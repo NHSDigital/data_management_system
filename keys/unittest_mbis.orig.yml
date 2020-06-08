@@ -1,0 +1,26 @@
+# Generate encrypted version 'config/keys/unittest_mbis.kek' of this file with:
+#   bundle exec rails c
+#     data = YAML.load_file('config/keys/unittest_mbis.orig.yml').to_yaml
+#     aes = OpenSSL::Cipher::Cipher.new('AES-256-CBC')
+#     aes.encrypt
+#     aes.key = Digest::SHA256.digest('test')
+#     encrypted_bundle = Base64.encode64(aes.update(data) + aes.final).gsub(/\n|\r|/, '')
+#     File.open('config/keys/unittest_mbis.kek', 'w') {|f| f << encrypted_bundle }
+#     exit
+:unittest_pseudo_prescr:
+  # salt1 is for pseudonymisation
+  :salt1: 1ee7719cc65473a1f6c84e9665f461de0a3dbae705225519550cb7ba7caf3ad3
+  # salt2 is for encrypting demographics
+  :salt2: 28ddfb5222f74cdb144be048480e56ba3a9cd6f1e73f394049428f910b8f00e8
+  # salt3 (optional) is for encrypting clinical data
+  # salt4 (optional) is for encrypting rawtext / mixed demographics and clinical data
+  :mode: pseudonymise_nhsnumber_only
+:unittest_encrypt:
+  # salt1 is for pseudonymisation
+  :salt1: 8f8823d5e4d60772ab439769c576848a0f3fb66d2f94f40acf155c7944b52f72
+  # salt2 is for encrypting demographics
+  :salt2: bc91de1d98e94927cf38927ed4716e7c3543d7a215f5eacecb391d132865134a
+  # salt3 (optional) is for encrypting clinical data
+  # salt4 (optional) is for encrypting rawtext / mixed demographics and clinical data
+  :salt4: 9de7929825e786683ec313d70807ef23fd3e18005232d364300b96a717251648
+  :mode: encrypt
