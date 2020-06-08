@@ -2,10 +2,9 @@ require 'bundler/capistrano'
 require 'ndr_dev_support/capistrano/ndr_model'
 
 set :application, 'mbis_front'
+set :repository, 'https://github.com/PublicHealthEngland/data_management_system'
+set :scm, :git
 
-# TODO: Not yet used - still moving towards an NDTMSv2-like deployment model
-# set :repository_branches, 'https://ndr-svn.phe.gov.uk/svn/non-era/branches/mbis/'
-set :repository_branches, 'https://ndr-svn.phe.gov.uk/svn/non-era/'
 
 # Use private repository for some configuration files
 set :secondary_repo, 'https://ndr-svn.phe.gov.uk/svn/non-era/mbis'

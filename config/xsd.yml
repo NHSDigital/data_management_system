@@ -1,0 +1,4 @@
+---
+run_test: true
+random_optional_elements: false
+print_test_output: false

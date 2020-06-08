@@ -3,8 +3,8 @@
 # stratified by <ENV>, <BRANCH> is branch of the MBIS project and <RUBY> is the server Ruby.
 ---
 beta:
-  branch: 'mbis'
+  branch: 'master'
   ruby: 2.6.3
 live:
-  branch: 'mbis'
+  branch: 'master'
   ruby: 2.6.3
