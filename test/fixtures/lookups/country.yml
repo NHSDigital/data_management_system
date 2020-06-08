@@ -1,0 +1,2754 @@
+# Created by `bin/rails lookup:create_fixture[Country]` at 2019-02-25 07:55:58 UTC
+---
+ABW:
+  id: ABW
+  value: ARUBA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &1 2019-01-23 10:10:59.129474000 Z
+    zone: &2 !ruby/object:ActiveSupport::TimeZone
+      name: Etc/UTC
+    time: *1
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &3 2019-01-23 10:10:59.129474000 Z
+    zone: *2
+    time: *3
+AFG:
+  id: AFG
+  value: AFGHANISTAN
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &4 2019-01-23 10:10:59.051027000 Z
+    zone: *2
+    time: *4
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &5 2019-01-23 10:10:59.051027000 Z
+    zone: *2
+    time: *5
+AGO:
+  id: AGO
+  value: ANGOLA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &6 2019-01-23 10:10:59.089916000 Z
+    zone: *2
+    time: *6
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &7 2019-01-23 10:10:59.089916000 Z
+    zone: *2
+    time: *7
+AIA:
+  id: AIA
+  value: ANGUILLA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &8 2019-01-23 10:10:59.100182000 Z
+    zone: *2
+    time: *8
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &9 2019-01-23 10:10:59.100182000 Z
+    zone: *2
+    time: *9
+ALA:
+  id: ALA
+  value: ÅLAND ISLANDS
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &10 2019-01-23 10:10:59.054168000 Z
+    zone: *2
+    time: *10
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &11 2019-01-23 10:10:59.054168000 Z
+    zone: *2
+    time: *11
+ALB:
+  id: ALB
+  value: ALBANIA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &12 2019-01-23 10:10:59.056937000 Z
+    zone: *2
+    time: *12
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &13 2019-01-23 10:10:59.056937000 Z
+    zone: *2
+    time: *13
+AND:
+  id: AND
+  value: ANDORRA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &14 2019-01-23 10:10:59.077082000 Z
+    zone: *2
+    time: *14
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &15 2019-01-23 10:10:59.077082000 Z
+    zone: *2
+    time: *15
+ARE:
+  id: ARE
+  value: UNITED ARAB EMIRATES
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &16 2019-01-23 10:10:59.881141000 Z
+    zone: *2
+    time: *16
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &17 2019-01-23 10:10:59.881141000 Z
+    zone: *2
+    time: *17
+ARG:
+  id: ARG
+  value: ARGENTINA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &18 2019-01-23 10:10:59.121542000 Z
+    zone: *2
+    time: *18
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &19 2019-01-23 10:10:59.121542000 Z
+    zone: *2
+    time: *19
+ARM:
+  id: ARM
+  value: ARMENIA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &20 2019-01-23 10:10:59.126069000 Z
+    zone: *2
+    time: *20
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &21 2019-01-23 10:10:59.126069000 Z
+    zone: *2
+    time: *21
+ASM:
+  id: ASM
+  value: AMERICAN SAMOA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &22 2019-01-23 10:10:59.063643000 Z
+    zone: *2
+    time: *22
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &23 2019-01-23 10:10:59.063643000 Z
+    zone: *2
+    time: *23
+ATA:
+  id: ATA
+  value: ANTARCTICA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &24 2019-01-23 10:10:59.107560000 Z
+    zone: *2
+    time: *24
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &25 2019-01-23 10:10:59.107560000 Z
+    zone: *2
+    time: *25
+ATF:
+  id: ATF
+  value: FRENCH SOUTHERN TERRITORIES
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &26 2019-01-23 10:10:59.433880000 Z
+    zone: *2
+    time: *26
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &27 2019-01-23 10:10:59.433880000 Z
+    zone: *2
+    time: *27
+ATG:
+  id: ATG
+  value: ANTIGUA AND BARBUDA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &28 2019-01-23 10:10:59.114447000 Z
+    zone: *2
+    time: *28
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &29 2019-01-23 10:10:59.114447000 Z
+    zone: *2
+    time: *29
+AUS:
+  id: AUS
+  value: AUSTRALIA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &30 2019-01-23 10:10:59.133388000 Z
+    zone: *2
+    time: *30
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &31 2019-01-23 10:10:59.133388000 Z
+    zone: *2
+    time: *31
+AUT:
+  id: AUT
+  value: AUSTRIA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &32 2019-01-23 10:10:59.156663000 Z
+    zone: *2
+    time: *32
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &33 2019-01-23 10:10:59.156663000 Z
+    zone: *2
+    time: *33
+AZE:
+  id: AZE
+  value: AZERBAIJAN
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &34 2019-01-23 10:10:59.168538000 Z
+    zone: *2
+    time: *34
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &35 2019-01-23 10:10:59.168538000 Z
+    zone: *2
+    time: *35
+BDI:
+  id: BDI
+  value: BURUNDI
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &36 2019-01-23 10:10:59.303172000 Z
+    zone: *2
+    time: *36
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &37 2019-01-23 10:10:59.303172000 Z
+    zone: *2
+    time: *37
+BEL:
+  id: BEL
+  value: BELGIUM
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &38 2019-01-23 10:10:59.206537000 Z
+    zone: *2
+    time: *38
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &39 2019-01-23 10:10:59.206537000 Z
+    zone: *2
+    time: *39
+BEN:
+  id: BEN
+  value: BENIN
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &40 2019-01-23 10:10:59.216492000 Z
+    zone: *2
+    time: *40
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &41 2019-01-23 10:10:59.216492000 Z
+    zone: *2
+    time: *41
+BES:
+  id: BES
+  value: BONAIRE, SINT EUSTATIUS AND SABA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &42 2019-01-23 10:10:59.244071000 Z
+    zone: *2
+    time: *42
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &43 2019-01-23 10:10:59.244071000 Z
+    zone: *2
+    time: *43
+BFA:
+  id: BFA
+  value: BURKINA FASO
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &44 2019-01-23 10:10:59.298234000 Z
+    zone: *2
+    time: *44
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &45 2019-01-23 10:10:59.298234000 Z
+    zone: *2
+    time: *45
+BGD:
+  id: BGD
+  value: BANGLADESH
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &46 2019-01-23 10:10:59.190602000 Z
+    zone: *2
+    time: *46
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &47 2019-01-23 10:10:59.190602000 Z
+    zone: *2
+    time: *47
+BGR:
+  id: BGR
+  value: BULGARIA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &48 2019-01-23 10:10:59.292766000 Z
+    zone: *2
+    time: *48
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &49 2019-01-23 10:10:59.292766000 Z
+    zone: *2
+    time: *49
+BHR:
+  id: BHR
+  value: BAHRAIN
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &50 2019-01-23 10:10:59.183014000 Z
+    zone: *2
+    time: *50
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &51 2019-01-23 10:10:59.183014000 Z
+    zone: *2
+    time: *51
+BHS:
+  id: BHS
+  value: BAHAMAS, THE
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &52 2019-01-23 10:10:59.175644000 Z
+    zone: *2
+    time: *52
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &53 2019-01-23 10:10:59.175644000 Z
+    zone: *2
+    time: *53
+BIH:
+  id: BIH
+  value: BOSNIA AND HERZEGOVINA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &54 2019-01-23 10:10:59.250590000 Z
+    zone: *2
+    time: *54
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &55 2019-01-23 10:10:59.250590000 Z
+    zone: *2
+    time: *55
+BLM:
+  id: BLM
+  value: ST BARTHÉLEMY
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &56 2019-01-23 10:10:59.780299000 Z
+    zone: *2
+    time: *56
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &57 2019-01-23 10:10:59.780299000 Z
+    zone: *2
+    time: *57
+BLR:
+  id: BLR
+  value: BELARUS
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &58 2019-01-23 10:10:59.200505000 Z
+    zone: *2
+    time: *58
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &59 2019-01-23 10:10:59.200505000 Z
+    zone: *2
+    time: *59
+BLZ:
+  id: BLZ
+  value: BELIZE
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &60 2019-01-23 10:10:59.211532000 Z
+    zone: *2
+    time: *60
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &61 2019-01-23 10:10:59.211532000 Z
+    zone: *2
+    time: *61
+BMU:
+  id: BMU
+  value: BERMUDA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &62 2019-01-23 10:10:59.222500000 Z
+    zone: *2
+    time: *62
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &63 2019-01-23 10:10:59.222500000 Z
+    zone: *2
+    time: *63
+BOL:
+  id: BOL
+  value: BOLIVIA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &64 2019-01-23 10:10:59.237038000 Z
+    zone: *2
+    time: *64
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &65 2019-01-23 10:10:59.237038000 Z
+    zone: *2
+    time: *65
+BRA:
+  id: BRA
+  value: BRAZIL
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &66 2019-01-23 10:10:59.267543000 Z
+    zone: *2
+    time: *66
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &67 2019-01-23 10:10:59.267543000 Z
+    zone: *2
+    time: *67
+BRB:
+  id: BRB
+  value: BARBADOS
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &68 2019-01-23 10:10:59.195468000 Z
+    zone: *2
+    time: *68
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &69 2019-01-23 10:10:59.195468000 Z
+    zone: *2
+    time: *69
+BRN:
+  id: BRN
+  value: BRUNEI
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &70 2019-01-23 10:10:59.285580000 Z
+    zone: *2
+    time: *70
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &71 2019-01-23 10:10:59.285580000 Z
+    zone: *2
+    time: *71
+BTN:
+  id: BTN
+  value: BHUTAN
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &72 2019-01-23 10:10:59.229548000 Z
+    zone: *2
+    time: *72
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &73 2019-01-23 10:10:59.229548000 Z
+    zone: *2
+    time: *73
+BVT:
+  id: BVT
+  value: BOUVET ISLAND
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &74 2019-01-23 10:10:59.260764000 Z
+    zone: *2
+    time: *74
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &75 2019-01-23 10:10:59.260764000 Z
+    zone: *2
+    time: *75
+BWA:
+  id: BWA
+  value: BOTSWANA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &76 2019-01-23 10:10:59.253381000 Z
+    zone: *2
+    time: *76
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &77 2019-01-23 10:10:59.253381000 Z
+    zone: *2
+    time: *77
+CAF:
+  id: CAF
+  value: CENTRAL AFRICAN REPUBLIC
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &78 2019-01-23 10:10:59.314069000 Z
+    zone: *2
+    time: *78
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &79 2019-01-23 10:10:59.314069000 Z
+    zone: *2
+    time: *79
+CAN:
+  id: CAN
+  value: CANADA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &80 2019-01-23 10:10:59.309993000 Z
+    zone: *2
+    time: *80
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &81 2019-01-23 10:10:59.309993000 Z
+    zone: *2
+    time: *81
+CCK:
+  id: CCK
+  value: COCOS (KEELING) ISLANDS
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &82 2019-01-23 10:10:59.340413000 Z
+    zone: *2
+    time: *82
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &83 2019-01-23 10:10:59.340413000 Z
+    zone: *2
+    time: *83
+CHE:
+  id: CHE
+  value: SWITZERLAND
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &84 2019-01-23 10:10:59.813288000 Z
+    zone: *2
+    time: *84
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &85 2019-01-23 10:10:59.813288000 Z
+    zone: *2
+    time: *85
+CHL:
+  id: CHL
+  value: CHILE
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &86 2019-01-23 10:10:59.318374000 Z
+    zone: *2
+    time: *86
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &87 2019-01-23 10:10:59.318374000 Z
+    zone: *2
+    time: *87
+CHN:
+  id: CHN
+  value: CHINA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &88 2019-01-23 10:10:59.336992000 Z
+    zone: *2
+    time: *88
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &89 2019-01-23 10:10:59.336992000 Z
+    zone: *2
+    time: *89
+CIV:
+  id: CIV
+  value: IVORY COAST
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &90 2019-01-23 10:10:59.507286000 Z
+    zone: *2
+    time: *90
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &91 2019-01-23 10:10:59.507286000 Z
+    zone: *2
+    time: *91
+CMR:
+  id: CMR
+  value: CAMEROON
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &92 2019-01-23 10:10:59.308369000 Z
+    zone: *2
+    time: *92
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &93 2019-01-23 10:10:59.308369000 Z
+    zone: *2
+    time: *93
+COD:
+  id: COD
+  value: CONGO (DEMOCRATIC REPUBLIC)
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &94 2019-01-23 10:10:59.349070000 Z
+    zone: *2
+    time: *94
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &95 2019-01-23 10:10:59.349070000 Z
+    zone: *2
+    time: *95
+COG:
+  id: COG
+  value: CONGO
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &96 2019-01-23 10:10:59.346951000 Z
+    zone: *2
+    time: *96
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &97 2019-01-23 10:10:59.346951000 Z
+    zone: *2
+    time: *97
+COK:
+  id: COK
+  value: COOK ISLANDS
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &98 2019-01-23 10:10:59.350768000 Z
+    zone: *2
+    time: *98
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &99 2019-01-23 10:10:59.350768000 Z
+    zone: *2
+    time: *99
+COL:
+  id: COL
+  value: COLOMBIA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &100 2019-01-23 10:10:59.342188000 Z
+    zone: *2
+    time: *100
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &101 2019-01-23 10:10:59.342188000 Z
+    zone: *2
+    time: *101
+COM:
+  id: COM
+  value: COMOROS
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &102 2019-01-23 10:10:59.345146000 Z
+    zone: *2
+    time: *102
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &103 2019-01-23 10:10:59.345146000 Z
+    zone: *2
+    time: *103
+CPV:
+  id: CPV
+  value: CAPE VERDE
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &104 2019-01-23 10:10:59.311309000 Z
+    zone: *2
+    time: *104
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &105 2019-01-23 10:10:59.311309000 Z
+    zone: *2
+    time: *105
+CRI:
+  id: CRI
+  value: COSTA RICA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &106 2019-01-23 10:10:59.354299000 Z
+    zone: *2
+    time: *106
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &107 2019-01-23 10:10:59.354299000 Z
+    zone: *2
+    time: *107
+CUB:
+  id: CUB
+  value: CUBA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &108 2019-01-23 10:10:59.358244000 Z
+    zone: *2
+    time: *108
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &109 2019-01-23 10:10:59.358244000 Z
+    zone: *2
+    time: *109
+CUW:
+  id: CUW
+  value: CURAÇAO
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &110 2019-01-23 10:10:59.359995000 Z
+    zone: *2
+    time: *110
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &111 2019-01-23 10:10:59.359995000 Z
+    zone: *2
+    time: *111
+CXR:
+  id: CXR
+  value: CHRISTMAS ISLAND
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &112 2019-01-23 10:10:59.338886000 Z
+    zone: *2
+    time: *112
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &113 2019-01-23 10:10:59.338886000 Z
+    zone: *2
+    time: *113
+CYM:
+  id: CYM
+  value: CAYMAN ISLANDS
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &114 2019-01-23 10:10:59.312684000 Z
+    zone: *2
+    time: *114
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &115 2019-01-23 10:10:59.312684000 Z
+    zone: *2
+    time: *115
+CZE:
+  id: CZE
+  value: CZECH REPUBLIC
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &116 2019-01-23 10:10:59.364303000 Z
+    zone: *2
+    time: *116
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &117 2019-01-23 10:10:59.364303000 Z
+    zone: *2
+    time: *117
+DEU:
+  id: DEU
+  value: GERMANY
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &118 2019-01-23 10:10:59.444977000 Z
+    zone: *2
+    time: *118
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &119 2019-01-23 10:10:59.444977000 Z
+    zone: *2
+    time: *119
+DJI:
+  id: DJI
+  value: DJIBOUTI
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &120 2019-01-23 10:10:59.366915000 Z
+    zone: *2
+    time: *120
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &121 2019-01-23 10:10:59.366915000 Z
+    zone: *2
+    time: *121
+DMA:
+  id: DMA
+  value: DOMINICA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &122 2019-01-23 10:10:59.368159000 Z
+    zone: *2
+    time: *122
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &123 2019-01-23 10:10:59.368159000 Z
+    zone: *2
+    time: *123
+DNK:
+  id: DNK
+  value: DENMARK
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &124 2019-01-23 10:10:59.365631000 Z
+    zone: *2
+    time: *124
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &125 2019-01-23 10:10:59.365631000 Z
+    zone: *2
+    time: *125
+DOM:
+  id: DOM
+  value: DOMINICAN REPUBLIC
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &126 2019-01-23 10:10:59.369398000 Z
+    zone: *2
+    time: *126
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &127 2019-01-23 10:10:59.369398000 Z
+    zone: *2
+    time: *127
+DZA:
+  id: DZA
+  value: ALGERIA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &128 2019-01-23 10:10:59.060091000 Z
+    zone: *2
+    time: *128
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &129 2019-01-23 10:10:59.060091000 Z
+    zone: *2
+    time: *129
+ECU:
+  id: ECU
+  value: ECUADOR
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &130 2019-01-23 10:10:59.373644000 Z
+    zone: *2
+    time: *130
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &131 2019-01-23 10:10:59.373644000 Z
+    zone: *2
+    time: *131
+EGY:
+  id: EGY
+  value: EGYPT
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &132 2019-01-23 10:10:59.384823000 Z
+    zone: *2
+    time: *132
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &133 2019-01-23 10:10:59.384823000 Z
+    zone: *2
+    time: *133
+ERI:
+  id: ERI
+  value: ERITREA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &134 2019-01-23 10:10:59.410611000 Z
+    zone: *2
+    time: *134
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &135 2019-01-23 10:10:59.410611000 Z
+    zone: *2
+    time: *135
+ESH:
+  id: ESH
+  value: WESTERN SAHARA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &136 2019-01-23 10:10:59.943781000 Z
+    zone: *2
+    time: *136
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &137 2019-01-23 10:10:59.943781000 Z
+    zone: *2
+    time: *137
+EST:
+  id: EST
+  value: ESTONIA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &138 2019-01-23 10:10:59.413074000 Z
+    zone: *2
+    time: *138
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &139 2019-01-23 10:10:59.413074000 Z
+    zone: *2
+    time: *139
+ETH:
+  id: ETH
+  value: ETHIOPIA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &140 2019-01-23 10:10:59.416832000 Z
+    zone: *2
+    time: *140
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &141 2019-01-23 10:10:59.416832000 Z
+    zone: *2
+    time: *141
+FIN:
+  id: FIN
+  value: FINLAND
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &142 2019-01-23 10:10:59.425685000 Z
+    zone: *2
+    time: *142
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &143 2019-01-23 10:10:59.425685000 Z
+    zone: *2
+    time: *143
+FJI:
+  id: FJI
+  value: FIJI
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &144 2019-01-23 10:10:59.423707000 Z
+    zone: *2
+    time: *144
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &145 2019-01-23 10:10:59.423707000 Z
+    zone: *2
+    time: *145
+FLK:
+  id: FLK
+  value: FALKLAND ISLANDS
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &146 2019-01-23 10:10:59.418941000 Z
+    zone: *2
+    time: *146
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &147 2019-01-23 10:10:59.418941000 Z
+    zone: *2
+    time: *147
+FRA:
+  id: FRA
+  value: FRANCE
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &148 2019-01-23 10:10:59.428180000 Z
+    zone: *2
+    time: *148
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &149 2019-01-23 10:10:59.428180000 Z
+    zone: *2
+    time: *149
+FRO:
+  id: FRO
+  value: FAROE ISLANDS
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &150 2019-01-23 10:10:59.421728000 Z
+    zone: *2
+    time: *150
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &151 2019-01-23 10:10:59.421728000 Z
+    zone: *2
+    time: *151
+FSM:
+  id: FSM
+  value: MICRONESIA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &152 2019-01-23 10:10:59.596781000 Z
+    zone: *2
+    time: *152
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &153 2019-01-23 10:10:59.596781000 Z
+    zone: *2
+    time: *153
+GAB:
+  id: GAB
+  value: GABON
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &154 2019-01-23 10:10:59.435743000 Z
+    zone: *2
+    time: *154
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &155 2019-01-23 10:10:59.435743000 Z
+    zone: *2
+    time: *155
+GEO:
+  id: GEO
+  value: GEORGIA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &156 2019-01-23 10:10:59.442124000 Z
+    zone: *2
+    time: *156
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &157 2019-01-23 10:10:59.442124000 Z
+    zone: *2
+    time: *157
+GHA:
+  id: GHA
+  value: GHANA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &158 2019-01-23 10:10:59.447514000 Z
+    zone: *2
+    time: *158
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &159 2019-01-23 10:10:59.447514000 Z
+    zone: *2
+    time: *159
+GIB:
+  id: GIB
+  value: GIBRALTAR
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &160 2019-01-23 10:10:59.452863000 Z
+    zone: *2
+    time: *160
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &161 2019-01-23 10:10:59.452863000 Z
+    zone: *2
+    time: *161
+GIN:
+  id: GIN
+  value: GUINEA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &162 2019-01-23 10:10:59.466985000 Z
+    zone: *2
+    time: *162
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &163 2019-01-23 10:10:59.466985000 Z
+    zone: *2
+    time: *163
+GLP:
+  id: GLP
+  value: GUADELOUPE
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &164 2019-01-23 10:10:59.461440000 Z
+    zone: *2
+    time: *164
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &165 2019-01-23 10:10:59.461440000 Z
+    zone: *2
+    time: *165
+GMB:
+  id: GMB
+  value: GAMBIA, THE
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &166 2019-01-23 10:10:59.438535000 Z
+    zone: *2
+    time: *166
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &167 2019-01-23 10:10:59.438535000 Z
+    zone: *2
+    time: *167
+GNB:
+  id: GNB
+  value: GUINEA-BISSAU
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &168 2019-01-23 10:10:59.468394000 Z
+    zone: *2
+    time: *168
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &169 2019-01-23 10:10:59.468394000 Z
+    zone: *2
+    time: *169
+GNQ:
+  id: GNQ
+  value: EQUATORIAL GUINEA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &170 2019-01-23 10:10:59.404811000 Z
+    zone: *2
+    time: *170
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &171 2019-01-23 10:10:59.404811000 Z
+    zone: *2
+    time: *171
+GRC:
+  id: GRC
+  value: GREECE
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &172 2019-01-23 10:10:59.456856000 Z
+    zone: *2
+    time: *172
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &173 2019-01-23 10:10:59.456856000 Z
+    zone: *2
+    time: *173
+GRD:
+  id: GRD
+  value: GRENADA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &174 2019-01-23 10:10:59.460029000 Z
+    zone: *2
+    time: *174
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &175 2019-01-23 10:10:59.460029000 Z
+    zone: *2
+    time: *175
+GRL:
+  id: GRL
+  value: GREENLAND
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &176 2019-01-23 10:10:59.458411000 Z
+    zone: *2
+    time: *176
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &177 2019-01-23 10:10:59.458411000 Z
+    zone: *2
+    time: *177
+GTM:
+  id: GTM
+  value: GUATEMALA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &178 2019-01-23 10:10:59.465627000 Z
+    zone: *2
+    time: *178
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &179 2019-01-23 10:10:59.465627000 Z
+    zone: *2
+    time: *179
+GUF:
+  id: GUF
+  value: FRENCH GUIANA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &180 2019-01-23 10:10:59.430348000 Z
+    zone: *2
+    time: *180
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &181 2019-01-23 10:10:59.430348000 Z
+    zone: *2
+    time: *181
+GUM:
+  id: GUM
+  value: GUAM
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &182 2019-01-23 10:10:59.464109000 Z
+    zone: *2
+    time: *182
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &183 2019-01-23 10:10:59.464109000 Z
+    zone: *2
+    time: *183
+GUY:
+  id: GUY
+  value: GUYANA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &184 2019-01-23 10:10:59.470699000 Z
+    zone: *2
+    time: *184
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &185 2019-01-23 10:10:59.470699000 Z
+    zone: *2
+    time: *185
+HKG:
+  id: HKG
+  value: HONG KONG (SPECIAL ADMINISTRATIVE REGION OF CHINA)
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &186 2019-01-23 10:10:59.477218000 Z
+    zone: *2
+    time: *186
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &187 2019-01-23 10:10:59.477218000 Z
+    zone: *2
+    time: *187
+HMD:
+  id: HMD
+  value: HEARD ISLAND AND MCDONALD ISLANDS
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &188 2019-01-23 10:10:59.474322000 Z
+    zone: *2
+    time: *188
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &189 2019-01-23 10:10:59.474322000 Z
+    zone: *2
+    time: *189
+HND:
+  id: HND
+  value: HONDURAS
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &190 2019-01-23 10:10:59.475651000 Z
+    zone: *2
+    time: *190
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &191 2019-01-23 10:10:59.475651000 Z
+    zone: *2
+    time: *191
+HRV:
+  id: HRV
+  value: CROATIA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &192 2019-01-23 10:10:59.356388000 Z
+    zone: *2
+    time: *192
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &193 2019-01-23 10:10:59.356388000 Z
+    zone: *2
+    time: *193
+HTI:
+  id: HTI
+  value: HAITI
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &194 2019-01-23 10:10:59.472988000 Z
+    zone: *2
+    time: *194
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &195 2019-01-23 10:10:59.472988000 Z
+    zone: *2
+    time: *195
+HUN:
+  id: HUN
+  value: HUNGARY
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &196 2019-01-23 10:10:59.478643000 Z
+    zone: *2
+    time: *196
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &197 2019-01-23 10:10:59.478643000 Z
+    zone: *2
+    time: *197
+IDN:
+  id: IDN
+  value: INDONESIA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &198 2019-01-23 10:10:59.486881000 Z
+    zone: *2
+    time: *198
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &199 2019-01-23 10:10:59.486881000 Z
+    zone: *2
+    time: *199
+IMN:
+  id: IMN
+  value: ISLE OF MAN
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &200 2019-01-23 10:10:59.498342000 Z
+    zone: *2
+    time: *200
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &201 2019-01-23 10:10:59.498342000 Z
+    zone: *2
+    time: *201
+IND:
+  id: IND
+  value: INDIA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &202 2019-01-23 10:10:59.484210000 Z
+    zone: *2
+    time: *202
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &203 2019-01-23 10:10:59.484210000 Z
+    zone: *2
+    time: *203
+IOT:
+  id: IOT
+  value: BRITISH INDIAN OCEAN TERRITORY
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &204 2019-01-23 10:10:59.273566000 Z
+    zone: *2
+    time: *204
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &205 2019-01-23 10:10:59.273566000 Z
+    zone: *2
+    time: *205
+IRL:
+  id: IRL
+  value: IRELAND
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &206 2019-01-23 10:10:59.495341000 Z
+    zone: *2
+    time: *206
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &207 2019-01-23 10:10:59.495341000 Z
+    zone: *2
+    time: *207
+IRN:
+  id: IRN
+  value: IRAN
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &208 2019-01-23 10:10:59.489237000 Z
+    zone: *2
+    time: *208
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &209 2019-01-23 10:10:59.489237000 Z
+    zone: *2
+    time: *209
+IRQ:
+  id: IRQ
+  value: IRAQ
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &210 2019-01-23 10:10:59.492519000 Z
+    zone: *2
+    time: *210
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &211 2019-01-23 10:10:59.492519000 Z
+    zone: *2
+    time: *211
+ISL:
+  id: ISL
+  value: ICELAND
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &212 2019-01-23 10:10:59.481211000 Z
+    zone: *2
+    time: *212
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &213 2019-01-23 10:10:59.481211000 Z
+    zone: *2
+    time: *213
+ISR:
+  id: ISR
+  value: ISRAEL
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &214 2019-01-23 10:10:59.501234000 Z
+    zone: *2
+    time: *214
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &215 2019-01-23 10:10:59.501234000 Z
+    zone: *2
+    time: *215
+ITA:
+  id: ITA
+  value: ITALY
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &216 2019-01-23 10:10:59.504648000 Z
+    zone: *2
+    time: *216
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &217 2019-01-23 10:10:59.504648000 Z
+    zone: *2
+    time: *217
+JAM:
+  id: JAM
+  value: JAMAICA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &218 2019-01-23 10:10:59.510093000 Z
+    zone: *2
+    time: *218
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &219 2019-01-23 10:10:59.510093000 Z
+    zone: *2
+    time: *219
+JOR:
+  id: JOR
+  value: JORDAN
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &220 2019-01-23 10:10:59.514070000 Z
+    zone: *2
+    time: *220
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &221 2019-01-23 10:10:59.514070000 Z
+    zone: *2
+    time: *221
+JPN:
+  id: JPN
+  value: JAPAN
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &222 2019-01-23 10:10:59.512120000 Z
+    zone: *2
+    time: *222
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &223 2019-01-23 10:10:59.512120000 Z
+    zone: *2
+    time: *223
+KAZ:
+  id: KAZ
+  value: KAZAKHSTAN
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &224 2019-01-23 10:10:59.517102000 Z
+    zone: *2
+    time: *224
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &225 2019-01-23 10:10:59.517102000 Z
+    zone: *2
+    time: *225
+KEN:
+  id: KEN
+  value: KENYA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &226 2019-01-23 10:10:59.519201000 Z
+    zone: *2
+    time: *226
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &227 2019-01-23 10:10:59.519201000 Z
+    zone: *2
+    time: *227
+KGZ:
+  id: KGZ
+  value: KYRGYZSTAN
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &228 2019-01-23 10:10:59.534164000 Z
+    zone: *2
+    time: *228
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &229 2019-01-23 10:10:59.534164000 Z
+    zone: *2
+    time: *229
+KHM:
+  id: KHM
+  value: CAMBODIA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &230 2019-01-23 10:10:59.305944000 Z
+    zone: *2
+    time: *230
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &231 2019-01-23 10:10:59.305944000 Z
+    zone: *2
+    time: *231
+KIR:
+  id: KIR
+  value: KIRIBATI
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &232 2019-01-23 10:10:59.521721000 Z
+    zone: *2
+    time: *232
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &233 2019-01-23 10:10:59.521721000 Z
+    zone: *2
+    time: *233
+KNA:
+  id: KNA
+  value: ST KITTS AND NEVIS
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &234 2019-01-23 10:10:59.786295000 Z
+    zone: *2
+    time: *234
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &235 2019-01-23 10:10:59.786295000 Z
+    zone: *2
+    time: *235
+KOR:
+  id: KOR
+  value: KOREA (SOUTH)
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &236 2019-01-23 10:10:59.527122000 Z
+    zone: *2
+    time: *236
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &237 2019-01-23 10:10:59.527122000 Z
+    zone: *2
+    time: *237
+KWT:
+  id: KWT
+  value: KUWAIT
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &238 2019-01-23 10:10:59.532171000 Z
+    zone: *2
+    time: *238
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &239 2019-01-23 10:10:59.532171000 Z
+    zone: *2
+    time: *239
+LAO:
+  id: LAO
+  value: LAOS
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &240 2019-01-23 10:10:59.537047000 Z
+    zone: *2
+    time: *240
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &241 2019-01-23 10:10:59.537047000 Z
+    zone: *2
+    time: *241
+LBN:
+  id: LBN
+  value: LEBANON
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &242 2019-01-23 10:10:59.541102000 Z
+    zone: *2
+    time: *242
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &243 2019-01-23 10:10:59.541102000 Z
+    zone: *2
+    time: *243
+LBR:
+  id: LBR
+  value: LIBERIA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &244 2019-01-23 10:10:59.545865000 Z
+    zone: *2
+    time: *244
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &245 2019-01-23 10:10:59.545865000 Z
+    zone: *2
+    time: *245
+LBY:
+  id: LBY
+  value: LIBYA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &246 2019-01-23 10:10:59.550925000 Z
+    zone: *2
+    time: *246
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &247 2019-01-23 10:10:59.550925000 Z
+    zone: *2
+    time: *247
+LCA:
+  id: LCA
+  value: ST LUCIA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &248 2019-01-23 10:10:59.789311000 Z
+    zone: *2
+    time: *248
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &249 2019-01-23 10:10:59.789311000 Z
+    zone: *2
+    time: *249
+LIE:
+  id: LIE
+  value: LIECHTENSTEIN
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &250 2019-01-23 10:10:59.553535000 Z
+    zone: *2
+    time: *250
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &251 2019-01-23 10:10:59.553535000 Z
+    zone: *2
+    time: *251
+LKA:
+  id: LKA
+  value: SRI LANKA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &252 2019-01-23 10:10:59.777232000 Z
+    zone: *2
+    time: *252
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &253 2019-01-23 10:10:59.777232000 Z
+    zone: *2
+    time: *253
+LSO:
+  id: LSO
+  value: LESOTHO
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &254 2019-01-23 10:10:59.542483000 Z
+    zone: *2
+    time: *254
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &255 2019-01-23 10:10:59.542483000 Z
+    zone: *2
+    time: *255
+LTU:
+  id: LTU
+  value: LITHUANIA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &256 2019-01-23 10:10:59.556338000 Z
+    zone: *2
+    time: *256
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &257 2019-01-23 10:10:59.556338000 Z
+    zone: *2
+    time: *257
+LUX:
+  id: LUX
+  value: LUXEMBOURG
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &258 2019-01-23 10:10:59.559189000 Z
+    zone: *2
+    time: *258
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &259 2019-01-23 10:10:59.559189000 Z
+    zone: *2
+    time: *259
+LVA:
+  id: LVA
+  value: LATVIA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &260 2019-01-23 10:10:59.539286000 Z
+    zone: *2
+    time: *260
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &261 2019-01-23 10:10:59.539286000 Z
+    zone: *2
+    time: *261
+MAC:
+  id: MAC
+  value: MACAO (SPECIAL ADMINISTRATIVE REGION OF CHIINA)
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &262 2019-01-23 10:10:59.562173000 Z
+    zone: *2
+    time: *262
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &263 2019-01-23 10:10:59.562173000 Z
+    zone: *2
+    time: *263
+MAF:
+  id: MAF
+  value: SAINT MARTIN (FRENCH PART)
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &264 2019-01-23 10:10:59.716281000 Z
+    zone: *2
+    time: *264
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &265 2019-01-23 10:10:59.716281000 Z
+    zone: *2
+    time: *265
+MAR:
+  id: MAR
+  value: MOROCCO
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &266 2019-01-23 10:10:59.617313000 Z
+    zone: *2
+    time: *266
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &267 2019-01-23 10:10:59.617313000 Z
+    zone: *2
+    time: *267
+MCO:
+  id: MCO
+  value: MONACO
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &268 2019-01-23 10:10:59.607101000 Z
+    zone: *2
+    time: *268
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &269 2019-01-23 10:10:59.607101000 Z
+    zone: *2
+    time: *269
+MDA:
+  id: MDA
+  value: MOLDOVA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &270 2019-01-23 10:10:59.601635000 Z
+    zone: *2
+    time: *270
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &271 2019-01-23 10:10:59.601635000 Z
+    zone: *2
+    time: *271
+MDG:
+  id: MDG
+  value: MADAGASCAR
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &272 2019-01-23 10:10:59.566174000 Z
+    zone: *2
+    time: *272
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &273 2019-01-23 10:10:59.566174000 Z
+    zone: *2
+    time: *273
+MDV:
+  id: MDV
+  value: MALDIVES
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &274 2019-01-23 10:10:59.573264000 Z
+    zone: *2
+    time: *274
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &275 2019-01-23 10:10:59.573264000 Z
+    zone: *2
+    time: *275
+MEX:
+  id: MEX
+  value: MEXICO
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &276 2019-01-23 10:10:59.594465000 Z
+    zone: *2
+    time: *276
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &277 2019-01-23 10:10:59.594465000 Z
+    zone: *2
+    time: *277
+MHL:
+  id: MHL
+  value: MARSHALL ISLANDS
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &278 2019-01-23 10:10:59.581116000 Z
+    zone: *2
+    time: *278
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &279 2019-01-23 10:10:59.581116000 Z
+    zone: *2
+    time: *279
+MKD:
+  id: MKD
+  value: MACEDONIA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &280 2019-01-23 10:10:59.563582000 Z
+    zone: *2
+    time: *280
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &281 2019-01-23 10:10:59.563582000 Z
+    zone: *2
+    time: *281
+MLI:
+  id: MLI
+  value: MALI
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &282 2019-01-23 10:10:59.576097000 Z
+    zone: *2
+    time: *282
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &283 2019-01-23 10:10:59.576097000 Z
+    zone: *2
+    time: *283
+MLT:
+  id: MLT
+  value: MALTA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &284 2019-01-23 10:10:59.578208000 Z
+    zone: *2
+    time: *284
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &285 2019-01-23 10:10:59.578208000 Z
+    zone: *2
+    time: *285
+MMR:
+  id: MMR
+  value: BURMA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &286 2019-01-23 10:10:59.300868000 Z
+    zone: *2
+    time: *286
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &287 2019-01-23 10:10:59.300868000 Z
+    zone: *2
+    time: *287
+MNE:
+  id: MNE
+  value: MONTENEGRO
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &288 2019-01-23 10:10:59.611270000 Z
+    zone: *2
+    time: *288
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &289 2019-01-23 10:10:59.611270000 Z
+    zone: *2
+    time: *289
+MNG:
+  id: MNG
+  value: MONGOLIA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &290 2019-01-23 10:10:59.609429000 Z
+    zone: *2
+    time: *290
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &291 2019-01-23 10:10:59.609429000 Z
+    zone: *2
+    time: *291
+MNP:
+  id: MNP
+  value: NORTHERN MARIANA ISLANDS
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &292 2019-01-23 10:10:59.657636000 Z
+    zone: *2
+    time: *292
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &293 2019-01-23 10:10:59.657636000 Z
+    zone: *2
+    time: *293
+MOZ:
+  id: MOZ
+  value: MOZAMBIQUE
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &294 2019-01-23 10:10:59.621956000 Z
+    zone: *2
+    time: *294
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &295 2019-01-23 10:10:59.621956000 Z
+    zone: *2
+    time: *295
+MRT:
+  id: MRT
+  value: MAURITANIA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &296 2019-01-23 10:10:59.586489000 Z
+    zone: *2
+    time: *296
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &297 2019-01-23 10:10:59.586489000 Z
+    zone: *2
+    time: *297
+MSR:
+  id: MSR
+  value: MONTSERRAT
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &298 2019-01-23 10:10:59.614216000 Z
+    zone: *2
+    time: *298
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &299 2019-01-23 10:10:59.614216000 Z
+    zone: *2
+    time: *299
+MTQ:
+  id: MTQ
+  value: MARTINIQUE
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &300 2019-01-23 10:10:59.583190000 Z
+    zone: *2
+    time: *300
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &301 2019-01-23 10:10:59.583190000 Z
+    zone: *2
+    time: *301
+MUS:
+  id: MUS
+  value: MAURITIUS
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &302 2019-01-23 10:10:59.589222000 Z
+    zone: *2
+    time: *302
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &303 2019-01-23 10:10:59.589222000 Z
+    zone: *2
+    time: *303
+MWI:
+  id: MWI
+  value: MALAWI
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &304 2019-01-23 10:10:59.568155000 Z
+    zone: *2
+    time: *304
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &305 2019-01-23 10:10:59.568155000 Z
+    zone: *2
+    time: *305
+MYS:
+  id: MYS
+  value: MALAYSIA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &306 2019-01-23 10:10:59.569690000 Z
+    zone: *2
+    time: *306
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &307 2019-01-23 10:10:59.569690000 Z
+    zone: *2
+    time: *307
+MYT:
+  id: MYT
+  value: MAYOTTE
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &308 2019-01-23 10:10:59.592164000 Z
+    zone: *2
+    time: *308
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &309 2019-01-23 10:10:59.592164000 Z
+    zone: *2
+    time: *309
+NAM:
+  id: NAM
+  value: NAMIBIA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &310 2019-01-23 10:10:59.625314000 Z
+    zone: *2
+    time: *310
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &311 2019-01-23 10:10:59.625314000 Z
+    zone: *2
+    time: *311
+NCL:
+  id: NCL
+  value: NEW CALEDONIA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &312 2019-01-23 10:10:59.636887000 Z
+    zone: *2
+    time: *312
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &313 2019-01-23 10:10:59.636887000 Z
+    zone: *2
+    time: *313
+NER:
+  id: NER
+  value: NIGER
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &314 2019-01-23 10:10:59.644374000 Z
+    zone: *2
+    time: *314
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &315 2019-01-23 10:10:59.644374000 Z
+    zone: *2
+    time: *315
+NFK:
+  id: NFK
+  value: NORFOLK ISLAND
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &316 2019-01-23 10:10:59.654086000 Z
+    zone: *2
+    time: *316
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &317 2019-01-23 10:10:59.654086000 Z
+    zone: *2
+    time: *317
+NGA:
+  id: NGA
+  value: NIGERIA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &318 2019-01-23 10:10:59.647374000 Z
+    zone: *2
+    time: *318
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &319 2019-01-23 10:10:59.647374000 Z
+    zone: *2
+    time: *319
+NIC:
+  id: NIC
+  value: NICARAGUA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &320 2019-01-23 10:10:59.641357000 Z
+    zone: *2
+    time: *320
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &321 2019-01-23 10:10:59.641357000 Z
+    zone: *2
+    time: *321
+NIU:
+  id: NIU
+  value: NIUE
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &322 2019-01-23 10:10:59.650526000 Z
+    zone: *2
+    time: *322
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &323 2019-01-23 10:10:59.650526000 Z
+    zone: *2
+    time: *323
+NLD:
+  id: NLD
+  value: NETHERLANDS
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &324 2019-01-23 10:10:59.634263000 Z
+    zone: *2
+    time: *324
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &325 2019-01-23 10:10:59.634263000 Z
+    zone: *2
+    time: *325
+NOR:
+  id: NOR
+  value: NORWAY
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &326 2019-01-23 10:10:59.660349000 Z
+    zone: *2
+    time: *326
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &327 2019-01-23 10:10:59.660349000 Z
+    zone: *2
+    time: *327
+NPL:
+  id: NPL
+  value: NEPAL
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &328 2019-01-23 10:10:59.631285000 Z
+    zone: *2
+    time: *328
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &329 2019-01-23 10:10:59.631285000 Z
+    zone: *2
+    time: *329
+NRU:
+  id: NRU
+  value: NAURU
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &330 2019-01-23 10:10:59.628229000 Z
+    zone: *2
+    time: *330
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &331 2019-01-23 10:10:59.628229000 Z
+    zone: *2
+    time: *331
+NZL:
+  id: NZL
+  value: NEW ZEALAND
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &332 2019-01-23 10:10:59.638777000 Z
+    zone: *2
+    time: *332
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &333 2019-01-23 10:10:59.638777000 Z
+    zone: *2
+    time: *333
+OMN:
+  id: OMN
+  value: OMAN
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &334 2019-01-23 10:10:59.666237000 Z
+    zone: *2
+    time: *334
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &335 2019-01-23 10:10:59.666237000 Z
+    zone: *2
+    time: *335
+PAK:
+  id: PAK
+  value: PAKISTAN
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &336 2019-01-23 10:10:59.669384000 Z
+    zone: *2
+    time: *336
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &337 2019-01-23 10:10:59.669384000 Z
+    zone: *2
+    time: *337
+PAN:
+  id: PAN
+  value: PANAMA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &338 2019-01-23 10:10:59.675206000 Z
+    zone: *2
+    time: *338
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &339 2019-01-23 10:10:59.675206000 Z
+    zone: *2
+    time: *339
+PCN:
+  id: PCN
+  value: PITCAIRN, HENDERSON, DUCIE AND OENO ISLANDS
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &340 2019-01-23 10:10:59.689334000 Z
+    zone: *2
+    time: *340
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &341 2019-01-23 10:10:59.689334000 Z
+    zone: *2
+    time: *341
+PER:
+  id: PER
+  value: PERU
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &342 2019-01-23 10:10:59.683227000 Z
+    zone: *2
+    time: *342
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &343 2019-01-23 10:10:59.683227000 Z
+    zone: *2
+    time: *343
+PHL:
+  id: PHL
+  value: PHILIPPINES
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &344 2019-01-23 10:10:59.686358000 Z
+    zone: *2
+    time: *344
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &345 2019-01-23 10:10:59.686358000 Z
+    zone: *2
+    time: *345
+PLW:
+  id: PLW
+  value: PALAU
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &346 2019-01-23 10:10:59.672575000 Z
+    zone: *2
+    time: *346
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &347 2019-01-23 10:10:59.672575000 Z
+    zone: *2
+    time: *347
+PNG:
+  id: PNG
+  value: PAPUA NEW GUINEA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &348 2019-01-23 10:10:59.678192000 Z
+    zone: *2
+    time: *348
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &349 2019-01-23 10:10:59.678192000 Z
+    zone: *2
+    time: *349
+POL:
+  id: POL
+  value: POLAND
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &350 2019-01-23 10:10:59.692302000 Z
+    zone: *2
+    time: *350
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &351 2019-01-23 10:10:59.692302000 Z
+    zone: *2
+    time: *351
+PRI:
+  id: PRI
+  value: PUERTO RICO
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &352 2019-01-23 10:10:59.698396000 Z
+    zone: *2
+    time: *352
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &353 2019-01-23 10:10:59.698396000 Z
+    zone: *2
+    time: *353
+PRK:
+  id: PRK
+  value: KOREA (NORTH)
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &354 2019-01-23 10:10:59.524216000 Z
+    zone: *2
+    time: *354
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &355 2019-01-23 10:10:59.524216000 Z
+    zone: *2
+    time: *355
+PRT:
+  id: PRT
+  value: PORTUGAL
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &356 2019-01-23 10:10:59.695518000 Z
+    zone: *2
+    time: *356
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &357 2019-01-23 10:10:59.695518000 Z
+    zone: *2
+    time: *357
+PRY:
+  id: PRY
+  value: PARAGUAY
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &358 2019-01-23 10:10:59.680264000 Z
+    zone: *2
+    time: *358
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &359 2019-01-23 10:10:59.680264000 Z
+    zone: *2
+    time: *359
+PSE:
+  id: PSE
+  value: OCCUPIED PALESTINIAN TERRITORIES
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &360 2019-01-23 10:10:59.663219000 Z
+    zone: *2
+    time: *360
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &361 2019-01-23 10:10:59.663219000 Z
+    zone: *2
+    time: *361
+PYF:
+  id: PYF
+  value: FRENCH POLYNESIA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &362 2019-01-23 10:10:59.432277000 Z
+    zone: *2
+    time: *362
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &363 2019-01-23 10:10:59.432277000 Z
+    zone: *2
+    time: *363
+QAT:
+  id: QAT
+  value: QATAR
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &364 2019-01-23 10:10:59.700684000 Z
+    zone: *2
+    time: *364
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &365 2019-01-23 10:10:59.700684000 Z
+    zone: *2
+    time: *365
+QOK:
+  id: QOK
+  value: KOSOVO
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &366 2019-01-23 10:10:59.529216000 Z
+    zone: *2
+    time: *366
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &367 2019-01-23 10:10:59.529216000 Z
+    zone: *2
+    time: *367
+REU:
+  id: REU
+  value: RÉUNION
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &368 2019-01-23 10:10:59.704360000 Z
+    zone: *2
+    time: *368
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &369 2019-01-23 10:10:59.704360000 Z
+    zone: *2
+    time: *369
+ROU:
+  id: ROU
+  value: ROMANIA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &370 2019-01-23 10:10:59.707984000 Z
+    zone: *2
+    time: *370
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &371 2019-01-23 10:10:59.707984000 Z
+    zone: *2
+    time: *371
+RUS:
+  id: RUS
+  value: RUSSIA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &372 2019-01-23 10:10:59.711296000 Z
+    zone: *2
+    time: *372
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &373 2019-01-23 10:10:59.711296000 Z
+    zone: *2
+    time: *373
+RWA:
+  id: RWA
+  value: RWANDA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &374 2019-01-23 10:10:59.714221000 Z
+    zone: *2
+    time: *374
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &375 2019-01-23 10:10:59.714221000 Z
+    zone: *2
+    time: *375
+SAU:
+  id: SAU
+  value: SAUDI ARABIA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &376 2019-01-23 10:10:59.730217000 Z
+    zone: *2
+    time: *376
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &377 2019-01-23 10:10:59.730217000 Z
+    zone: *2
+    time: *377
+SDN:
+  id: SDN
+  value: SUDAN
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &378 2019-01-23 10:10:59.798250000 Z
+    zone: *2
+    time: *378
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &379 2019-01-23 10:10:59.798250000 Z
+    zone: *2
+    time: *379
+SEN:
+  id: SEN
+  value: SENEGAL
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &380 2019-01-23 10:10:59.733194000 Z
+    zone: *2
+    time: *380
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &381 2019-01-23 10:10:59.733194000 Z
+    zone: *2
+    time: *381
+SGP:
+  id: SGP
+  value: SINGAPORE
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &382 2019-01-23 10:10:59.745322000 Z
+    zone: *2
+    time: *382
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &383 2019-01-23 10:10:59.745322000 Z
+    zone: *2
+    time: *383
+SGS:
+  id: SGS
+  value: SOUTH GEORGIA AND THE SOUTH SANDWICH ISLANDS
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &384 2019-01-23 10:10:59.768314000 Z
+    zone: *2
+    time: *384
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &385 2019-01-23 10:10:59.768314000 Z
+    zone: *2
+    time: *385
+SHN:
+  id: SHN
+  value: ST HELENA, ASCENSION AND TRISTAN DA CUNHA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &386 2019-01-23 10:10:59.783205000 Z
+    zone: *2
+    time: *386
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &387 2019-01-23 10:10:59.783205000 Z
+    zone: *2
+    time: *387
+SJM:
+  id: SJM
+  value: SVALBARD AND JAN MAYEN
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &388 2019-01-23 10:10:59.808386000 Z
+    zone: *2
+    time: *388
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &389 2019-01-23 10:10:59.808386000 Z
+    zone: *2
+    time: *389
+SLB:
+  id: SLB
+  value: SOLOMON ISLANDS
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &390 2019-01-23 10:10:59.759089000 Z
+    zone: *2
+    time: *390
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &391 2019-01-23 10:10:59.759089000 Z
+    zone: *2
+    time: *391
+SLE:
+  id: SLE
+  value: SIERRA LEONE
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &392 2019-01-23 10:10:59.742326000 Z
+    zone: *2
+    time: *392
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &393 2019-01-23 10:10:59.742326000 Z
+    zone: *2
+    time: *393
+SLV:
+  id: SLV
+  value: EL SALVADOR
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &394 2019-01-23 10:10:59.395610000 Z
+    zone: *2
+    time: *394
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &395 2019-01-23 10:10:59.395610000 Z
+    zone: *2
+    time: *395
+SMR:
+  id: SMR
+  value: SAN MARINO
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &396 2019-01-23 10:10:59.722456000 Z
+    zone: *2
+    time: *396
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &397 2019-01-23 10:10:59.722456000 Z
+    zone: *2
+    time: *397
+SOM:
+  id: SOM
+  value: SOMALIA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &398 2019-01-23 10:10:59.761763000 Z
+    zone: *2
+    time: *398
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &399 2019-01-23 10:10:59.761763000 Z
+    zone: *2
+    time: *399
+SPM:
+  id: SPM
+  value: ST PIERRE AND MIQUELON
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &400 2019-01-23 10:10:59.792286000 Z
+    zone: *2
+    time: *400
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &401 2019-01-23 10:10:59.792286000 Z
+    zone: *2
+    time: *401
+SRB:
+  id: SRB
+  value: SERBIA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &402 2019-01-23 10:10:59.736473000 Z
+    zone: *2
+    time: *402
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &403 2019-01-23 10:10:59.736473000 Z
+    zone: *2
+    time: *403
+SSD:
+  id: SSD
+  value: SOUTH SUDAN
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &404 2019-01-23 10:10:59.771573000 Z
+    zone: *2
+    time: *404
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &405 2019-01-23 10:10:59.771573000 Z
+    zone: *2
+    time: *405
+STP:
+  id: STP
+  value: SAO TOME AND PRINCIPE
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &406 2019-01-23 10:10:59.727343000 Z
+    zone: *2
+    time: *406
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &407 2019-01-23 10:10:59.727343000 Z
+    zone: *2
+    time: *407
+SUR:
+  id: SUR
+  value: SURINAME
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &408 2019-01-23 10:10:59.801848000 Z
+    zone: *2
+    time: *408
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &409 2019-01-23 10:10:59.801848000 Z
+    zone: *2
+    time: *409
+SVK:
+  id: SVK
+  value: SLOVAKIA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &410 2019-01-23 10:10:59.750460000 Z
+    zone: *2
+    time: *410
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &411 2019-01-23 10:10:59.750460000 Z
+    zone: *2
+    time: *411
+SVN:
+  id: SVN
+  value: SLOVENIA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &412 2019-01-23 10:10:59.756174000 Z
+    zone: *2
+    time: *412
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &413 2019-01-23 10:10:59.756174000 Z
+    zone: *2
+    time: *413
+SWE:
+  id: SWE
+  value: SWEDEN
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &414 2019-01-23 10:10:59.810903000 Z
+    zone: *2
+    time: *414
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &415 2019-01-23 10:10:59.810903000 Z
+    zone: *2
+    time: *415
+SWZ:
+  id: SWZ
+  value: ESWATINI
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &416 2019-01-23 10:10:59.414708000 Z
+    zone: *2
+    time: *416
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &417 2019-01-23 10:10:59.414708000 Z
+    zone: *2
+    time: *417
+SXM:
+  id: SXM
+  value: SINT MAARTEN (DUTCH PART)
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &418 2019-01-23 10:10:59.747420000 Z
+    zone: *2
+    time: *418
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &419 2019-01-23 10:10:59.747420000 Z
+    zone: *2
+    time: *419
+SYC:
+  id: SYC
+  value: SEYCHELLES
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &420 2019-01-23 10:10:59.739374000 Z
+    zone: *2
+    time: *420
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &421 2019-01-23 10:10:59.739374000 Z
+    zone: *2
+    time: *421
+SYR:
+  id: SYR
+  value: SYRIA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &422 2019-01-23 10:10:59.820196000 Z
+    zone: *2
+    time: *422
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &423 2019-01-23 10:10:59.820196000 Z
+    zone: *2
+    time: *423
+TCA:
+  id: TCA
+  value: TURKS AND CAICOS ISLANDS
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &424 2019-01-23 10:10:59.868259000 Z
+    zone: *2
+    time: *424
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &425 2019-01-23 10:10:59.868259000 Z
+    zone: *2
+    time: *425
+TCD:
+  id: TCD
+  value: CHAD
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &426 2019-01-23 10:10:59.315405000 Z
+    zone: *2
+    time: *426
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &427 2019-01-23 10:10:59.315405000 Z
+    zone: *2
+    time: *427
+TGO:
+  id: TGO
+  value: TOGO
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &428 2019-01-23 10:10:59.846472000 Z
+    zone: *2
+    time: *428
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &429 2019-01-23 10:10:59.846472000 Z
+    zone: *2
+    time: *429
+THA:
+  id: THA
+  value: THAILAND
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &430 2019-01-23 10:10:59.835451000 Z
+    zone: *2
+    time: *430
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &431 2019-01-23 10:10:59.835451000 Z
+    zone: *2
+    time: *431
+TJK:
+  id: TJK
+  value: TAJIKISTAN
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &432 2019-01-23 10:10:59.827334000 Z
+    zone: *2
+    time: *432
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &433 2019-01-23 10:10:59.827334000 Z
+    zone: *2
+    time: *433
+TKL:
+  id: TKL
+  value: TOKELAU
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &434 2019-01-23 10:10:59.849585000 Z
+    zone: *2
+    time: *434
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &435 2019-01-23 10:10:59.849585000 Z
+    zone: *2
+    time: *435
+TKM:
+  id: TKM
+  value: TURKMENISTAN
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &436 2019-01-23 10:10:59.865741000 Z
+    zone: *2
+    time: *436
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &437 2019-01-23 10:10:59.865741000 Z
+    zone: *2
+    time: *437
+TLS:
+  id: TLS
+  value: EAST TIMOR
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &438 2019-01-23 10:10:59.370973000 Z
+    zone: *2
+    time: *438
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &439 2019-01-23 10:10:59.370973000 Z
+    zone: *2
+    time: *439
+TON:
+  id: TON
+  value: TONGA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &440 2019-01-23 10:10:59.852950000 Z
+    zone: *2
+    time: *440
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &441 2019-01-23 10:10:59.852950000 Z
+    zone: *2
+    time: *441
+TTO:
+  id: TTO
+  value: TRINIDAD AND TOBAGO
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &442 2019-01-23 10:10:59.856777000 Z
+    zone: *2
+    time: *442
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &443 2019-01-23 10:10:59.856777000 Z
+    zone: *2
+    time: *443
+TUN:
+  id: TUN
+  value: TUNISIA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &444 2019-01-23 10:10:59.860403000 Z
+    zone: *2
+    time: *444
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &445 2019-01-23 10:10:59.860403000 Z
+    zone: *2
+    time: *445
+TUR:
+  id: TUR
+  value: TURKEY
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &446 2019-01-23 10:10:59.863155000 Z
+    zone: *2
+    time: *446
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &447 2019-01-23 10:10:59.863155000 Z
+    zone: *2
+    time: *447
+TUV:
+  id: TUV
+  value: TUVALU
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &448 2019-01-23 10:10:59.871749000 Z
+    zone: *2
+    time: *448
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &449 2019-01-23 10:10:59.871749000 Z
+    zone: *2
+    time: *449
+TWN:
+  id: TWN
+  value: TAIWAN
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &450 2019-01-23 10:10:59.824236000 Z
+    zone: *2
+    time: *450
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &451 2019-01-23 10:10:59.824236000 Z
+    zone: *2
+    time: *451
+TZA:
+  id: TZA
+  value: TANZANIA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &452 2019-01-23 10:10:59.831727000 Z
+    zone: *2
+    time: *452
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &453 2019-01-23 10:10:59.831727000 Z
+    zone: *2
+    time: *453
+UGA:
+  id: UGA
+  value: UGANDA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &454 2019-01-23 10:10:59.875575000 Z
+    zone: *2
+    time: *454
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &455 2019-01-23 10:10:59.875575000 Z
+    zone: *2
+    time: *455
+UKR:
+  id: UKR
+  value: UKRAINE
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &456 2019-01-23 10:10:59.877479000 Z
+    zone: *2
+    time: *456
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &457 2019-01-23 10:10:59.877479000 Z
+    zone: *2
+    time: *457
+UMI:
+  id: UMI
+  value: UNITED STATES MINOR OUTLYING ISLANDS
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &458 2019-01-23 10:10:59.903381000 Z
+    zone: *2
+    time: *458
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &459 2019-01-23 10:10:59.903381000 Z
+    zone: *2
+    time: *459
+URY:
+  id: URY
+  value: URUGUAY
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &460 2019-01-23 10:10:59.913206000 Z
+    zone: *2
+    time: *460
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &461 2019-01-23 10:10:59.913206000 Z
+    zone: *2
+    time: *461
+USA:
+  id: USA
+  value: UNITED STATES
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &462 2019-01-23 10:10:59.898959000 Z
+    zone: *2
+    time: *462
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &463 2019-01-23 10:10:59.898959000 Z
+    zone: *2
+    time: *463
+UZB:
+  id: UZB
+  value: UZBEKISTAN
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &464 2019-01-23 10:10:59.922150000 Z
+    zone: *2
+    time: *464
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &465 2019-01-23 10:10:59.922150000 Z
+    zone: *2
+    time: *465
+VAT:
+  id: VAT
+  value: VATICAN CITY
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &466 2019-01-23 10:10:59.930526000 Z
+    zone: *2
+    time: *466
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &467 2019-01-23 10:10:59.930526000 Z
+    zone: *2
+    time: *467
+VCT:
+  id: VCT
+  value: ST VINCENT AND THE GRENADINES
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &468 2019-01-23 10:10:59.795366000 Z
+    zone: *2
+    time: *468
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &469 2019-01-23 10:10:59.795366000 Z
+    zone: *2
+    time: *469
+VEN:
+  id: VEN
+  value: VENEZUELA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &470 2019-01-23 10:10:59.933666000 Z
+    zone: *2
+    time: *470
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &471 2019-01-23 10:10:59.933666000 Z
+    zone: *2
+    time: *471
+VGB:
+  id: VGB
+  value: BRITISH VIRGIN ISLANDS
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &472 2019-01-23 10:10:59.279499000 Z
+    zone: *2
+    time: *472
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &473 2019-01-23 10:10:59.279499000 Z
+    zone: *2
+    time: *473
+VIR:
+  id: VIR
+  value: UNITED STATES VIRGIN ISLANDS
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &474 2019-01-23 10:10:59.907682000 Z
+    zone: *2
+    time: *474
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &475 2019-01-23 10:10:59.907682000 Z
+    zone: *2
+    time: *475
+VNM:
+  id: VNM
+  value: VIETNAM
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &476 2019-01-23 10:10:59.937258000 Z
+    zone: *2
+    time: *476
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &477 2019-01-23 10:10:59.937258000 Z
+    zone: *2
+    time: *477
+VUT:
+  id: VUT
+  value: VANUATU
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &478 2019-01-23 10:10:59.924579000 Z
+    zone: *2
+    time: *478
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &479 2019-01-23 10:10:59.924579000 Z
+    zone: *2
+    time: *479
+WLF:
+  id: WLF
+  value: WALLIS AND FUTUNA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &480 2019-01-23 10:10:59.940685000 Z
+    zone: *2
+    time: *480
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &481 2019-01-23 10:10:59.940685000 Z
+    zone: *2
+    time: *481
+WSM:
+  id: WSM
+  value: SAMOA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &482 2019-01-23 10:10:59.719266000 Z
+    zone: *2
+    time: *482
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &483 2019-01-23 10:10:59.719266000 Z
+    zone: *2
+    time: *483
+XAE:
+  id: XAE
+  value: CYPRUS (EUROPEAN UNION)
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &484 2019-01-23 10:10:59.361588000 Z
+    zone: *2
+    time: *484
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &485 2019-01-23 10:10:59.361588000 Z
+    zone: *2
+    time: *485
+XBN:
+  id: XBN
+  value: CYPRUS (NON-EUROPEAN UNION)
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &486 2019-01-23 10:10:59.362973000 Z
+    zone: *2
+    time: *486
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &487 2019-01-23 10:10:59.362973000 Z
+    zone: *2
+    time: *487
+XDE:
+  id: XDE
+  value: SPAIN (EXCEPT CANARY ISLANDS)
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &488 2019-01-23 10:10:59.774253000 Z
+    zone: *2
+    time: *488
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &489 2019-01-23 10:10:59.774253000 Z
+    zone: *2
+    time: *489
+XKU:
+  id: XKU
+  value: UNITED KINGDOM
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &490 2019-01-23 10:10:59.886391000 Z
+    zone: *2
+    time: *490
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &491 2019-02-25 07:49:03.798728000 Z
+    zone: *2
+    time: *491
+XLC:
+  id: XLC
+  value: CHANNEL ISLANDS NOT JERSEY OR GUERNSEY
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &492 2019-01-23 10:10:59.317082000 Z
+    zone: *2
+    time: *492
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &493 2019-01-23 10:10:59.317082000 Z
+    zone: *2
+    time: *493
+YEM:
+  id: YEM
+  value: YEMEN
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &494 2019-01-23 10:10:59.946380000 Z
+    zone: *2
+    time: *494
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &495 2019-01-23 10:10:59.946380000 Z
+    zone: *2
+    time: *495
+ZAF:
+  id: ZAF
+  value: SOUTH AFRICA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &496 2019-01-23 10:10:59.765139000 Z
+    zone: *2
+    time: *496
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &497 2019-01-23 10:10:59.765139000 Z
+    zone: *2
+    time: *497
+ZMB:
+  id: ZMB
+  value: ZAMBIA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &498 2019-01-23 10:10:59.949853000 Z
+    zone: *2
+    time: *498
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &499 2019-01-23 10:10:59.949853000 Z
+    zone: *2
+    time: *499
+ZWE:
+  id: ZWE
+  value: ZIMBABWE
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &500 2019-01-23 10:10:59.952465000 Z
+    zone: *2
+    time: *500
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &501 2019-01-23 10:10:59.952465000 Z
+    zone: *2
+    time: *501
+

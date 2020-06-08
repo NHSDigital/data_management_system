@@ -1,0 +1,10 @@
+<%
+  @readonly = true # ensure the buttons draw!
+%>
+
+jQuery('#modal').modal('hide');
+jQuery('#project_summary_data_information').replaceWith('<%= escape_javascript(render 'projects/project_summary_data') %>');
+jQuery('#project_legal_ethical_information').replaceWith('<%= escape_javascript(render 'projects/project_legal_ethical') %>');
+jQuery('#display_project_name').text('<%= @project.name %>');
+jQuery('#flash_messages').html('<%= j render partial: "shared/flash_messages" %>');
+jQuery('#project_memberships_information').replaceWith('<%= escape_javascript(render 'projects/project_memberships') %>');

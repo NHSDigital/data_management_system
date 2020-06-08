@@ -1,0 +1,8 @@
+<%= render layout: 'layout', locals: { contract: @contract } do %>
+  <div class="pull-right">
+    <%= edit_link(@contract, text: true, class: 'btn btn-default') %>
+    <%= download_link(@contract, path: download_contract_path(@contract), text: true, class: 'btn btn-primary', disabled: @contract.attachment_file_name.blank?, data: { turbolinks: false }) %>
+  </div>
+
+  <%= render 'form', contract: @contract, readonly: true %>
+<% end %>

@@ -1,0 +1,4 @@
+<%= render layout: 'layout', locals: { contract: @contract } do %>
+  <%= content_tag(:h4, "New #{Contract.model_name.human}", style: 'margin-left: 10px;') %><hr />
+  <%= render 'form', contract: @contract %>
+<% end %>

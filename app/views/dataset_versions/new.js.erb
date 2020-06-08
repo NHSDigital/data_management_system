@@ -1,0 +1,6 @@
+<%
+  html_content = escape_javascript bootstrap_form_for([@dataset, @dataset_version], remote: true, horizontal: true) { |form| render('form', form: form) }
+%>
+
+jQuery('#modal_title').html('Add a new Dataset Version');
+jQuery('#modal_body').html('<%= html_content %>').parents('.modal').modal('show');

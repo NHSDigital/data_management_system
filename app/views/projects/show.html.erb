@@ -1,0 +1,22 @@
+<%= content_tag :div, class: 'project', id: dom_id(@project) do %>
+  <% if @project.errors.any? %>
+    <div class="alert alert-danger">
+      <strong><%= pluralize(@project.errors.count, "error") %></strong>
+      <ul>
+        <% @project.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <%= render 'transition_errors', project: @project %>
+  <%= render 'header', project: @project %>
+
+  <div class="panel-body" id="project-details">
+    <div class="row" id="project_show_tabs">
+      <%= render "projects/#{@project.project_type_name.downcase}/show_project_tabs" %>
+      <%= render "projects/#{@project.project_type_name.downcase}/show_project_tab_panels" %>
+    </div>
+  </div>
+<% end %>

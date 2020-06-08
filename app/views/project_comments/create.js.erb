@@ -1,0 +1,35 @@
+<% if @project_comment.comment_type == 'DelegateRejection' %>
+  window.location.reload();
+<% end %>
+<%
+  @readonly = true
+  @project ||= @project_comment.project # shallow routing means this may not have been set
+  data_item = @project_comment.project_node
+%>
+jQuery('#modal').modal('hide');
+jQuery('#project_data_items_information').replaceWith(
+  '<%= escape_javascript(render 'projects/project_data_items') %>');
+jQuery('#project_summary_data_information').replaceWith(
+  '<%= escape_javascript(render 'projects/project_summary_data') %>');
+jQuery('#project_memberships_information').replaceWith(
+  '<%= escape_javascript(render 'projects/project_grants') %>');
+jQuery('#project_legal_ethical_information').replaceWith(
+  '<%= escape_javascript(render 'projects/project_legal_ethical') %>');
+jQuery('#project_comment_information').replaceWith(
+  '<%= escape_javascript(render 'projects/project_comments') %>');
+
+// Conditional logic to show the relevant comments based on comment_type
+<% if @project_comment.comment_type =~ /DataSourceItem(Justification|Rejection)/ %>
+  jQuery('#<%= dom_id(data_item) %>_comments').collapse('show')
+  can_submit_to_odr(<%= @project_comment.project.unjustified_data_items%>);
+<% end %>
+<% if @project_comment.comment_type =~ /Detail(Justification|Rejection)/ %>
+  jQuery('#project_summary_data_comments').collapse('show')
+<% end %>
+<% if @project_comment.comment_type =~ /Member(Justification|Rejection)/ %>
+  jQuery('#project_memberships_comments').collapse('show')
+<% end %>
+
+<%= render partial: 'projects/refresh_status_labels' %>
+
+$('.timeago').timeago();

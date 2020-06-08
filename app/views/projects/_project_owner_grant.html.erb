@@ -1,0 +1,9 @@
+<%= form.control_group :owner_grant, t('.owner') do %>
+  <%= form.fields_for :owner_grant, @project.owner_grant || Grant.new do |builder| %>
+    <%= builder.select(:user_id, available_owners, required: true) unless @readonly %>
+    <%= builder.text_field :full_name if form.readonly %>
+    <%= builder.hidden_field :id %>
+    <%= builder.hidden_field :roleable_id, value: ProjectRole.fetch(:owner).id %>
+    <%= builder.hidden_field :roleable_type, value: 'ProjectRole' %>
+  <% end %>
+<% end %>

@@ -1,0 +1,8 @@
+<%= render 'search' %>
+<%= bootstrap_panel_tag panel_heading_segments(
+  center: content_tag(:h4) { 'Listing Projects' },
+) do %>
+  <%= render 'projects_table', projects: @projects %>
+  <%= will_paginate @projects, class: 'pagination center-block text-center' %>
+<% end %>
+

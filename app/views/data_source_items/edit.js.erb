@@ -1,0 +1,6 @@
+<%
+  html_content = escape_javascript bootstrap_form_for(@data_source_item, remote: true, horizontal: 2) { |form| render('form', form: form, url: dataset_version_nodes_path(@node)) }
+%>
+
+jQuery('#modal_title').html("Editing Data Iteam: <%= @data_source_item.name %>");
+jQuery('#modal_body').html('<%= html_content %>').parents('.modal').modal('show');

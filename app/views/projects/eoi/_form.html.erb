@@ -1,0 +1,65 @@
+<%
+  readonly ||= false
+  remote   ||= false
+
+  url = @project.persisted? ? project_path(@project) : team_projects_path(@project.team)
+%>
+
+<%= bootstrap_form_for @project, url: url, horizontal: 2, remote: remote, readonly: readonly do |form| %>
+  <%= form.error_and_warning_alert_boxes %>
+  <%= form.hidden_field(:project_type_id) %>
+
+  <%= render 'projects/project_owner_grant', form: form %>
+
+  <%= form.control_group(:name, t('.name')) do %>
+      <%= form.text_field :name, class: 'mandatory' %>
+  <% end %>
+
+  <% if form.object.persisted? %>
+    <% if current_user.application_manager? && @project.eoi? && !@project.closure_reason.nil? %>
+      <%= form.control_group(:closure_reason) do %>
+        <%= form.collection_select(:closure_reason_id, Lookups::ClosureReason.rejectable, :id, :value, { readonly: true, readonly_value: @project.closure_reason.value }) %>
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <%= form.control_group(:project_purpose, t('.project_purpose')) { form.text_area :project_purpose, class: 'mandatory', rows: 5 } %>
+
+  <% unless readonly %>
+    <div class='row' id="multi_project_datasets">
+      <%= form.control_group :project_datasets, link_to_add_row('Add Dataset', form, :project_datasets, class: 'btn btn-primary') do %>
+        <ul class='repeatable-fields list-group'>
+          <%= form.fields_for :project_datasets do |builder| %>
+            <%= render 'projects/project_dataset', form: builder %>
+          <% end %>
+        </ul>
+      <% end %>
+    </div>
+  <% end %>
+
+  <%= form.control_group :level_of_identifiability, t('.level_of_identifiability') do %>
+    <%= form.select :level_of_identifiability, Lookups::IdentifiabilityLevel.pluck(:value), required: true %>
+  <% end %>
+
+  <%= form.control_group(:project_end_uses, t('.project_end_uses'), style: 'margin-bottom: 0px;') do %>
+    <% readonly_value = @project.end_use_names.any? ? safe_join(@project.end_use_names, raw('<br />')) : 'Unknown' %>
+    <%= form.collection_check_boxes(:end_use_ids, EndUse.all, :id, :name, readonly_value: readonly_value) do |b| %>
+      <div class="checkbox">
+        <%= b.label { b.check_box + b.text } %>
+      </div>
+    <% end %>
+  <% end %>
+  <%= form.control_group(:end_use_other, '') do %>
+    <%= form.text_area :end_use_other, placeholder: "If 'Other' please specify", data: { 'depends-on' => '#project_end_use', 'depends-on-value' => 'Other' } %>
+  <% end %>
+
+  <% unless readonly %>
+    <hr />
+    <%= form.control_group nil do %>
+      <div class="pull-right">
+        <%= link_to 'Cancel', (@project.persisted? ? project_path(@project) : team_projects_path(@project.team)), class: 'btn btn-default' %>
+        <%= form.submit (@project.persisted? ? 'Update EOI' : 'Create EOI'), class: 'btn btn-primary' %>
+      </div>
+    <% end %>
+  <% end %>
+<% end %>

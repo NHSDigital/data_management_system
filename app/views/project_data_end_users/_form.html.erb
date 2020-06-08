@@ -1,0 +1,24 @@
+<%= bootstrap_form_for [@project, @project_data_end_user], horizontal: 5 do |form| %>
+  <%= form.control_group :first_name, 'First name' do %>
+    <%= form.text_field :first_name, required: true %>
+  <% end %>
+
+  <%= form.control_group :last_name, 'Last name' do %>
+    <%= form.text_field :last_name, required: true %>
+  <% end %>
+
+  <%= form.control_group :email, 'Email' do %>
+    <%= form.text_field :email, required: true %>
+  <% end %>
+
+  <%= form.control_group :ts_cs_accepted, 'This user has signed and accepted the MBIS terms & conditions of use' do %>
+    <%= form.select :ts_cs_accepted, [['Yes',true],['No',false]], { required: true } %>
+  <% end %>
+
+  <%= form.control_group nil do %>
+    <div class="pull-right">
+      <%= close_modal %>
+      <%= submit_tag('Save', class: 'btn btn-primary', disable_with: 'Saving&hellip;'.html_safe) %>
+    </div>
+  <% end %>
+<% end %>

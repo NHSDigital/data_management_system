@@ -1,0 +1,10 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+simple_admin_unread:
+  user_id: admin_user
+  notification_id: simple_admin
+  status: 'new'
+
+two:
+  user_id: 2
+  notification_id: 2

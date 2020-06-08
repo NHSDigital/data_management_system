@@ -1,0 +1,12 @@
+<div class="col-md-12" id="memberships-panel">
+  <%= bootstrap_panel_tag(capture { %>
+      <% if can?(:edit_team_grants, current_user) %>
+        <div class="pull-right">
+          <%= link_to(edit_team_grants_button, edit_team_grants_path(@team), class: "btn btn-primary btn-xs") if @readonly %>
+        </div>
+      <% end %>
+    <h3 class="panel-title clearfix">Users</h3>
+  <% }) do %>
+  <%= render 'users' %>
+  <% end %>
+</div>

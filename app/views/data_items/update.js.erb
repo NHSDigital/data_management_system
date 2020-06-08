@@ -1,0 +1,5 @@
+jQuery('#modal').modal('hide');
+jQuery('#<%= dom_id(@data_item.parent_node) %>_child_node_table').replaceWith('<%= escape_javascript(render 'dataset_versions/child_nodes_table', node: @data_item.parent_node) %>');
+jQuery('#<%= dom_id(@data_item.parent_node) %>_child_nodes').collapse('show')
+<% @data_item.valid?(:publish) %>
+jQuery('#<%= dom_id(@data_item) %>_invalid').replaceWith('<%= escape_javascript(render 'nodes/error_details', node: @data_item) %>');

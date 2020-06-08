@@ -1,0 +1,41 @@
+<ul id="tabs" class="nav nav-tabs" data-tabs='tabs'>
+  <li class='active'>
+    <a href="#details" data-toggle='tab'>Project Details</a>
+  </li>
+  <li>
+    <a href="#datasets" data-toggle="tab">Datasets</a>
+  </li>
+  <li>
+    <a href="#data_items" data-toggle='tab'>Data Items</a>
+  </li>
+  <li>
+    <a href="#users" data-toggle='tab'>Users</a>
+  </li>
+  <%= tab_to ProjectAmendment.model_name.human.pluralize, '#amendments', count: @project.project_amendments.count, data: { toggle: :tab } %>
+  <% if can?(:read, DataPrivacyImpactAssessment) %>
+    <%= tab_to DataPrivacyImpactAssessment.model_name.human(count: 2), '#dpias', count: @project.dpias.count, data: { toggle: :tab } %>
+  <% end %>
+  <% if can?(:read, Contract) %>
+    <%= tab_to Contract.model_name.human.pluralize, '#contracts', count: @project.contracts.count, data: { toggle: :tab } %>
+  <% end %>
+
+  <%= tab_to(Release.model_name.human.pluralize, '#releases', count: @project.releases.count, data: { toggle: :tab }) %>
+
+  <li>
+    <a href="#uploads" data-toggle='tab'>
+      Uploads
+      <span id='total_attachment_count' >(<%= @project.project_attachments.uploads.count.to_s %>)</span>
+    </a>
+  </li>
+  <li>
+    <a href="#comments" data-toggle='tab'>
+      Comments
+    </a>
+  </li>
+  <li>
+    <a href="#timeline" data-toggle="tab">Timeline</a>
+  </li>
+  <li>
+    <a href="#related" data-toggle="tab">Related</a>
+  </li>
+</ul>

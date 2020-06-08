@@ -1,0 +1,386 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<COSD:COSD xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:COSD="http://www.datadictionary.nhs.uk/messages/COSD-v8-2" xsi:schemaLocation="http://www.datadictionary.nhs.uk/messages/COSD-v8-2 ../Schemas/COSDCOSD_XMLSchema-v8-1.xsd"> 
+	<Id root="60E8A409-24B6-4ADC-9C96-0273F668BDC8"/>
+	<OrganisationIdentifierCodeOfSubmittingOrganisation extension="123"/>
+	<RecordCount value="1"/>
+   	<ReportingPeriodStartDate>2018-03-01</ReportingPeriodStartDate>
+	<ReportingPeriodEndDate>2018-03-30</ReportingPeriodEndDate>
+	<FileCreationDateTime>2018-03-30T00:00:00</FileCreationDateTime>
+  <OtherRecord>
+    <Id root="778F1F33-4911-4E50-8E36-3182780F8F94" />
+    <LinkagePatientId>
+      <NHSNumber extension="1111111111" />
+      <LocalPatientIdExtended>AB1888555446</LocalPatientIdExtended>
+      <NHSNumberStatusIndicator code="03" />
+      <Birthdate>1971-01-01</Birthdate>
+      <OrganisationIdentifierCodeOfProvider extension="AB1" />
+    </LinkagePatientId>
+    <LinkageDiagnosticDetails>
+      <PrimaryDiagnosis code="C809"/>
+      <TumourLaterality code="9"/>
+      <ClinicalDateCancerDiagnosis>2018-01-01</ClinicalDateCancerDiagnosis>
+      <DateOfNonPrimaryCancerDiagnosisClinicallyAgreed>2018-01-02</DateOfNonPrimaryCancerDiagnosisClinicallyAgreed>
+    </LinkageDiagnosticDetails>
+    <NonPrimaryCancerPathwayRoute>
+      <NonPrimaryCancerPathwayType code="01"/>
+      <CancerRecurrenceOrMetastaticDiseaseType code="01"/>
+      <MetastaticSite code="02"/>
+      <MetastaticSite code="03"/>
+      <MetastaticSite code="04"/>
+      <CancerProgressionICD code="C809"/>
+    </NonPrimaryCancerPathwayRoute>
+    <Demographics>
+      <PersonFamilyName>COSD</PersonFamilyName>
+      <PersonGivenName>OTHER</PersonGivenName>
+      <Address>
+        <UnstructuredAddress>
+          <StreetAddressLine>CORE STREET</StreetAddressLine>
+        </UnstructuredAddress>
+      </Address>
+      <Postcode>AB1 3CD</Postcode>
+      <Gender code="1"/>
+      <PersonStatedSexualOrientationCodeAtDiagnosis code="1"/>
+      <GMPSpecified extension="G1234566" />
+      <GMPRegistration extension="F12345" />
+      <PersonBirthFamilyName>COSD</PersonBirthFamilyName>
+      <Ethnicity code="A"/>
+    </Demographics>
+    <ReferralAndFirstStageOfPatientPathway>
+      <SourceOfReferralOutPatients code="02"/>
+      <DateFirstSeen>2018-01-01</DateFirstSeen>
+      <ConsultantCode extension="C1234567"/>
+      <OrganisationSiteIdentifierOfProviderFirstSeen extension="AB123"/>
+      <SpecialistDateFirstSeen>2018-01-01</SpecialistDateFirstSeen>
+      <OrganisationSiteIdentifierOfProviderFirstCancerSpecialist extension="AB123"/>
+      <CancerOrSymptomaticBreastReferralPatientStatus code="14"/>
+      <CancerSymptomsDateFirstNoted>2018-01-01</CancerSymptomsDateFirstNoted>
+    </ReferralAndFirstStageOfPatientPathway>
+    <NonPrimaryCancerPathway>
+      <SourceOfReferralForOutPatientsNonPrimaryCancerPathway code="02"/>
+      <PalliativeCareSpecialistSeenIndicatorCancerRecurrence code="Y"/>
+    </NonPrimaryCancerPathway>
+    <NonPrimaryCancerPathwayALLAMLAndMPAL>
+      <RelapseMethodDetectionType code="1"/>
+    </NonPrimaryCancerPathwayALLAMLAndMPAL>
+    <NonPrimaryCancerPathwayALLAMLAndMPAL>
+      <RelapseMethodDetectionType code="2"/>
+    </NonPrimaryCancerPathwayALLAMLAndMPAL>
+    <NonPrimaryCancerPathwayALLAMLAndMPAL>
+      <RelapseMethodDetectionType code="1"/>
+    </NonPrimaryCancerPathwayALLAMLAndMPAL>
+    <Imaging>
+      <OrganisationSiteIdentifierOfImaging extension="AB123"/>
+      <ProcedureDate>2018-01-01</ProcedureDate>
+      <CancerImagingOutcome code="02"/>
+      <NICIPCode code="NICIP"/>
+      <CancerImagingModality code="C05X"/>
+      <ImagingAnatomicalSite code="C809"/>
+      <ImagingAnatomicalSide code="9"/>
+      <ImagingCodeSNOMEDCT code="123466"/>
+      <ImagingReportText>BLAH</ImagingReportText>
+      <LesionSizeRadiological value="1.1"/>
+    </Imaging>
+    <Diagnosis>
+      <OrganisationSiteIdentifierOfDiagnosis extension="AB123"/>
+      <BasisOfCancerDiagnosis code="2"/>
+      <SNOMEDVersionDiagnosis code="01"/>
+      <MorphologySNOMEDDiagnosis code="123344"/>
+      <MorphologyICDODiagnosis code="M1234"/>
+      <TopographyICDO code="C1234"/>
+      <DiagnosisGradeOfDifferentiation code="G2"/>
+      <AdultPerformanceStatus code="2"/>
+      <DiagnosisSNOMEDCT code="123456"/>
+      <CancerRecurrenceCarePlanInd code="YL"/>
+      <CancerMetastaticDiseaseType code="02"/>
+      <CancerProgressionAgreedDatePrimaryCancerPathway>2018-01-01</CancerProgressionAgreedDatePrimaryCancerPathway>
+      <CancerProgressionAgreedDatePrimaryCancerPathway>2018-01-01</CancerProgressionAgreedDatePrimaryCancerPathway>
+      <CancerProgressionAgreedDatePrimaryCancerPathway>2018-01-01</CancerProgressionAgreedDatePrimaryCancerPathway>
+      <!-- THIS IS THE MISTAKE -->
+      <!-- SHOULD HAVE BEEN A REPEATING SECTION -->
+      <SNOMEDVersionCancerTransformation code="02"/>
+      <MorphologySNOMEDCancerTransformation code="123456"/>
+      <MorphologyICDOCancerTransformation code="C1234"/>
+      <CancerTransformationAgreedDatePrimaryCancerPathway>2018-01-01</CancerTransformationAgreedDatePrimaryCancerPathway>
+      <!-- END OF ERROR SECTION -->
+      <DiagnosisAdditionalItems>
+        <PrimaryDiagnosisCancerComment>BLAH</PrimaryDiagnosisCancerComment>
+        <SecondaryDiagnosisICD code="C809"/>
+        <SecondaryDiagnosisICD code="C809"/>
+        <SecondaryDiagnosisICD code="C809"/>
+        <SecondaryDiagnosisCancerComment>BLAH</SecondaryDiagnosisCancerComment>
+        <FamilialCancerSyndromeIndicator code="Y"/>
+        <FamilialCancerSyndromeComment>BLAH</FamilialCancerSyndromeComment>
+        <TissueBankedAtDiagnosisIndicator code="Y"/>
+        <TissueTypeBankedAtDiagnosis code="1"/>
+        <TissueTypeBankedAtDiagnosis code="2"/>
+        <TissueTypeBankedAtDiagnosis code="3"/>
+      </DiagnosisAdditionalItems>
+    </Diagnosis>
+    <PersonObservation>
+      <PersonHeightInMetres value="1.66"/>
+      <PersonObservationWeight value="80.1"/>
+      <BodyMassIndex value="12.2"/>
+      <ObservationDate>2018-01-01</ObservationDate>
+    </PersonObservation>
+    <ClinicalNurseSpecialistAndRiskFactorAssessments>
+      <ClinicalNurseSpecialistIndicationCode code="Y1"/>
+      <SmokingStatusCode code="2"/>
+      <AlcoholHistoryCancerInLastThreeMonths code="2"/>
+      <AlcoholHistoryCancerBeforeLastThreeMonths code="2"/>
+    </ClinicalNurseSpecialistAndRiskFactorAssessments>
+    <ClinicalNurseSpecialistHolisticNeedsAssessment>
+      <HNACompletedDate>2018-01-01</HNACompletedDate>
+      <HNAPointOfPathway code="02"/>
+    </ClinicalNurseSpecialistHolisticNeedsAssessment>
+    <MultidisciplinaryTeamMeetings>
+      <TeamMeetingDate>2018-01-01</TeamMeetingDate>
+      <OrganisationSiteIdentifierOfMultidisciplinaryTeamMeeting extension="AB123"/>
+      <OrganisationSiteIdentifierOfMultidisciplinaryTeamMeeting extension="AB123"/>
+      <OrganisationSiteIdentifierOfMultidisciplinaryTeamMeeting extension="AB123"/>
+      <TeamMeetingType>0401</TeamMeetingType>
+      <TeamMeetingTypeComment>BLAH</TeamMeetingTypeComment>
+    </MultidisciplinaryTeamMeetings>
+    <CancerCarePlan>
+      <CancerMultiTeamDiscussionDate>2018-01-01</CancerMultiTeamDiscussionDate>
+      <ConsultantCodeMultidisciplinaryTeamLead extension="C1234567"/>
+      <CancerCarePlanIntent code="C"/>
+      <PlannedCancerTreatmentType code="02"/>
+      <PlannedCancerTreatmentType code="02"/>
+      <PlannedCancerTreatmentType code="02"/>
+      <NoCancerTreatmentReason code="02"/>
+      <AdultComorbidityEvaluation code="1"/>
+    </CancerCarePlan>
+    <MolecularBiomarkersGermlineTesting>
+      <OfferStatusGermlineGeneticTest code="01"/>
+      <GermlineGeneticTestTypeOffered code="02"/>
+      <GermlineGeneticTestTypeOffered code="02"/>
+      <GermlineGeneticTestTypeOffered code="02"/>
+      <OtherGermlineGeneticTestTypeOffered>SOME</OtherGermlineGeneticTestTypeOffered>
+      <OtherGermlineGeneticTestTypeOffered>THING</OtherGermlineGeneticTestTypeOffered>
+      <OtherGermlineGeneticTestTypeOffered>ELSE</OtherGermlineGeneticTestTypeOffered>
+      <ActivityOfferDate>2018-01-01</ActivityOfferDate>
+      <OrganisationIdentifierReportingLaboratory extension="AB123"/>
+      <OfferStatusReferralRegionalClinicalGeneticsService code="02"/>
+    </MolecularBiomarkersGermlineTesting>
+    <MolecularBiomarkersGermlineTesting>
+      <OfferStatusGermlineGeneticTest code="02"/>
+      <ActivityOfferDate>2018-01-01</ActivityOfferDate>
+      <OrganisationIdentifierReportingLaboratory extension="AB123"/>
+      <OfferStatusReferralRegionalClinicalGeneticsService code="02"/>
+    </MolecularBiomarkersGermlineTesting>
+    <MolecularBiomarkersSomaticTesting>
+      <StratifiedMedicineMolecularTestPerformedIndicator code="Y"/>
+      <GeneStratificationBiomarkerAnalysed code="02"/>
+      <GeneStratificationBiomarkerAnalysed code="02"/>
+      <GeneStratificationBiomarkerAnalysed code="02"/>
+      <OtherGeneStratificationBiomarkerTypeAnalysedComment>SOME</OtherGeneStratificationBiomarkerTypeAnalysedComment>
+      <OtherGeneStratificationBiomarkerTypeAnalysedComment>THING</OtherGeneStratificationBiomarkerTypeAnalysedComment>
+      <OtherGeneStratificationBiomarkerTypeAnalysedComment>ELSE</OtherGeneStratificationBiomarkerTypeAnalysedComment>
+      <GeneStratificationBiomarkerAnalysedDate>2018-01-01</GeneStratificationBiomarkerAnalysedDate>
+      <OrganisationIdentifierReportingLaboratory extension="AB123"/>
+    </MolecularBiomarkersSomaticTesting>
+    <ClinicalTrials>
+      <CancerPatientTrialStatus code="02"/>
+      <ClinicalTrialDecisionDate>2018-01-01</ClinicalTrialDecisionDate>
+      <ClinicalTrialStartDate>2018-01-01</ClinicalTrialStartDate>
+      <CancerClinicalTrialTreatmentType code="02"/>
+    </ClinicalTrials>
+    <Staging>
+      <FinalPreTreatmentTCategory>1</FinalPreTreatmentTCategory>
+      <FinalPreTreatmentNCategory>0</FinalPreTreatmentNCategory>
+      <FinalPreTreatmentMCategory>0</FinalPreTreatmentMCategory>
+      <FinalPreTreatmentTNMStageGrouping>1</FinalPreTreatmentTNMStageGrouping>
+      <OrganisationSiteIdentifierOfTNMStageGroupingFinalPretreatment extension="AB123"/>
+      <FinalPreTreatmentTNMStageGroupingDate>2018-01-01</FinalPreTreatmentTNMStageGroupingDate>
+      <IntegratedStageTCategory>1</IntegratedStageTCategory>
+      <IntegratedStageNCategory>0</IntegratedStageNCategory>
+      <IntegratedStageMCategory>0</IntegratedStageMCategory>
+      <IntegratedStageTNMStageGrouping>1</IntegratedStageTNMStageGrouping>
+      <OrganisationSiteIdentifierOfTNMStageGroupingIntegrated extension="AB123"/>
+      <IntegratedStageTNMStageGroupingDate>2018-01-01</IntegratedStageTNMStageGroupingDate>
+      <TNMCodingEdition code="2"/>
+      <TNMVersionNumberStaging>01</TNMVersionNumberStaging>
+    </Staging>
+    <Treatment>
+      <CancerTreatmentEventType code="01"/>
+      <AdjunctiveTherapyType code="1"/>
+      <CancerTreatmentIntent code="01"/>
+      <CancerTreatmentStartDate>2018-01-01</CancerTreatmentStartDate>
+      <CancerTreatmentModality code="01"/>
+      <OrganisationSiteIdentifierOfProviderCancerTreatmentStartDate extension="AB111"/>
+      <ConsultantCode extension="C1234561"/>
+    </Treatment>
+    <Treatment>
+      <CancerTreatmentEventType code="02"/>
+      <AdjunctiveTherapyType code="2"/>
+      <CancerTreatmentIntent code="02"/>
+      <CancerTreatmentStartDate>2018-01-02</CancerTreatmentStartDate>
+      <CancerTreatmentModality code="02"/>
+      <OrganisationSiteIdentifierOfProviderCancerTreatmentStartDate extension="AB123"/>
+      <ConsultantCode extension="C1234567"/>
+      <SurgeryAndOtherProcedures>
+        <ProcedureDate>2018-01-01</ProcedureDate>
+        <ConsultantCodeResponsibleSurgeon extension="C1234567"/>
+        <ConsultantCodeResponsibleSurgeon extension="C1234568"/>
+        <ConsultantCodeResponsibleSurgeon extension="C1234569"/>
+        <PrimaryProcedureOPCS code="Z123"/>
+        <PrimaryProcedureSNOMEDCT code="123456"/>
+        <ProcedureOPCS code="Z123"/>
+        <ProcedureOPCS code="Z123"/>
+        <ProcedureOPCS code="Z123"/>
+        <ProcedureSNOMEDCT code="123456"/>
+        <ProcedureSNOMEDCT code="123456"/>
+        <ProcedureSNOMEDCT code="123456"/>
+        <AdditionalUnplannedProcedureRequiredIndicator code="9"/>
+        <HospitalDischargeDate>2018-01-01</HospitalDischargeDate>
+        <HospitalDischargeDestinationCode code="19"/>
+        <ASAPhysicalStatusClassificationSystemCode code="2"/>
+        <SurgicalAccessType code="2"/>
+        <SurgeryAndOtherProceduresStemCellTransplantation>
+          <StemCellInfusionSourceCode code="9"/>
+          <StemCellInfusionDonorType code="2"/>
+          <StemCellTransplantConditioningRegimen code="2"/>
+        </SurgeryAndOtherProceduresStemCellTransplantation>
+      </SurgeryAndOtherProcedures>
+        <Radiotherapy>
+          <BrachytherapyType code="BI"/>
+        </Radiotherapy>
+        <ActiveMonitoring>
+          <MonitoringIntent code="2"/>
+        </ActiveMonitoring>
+    </Treatment>
+    <LaboratoryResultsGeneral>
+      <LactateDehydrogenaseLevelPeakAtDiagnosis value="99"/>
+      <LactateDehydrogenaseLevelNormalUpperLimit value="1"/>
+    </LaboratoryResultsGeneral>
+    <LabResGermCellCNSAndNonGermCellCNSTumours>
+      <BetaHumanChorionicGonadotropinMaximumAtDiagnosis value="44"/>
+    </LabResGermCellCNSAndNonGermCellCNSTumours>
+    <LabResGermCellCNSGermCellNonCNSHepatoblastomaAndHepatocellularCa>
+      <AlphaFetoproteinMaximumAtDiagnosis value="55"/>
+    </LabResGermCellCNSGermCellNonCNSHepatoblastomaAndHepatocellularCa>
+    <Pathology>
+      <InvestigationResultDate>2018-01-01</InvestigationResultDate>
+      <ServiceReportId extension="SERVICEID"/>
+      <PathologyObservationReportId extension="PATHID"/>
+      <ServiceReportStatus code="2"/>
+      <PathTestReqCareProfCode extension="WHATISTH"/>
+      <OrganisationSiteIdentifierOfPathologyTestRequest extension="AB123"/>
+      <SampleCollectionDate>2018-01-01</SampleCollectionDate>
+      <SampleReceiptDate>2018-01-01</SampleReceiptDate>
+      <OrganisationIdentifierOfReportingPathologist extension="AB123"/>
+      <PathologistConsultantCode extension="C1234567"/>
+      <SpecimenNature code="2"/>
+      <SNOMEDVersionPathology code="02"/>
+      <TopographySNOMEDPathology code="123456"/>
+      <TopographySNOMEDPathology code="123456"/>
+      <TopographySNOMEDPathology code="123456"/>
+      <MorphologySNOMEDPathology code="123456"/>
+      <MorphologySNOMEDPathology code="123456"/>
+      <MorphologySNOMEDPathology code="123456"/>
+      <PrimaryDiagnosisICDPath code="C509"/>
+      <TumourLaterality code="9"/>
+      <PathologyInvestigationType code="CY"/>
+      <PathologyReportText>BLAH</PathologyReportText>
+      <LesionSizePathological value="1.1"/>
+      <GradeOfDiff code="G2"/>
+      <CancerVascLymphInvasion code="99"/>
+      <ExcisionMargin code="02"/>
+      <SyncTumourInd code="Y"/>
+      <NumberNodesExamined value="1"/>
+      <NumberNodesPositive value="1"/>
+      <TNMCodingEdition code="2"/>
+      <TNMVersionNumberPathological>8</TNMVersionNumberPathological>
+      <PathTCategory>1</PathTCategory>
+      <PathNCategory>0</PathNCategory>
+      <PathMCategory>0</PathMCategory>
+      <PathTNMStage>1</PathTNMStage>
+      <NeoadjuvantTherapyInd code="Y"/>
+    </Pathology>
+    <DeathDetails>
+      <PersonDeathDate>2018-01-03</PersonDeathDate>
+      <DeathLocationType code="20"/>
+    </DeathDetails>
+  </OtherRecord>
+  <OtherRecord>
+    <Id root="778F1F33-4911-4E50-8E36-3182780F8F95" />
+    <LinkagePatientId>
+      <NHSNumber extension="1111111111" />
+      <LocalPatientIdExtended>AB1888555446</LocalPatientIdExtended>
+      <NHSNumberStatusIndicator code="03" />
+      <Birthdate>1971-01-01</Birthdate>
+      <OrganisationIdentifierCodeOfProvider extension="AB1" />
+    </LinkagePatientId>
+    <LinkageDiagnosticDetails>
+      <PrimaryDiagnosis code="C809"/>
+      <TumourLaterality code="9"/>
+      <ClinicalDateCancerDiagnosis>2018-01-01</ClinicalDateCancerDiagnosis>
+      <DateOfNonPrimaryCancerDiagnosisClinicallyAgreed>2018-01-02</DateOfNonPrimaryCancerDiagnosisClinicallyAgreed>
+    </LinkageDiagnosticDetails>
+    <NonPrimaryCancerPathwayRoute>
+      <NonPrimaryCancerPathwayType code="01"/>
+      <CancerRecurrenceOrMetastaticDiseaseType code="01"/>
+      <MetastaticSite code="02"/>
+      <MetastaticSite code="03"/>
+      <MetastaticSite code="04"/>
+      <CancerProgressionICD code="C809"/>
+    </NonPrimaryCancerPathwayRoute>
+    <Demographics>
+      <PersonFamilyName>COSD</PersonFamilyName>
+      <PersonGivenName>OTHER</PersonGivenName>
+      <Address>
+        <UnstructuredAddress>
+          <StreetAddressLine>CORE STREET</StreetAddressLine>
+        </UnstructuredAddress>
+      </Address>
+      <Postcode>AB1 3CD</Postcode>
+      <Gender code="1"/>
+      <PersonStatedSexualOrientationCodeAtDiagnosis code="1"/>
+      <GMPSpecified extension="G1234566" />
+      <GMPRegistration extension="F12345" />
+      <PersonBirthFamilyName>COSD</PersonBirthFamilyName>
+      <Ethnicity code="A"/>
+    </Demographics>
+
+    <Diagnosis>
+      <OrganisationSiteIdentifierOfDiagnosis extension="AB123"/>
+      <BasisOfCancerDiagnosis code="2"/>
+      <SNOMEDVersionDiagnosis code="01"/>
+      <MorphologySNOMEDDiagnosis code="123344"/>
+      <MorphologyICDODiagnosis code="M1234"/>
+      <TopographyICDO code="C1234"/>
+      <DiagnosisGradeOfDifferentiation code="G2"/>
+      <AdultPerformanceStatus code="2"/>
+      <DiagnosisSNOMEDCT code="123456"/>
+      <CancerRecurrenceCarePlanInd code="YL"/>
+      <CancerMetastaticDiseaseType code="02"/>
+      <CancerProgressionAgreedDatePrimaryCancerPathway>2018-01-01</CancerProgressionAgreedDatePrimaryCancerPathway>
+      <CancerProgressionAgreedDatePrimaryCancerPathway>2018-01-01</CancerProgressionAgreedDatePrimaryCancerPathway>
+      <CancerProgressionAgreedDatePrimaryCancerPathway>2018-01-01</CancerProgressionAgreedDatePrimaryCancerPathway>
+      <!-- THIS IS THE MISTAKE -->
+      <!-- SHOULD HAVE BEEN A REPEATING SECTION -->
+      <SNOMEDVersionCancerTransformation code="02"/>
+      <MorphologySNOMEDCancerTransformation code="123456"/>
+      <MorphologyICDOCancerTransformation code="C1234"/>
+      <CancerTransformationAgreedDatePrimaryCancerPathway>2018-01-01</CancerTransformationAgreedDatePrimaryCancerPathway>
+      <!-- END OF ERROR SECTION -->
+      <DiagnosisAdditionalItems>
+        <PrimaryDiagnosisCancerComment>BLAH</PrimaryDiagnosisCancerComment>
+        <SecondaryDiagnosisICD code="C809"/>
+        <SecondaryDiagnosisICD code="C809"/>
+        <SecondaryDiagnosisICD code="C809"/>
+        <SecondaryDiagnosisCancerComment>BLAH</SecondaryDiagnosisCancerComment>
+        <FamilialCancerSyndromeIndicator code="Y"/>
+        <FamilialCancerSyndromeComment>BLAH</FamilialCancerSyndromeComment>
+        <TissueBankedAtDiagnosisIndicator code="Y"/>
+        <TissueTypeBankedAtDiagnosis code="1"/>
+        <TissueTypeBankedAtDiagnosis code="2"/>
+        <TissueTypeBankedAtDiagnosis code="3"/>
+      </DiagnosisAdditionalItems>
+    </Diagnosis>
+    <DeathDetails>
+      <PersonDeathDate>2018-01-03</PersonDeathDate>
+      <DeathLocationType code="20"/>
+    </DeathDetails>
+  </OtherRecord>
+</COSD:COSD>

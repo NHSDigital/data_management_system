@@ -1,0 +1,14 @@
+<div id='flash_messages'>
+  <% if flash[:notice] %>
+    <%= bootstrap_alert_tag(:info, flash[:notice].html_safe) %>
+  <% end %>
+  <% if flash[:error] %>
+    <%= bootstrap_alert_tag(:danger, flash[:error].html_safe) %>
+  <% end %>
+  <% if flash[:alert] %>
+    <%= bootstrap_alert_tag(:danger, flash[:alert].html_safe) %>
+  <% end %>
+  <% if flash[:warning] %>
+    <%= bootstrap_alert_tag(:warning, flash[:warning].html_safe) %>
+  <% end %>
+</div>

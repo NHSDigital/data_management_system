@@ -1,0 +1,38 @@
+<div class="tab-pane" id="contracts">
+  <div class="panel panel-default" style="border-top: 0px;">
+    <div class="panel-heading" style="font-size: 1.5em;">
+      <%= Contract.model_name.human.pluralize %>
+    </div>
+  </div>
+
+  <table class="table table-condensed" id="contractsTable">
+    <thead>
+      <tr>
+        <th><%= Contract.human_attribute_name(:contract_version) %></th>
+        <th><%= Contract.human_attribute_name(:contract_start_date) %></th>
+        <th><%= Contract.human_attribute_name(:contract_end_date) %></th>
+        <th>
+          <div class="pull-right">
+            <% if can?(:create, Contract.new(project: project)) %>
+              <%= link_to_with_icon(icon: 'plus-sign', text: true, title: 'New', path: new_project_contract_path(project), class: 'btn btn-primary btn-xs') %>
+            <% end %>
+          </div>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <% project.contracts.accessible_by(current_ability).find_each do |contract| %>
+        <%= content_tag(:tr, id: dom_id(contract)) do %>
+          <td><%= contract.contract_version %></td>
+          <td><%= contract.contract_start_date&.to_s(:ui) %></td>
+          <td><%= contract.contract_end_date&.to_s(:ui) %></td>
+          <td>
+            <div class="pull-right">
+              <%= inline_controls_for(contract) %>
+            </div>
+          </td>
+        <% end %>
+      <% end %>
+    </tbody>
+  </table>
+</div>

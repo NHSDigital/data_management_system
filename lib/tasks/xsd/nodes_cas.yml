@@ -1,0 +1,885 @@
+---
+- name: CAS
+  min_occurs: 1
+  max_occurs: 1
+  node_type: Nodes::Entity
+  dataset_version: 1-0
+  sort: 1
+  children:
+  - name: AV_PATIENT_ENGLAND
+    min_occurs: 0
+    max_occurs: 1
+    node_type: Nodes::Table
+    children:
+    - name: DEATHDATEFLAG
+      description: A flag set to inform if any part of the death date has been imputed.
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: POTENTIAL_DQ_ISSUES
+      description: Suggestion of what may be causing issues with data quality.
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: DEATHDATEBEST
+      description: Date of death of the patient. Death date best is calculated as the
+        average of deathdate1 and deathdate2 when dates are ambiguous.
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: VITALSTATUS
+      description: Vital status of the patient
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: DEATHLOCATIONDESC
+      description: Description of the location where the patient died
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: POSTMORTEM
+      description: Indicates whether a post-mortem took place
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: BIRTHDATE1
+      description: The earliest birth date in a range, when dates are ambiguous
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: BIRTHDATE2
+      description: The latest birth date in a range, when dates are ambiguous
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: PERSONID
+      description: Unique person ID in ENCORE. Each “Person” can be associated with multiple
+        patient IDs. Where two patients are found to be the same person one of the PERSONIDs
+        will be discarded.
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: BIRTHDATEFLAG
+      description: Set to 0 if the date was fully specified, 1 if the month and year of
+        diagnosis are known, but the day was not specified, 2 if the year is fully known,
+        but the month and day are not specified, and 3 if the date was less specific than
+        any of these
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: DEATHCAUSECODE_1A
+      description: Valid ICD code as provided with death notification. Comma separated
+        when multiple codes recorded.
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: ETHNICITYNAME
+      description: Description of the 16+1 ethnic data categories defined in the 2001
+        census is the national mandatory standard for the collection and analysis of ethnicity.
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: EMBARKATION
+      description: Whether there is a record of the patient leaving the UK
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: EMBARKATIONDATE
+      description: Date the patient is recorded as leaving the UK
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: TUMOURCOUNT
+      description: Count of every tumour assigned to this PatientID.
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: BIGTUMOURCOUNT
+      description: Count of every tumour assigned to this PatientID in range C00-97 excl
+        C44
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: VITALSTATUSDATE
+      description: Date of the vital status of the patient.
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: DEATHDATE1
+      description: The earliest death date, when dates are ambiguous
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: DEATHDATE2
+      description: The latest death date, when dates are ambiguous
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: DEATHIDMAX
+      description: The DeathIDMax held on Encore for this patient
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: DEATHCAUSECODE_1B
+      description: Valid ICD code as provided with death notification. Comma separated
+        when multiple codes recorded.
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: DEATHCAUSECODE_1C
+      description: Valid ICD code as provided with death notification. Comma separated
+        when multiple codes recorded.
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: DEATHCAUSECODE_2
+      description: Valid ICD code as provided with death notification. Comma separated
+        when multiple codes recorded.
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: DEATHCAUSECODE_UNDERLYING
+      description: Valid ICD code as provided with death notification. Comma separated
+        when multiple codes recorded.
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: DEATHLOCATIONCODE
+      description: Code of the location where the patient died
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: SEX
+      description: Sex at date of diagnosis
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: ETHNICITY
+      description: The 16+1 ethnic data categories defined in the 2001 census is the national
+        mandatory standard for the collection and analysis of ethnicity.
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: BIRTHDATEBEST
+      description: Date of birth of the patient. Birth date best is calculated as the
+        average of birthdate1 and birthdate2 when dates are ambiguous.
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: NHSNUMBER
+      description: NHS number of the patient (unique national NHS patient identifier).
+        The NHS Number is 10 numeric digits in length. The tenth digit is a modulus-11
+        check digit used to confirm its validity.
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+  - name: AV_TREATMENT_ENGLAND
+    min_occurs: 0
+    max_occurs: 1
+    node_type: Nodes::Table
+    children:
+    - name: WITHIN_SIX_MONTHS_FLAG
+      description: Whether treatment was within six months of date of diagnosis
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: NUMBER_OF_TUMOURS
+      description: Number of tumours affected by this event
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: EVENTCODE
+      description: Type of event code
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: EVENTDATE
+      description: Date the event took place
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: PROVIDERDESC
+      description: Name of the organisation where the event took place
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: TRUST_CODE
+      description: Code of the  NHS Trust where the event took place
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: OPCS4_CODE
+      description: Operations, procedures and interventions as coded in OPCS-4, or more
+        formally OPCS Classification of Interventions and Procedures version 4.
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: RADIOCODE
+      description: Radiotherapy code
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: IMAGINGCODE
+      description: Imaging code – internal coding system
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: IMAGINGSITE
+      description: Site on body where imaging occured
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: LESIONSIZE
+      description: The size in millimetres of the diameter of a lesion, largest if more
+        than one, if the histology of a sample proves to be invasive.
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: EVENTYEAR
+      description: Year the event took place
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: TRUST_NAME
+      description: Name of the NHS Trust where the event took place
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: SIX_MONTHS_AFTER_FLAG
+      description: Whether treatment was after six months from date of diagnosis
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: RADIODESC
+      description: Radiotherapy description
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: IMAGINGDESC
+      description: Description of imaging
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: CHEMO_ALL_DRUGS
+      description: List of all systemic anti-cancer therapy drugs.
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: EVENTID
+      description: Unique event ID.
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: EVENTDESC
+      description: Description of the event
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: PROVIDERCODE
+      description: Code of the organisation where the event took place. This is the organisation
+        acting as a healthcare provider.
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: PRACTITIONERCODE
+      description: The general medical council reference number for consultants or general
+        medical practitioners, or the general dental council registration number for general
+        dental practitioners.
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: OPCS4_NAME
+      description: Name of the operations, procedures and interventions as coded in OPCS-4,
+        or more formally OPCS Classification of Interventions and Procedures version 4.
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: CHEMO_DRUG_GROUP
+      description: Name or acronym of known drug combinations, derived from CHEMO_ALL_DRUGS.
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+  - name: AV_TUMOUR_ENGLAND
+    min_occurs: 0
+    max_occurs: 1
+    node_type: Nodes::Table
+    children:
+    - name: LSOA01_CODE
+      description: 2001 Lower Super Output Area the patient was resident in when the tumour
+        was diagnosed
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: MSOA01_CODE
+      description: 2001 Middle Super Output Area the patient was resident in when the
+        tumour was diagnosed
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: FINANCIALYEAR
+      description: Gives financial year of diagnosis
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: DIAGNOSISYEAR
+      description: Year of DIAGNOSISDATEBEST
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: DCO
+      description: Death certificate only
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: SITE_CODED
+      description: Site of the cancer, in the coding system that the tumour was originally
+        coded in
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: SITE_CODED_3CHAR
+      description: 3 digit version of SITE_CODED
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: BEHAVIOUR_CODED
+      description: Numeric behaviour code
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: CODING_SYSTEM
+      description: The coding system used to register the tumour
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: HISTOLOGY_CODED
+      description: Histology code
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: HISTOLOGY_CODED_DESC
+      description: Description of histology code
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: SCREENINGSTATUSCOSD_CODE
+      description: More detailed screening status of the tumour
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: SCREENINGSTATUSFULL_NAME
+      description: Description of the code in SCREENINGSTATUSFULL_CODE
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: ER_SCORE
+      description: 'Oestrogen receptor score of the tumour. '
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: LAUA_CODE
+      description: Local Authority Unitary Authority code the patient was resident in
+        when the tumour was diagnosed
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: COUNTY_CODE
+      description: County code the patient was resident in when the tumour was diagnosed
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: GOR_NAME
+      description: Name of the government office region the patient was resident in when
+        the tumour was diagnosed
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: BEHAVIOUR_ICD10_O2
+      description: Behaviour of the cancer, in the ICD-10-O2 system
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: N_BEST
+      description: N stage flagged by the registry as the ‘best’ N stage
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: ER_STATUS
+      description: Oestrogen receptor status of the tumour
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: CREG_CODE
+      description: Cancer registry catchment area code the patient was resident in when
+        the tumour was diagnosed
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: FIVEYEARAGEBAND
+      description: Five-year band of age at diagnosis
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: DEATHDATEFLAG
+      description: A flag set to inform if any part of the death date has been imputed.
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: DIAGNOSISDATE1
+      description: The earliest date when the diagnosis may have taken place, when dates
+        are ambiguous
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: DIAGNOSISDATEFLAG
+      description: A flag set to inform if any part of the diagnosis date has been imputed
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: BASISOFDIAGNOSIS
+      description: Basis of diagnosis of the tumour, according to all data received by
+        the registry
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: MORPH_CODED
+      description: Morphology of the cancer, in the coding system that the tumour was
+        originally coded in
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: BEHAVIOUR_CODED_DESC
+      description: Description of behaviour code
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: CODING_SYSTEM_DESC
+      description: A human-readable description of the coding system used to register
+        the tumour
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: GRADE
+      description: Grade of tumour
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: SCREENDETECTED
+      description: Whether or not the tumour was detected by a screening programme
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: PR_STATUS
+      description: Progesterone receptor status of the tumour
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: GLEASON_COMBINED
+      description: Combined Gleason primary and secondary scores
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: AGE
+      description: Age at date of diagnosis
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: N_IMG
+      description: This is the UICC code which classifies the absence or presence and
+        extent of regional lymph node metastases before treatment.
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: LSOA11_CODE
+      description: 2011 Lower Super Output Area the patient was resident in when the tumour
+        was diagnosed
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: CCG_CODE
+      description: Clinical Commissioning Group code the patient was resident in when
+        the tumour was diagnosed
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: COUNTY_NAME
+      description: Name of the county the patient was resident in when the tumour was
+        diagnosed
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: SCREENINGSTATUSFULL_CODE
+      description: Full detailed screening status of the tumour
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: CANALLIANCE_NAME
+      description: Name of the Cancer Alliance area the patient was resident in when the
+        tumour was diagnosed.
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: CTRY_NAME
+      description: Name of the country the patient was resident in when the tumour was
+        diagnosed.
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: NHS_REGION_2017_NAME
+      description: Name of the NHS region (2017) the patient was resident in when the
+        tumour was diagnosed.
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: PARL_CON_CODE
+      description: Parliamentary constituency area code the patient was resident in when
+        the tumour was diagnosed.
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: POTENTIAL_DQ_ISSUES
+      description: Suggestion of what may be causing issues with data quality.
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: RURAL_URBAN_IND_NAME
+      description: Rural/urban indicator of where the patient was resident when the tumour
+        was diagnosed.
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: DIAGNOSISDATE2
+      description: The latest date when the diagnosis may have taken place, when dates
+        are ambiguous
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: PR_SCORE
+      description: Progesterone receptor score of the tumour
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: NODESEXCISED
+      description: Number of nodes excised
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: M_IMG
+      description: 'This is the UICC code which classifies the absence or presence of
+        distant metastases pre-treatment.  '
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: DEATHDATEBEST
+      description: Date of death of the patient. Death date best is calculated as the
+        average of deathdate1 and deathdate2 when dates are ambiguous.
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: DUKES
+      description: Dukes' stage
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: FIGO
+      description: FIGO stage
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: PATIENTID
+      description: Unique patient ID in ENCORE
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: STP_CODE
+      description: Sustainability and transformation partnership area code the patient
+        was resident in when the tumour was diagnosed.
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: STP_NAME
+      description: Name of the sustainability and transformation partnership area the
+        patient was resident in when the tumour was diagnosed.
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: VITALSTATUS
+      description: Vital status of the patient
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: SITE_ICD10_O2_3CHAR
+      description: The topography code describes the site of origin of the neoplasms and
+        in this field is mapped to a 3-character ICD-10-O2 code
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: T_BEST
+      description: T stage flagged by the registry as the ‘best’ T stage
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: EMBARKATION
+      description: Whether there is a record of the patient leaving the UK
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: EMBARKATIONDATE
+      description: Date the patient is recorded as leaving the UK
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: VITALSTATUSDATE
+      description: Date of the vital status of the patient.
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: STAGE_PATH_SYSTEM
+      description: System used to record pathological stage at diagnosis
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: UTLA_CODE
+      description: Upper tier Local Authority code the patient was resident in when the
+        tumour was diagnosed
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: STAGE_BEST_SYSTEM
+      description: System used to record best registry stage at diagnosis
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: SITE_CODED_DESC
+      description: Description of the code in SITE_CODED
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: STAGE_IMG
+      description: Stage at diagnosis derived from imaging
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: STAGE_PATH
+      description: Pathological stage at diagnosis
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: SEX
+      description: Sex at date of diagnosis
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: T_IMG
+      description: This is the UICC code which classifies the size and extent of the primary
+        tumour before treatment.
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: T_PATH
+      description: T CATEGORY (PATHOLOGICAL) is the Union for International Cancer Control
+        (UICC) code which classifies the size and extent of the primary Tumour based on
+        the evidence from a pathological examination.
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: UTLA_NAME
+      description: Name of the upper tier Local Authority the patient was resident in
+        when the tumour was diagnosed
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: SCREENINGSTATUSCOSD_NAME
+      description: Description of the code in SCREENINGSTATUSCOSD_CODE
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: NPI
+      description: Nottingham Prognostic Index Score (calculated from tumour size, grade
+        and lymph node involvement)
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: N_PATH
+      description: N CATEGORY (PATHOLOGICAL) is the Union for International Cancer Control
+        (UICC) code which classifies the absence or presence and extent of regional lymph
+        node metastases based on the evidence from a pathological examination.
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: M_PATH
+      description: M CATEGORY (PATHOLOGICAL) is the Union for International Cancer Control
+        (UICC) code which classifies the absence or presence of distant metastases based
+        on the evidence from a pathological examination.
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: MSOA11_CODE
+      description: 2011 Middle Super Output Area the patient was resident in when the
+        tumour was diagnosed
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: CCG_NAME
+      description: Name of the Clinical Commissioning Group the patient was resident in
+        when the tumour was diagnosed
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: LAUA_NAME
+      description: Name of the Local Authority Unitary Authority the patient was resident
+        in when the tumour was diagnosed
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: GOR_CODE
+      description: Government office region code the patient was resident in when the
+        tumour was diagnosed
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: CREG_NAME
+      description: Name of the cancer registry catchment area the patient was resident
+        in when the tumour was diagnosed
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: CANALLIANCE_CODE
+      description: Code of the Cancer Alliance area the patient was resident in when the
+        tumour was diagnosed.
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: CTRY_CODE
+      description: Country code the patient was resident in when the tumour was diagnosed.
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: NHS_REGION_2017_CODE
+      description: Code of the NHS region (2017) the patient was resident in when the
+        tumour was diagnosed.
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: NHS_REGION_2018_CODE
+      description: Code of the NHS region (2018) the patient was resident in when the
+        tumour was diagnosed.
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: NHS_REGION_2018_NAME
+      description: Name of the NHS region (2018) the patient was resident in when the
+        tumour was diagnosed.
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: PARL_CON_NAME
+      description: Name of the parliamentary constituency area the patient was resident
+        in when the tumour was diagnosed.
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: RURAL_URBAN_IND_CODE
+      description: Rural/urban indicator code of where the patient was resident when the
+        tumour was diagnosed.
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: POSTCODE
+      description: Postcode the patient was resident at when the tumour was diagnosed
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: STAGE_IMG_SYSTEM
+      description: System used to record imaging stage at diagnosis
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: NODESINVOLVED
+      description: Number of nodes involved
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: ETHNICITY
+      description: The 16+1 ethnic data categories defined in the 2001 census is the national
+        mandatory standard for the collection and analysis of ethnicity.
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: SITE_ICD10_O2
+      description: The topography code describes the site of origin of the neoplasms and
+        in this field is mapped to a 4-character ICD-10-O2 code
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: MORPH_ICD10_O2
+      description: Morphology of the cancer, in the ICD-10-O2 system
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: M_BEST
+      description: M stage flagged by the registry as the ‘best’  M stage
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: HER2_STATUS
+      description: 'HER2 status of the tumour '
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: GLEASON_PRIMARY
+      description: The grade that comprises most of the tumour volume is called the “primary
+        pattern”
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: GLEASON_SECONDARY
+      description: 'If additional grades are present, what is the highest grade (biopsy)
+        or the second most extensive grade (TURP and radicals).  If no additional grades
+        are present, primary and secondary grades are the same. '
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: BIRTHDATEBEST
+      description: Date of birth of the patient. Birth date best is calculated as the
+        average of birthdate1 and birthdate2 when dates are ambiguous.
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: DIAGNOSISDATEBEST
+      description: Diagnosis date of the patient, as defined by the UKACR. Diagnosis date
+        best is calculated as the average of diagnosisdate1 and diagnosisdate2 when dates
+        are ambiguous.
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: TUMOURID
+      description: Unique tumour ID in ENCORE.  A patient can have more than one type
+        of tumour hence the number of tumours is greater than the number of patients.
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: NHSNUMBER
+      description: NHS number of the patient (unique national NHS patient identifier).
+        The NHS Number is 10 numeric digits in length. The tenth digit is a modulus-11
+        check digit used to confirm its validity.
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: GLEASON_TERTIARY
+      description: Is there a different third grade in addition to the primary and secondary
+        grades and what is its value?
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1
+    - name: STAGE_BEST
+      description: Best ‘registry’ stage at diagnosis of the tumour. Stage best is the
+        combination of registration and hospital PAS data put through an algorithm. Stage
+        best is the combination of registration and hospital PAS data put through an algorithm.
+        Please note the completeness of stage_best measured here includes values indicating
+        that the tumour did not have a staging system or that there is currently insufficient
+        information recorded. Therefore, this should not be considered a measure of how
+        many tumours have a known stage
+      node_type: Nodes::DataItem
+      min_occurs: 0
+      max_occurs: 1

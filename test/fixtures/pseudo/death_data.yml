@@ -1,0 +1,4 @@
+death1:
+  death_dataid: 1
+# created in ppatients.yml
+  ppatient: patient3

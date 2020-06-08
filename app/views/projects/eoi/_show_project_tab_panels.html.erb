@@ -1,0 +1,29 @@
+<div id="tab-content" class='tab-content clearfix'>
+  <div class="tab-pane  active in" id="details" >
+    <div class="panel panel-default" style="border-top: 0px;">
+      <div class="panel-heading">
+        <span style="font-size: 1.5em;">Project Details</span>
+        <div class="pull-right">
+          <%= edit_link @project, text: true, class: 'btn btn-default' %>
+        </div>
+      </div>
+    </div>
+    <%= render "projects/#{@project.project_type_name.downcase}/form", readonly: true %>
+  </div>
+  <div class="tab-pane " id="users">
+    <div class="row">
+      <div class="col-md-12" >
+        <div class="panel panel-default" style="border-top:0px">
+          <%= render 'project_grants' %>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="tab-pane " id="comments">
+    <%= render partial: 'project_comments' %>
+  </div>
+
+  <%= render 'project_datasets',  project: @project %>
+  <%= render 'project_timeline',  project: @project %>
+  <%= render 'project_heirarchy', project: @project %>
+</div>

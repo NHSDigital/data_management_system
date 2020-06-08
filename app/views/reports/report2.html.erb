@@ -1,0 +1,30 @@
+<%= bootstrap_panel_tag panel_heading_segments(
+  left: content_tag(:h4) { 'Report 2' },
+  right: (link_to('CSV', report2_path(format: 'csv'), class: 'btn btn-primary'))
+) do %>
+<% end %>
+
+<table class="table table-hover" id="users_table">
+  <thead>
+    <tr>
+      <th>Team</th>
+      <th>Project</th>
+      <th>Type</th>
+      <th>Item</th>
+      <th>Comment</th>
+      <th>User</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @rows.each do |row| %>
+      <tr>
+        <td><%= row[:team_name] %></td>
+        <td><%= row[:project_name] %></td>
+        <td><%= row[:type] %></td>
+        <td><%= row[:item] %></td>
+        <td><%= row[:comment] %></td>
+        <td><%= row[:user] %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

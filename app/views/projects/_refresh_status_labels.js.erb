@@ -1,0 +1,12 @@
+jQuery('#details_approval_status').html("<%= escape_javascript approval_button_message(@project.details_approved) %>");
+jQuery('#details_approval_status').removeClass().addClass('label label-<%= approval_button_style(@project.details_approved) %>');
+jQuery('#user_approval_status').html("<%= escape_javascript approval_button_message(@project.members_approved) %>");
+jQuery('#user_approval_status').removeClass().addClass('label label-<%= approval_button_style(@project.members_approved) %>');
+jQuery('#data_item_approval_status').html("<%= escape_javascript approval_button_message(@project.data_items_approved) %>");
+jQuery('#data_item_approval_status').removeClass().addClass('label label-<%= approval_button_style(@project.data_items_approved) %>');
+jQuery('#legal_ethical_approval_status').html("<%= escape_javascript approval_button_message(@project.legal_ethical_approved) %>");
+jQuery('#legal_ethical_approval_status').removeClass().addClass('label label-<%= approval_button_style(@project.legal_ethical_approved) %>');
+jQuery('#all_approvals_answered').html("<%= escape_javascript approval_button_message(@project.can_submit_approvals) %>");
+jQuery('#all_approvals_answered').removeClass().addClass('label label-<%=approval_button_style(@project.can_submit_approvals) %>');
+jQuery('#save_and_submit_approvals_button').removeClass().addClass('btn btn-success <%= 'disabled' if @project.can_submit_approvals.nil? %>');
+jQuery('#transition_controls').html("<%= escape_javascript render('projects/transition_controls', project: @project) %>")

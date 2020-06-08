@@ -1,0 +1,4 @@
+<%= render layout: 'layout', locals: { dpia: @dpia } do %>
+  <%= content_tag(:h4, "Edit #{DataPrivacyImpactAssessment.model_name.human}", style: 'margin-left: 10px;') %><hr />
+  <%= render 'form', dpia: @dpia %>
+<% end %>

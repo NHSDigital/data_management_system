@@ -1,0 +1,131 @@
+<%
+  # Resource URL:
+  url = @team.persisted? ? url_for(@team) : url_for([@organisation, :teams])
+%>
+
+<%= bootstrap_form_for @team, url: url, horizontal: 2, readonly: @readonly do |form| %>
+  <%= form.error_and_warning_alert_boxes %>
+  <div class="row">
+    <div class=" col-md-12">
+      <div class="panel panel-default" id="team-details-panel">
+        <% if @readonly %>
+          <div class="panel-body">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="pull-left">
+                  <p style="font-size:1.5em">
+                    Team: <%= @team.name %>
+                  </p>
+                  <footer>
+                    Organisation: <%= @team.organisation.name %>
+                  </footer>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="pull-right" style="font-size:1.5em">
+                  <div class="btn-group" style="padding-right:8px">
+                    <% if can?(:destroy, form.object) %>
+                      <%= link_to bootstrap_icon_tag('trash icon-white') + ' Delete', @team, class: "btn btn-danger", method: :delete, data: { confirm: "Are you sure you want to delete team: #{@team.name}" }, id: 'delete_team_button' %></td>
+                    <% end %>
+                  </div>
+                  <div class="btn-group">
+                    <% if can?(:update, form.object) %>
+                      <div id='activate_button' style="display:inline-block">
+                        <%= render partial: "activate_team_button" %>
+                      </div>
+                      <%= link_to bootstrap_icon_tag('pencil') + ' Edit', edit_team_path(@team), class: 'btn btn-default' %>
+                    <% end %>
+                    <%= versions_link(@team) %>
+                    <%= link_to 'Back to Teams', organisation_teams_path(@team.organisation), class: 'btn btn-default' %>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% end %>
+        <div class="panel-footer">
+          <% if @readonly %>
+            <div class="row">
+              <div class="col-md-2 text-right"><strong>Status:</strong></div>
+              <div class="col-md-2"><%= @team.z_team_status.name %></div>
+            </div>
+            <div class="row">
+              <div class="col-md-2 text-right"><strong>Address:</strong></div>
+              <div class="col-md-2"><%= address_tag(@team)%></div>
+            </div>
+            <div class="row">
+              <div class="col-md-2 text-right"><strong>Notes:</strong></div>
+              <div class="col-md-6"><%= @team.notes %></div>
+            </div>
+          <% else %>
+            <%= form.control_group :name, 'Name' do %>
+              <%= form.text_field :name, class: 'mandatory' %>
+            <% end %>
+
+            <div class='row form-group'>
+              <label class="control-label col-md-2" for="directorate_id">Directorate</label>
+              <div class='col-md-6'>
+                <%= form.collection_select :directorate_id, Directorate.active, :id, :name, { include_blank: true }, class: 'form-control' %>
+              </div>
+            </div>
+
+            <div class='row form-group'>
+              <label class="control-label col-md-2" for="division_id">Division</label>
+              <div class='col-md-6'>
+                <%= form.grouped_collection_select :division_id, Directorate.active, :divisions, :name, :id, :name_and_head, { include_blank: true }, class: 'form-control' %>
+              </div>
+            </div>
+
+            <%= render 'shared/addresses', form: form, klass: @team %>
+
+            <% if params[:action] == 'new' || @team.z_team_status_name == 'New' %>
+              <%= form.hidden_field :z_team_status_id, value: ZTeamStatus.where(name: 'New').first.id %>
+            <% else %>
+              <%= form.control_group :z_team_status_id, 'Status' do %>
+                <%= form.select(:z_team_status_id, ZTeamStatus.where.not(name: 'New').map { |status| [status.name, status.id] }) %>
+              <% end %>
+            <% end %>
+
+            <%= form.control_group :notes, 'Notes' do %>
+              <%= form.text_area :notes %>
+            <% end %>
+            <%= form.control_group nil do %>
+              <div class="pull-right">
+                <%= cancel_submit url %>
+              </div>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
+
+
+<script>
+  jQuery(function() {
+    var divisions;
+    divisions = $('#team_division_id').html();
+    return $('#team_directorate_id').change(function() {
+      var directorate, escaped_directorate, options;
+      directorate = $('#team_directorate_id :selected').text();
+      escaped_directorate = directorate.replace(/([ #;&,.+*~\':"!^$[\]()=>|\/@])/g, '\\$1');
+      options = $(divisions).filter("optgroup[label=" + escaped_directorate + "]").html();
+      $("select#team_division_id").change();
+      if (options) {
+        return $('#team_division_id').html(options);
+      } else {
+        return $('#team_division_id').empty();
+      }
+    });
+  });
+
+    $("select#team_division_id").on("change", function() {
+        $.ajax({
+            url:  "/filter_delegates_by_division",
+            type: "GET",
+            data: { selected_division_id: $("select#team_division_id").val() }
+        });
+    });
+
+</script>

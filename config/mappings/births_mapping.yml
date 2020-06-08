@@ -1,0 +1,452 @@
+# Any difference in column name and field name is as a result of differences
+# between the specifaction and sample data received
+
+---
+!ruby/object:NdrImport::Table
+canonical_name: birth_table
+# only one table so we don't need file/tablename_pattern(s)
+# filename_pattern: !ruby/regexp //
+header_lines: 1
+# Actually up to 2 footer lines (beginning "COUNT IN" | "COUNT OT") but ONS
+# doesn't always include these, so we skip them in the importer instead.
+footer_lines: 0
+format: delimited
+delimiter: "|"
+klass: Pseudo::Birth
+columns:
+- column: record id
+  mappings:
+  - field: mbism204id
+- column: ledr id
+  mappings:
+  - field: ledrid
+- column: birthwgt
+  mappings:
+  - field: birthwgt
+- column: ccgpob
+  mappings:
+  - field: ccgpob
+- column: cestrss
+  mappings:
+  - field: cestrss
+- column: ctypob
+  mappings:
+  - field: ctypob
+- column: dobf
+  mappings:
+  - field: dobf
+- column: dor
+  mappings:
+  - field: dor
+- column: esttypeb
+  mappings:
+  - field: esttypeb
+- column: hautpob
+  mappings:
+  - field: hautpob
+- column: hropob
+  mappings:
+  - field: hropob
+- column: loapob
+  mappings:
+  - field: loarpob
+- column: lsoapob
+  mappings:
+  - field: lsoarpob
+- column: multbth
+  mappings:
+  - field: multbth
+- column: multtype
+  mappings:
+  - field: multtype
+- column: nhsind
+  mappings:
+  - field: nhsind
+- column: pcdpob
+  mappings:
+  - field: pcdpob
+- column: pobt
+  mappings:
+  - field: pobt
+    clean: :itself
+- column: sbind
+  mappings:
+  - field: sbind
+- column: dob
+  mappings:
+  - field: dob
+- column: fnamch1
+  mappings:
+  - field: fnamch1
+- column: fnamch2
+  mappings:
+  - field: fnamch2
+- column: fnamch3
+  mappings:
+  - field: fnamch3
+    clean: :itself
+- column: fnamchx
+  mappings:
+  - field: fnamchx_1
+    clean: :itself
+- column: gestatn
+  mappings:
+  - field: gestatn
+- column: icd10pv_1
+  mappings:
+  - field: icdpv_1
+- column: icd10pv_2
+  mappings:
+  - field: icdpv_2
+- column: icd10pv_3
+  mappings:
+  - field: icdpv_3
+- column: icd10pv_4
+  mappings:
+  - field: icdpv_4
+- column: icd10pv_5
+  mappings:
+  - field: icdpv_5
+- column: icd10pv_6
+  mappings:
+  - field: icdpv_6
+- column: icd10pv_7
+  mappings:
+  - field: icdpv_7
+- column: icd10pv_8
+  mappings:
+  - field: icdpv_8
+- column: icd10pv_9
+  mappings:
+  - field: icdpv_9
+- column: icd10pv_10
+  mappings:
+  - field: icdpv_10
+- column: icd10pv_11
+  mappings:
+  - field: icdpv_11
+- column: icd10pv_12
+  mappings:
+  - field: icdpv_12
+- column: icd10pv_13
+  mappings:
+  - field: icdpv_13
+- column: icd10pv_14
+  mappings:
+  - field: icdpv_14
+- column: icd10pv_15
+  mappings:
+  - field: icdpv_15
+- column: icd10pv_16
+  mappings:
+  - field: icdpv_16
+- column: icd10pv_17
+  mappings:
+  - field: icdpv_17
+- column: icd10pv_18
+  mappings:
+  - field: icdpv_18
+- column: icd10pv_19
+  mappings:
+  - field: icdpv_19
+- column: icd10pv_20
+  mappings:
+  - field: icdpv_20
+- column: icd10pvf_1
+  mappings:
+  - field: icdpvf_1
+- column: icd10pvf_2
+  mappings:
+  - field: icdpvf_2
+- column: icd10pvf_3
+  mappings:
+  - field: icdpvf_3
+- column: icd10pvf_4
+  mappings:
+  - field: icdpvf_4
+- column: icd10pvf_5
+  mappings:
+  - field: icdpvf_5
+- column: icd10pvf_6
+  mappings:
+  - field: icdpvf_6
+- column: icd10pvf_7
+  mappings:
+  - field: icdpvf_7
+- column: icd10pvf_8
+  mappings:
+  - field: icdpvf_8
+- column: icd10pvf_9
+  mappings:
+  - field: icdpvf_9
+- column: icd10pvf_10
+  mappings:
+  - field: icdpvf_10
+- column: icd10pvf_11
+  mappings:
+  - field: icdpvf_11
+- column: icd10pvf_12
+  mappings:
+  - field: icdpvf_12
+- column: icd10pvf_13
+  mappings:
+  - field: icdpvf_13
+- column: icd10pvf_14
+  mappings:
+  - field: icdpvf_14
+- column: icd10pvf_15
+  mappings:
+  - field: icdpvf_15
+- column: icd10pvf_16
+  mappings:
+  - field: icdpvf_16
+- column: icd10pvf_17
+  mappings:
+  - field: icdpvf_17
+- column: icd10pvf_18
+  mappings:
+  - field: icdpvf_18
+- column: icd10pvf_19
+  mappings:
+  - field: icdpvf_19
+- column: icd10pvf_20
+  mappings:
+  - field: icdpvf_20
+- column: nhsno
+  mappings:
+  - field: nhsno
+- column: sex
+  mappings:
+  - field: sex
+    replace:
+    # Early LEDR birth extracts from 2018-02 until 2018-06 incorrectly had text in the sex column
+    - ? !ruby/regexp /\AMale\z/
+      : '1'
+    - ? !ruby/regexp /\AFemale\z/
+      : '2'
+    - ? !ruby/regexp /\AIndeterminate\z/
+      : '3'
+- column: snamch
+  mappings:
+  - field: snamch
+- column: cod10r_1
+  mappings:
+  - field: cod10r_1
+- column: cod10r_2
+  mappings:
+  - field: cod10r_2
+- column: cod10r_3
+  mappings:
+  - field: cod10r_3
+- column: cod10r_4
+  mappings:
+  - field: cod10r_4
+- column: cod10r_5
+  mappings:
+  - field: cod10r_5
+- column: cod10r_6
+  mappings:
+  - field: cod10r_6
+- column: cod10r_7
+  mappings:
+  - field: cod10r_7
+- column: cod10r_8
+  mappings:
+  - field: cod10r_8
+- column: cod10r_9
+  mappings:
+  - field: cod10r_9
+- column: cod10r_10
+  mappings:
+  - field: cod10r_10
+- column: cod10r_11
+  mappings:
+  - field: cod10r_11
+- column: cod10r_12
+  mappings:
+  - field: cod10r_12
+- column: cod10r_13
+  mappings:
+  - field: cod10r_13
+- column: cod10r_14
+  mappings:
+  - field: cod10r_14
+- column: cod10r_15
+  mappings:
+  - field: cod10r_15
+- column: cod10r_16
+  mappings:
+  - field: cod10r_16
+- column: cod10r_17
+  mappings:
+  - field: cod10r_17
+- column: cod10r_18
+  mappings:
+  - field: cod10r_18
+- column: cod10r_19
+  mappings:
+  - field: cod10r_19
+- column: cod10r_20
+  mappings:
+  - field: cod10r_20
+- column: codfft_1
+  mappings:
+  - field: codfft_1
+    clean: :itself
+- column: codfft_2
+  mappings:
+  - field: codfft_2
+    clean: :itself
+- column: codfft_3
+  mappings:
+  - field: codfft_3
+    clean: :itself
+- column: codfft_4
+  mappings:
+  - field: codfft_4
+    clean: :itself
+- column: codfft_5
+  mappings:
+  - field: codfft_5
+    clean: :itself
+- column: deathlab
+  mappings:
+  - field: deathlab
+- column: wigwo10
+  mappings:
+  - field: wigwo10
+- column: addrmt
+  mappings:
+  - field: addrmt
+    clean: :itself
+- column: agebf
+  mappings:
+  - field: agebf
+- column: agebm
+  mappings:
+  - field: agebm
+- column: agemf
+  mappings:
+  - field: agemf
+- column: agemm
+  mappings:
+  - field: agemm
+- column: bthimar
+  mappings:
+  - field: bthimar
+- column: ccgrm
+  mappings:
+  - field: ccgrm
+- column: ctrypobf
+  mappings:
+  - field: ctrypobf
+- column: ctrypobm
+  mappings:
+  - field: ctrypobm
+- column: ctydrm
+  mappings:
+  - field: ctydrm
+- column: ctyrm
+  mappings:
+  - field: ctyrm
+- column: dobm
+  mappings:
+  - field: dobm
+- column: durmar
+  mappings:
+  - field: durmar
+- column: empsecf
+  mappings:
+  - field: empsecf
+- column: empsecm
+  mappings:
+  - field: empsecm
+- column: empstf
+  mappings:
+  - field: empstf
+- column: empstm
+  mappings:
+  - field: empstm
+- column: fnamf
+  mappings:
+  - field: fnamf_1
+- column: fnamfx
+  mappings:
+  - field: fnamfx_1
+- column: fnamm
+  mappings:
+  - field: fnamm_1
+- column: fnammx
+  mappings:
+  - field: fnammx_1
+- column: gorrm
+  mappings:
+  - field: gorrm
+- column: hautrm
+  mappings:
+  - field: hautrm
+- column: hrorm
+  mappings:
+  - field: hrorm
+- column: loarm
+  mappings:
+  - field: loarm
+- column: lsoarm
+  mappings:
+  - field: lsoarm
+- column: namemaid
+  mappings:
+  - field: namemaid
+    clean: :itself
+- column: pcdrm
+  mappings:
+  - field: pcdrm
+- column: seccatf
+  mappings:
+  - field: seccatf
+- column: seccatm
+  mappings:
+  - field: seccatm
+- column: snamf
+  mappings:
+  - field: snamf
+- column: snamm
+  mappings:
+  - field: snamm
+    clean: :itself
+- column: snammcf
+  mappings:
+  - field: snammcf
+- column: soc2kf
+  mappings:
+  - field: soc2kf
+- column: soc2km
+  mappings:
+  - field: soc2km
+- column: soc90f
+  mappings:
+  - field: soc90f
+- column: soc90m
+  mappings:
+  - field: soc90m
+- column: stregrm
+  mappings:
+  - field: stregrm
+- column: wardrm
+  mappings:
+  - field: wardrm
+- column: mattab
+  mappings:
+  - field: mattab
+- column: ccg9pob
+  mappings:
+  - field: ccg9pob
+- column: ccg9rm
+  mappings:
+  - field: ccg9rm
+- column: gor9rm
+  mappings:
+  - field: gor9rm
+- column: ward9rm
+  mappings:
+  - field: ward9m

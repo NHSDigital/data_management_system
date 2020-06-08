@@ -1,0 +1,3 @@
+<% @dataset_version ||= @node.dataset_version %>
+<% @dataset_version_invalid_nodes = @dataset_version.send(:invalid_nodes_for_schema_build) %>
+window.location.reload();

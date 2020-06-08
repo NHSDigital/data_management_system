@@ -1,0 +1,5 @@
+<h1>Editing <%= @dataset.name %></h1>
+
+<%= bootstrap_form_for @dataset, horizontal: 2 do |form| %>
+  <%= render 'form', { form: form} %>
+<% end %>

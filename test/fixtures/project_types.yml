@@ -1,0 +1,11 @@
+dummy:
+  name: Dummy
+
+project:
+  name: Project
+
+eoi:
+  name: EOI
+
+application:
+  name: Application

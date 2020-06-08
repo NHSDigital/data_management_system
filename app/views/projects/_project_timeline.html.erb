@@ -1,0 +1,31 @@
+<%
+  project_states = project.project_states.
+                    accessible_by(current_user.current_ability).
+                    includes(:state, :user).
+                    order(created_at: :desc)
+%>
+
+<div class="tab-pane" id="timeline">
+  <div class="panel panel-default" style="border-top: 0px;">
+    <div class="panel-heading" style="font-size: 1.5em;">
+      Status Updates
+    </div>
+  </div>
+
+  <table class="table table-condensed">
+    <thead></thead>
+    <tbody>
+      <% project_states.each do |project_state| %>
+        <tr>
+          <td><%= project_state.created_at.to_s(:long) %></td>
+          <td><%= project_state.user&.full_name || 'System' %></td>
+          <td>
+            <div class="pull-right">
+              <%= project_status_label(project, project_state.state) %>
+            </div>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

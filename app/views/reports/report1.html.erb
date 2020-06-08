@@ -1,0 +1,49 @@
+<%= bootstrap_panel_tag panel_heading_segments(
+  left: content_tag(:h4) { 'Report 1 (summary view)' },
+  right: (link_to('CSV', report1_path(format: 'csv'), class: 'btn btn-primary'))
+) do %>
+<% end %>
+    <table class="table table-hover" style="max-width: none;">
+      <thead>
+        <tr>
+          <th>Team</th>
+          <th>Division</th>
+          <!--<th>Head of Profession</th>
+          <th>Delegate Approver</th>-->
+          <th>Project Tile</th>
+          <!--<th>Project Summary</th> -->
+          <th>Status</th>
+          <th>Start Date</th>
+          <th>End Date</th>
+          <!--<th>Frequency</th>
+          <th>Senior Member</th>
+          <th>Members</th>
+          <th>Data User</th> -->
+          <th>End uses</th>
+          <th>Data Source</th>
+          <!--<th>Data Items</th>-->
+        </tr>
+      </thead>
+      <tbody>
+        <% @projects.each do |p| %>
+          <tr>
+            <td><%= p[:team] %></td>
+            <td><%= p[:division] %></td>
+            <!--<td><%# p[:head_of_profession] %></td>
+            <td><%# p[:delegate_approver] %></td>-->
+            <td><%= p[:title] %></td>
+            <!--<td><%# p[:summary] %></td>-->
+            <td><%= p[:status] %></td>
+            <td><%= p[:start_date] %></td>
+            <td><%= p[:end_date] %> </td>
+            <!--<td><%# p[:frequency] %></td>
+            <td><%# p[:senior_member] %></td>
+            <td><%#raw p[:members].join('</br>')%></td>
+            <td><%#raw p[:data_users].join('</br>')%></td>-->
+            <td><%= p[:end_uses].join(';') %></td>
+            <td><%= p[:data_source] %></td>
+            <!--<td><%#raw p[:data_items].join('</br>')%></td>-->
+          </tr>
+        <% end %>
+      </tbody>
+    </table

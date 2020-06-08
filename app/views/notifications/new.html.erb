@@ -1,0 +1,20 @@
+<%= bootstrap_form_for @notification, horizontal: 2 do |form| %>
+  <div class="row">
+    <div class=" col-md-12">
+        <div class="panel-footer">
+          <%= bootstrap_form_for @notification, horizontal: 2 do |form| %>
+            <%= form.control_group :body, 'Message' do %>
+              <%= form.text_area :body %>
+            <% end %>
+            <%= form.control_group nil do %>
+              <div class='pull-right'>
+                <%= cancel_submit @notification %>
+              </div>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
+

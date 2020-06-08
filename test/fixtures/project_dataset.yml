@@ -1,0 +1,45 @@
+approved_project_dataset_one:
+  project: approved_project
+  dataset_id: 81
+  terms_accepted: true
+
+pending_delegate_project_dataset_one:
+  project: pending_delegate_project
+  dataset_id: 79
+  terms_accepted: true
+
+pending_project_dataset_one:
+  project: pending_project
+  dataset_id: 79
+  terms_accepted: true
+
+one_dataset_one:
+  project: one
+  dataset_id: 81
+  terms_accepted: true
+
+two_dataset_one:
+  project: two
+  dataset_id: 80
+  terms_accepted: true
+
+new_project_dataset_one:
+  project: new_project
+  dataset_id: 79
+  terms_accepted: true
+
+rejected_project_dataset_one:
+  project: rejected_project
+  dataset_id: 79
+  terms_accepted: true
+
+deleted_project_dataset_one:
+  project: deleted_project
+  dataset_id: 79
+  terms_accepted: true
+
+new_delegate_project_dataset_one:
+  project: new_delegate_project
+  dataset_id: 79
+  terms_accepted: true
+  

@@ -1,0 +1,11 @@
+<%= bootstrap_form_for @directorate, horizontal: 2, readonly: @readonly do |form| %>
+  <%= form.control_group :name, 'Name' do %>
+    <%= form.text_field :name %>
+  <% end %>
+  <%= form.control_group nil do %>
+    <div class='pull-right'>
+      <%= close_modal %>
+      <%= submit_tag('Save', class: 'btn btn-primary', disable_with: 'Saving&hellip;'.html_safe) %>
+    </div>
+  <% end %>
+<% end %>

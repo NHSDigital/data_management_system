@@ -1,0 +1,13 @@
+<%
+  parent = project.parent if project.parent && current_user.can?(:read, project.parent)
+%>
+
+<div class="tab-pane" id="related">
+  <div class="panel panel-default" style="border-top: 0px;">
+    <div class="panel-heading" style="font-size: 1.5em;">
+      Related Projects
+    </div>
+  </div>
+
+  <%= render 'heirarchy', context: project, parent: parent, project: parent || project %>
+</div>

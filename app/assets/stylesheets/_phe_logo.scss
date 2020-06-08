@@ -1,0 +1,57 @@
+/* Line 9 */
+div, h1, header {
+  vertical-align: baseline;
+}
+
+/* Line 13 */
+#whitehall-wrapper {
+  .logo {
+    display: block;
+    clear: both;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    padding-top: 10px;
+    padding-right: 0px;
+    padding-bottom: 5px;
+    padding-left: 0px;
+    margin-top: 0px;
+  }
+
+  h1 {
+    text-transform: none;
+    padding: 0;
+
+    .organisation-logo {
+      font-family: Helvetica,Arial;
+      font-weight: 400;
+      display: block;
+      position: relative;
+      background-repeat: no-repeat;
+      font-size: 27px;
+      line-height: 30px;
+      padding-top: 0px;
+      padding-right: 0px;
+      padding-bottom: 0px;
+      padding-left: 10px;
+      border-left: 3px solid;
+      border-color: #00AD93;
+
+      span {
+        color: #0b0c0c;
+        display: block;
+        position: relative;
+        top: 5px;
+      }
+    }
+  }
+}
+
+//#whitehall-wrapper {
+//  margin-left: -16px;
+//
+//  h1 {
+//    font-size: 27px;
+//    margin: 0;
+///*      font-style: normal;*/
+//  }
+//}

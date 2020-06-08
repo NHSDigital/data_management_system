@@ -1,0 +1,15 @@
+<tr class='project_data_project_data_end_users_table' id="<%= dom_id(project_data_end_user) %>">
+  <td><%= project_data_end_user.first_name %></td>
+  <td class="text-truncate"><%= project_data_end_user.last_name %></td>
+  <td><%= project_data_end_user.email %></td>
+  <td title='test'><%= project_data_end_user.ts_cs_accepted  ? 'Yes' : 'No' %></td>
+  <td>
+    <% if current_user.can?(:destroy, project_data_end_user) && current_user.can?(:update, @project)%>
+      <div class="pull-right">
+        <%= delete_link(project_data_end_user, method: :delete, remote: true,
+                        data: { confirm: "Are you sure you want to remove ?" },
+                        id: 'delete_project_data_project_data_end_user' )%>
+      </div>
+    <% end %>
+  </td>
+</tr>

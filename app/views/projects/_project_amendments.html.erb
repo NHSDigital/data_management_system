@@ -1,0 +1,40 @@
+<div class="tab-pane" id="amendments">
+  <div class="panel panel-default" style="border-top: 0px;">
+    <div class="panel-heading" style="font-size: 1.5em;">
+      <%= ProjectAmendment.model_name.human.pluralize %>
+    </div>
+  </div>
+
+  <table class="table table-condensed" id="projectAmendments">
+    <thead>
+      <tr>
+        <th><%= ProjectAmendment.human_attribute_name(:requested_at) %></th>
+        <th><%= ProjectAmendment.human_attribute_name(:labels) %></th>
+        <th>
+          <div class="pull-right">
+            <% if can?(:create, ProjectAmendment.new(project: project)) %>
+              <%= link_to_with_icon(icon: 'plus-sign', text: true, title: 'New', path: new_project_project_amendment_path(project), class: 'btn btn-primary btn-xs') %>
+            <% end %>
+          </div>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <% project.project_amendments.accessible_by(current_ability).find_each do |amendment| %>
+        <%= content_tag(:tr, id: dom_id(amendment)) do %>
+          <td><%= amendment.requested_at.to_s(:ui) %></td>
+          <td>
+            <% amendment.labels.each do |label| %>
+              <%= bootstrap_label_tag(:default, label) %>
+            <% end %>
+          </td>
+          <td>
+            <div class="pull-right">
+              <%= inline_controls_for(amendment) %>
+            </div>
+          </td>
+        <% end %>
+      <% end %>
+    </tbody>
+  </table>
+</div>

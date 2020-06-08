@@ -1,0 +1,36 @@
+<!-- <tr class="<%= node.highlighting %>" id="<%= dom_id(node) %>">
+  <td><%= node.annotation %></td>
+  <td><%= node.description %></td>
+  <td><%= node.governance&.value %></td>
+
+  <td>
+    <div class="pull-right">
+      <% if can?(:destroy, node) %>
+        <%= delete_link(node_path(node), method: :delete, remote: true, data: { confirm: "Are you sure you want to remove #{node.name} from #{@dataset_version.name}?" }, skip_authorization: true)%>
+      <% end %>
+      <% if can?(:update, node) %>
+        <%= edit_link edit_node(node), remote: true, skip_authorization: true %>
+      <% end %>
+      <% if can?(:read, node) %>
+        <%= details_link detail_node(node), remote: true, skip_authorization: true %>
+      <% end %>
+    </div>
+  </td>
+</tr> -->
+
+<div class="panel panel-default panel-entity">
+  <div class="panel-heading">
+    <div class="row">
+      <div class="col-md-9">
+        <h3 class="panel-title">
+          <%= node_type_label(node) %> <%= node.name %> <%= node.min_occurs %>..<%= node.max_occurs %>
+        </h3>
+      </div>
+      <div class="col-md-3">
+        <%= new_node_dropdown_button(@dataset_version, node) %>
+      </div>
+    </div>
+  </div>
+  <%= render partial: 'nodes/node_categories', locals: { node: node } if @dataset_version.categories.present? %>
+  <%= render partial: 'dataset_versions/child_nodes_table', locals: { node: node } %>
+</div>

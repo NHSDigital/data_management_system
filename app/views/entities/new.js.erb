@@ -1,0 +1,10 @@
+<%
+  @node ||= @entity
+  html_content = escape_javascript bootstrap_form_for([@dataset_version, @entity],
+    url: dataset_version_entities_path(@dataset_version),
+    remote: true, horizontal: true) { |form| render('form', form: form) }
+%>
+
+jQuery('#modal_title').html('Add a new Entity');
+jQuery('#modal_body').html('<%= html_content %>').parents('.modal').modal('show');
+<%= render "nodes/save" %>

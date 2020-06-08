@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- From TRUD Download pack -->
+<SACT:SACT xsi:schemaLocation="http://www.datadictionary.nhs.uk/messages/SACT-v2-0 ../Schemas/SACTSACT_XMLSchema-v8-1.xsd"
+           xmlns:SACT="http://www.datadictionary.nhs.uk/messages/SACT-v2-0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Record>
+    <DemographicsAndConsultant>
+      <NHSNumber extension="1111111111"/>
+      <NHSNumberStatus code="05"/>
+      <PersonBirthDate>1995-01-01</PersonBirthDate>
+      <!-- This format if using COSD item spec -->
+      <PersonGenderCode code="1"/>
+      <!-- <PersonGenderCode>1</PersonGenderCode> -->
+      <EthnicCategory code="R"/>
+      <!-- <EthnicCategory>R</EthnicCategory> -->
+      <!-- This format if using COSD item spec -->
+      <PostCode>AB1 3CD</PostCode>
+      <!-- <PostCode>LS1 5HY</PostCode> -->
+      <GPPracticeCodeRegistration>4RT</GPPracticeCodeRegistration>
+      <ConsultantCode extension="12345678"/>
+      <StartCareProfessionalMainSpecialityCode>LYT</StartCareProfessionalMainSpecialityCode>
+      <OrgCodeOfProvider extension="6TY"/>
+      <!-- <ConsultantCode>12345678</ConsultantCode> -->
+      <!-- <OrgCodeOfProvider>6TY</OrgCodeOfProvider> -->
+    </DemographicsAndConsultant>
+    <ProgrammeAndRegimen>
+      <!-- <SACTProgrammeNumber>23</SACTProgrammeNumber>
+      <ACRegimenNumber>67</ACRegimenNumber> -->
+      <SACTProgrammeNumber value="23"/>
+      <ACRegimenNumber value="67"/>
+      <DrugTreatmentIntent code="P"/>
+      <DrugRegimenAcronym>ABC</DrugRegimenAcronym>
+      <PersonHeight value="1.70"/>
+      <PersonWeight value="150.123"/>
+      <!-- This format if using COSD item spec -->
+      <PerformanceStatusAdult code="2"/>
+      <!-- <PerformanceStatusAdult>2</PerformanceStatusAdult> -->
+      <CoMorbidityAdjustmentIndicator code="N"/>
+      <DecisionToTreatDate>2013-06-01</DecisionToTreatDate>
+      <StartDateACDrugRegimen>2013-06-01</StartDateACDrugRegimen>
+      <ClinicalTrialIndicator code="01"/>
+      <ChemoRadiationIndicator code="N"/>
+      <!-- <NumberPlannedSACTCycles>0</NumberPlannedSACTCycles> -->
+      <NumberPlannedSACTCycles value="0"/>
+    </ProgrammeAndRegimen>
+    <Cycle>
+      <ACDrugCycleId value="0"/>
+      <!-- <ACDrugCycleId>0</ACDrugCycleId> -->
+      <CycleStartDate>2013-06-01</CycleStartDate>
+      <PersonWeight value="150.123"/>
+      <!-- This format if using COSD item spec -->
+      <PerformanceStatusAdult code="2"/>
+      <!-- <PerformanceStatusAdult>2</PerformanceStatusAdult> -->
+      <PrimaryProcedure code="0000"/>
+    </Cycle>
+    <ClinicalStatus>
+      <!-- <StartPrimaryDiagnosis>0000</StartPrimaryDiagnosis> -->
+      <!-- <StartMorphology>00000</StartMorphology> -->
+      <StartPrimaryDiagnosis code="0000"/>
+      <StartMorphology code="00000"/>
+      <FinalTNMCategory>L</FinalTNMCategory>
+    </ClinicalStatus>
+    <DrugDetails>
+      <SACTDrugName>ABCDE</SACTDrugName>
+      <ChemoActualDose value="3"/>
+      <SACTDrugRouteOfAdmin code="08"/>
+      <SACTAdminDate>2013-06-01</SACTAdminDate>
+      <OrgCodeOfProvider extension="6TY"/>
+      <PrimaryProcedure code="0000"/>
+    </DrugDetails>
+    <Outcome>
+      <FinalSACTStartDate>2013-06-01</FinalSACTStartDate>
+      <SACTRegimenModIndicatorDoseReduction code="Y"/>
+      <SACTRegimenModIndicatorTimeDelay code="Y"/>
+      <SACTRegimenModIndicatorDaysReduced code="N"/>
+      <PlannedTreatmentChangeReason code="0"/>
+      <PersonDeathDate>2013-07-01</PersonDeathDate>
+    </Outcome>
+  </Record>
+</SACT:SACT>

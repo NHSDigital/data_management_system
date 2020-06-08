@@ -1,0 +1,3 @@
+jQuery('#modal').modal('hide');
+jQuery('#<%= dom_id(@data_item.parent_node) %>_child_node_table').replaceWith('<%= escape_javascript(render 'nodes/child_nodes_table', node: @data_item.parent_node) %>');
+jQuery('#<%= dom_id(@data_item.parent_node) %>_child_nodes').collapse('show')

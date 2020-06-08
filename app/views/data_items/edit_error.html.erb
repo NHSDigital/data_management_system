@@ -1,0 +1,4 @@
+<h1>Editing <%= @data_item.name %></h1>
+<%= bootstrap_form_for @data_item, url: data_item_path(@data_item), horizontal: 2 do |form| %>
+  <%= render 'form', { form: form, url: dataset_version_data_items_path(@data_item) } %>
+<% end %>

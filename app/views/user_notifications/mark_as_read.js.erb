@@ -1,0 +1,9 @@
+$('#notification_<%= @un.notification_id.to_s %>').removeClass();
+$('#notification_<%= @un.notification_id.to_s %>_details').collapse();
+$('#notification_<%=@un.id.to_s%>_link').replaceWith('<a href="#" class="more_or_less">less</a>');
+$('.more_or_less').click(function(){
+    $(this).text(function(i,old){
+        return old=='more' ?  'less' : 'more';
+    });
+  });
+

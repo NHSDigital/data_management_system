@@ -1,0 +1,16 @@
+<%
+  @project ||= @project_node.project # shallow routing means this may not have been set
+%>
+<% @project.project_nodes.each do |item| %>
+  $('#<%= "project_node_#{item.id}"%>').html("<%= escape_javascript(render partial: 'project_node_approvals', locals: { data_item: item } ) %>");
+<% end %>
+
+$('#data_item_approval_status').html("<%= escape_javascript approval_button_message(@project.data_items_approved) %>");
+$('#data_item_approval_status').removeClass().addClass('label label-<%= approval_button_style(@project.data_items_approved) %>');
+
+$('#all_approvals_answered').html("<%= escape_javascript approval_button_message(@project.can_submit_approvals) %>");
+$('#all_approvals_answered').removeClass().addClass('label label-<%= escape_javascript approval_button_style(@project.can_submit_approvals)%>');
+
+$('#save_and_submit_approvals_button').removeClass().addClass('btn btn-success <%= 'disabled' if @project.can_submit_approvals.nil? %>');
+
+jQuery('#transition_controls').html("<%= escape_javascript render('projects/transition_controls', project: @project) %>")

@@ -1,0 +1,12 @@
+<%= bootstrap_form_for [@project, @project_membership], horizontal: 2 do |form| %>
+  <%= form.control_group :membership_id, 'Member' do %>
+    <%= form.select :membership_id, @project.team_memberships_not_in_project.collect {|m| [ m.member_full_name, m.id ] }, { include_blank: @project.project_membership_prompt }, disabled: @project.disable_project_membership_dropdown? %>
+  <% end %>
+
+  <%= form.control_group nil do %>
+    <div class="pull-right">
+      <%= close_modal %>
+      <%= submit_tag('Save', class: 'btn btn-primary', disable_with: 'Saving&hellip;'.html_safe) %>
+    </div>
+  <% end %>
+<% end %>

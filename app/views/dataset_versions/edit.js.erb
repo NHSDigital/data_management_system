@@ -1,0 +1,6 @@
+<%
+  html_content = escape_javascript bootstrap_form_for(@dataset_version, remote: true, horizontal: 2) { |form| render('form', form: form) }
+%>
+
+jQuery('#modal_title').html("Editing Dataset Version: <%= @dataset_version.semver_version %>");
+jQuery('#modal_body').html('<%= html_content %>').parents('.modal').modal('show');

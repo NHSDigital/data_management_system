@@ -1,0 +1,46 @@
+<div id="modal-<%= state.id.downcase %>" class="modal fade">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <%= form_with(model: project, url: transition_project_path(project, state: state.id), method: :patch, local: false) do |form| %>
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h4 class="modal-title"><%= state.name %></h4>
+        </div>
+        <div class="modal-body">
+          <% if state.id == 'REJECTED' && current_user.application_manager? && project.eoi? %>
+            <div class="form-group">
+              <%= form.label :closure_reason_id, 'Closure Reason' %>
+              <%= form.collection_select(:closure_reason_id, Lookups::ClosureReason.rejectable, :id, :value, {}, class: 'form-control') %>
+            </div>
+          <% end %>
+
+          <% if state.id.in? %w[DPIA_REVIEW DPIA_REJECTED CONTRACT_REJECTED] %>
+            <%= form.label :assigned_user_id, 'Application Manager' %>
+            <%= form.collection_select :assigned_user_id, User.application_managers.in_use - [current_user], :id, :full_name, class: 'form-control' %>
+          <% elsif state.id == 'DPIA_MODERATION' %>
+            <%= form.label :assigned_user_id, 'Approving Manager' %>
+            <%= form.collection_select :assigned_user_id, User.senior_application_managers.in_use - [current_user], :id, :full_name, class: 'form-control' %>
+          <% end %>
+
+          <% unless state.id.in? %w[DPIA_REVIEW] %>
+            <%= form.fields_for(:project_comments, project.project_comments.build(user: current_user)) do |comment_form| %>
+              <%= comment_form.hidden_field :user_id %>
+              <div class="form-group">
+                <%= comment_form.label :comment, 'Comment' %>
+                <%= comment_form.text_area(:comment, class: 'form-control', rows: 8) %>
+              </div>
+            <% end %>
+          <% end %>
+        </div>
+        <div class="modal-footer">
+          <div class="pull-right">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            <%= form.submit 'Save', class: 'btn btn-primary' %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

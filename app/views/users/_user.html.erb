@@ -1,0 +1,19 @@
+<%= bootstrap_panel_tag panel_heading_segments(
+  center: content_tag(:h4) do %>
+      <%= "#{@user.first_name} #{@user.last_name}" %>
+      <br>
+  <% end
+) do %>
+<% end %>
+
+<ul class="nav nav-tabs">
+  <%= tab_to(t('user.details'), @user) %>   
+  <%= tab_to('Teams', user_teams_path(@user), count: @user.teams.count) %>
+  <%= tab_to('Projects', user_projects_path(@user), count: projects_for_user.count) %>
+  <%= tab_to('Roles', user_grants_path(@user), count: @user.grants.count) %>
+</ul>
+
+<br>
+
+
+<%= yield %>

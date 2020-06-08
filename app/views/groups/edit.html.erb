@@ -1,0 +1,4 @@
+<h1>Editing <%= @group.name %></h1>
+<%= bootstrap_form_for @group, url: group_path(@group), horizontal: 2 do |form| %>
+  <%= render 'form', { form: form, url: dataset_version_groups_path(@group) } %>
+<% end %>

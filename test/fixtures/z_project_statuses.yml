@@ -1,0 +1,25 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+pending:
+  name: Pending
+
+delegate_approval:
+  name: Delegate Approval
+
+active:
+  name: Active
+
+approved:
+  name: Approved
+
+new:
+  name: New
+
+rejected:
+  name: Rejected
+
+deleted:
+  name: Deleted
+
+expired:
+  name: Expired

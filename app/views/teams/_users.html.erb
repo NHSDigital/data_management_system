@@ -1,0 +1,24 @@
+<table class="table table-hover" id="memberships-table">
+  <tbody>
+    <% @team.users.find_each do |user| %>
+      <%= content_tag :tr, id: dom_id(user) do %>
+        <td style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 20vw;">
+          <%= content_tag :span, user.full_name, title: user.full_name %>
+        </td>
+        <td>
+          <div class="pull-right">
+            <div class="btn-toolbar">
+              <div class="btn-group">
+                <!-- TODO: scope grants for delegates -->
+                <%= content_tag :span, 'Delegate', class: 'label label-default' if @team.delegate_users.include?(user) %>
+              </div>
+              <div class="btn-group">
+                <%= details_link(user) %>
+              </div>
+            </div>
+          </div>
+        </td>
+      <% end %>
+    <% end %>
+  </tbody>
+</table>

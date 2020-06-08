@@ -1,0 +1,7 @@
+$("ul.errors").html("")
+<% if @node.errors.any? %>
+  <% @node.errors.full_messages.each do |message| %>
+    $("ul.errors").append($("<li />").html("<%= message.html_safe %>"))
+  <% end %>
+<% end %>
+

@@ -1,0 +1,26 @@
+development:
+  :address: smtp.live.com
+  :port: 587
+  :domain: example.com
+  :user_name: test@test.com 
+  :password: xxxxxxx
+  :authentication: plain
+  :enable_starttls_auto: true
+
+test:
+  :address: send.nhs.net
+  :port: 587
+  :domain: nhs.uk
+  :user_name: test@nhs.net
+  :password: GOES_HERE
+  :authentication: :login
+  :enable_starttls_auto: true
+
+production:
+  :address: send.nhs.net
+  :port: 587
+  :domain: nhs.uk
+  :user_name: GOES_HERE
+  :password: GOES_HERE
+  :authentication: :login
+  :enable_starttls_auto: true

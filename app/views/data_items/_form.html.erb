@@ -1,0 +1,16 @@
+<% readonly ||= false %>
+<%= bootstrap_form_for([@dataset_version, @data_item], url: dataset_version_data_items_path(@dataset_version, @data_item), horizontal: true) do |form| %>
+  <%= form.hidden_field :id, value: @data_item.id %>
+  <%= form.hidden_field :parent_id, value: @data_item.parent_id %>
+  <%= render 'fields', f: form, readonly: readonly unless @dataset_version.dataset.dataset_type_name == 'table_specification'%>
+  <%= render 'table_spec_fields', f: form, readonly: readonly if @dataset_version.dataset.dataset_type_name == 'table_specification' %>
+  <% unless readonly %>
+    <%= button_control_group nil do %>
+      <div class='pull-right'>
+        <%= close_modal %>
+        <%= submit_tag('Save', class: 'btn btn-primary', disable_with: 'Saving&hellip;'.html_safe) %>
+      </div>
+    <% end %>
+  <% end %>
+  <ul class="errors"></ul>
+<% end %>

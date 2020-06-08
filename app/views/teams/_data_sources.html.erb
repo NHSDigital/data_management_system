@@ -1,0 +1,40 @@
+<div class="col-md-6" id="datasources-panel">
+  <%= bootstrap_panel_tag(capture { %>
+    <% if can?(:create, TeamDataset.new(team: @team)) %>
+      <div class="pull-right">
+        <%= link_to(bootstrap_icon_tag('plus') + ' Add', new_team_team_dataset_url(@team.id), remote: true, class: "btn btn-primary btn-xs") if @readonly %>
+      </div>
+    <% end %>
+    <h3 class="panel-title clearfix">Data Sources</h3>
+  <% }) do %>
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Title</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @team.team_datasets.each do |team_dataset| %>
+          <tr class="" id="<%= dom_id(team_dataset) %>">
+            <% if @readonly %>
+              <td><%= link_to "#{team_dataset.dataset.name}", data_source_path(team_dataset.dataset) %></td>
+            <% else %>
+              <td><%= team_dataset.dataset.name %></td>
+            <% end %>
+            <td>
+              <% if @readonly %>
+                <% if can?(:destroy, team_dataset) %>
+                  <div class="pull-right">
+                    <%= delete_link(team_dataset, method: :delete, remote: true, data: { confirm: "Are you sure you want to remove #{team_data_source.data_source_name} from #{team_data_source.team_name}?" } )%>
+                  </div>
+                <% end %>
+              <% end %>
+              <%= team_dataset.dataset.full_name %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% end %>
+</div>

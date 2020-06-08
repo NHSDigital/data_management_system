@@ -1,0 +1,13 @@
+<% if can?(:approve, @project) %>
+  <% if project.members_approved.nil? %>
+      <%= link_to 'Approve', approve_project_members_project_path(:id => project.id, "project[members_approved]" => true), method: :patch, remote: true, class: 'btn btn-success btn-sm' %>
+      <%= link_to ' Decline', new_project_project_comment_path(@project, comment_type: 'MemberRejection'), remote: true, class: 'btn btn-danger btn-sm' %>
+  <% else %>
+    <%= link_to 'X', approve_project_members_project_path(:id => project.id, "project[members_approved]" => ''), method: :patch, remote: true, class: 'btn btn-default btn-xs', title: 'Undo', rel: 'tooltip', "data-placement" => "left" %>
+    <span id="members_approval_status" class="label label-<%= approval_button_style(@project.members_approved) %>"><%= approval_button_message(@project.members_approved) %></span>
+  <% end %>
+<% end %>
+
+<script type="text/javascript">
+  jQuery('a').tooltip();
+</script>

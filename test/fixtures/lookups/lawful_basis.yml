@@ -1,0 +1,189 @@
+# Created by `bin/rails lookup:create_fixture[LawfulBasis]` at 2019-11-07 09:47:34 UTC
+---
+6.1a:
+  id: 6.1a
+  value: Art. 6.1(a) the data subject has given consent to the processing of his or
+    her personal data for one or more specific purposes.
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &1 2019-01-23 10:11:01.180918000 Z
+    zone: &2 !ruby/object:ActiveSupport::TimeZone
+      name: Etc/UTC
+    time: *1
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &3 2019-01-23 10:11:01.180918000 Z
+    zone: *2
+    time: *3
+6.1b:
+  id: 6.1b
+  value: Art. 6.1(b) processing is necessary for the performance of a contract to
+    which the data subject is party or in order to take steps at the request of the
+    data subject prior to entering into a contract
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &4 2019-01-23 10:11:01.189689000 Z
+    zone: *2
+    time: *4
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &5 2019-01-23 10:11:01.189689000 Z
+    zone: *2
+    time: *5
+6.1c:
+  id: 6.1c
+  value: Art. 6.1(c) processing is necessary for compliance with a legal obligation
+    to which the controller is subject
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &6 2019-01-23 10:11:01.193708000 Z
+    zone: *2
+    time: *6
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &7 2019-01-23 10:11:01.193708000 Z
+    zone: *2
+    time: *7
+6.1d:
+  id: 6.1d
+  value: Art. 6.1(d) processing is necessary in order to protect the vital interests
+    of the data subject or of another natural person
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &8 2019-01-23 10:11:01.199809000 Z
+    zone: *2
+    time: *8
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &9 2019-01-23 10:11:01.199809000 Z
+    zone: *2
+    time: *9
+6.1e:
+  id: 6.1e
+  value: Art. 6.1(e) processing is necessary for the performance of a task carried
+    out in the public interest or in the exercise of official authority vested in
+    the controller
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &10 2019-01-23 10:11:01.204548000 Z
+    zone: *2
+    time: *10
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &11 2019-01-23 10:11:01.204548000 Z
+    zone: *2
+    time: *11
+6.1f:
+  id: 6.1f
+  value: Art. 6.1(f) processing is necessary for the purposes of the legitimate interests
+    pursued by the controller or by a third party
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &12 2019-01-23 10:11:01.211403000 Z
+    zone: *2
+    time: *12
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &13 2019-01-23 10:11:01.211403000 Z
+    zone: *2
+    time: *13
+9.2a:
+  id: 9.2a
+  value: Art. 9.2(a) The data subject has given explicit consent.
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &14 2019-01-23 10:11:01.214424000 Z
+    zone: *2
+    time: *14
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &15 2019-01-23 10:11:01.214424000 Z
+    zone: *2
+    time: *15
+9.2b:
+  id: 9.2b
+  value: Art. 9.2(b) The processing is necessary in the context of employment law,
+    or laws relating to social security and social protection.
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &16 2019-01-23 10:11:01.216866000 Z
+    zone: *2
+    time: *16
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &17 2019-01-23 10:11:01.216866000 Z
+    zone: *2
+    time: *17
+9.2c:
+  id: 9.2c
+  value: Art. 9.2(c) The processing is necessary to protect vital interests of the
+    data subject (or another person) here the data subject is ncapable of giving consent.
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &18 2019-01-23 10:11:01.230563000 Z
+    zone: *2
+    time: *18
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &19 2019-01-23 10:11:01.230563000 Z
+    zone: *2
+    time: *19
+9.2d:
+  id: 9.2d
+  value: Art. 9.2(d) The processing is carried out in the course of the legitimate
+    activities of a charity or not-for-profit body, with respect to its own members,
+    former members, or persons with whom it has regular contact in connection with
+    its purposes
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &20 2019-01-23 10:11:01.243683000 Z
+    zone: *2
+    time: *20
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &21 2019-01-23 10:11:01.243683000 Z
+    zone: *2
+    time: *21
+9.2e:
+  id: 9.2e
+  value: Art. 9.2(e) The processing relates to personal data which have been manifestly
+    made public by the data subject.
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &22 2019-01-23 10:11:01.250408000 Z
+    zone: *2
+    time: *22
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &23 2019-01-23 10:11:01.250408000 Z
+    zone: *2
+    time: *23
+9.2f:
+  id: 9.2f
+  value: Art. 9.2(f) The processing is necessary for the establishment, exercise or
+    defence of legal claims, or for courts acting in their judicial capacity.
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &24 2019-01-23 10:11:01.254826000 Z
+    zone: *2
+    time: *24
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &25 2019-01-23 10:11:01.254826000 Z
+    zone: *2
+    time: *25
+9.2h:
+  id: 9.2h
+  value: Art. 9.2(h) The processing is required for the purpose of medical treatment
+    undertaken by health professionals, including assessing the working capacity of
+    employees and the management of health or social care systems and services.
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &26 2019-01-23 10:11:01.260535000 Z
+    zone: *2
+    time: *26
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &27 2019-01-23 10:11:01.260535000 Z
+    zone: *2
+    time: *27
+9.2i:
+  id: 9.2i
+  value: Art. 9.2(i) The processing is necessary for reasons of public interest in
+    the area of public health (e.g., ensuring the safety of medicinal products).
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &28 2019-01-23 10:11:01.266507000 Z
+    zone: *2
+    time: *28
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &29 2019-01-23 10:11:01.266507000 Z
+    zone: *2
+    time: *29
+9.2j:
+  id: 9.2j
+  value: Art. 9.2(j) The processing is necessary for archiving purposes in the public
+    interest, for historical, scientific, research or statistical purposes, subject
+    to appropriate safeguards.
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &30 2019-01-23 10:11:01.273605000 Z
+    zone: *2
+    time: *30
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &31 2019-01-23 10:11:01.273605000 Z
+    zone: *2
+    time: *31
+

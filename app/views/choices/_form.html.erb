@@ -1,0 +1,47 @@
+<% readonly ||= false %>
+<%= bootstrap_form_for([@dataset_version, @choice], url: dataset_version_data_items_path(@dataset_version, @choice), horizontal: true) do |form| %>
+  <%= form.hidden_field :id, value: @choice.id %>
+  <%= form.hidden_field :parent_id, value: @choice.parent_id %>
+  <!-- TODO: sort -->
+  <%= form.hidden_field :sort, value: 0 %>
+  <%= form.hidden_field :dataset_version_id, value: @dataset_version.id %>
+  <%= form.control_group :name, 'Name' do %>
+    <%= form.text_field :name %>
+  <% end %>
+  <%= form.control_group :min_occurs, 'Min Occurs' do %>
+    <%= form.number_field :min_occurs %>
+  <% end %>
+  <%= form.control_group :max_occurs, 'Max Occurs' do %>
+    <%= form.number_field :max_occurs %>
+  <% end %>
+  <%= form.control_group :choice_type, 'Choice Type' do %>
+    <%= form.collection_select :choice_type_id, ChoiceType.all, :id, :name %>
+  <% end %>
+  <%= form.control_group :child_nodes, 'Choices' do %>
+    <%= form.fields_for :data_items do |data_item| %>
+      <%= render 'nodes/data_item_fields', f: data_item %>
+    <% end %>
+    <%= form.fields_for :entities do |entity| %>
+      <%= render 'nodes/entity_fields', f: entity %>
+    <% end %>
+    <div class="d-inline">
+      <div class='links'>
+        <%= link_to_add_association "New Data Item", form, :data_items, class: 'btn btn-primary' %>
+        <%= link_to_add_association "New Entity", form, :entities, class: 'btn btn-primary' %>
+      </div>
+    </div>
+  <% end %>
+  <%= form.control_group :add_existing_node, 'Add Existing Nodes' do %>  
+    <input type="checkbox" id="add-existing-node">
+    <div class='existing-node'>
+      <%= render 'nodes/existing_node', form: form %>
+    </div>
+  <% end %>
+  <%= button_control_group nil do %>
+    <div class='pull-right'>
+      <%= close_modal %>
+      <%= submit_tag('Save', class: 'btn btn-primary', disable_with: 'Saving&hellip;'.html_safe) %>
+    </div>
+  <% end %>
+  <ul class="errors"></ul>
+<% end %>

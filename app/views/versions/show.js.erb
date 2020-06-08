@@ -1,0 +1,6 @@
+<%
+  html_content = escape_javascript(render('show'))
+%>
+
+jQuery('#modal_title').html("Audit details");
+jQuery('#modal_body').html('<%= html_content %>').parents('.modal').modal('show');

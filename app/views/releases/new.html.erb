@@ -1,0 +1,4 @@
+<%= render layout: 'layout', locals: { release: @release } do %>
+  <%= content_tag(:h4, "New #{Release.model_name.human}", style: 'margin-left: 10px;') %><hr />
+  <%= render 'form', release: @release %>
+<% end %>

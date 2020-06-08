@@ -1,0 +1,50 @@
+<ul id="tabs" class="nav nav-tabs" data-tabs='tabs'>
+  <li class='active'>
+    <a href="#details" data-toggle='tab'>Project Details
+      <%= approval_status_msg(@project, @project.details_approved, current_user, id: 'details_approval_status') %>
+    </a>
+  </li>
+  <li>
+    <a href="#data" data-toggle='tab'>Data Items
+      <%= approval_status_msg(@project, @project.data_items_approved, current_user, id: 'data_item_approval_status') %>
+    </a>
+  </li>
+  <li>
+    <a href="#legal" data-toggle='tab'>Legal / Ethical
+      <%= approval_status_msg(@project, @project.legal_ethical_approved, current_user, id: 'legal_ethical_approval_status') %>
+    </a>
+  </li>
+  <li>
+    <a href="#users" data-toggle='tab'>Users
+      <%= approval_status_msg(@project, @project.members_approved, current_user, id: 'user_approval_status') %>
+    </a>
+  </li>
+  <li>
+    <a href="#uploads" data-toggle='tab'>
+      Uploads
+      <span id='total_attachment_count' >(<%= @project.project_attachments.uploads.count.to_s %>)</span>
+    </a>
+  </li>
+
+  <li>
+    <a href="#comments" data-toggle='tab'>
+      Comments
+    </a>
+  </li>
+<!--
+<li>
+    <a href="#actions" data-toggle='tab'>
+      Actions
+    </a>
+  </li>
+ -->
+  <li>
+    <a href="#datasets" data-toggle="tab">Datasets</a>
+  </li>
+  <li>
+    <a href="#timeline" data-toggle="tab">Timeline</a>
+  </li>
+  <li>
+    <a href="#related" data-toggle="tab">Related</a>
+  </li>
+</ul>

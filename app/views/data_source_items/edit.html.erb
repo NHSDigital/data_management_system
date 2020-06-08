@@ -1,0 +1,5 @@
+<h1>Editing <%= "#{@data_source_item.data_source_name} data iteam: #{@data_source_item.name}" %></h1>
+
+<%= bootstrap_form_for @data_source_item, horizontal: 2 do |form| %>
+  <%= render 'form', { form: form} %>
+<% end %>

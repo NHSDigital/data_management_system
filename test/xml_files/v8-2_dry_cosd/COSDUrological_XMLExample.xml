@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<COSD:COSD xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:COSD="http://www.datadictionary.nhs.uk/messages/COSD-v8-2" xsi:schemaLocation="http://www.datadictionary.nhs.uk/messages/COSD-v8-2 ../Schemas/COSDCOSD_XMLSchema-v8-1.xsd"> 
+  <Id root="60E8A409-24B6-4ADC-9C96-0273F668BDC8"/>
+  <OrganisationIdentifierCodeOfSubmittingOrganisation extension="123"/>
+  <RecordCount value="1"/>
+     <ReportingPeriodStartDate>2018-03-01</ReportingPeriodStartDate>
+  <ReportingPeriodEndDate>2018-03-30</ReportingPeriodEndDate>
+  <FileCreationDateTime>2018-03-30T00:00:00</FileCreationDateTime>
+  <UrologicalRecord>
+    <Id root="778F1F33-4911-4E50-8E36-3182780F8F94" />
+    <LinkagePatientId>
+      <NHSNumber extension="1111111111" />
+      <LocalPatientIdExtended>AB1888555446</LocalPatientIdExtended>
+      <NHSNumberStatusIndicator code="03" />
+      <Birthdate>1969-01-01</Birthdate>
+      <OrganisationIdentifierCodeOfProvider extension="AB1" />
+    </LinkagePatientId>
+    <LinkageDiagnosticDetails>
+      <PrimaryDiagnosis code="C672" />
+      <TumourLaterality code="8" />
+      <ClinicalDateCancerDiagnosis>2018-01-01</ClinicalDateCancerDiagnosis>
+    </LinkageDiagnosticDetails>
+    <Demographics>
+      <PersonFamilyName>COSD</PersonFamilyName>
+      <PersonGivenName>UROLOGICAL</PersonGivenName>
+      <Address>
+        <UnstructuredAddress>
+          <StreetAddressLine>1 Main Road</StreetAddressLine>
+        </UnstructuredAddress>
+      </Address>
+      <Postcode>SE1 8UG</Postcode>
+      <Gender code="1" />
+      <PersonStatedSexualOrientationCodeAtDiagnosis code="Z" />
+      <GMPSpecified extension="G1234566" />
+      <GMPRegistration extension="F12345" />
+      <PersonBirthFamilyName>COSD</PersonBirthFamilyName>
+      <Ethnicity code="A" />
+    </Demographics>
+    <ReferralAndFirstStageOfPatientPathway>
+      <SourceOfReferralOutPatients code="03" />
+      <DateFirstSeen>2018-03-01</DateFirstSeen>
+      <ConsultantCode extension="C1234567" />
+      <OrganisationSiteIdentifierOfProviderFirstSeen extension="AB101" />
+      <SpecialistDateFirstSeen>2018-03-01</SpecialistDateFirstSeen>
+      <OrganisationSiteIdentifierOfProviderFirstCancerSpecialist extension="ABC01" />
+      <CancerOrSymptomaticBreastReferralPatientStatus code="08" />
+      <CancerSymptomsDateFirstNoted>2014-02-02</CancerSymptomsDateFirstNoted>
+    </ReferralAndFirstStageOfPatientPathway>
+    <Imaging>
+      <OrganisationSiteIdentifierOfImaging extension="AB101" />
+      <ProcedureDate>2018-03-03</ProcedureDate>
+      <CancerImagingOutcome code="05" />
+      <NICIPCode code="NICIP" />
+      <CancerImagingModality code="C02X" />
+      <ImagingAnatomicalSite code="CZ002" />
+      <ImagingAnatomicalSide code="8" />  
+      <ImagingCodeSNOMEDCT code="123456" />
+      <ImagingReportText><![CDATA[No mets]]></ImagingReportText>
+      <LesionSizeRadiological value="120.01" />
+    </Imaging>
+    <Diagnosis> 
+      <OrganisationSiteIdentifierOfDiagnosis extension="ABC01" />
+      <BasisOfCancerDiagnosis code="7" />
+      <SNOMEDVersionDiagnosis code="99" />
+      <MorphologySNOMEDDiagnosis code="M81203" />
+      <MorphologyICDODiagnosis code="M81203" />
+      <TopographyICDO code="T74060" />
+      <DiagnosisGradeOfDifferentiation code="G2" />
+      <AdultPerformanceStatus code="2" />    
+      <DiagnosisSNOMEDCT code="123456" />
+      <CancerRecurrenceCarePlanInd code="NN" />
+      <CancerMetastaticDiseaseType code="03" />
+      <MetastaticSite code="98" />
+      <DiagnosisAdditionalItems>
+        <PrimaryDiagnosisCancerComment><![CDATA[TestData]]></PrimaryDiagnosisCancerComment>
+        <SecondaryDiagnosisICD code="C679" />
+        <SecondaryDiagnosisCancerComment><![CDATA[TestData]]></SecondaryDiagnosisCancerComment>
+        <FamilialCancerSyndromeIndicator code="9" />
+        <FamilialCancerSyndromeComment><![CDATA[TestData]]></FamilialCancerSyndromeComment>
+        <TissueBankedAtDiagnosisIndicator code="9" />
+        <TissueTypeBankedAtDiagnosis code="5" />
+      </DiagnosisAdditionalItems>
+      <DiagnosisProstate>
+        <PretreatmentProstateBiopsyTechniqueType code="1" />
+      </DiagnosisProstate>
+    </Diagnosis>
+    <PersonObservation>
+      <PersonHeightInMetres value="1.71" />
+      <PersonObservationWeight value="75.57" />
+      <BodyMassIndex value="25.8" />
+      <ObservationDate>2018-03-04</ObservationDate>
+    </PersonObservation>
+    <ClinicalNurseSpecialistAndRiskFactorAssessments>
+      <ClinicalNurseSpecialistIndicationCode code="Y5" />
+      <SmokingStatusCode code="Z" />
+      <AlcoholHistoryCancerInLastThreeMonths code="3" />
+      <AlcoholHistoryCancerBeforeLastThreeMonths code="2" />
+    </ClinicalNurseSpecialistAndRiskFactorAssessments>
+    <ClinicalNurseSpecialistHolisticNeedsAssessment>
+      <HNACompletedDate>2018-03-05</HNACompletedDate>
+      <HNAPointOfPathway code="03" />
+    </ClinicalNurseSpecialistHolisticNeedsAssessment>
+    <MultidisciplinaryTeamMeetings>
+      <TeamMeetingDate>2018-03-05</TeamMeetingDate>
+      <OrganisationSiteIdentifierOfMultidisciplinaryTeamMeeting extension="ABC99" />
+      <TeamMeetingType>1201</TeamMeetingType>
+      <TeamMeetingTypeComment><![CDATA[TestData]]></TeamMeetingTypeComment>
+    </MultidisciplinaryTeamMeetings>
+    <CancerCarePlan>
+      <CancerMultiTeamDiscussionDate>2014-02-01</CancerMultiTeamDiscussionDate>
+      <ConsultantCodeMultidisciplinaryTeamLead extension="C1234567" />
+      <CancerCarePlanIntent code="Z" />
+      <PlannedCancerTreatmentType code="06" />
+      <NoCancerTreatmentReason code="99" />
+      <AdultComorbidityEvaluation code="2" />
+      <CancerCarePlanUrological>
+        <EstimatedGlomerularFiltrationRate value="1"/>
+        <HydronephrosisCode code="L" />
+        <SCategoryCode code="SX" />
+        <SCategoryAplhaFetoProtein value="998" />
+        <SCategoryHumanChorionicGonadotrophin value="998" />
+        <SCategoryLactateDehydrogenase value="998" />
+        <ProstateSpecificAntigenDiagnosis value="220.5" />
+      </CancerCarePlanUrological>
+    </CancerCarePlan>
+    <MolecularBiomarkersGermlineTesting>
+      <OfferStatusGermlineGeneticTest code="02" />
+      <GermlineGeneticTestTypeOffered code="02" />
+      <OtherGermlineGeneticTestTypeOffered><![CDATA[TestData]]></OtherGermlineGeneticTestTypeOffered>
+      <ActivityOfferDate>2018-03-05</ActivityOfferDate>
+      <OrganisationIdentifierReportingLaboratory extension="ABC22" />
+      <OfferStatusReferralRegionalClinicalGeneticsService code="02" />
+    </MolecularBiomarkersGermlineTesting>
+    <MolecularBiomarkersSomaticTesting>
+      <StratifiedMedicineMolecularTestPerformedIndicator code="Y" />
+      <GeneStratificationBiomarkerAnalysed code="98" />
+      <OtherGeneStratificationBiomarkerTypeAnalysedComment><![CDATA[TestData]]></OtherGeneStratificationBiomarkerTypeAnalysedComment>
+      <GeneStratificationBiomarkerAnalysedDate>2018-03-05</GeneStratificationBiomarkerAnalysedDate>
+      <OrganisationIdentifierReportingLaboratory extension="ABC22" />
+    </MolecularBiomarkersSomaticTesting>
+    <ClinicalTrials>
+      <CancerPatientTrialStatus code="02" />
+      <ClinicalTrialDecisionDate>2018-03-05</ClinicalTrialDecisionDate>
+      <ClinicalTrialStartDate>2018-03-05</ClinicalTrialStartDate>
+      <CancerClinicalTrialTreatmentType code="06" />
+    </ClinicalTrials>
+    <Staging>
+      <FinalPreTreatmentTCategory>2a</FinalPreTreatmentTCategory>
+      <FinalPreTreatmentNCategory>0</FinalPreTreatmentNCategory>
+      <FinalPreTreatmentMCategory>0</FinalPreTreatmentMCategory>
+      <FinalPreTreatmentTNMStageGrouping>2</FinalPreTreatmentTNMStageGrouping>
+      <OrganisationSiteIdentifierOfTNMStageGroupingFinalPretreatment extension="ABC22" />
+      <FinalPreTreatmentTNMStageGroupingDate>2018-03-04</FinalPreTreatmentTNMStageGroupingDate>
+      <IntegratedStageTCategory>3a</IntegratedStageTCategory>
+      <IntegratedStageNCategory>1</IntegratedStageNCategory>
+      <IntegratedStageMCategory>0</IntegratedStageMCategory>
+      <IntegratedStageTNMStageGrouping>3A</IntegratedStageTNMStageGrouping>
+      <OrganisationSiteIdentifierOfTNMStageGroupingIntegrated extension="ABC22" />
+      <IntegratedStageTNMStageGroupingDate>2018-03-05</IntegratedStageTNMStageGroupingDate>
+      <TNMCodingEdition code="1" />
+      <TNMVersionNumberStaging>8</TNMVersionNumberStaging>
+      <StagingTesticular>
+        <StageGroupingTesticularCancer code="1S" />
+        <StageGroupingDateTesticularCancer>2018-03-04</StageGroupingDateTesticularCancer>
+        <ExtentMetastaticSpread code="H" />
+        <ExtentMetastaticSpread code="H" />
+        <LungMetastasesSubStageGrouping code="L1" />
+      </StagingTesticular>
+    </Staging>
+    <Treatment>
+      <CancerTreatmentEventType code="01" />
+      <AdjunctiveTherapyType code="1" />
+      <CancerTreatmentIntent code="01" />
+      <CancerTreatmentStartDate>2018-03-04</CancerTreatmentStartDate>
+      <CancerTreatmentModality code="01" />
+      <OrganisationSiteIdentifierOfProviderCancerTreatmentStartDate extension="AB101" />
+      <ConsultantCode extension="C1234567" />
+      <TreatmentBladder>
+        <IntravesicalChemRecInd code="9" />
+        <IntravesicalImmunoRecInd code="9" />
+      </TreatmentBladder>
+      <TreatmentProstate>
+        <ProstateSpecificAntigenPreTreatment value="222.5" />
+        <ProstateNerveSparingSurgeryType code="1" />
+        <RadicalProstatectomyMarginStatus code="3" />
+      </TreatmentProstate>
+    </Treatment>
+    <Treatment>
+      <CancerTreatmentEventType code="01" />
+      <AdjunctiveTherapyType code="1" />
+      <CancerTreatmentIntent code="01" />
+      <CancerTreatmentStartDate>2018-03-05</CancerTreatmentStartDate>
+      <CancerTreatmentModality code="01" />
+      <OrganisationSiteIdentifierOfProviderCancerTreatmentStartDate extension="AB101" />
+      <ConsultantCode extension="C1234567" />
+      <SurgeryAndOtherProcedures>
+        <ProcedureDate>2018-03-05</ProcedureDate>
+        <ConsultantCodeResponsibleSurgeon extension="C1234567" />
+        <PrimaryProcedureOPCS code="M349" />
+        <PrimaryProcedureSNOMEDCT code="123456" />
+        <ProcedureOPCS code="B283" />
+        <ProcedureSNOMEDCT code="123456" />
+        <AdditionalUnplannedProcedureRequiredIndicator code="N" />
+        <HospitalDischargeDate>2018-05-08</HospitalDischargeDate>
+        <HospitalDischargeDestinationCode code="19" />
+        <ASAPhysicalStatusClassificationSystemCode code="2" />
+        <SurgicalAccessType code="Z" />
+      </SurgeryAndOtherProcedures>
+      <TreatmentBladder>
+        <IntravesicalChemRecInd code="9" />
+        <IntravesicalImmunoRecInd code="9" />
+      </TreatmentBladder>
+      <TreatmentProstate>
+        <ProstateSpecificAntigenPreTreatment value="222.5" />
+        <ProstateNerveSparingSurgeryType code="1" />
+        <RadicalProstatectomyMarginStatus code="3" />
+      </TreatmentProstate>
+    </Treatment>
+    <LaboratoryResultsGeneral>
+      <LactateDehydrogenaseLevelPeakAtDiagnosis value="123" />
+      <LactateDehydrogenaseLevelNormalUpperLimit value="530" />
+    </LaboratoryResultsGeneral>
+    <Pathology>
+      <InvestigationResultDate>2018-03-05</InvestigationResultDate>
+      <ServiceReportId extension="TNQ1235648" />
+      <PathologyObservationReportId extension="TNQ12546325" />
+      <ServiceReportStatus code="1" />
+      <PathTestReqCareProfCode extension="C2253657" />
+      <OrganisationSiteIdentifierOfPathologyTestRequest extension="ABC22" />
+      <SampleCollectionDate>2018-03-05</SampleCollectionDate>
+      <SampleReceiptDate>2018-03-05</SampleReceiptDate>
+      <OrganisationIdentifierOfReportingPathologist extension="ABC22" />
+      <PathologistConsultantCode extension="C2253658" />
+      <SpecimenNature code="1" />
+      <SNOMEDVersionPathology code="01" />
+      <TopographySNOMEDPathology code="123456" />
+      <MorphologySNOMEDPathology code="M85003" />
+      <PrimaryDiagnosisICDPath code="C50.9" />
+      <TumourLaterality code="L" />
+      <PathologyInvestigationType code="BU" />
+      <PathologyReportText><![CDATA[
+
+Anonymous General Hospitals NHS Foundation Trust
+Urological HISTOPATHOLOGY REPORT  PH000000X/0X
+________
+Surname     XXX Forenames   XXX
+Date of birth     01/01/1969  NHS No      123 135 7990
+Clinician   XXX DR    Sex   M
+Date specimen taken     05/03/2018  Patient location
+Hospital No XXX    Date of receipt   05/03/2018
+Hospital    ANONYMOUS GENERAL HOSPITAL    Pathologist Dr XXXX
+________
+CLINICAL DETAILS
+
+blah blah blah
+_______
+SUMMARY
+
+blah blah blah
+
+Authorised by: Dr XXX on 05/03/2018 22:45:20
+]]>
+      </PathologyReportText>
+      <LesionSizePathological value="22.60" />
+      <GradeOfDiff code="GX" />
+      <CancerVascLymphInvasion code="YU" />
+      <ExcisionMargin code="02" />
+      <SyncTumourInd code="N" />
+      <NumberNodesExamined value="99" />
+      <NumberNodesPositive value="10" />
+      <TNMCodingEdition code="1" />
+      <TNMVersionNumberPathological>8</TNMVersionNumberPathological>
+      <PathTCategory>2a</PathTCategory>
+      <PathNCategory>0</PathNCategory>
+      <PathMCategory>0</PathMCategory>
+      <PathTNMStage>2</PathTNMStage>
+      <NeoadjuvantTherapyInd code="9" />
+      <PathologyBladder>
+        <DetrosorMusclePresenceIndCode code="1" />
+        <TumourGradeUrology code="L" />
+      </PathologyBladder>
+      <PathologyKidney>
+        <TumourNecrosisInd code="Y" />
+        <TumourInvIndPerinephricFat code="N" />
+        <TumourInvIndAdrenal code="Y" />
+        <RenalVeinTumourInd code="N" />
+        <TumourInvIndGerotasFascia code="Y" />
+      </PathologyKidney>
+      <PathologyPenis>
+        <TumourInvIndCorpusSpongiosum code="Y" />
+        <TumourInvIndCorpusCavernosum code="N" />
+        <TumourInvIndUrethraOrProstate code="Y" />
+      </PathologyPenis>
+      <PathologyProstate>
+        <!-- contradiction in use of code attribute between spec and schema. NHS have a list. spec does not --> 
+        <!-- <GleasonGradePrimary code="3" />
+        <GleasonGradeSecondary code="3" />
+        <GleasonGradeTertiary code="3" /> -->
+        <GleasonGradePrimary>3</GleasonGradePrimary>
+        <GleasonGradeSecondary>3</GleasonGradeSecondary>
+        <GleasonGradeTertiary>3</GleasonGradeTertiary>
+        <PerineuralInvasionInd code="X" />
+        <OrganConfinedInd code="X" />
+        <TumourInvIndSeminalVesicles code="X" />
+        <TurpTumourPercentage value="99" />
+      </PathologyProstate>
+      <PathologyTesticular>
+        <TumourInvIndReteTestis code="Y" />
+      </PathologyTesticular>
+    </Pathology>
+    <DeathDetails>
+      <PersonDeathDate>2018-03-09</PersonDeathDate>
+      <DeathLocationType code="10" />
+    </DeathDetails>
+  </UrologicalRecord>
+</COSD:COSD>

@@ -1,0 +1,18 @@
+role_one:
+  name: Read_Only
+  sort: 1
+role_two:
+  name: MBIS Applicant
+  sort: 2
+role_three:
+  name: MBIS Delegate
+  sort: 3
+read_only:
+  name: Read Only
+  sort: 4
+owner:
+  name: Owner
+  sort: 5
+contributor:
+  name: Contributor
+  sort: 6

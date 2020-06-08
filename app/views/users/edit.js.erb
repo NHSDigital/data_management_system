@@ -1,0 +1,6 @@
+<%
+  html_content = escape_javascript bootstrap_form_for(@user, remote: true, horizontal: 2) { |form| render('form', form: form) }
+%>
+
+jQuery('#modal_title').html("Editing User: <%= @user.full_name %>");
+jQuery('#modal_body').html('<%= html_content %>').parents('.modal').modal('show');

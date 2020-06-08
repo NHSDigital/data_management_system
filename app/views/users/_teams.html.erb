@@ -1,0 +1,27 @@
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th>Team</th>
+      <th>Location</th>
+      <th>Status</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <!-- TODO: control by grants? is that even needed? could just use @user.teams? -->
+    <% @user.teams.each do |team| %>
+      <tr id="<%= dom_id(team) %>">
+        <td><%= link_to "#{team.name}", team_url(team) %></td>
+        <td><%= team.location %></td>
+        <td><%= team.z_team_status.name %></td>
+        <td>
+          <div class="pull-right">
+            <% if can?(:destroy, membership) %>
+              <%= delete_link(membership, method: :delete, remote: true, data: { confirm: "Are you sure you want to remove #{membership.member_full_name} from #{membership.team_name}?" } )%>
+            <% end %>
+          </div>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

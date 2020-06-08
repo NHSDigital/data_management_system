@@ -1,0 +1,35 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  project: one
+  node_id: 195218
+
+two:
+  project: two
+  node_id: 195218
+
+new_dob:
+  project: new_project
+  node_id: 195218
+
+new_forename:
+  project: new_project
+  node_id: 194986
+
+pending_dob:
+  project: pending_project
+  node_id: 194923
+
+pending_delegate_dob:
+  project: pending_delegate_project
+  node_id: 194923
+
+approved_dob:
+  project: approved_project
+  node_id: 194923
+  approved: true
+
+rejected_dob:
+  project: rejected_project
+  node_id: 194923
+  approved: false

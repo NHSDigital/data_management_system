@@ -1,0 +1,372 @@
+# Users' encrypted_passwords are "password", hashed using the [not_]secret_key_base
+# for the test environment: "this_is_not_secure_but_does_seed_test_user_passwords"
+#
+standard_user:
+  email: standard@phe.gov.uk
+  first_name: standard
+  last_name: user
+  z_user_status: active_user_status
+  encrypted_password: <%= Devise::Encryptor.digest(User, 'Password1*') %>
+  location: Cambridge
+  username: standarduser
+  directorate_id: 1
+  division_id: 1
+  delegate_user: false
+
+admin_user:
+  email: admin@phe.gov.uk
+  first_name: admin
+  last_name: admin
+  telephone: '01223 999999'
+  job_title: 'The Boss'
+  z_user_status: active_user_status
+  location: Cambridge
+  username: adminadmin
+  directorate_id: 1
+  division_id: 1
+  delegate_user: false
+
+admin_user2:
+  email: admin2@phe.gov.uk
+  first_name: admin
+  last_name: admin2
+  telephone: '01223 999999'
+  job_title: 'The Boss'
+  z_user_status: active_user_status
+  location: Cambridge
+  username: adminadmin2
+  directorate_id: 1
+  division_id: 1
+  delegate_user: false
+
+odr_user:
+  email: odr@phe.gov.uk
+  first_name: odr
+  last_name: odr
+  telephone: '01223 999999'
+  job_title: 'The ODR'
+  z_user_status: active_user_status
+  location: Cambridge
+  username: odrodr
+  directorate_id: 1
+  division_id: 1
+  delegate_user: false
+
+odr_user2:
+  email: odr2@phe.gov.uk
+  first_name: odr
+  last_name: odr2
+  telephone: '01223 999999'
+  job_title: 'The ODR'
+  z_user_status: active_user_status
+  location: Cambridge
+  username: odrodr2
+  directorate_id: 1
+  division_id: 1
+  delegate_user: false
+
+standard_user1:
+  email: su11@phe.gov.uk
+  first_name: standard
+  last_name: user1
+  z_user_status: active_user_status
+  location: Cambridge
+  username: standarduser1
+  directorate_id: 1
+  division_id: 1
+  delegate_user: false
+
+standard_user2:
+  email: su12@phe.gov.uk
+  first_name: standard2
+  last_name: user2
+  z_user_status: active_user_status
+  location: Cambridge
+  username: standard2user2
+  directorate_id: 1
+  division_id: 1
+  delegate_user: false
+
+standard_user_no_teams:
+  email: noteam@phe.gov.uk
+  first_name: no_team
+  last_name: user
+  z_user_status: active_user_status
+  location: Cambridge
+  username: no_teamuser
+  directorate_id: 1
+  division_id: 1
+  delegate_user: false
+
+standard_user_one_team:
+  email: oneteam@phe.gov.uk
+  first_name: standard
+  last_name: userone
+  z_user_status: active_user_status
+  encrypted_password: <%= Devise::Encryptor.digest(User, 'Password1*') %>
+  location: Cambridge
+  username: standarduserone
+  directorate_id: 1
+  division_id: 1
+  delegate_user: false
+
+standard_user_multiple_teams:
+  email: multiteam@phe.gov.uk
+  first_name: standard
+  last_name: usertwo
+  z_user_status: active_user_status
+  location: Cambridge
+  username: standardusertwo
+  directorate_id: 1
+  division_id: 1
+  delegate_user: false
+
+senior_project_user:
+  email: another@phe.gov.uk
+  first_name: Another
+  last_name: User
+  z_user_status: active_user_status
+  location: Cambridge
+  username: anotheruser
+  directorate_id: 1
+  division_id: 1
+  delegate_user: false
+
+deleted_user:
+  email: deleted@phe.gov.uk
+  first_name: deleted
+  last_name: user
+  z_user_status: deleted_user_status
+  encrypted_password: <%= Devise::Encryptor.digest(User, 'Password1*') %>
+  location: Cambridge
+  username: deleteduser
+  directorate_id: 1
+  division_id: 1
+  delegate_user: false
+
+new_senior_user:
+  email: new_senior@phe.gov.uk
+  first_name: New
+  last_name: Senior
+  z_user_status: active_user_status
+  location: Cambridge
+  username: newsenior
+  directorate_id: 1
+  division_id: 1
+  delegate_user: false
+
+new_standard_user:
+  email: new_standard@phe.gov.uk
+  first_name: New
+  last_name: Normal
+  z_user_status: active_user_status
+  location: Cambridge
+  username: newnormal
+  directorate_id: 1
+  division_id: 1
+  delegate_user: false
+
+pending_senior_user:
+  email: pending_senior@phe.gov.uk
+  first_name: Pending
+  last_name: Senior
+  z_user_status: active_user_status
+  location: Cambridge
+  username: pendingsenior
+  directorate_id: 1
+  division_id: 1
+  delegate_user: false
+
+pending_standard_user:
+  email: pending_standard@phe.gov.uk
+  first_name: Pending
+  last_name: Normal
+  z_user_status: active_user_status
+  location: Cambridge
+  username: pendingnormal
+  directorate_id: 1
+  division_id: 1
+  delegate_user: false
+
+pending_delegate_senior_user:
+  email: pending_delegate_senior@phe.gov.uk
+  first_name: Pending
+  last_name: Senior
+  z_user_status: active_user_status
+  location: Cambridge
+  username: pendingdelegatesenior
+  directorate_id: 1
+  division_id: 1
+  delegate_user: false
+
+pending_delegate_standard_user:
+  email: pending_delegate_standard@phe.gov.uk
+  first_name: Pending
+  last_name: Normal
+  z_user_status: active_user_status
+  location: Cambridge
+  username: pendingdelegatenormal
+  directorate_id: 1
+  division_id: 1
+  delegate_user: false
+
+approved_senior_user:
+  email: approved_senior@phe.gov.uk
+  first_name: Approved
+  last_name: Senior
+  z_user_status: active_user_status
+  location: Cambridge
+  username: approvedsenior
+  directorate_id: 1
+  division_id: 1
+  delegate_user: false
+
+approved_standard_user:
+  email: approved_standard@phe.gov.uk
+  first_name: Approved
+  last_name: Normal
+  z_user_status: active_user_status
+  location: Cambridge
+  username: approvedstandard
+  directorate_id: 1
+  division_id: 1
+  delegate_user: false
+
+rejected_senior_user:
+  email: rejected_senior@phe.gov.uk
+  first_name: Rejected
+  last_name: Senior
+  z_user_status: active_user_status
+  location: Cambridge
+  username: rejectedsenior
+  directorate_id: 1
+  division_id: 1
+  delegate_user: false
+
+rejected_standard_user:
+  email: rejected_standard@phe.gov.uk
+  first_name: Rejected
+  last_name: Normal
+  z_user_status: active_user_status
+  location: Cambridge
+  username: rejectednormal
+  directorate_id: 1
+  division_id: 1
+  delegate_user: false
+
+deleted_senior_user:
+  email: deleted_senior@phe.gov.uk
+  first_name: Deleted
+  last_name: Senior
+  z_user_status: active_user_status
+  location: Cambridge
+  username: deletedsenior
+  directorate_id: 1
+  division_id: 1
+  delegate_user: false
+
+delegate_user1:
+  email: delegate1@phe.gov.uk
+  first_name: Delegate1
+  last_name: User
+  z_user_status: active_user_status
+  location: Cambridge
+  username: delegate1
+  directorate_id: 1
+  division_id: 1
+  delegate_user: true
+
+delegate_user2:
+  email: delegate2@phe.gov.uk
+  first_name: Delegate2
+  last_name: User
+  z_user_status: active_user_status
+  location: Cambridge
+  username: delegate2
+  directorate_id: 1
+  division_id: 1
+  delegate_user: true
+
+delegate_user3:
+  email: delegate3@phe.gov.uk
+  first_name: Delegate3
+  last_name: User
+  z_user_status: active_user_status
+  location: Cambridge
+  username: delegate3
+  directorate_id: 1
+  division_id: 1
+  delegate_user: true
+
+approved_project_user:
+  email: approved_project_user@phe.gov.uk
+  first_name: Approved
+  last_name: Project User
+  z_user_status: active_user_status
+  location: Cambridge
+  username: approved_project_user
+  directorate_id: 1
+  division_id: 1
+  delegate_user: false
+
+application_manager_one:
+  email: application.manager1@phe.gov.uk
+  username: application.manager.1
+  first_name: Application
+  last_name: Manager-One
+  z_user_status: active_user_status
+  location: ODR Offices
+
+application_manager_two:
+  email: application.manager2@phe.gov.uk
+  username: application.manager.2
+  first_name: Application
+  last_name: Manager-Two
+  z_user_status: active_user_status
+  location: ODR Offices
+
+application_manager_three:
+  email: application.manager3@phe.gov.uk
+  username: application.manager.3
+  first_name: Application
+  last_name: Manager-Three
+  z_user_status: active_user_status
+  location: ODR Offices
+
+senior_application_manager_one:
+  email: seniorapplication.manager1@phe.gov.uk
+  username: senior.application.manager.1
+  first_name: Senior Application
+  last_name: Manager-One
+  z_user_status: active_user_status
+  location: ODR Offices
+
+contributor:
+  email: contributor@phe.gov.uk
+  first_name: contribu
+  last_name: tor
+  z_user_status: active_user_status
+  location: Cambridge
+  username: contributor
+  directorate_id: 1
+  division_id: 1
+
+dummy_project_owner:
+  email: dummy_project_owner@phe.gov.uk
+  first_name: fizzy
+  last_name: dummy
+  z_user_status: active_user_status
+  location: sweetie bag
+  username: dummy_project_owner
+  directorate_id: 1
+  division_id: 1
+
+team_dataset_manager:
+  email: dataset_manager@phe.gov.uk
+  first_name: Mr
+  last_name: Manager
+  z_user_status: active_user_status
+  location: Banana Stand
+  username: dm
+  directorate_id: 1
+  division_id: 1

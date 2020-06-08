@@ -1,0 +1,52 @@
+<%= bootstrap_form_for @data_source, horizontal: 2, readonly: @readonly do |form| %>
+  <div class="row">
+    <div class=" col-md-12">
+      <% if @readonly %>
+        <div class="panel panel-default">
+          <div class="panel-body">
+            <div class="row">
+              <div class="col-md-12">
+                <div class="pull-left" style="font-size:1.5em">
+                  Data Source: <%= @data_source.name %>
+                </div>
+                <div class="btn-toolbar pull-right">
+                  <% if can?(:destroy, form.object) %>
+                    <div class="btn-group" style="padding-right:8px">
+                      <%= link_to bootstrap_icon_tag('trash icon-white') + ' Delete', @data_source, :class => "btn btn-danger", method: :delete, data: { confirm: "Are you sure you want to delete data source: #{@data_source.name}" } %></td>
+                    </div>
+                  <% end %>
+                  <div class="btn-group">
+                    <% if can?(:update, form.object) %>
+                      <%= link_to bootstrap_icon_tag('pencil') + ' Edit', edit_data_source_path(@data_source), class: 'btn btn-default' %>
+                    <% end %>
+                    <%= link_to 'Back to Data Sources', data_sources_path, class: 'btn btn-default' %>
+                    <%# link_to 'Audit', { :controller => 'versions', :tablename => 'data_source', :id => @data_source}, :class => 'btn btn-default' %>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+        <% else %>
+        <div class="panel-footer">
+          <%= form.control_group :title, 'Title' do %>
+            <%= form.text_field :title %>
+          <% end %>
+
+          <%= form.control_group :terms, 'Terms' do %>
+            <%= form.text_area :terms, rows: 15 %>
+          <% end %>
+
+          <%= form.control_group nil do %>
+            <div class="pull-right">
+              <%= cancel_submit %>
+            </div>
+          <% end %>
+        </div>
+        <% end %>
+
+      </div>
+    </div>
+  </div>
+<% end %>

@@ -1,0 +1,83 @@
+<%= render layout: @user.to_partial_path do %>
+  <% url = user_grants_url(@user) %>
+  <%= form_tag(url, method: :patch) %>
+  <%= text_field_tag :project_search, '',
+                     placeholder: "Filter #{Project.model_name.human.pluralize}...",
+                     style: 'width:100%' %>
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>Project</th>
+          <th>Team</th>
+          <% ProjectRole.all.each do |role| %>
+            <th><%= role.name %></th>
+          <% end %>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- TODO: show team for project -->
+        <% @user.projects.each do |project| %>
+          <%= content_tag(:tr, 'data-project-name' => project.try(:name)) do %>
+            <td><%= link_to(project.name, project) if project %></td>
+            <td><%= link_to(project.team.name, project.team) if project %></td>
+            <% ProjectRole.all.each do |role| %>
+            <% already_granted = @user.role?(role, at: project) %>
+              <td>
+                <%= hidden_field_tag "grants[ProjectRole][[#{project.id}][#{role.id}]", nil %>
+                <%= check_box_tag    "grants[ProjectRole][#{project.id}][#{role.id}]", 1, already_granted %>
+              </td>
+            <% end %>
+          <% end %>
+        <% end %>
+      </tbody>
+    </table>
+
+    <div class="row">
+      <div class="col-md-2 col-md-offset-4">
+        <%= link_to 'Cancel', url, class: 'btn btn-default btn-block' %>
+      </div>
+      <div class="col-md-2">
+        <%= submit_tag 'Update Roles', class: 'btn btn-primary btn-block' %>
+      </div>
+    </div>
+  </form>
+<% end %>
+
+<script type="text/javascript">
+  jQuery(document).ready(function() {
+    // This is a static list:
+    var projectLookup = {},
+        searchFunction  = function() {
+          var search = $searchField.val().toLowerCase(),
+              $toShow = jQuery(),
+              $toHide = jQuery();
+
+          jQuery.each(projectLookup, function(value, $row) {
+            if (~value.indexOf(search)) {
+              $toShow = $toShow.add($row);
+            } else {
+              $toHide = $toHide.add($row);
+            }
+          });
+
+          $toShow.show();
+          $toHide.hide();
+        },
+        debounceTimer,
+        $searchField;
+
+    jQuery('tr[data-project-name]').each(function(_index, item) {
+      var $row = jQuery(item);
+      projectLookup[$row.data('project-name').toLowerCase()] = $row;
+    });
+
+    jQuery('#project_search').on('keyup change', function(event) {
+      // Set the shared variable, so we don't have to rebind (problem in IE8)
+      $searchField = jQuery(event.target);
+
+      // Don't filter more than five times per second:
+      if (debounceTimer) clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(searchFunction, 200);
+    });
+  });
+</script>

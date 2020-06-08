@@ -1,0 +1,3464 @@
+# Please add field names under the reference like below
+# reference: C000010
+# rawtext_name: raw_name
+# virtual_field: virtual_name
+# encore_event: event_name
+# encore_event_field: encore_event_field_name
+# e_base_record: e_base_record_name
+- name: COSD_Pathology
+  min_occurs: 1
+  max_occurs: 1
+  node_type: Nodes::Entity
+  dataset_version: 4-1
+  sort: 1
+  description: To carry the submission header details
+  children:
+  - name: Id
+    min_occurs: 1
+    max_occurs: 1
+    sort: 1
+    reference: pC000010
+    rawtext_name: 
+    virtual_field: 
+    encore_event: Vpathology
+    encore_event_field: 
+    e_base_record: e_cosd_xml_pathology
+    annotation: COSDS SUBMISSION IDENTIFIER
+    description: The universal unique identifier (UUID) for the submission
+    node_type: Nodes::DataItem
+    data_dictionary_element:
+      name: COSDS SUBMISSION IDENTIFIER
+      group: Pathology
+  - name: ORGANISATION IDENTIFIER CODE OF SUBMITTING ORGANISATION
+    min_occurs: 1
+    max_occurs: 1
+    sort: 2
+    reference: pC000020
+    rawtext_name: 
+    virtual_field: 
+    encore_event: Vpathology
+    encore_event_field: 
+    e_base_record: e_cosd_xml_pathology
+    annotation: ORGANISATION IDENTIFIER (CODE OF SUBMITTING ORGANISATION)
+    description: This is the ORGANISATION IDENTIFIER of the ORGANISATION acting as the
+      physical sender of a Data Set submission. This code provides an audit trail where
+      a different organisation is undertaking the submission on behalf of the provider
+      organisation. It will not be carried over into the national database.
+    node_type: Nodes::DataItem
+    data_dictionary_element:
+      name: ORGANISATION IDENTIFIER (CODE OF SUBMITTING ORGANISATION)
+      group: Pathology
+  - name: RECORD COUNT
+    min_occurs: 1
+    max_occurs: 1
+    sort: 3
+    reference: pC000030
+    rawtext_name: 
+    virtual_field: 
+    encore_event: Vpathology
+    encore_event_field: 
+    e_base_record: e_cosd_xml_pathology
+    annotation: COSDS SUBMISSION RECORD COUNT
+    description: The value attribute should identify the number of <COSDRecord> elements
+      being supplied with this submission
+    node_type: Nodes::DataItem
+    data_dictionary_element:
+      name: COSDS SUBMISSION RECORD COUNT
+      group: Pathology
+  - name: REPORTING PERIOD START DATE
+    min_occurs: 1
+    max_occurs: 1
+    sort: 4
+    reference: pC000040
+    rawtext_name: 
+    virtual_field: 
+    encore_event: Vpathology
+    encore_event_field: 
+    e_base_record: e_cosd_xml_pathology
+    annotation: REPORTING PERIOD START DATE
+    description: The reporting period start date to which this file refers
+    node_type: Nodes::DataItem
+    data_dictionary_element:
+      name: REPORTING PERIOD START DATE
+      group: Pathology
+  - name: REPORTING PERIOD END DATE
+    min_occurs: 1
+    max_occurs: 1
+    sort: 5
+    reference: pC000050
+    rawtext_name: 
+    virtual_field: 
+    encore_event: Vpathology
+    encore_event_field: 
+    e_base_record: e_cosd_xml_pathology
+    annotation: REPORTING PERIOD END DATE
+    description: The reporting period end date to which this file refers
+    node_type: Nodes::DataItem
+    data_dictionary_element:
+      name: REPORTING PERIOD END DATE
+      group: Pathology
+  - name: FILE CREATION DATE TIME
+    min_occurs: 1
+    max_occurs: 1
+    sort: 6
+    reference: pC000060
+    rawtext_name: 
+    virtual_field: 
+    encore_event: Vpathology
+    encore_event_field: 
+    e_base_record: e_cosd_xml_pathology
+    annotation: DATE AND TIME DATA SET CREATED
+    description: Date/time this upload file was created
+    node_type: Nodes::DataItem
+    data_dictionary_element:
+      name: DATE AND TIME DATA SET CREATED
+      group: Pathology
+  - name: RecordGroupChoice
+    min_occurs: 1
+    sort: 7
+    annotation: TEMP ANNOTATION
+    node_type: Nodes::CategoryChoice
+    children:
+    - name: Record
+      min_occurs: 1
+      max_occurs: 1
+      sort: 1
+      annotation: TEMP ANNOTATION
+      description: To carry the record identifier details
+      node_type: Nodes::Entity
+      children:
+      - name: Id
+        min_occurs: 1
+        max_occurs: 1
+        sort: 1
+        reference: C000070
+        rawtext_name: 
+        virtual_field: 
+        encore_event: Vpathology
+        encore_event_field: 
+        e_base_record: e_cosd_xml_pathology
+        annotation: COSDS UNIQUE IDENTIFIER
+        description: The universal unique identifier (UUID) for the record
+        node_type: Nodes::DataItem
+        data_dictionary_element:
+          name: COSDS UNIQUE IDENTIFIER
+          group: Pathology
+      - name: LinkagePatientId
+        min_occurs: 1
+        max_occurs: 1
+        sort: 20
+        annotation: TEMP ANNOTATION
+        description: These items are required for every record in order to link patient
+          records.
+        node_type: Nodes::Entity
+        children:
+        - name: PatientIdentifier
+          min_occurs: 1
+          max_occurs: 2
+          sort: 1
+          annotation: TEMP ANNOTATION
+          choice_type: mandatory_and_or
+          node_type: Nodes::Choice
+          children:
+          - name: NHS NUMBER
+            min_occurs: 1
+            max_occurs: 1
+            sort: 1
+            reference: CR0010
+            rawtext_name: nhsnumber
+            virtual_field: nhsnumber
+            encore_event: e_base_record
+            encore_event_field: nhsnumber
+            e_base_record: all
+            e_base_record: e_cosd_xml_pathology
+            annotation: NHS NUMBER
+            description: "*For linkage purposes NHS NUMBER  and/or LOCAL PATIENT IDENTIFIER
+              is required. The NHS NUMBER, the primary identifier of a PERSON, is a
+              unique identifier for a PATIENT within the NHS in England and Wales. This
+              will not vary by any ORGANISATION of which a PERSON is a PATIENT."
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: NHS NUMBER
+              group: Pathology
+          - name: LOCAL PATIENT IDENTIFIER
+            min_occurs: 1
+            max_occurs: 1
+            sort: 2
+            reference: CR0020
+            rawtext_name: hospitalnumber
+            virtual_field: hospitalnumber
+            encore_event: e_base_record
+            encore_event_field: hospitalnumber
+            e_base_record: all
+            e_base_record: e_cosd_xml_pathology
+            annotation: LOCAL PATIENT IDENTIFIER (EXTENDED)
+            description: "*For linkage purposes NHS NUMBER and/or LOCAL PATIENT IDENTIFIER
+              \ (EXTENDED) is required. This is a number used to identify a PATIENT
+              uniquely within a Health Care Provider. It may be different from the PATIENT's
+              casenote number and may be assigned automatically by the computer system.
+              LOCAL PATIENT IDENTIFIER (EXTENDED) is used where IT systems have a LOCAL
+              PATIENT IDENTIFIER which is longer than 10 characters and LOCAL PATIENT
+              IDENTIFIER cannot be used for data submission."
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: LOCAL PATIENT IDENTIFIER (EXTENDED)
+              group: Pathology
+        - name: NHS NUMBER STATUS INDICATOR CODE
+          min_occurs: 1
+          max_occurs: 1
+          sort: 2
+          reference: CR1350
+          rawtext_name: 
+          virtual_field: 
+          encore_event: Vpathology
+          encore_event_field: 
+          e_base_record: e_cosd_xml_pathology
+          annotation: NHS NUMBER STATUS INDICATOR CODE
+          description: The NHS NUMBER STATUS  INDICATOR CODE is the trace status of
+            the NHS NUMBER
+          node_type: Nodes::DataItem
+          data_dictionary_element:
+            name: NHS NUMBER STATUS INDICATOR CODE
+            group: Pathology
+        - name: PERSON BIRTH DATE
+          min_occurs: 1
+          max_occurs: 1
+          sort: 3
+          reference: CR0100
+          rawtext_name: dateofbirth
+          virtual_field: dateofbirth
+          encore_event: e_base_record
+          encore_event_field: dateofbirth
+          e_base_record: all
+          annotation: PERSON BIRTH DATE
+          description: The date on which a PERSON was born or is officially deemed to
+            have been born.
+          node_type: Nodes::DataItem
+          data_dictionary_element:
+            name: PERSON BIRTH DATE
+            group: Pathology
+        - name: ORGANISATION IDENTIFIER (CODE OF PROVIDER)
+          min_occurs: 1
+          max_occurs: 1
+          sort: 4
+          reference: CR0030
+          encore_notes: mapped to both hospitalnumberprovidercode and providercode
+          rawtext_name: hospitalnumberprovidercode
+          virtual_field: providercode hospitalnumberprovidercode
+          encore_event: e_base_record
+          encore_event_field: hospitalnumberprovidercode providercode
+          e_base_record: all unless sub class overrides
+          e_base_record: e_cosd_xml_pathology
+          annotation: ORGANISATION IDENTIFIER (CODE OF PROVIDER)
+          description: The ORGANISATION IDENTIFIER of the Organisation acting as a Health
+            Care Provider. (an6 not applicable to COSD)
+          node_type: Nodes::DataItem
+          data_dictionary_element:
+            name: ORGANISATION IDENTIFIER (CODE OF PROVIDER)
+            group: Pathology
+      - name: Demographics
+        min_occurs: 0
+        max_occurs: 1
+        sort: 30
+        annotation: TEMP ANNOTATION
+        description: "To carry the patient demographic details. It is anticipated that
+          some of the demographic data items listed below will be collected by every
+          provider with which the patient has contact. \r Where this information is
+          exchanged, the appropriate data item name should be used to identify the particular
+          instance of the data."
+        node_type: Nodes::Entity
+        children:
+        - name: PERSON FAMILY NAME (AT BIRTH)
+          min_occurs: 0
+          max_occurs: 1
+          sort: 1
+          reference: CR0140
+          rawtext_name: surname
+          virtual_field: surname
+          encore_event: 
+          encore_event_field: 
+          e_base_record: e_base_record
+          annotation: PERSON FAMILY NAME
+          description: That part of a PERSON's name which is used to describe family,
+            clan, tribal group, or marital association.
+          node_type: Nodes::DataItem
+          data_dictionary_element:
+            name: PERSON FAMILY NAME
+            group: Pathology
+        - name: PERSON GIVEN NAME
+          min_occurs: 0
+          max_occurs: 1
+          sort: 2
+          reference: CR0060
+          rawtext_name: forenames
+          virtual_field: forenames
+          encore_event: 
+          encore_event_field: 
+          e_base_record: e_base_record
+          annotation: PERSON GIVEN NAME
+          description: The forename(s) or given name(s) of a PERSON.
+          node_type: Nodes::DataItem
+          data_dictionary_element:
+            name: PERSON GIVEN NAME
+            group: Pathology
+        - name: Address
+          min_occurs: 0
+          max_occurs: 1
+          sort: 3
+          reference: CR0070
+          rawtext_name: address
+          virtual_field: address
+          encore_event: 
+          encore_event_field: 
+          e_base_record: e_base_record
+          annotation: PATIENT USUAL ADDRESS (AT DIAGNOSIS)
+          description: Supports Structured or Unstructured Addresses
+          node_type: Nodes::Entity
+          children:
+          - name: AddressChoice
+            min_occurs: 1
+            max_occurs: 1
+            sort: 1
+            annotation: TEMP ANNOTATION
+            choice_type: mandatory_or
+            node_type: Nodes::Choice
+            children:
+            - name: UnstructuredAddress
+              min_occurs: 0
+              max_occurs: 1
+              sort: 1
+              annotation: TEMP ANNOTATION
+              node_type: Nodes::Entity
+              children:
+              - name: STREET ADDRESS LINE
+                min_occurs: 0
+                max_occurs: 1
+                sort: 1
+                rawtext_name: address
+                virtual_field: address
+                encore_event: 
+                encore_event_field: 
+                e_base_record: e_base_record
+                annotation: UNSTRUCTURED ADDRESS LINE (175 CHARACTERS)
+                description: UNSTRUCTURED ADDRESS LINE (175 CHARACTERS)
+                node_type: Nodes::DataItem
+                xml_type: ST_NHS_AddressLine175
+            - name: StructuredAddress
+              min_occurs: 0
+              max_occurs: 1
+              sort: 2
+              annotation: Supports Structured Addresses
+              node_type: Nodes::Entity
+              children:
+              - name: STREET ADDRESS LINE
+                min_occurs: 0
+                max_occurs: 5
+                sort: 1
+                rawtext_name: address
+                virtual_field: address
+                encore_event: 
+                encore_event_field: 
+                e_base_record: e_base_record
+                annotation: UNSTRUCTURED ADDRESS LINE (35 CHARACTERS)
+                description: UNSTRUCTURED ADDRESS LINE (35 CHARACTERS)
+                node_type: Nodes::DataItem
+                xml_type: ST_NHS_AddressLine35
+        - name: POSTCODE OF USUAL ADDRESS (AT DIAGNOSIS)
+          min_occurs: 0
+          max_occurs: 1
+          sort: 4
+          reference: CR0080
+          rawtext_name: postcode
+          virtual_field: postcode
+          encore_event: 
+          encore_event_field: 
+          e_base_record: e_base_record
+          annotation: POSTCODE OF USUAL ADDRESS (AT DIAGNOSIS)
+          description: POSTCODE OF USUAL ADDRESS (AT DIAGNOSIS) is the POSTCODE OF USUAL
+            ADDRESS of the PATIENT at the time of PATIENT DIAGNOSIS.
+          node_type: Nodes::DataItem
+          data_dictionary_element:
+            name: POSTCODE OF USUAL ADDRESS (AT DIAGNOSIS)
+            group: Pathology
+        - name: PERSON STATED GENDER CODE
+          min_occurs: 0
+          max_occurs: 1
+          sort: 5
+          reference: CR3170
+          rawtext_name: sex
+          virtual_field: sex
+          encore_event: 
+          encore_event_field: 
+          e_base_record: e_base_record
+          annotation: PERSON STATED GENDER CODE
+          description: Person's gender as self-declared (or inferred by observation
+            for those unable to declare their PERSON STATED GENDER).
+          node_type: Nodes::DataItem
+          data_dictionary_element:
+            name: PERSON STATED GENDER CODE
+            group: Pathology
+      - name: Pathology
+        min_occurs: 0
+        sort: 40
+        annotation: TEMP ANNOTATION
+        description: To carry the pathology details.  It is expected that all the data
+          items on the minimum RCPath data set will be collected. The pathology data
+          items below are a subset of that data set. A patient may have any number of
+          pathology reports, and there may be more than one pathology report per specimen.
+        node_type: Nodes::Entity
+        children:
+        - name: PathologyGroup
+          sort: 0
+          annotation: TEMP ANNOTATION
+          node_type: Nodes::Group
+          children:
+          - name: INVESTIGATION RESULT DATE
+            min_occurs: 1
+            max_occurs: 1
+            sort: 1
+            reference: pCR0780
+            rawtext_name: authoriseddate
+            virtual_field: authoriseddate
+            encore_event: Vpathology
+            encore_event_field: investigationresultdate
+            e_base_record: e_cosd_xml_pathology
+            annotation: INVESTIGATION RESULT DATE
+            description: The date on which an investigation was concluded e.g. the date
+              the result was authorised.
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: INVESTIGATION RESULT DATE
+              group: Pathology
+          - name: SERVICE REPORT IDENTIFIER
+            min_occurs: 1
+            max_occurs: 1
+            sort: 2
+            reference: pCR0950
+            rawtext_name: servicereportidentifier
+            virtual_field: servicereportidentifier
+            encore_event: Vpathology
+            encore_event_field: servicereportidentifier
+            e_base_record: e_cosd_xml_pathology
+            annotation: SERVICE REPORT IDENTIFIER
+            description: A unique identifier of a SERVICE REPORT.
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: SERVICE REPORT IDENTIFIER
+              group: Pathology
+          - name: PATHOLOGY OBSERVATION REPORT IDENTIFIER
+            min_occurs: 0
+            max_occurs: 1
+            sort: 3
+            reference: pCR6220
+            rawtext_name: pathology_observation_report_id
+            virtual_field: pathology_observation_report_id
+            encore_event: Vpathology
+            encore_event_field: pathobservationreportid
+            e_base_record: e_cosd_xml_pathology
+            annotation: PATHOLOGY OBSERVATION REPORT IDENTIFIER
+            description: A local identifier of an OBSERVATION REPORT. This differs from
+              the Service Report Identifier as it identifies the specific RC Path Form
+              used, multiple of these could be contained within a Service Report (where
+              there are multiple tumours are identified taken).
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: PATHOLOGY OBSERVATION REPORT IDENTIFIER
+              group: Pathology
+          - name: SERVICE REPORT STATUS
+            min_occurs: 0
+            max_occurs: 1
+            sort: 4
+            reference: pCR0960
+            rawtext_name: servicereportstatus
+            virtual_field: servicereportstatus
+            encore_event: Vpathology
+            encore_event_field: servicereportstatus
+            e_base_record: e_cosd_xml_pathology
+            annotation: SERVICE REPORT STATUS
+            description: The status of the SERVICE REPORT.
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: SERVICE REPORT STATUS
+              group: Pathology
+          - name: ConsultantPathologyTestRequestedBy
+            min_occurs: 0
+            max_occurs: 1
+            sort: 5
+            annotation: TEMP ANNOTATION
+            node_type: Nodes::Entity
+            children:
+            - name: PROFESSIONAL REGISTRATION ISSUER CODE - CONSULTANT (PATHOLOGY TEST
+                REQUESTED BY)
+              min_occurs: 1
+              max_occurs: 1
+              sort: 1
+              reference: pCR7100
+              rawtext_name: professionalregistrationissuercode-consultantpathologytestrequestedby
+              virtual_field: pric_requestor
+              encore_event: Vpathology
+              encore_event_field: pric_requestor
+              e_base_record: e_cosd_xml_pathology
+              annotation: PROFESSIONAL REGISTRATION ISSUER CODE (PATHOLOGY TEST REQUESTED
+                BY)
+              description: PROFESSIONAL REGISTRATION ISSUER CODE (PATHOLOGY TEST REQUESTED
+                BY)
+              node_type: Nodes::DataItem
+              xml_type: ST_NHS_PRIC_GMP
+            - name: PROFESSIONAL REGISTRATION ENTRY IDENTIFIER - CONSULTANT (PATHOLOGY
+                TEST REQUESTED BY)
+              min_occurs: 1
+              max_occurs: 1
+              sort: 2
+              reference: pCR7120
+              rawtext_name: professionalregistrationentryidentifier-consultantpathologytestrequestedby
+              virtual_field: prei_requestor
+              encore_event: Vpathology
+              encore_event_field: prei_requestor
+              e_base_record: e_cosd_xml_pathology
+              annotation: PROFESSIONAL REGISTRATION ENTRY IDENTIFIER (PATHOLOGY TEST
+                REQUESTED BY)
+              description: PROFESSIONAL REGISTRATION ENTRY IDENTIFIER (PATHOLOGY TEST
+                REQUESTED BY)
+              node_type: Nodes::DataItem
+              xml_type: ST_NHS_PREC_GMP
+          - name: ORGANISATION SITE IDENTIFIER (PATHOLOGY TEST REQUESTED BY)
+            min_occurs: 0
+            max_occurs: 1
+            sort: 6
+            reference: pCR0980
+            rawtext_name: pathtestreqsitecode
+            virtual_field: providercode
+            encore_event: Vpathology
+            encore_event_field: providercode
+            e_base_record: e_cosd_xml_pathology
+            annotation: ORGANISATION SITE IDENTIFIER (OF PATHOLOGY TEST REQUEST)
+            description: The ORGANISATION IDENTIFIER of the Organisation Site at which
+              the CARE PROFESSIONAL, who requested the DIAGNOSTIC TEST REQUEST for suspected
+              cancer, is based.
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: ORGANISATION SITE IDENTIFIER (OF PATHOLOGY TEST REQUEST)
+              group: Pathology
+          - name: SAMPLE COLLECTION DATE
+            min_occurs: 0
+            max_occurs: 1
+            sort: 7
+            reference: pCR1010
+            rawtext_name: collecteddate
+            virtual_field: collecteddate
+            encore_event: Vpathology
+            encore_event_field: sampletakendate
+            e_base_record: e_cosd_xml_pathology
+            annotation: SAMPLE COLLECTION DATE
+            description: The date that a SAMPLE collection takes place or the start
+              of a period for SAMPLE collection.
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: SAMPLE COLLECTION DATE
+              group: Pathology
+          - name: SAMPLE RECEIPT DATE
+            min_occurs: 0
+            max_occurs: 1
+            sort: 8
+            reference: pCR0770
+            rawtext_name: receiveddate
+            virtual_field: receiveddate
+            encore_event: Vpathology
+            encore_event_field: samplereceiptdate
+            e_base_record: e_cosd_xml_pathology
+            annotation: SAMPLE RECEIPT DATE
+            description: Date of receipt of a SAMPLE by a LABORATORY.
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: SAMPLE RECEIPT DATE
+              group: Pathology
+          - name: ORGANISATION IDENTIFIER (OF REPORTING PATHOLOGIST)
+            min_occurs: 0
+            max_occurs: 1
+            sort: 9
+            reference: pCR0800
+            rawtext_name: orgcodepathreport
+            virtual_field: orgcodepathreport
+            encore_event: Vpathology
+            encore_event_field: organisationcode_pathology
+            e_base_record: e_cosd_xml_pathology
+            annotation: ORGANISATION IDENTIFIER (OF REPORTING PATHOLOGIST)
+            description: The ORGANISATION IDENTIFIER of the Organisation at which the
+              authorising pathologist is based.
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: ORGANISATION IDENTIFIER (OF REPORTING PATHOLOGIST)
+              group: Pathology
+          - name: ConsultantPathologist
+            min_occurs: 0
+            max_occurs: 1
+            sort: 10
+            annotation: TEMP ANNOTATION
+            node_type: Nodes::Entity
+            children:
+            - name: PROFESSIONAL REGISTRATION ISSUER CODE - CONSULTANT (PATHOLOGIST)
+              min_occurs: 1
+              max_occurs: 1
+              sort: 1
+              reference: pCR7130
+              rawtext_name: professionalregistrationissuercode-consultantpathologist
+              virtual_field: pric_pathologist
+              encore_event: Vpathology
+              encore_event_field: pric_pathologist
+              e_base_record: e_cosd_xml_pathology
+              annotation: PROFESSIONAL REGISTRATION ISSUER CODE (PATHOLOGY REPORT AUTHORISED
+                BY)
+              description: PROFESSIONAL REGISTRATION ISSUER CODE (PATHOLOGY REPORT AUTHORISED
+                BY)
+              node_type: Nodes::DataItem
+              xml_type: ST_NHS_PRIC_GMP
+            - name: PROFESSIONAL REGISTRATION ENTRY IDENTIFIER - CONSULTANT (PATHOLOGIST)
+              min_occurs: 1
+              max_occurs: 1
+              sort: 2
+              reference: pCR7140
+              rawtext_name: professionalregistrationentryidentifier-consultantpathologist
+              virtual_field: prei_pathologist
+              encore_event: Vpathology
+              encore_event_field: prei_pathologist
+              e_base_record: e_cosd_xml_pathology
+              annotation: PROFESSIONAL REGISTRATION ENTRY IDENTIFIER (PATHOLOGY REPORT
+                AUTHORISED BY)
+              description: PROFESSIONAL REGISTRATION ENTRY IDENTIFIER (PATHOLOGY REPORT
+                AUTHORISED BY)
+              node_type: Nodes::DataItem
+              xml_type: ST_NHS_PREC_GMP
+          - name: SPECIMEN NATURE
+            min_occurs: 0
+            max_occurs: 1
+            sort: 11
+            reference: pCR0970
+            rawtext_name: specimennature
+            virtual_field: specimennature
+            encore_event: Vpathology
+            encore_event_field: specimennature
+            e_base_record: e_cosd_xml_pathology
+            annotation: CANCER SPECIMEN NATURE
+            description: The nature of the specimen taken during a Clinical Investigation.
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: SPECIMEN NATURE
+              group: Pathology
+          - name: TopographyMorphologySnomed
+            min_occurs: 0
+            max_occurs: 1
+            sort: 12
+            annotation: TEMP ANNOTATION
+            node_type: Nodes::Entity
+            children:
+            - name: SNOMED VERSION (PATHOLOGY)
+              min_occurs: 1
+              max_occurs: 1
+              sort: 1
+              reference: pCR6990
+              rawtext_name: snomed_version
+              virtual_field: snomed_version
+              encore_event: Vpathology
+              encore_event_field: snomedversion
+              e_base_record: e_cosd_xml_pathology
+              annotation: SNOMED VERSION (PATHOLOGY)
+              description: " The version of SNOMED used to encode MORPHOLOGY (SNOMED)
+                PATHOLOGY and TOPOGRAPHY (SNOMED) PATHOLOGY Versions of SNOMED prior
+                to SNOMED CT ceased to be licenced by The International Health Terminology
+                Standards Development Organisation (IHTSDO) after April 2017 other than
+                for historical content  "
+              node_type: Nodes::DataItem
+              data_dictionary_element:
+                name: SNOMED VERSION (PATHOLOGY)
+                group: Pathology
+            - name: TopographyMorphologyChoice
+              min_occurs: 1
+              max_occurs: 2
+              sort: 2
+              annotation: TEMP ANNOTATION
+              choice_type: mandatory_or
+              node_type: Nodes::Choice
+              children:
+              - name: TOPOGRAPHY (SNOMED) PATHOLOGY
+                min_occurs: 1
+                sort: 1
+                reference: pCR6410
+                rawtext_name: topography_snomed
+                virtual_field: topography_snomed
+                encore_event: Vpathology
+                encore_event_field: topography_snomed
+                e_base_record: e_cosd_xml_pathology
+                annotation: TOPOGRAPHY (SNOMED PATHOLOGY)
+                description: This is the topographical site of the tumour as categorised
+                  by SNOMED International / SNOMED CT Versions of SNOMED prior to SNOMED
+                  CT ceased to be licenced by The International Health Terminology Standards
+                  Development Organisation (IHTSDO) after April 2017 other than for
+                  historical content
+                node_type: Nodes::DataItem
+                data_dictionary_element:
+                  name: TOPOGRAPHY (SNOMED PATHOLOGY)
+                  group: Pathology
+              - name: MORPHOLOGY (SNOMED) PATHOLOGY
+                min_occurs: 1
+                sort: 2
+                reference: pCR6420
+                rawtext_name: morphology_snomed
+                virtual_field: histology_snomed
+                encore_event: Vpathology
+                encore_event_field: histology_snomed
+                e_base_record: e_cosd_xml_pathology
+                annotation: MORPHOLOGY (SNOMED PATHOLOGY)
+                description: This is the morphology of the tumour as categorised  by
+                  SNOMED International / SNOMED CT Versions of SNOMED prior to SNOMED
+                  CT ceased to be licenced by The International Health Terminology Standards
+                  Development Organisation (IHTSDO) after April 2017 other than for
+                  historical content
+                node_type: Nodes::DataItem
+                data_dictionary_element:
+                  name: MORPHOLOGY (SNOMED PATHOLOGY)
+                  group: Pathology
+          - name: DIAGNOSIS (ICD PATHOLOGICAL)
+            min_occurs: 0
+            sort: 13
+            reference: pCR0810
+            rawtext_name: primarydiagnoses
+            virtual_field: primarydiagnoses
+            encore_event: Vpathology
+            encore_event_field: primarydiagnoses
+            e_base_record: e_cosd_xml_pathology
+            annotation: DIAGNOSIS (ICD PATHOLOGICAL)
+            description: PRIMARY DIAGNOSIS (ICD PATHOLOGICAL) is the PRIMARY DIAGNOSIS
+              based on the evidence from a pathological examination.
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: PRIMARY DIAGNOSIS (ICD PATHOLOGICAL)
+              group: Pathology
+          - name: TUMOUR LATERALITY (PATHOLOGICAL)
+            min_occurs: 0
+            max_occurs: 1
+            sort: 14
+            reference: pCR0820
+            rawtext_name: tumourlaterality_pathological
+            virtual_field: tumourlaterality
+            encore_event: Vpathology
+            encore_event_field: tumourlaterality
+            e_base_record: e_cosd_xml_pathology
+            annotation: TUMOUR LATERALITY (PATHOLOGICAL)
+            description: Tumour laterality identifies the side of the body for a tumour
+              relating to paired organs within a PATIENT.
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: TUMOUR LATERALITY (PATHOLOGICAL)
+              group: Pathology
+          - name: PATHOLOGY INVESTIGATION TYPE
+            min_occurs: 0
+            max_occurs: 1
+            sort: 15
+            reference: pCR0760
+            rawtext_name: pathologyinvestigationtype
+            virtual_field: pathologyinvestigationtype
+            encore_event: Vpathology
+            encore_event_field: pathologyinvestigationtype
+            e_base_record: e_cosd_xml_pathology
+            annotation: PATHOLOGY INVESTIGATION TYPE
+            description: The type of pathology investigation carried out.
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: PATHOLOGY INVESTIGATION TYPE
+              group: Pathology
+          - name: PATHOLOGY REPORT TEXT
+            min_occurs: 0
+            max_occurs: 1
+            sort: 16
+            reference: pCR1020
+            rawtext_name: fulltextreport
+            virtual_field: fulltextreport
+            encore_event: Vpathology
+            encore_event_field: fullpathologytext
+            e_base_record: e_cosd_xml_pathology
+            annotation: PATHOLOGY REPORT TEXT
+            description: The full text from the pathology report which may be required
+              by Registries to calculate diagnosis and staging details
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: PATHOLOGY REPORT TEXT
+              group: Pathology
+          - name: LESION SIZE (PATHOLOGICAL)
+            min_occurs: 0
+            max_occurs: 1
+            sort: 17
+            reference: pCR0830
+            rawtext_name: lesionsize_pathological
+            virtual_field: lesionsize_pathological
+            encore_event: Vpathology
+            encore_event_field: lesionsize_pathological
+            e_base_record: e_cosd_xml_pathology
+            annotation: LESION SIZE (PATHOLOGICAL)
+            description: The size in millimetres of the diameter of a lesion, largest
+              if more than one, if the histology of a SAMPLE proves to be invasive.
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: LESION SIZE (PATHOLOGICAL)
+              group: Pathology
+          - name: GRADE OF DIFFERENTIATION (PATHOLOGICAL)
+            min_occurs: 0
+            max_occurs: 1
+            sort: 18
+            reference: pCR0860
+            rawtext_name: gradeofdifferentiation_pathological
+            virtual_field: gradeofdifferentiation
+            encore_event: Vpathology
+            encore_event_field: gradeofdifferentiation
+            e_base_record: e_cosd_xml_pathology
+            annotation: GRADE OF DIFFERENTIATION (PATHOLOGICAL)
+            description: GRADE OF DIFFERENTIATION (PATHOLOGICAL) is the definitive grade
+              of the Tumour based on the evidence from a pathological examination.
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: GRADE OF DIFFERENTIATION (PATHOLOGICAL)
+              group: Pathology
+          - name: CANCER VASCULAR OR LYMPHATIC INVASION
+            min_occurs: 0
+            max_occurs: 1
+            sort: 19
+            reference: pCR0870
+            rawtext_name: cancervascularorlymphaticinvasion
+            virtual_field: vascularorlymphaticinvasion
+            encore_event: Vpathology
+            encore_event_field: vascularorlymphaticinvasion
+            e_base_record: e_cosd_xml_pathology
+            annotation: CANCER VASCULAR OR LYMPHATIC INVASION
+            description: An indication of the presence or absence of unequivocal tumour
+              in lymphatic and/or  vascular spaces.
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: CANCER VASCULAR OR LYMPHATIC INVASION
+              group: Pathology
+          - name: EXCISION MARGIN
+            min_occurs: 0
+            max_occurs: 1
+            sort: 20
+            reference: pCR0880
+            rawtext_name: excisionmargin
+            virtual_field: excisionmargin
+            encore_event: Vpathology
+            encore_event_field: excisionmargin
+            e_base_record: e_cosd_xml_pathology
+            annotation: EXCISION MARGIN INDICATION CODE
+            description: An indication of whether the excision margin was clear of the
+              tumour and if so, by how much. Where there is more than one measurement,
+              record the closest or closest relevant margin. Where actual measurements
+              are not taken use options 01, 05 or 06. Note that not some values are
+              applicable to  specific tumour types
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: EXCISION MARGIN INDICATION CODE
+              group: Pathology
+          - name: SYNCHRONOUS TUMOUR INDICATOR
+            min_occurs: 0
+            max_occurs: 1
+            sort: 21
+            reference: pCR0840
+            rawtext_name: synchronoustumourindicator
+            virtual_field: synchronoustumourindicator
+            encore_event: Vpathology
+            encore_event_field: synchronoustumourindicator
+            e_base_record: e_cosd_xml_pathology
+            annotation: SYNCHRONOUS TUMOUR INDICATOR
+            description: An indicator of the presence of multiple tumours at a tumour
+              site.
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: SYNCHRONOUS TUMOUR INDICATOR
+              group: Pathology
+          - name: NUMBER OF NODES EXAMINED
+            min_occurs: 0
+            max_occurs: 1
+            sort: 22
+            reference: pCR0890
+            rawtext_name: numberofnodesexamined
+            virtual_field: numberofnodesexamined
+            encore_event: Vpathology
+            encore_event_field: numberofnodesexamined
+            e_base_record: e_cosd_xml_pathology
+            annotation: NUMBER OF NODES EXAMINED
+            description: The number of local and regional nodes examined.
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: NUMBER OF NODES EXAMINED
+              group: Pathology
+          - name: NUMBER OF NODES POSITIVE
+            min_occurs: 0
+            max_occurs: 1
+            sort: 23
+            reference: pCR0900
+            rawtext_name: numberofnodespositive
+            virtual_field: numberofnodespositive
+            encore_event: Vpathology
+            encore_event_field: numberofnodespositive
+            e_base_record: e_cosd_xml_pathology
+            annotation: NUMBER OF NODES POSITIVE
+            description: The number of local and regional nodes reported as being positive
+              for the presence of Tumour metastases.
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: NUMBER OF NODES POSITIVE
+              group: Pathology
+          - name: TNM CODING EDITION
+            min_occurs: 0
+            max_occurs: 1
+            sort: 24
+            reference: pCR6980
+            rawtext_name: tnm_coding_edition
+            virtual_field: tnm_coding_edition
+            encore_event: Vpathology
+            encore_event_field: tnm_coding_edition
+            e_base_record: e_cosd_xml_pathology
+            annotation: TNM CODING EDITION
+            description: The TNM Coding edition in use
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: TNM CODING EDITION
+              group: Pathology
+          - name: TNM VERSION NUMBER (PATHOLOGICAL)
+            min_occurs: 0
+            max_occurs: 1
+            sort: 25
+            reference: pCR6820
+            rawtext_name: tnmeditionnumber
+            virtual_field: tnmedition
+            encore_event: Vpathology
+            encore_event_field: tnmedition
+            e_base_record: e_cosd_xml_pathology
+            annotation: TNM VERSION NUMBER (PATHOLOGICAL)
+            description: The Pathological UICC or AJCC version number used for Tumour,
+              Node and Metastasis (TNM) staging based on the evidence from a pathological
+              examination.
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: TNM VERSION NUMBER (PATHOLOGICAL)
+              group: Pathology
+          - name: T CATEGORY (PATHOLOGICAL)
+            min_occurs: 0
+            max_occurs: 1
+            sort: 26
+            reference: pCR0910
+            rawtext_name: tcategory_pathological
+            virtual_field: tcategory_pathological
+            encore_event: Vpathology
+            encore_event_field: tcategory_pathological
+            e_base_record: e_cosd_xml_pathology
+            annotation: T CATEGORY (PATHOLOGICAL)
+            description: T CATEGORY (PATHOLOGICAL) is the Union for International Cancer
+              Control (UICC) or American Joint Committee on Cancer (AJCC) code which
+              classifies the size and extent of the primary Tumour based on the evidence
+              from a pathological examination.
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: T CATEGORY (PATHOLOGICAL)
+              group: Pathology
+          - name: N CATEGORY (PATHOLOGICAL)
+            min_occurs: 0
+            max_occurs: 1
+            sort: 27
+            reference: pCR0920
+            rawtext_name: ncategory_pathological
+            virtual_field: ncategory_pathological
+            encore_event: Vpathology
+            encore_event_field: ncategory_pathological
+            e_base_record: e_cosd_xml_pathology
+            annotation: N CATEGORY (PATHOLOGICAL)
+            description: N CATEGORY (PATHOLOGICAL) is the Union for International Cancer
+              Control (UICC) or American Joint Committee on Cancer (AJCC) code which
+              classifies the absence or presence and extent of regional lymph node metastases
+              based on the evidence from a pathological examination.
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: N CATEGORY (PATHOLOGICAL)
+              group: Pathology
+          - name: M CATEGORY (PATHOLOGICAL)
+            min_occurs: 0
+            max_occurs: 1
+            sort: 28
+            reference: pCR0930
+            rawtext_name: mcategory_pathological
+            virtual_field: mcategory_pathological
+            encore_event: Vpathology
+            encore_event_field: mcategory_pathological
+            e_base_record: e_cosd_xml_pathology
+            annotation: M CATEGORY (PATHOLOGICAL)
+            description: M CATEGORY (PATHOLOGICAL)  is the Union for International Cancer
+              Control (UICC) or American Joint Committee on Cancer (AJCC) code which  classifies
+              the absence or presence of distant metastases based on the evidence from
+              a pathological examination.
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: M CATEGORY (PATHOLOGICAL)
+              group: Pathology
+          - name: TNM STAGE GROUPING (PATHOLOGICAL)
+            min_occurs: 0
+            max_occurs: 1
+            sort: 29
+            reference: pCR0940
+            rawtext_name: tnmstagegrouping_pathological
+            virtual_field: tnmstagegrouping_pathological
+            encore_event: Vpathology
+            encore_event_field: tnmstagegrouping_pathological
+            e_base_record: e_cosd_xml_pathology
+            annotation: TNM STAGE GROUPING (PATHOLOGICAL)
+            description: TNM STAGE GROUPING (PATHOLOGICAL) is the Union for International
+              Cancer Control (UICC) or American Joint Committee on Cancer (AJCC) code
+              which classifies the combination of Tumour, node and metastases into stage
+              groupings based on the evidence from a pathological examination.
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: TNM STAGE GROUPING (PATHOLOGICAL)
+              group: Pathology
+          - name: NEOADJUVANT THERAPY INDICATOR
+            min_occurs: 0
+            max_occurs: 1
+            sort: 30
+            reference: pCR1000
+            rawtext_name: neoadjuvanttherapyindicator
+            virtual_field: neoadjuvanttherapyindicator
+            encore_event: Vpathology
+            encore_event_field: neoadjuvanttherapyindicator
+            e_base_record: e_cosd_xml_pathology
+            annotation: NEOADJUVANT THERAPY INDICATOR
+            description: Indicator of whether the pathological stage was recorded after
+              the patient had received neoadjuvant therapy.
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: NEOADJUVANT THERAPY INDICATOR
+              group: Pathology
+          - name: Ki-67 INDICATOR
+            min_occurs: 0
+            max_occurs: 1
+            sort: 31
+            reference: pCR7000
+            rawtext_name: ki-67indicator
+            virtual_field: ki67indicator
+            encore_event: Vpathology
+            encore_event_field: ki67indicator
+            e_base_record: e_cosd_xml_pathology
+            annotation: CANCER SPECIMEN NATURE
+            description: Indicate if a Ki-67 staining was done on the sample
+            node_type: Nodes::DataItem
+            xml_type: ST_NHS_KI67Indicator
+          - name: Ki-67 RESULT
+            min_occurs: 0
+            max_occurs: 1
+            sort: 32
+            reference: pCR7010
+            rawtext_name: ki-67result
+            virtual_field: ki67result
+            encore_event: Vpathology
+            encore_event_field: ki67result
+            e_base_record: e_cosd_xml_pathology
+            annotation: KI-67 PERCENTAGE RESULT
+            description: Record the percentage of tumour cells that are positive for
+              Ki-67, on a scale of 0 to 100
+            node_type: Nodes::DataItem
+            xml_type: INT_NHS_3_LIMIT_100
+          - name: MLH1 NUCLEAR EXPRESSION INTACT
+            min_occurs: 0
+            max_occurs: 1
+            sort: 33
+            reference: pCR7020
+            rawtext_name: mlh1nuclearexpressionintact
+            virtual_field: mlh1nuclearexpressionintact
+            encore_event: Vpathology
+            encore_event_field: mlh1nuclearexpressionintact
+            e_base_record: e_cosd_xml_pathology
+            annotation: MLH1 IMMUNOHISTOCHEMISTRY NUCLEAR EXPRESSION INTACT INDICATION
+              CODE
+            description: Is MLH1 immunohistochemistry nuclear expression intact?
+            node_type: Nodes::DataItem
+            xml_type: ST_NHS_NuclearExpressionIntact
+          - name: PMS2 NUCLEAR EXPRESSION INTACT
+            min_occurs: 0
+            max_occurs: 1
+            sort: 34
+            reference: pCR7030
+            rawtext_name: pms2nuclearexpressionintact
+            virtual_field: pms2nuclearexpressionintact
+            encore_event: Vpathology
+            encore_event_field: pms2nuclearexpressionintact
+            e_base_record: e_cosd_xml_pathology
+            annotation: PMS2 IMMUNOHISTOCHEMISTRY NUCLEAR EXPRESSION INTACT INDICATION
+              CODE
+            description: Is PMS2 immunohistochemistry nuclear expression intact?
+            node_type: Nodes::DataItem
+            xml_type: ST_NHS_NuclearExpressionIntact
+          - name: MSH2 NUCLEAR EXPRESSION INTACT
+            min_occurs: 0
+            max_occurs: 1
+            sort: 35
+            reference: pCR7040
+            rawtext_name: msh2nuclearexpressionintact
+            virtual_field: msh2nuclearexpressionintact
+            encore_event: Vpathology
+            encore_event_field: msh2nuclearexpressionintact
+            e_base_record: e_cosd_xml_pathology
+            annotation: MSH2 IMMUNOHISTOCHEMISTRY NUCLEAR EXPRESSION INTACT INDICATION
+              CODE
+            description: Is MSH2 immunohistochemistry nuclear expression intact?
+            node_type: Nodes::DataItem
+            xml_type: ST_NHS_NuclearExpressionIntact
+          - name: MSH6 NUCLEAR EXPRESSION INTACT
+            min_occurs: 0
+            max_occurs: 1
+            sort: 36
+            reference: pCR7050
+            rawtext_name: msh6nuclearexpressionintact
+            virtual_field: msh6nuclearexpressionintact
+            encore_event: Vpathology
+            encore_event_field: msh6nuclearexpressionintact
+            e_base_record: e_cosd_xml_pathology
+            annotation: MSH6 IMMUNOHISTOCHEMISTRY NUCLEAR EXPRESSION INTACT INDICATION
+              CODE
+            description: Is MSH6 immunohistochemistry nuclear expression intact?
+            node_type: Nodes::DataItem
+            xml_type: ST_NHS_NuclearExpressionIntact
+          - name: MICROSATELLITE INSTABILITY (MSI) TESTING
+            min_occurs: 0
+            max_occurs: 1
+            sort: 37
+            reference: pCR7060
+            rawtext_name: microsatelliteinstabilitymsitesting
+            virtual_field: msitesting
+            encore_event: Vpathology
+            encore_event_field: msitesting
+            e_base_record: e_cosd_xml_pathology
+            annotation: MICROSATELLITE INSTABILITY TESTING RESULT
+            description: Result of microsatellite instability (MSI) testing.
+            node_type: Nodes::DataItem
+            xml_type: ST_NHS_MicrosatelliteInstabilityMSITesting
+        - name: PathologyBreast
+          min_occurs: 0
+          max_occurs: 1
+          sort: 10
+          annotation: TEMP ANNOTATION
+          description: To carry pathology details for breast cancer
+          categories:
+          - Breast
+          node_type: Nodes::Entity
+          children:
+          - name: MULTIFOCAL TUMOUR INDICATOR (BREAST)
+            min_occurs: 0
+            max_occurs: 1
+            sort: 1
+            reference: pBR4140
+            rawtext_name: multifocaltumourindicator_breast
+            virtual_field: multifocaltumourind_breast
+            encore_event: Vpathology
+            encore_event_field: multifocaltumourind_breast
+            e_base_record: e_cosd_xml_pathology
+            annotation: MULTIFOCAL TUMOUR INDICATOR (BREAST)
+            description: Is there more than one discrete tumour identified in the same
+              breast?
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: MULTIFOCAL TUMOUR INDICATOR (BREAST)
+              group: Pathology
+          - name: DCIS grade
+            min_occurs: 0
+            max_occurs: 1
+            sort: 2
+            reference: pBR4160
+            rawtext_name: dcisgrade
+            virtual_field: dcisgrade
+            encore_event: Vpathology
+            encore_event_field: dcisgrade
+            e_base_record: e_cosd_xml_pathology
+            annotation: DUCTAL CARCINOMA IN SITU GRADE
+            description: If ductal carcinoma in situ is present, record the DCIS grade.
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: DUCTAL CARCINOMA IN SITU GRADE
+              group: Pathology
+          - name: DCIS/PLEOMORPHIC OR DCIS LIKE LCIS SIZE
+            min_occurs: 0
+            max_occurs: 1
+            sort: 3
+            reference: pBR4180
+            rawtext_name: noninvasivetumoursize
+            virtual_field: noninvasivetumoursize
+            encore_event: Vpathology
+            encore_event_field: noninvasivetumoursize
+            e_base_record: e_cosd_xml_pathology
+            annotation: DCIS/PLEOMORPHIC OR DCIS LIKE LCIS SIZE
+            description: The size of the non invasive tumour in mm. This is only required
+              if there is no invasive component.
+            node_type: Nodes::DataItem
+            xml_type: ST_NHS_NonInvasiveTumourSize
+          - name: WHOLE TUMOUR (INVASIVE + DCIS) SIZE
+            min_occurs: 0
+            max_occurs: 1
+            sort: 4
+            reference: pBR4190
+            rawtext_name: wholetumoursize
+            virtual_field: wholetumoursize
+            encore_event: Vpathology
+            encore_event_field: wholetumoursize
+            e_base_record: e_cosd_xml_pathology
+            annotation: WHOLE TUMOUR (INVASIVE + DCIS) SIZE
+            description: Whole size of tumour (invasive + surrounding DCIS if DCIS extends
+              >1mm beyond invasive) (mm) (For tumours without a DCIS component this
+              will be the same as INVASIVE LESION SIZE).
+            node_type: Nodes::DataItem
+            xml_type: ST_NHS_WholeTumourSize
+          - name: METASTASIS EXTENT CODE
+            min_occurs: 0
+            max_occurs: 1
+            sort: 5
+            reference: pBR4200
+            rawtext_name: metastasisextentcode
+            virtual_field: metastasisextentcode
+            encore_event: Vpathology
+            encore_event_field: metastasisextentcode
+            e_base_record: e_cosd_xml_pathology
+            annotation: METASTASIS EXTENT CODE
+            description: 'For single node positivity, specify micrometastatic status
+              as follows: (See User Guide for more information)'
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: METASTASIS EXTENT CODE
+              group: Pathology
+          - name: DISTANCE TO MARGIN
+            min_occurs: 0
+            max_occurs: 1
+            sort: 6
+            reference: pBR4210
+            rawtext_name: distancetomargin
+            virtual_field: distancetomargin
+            encore_event: Vpathology
+            encore_event_field: distancetomargin
+            e_base_record: e_cosd_xml_pathology
+            annotation: DISTANCE TO MARGIN
+            description: Distance to closest relevant margin (mm). Distance to nearest
+              margin whether invasive or non invasive. (For COSD measurement to the
+              nearest mm is sufficient but may be recorded to nearest tenth of mm)
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: DISTANCE TO MARGIN
+              group: Pathology
+          - name: ER ALLRED SCORE
+            min_occurs: 0
+            max_occurs: 1
+            sort: 7
+            reference: pBR4230
+            rawtext_name: erallredscore
+            virtual_field: erallredscore
+            encore_event: Vpathology
+            encore_event_field: erallredscore
+            e_base_record: e_cosd_xml_pathology
+            annotation: ALLRED SCORE (ESTROGEN RECEPTOR)
+            description: ER Allred score (Range 0, 2-8)
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: ALLRED SCORE (ESTROGEN RECEPTOR)
+              group: Pathology
+          - name: ER STATUS
+            min_occurs: 0
+            max_occurs: 1
+            sort: 8
+            reference: pBR4220
+            rawtext_name: erstatus
+            virtual_field: erstatus
+            encore_event: Vpathology
+            encore_event_field: erstatus
+            e_base_record: e_cosd_xml_pathology
+            annotation: ESTROGEN RECEPTOR STATUS
+            description: Oestrogen Receptor (ER) status.
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: ESTROGEN RECEPTOR STATUS
+              group: Pathology
+          - name: PR ALLRED SCORE
+            min_occurs: 0
+            max_occurs: 1
+            sort: 9
+            reference: pBR4300
+            rawtext_name: prallredscore
+            virtual_field: prallredscore
+            encore_event: Vpathology
+            encore_event_field: prallredscore
+            e_base_record: e_cosd_xml_pathology
+            annotation: ALLRED SCORE (PROGESTERONE RECEPTOR)
+            description: Record the PR ALLRED score if ER status is negative. (Range
+              0, 2-8)
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: ALLRED SCORE (PROGESTERONE RECEPTOR)
+              group: Pathology
+          - name: PR STATUS
+            min_occurs: 0
+            max_occurs: 1
+            sort: 10
+            reference: pBR4290
+            rawtext_name: prstatus
+            virtual_field: prstatus
+            encore_event: Vpathology
+            encore_event_field: prstatus
+            e_base_record: e_cosd_xml_pathology
+            annotation: BREAST PROGESTERONE RECEPTOR STATUS
+            description: Progesterone Receptor Status. Record the PR status if ER status
+              is negative.
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: PROGESTERONE RECEPTOR STATUS
+              group: Pathology
+          - name: HER2 STATUS
+            min_occurs: 0
+            max_occurs: 1
+            sort: 11
+            reference: pBR4280
+            rawtext_name: her2status
+            virtual_field: her2
+            encore_event: Vpathology
+            encore_event_field: her2
+            e_base_record: e_cosd_xml_pathology
+            annotation: HUMAN EPIDERMAL GROWTH FACTOR RECEPTOR STATUS (BREAST)
+            description: HER2 Immunohistochemical status (Human Epidermal Growth Factor
+              Receptor 2). Where the initial result of this test is "Borderline", a
+              further report will follow with result of the ISH test.
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: HUMAN EPIDERMAL GROWTH FACTOR RECEPTOR STATUS
+              group: Pathology
+          - name: HER2 ISH STATUS
+            min_occurs: 0
+            max_occurs: 1
+            sort: 12
+            reference: pBR4310
+            rawtext_name: her2ishstatus
+            virtual_field: her2ishstatus
+            encore_event: Vpathology
+            encore_event_field: her2ishstatus
+            e_base_record: e_cosd_xml_pathology
+            annotation: HUMAN EPIDERMAL GROWTH FACTOR IN SITU HYBRIDISATION RECEPTOR
+              STATUS (BREAST)
+            description: Record the result of the ISH (In situ hybridization) test.  This
+              is only required if the initial HER2 status is "Borderline".
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: HUMAN EPIDERMAL GROWTH FACTOR IN SITU HYBRIDIZATION RECEPTOR STATUS
+              group: Pathology
+          - name: CYTOLOGY (BREAST)
+            min_occurs: 0
+            max_occurs: 1
+            sort: 13
+            reference: pBR4240
+            rawtext_name: cytology_breast
+            virtual_field: cytology_breast
+            encore_event: Vpathology
+            encore_event_field: cytology_breast
+            e_base_record: e_cosd_xml_pathology
+            annotation: CYTOLOGY RESULT CODE (BREAST)
+            description: Cytology opinion (Breast)
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: CYTOLOGY RESULT CODE (BREAST)
+              group: Pathology
+          - name: CYTOLOGY (NODE)
+            min_occurs: 0
+            max_occurs: 1
+            sort: 14
+            reference: pBR4250
+            rawtext_name: cytology_node
+            virtual_field: cytology_node
+            encore_event: Vpathology
+            encore_event_field: cytology_node
+            e_base_record: e_cosd_xml_pathology
+            annotation: CYTOLOGY RESULT CODE (NODE)
+            description: Cytology opinion on axillary lymph node.
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: CYTOLOGY RESULT CODE (NODE)
+              group: Pathology
+          - name: CORE BIOPSY (BREAST)
+            min_occurs: 0
+            max_occurs: 1
+            sort: 15
+            reference: pBR4260
+            rawtext_name: corebiopsy_breast
+            virtual_field: corebiopsy_breast
+            encore_event: Vpathology
+            encore_event_field: corebiopsy_breast
+            e_base_record: e_cosd_xml_pathology
+            annotation: NEEDLE CORE BIOPSY RESULT CODE (BREAST)
+            description: Needle biopsy opinion on axillary lymph node.
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: CORE BIOPSY RESULT CODE (BREAST)
+              group: Pathology
+          - name: CORE BIOPSY (NODE)
+            min_occurs: 0
+            max_occurs: 1
+            sort: 16
+            reference: pBR4270
+            rawtext_name: corebiopsy_node
+            virtual_field: corebiopsy_node
+            encore_event: Vpathology
+            encore_event_field: corebiopsy_node
+            e_base_record: e_cosd_xml_pathology
+            annotation: CORE BIOPSY RESULT CODE (NODE)
+            description: Needle core biopsy opinion.
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: CORE BIOPSY RESULT CODE (NODE)
+              group: Pathology
+        - name: PathologyRenalPaediatricKidney
+          min_occurs: 0
+          max_occurs: 1
+          sort: 20
+          annotation: TEMP ANNOTATION
+          description: To carry renal (paediatric kidney) pathology details for CTYA
+          categories:
+          - CTYA
+          node_type: Nodes::Entity
+          children:
+          - name: TUMOUR RUPTURE
+            min_occurs: 0
+            max_occurs: 1
+            sort: 1
+            reference: pCT6610
+            rawtext_name: tumourrupture
+            virtual_field: tumourrupture
+            encore_event: Vpathology
+            encore_event_field: tumourrupture
+            e_base_record: e_cosd_xml_pathology
+            annotation: TUMOUR RUPTURE INDICATOR (PATHOLOGICAL)
+            description: Integrity of tumour margins based on pathologist's assessment.
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: TUMOUR RUPTURE INDICATOR
+              group: Pathology
+          - name: ANAPLASTIC NEPHROBLASTOMA
+            min_occurs: 0
+            max_occurs: 1
+            sort: 2
+            reference: pCT6620
+            rawtext_name: anaplasticnephroblastoma
+            virtual_field: anaplasticnephroblastoma
+            encore_event: Vpathology
+            encore_event_field: anaplasticnephroblastoma
+            e_base_record: e_cosd_xml_pathology
+            annotation: ANAPLASTIC NEPHROBLASTOMA TYPE
+            description: Is there evidence of anaplasia, focal or diffused, based on
+              established pathological classification
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: ANAPLASTIC NEPHROBLASTOMA TYPE
+              group: Pathology
+          - name: PERIRENAL FAT INVASION
+            min_occurs: 0
+            max_occurs: 1
+            sort: 3
+            reference: pCT6630
+            rawtext_name: perirenalfatinvasion
+            virtual_field: perirenalfatinvasion
+            encore_event: Vpathology
+            encore_event_field: perirenalfatinvasion
+            e_base_record: e_cosd_xml_pathology
+            annotation: TUMOUR INVASION INDICATOR (PERIRENAL FAT)
+            description: Are there areas of perirenal fat suspected for tumour infiltration
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: TUMOUR INVASION INDICATOR (PERIRENAL FAT)
+              group: Pathology
+          - name: RENAL SINUS INVASION
+            min_occurs: 0
+            max_occurs: 1
+            sort: 4
+            reference: pCT6640
+            rawtext_name: renalsinusinvasion
+            virtual_field: renalsinusinvasion
+            encore_event: Vpathology
+            encore_event_field: renalsinusinvasion
+            e_base_record: e_cosd_xml_pathology
+            annotation: TUMOUR INVASION INDICATOR (RENAL SINUS)
+            description: Is there evidence of invasion of renal sinus by tumour
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: TUMOUR INVASION INDICATOR (RENAL SINUS)
+              group: Pathology
+          - name: RENAL VEIN TUMOUR
+            min_occurs: 0
+            max_occurs: 1
+            sort: 5
+            reference: pCT6650
+            rawtext_name: renalveintumour_ctya
+            virtual_field: renalveintumour_ctya
+            encore_event: Vpathology
+            encore_event_field: renalveintumour_ctya
+            e_base_record: e_cosd_xml_pathology
+            annotation: RENAL VEIN TUMOUR INDICATOR (PAEDIATRIC KIDNEY)
+            description: Is there evidence of tumour thrombus in the renal vein
+            node_type: Nodes::DataItem
+            xml_type: ST_NHS_YesNoUncertain
+          - name: VIABLE TUMOUR AT RESECTION MARGIN
+            min_occurs: 0
+            max_occurs: 1
+            sort: 6
+            reference: pCT6680
+            rawtext_name: viabletumouratresectionmargin
+            virtual_field: viabletumourresectionmarg
+            encore_event: Vpathology
+            encore_event_field: viabletumourresectionmarg
+            e_base_record: e_cosd_xml_pathology
+            annotation: VIABLE TUMOUR EVIDENCE AT RESECTION MARGIN
+            description: If the resection margins are involved, is there evidence of
+              viable tumour at the resection margin
+            node_type: Nodes::DataItem
+            xml_type: ST_NHS_ViableTumourAtResectionMargin
+          - name: TUMOUR LOCAL STAGE (PATHOLOGICAL)
+            min_occurs: 0
+            max_occurs: 1
+            sort: 7
+            reference: pCT6670
+            rawtext_name: tumourlocalstage_pathological
+            virtual_field: tumourlocalstage
+            encore_event: Vpathology
+            encore_event_field: tumourlocalstage
+            e_base_record: e_cosd_xml_pathology
+            annotation: INTERNATIONAL SOCIETY OF PAEDIATRIC ONCOLOGY TUMOUR LOCAL STAGE
+            description: Local stage of the tumour as assessed by pathologist. Classification
+              system used is International Society of Paediatric Oncology (SIOP)
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: TUMOUR LOCAL STAGE
+              group: Pathology
+        - name: PathologyCNS
+          min_occurs: 0
+          max_occurs: 1
+          sort: 30
+          annotation: TEMP ANNOTATION
+          description: To carry pathology details for CNS cancer
+          categories:
+          - CNS
+          node_type: Nodes::Entity
+          children:
+          - name: MOLECULAR DIAGNOSTICS CODE
+            min_occurs: 0
+            sort: 1
+            reference: pBA3070
+            rawtext_name: moleculardiagnosticscode
+            virtual_field: moleculardiagnosticscode
+            encore_event: Vpathology
+            encore_event_field: moleculardiagnosticscodes
+            e_base_record: e_cosd_xml_pathology
+            annotation: MOLECULAR DIAGNOSTIC CODE
+            description: Chromosomal or genetic markers associated with the brain tumour.
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: MOLECULAR DIAGNOSTIC CODE
+              group: Pathology
+          - name: IMMUNOHISTOCHEMISTRY HORMONE EXPRESSION TYPE
+            min_occurs: 0
+            sort: 2
+            reference: pBA3150
+            rawtext_name: immunohistochemistryhormoneexpressiontype
+            virtual_field: hormoneexpressiontype
+            encore_event: Vpathology
+            encore_event_field: hormoneexpressiontypes
+            e_base_record: e_cosd_xml_pathology
+            annotation: HORMONE EXPRESSION TYPE
+            description: 'Hormone expression by immunohistochemistry. FOR PITUITARY
+              ADENOMAS ONLY. (Multiple values may be recorded) '
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: HORMONE EXPRESSION TYPE
+              group: Pathology
+        - name: PathologyColorectal
+          min_occurs: 0
+          max_occurs: 1
+          sort: 40
+          annotation: TEMP ANNOTATION
+          description: To carry details of pathology for colorectal cancer
+          categories:
+          - Colorectal
+          node_type: Nodes::Entity
+          children:
+          - name: POSITIVE PROXIMAL OR DISTAL RESECTION MARGIN
+            min_occurs: 0
+            max_occurs: 1
+            sort: 1
+            reference: pCO5190
+            rawtext_name: positiveproximalordistalresectionmargin
+            virtual_field: margininvindcode_proxdistal
+            encore_event: Vpathology
+            encore_event_field: margininvindcode_proxdistal
+            e_base_record: e_cosd_xml_pathology
+            annotation: MARGIN INVOLVED INDICATION CODE (COLORECTAL PROXIMAL OR DISTAL
+              RESECTION MARGIN)
+            description: Record whether the proximal or distal resection margins were
+              involved. If the minimal distance from the cut margin is less than or
+              equal to 1 mm the margin is considered "involved".
+            node_type: Nodes::DataItem
+            xml_type: ST_NHS_MarginInvolvedIndCodePosProxColorectal
+          - name: DISTANCE TO CIRCUMFERENTIAL MARGIN
+            min_occurs: 0
+            max_occurs: 1
+            sort: 2
+            reference: pCO5210
+            rawtext_name: distancetocircumferentialmargin
+            virtual_field: disttocircumferentialmargin
+            encore_event: Vpathology
+            encore_event_field: disttocircumferentialmargin
+            e_base_record: e_cosd_xml_pathology
+            annotation: DISTANCE TO CLOSEST NON PERITONEALISED RESECTION MARGIN
+            description: Record the distance from the outer margin of the tumour to
+              the closest non peritonealised circumferential resection margin in mm.
+              RECTAL CANCERS ONLY.
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: DISTANCE TO CLOSEST NON PERITONEALISED RESECTION MARGIN
+              group: Pathology
+          - name: PLANE OF SURGICAL EXCISION
+            min_occurs: 0
+            max_occurs: 1
+            sort: 3
+            reference: pCO5260
+            rawtext_name: planeofsurgicalexcision
+            virtual_field: planeofsurgicalexcision
+            encore_event: Vpathology
+            encore_event_field: planeofsurgicalexcision
+            e_base_record: e_cosd_xml_pathology
+            annotation: PLANE OF SURGICAL EXCISION INDICATOR
+            description: This is the quality of the surgical excision as seen by the
+              pathologist.  This grades the resection on its worst plane.  FOR RECTAL
+              CANCERS ONLY.
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: PLANE OF SURGICAL EXCISION TYPE
+              group: Pathology
+          - name: DISTANCE FROM DENTATE LINE
+            min_occurs: 0
+            max_occurs: 1
+            sort: 4
+            reference: pCO5270
+            rawtext_name: distancefromdentateline
+            virtual_field: distancefromdentateline
+            encore_event: Vpathology
+            encore_event_field: distancefromdentateline
+            e_base_record: e_cosd_xml_pathology
+            annotation: DISTANCE FROM DENTATE LINE
+            description: For abdominoperineal excision specimens only. Record the distance
+              of the tumour from the dentate line in mm measured on the gross specimen.
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: DISTANCE FROM DENTATE LINE
+              group: Pathology
+          - name: DISTANCE BEYOND MUSCULARIS PROPRIA
+            min_occurs: 0
+            max_occurs: 1
+            sort: 5
+            reference: pCO5280
+            rawtext_name: distancebeyondmuscularispropria
+            virtual_field: distbeyondmuscularispropria
+            encore_event: Vpathology
+            encore_event_field: distbeyondmuscularispropria
+            e_base_record: e_cosd_xml_pathology
+            annotation: DISTANCE BEYOND MUSCULARIS PROPRIA
+            description: Maximum distance of spread beyond muscularis propria in mm.
+              If there is doubt about the sites of the muscularis propria estimate the
+              distance as accurately as possible.
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: DISTANCE BEYOND MUSCULARIS PROPRIA
+              group: Pathology
+          - name: RESPONSE TO PREOPERATIVE THERAPY
+            min_occurs: 0
+            max_occurs: 1
+            sort: 6
+            reference: pCO5290
+            rawtext_name: responsetopreoperativetherapy
+            virtual_field: preoptherapyresponsetype
+            encore_event: Vpathology
+            encore_event_field: preoptherapyresponsetype
+            e_base_record: e_cosd_xml_pathology
+            annotation: PREOPERATIVE THERAPY RESPONSE TYPE
+            description: If preoperative therapy was given what was the response (four
+              tier system, similar to that described by Ryan et al)
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: PREOPERATIVE THERAPY RESPONSE TYPE
+              group: Pathology
+          - name: STATUS OF CIRCUMFERENTIAL EXCISION MARGIN
+            min_occurs: 0
+            max_occurs: 1
+            sort: 7
+            reference: pCO5300
+            rawtext_name: statusofcircumferentialexcisionmargin
+            virtual_field: margininvindcode_circ
+            encore_event: Vpathology
+            encore_event_field: margininvindcode_circ
+            e_base_record: e_cosd_xml_pathology
+            annotation: MARGIN INVOLVED INDICATION CODE (CIRCUMFERENTIAL MARGIN)
+            description: Record whether the proximal or distal resection margins were
+              involved. If the minimal distance from the cut margin is less than or
+              equal to 1 mm the margin is considered "involved".
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: MARGIN INVOLVED INDICATION CODE (CIRCUMFERENTIAL MARGIN)
+              group: Pathology
+        - name: PathologyGynaecological
+          min_occurs: 0
+          max_occurs: 1
+          sort: 50
+          annotation: TEMP ANNOTATION
+          description: To carry pathology details for Gynaecological items
+          categories:
+          - Gynaecological
+          node_type: Nodes::Entity
+          children:
+          - name: FALLOPIAN TUBE INVOLVEMENT
+            min_occurs: 0
+            max_occurs: 1
+            sort: 1
+            reference: pGY7050
+            rawtext_name: fallopiantubeinvolvement
+            virtual_field: fallopiantubeinvolvement
+            encore_event: Vpathology
+            encore_event_field: fallopiantubeinvolvement
+            e_base_record: e_cosd_xml_pathology
+            annotation: MICROSCOPIC INVOLVEMENT INDICATION CODE (FALLOPIAN TUBE)
+            description: For endometrial and epithelial/ovarian cancers, is there microscopic
+              involvement of fallopian tubes
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: MICROSCOPIC INVOLVEMENT INDICATION CODE (FALLOPIAN TUBE)
+              group: Pathology
+          - name: OVARIAN INVOLVEMENT
+            min_occurs: 0
+            max_occurs: 1
+            sort: 2
+            reference: pGY7120
+            rawtext_name: ovarianinvolvement
+            virtual_field: ovarianinvolvement
+            encore_event: Vpathology
+            encore_event_field: ovarianinvolvement
+            e_base_record: e_cosd_xml_pathology
+            annotation: MICROSCOPIC INVOLVEMENT INDICATION CODE (OVARIAN)
+            description: For endometrial and fallopian cancers, is there microscopic
+              involvement of ovaries
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: MICROSCOPIC INVOLVEMENT INDICATION CODE (OVARIAN)
+              group: Pathology
+          - name: SEROSAL INVOLVEMENT
+            min_occurs: 0
+            max_occurs: 1
+            sort: 3
+            reference: pGY7130
+            rawtext_name: serosalinvolvement
+            virtual_field: serosalinvolvement
+            encore_event: Vpathology
+            encore_event_field: serosalinvolvement
+            e_base_record: e_cosd_xml_pathology
+            annotation: MICROSCOPIC INVOLVEMENT INDICATION CODE (UTERINE SEROSA)
+            description: For endometrial, epithelial/ovarian and fallopian cancers,
+              is there microscopic involvement of uterine serosa
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: MICROSCOPIC INVOLVEMENT INDICATOR (SEROSA)
+              group: Pathology
+          - name: OMENTAL INVOLVEMENT
+            min_occurs: 0
+            max_occurs: 1
+            sort: 4
+            reference: pGY7100
+            rawtext_name: omentalinvolvement
+            virtual_field: omentalinvolvement
+            encore_event: Vpathology
+            encore_event_field: omentalinvolvement
+            e_base_record: e_cosd_xml_pathology
+            annotation: OMENTUM INVOLVEMENT INDICATION CODE
+            description: For endometrium, ovary, fallopian tube and primary peritoneum  cancers,
+              is there involvement of the omentum
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: OMENTUM INVOLVEMENT INDICATION CODE
+              group: Pathology
+        - name: PathologyFTOvarianEpithelialPP
+          min_occurs: 0
+          max_occurs: 1
+          sort: 51
+          annotation: TEMP ANNOTATION
+          description: To carry pathology details for Gynaecological - Fallopian Tube,
+            Ovarian Epithelial and Primary Peritoneal
+          categories:
+          - Gynaecological
+          node_type: Nodes::Entity
+          children:
+          - name: CAPSULE STATUS
+            min_occurs: 0
+            max_occurs: 1
+            sort: 1
+            reference: pGY7140
+            rawtext_name: capsulestatus
+            virtual_field: capsulestatus
+            encore_event: Vpathology
+            encore_event_field: capsulestatus
+            e_base_record: e_cosd_xml_pathology
+            annotation: GYNAECOLOGICIAL CAPSULE STATUS
+            description: Capsule status of ovaries (record the most severe) "
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: CAPSULE STATUS
+              group: Pathology
+          - name: OVARIAN SURFACE INVOLVEMENT
+            min_occurs: 0
+            max_occurs: 1
+            sort: 2
+            reference: pGY7190
+            rawtext_name: ovariansurfaceinvolvement
+            virtual_field: ovariansurfaceinvolvement
+            encore_event: Vpathology
+            encore_event_field: ovariansurfaceinvolvement
+            e_base_record: e_cosd_xml_pathology
+            annotation: OVARY SURFACE INVOLVEMENT INDICATOR
+            description: Is there involvement of the surface of either ovary?
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: OVARY SURFACE INVOLVEMENT INDICATOR
+              group: Pathology
+          - name: PERITONEAL CYTOLOGY
+            min_occurs: 0
+            max_occurs: 1
+            sort: 3
+            reference: pGY7170
+            rawtext_name: peritonealcytology
+            virtual_field: peritonealcytology
+            encore_event: Vpathology
+            encore_event_field: peritonealcytology
+            e_base_record: e_cosd_xml_pathology
+            annotation: PERITONEAL CYTOLOGY RESULT CODE
+            description: Result of peritoneal cytology
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: PERITONEAL CYTOLOGY RESULT CODE
+              group: Pathology
+          - name: PERITONEAL INVOLVEMENT
+            min_occurs: 0
+            max_occurs: 1
+            sort: 4
+            reference: pGY7180
+            rawtext_name: peritonealinvolvement
+            virtual_field: peritonealinvolvement
+            encore_event: Vpathology
+            encore_event_field: peritonealinvolvement
+            e_base_record: e_cosd_xml_pathology
+            annotation: PERITONEAL INVOLVEMENT INDICATION CODE
+            description: Is there peritoneal involvement?
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: PERITONEAL INVOLVEMENT INDICATOR
+              group: Pathology
+        - name: PathologyEndometrial
+          min_occurs: 0
+          max_occurs: 1
+          sort: 52
+          annotation: TEMP ANNOTATION
+          description: To carry pathology details for Gynaecological - Endometrial
+          categories:
+          - Gynaecological
+          node_type: Nodes::Entity
+          children:
+          - name: INVOLVEMENT OF CERVICAL STROMA
+            min_occurs: 0
+            max_occurs: 1
+            sort: 1
+            reference: pGY7240
+            rawtext_name: involvementofcervicalstroma
+            virtual_field: involvementofcervicalstroma
+            encore_event: Vpathology
+            encore_event_field: involvementofcervicalstroma
+            e_base_record: e_cosd_xml_pathology
+            annotation: MICROSCOPIC INVOLVEMENT INDICATOR (CERVICAL STROMA)
+            description: Is there microscopic involvement of cervical stroma?
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: MICROSCOPIC INVOLVEMENT INDICATOR (CERVICAL STROMA)
+              group: Pathology
+          - name: MYOMETRIAL INVASION
+            min_occurs: 0
+            max_occurs: 1
+            sort: 2
+            reference: pGY7260
+            rawtext_name: myometrialinvasion
+            virtual_field: myometrialinvasion
+            encore_event: Vpathology
+            encore_event_field: myometrialinvasion
+            e_base_record: e_cosd_xml_pathology
+            annotation: MYOMETRIAL INVASION IDENTIFICATION CODE
+            description: Is there microscopic evidence of myometrial invasion?
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: MYOMETRIAL INVASION IDENTIFICATION CODE
+              group: Pathology
+          - name: PARAMETRIUM INVOLVEMENT
+            min_occurs: 0
+            max_occurs: 1
+            sort: 3
+            reference: pGY7270
+            rawtext_name: parametriuminvolvement
+            virtual_field: parametriuminvolvement
+            encore_event: Vpathology
+            encore_event_field: parametriuminvolvement
+            e_base_record: e_cosd_xml_pathology
+            annotation: MICROSCOPIC INVOLVEMENT INDICATOR (PARAMETRIUM)
+            description: Is there microscopic involvement of parametrium?
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: MICROSCOPIC INVOLVEMENT INDICATOR (PARAMETRIUM)
+              group: Pathology
+          - name: PERITONEAL WASHINGS
+            min_occurs: 0
+            max_occurs: 1
+            sort: 4
+            reference: pGY7280
+            rawtext_name: peritonealwashings
+            virtual_field: peritonealwashings
+            encore_event: Vpathology
+            encore_event_field: peritonealwashings
+            e_base_record: e_cosd_xml_pathology
+            annotation: PERITONEAL WASHINGS IDENTIFIED
+            description: Were peritoneal washings submitted and if so were malignant
+              cells seen?
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: PERITONEAL WASHINGS IDENTIFIED
+              group: Pathology
+          - name: PERITONEAL INVOLVEMENT (ENDOMETRIAL)
+            min_occurs: 0
+            max_occurs: 1
+            sort: 5
+            reference: pGY7500
+            rawtext_name: peritonealinvolvementendometrial
+            virtual_field: peritonealinvolvement_endo
+            encore_event: Vpathology
+            encore_event_field: peritonealinvolvement_endo
+            e_base_record: e_cosd_xml_pathology
+            annotation: PERITONEAL INVOLVEMENT INDICATOR (ENDOMETRIAL CANCER)
+            description: Is there peritoneal involvement for endometrial cancer?
+            node_type: Nodes::DataItem
+            xml_type: ST_NHS_InvolvedNotInvolvedNotAssessable
+          - name: SITE OF PERITONEAL INVOLVEMENT
+            min_occurs: 0
+            max_occurs: 1
+            sort: 6
+            reference: pGY7510
+            rawtext_name: siteofperitonealinvolvement
+            virtual_field: peritonealinvolvementsite
+            encore_event: Vpathology
+            encore_event_field: peritonealinvolvementsite
+            e_base_record: e_cosd_xml_pathology
+            annotation: GYNAECOLOGICIAL CANCER SITE OF PERITONEAL INVOLVEMENT
+            description: GYNAECOLOGICIAL CANCER SITE OF PERITONEAL INVOLVEMENT
+            node_type: Nodes::DataItem
+            xml_type: ST_NHS_SiteOfPeritonealInvolvement
+        - name: PathologyCervical
+          min_occurs: 0
+          max_occurs: 1
+          sort: 53
+          annotation: TEMP ANNOTATION
+          description: To carry pathology details for Gynaecological - Cervical
+          categories:
+          - Gynaecological
+          node_type: Nodes::Entity
+          children:
+          - name: CGIN GRADE
+            min_occurs: 0
+            max_occurs: 1
+            sort: 1
+            reference: pGY7290
+            rawtext_name: cgingrade
+            virtual_field: cgingrade
+            encore_event: Vpathology
+            encore_event_field: cgingrade
+            e_base_record: e_cosd_xml_pathology
+            annotation: CERVICAL GLANDULAR INTRAEPITHELIAL NEOPLASIA PRESENCE AND GRADE
+            description: Specify presence and grade of CGIN (cervical glandular intraepithelial
+              neoplasia)
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: CERVICAL GLANDULAR INTRAEPITHELIAL NEOPLASIA PRESENCE AND GRADE
+              group: Pathology
+          - name: CIN GRADE
+            min_occurs: 0
+            max_occurs: 1
+            sort: 2
+            reference: pGY7300
+            rawtext_name: cingrade
+            virtual_field: cingrade
+            encore_event: Vpathology
+            encore_event_field: cingrade
+            e_base_record: e_cosd_xml_pathology
+            annotation: CERVICAL INTRAEPITHELIAL NEOPLASIA PRESENCE AND GRADE
+            description: Specify presence and grade of CIN (cervical intra-epithelial
+              neoplasia)
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: CERVICAL INTRAEPITHELIAL NEOPLASIA PRESENCE AND GRADE
+              group: Pathology
+          - name: SMILE
+            min_occurs: 0
+            max_occurs: 1
+            sort: 3
+            reference: pGY7350
+            rawtext_name: smile
+            virtual_field: smile
+            encore_event: Vpathology
+            encore_event_field: smile
+            e_base_record: e_cosd_xml_pathology
+            annotation: SMILE INDICATION CODE
+            description: Specify presence of SMILE (Stratified Mucin-Producing Intra-Epithelial
+              Lesion)
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: SMILE INDICATION CODE
+              group: Pathology
+          - name: EXCISION MARGIN (PRE INVASIVE)
+            min_occurs: 0
+            max_occurs: 1
+            sort: 4
+            reference: pGY7310
+            rawtext_name: excisionmargin_preinvasive
+            virtual_field: excisionmargin_preinvasive
+            encore_event: Vpathology
+            encore_event_field: excisionmargin_preinvasive
+            e_base_record: e_cosd_xml_pathology
+            annotation: RESECTION MARGIN INVOLVEMENT INDICATOR
+            description: Is there evidence of resection margin involvement by in situ/pre
+              invasive disease (CIN, CGIN, SMILE)
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: RESECTION MARGIN INVOLVEMENT INDICATOR
+              group: Pathology
+          - name: PARACERVICAL OR PARAMETRIAL INVOLVEMENT
+            min_occurs: 0
+            max_occurs: 1
+            sort: 5
+            reference: pGY7340
+            rawtext_name: paracervicalorparametrialinvolvement
+            virtual_field: parcervicalorparmetrialinv
+            encore_event: Vpathology
+            encore_event_field: parcervicalorparmetrialinv
+            e_base_record: e_cosd_xml_pathology
+            annotation: PARACERVICAL OR PARAMETRIAL INVOLVEMENT INDICATOR
+            description: Is there evidence of paracervical and/or parametrial involvement?
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: PARACERVICAL OR PARAMETRIAL INVOLVEMENT INDICATOR
+              group: Pathology
+          - name: THICKNESS UNINVOLVED STROMA
+            min_occurs: 0
+            max_occurs: 1
+            sort: 6
+            reference: pGY7360
+            rawtext_name: thicknessuninvolvedstroma
+            virtual_field: thicknessuninvolvedstroma
+            encore_event: Vpathology
+            encore_event_field: thicknessuninvolvedstroma
+            e_base_record: e_cosd_xml_pathology
+            annotation: UNINVOLVED CERVICAL STROMA THICKNESS
+            description: Minimum thickness of uninvolved cervical stroma in mm (minimum
+              tumour-free rim)
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: UNINVOLVED CERVICAL STROMA THICKNESS
+              group: Pathology
+          - name: VAGINAL INVOLVEMENT
+            min_occurs: 0
+            max_occurs: 1
+            sort: 7
+            reference: pGY7370
+            rawtext_name: vaginalinvolvement
+            virtual_field: vaginalinvolvement
+            encore_event: Vpathology
+            encore_event_field: vaginalinvolvement
+            e_base_record: e_cosd_xml_pathology
+            annotation: MICROSCOPIC INVOLVEMENT INDICATOR (VAGINAL)
+            description: Is there evidence of microscopic vaginal involvement?
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: MICROSCOPIC INVOLVEMENT INDICATOR (VAGINAL)
+              group: Pathology
+          - name: INVASIVE THICKNESS
+            min_occurs: 0
+            max_occurs: 1
+            sort: 8
+            reference: pGY7450
+            rawtext_name: invasive_thickness
+            virtual_field: invasive_thickness
+            encore_event: Vpathology
+            encore_event_field: invasivethickness
+            e_base_record: e_cosd_xml_pathology
+            annotation: INVASIVE THICKNESS
+            description: The thickness or depth of the invasive lesion in mm
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: INVASIVE THICKNESS
+              group: Pathology
+        - name: PathologyNodes
+          min_occurs: 0
+          max_occurs: 1
+          sort: 55
+          annotation: TEMP ANNOTATION
+          description: To carry pathology details for Gynaecological - Nodes
+          categories:
+          - Gynaecological
+          node_type: Nodes::Entity
+          children:
+          - name: NODES EXAMINED NUMBER (PARA-AORTIC)
+            min_occurs: 0
+            max_occurs: 1
+            sort: 2
+            reference: pGY7060
+            rawtext_name: nodesexaminednumber_paraaortic
+            virtual_field: paraaorticnodesexamined
+            encore_event: Vpathology
+            encore_event_field: paraaorticnodesexamined
+            e_base_record: e_cosd_xml_pathology
+            annotation: NUMBER OF NODES EXAMINED (PARA-AORTIC)
+            description: The number of para-aortic nodes examined. (Not applicable for
+              vulval cancers) Use 0 if nodes not sent.
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: NUMBER OF NODES EXAMINED (PARA-AORTIC)
+              group: Pathology
+          - name: NODES POSITIVE NUMBER (PARA-AORTIC)
+            min_occurs: 0
+            max_occurs: 1
+            sort: 3
+            reference: pGY7080
+            rawtext_name: nodespositivenumber_paraaortic
+            virtual_field: paraaorticnodespositive
+            encore_event: Vpathology
+            encore_event_field: paraaorticnodespositive
+            e_base_record: e_cosd_xml_pathology
+            annotation: NUMBER OF NODES POSITIVE (PARA-AORTIC)
+            description: The number of  para-aortic nodes reported as being positive
+              for the presence of tumour metastases. (Not applicable for vulval cancers)
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: NUMBER OF NODES POSITIVE (PARA-AORTIC)
+              group: Pathology
+          - name: NODES EXAMINED NUMBER (PELVIC)
+            min_occurs: 0
+            max_occurs: 1
+            sort: 4
+            reference: pGY7070
+            rawtext_name: nodesexaminednumber_pelvic
+            virtual_field: pelvicnodesexamined
+            encore_event: Vpathology
+            encore_event_field: pelvicnodesexamined
+            e_base_record: e_cosd_xml_pathology
+            annotation: NUMBER OF NODES EXAMINED (PELVIC)
+            description: The number of pelvic nodes examined (Not applicable for vulval
+              cancers). Use 0 if nodes not sent
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: NUMBER OF NODES EXAMINED (PELVIC)
+              group: Pathology
+          - name: NODES POSITIVE NUMBER (PELVIC)
+            min_occurs: 0
+            max_occurs: 1
+            sort: 5
+            reference: pGY7090
+            rawtext_name: nodespositivenumber_pelvic
+            virtual_field: pelvicnodespositive
+            encore_event: Vpathology
+            encore_event_field: pelvicnodespositive
+            e_base_record: e_cosd_xml_pathology
+            annotation: NUMBER OF NODES POSITIVE (PELVIC)
+            description: The number of  pelvic nodes reported as being positive for
+              the presence of tumour metastases.  (Not applicable for vulval cancers)
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: NUMBER OF NODES POSITIVE (PELVIC)
+              group: Pathology
+          - name: NODES EXAMINED NUMBER (INGUINO-FEMORAL)
+            min_occurs: 0
+            max_occurs: 1
+            sort: 6
+            reference: pGY7410
+            rawtext_name: nodesexaminednumber_inguinofemoral
+            virtual_field: inguinofemoralnodesexamined
+            encore_event: Vpathology
+            encore_event_field: inguinofemoralnodesexamined
+            e_base_record: e_cosd_xml_pathology
+            annotation: NUMBER OF NODES EXAMINED (INGUINO-FEMORAL)
+            description: The number of inguino-femoral nodes examined. (Only applicable
+              to vulval cancers). Use 0 if nodes not sent
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: NUMBER OF NODES EXAMINED (INGUINO-FEMORAL)
+              group: Pathology
+          - name: NODES POSITIVE NUMBER (INGUINO-FEMORAL)
+            min_occurs: 0
+            max_occurs: 1
+            sort: 7
+            reference: pGY7420
+            rawtext_name: nodespositivenumber_inguinofemoral
+            virtual_field: inguinofemoralnodespositive
+            encore_event: Vpathology
+            encore_event_field: inguinofemoralnodespositive
+            e_base_record: e_cosd_xml_pathology
+            annotation: NUMBER OF NODES POSITIVE (INGUINO-FEMORAL)
+            description: The number of inguino-femoral nodes reported as being positive
+              for the presence of tumour metastases. (Only applicable to vulval cancers)
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: NUMBER OF NODES POSITIVE (INGUINO-FEMORAL)
+              group: Pathology
+          - name: EXTRANODAL  SPREAD
+            min_occurs: 0
+            max_occurs: 1
+            sort: 8
+            reference: pGY7230
+            rawtext_name: extranodalspread
+            virtual_field: extranodalspread
+            encore_event: Vpathology
+            encore_event_field: extranodalspread
+            e_base_record: e_cosd_xml_pathology
+            annotation: EXTRANODAL SPREAD INDICATOR
+            description: Is there evidence of extranodal spread/extension?
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: EXTRANODAL SPREAD INDICATOR
+              group: Pathology
+        - name: PathologyHeadNeckVarious
+          min_occurs: 0
+          max_occurs: 1
+          sort: 60
+          annotation: TEMP ANNOTATION
+          description: To carry pathology details for various head and neck cancer
+          categories:
+          - HeadNeck
+          node_type: Nodes::Entity
+          children:
+          - name: MAXIMUM DEPTH OF INVASION
+            min_occurs: 0
+            max_occurs: 1
+            sort: 1
+            reference: pHN9300
+            rawtext_name: maximumdepthofinvasion
+            virtual_field: maximumdepthofinvasion
+            encore_event: Vpathology
+            encore_event_field: maximumdepthofinvasion
+            e_base_record: e_cosd_xml_pathology
+            annotation: MAXIMUM DEPTH OF INVASION
+            description: The maximum depth of invasion in mm. Record as "00" to indicate
+              'not applicable', (This is not applicable for nasopharynx, hypopharynx,
+              nasal cavity or sinuses).
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: MAXIMUM DEPTH OF INVASION
+              group: Pathology
+          - name: BONE INVASION
+            min_occurs: 0
+            max_occurs: 1
+            sort: 2
+            reference: pHN9310
+            rawtext_name: boneinvasion
+            virtual_field: boneinvasion
+            encore_event: Vpathology
+            encore_event_field: boneinvasion
+            e_base_record: e_cosd_xml_pathology
+            annotation: BONE INVASION INDICATION CODE
+            description: Is there evidence of invasion into bone
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: BONE INVASION INDICATION CODE
+              group: Pathology
+          - name: CARTILAGE INVASION
+            min_occurs: 0
+            max_occurs: 1
+            sort: 3
+            reference: pHN9320
+            rawtext_name: cartilageinvasion
+            virtual_field: cartilageinvasion
+            encore_event: Vpathology
+            encore_event_field: cartilageinvasion
+            e_base_record: e_cosd_xml_pathology
+            annotation: CARTILAGE INVASION INDICATION CODE
+            description: Is there evidence of invasion into cartilage
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: CARTILAGE INVASION INDICATION CODE
+              group: Pathology
+          - name: NECK DISSECTION LATERALITY
+            min_occurs: 0
+            max_occurs: 1
+            sort: 4
+            reference: pHN9330
+            rawtext_name: neckdissectionlaterality
+            virtual_field: neckdissectionlaterality
+            encore_event: Vpathology
+            encore_event_field: neckdissectionlaterality
+            e_base_record: e_cosd_xml_pathology
+            annotation: ANATOMICAL SIDE (NECK DISSECTION)
+            description: Identify laterality of neck dissection if performed
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: ANATOMICAL SIDE (NECK DISSECTION)
+              group: Pathology
+        - name: PathologySalivary
+          min_occurs: 0
+          max_occurs: 1
+          sort: 61
+          annotation: TEMP ANNOTATION
+          description: To carry salivary pathology details for head and neck cancer
+          categories:
+          - HeadNeck
+          node_type: Nodes::Entity
+          children:
+          - name: MACROSCOPIC EXTRAGLANDULAR EXTENSION
+            min_occurs: 1
+            max_occurs: 1
+            sort: 1
+            reference: pHN9390
+            rawtext_name: macroscopicextraglandularextension
+            virtual_field: macroextraglandularext
+            encore_event: Vpathology
+            encore_event_field: macroextraglandularext
+            e_base_record: e_cosd_xml_pathology
+            annotation: MACROSCOPIC EXTRAGLANDULAR EXTENSION INDICATION CODE
+            description: Macroscopic extension of tumour outside the capsule of the
+              salivary gland.
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: MACROSCOPIC EXTRAGLANDULAR EXTENSION INDICATION CODE
+              group: Pathology
+        - name: PathologyGeneralAndSalivary
+          min_occurs: 0
+          max_occurs: 1
+          sort: 70
+          annotation: TEMP ANNOTATION
+          description: To carry general and salivary pathology details for head and
+            neck cancer
+          categories:
+          - HeadNeck
+          node_type: Nodes::Entity
+          children:
+          - name: POSITIVE NODES LATERALITY
+            min_occurs: 0
+            max_occurs: 1
+            sort: 1
+            reference: pHN9400
+            rawtext_name: positivenodeslaterality
+            virtual_field: positivenodeslaterality
+            encore_event: Vpathology
+            encore_event_field: positivenodeslaterality
+            e_base_record: e_cosd_xml_pathology
+            annotation: ANATOMICAL SIDE (POSITIVE NODES)
+            description: If nodes positive specify laterality
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: ANATOMICAL SIDE (POSITIVE NODES)
+              group: Pathology
+          - name: LARGEST METASTASIS LEFT NECK
+            min_occurs: 0
+            max_occurs: 1
+            sort: 2
+            reference: pHN9410
+            rawtext_name: largestmetastasisleftneck
+            virtual_field: largestmetastasisleftneck
+            encore_event: Vpathology
+            encore_event_field: largestmetastasisleftneck
+            e_base_record: e_cosd_xml_pathology
+            annotation: LARGEST METASTASIS (LEFT NECK)
+            description: If Neck dissected on Left side, the size in mm of the largest
+              metastasis
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: LARGEST METASTASIS (LEFT NECK)
+              group: Pathology
+          - name: LARGEST METASTASIS RIGHT NECK
+            min_occurs: 0
+            max_occurs: 1
+            sort: 3
+            reference: pHN9420
+            rawtext_name: largestmetastasisrightneck
+            virtual_field: largestmetastasisrightneck
+            encore_event: Vpathology
+            encore_event_field: largestmetastasisrightneck
+            e_base_record: e_cosd_xml_pathology
+            annotation: LARGEST METASTASIS (RIGHT NECK)
+            description: If Neck dissected on Right side, the size in mm of the largest
+              metastasis
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: LARGEST METASTASIS (RIGHT NECK)
+              group: Pathology
+          - name: EXTRACAPSULAR SPREAD
+            min_occurs: 0
+            max_occurs: 1
+            sort: 4
+            reference: pHN9430
+            rawtext_name: extracapsularspread
+            virtual_field: extracapsularspread
+            encore_event: Vpathology
+            encore_event_field: extracapsularspread
+            e_base_record: e_cosd_xml_pathology
+            annotation: EXTRACAPSULAR SPREAD INDICATION CODE
+            description: Invasion of metastatic tumour outside the capsule of a lymph
+              node.
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: EXTRACAPSULAR SPREAD INDICATION CODE
+              group: Pathology
+        - name: PathologyHumanPapillomavirus
+          min_occurs: 0
+          max_occurs: 1
+          sort: 71
+          annotation: TEMP ANNOTATION
+          description: To carry human papiloma virus pathology details for head and
+            neck cancer
+          categories:
+          - HeadNeck
+          node_type: Nodes::Entity
+          children:
+          - name: p16 TESTING INDICATOR
+            min_occurs: 0
+            max_occurs: 1
+            sort: 1
+            reference: pHN9500
+            rawtext_name: p16testingindicator
+            virtual_field: p16testingindicator
+            encore_event: Vpathology
+            encore_event_field: p16testingindicator
+            e_base_record: e_cosd_xml_pathology
+            annotation: P16 IMMUNOHISTOCHEMISTRY TEST RESULT
+            description: Indicate the result of p16 immunohistochemistry
+            node_type: Nodes::DataItem
+            xml_type: ST_NHS_PositiveNegativeNotPerformedNotKnown
+          - name: HPV-ISH TESTING
+            min_occurs: 0
+            max_occurs: 1
+            sort: 2
+            reference: pHN9510
+            rawtext_name: hpv-ishtesting
+            virtual_field: hpvishtesting
+            encore_event: Vpathology
+            encore_event_field: hpvishtesting
+            e_base_record: e_cosd_xml_pathology
+            annotation: HUMAN PAPILLOMAVIRUS IN SITU HYBRIDISATION TEST RESULT
+            description: Indicate the result of HPV-ISH testing (Human Papillomavirus
+              - In Situ Hybridisation)
+            node_type: Nodes::DataItem
+            xml_type: ST_NHS_PositiveNegativeNotPerformedNotKnown
+        - name: PathologyLung
+          min_occurs: 0
+          max_occurs: 1
+          sort: 90
+          annotation: TEMP ANNOTATION
+          description: To carry Pathology details for Lung Carcinoma (Most items are
+            only applicable where patients have surgical resection)
+          categories:
+          - Lung
+          node_type: Nodes::Entity
+          children:
+          - name: EXTENT OF ATELECTASIS
+            min_occurs: 0
+            max_occurs: 1
+            sort: 2
+            reference: pLU10110
+            rawtext_name: extentofatelectasis
+            virtual_field: extentofatelectasis
+            encore_event: Vpathology
+            encore_event_field: extentofatelectasis
+            e_base_record: e_cosd_xml_pathology
+            annotation: EXTENT OF ATELECTASIS
+            description: Extent of atelectasis/obstructive pneumonitis
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: EXTENT OF ATELECTASIS
+              group: Pathology
+          - name: EXTENT OF PLEURAL INVASION
+            min_occurs: 0
+            max_occurs: 1
+            sort: 3
+            reference: pLU10120
+            rawtext_name: extentofpleuralinvasion
+            virtual_field: extentofpleuralinvasion
+            encore_event: Vpathology
+            encore_event_field: extentofpleuralinvasion
+            e_base_record: e_cosd_xml_pathology
+            annotation: EXTENT OF PLEURAL INVASION
+            description: What is the extent of pleural invasion
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: EXTENT OF PLEURAL INVASION
+              group: Pathology
+          - name: PERICARDIAL INVASION
+            min_occurs: 0
+            max_occurs: 1
+            sort: 4
+            reference: pLU10130
+            rawtext_name: pericardialinvasion
+            virtual_field: pericardialinvasion
+            encore_event: Vpathology
+            encore_event_field: pericardialinvasion
+            e_base_record: e_cosd_xml_pathology
+            annotation: TUMOUR INVASION INDICATOR (PERICARDIUM)
+            description: Does the tumour invade the pericardium
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: TUMOUR INVASION INDICATOR (PERICARDIUM)
+              group: Pathology
+          - name: DIAPHRAGM INVASION
+            min_occurs: 0
+            max_occurs: 1
+            sort: 5
+            reference: pLU10140
+            rawtext_name: diaphragminvasion
+            virtual_field: diaphragminvasion
+            encore_event: Vpathology
+            encore_event_field: diaphragminvasion
+            e_base_record: e_cosd_xml_pathology
+            annotation: TUMOUR INVASION INDICATOR (DIAPHRAGM)
+            description: Does the tumour invade the  diaphragm
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: TUMOUR INVASION INDICATOR (DIAPHRAGM)
+              group: Pathology
+          - name: INVASION INTO GREAT VESSEL
+            min_occurs: 0
+            max_occurs: 1
+            sort: 6
+            reference: pLU10150
+            rawtext_name: invasionintogreatvessel
+            virtual_field: invasionintogreatvessel
+            encore_event: Vpathology
+            encore_event_field: invasionintogreatvessel
+            e_base_record: e_cosd_xml_pathology
+            annotation: TUMOUR INVASION INDICATOR (GREAT VESSELS)
+            description: Does the tumour invade the great vessels (aorta, central pulmonary
+              artery or vein)
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: TUMOUR INVASION INDICATOR (GREAT VESSELS)
+              group: Pathology
+          - name: INVASION INTO HEART
+            min_occurs: 0
+            max_occurs: 1
+            sort: 7
+            reference: pLU10160
+            rawtext_name: invasionintoheart
+            virtual_field: invasionintoheart
+            encore_event: Vpathology
+            encore_event_field: invasionintoheart
+            e_base_record: e_cosd_xml_pathology
+            annotation: TUMOUR INVASION INDICATOR (HEART)
+            description: Does the tumour invade the Atrium or Heart
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: TUMOUR INVASION INDICATOR (HEART)
+              group: Pathology
+          - name: MALIGNANT PLEURAL EFFUSION
+            min_occurs: 0
+            max_occurs: 1
+            sort: 8
+            reference: pLU10170
+            rawtext_name: malignantpleuraleffusion
+            virtual_field: malignantpleuraleffusion
+            encore_event: Vpathology
+            encore_event_field: malignantpleuraleffusion
+            e_base_record: e_cosd_xml_pathology
+            annotation: MALIGNANT PLEURAL EFFUSION INDICATOR
+            description: Is there evidence of malignant pleural effusion?
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: MALIGNANT PLEURAL EFFUSION INDICATOR
+              group: Pathology
+          - name: INVASION INTO MEDIASTINUM
+            min_occurs: 0
+            max_occurs: 1
+            sort: 9
+            reference: pLU10190
+            rawtext_name: invasionintomediastinum
+            virtual_field: invasionintomediastinum
+            encore_event: Vpathology
+            encore_event_field: invasionintomediastinum
+            e_base_record: e_cosd_xml_pathology
+            annotation: TUMOUR INVASION INDICATOR (MEDIASTINUM)
+            description: Does the tumour invade the mediastinum?
+            node_type: Nodes::DataItem
+            xml_type: ST_NHS_YesNoNotKnownCannotBeAssessed
+          - name: SATELLITE TUMOUR NODULES LOCATION
+            min_occurs: 0
+            max_occurs: 1
+            sort: 10
+            reference: pLU10180
+            rawtext_name: satellitetumournoduleslocation
+            virtual_field: tumournoduleslocation
+            encore_event: Vpathology
+            encore_event_field: tumournoduleslocation
+            e_base_record: e_cosd_xml_pathology
+            annotation: SATELLITE TUMOUR NODULES LOCATION
+            description: Record the most distant location of separate tumour nodules
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: SATELLITE TUMOUR NODULES LOCATION
+              group: Pathology
+        - name: PathologyBoneAndSoftTissue
+          min_occurs: 0
+          max_occurs: 1
+          sort: 110
+          annotation: TEMP ANNOTATION
+          description: To carry pathology details for Sarcoma - for both Bone and Soft
+            Tissue
+          categories:
+          - Sarcoma
+          node_type: Nodes::Entity
+          children:
+          - name: GENETIC CONFIRMATION INDICATOR
+            min_occurs: 0
+            max_occurs: 1
+            sort: 1
+            reference: pSA11170
+            rawtext_name: geneticconfirmationindicator
+            virtual_field: geneticconfirmationind
+            encore_event: Vpathology
+            encore_event_field: geneticconfirmationind
+            e_base_record: e_cosd_xml_pathology
+            annotation: GENETIC CONFIRMATION INDICATOR
+            description: Are there any cytogenetic or molecular genetic data confirming
+              the histological diagnosis?
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: GENETIC CONFIRMATION INDICATOR
+              group: Pathology
+        - name: PathologyBone
+          min_occurs: 0
+          max_occurs: 1
+          sort: 115
+          annotation: TEMP ANNOTATION
+          description: To carry pathology details for Sarcoma specific to Bone
+          categories:
+          - Sarcoma
+          node_type: Nodes::Entity
+          children:
+          - name: EXTENT OF LOCAL SPREAD (BONE)
+            min_occurs: 0
+            max_occurs: 1
+            sort: 1
+            reference: pSA11130
+            rawtext_name: extentoflocalspread_bone
+            virtual_field: extentoflocalspread_bone
+            encore_event: Vpathology
+            encore_event_field: extentoflocalspread_bone
+            e_base_record: e_cosd_xml_pathology
+            annotation: SARCOMA TUMOUR BREACH IDENTIFIER
+            description: FOR MEDULLARY TUMOURS ONLY.  Does the tumour breach the cortex.   The
+              extent of local spread will determine whether the tumour is intracompartmental
+              or extracompartmental
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: TUMOUR BREACH IDENTIFIER
+              group: Pathology
+          - name: TUMOUR NECROSIS
+            min_occurs: 0
+            max_occurs: 1
+            sort: 2
+            reference: pSA11140
+            rawtext_name: tumournecrosis
+            virtual_field: tumournecrosis
+            encore_event: Vpathology
+            encore_event_field: tumournecrosis
+            e_base_record: e_cosd_xml_pathology
+            annotation: TUMOUR NECROSIS PERCENTAGE
+            description: Approximate percentage of tumour necrosis in response to pre-operative
+              therapy (range 0-100)
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: TUMOUR NECROSIS
+              group: Pathology
+        - name: PathologySoftTissue
+          min_occurs: 0
+          max_occurs: 1
+          sort: 120
+          annotation: TEMP ANNOTATION
+          description: To carry pathology details for Sarcoma specific to Soft Tissue
+          categories:
+          - Sarcoma
+          node_type: Nodes::Entity
+          children:
+          - name: TUMOUR DEPTH
+            min_occurs: 0
+            max_occurs: 1
+            sort: 1
+            reference: pSA11100
+            rawtext_name: tumourdepth
+            virtual_field: tumourdepth
+            encore_event: Vpathology
+            encore_event_field: tumourdepth
+            e_base_record: e_cosd_xml_pathology
+            annotation: SARCOMA TUMOUR DEPTH
+            description: Record the deepest tissue compartment where the tumour is located
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: TUMOUR DEPTH
+              group: Pathology
+          - name: MITOTIC RATE (SARCOMA)
+            min_occurs: 0
+            max_occurs: 1
+            sort: 2
+            reference: pSA11220
+            rawtext_name: mitoticrate
+            virtual_field: mitoticrate
+            encore_event: Vpathology
+            encore_event_field: mitoticrate
+            e_base_record: e_cosd_xml_pathology
+            annotation: MITOTIC RATE (SARCOMA)
+            description: Mitotic rate per 5mm squared. Also known as mitotic index and
+              mitotic count. ONLY APPLICABLE TO GISTs.
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: MITOTIC RATE (SARCOMA)
+              group: Pathology
+        - name: PathologySkin
+          min_occurs: 0
+          max_occurs: 1
+          sort: 141
+          annotation: TEMP ANNOTATION
+          categories:
+          - Skin
+          node_type: Nodes::Entity
+          children:
+          - name: PathologyBCC
+            min_occurs: 0
+            max_occurs: 1
+            sort: 1
+            annotation: TEMP ANNOTATION
+            categories:
+            - Skin
+            node_type: Nodes::Entity
+            children:
+            - name: SKIN CANCER LESION INDICATOR
+              min_occurs: 0
+              max_occurs: 1
+              sort: 1
+              reference: pSK12120
+              rawtext_name: skincancerlesionindicator
+              virtual_field: skincancerlesionindicator
+              encore_event: Vpathology
+              encore_event_field: skincancerlesionindicator
+              e_base_record: e_cosd_xml_pathology
+              annotation: SKIN CANCER LESION NUMBER
+              description: This is the specimen number or letter used to identify the
+                specimen within a report. Where more than one primary skin cancer is
+                reported on the same pathology report,  record the lesion number or
+                letter as specified on the pathology report.
+              node_type: Nodes::DataItem
+              data_dictionary_element:
+                name: SKIN CANCER LESION NUMBER
+                group: Pathology
+            - name: PERINEURAL INVASION
+              min_occurs: 0
+              max_occurs: 1
+              sort: 2
+              reference: pSK12530
+              rawtext_name: perineuralinvasion_v6
+              virtual_field: perineuralinvasion_skin_v6
+              encore_event: Vpathology
+              encore_event_field: perineuralinvasion_skin_v6
+              e_base_record: e_cosd_xml_pathology
+              annotation: PERINEURAL INVASION INDICATOR
+              description: Is there perineural invasion (invasion into perineurium of
+                nerve bundles- PNI)
+              node_type: Nodes::DataItem
+              xml_type: ST_NHS_PerineuralInvasionIndSkin
+            - name: LESION DIAMETER GREATER THAN 20MM INDICATOR
+              min_occurs: 0
+              max_occurs: 1
+              sort: 3
+              reference: pSK12537
+              rawtext_name: lesiondiametergreaterthan20mmindicator
+              virtual_field: lesiondiametergt20mmind
+              encore_event: Vpathology
+              encore_event_field: lesiondiametergt20mmind
+              e_base_record: e_cosd_xml_pathology
+              annotation: LESION DIAMETER GREATER THAN 20MM INDICATION CODE
+              description: Is the diameter of the lesion greater than 20mm?
+              node_type: Nodes::DataItem
+              data_dictionary_element:
+                name: LESION DIAMETER GREATER THAN 20MM INDICATION CODE
+                group: Pathology
+          - name: PathologySCC
+            min_occurs: 0
+            max_occurs: 1
+            sort: 2
+            annotation: TEMP ANNOTATION
+            description: To carry pathology details for Squamous Cell Carcinoma
+            categories:
+            - Skin
+            node_type: Nodes::Entity
+            children:
+            - name: SKIN CANCER LESION INDICATOR
+              min_occurs: 0
+              max_occurs: 1
+              sort: 1
+              reference: pSK12120
+              rawtext_name: skincancerlesionindicator
+              virtual_field: skincancerlesionindicator
+              encore_event: Vpathology
+              encore_event_field: skincancerlesionindicator
+              e_base_record: e_cosd_xml_pathology
+              annotation: SKIN CANCER LESION NUMBER
+              description: This is the specimen number or letter used to identify the
+                specimen within a report. Where more than one primary skin cancer is
+                reported on the same pathology report,  record the lesion number or
+                letter as specified on the pathology report.
+              node_type: Nodes::DataItem
+              data_dictionary_element:
+                name: SKIN CANCER LESION NUMBER
+                group: Pathology
+            - name: PERINEURAL INVASION
+              min_occurs: 0
+              max_occurs: 1
+              sort: 2
+              reference: pSK12530
+              rawtext_name: perineuralinvasion_v6
+              virtual_field: perineuralinvasion_skin_v6
+              encore_event: Vpathology
+              encore_event_field: perineuralinvasion_skin_v6
+              e_base_record: e_cosd_xml_pathology
+              annotation: PERINEURAL INVASION INDICATOR
+              description: Is there perineural invasion (invasion into perineurium of
+                nerve bundles- PNI)
+              node_type: Nodes::DataItem
+              data_dictionary_element:
+                name: PERINEURAL INVASION INDICATOR
+                group: Pathology
+            - name: LESION DIAMETER GREATER THAN 20MM INDICATOR
+              min_occurs: 0
+              max_occurs: 1
+              sort: 3
+              reference: pSK12537
+              rawtext_name: lesiondiametergreaterthan20mmindicator
+              virtual_field: lesiondiametergt20mmind
+              encore_event: Vpathology
+              encore_event_field: lesiondiametergt20mmind
+              e_base_record: e_cosd_xml_pathology
+              annotation: LESION DIAMETER GREATER THAN 20MM INDICATION CODE
+              description: Is the diameter of the lesion greater than 20mm?
+              node_type: Nodes::DataItem
+              data_dictionary_element:
+                name: LESION DIAMETER GREATER THAN 20MM INDICATION CODE
+                group: Pathology
+            - name: CLARKS LEVEL IV INDICATOR
+              min_occurs: 0
+              max_occurs: 1
+              sort: 4
+              reference: pSK12545
+              rawtext_name: clarkslevelivindicator
+              virtual_field: clarkslevelivindicator
+              encore_event: Vpathology
+              encore_event_field: clarkslevelivindicator
+              e_base_record: e_cosd_xml_pathology
+              annotation: CLARKS LEVEL IV INDICATION CODE
+              description: Greater than or equal to Clarks level IV. (Required for melanoma
+                only if pT1a/b staging not possible from mitotic index and/or ulceration).
+              node_type: Nodes::DataItem
+              data_dictionary_element:
+                name: CLARKS LEVEL IV INDICATION CODE
+                group: Pathology
+            - name: LESION VERTICAL THICKNESS GREATER THAN 2MM INDICATOR
+              min_occurs: 0
+              max_occurs: 1
+              sort: 5
+              reference: pSK12565
+              rawtext_name: lesionverticalthicknessgreaterthan2mmindicator
+              virtual_field: lesionvertthicknessgt2mmind
+              encore_event: Vpathology
+              encore_event_field: lesionvertthicknessgt2mmind
+              e_base_record: e_cosd_xml_pathology
+              annotation: LESION VERTICAL THICKNESS GREATER THAN 2MM INDICATION CODE
+              description: Is the vertical thickness of the lesion greater than 2mm
+              node_type: Nodes::DataItem
+              data_dictionary_element:
+                name: LESION VERTICAL THICKNESS GREATER THAN 2MM INDICATION CODE
+                group: Pathology
+          - name: PathologyMM
+            min_occurs: 0
+            max_occurs: 1
+            sort: 3
+            annotation: TEMP ANNOTATION
+            description: To carry pathology details for Malignant Melanoma
+            categories:
+            - Skin
+            node_type: Nodes::Entity
+            children:
+            - name: SKIN CANCER LESION INDICATOR
+              min_occurs: 0
+              max_occurs: 1
+              sort: 1
+              reference: pSK12120
+              rawtext_name: skincancerlesionindicator
+              virtual_field: skincancerlesionindicator
+              encore_event: Vpathology
+              encore_event_field: skincancerlesionindicator
+              e_base_record: e_cosd_xml_pathology
+              annotation: SKIN CANCER LESION SPECIMEN IDENTIFIER
+              description: This is the specimen number or letter used to identify the
+                specimen within a report. Where more than one primary skin cancer is
+                reported on the same pathology report,  record the lesion number or
+                letter as specified on the pathology report.
+              node_type: Nodes::DataItem
+              data_dictionary_element:
+                name: SKIN CANCER LESION NUMBER
+                group: Pathology
+            - name: ULCERATION INDICATOR
+              min_occurs: 0
+              max_occurs: 1
+              sort: 2
+              reference: pSK12580
+              rawtext_name: ulcerationindicator
+              virtual_field: ulcerationindicator
+              encore_event: Vpathology
+              encore_event_field: ulcerationindicator
+              e_base_record: e_cosd_xml_pathology
+              annotation: SKIN ULCERATION INDICATION CODE
+              description: Loss of full thickness of epidermis associated with reactive
+                changes (ulceration).
+              node_type: Nodes::DataItem
+              data_dictionary_element:
+                name: ULCERATION INDICATION CODE
+                group: Pathology
+            - name: MITOTIC RATE (SKIN)
+              min_occurs: 0
+              max_occurs: 1
+              sort: 3
+              reference: pSK12590
+              rawtext_name: mitoticrate
+              virtual_field: mitoticrate
+              encore_event: Vpathology
+              encore_event_field: mitoticrate
+              e_base_record: e_cosd_xml_pathology
+              annotation: MITOTIC RATE (SKIN)
+              description: Mitotic rate per square mm
+              node_type: Nodes::DataItem
+              data_dictionary_element:
+                name: MITOTIC RATE (SKIN)
+                group: Pathology
+            - name: MICROSATELLITE OR IN-TRANSIT METASTASIS INDICATOR
+              min_occurs: 0
+              max_occurs: 1
+              sort: 4
+              reference: pSK12600
+              rawtext_name: microsatelliteorintransitmetastasisindicator
+              virtual_field: microsatorintransitmetsind
+              encore_event: Vpathology
+              encore_event_field: microsatorintransitmetsind
+              e_base_record: e_cosd_xml_pathology
+              annotation: MICROSATELLITE OR IN-TRANSIT METASTASIS INDICATION CODE
+              description: Is there evidence of Microsatellite or in transit metastases.  (Intralymphatic
+                metastatic cells separate from main tumour)
+              node_type: Nodes::DataItem
+              data_dictionary_element:
+                name: MICROSATELLITE OR IN-TRANSIT METASTASIS INDICATION CODE
+                group: Pathology
+            - name: TUMOUR REGRESSION INDICATOR
+              min_occurs: 0
+              max_occurs: 1
+              sort: 5
+              reference: pSK12620
+              rawtext_name: tumourregressionindicator
+              virtual_field: tumourregressionindicator
+              encore_event: Vpathology
+              encore_event_field: tumourregressionindicator
+              e_base_record: e_cosd_xml_pathology
+              annotation: TUMOUR REGRESSION INDICATION CODE (SKIN)
+              description: Area of loss of tumour associated with reactive changes.
+              node_type: Nodes::DataItem
+              data_dictionary_element:
+                name: TUMOUR REGRESSION INDICATION CODE
+                group: Pathology
+            - name: BRESLOW THICKNESS
+              min_occurs: 0
+              max_occurs: 1
+              sort: 6
+              reference: pSK12630
+              rawtext_name: breslowthickness
+              virtual_field: breslowthickness
+              encore_event: Vpathology
+              encore_event_field: breslowthickness
+              e_base_record: e_cosd_xml_pathology
+              annotation: BRESLOW THICKNESS
+              description: Breslow thickness in mm, can be recorded to nearest 0.01mm
+                where clinically appropriate
+              node_type: Nodes::DataItem
+              data_dictionary_element:
+                name: BRESLOW THICKNESS
+                group: Pathology
+            - name: TUMOUR INFILTRATING LYMPHOCYTES (TILS)
+              min_occurs: 0
+              max_occurs: 1
+              sort: 7
+              reference: pSK12430
+              rawtext_name: tumourinfiltratinglymphocytes_tils
+              virtual_field: tils
+              encore_event: Vpathology
+              encore_event_field: tils
+              e_base_record: e_cosd_xml_pathology
+              annotation: TUMOUR INFILTRATING LYMPHOCYTE TYPE
+              description: Type of TILS.   Tumour infiltrating lymphocytes (TILS) are
+                white blood cells that have left the bloodstream and migrated into a
+                tumour.
+              node_type: Nodes::DataItem
+              data_dictionary_element:
+                name: TUMOUR INFILTRATING LYMPHOCYTE TYPE
+                group: Pathology
+            - name: SENTINEL NODES EXAMINED NUMBER
+              min_occurs: 0
+              max_occurs: 1
+              sort: 8
+              reference: pSK12460
+              rawtext_name: sentinelnodesexaminednumber
+              virtual_field: sentinelnodesexamined
+              encore_event: Vpathology
+              encore_event_field: sentinelnodesexamined
+              e_base_record: e_cosd_xml_pathology
+              annotation: NUMBER OF SENTINEL NODES SAMPLED
+              description: Number of sentinel nodes sampled.
+              node_type: Nodes::DataItem
+              data_dictionary_element:
+                name: NUMBER OF SENTINEL NODES SAMPLED
+                group: Pathology
+            - name: SENTINEL NODES POSITIVE NUMBER
+              min_occurs: 0
+              max_occurs: 1
+              sort: 9
+              reference: pSK12470
+              rawtext_name: sentinelnodespositivenumber
+              virtual_field: sentinelnodespositive
+              encore_event: Vpathology
+              encore_event_field: sentinelnodespositive
+              e_base_record: e_cosd_xml_pathology
+              annotation: NUMBER OF SENTINEL NODES POSITIVE
+              description: Number of sentinel nodes positive.
+              node_type: Nodes::DataItem
+              data_dictionary_element:
+                name: NUMBER OF SENTINEL NODES POSITIVE
+                group: Pathology
+            - name: POST SNB COMPLETION LYMPHADENECTOMY - NODES SAMPLED NUMBER
+              min_occurs: 0
+              max_occurs: 1
+              sort: 10
+              reference: pSK12480
+              rawtext_name: postsnbcompletionlymphadenectomynodessamplednumber
+              virtual_field: postsnbclymphnodesexamined
+              encore_event: Vpathology
+              encore_event_field: postsnbclymphnodesexamined
+              e_base_record: e_cosd_xml_pathology
+              annotation: NUMBER OF NODES SAMPLED (POST SENTINEL NODE COMPLETION LYMPHADENECTOMY)
+              description: Post Sentinel Node Biopsy (SNB) completion lymphadenectomy
+                (not always done), number of nodes sampled.
+              node_type: Nodes::DataItem
+              data_dictionary_element:
+                name: NUMBER OF NODES SAMPLED (POST SENTINEL NODE COMPLETION LYMPHADENECTOMY)
+                group: Pathology
+            - name: POST SNB COMPLETION LYMPHADENECTOMY - NODES POSITIVE NUMBER
+              min_occurs: 0
+              max_occurs: 1
+              sort: 11
+              reference: pSK12490
+              rawtext_name: postsnbcompletionlymphadenectomynodespositivenumber
+              virtual_field: postsnbclymphnodespositive
+              encore_event: Vpathology
+              encore_event_field: postsnbclymphnodespositive
+              e_base_record: e_cosd_xml_pathology
+              annotation: NUMBER OF NODES POSITIVE (POST SENTINEL NODE COMPLETION LYMPHADENECTOMY)
+              description: Post Sentinel Node Biopsy (SNB) completion lymphadenectomy
+                (not always done), number of nodes positive.
+              node_type: Nodes::DataItem
+              data_dictionary_element:
+                name: NUMBER OF NODES POSITIVE (POST SENTINEL NODE COMPLETION LYMPHADENECTOMY)
+                group: Pathology
+        - name: PathologyVarious
+          min_occurs: 0
+          max_occurs: 1
+          sort: 170
+          annotation: TEMP ANNOTATION
+          description: To carry pathology details for various Upper GI cancers as shown
+          categories:
+          - UpperGI
+          node_type: Nodes::Entity
+          children:
+          - name: TOTAL NUMBER OF COLORECTAL METASTASES IN LIVER CODE
+            min_occurs: 0
+            max_occurs: 1
+            sort: 1
+            reference: pUG14500
+            rawtext_name: numberofcolorectalmetastasesinlivercode
+            virtual_field: numberofcolorectalmetsliver
+            encore_event: Vpathology
+            encore_event_field: numberofcolorectalmetsliver
+            e_base_record: e_cosd_xml_pathology
+            annotation: NUMBER OF COLORECTAL METASTASES IN LIVER
+            description: Number of colorectal metastases identified in resected liver
+            node_type: Nodes::DataItem
+            xml_type: INT_NHS_2
+          - name: EXCISION MARGIN (PROXIMAL DISTAL)
+            min_occurs: 0
+            max_occurs: 1
+            sort: 2
+            reference: pUG14480
+            rawtext_name: excisionmargin_proximaldistal
+            virtual_field: margininvindcode_proxdistal
+            encore_event: Vpathology
+            encore_event_field: margininvindcode_proxdistal
+            e_base_record: e_cosd_xml_pathology
+            annotation: MARGIN INVOLVED INDICATION CODE (POSITIVE PROXIMAL OR DISTAL
+              RESECTION MARGIN)
+            description: Identify whether either proximal or distal margin is involved.
+              (Involved equals 1mm or less, not involved equals greater then 1mm).
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: MARGIN INVOLVED INDICATION CODE (POSITIVE PROXIMAL OR DISTAL RESECTION
+                MARGIN)
+              group: Pathology
+          - name: EXCISION MARGIN (CIRCUMFERENTIAL)
+            min_occurs: 0
+            max_occurs: 1
+            sort: 3
+            reference: pUG14490
+            rawtext_name: excisionmargin_circumferential
+            virtual_field: margininvindcode_circ
+            encore_event: Vpathology
+            encore_event_field: margininvindcode_circ
+            e_base_record: e_cosd_xml_pathology
+            annotation: MARGIN INVOLVED INDICATION CODE (CIRCUMFERENTIAL MARGIN)
+            description: Identify whether circumferential margin is involved.  (Involved
+              equals 1mm or less, not involved equals greater then 1mm).
+            node_type: Nodes::DataItem
+            data_dictionary_element:
+              name: MARGIN INVOLVED INDICATION CODE (CIRCUMFERENTIAL MARGIN)
+              group: Pathology
+        - name: PathologyUrological
+          min_occurs: 0
+          max_occurs: 1
+          sort: 180
+          annotation: TEMP ANNOTATION
+          categories:
+          - Urological
+          node_type: Nodes::Entity
+          children:
+          - name: PathologyBladder
+            min_occurs: 0
+            max_occurs: 1
+            sort: 1
+            annotation: TEMP ANNOTATION
+            description: To carry the urological cancer pathology details for Bladder.
+            categories:
+            - Urological
+            node_type: Nodes::Entity
+            children:
+            - name: DETRUSOR MUSCLE PRESENCE INDICATOR
+              min_occurs: 0
+              max_occurs: 1
+              sort: 1
+              reference: pUR15120
+              rawtext_name: detrusormusclepresenceindicator
+              virtual_field: detrusormusclepresenceind
+              encore_event: Vpathology
+              encore_event_field: detrusormusclepresenceind
+              e_base_record: e_cosd_xml_pathology
+              annotation: DETRUSOR MUSCLE PRESENCE INDICATION CODE
+              description: 'BLADDER ONLY Presence or absence of detrusor muscle in the
+                specimen '
+              node_type: Nodes::DataItem
+              data_dictionary_element:
+                name: DETRUSOR MUSCLE PRESENCE INDICATION CODE
+                group: Pathology
+            - name: TUMOUR GRADE (UROLOGICAL)
+              min_occurs: 0
+              max_occurs: 1
+              sort: 2
+              reference: pUR15290
+              rawtext_name: tumourgrade_urology
+              virtual_field: tumourgrade_urology
+              encore_event: Vpathology
+              encore_event_field: tumourgrade_urology
+              e_base_record: e_cosd_xml_pathology
+              annotation: TUMOUR GRADE (UROLOGY)
+              description: BLADDER ONLY. Specify whether LOW, HIGH Grade or PUNLMP (Papillary
+                Urothelial Neoplasm of Low Malignant Potential).
+              node_type: Nodes::DataItem
+              data_dictionary_element:
+                name: TUMOUR GRADE (UROLOGY)
+                group: Pathology
+          - name: PathologyKidney
+            min_occurs: 0
+            max_occurs: 1
+            sort: 2
+            annotation: TEMP ANNOTATION
+            description: To carry the urological cancer pathology details for Kidney.
+            categories:
+            - Urological
+            node_type: Nodes::Entity
+            children:
+            - name: TUMOUR NECROSIS INDICATOR
+              min_occurs: 0
+              max_occurs: 1
+              sort: 1
+              reference: pUR15130
+              rawtext_name: tumournecrosisindicator
+              virtual_field: tumournecrosisindicator
+              encore_event: Vpathology
+              encore_event_field: tumournecrosisindicator
+              e_base_record: e_cosd_xml_pathology
+              annotation: TUMOUR NECROSIS INDICATION CODE
+              description: Is there evidence of coagulative tumour necrosis?
+              node_type: Nodes::DataItem
+              data_dictionary_element:
+                name: TUMOUR NECROSIS INDICATOR
+                group: Pathology
+            - name: PERINEPHRIC FAT INVASION
+              min_occurs: 0
+              max_occurs: 1
+              sort: 2
+              reference: pUR15140
+              rawtext_name: perinephricfatinvasion
+              virtual_field: perinephricfatinvasion
+              encore_event: Vpathology
+              encore_event_field: perinephricfatinvasion
+              e_base_record: e_cosd_xml_pathology
+              annotation: TUMOUR INVASION INDICATOR (PERINEPHRIC FAT)
+              description: Is there evidence of perinephric fat invasion?
+              node_type: Nodes::DataItem
+              data_dictionary_element:
+                name: TUMOUR INVASION INDICATOR (PERINEPHRIC FAT)
+                group: Pathology
+            - name: ADRENAL INVASION
+              min_occurs: 0
+              max_occurs: 1
+              sort: 3
+              reference: pUR15150
+              rawtext_name: adrenalinvasion
+              virtual_field: adrenalinvasion
+              encore_event: Vpathology
+              encore_event_field: adrenalinvasion
+              e_base_record: e_cosd_xml_pathology
+              annotation: TUMOUR INVASION INDICATION CODE (DIRECT ADRENAL)
+              description: Is there evidence of direct adrenal invasion?
+              node_type: Nodes::DataItem
+              data_dictionary_element:
+                name: TUMOUR INVASION INDICATOR (ADRENAL)
+                group: Pathology
+            - name: RENAL VEIN TUMOUR
+              min_occurs: 0
+              max_occurs: 1
+              sort: 4
+              reference: pUR15160
+              rawtext_name: renalveintumour
+              virtual_field: renalveintumour
+              encore_event: Vpathology
+              encore_event_field: renalveintumour
+              e_base_record: e_cosd_xml_pathology
+              annotation: RENAL VEIN TUMOUR THROMBUS INDICATION CODE (UROLOGICAL)
+              description: Is there evidence of tumour thrombus in the renal vein?
+              node_type: Nodes::DataItem
+              data_dictionary_element:
+                name: RENAL VEIN TUMOUR INDICATOR
+                group: Pathology
+            - name: GEROTA'S FASCIA INVASION
+              min_occurs: 0
+              max_occurs: 1
+              sort: 5
+              reference: pUR15170
+              rawtext_name: gerotasfasciainvasion
+              virtual_field: gerotasfasciainvasion
+              encore_event: Vpathology
+              encore_event_field: gerotasfasciainvasion
+              e_base_record: e_cosd_xml_pathology
+              annotation: TUMOUR INVASION INDICATOR (GEROTAS FASCIA)
+              description: Is there evidence of invasion into Gerota's fascia?
+              node_type: Nodes::DataItem
+              data_dictionary_element:
+                name: TUMOUR INVASION INDICATOR (GEROTAS FASCIA)
+                group: Pathology
+          - name: PathologyPenis
+            min_occurs: 0
+            max_occurs: 1
+            sort: 3
+            annotation: TEMP ANNOTATION
+            description: To carry the urolgical cancer pathology details for Penis.
+            categories:
+            - Urological
+            node_type: Nodes::Entity
+            children:
+            - name: CORPUS SPONGIOSUM INVASION
+              min_occurs: 0
+              max_occurs: 1
+              sort: 1
+              reference: pUR15180
+              rawtext_name: corpusspongiosuminvasion
+              virtual_field: corpusspongiosuminvasion
+              encore_event: Vpathology
+              encore_event_field: corpusspongiosuminvasion
+              e_base_record: e_cosd_xml_pathology
+              annotation: TUMOUR INVASION INDICATOR (CORPUS SPONGIOSUM)
+              description: Is there evidence of invasion into corpus spongiosum?
+              node_type: Nodes::DataItem
+              data_dictionary_element:
+                name: TUMOUR INVASION INDICATOR (CORPUS SPONGIOSUM)
+                group: Pathology
+            - name: CORPUS CAVERNOSUM INVASION
+              min_occurs: 0
+              max_occurs: 1
+              sort: 2
+              reference: pUR15190
+              rawtext_name: corpuscavernosuminvasion
+              virtual_field: corpuscavernosuminvasion
+              encore_event: Vpathology
+              encore_event_field: corpuscavernosuminvasion
+              e_base_record: e_cosd_xml_pathology
+              annotation: TUMOUR INVASION INDICATOR (CORPUS CAVERNOSUM)
+              description: Is there evidence of invasion into corpus cavernosum?
+              node_type: Nodes::DataItem
+              data_dictionary_element:
+                name: TUMOUR INVASION INDICATOR (CORPUS CAVERNOSUM)
+                group: Pathology
+            - name: URETHRA OR PROSTATE INVASION
+              min_occurs: 0
+              max_occurs: 1
+              sort: 3
+              reference: pUR15200
+              rawtext_name: urethraorprostateinvasion
+              virtual_field: urethraorprostateinvasion
+              encore_event: Vpathology
+              encore_event_field: urethraorprostateinvasion
+              e_base_record: e_cosd_xml_pathology
+              annotation: TUMOUR INVASION INDICATOR (URETHRA OR PROSTATE)
+              description: Is there evidence of invasion into the urethra or prostate?
+              node_type: Nodes::DataItem
+              data_dictionary_element:
+                name: TUMOUR INVASION INDICATOR (URETHRA OR PROSTATE)
+                group: Pathology
+          - name: PathologyProstate
+            min_occurs: 0
+            max_occurs: 1
+            sort: 4
+            annotation: TEMP ANNOTATION
+            description: To carry the urological cancer pathology details for Prostate
+            categories:
+            - Urological
+            node_type: Nodes::Entity
+            children:
+            - name: GLEASON GRADE (PRIMARY)
+              min_occurs: 0
+              max_occurs: 1
+              sort: 1
+              reference: pUR15210
+              rawtext_name: gleasongrade_primary
+              virtual_field: primarygrade
+              encore_event: Vpathology
+              encore_event_field: primarygrade
+              e_base_record: e_cosd_xml_pathology
+              annotation: GLEASON GRADE (PRIMARY)
+              description: What is the most extensive Gleason grade?
+              node_type: Nodes::DataItem
+              data_dictionary_element:
+                name: GLEASON GRADE (PRIMARY)
+                group: Pathology
+            - name: GLEASON GRADE (SECONDARY)
+              min_occurs: 0
+              max_occurs: 1
+              sort: 2
+              reference: pUR15220
+              rawtext_name: gleasongrade_secondary
+              virtual_field: secondarygrade
+              encore_event: Vpathology
+              encore_event_field: secondarygrade
+              e_base_record: e_cosd_xml_pathology
+              annotation: GLEASON GRADE (SECONDARY)
+              description: If additional grades are present, what is the highest grade
+                (biopsy) or the second most extensive grade (TURP and radicals).  If
+                no additional grades are present, primary and secondary grades are the
+                same.
+              node_type: Nodes::DataItem
+              data_dictionary_element:
+                name: GLEASON GRADE (SECONDARY)
+                group: Pathology
+            - name: GLEASON GRADE (TERTIARY)
+              min_occurs: 0
+              max_occurs: 1
+              sort: 3
+              reference: pUR15230
+              rawtext_name: gleasongrade_tertiary
+              virtual_field: tertiarygrade
+              encore_event: Vpathology
+              encore_event_field: tertiarygrade
+              e_base_record: e_cosd_xml_pathology
+              annotation: GLEASON GRADE (TERTIARY)
+              description: Is there a different third grade in addition the primary
+                and secondary grades and what is its value?
+              node_type: Nodes::DataItem
+              data_dictionary_element:
+                name: GLEASON GRADE (TERTIARY)
+                group: Pathology
+            - name: PERINEURAL INVASION
+              min_occurs: 0
+              max_occurs: 1
+              sort: 4
+              reference: pUR15240
+              rawtext_name: perineuralinvasion
+              virtual_field: perineuralinvasion_urology
+              encore_event: Vpathology
+              encore_event_field: perineuralinvasion_urology
+              e_base_record: e_cosd_xml_pathology
+              annotation: PERINEURAL INVASION INDICATOR (UROLOGICAL)
+              description: Is there perineural invasion (invasion into perineurium of
+                nerve bundles- PNI)
+              node_type: Nodes::DataItem
+              xml_type: ST_NHS_PerineuralInvasionIndSkin
+            - name: TURP TUMOUR PERCENTAGE
+              min_occurs: 0
+              max_occurs: 1
+              sort: 7
+              reference: pUR15270
+              rawtext_name: turptumourpercentage
+              virtual_field: turptumourpercentage
+              encore_event: Vpathology
+              encore_event_field: turptumourpercentage
+              e_base_record: e_cosd_xml_pathology
+              annotation: TURP TUMOUR PERCENTAGE
+              description: For TURP only, what percentage of tumour if clinically unsuspected
+                tumour.
+              node_type: Nodes::DataItem
+              data_dictionary_element:
+                name: TURP TUMOUR PERCENTAGE
+                group: Pathology
+          - name: PathologyTesticular
+            min_occurs: 0
+            max_occurs: 1
+            sort: 5
+            annotation: TEMP ANNOTATION
+            description: To carry the urological cancer pathology details for Testicular
+            categories:
+            - Urological
+            node_type: Nodes::Entity
+            children:
+            - name: RETE TESTES INVASION
+              min_occurs: 1
+              max_occurs: 1
+              sort: 1
+              reference: pUR15310
+              rawtext_name: retetestesinvasion
+              virtual_field: retetestesinvasion
+              encore_event: Vpathology
+              encore_event_field: retetestesinvasion
+              e_base_record: e_cosd_xml_pathology
+              annotation: TUMOUR INVASION INDICATOR (RETE TESTIS)
+              description: For Seminoma only, does the tumour invade the rete testis
+              node_type: Nodes::DataItem
+              data_dictionary_element:
+                name: TUMOUR INVASION INDICATOR (RETE TESTIS)
+                group: Pathology

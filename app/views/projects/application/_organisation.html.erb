@@ -1,0 +1,11 @@
+<%= form.control_group(:"#{target}_name", t(".#{target}_name")) { form.text_field(:"#{target}_name") } %>
+<%= form.control_group(:"#{target}_add1", t(".#{target}_add1")) { form.text_field(:"#{target}_add1") } %>
+<%= form.control_group(:"#{target}_add2", t(".#{target}_add2")) { form.text_field(:"#{target}_add2") } %>
+<%= form.control_group(:"#{target}_city", t(".#{target}_city")) { form.text_field(:"#{target}_city") } %>
+<%= form.control_group(:"#{target}_postcode", t(".#{target}_postcode"), {}, class: 'col-md-2') do %>
+  <%= form.text_field(:"#{target}_postcode") %>
+<% end %>
+<%= form.control_group(:"#{target}_country_id", t(".#{target}_country"), {}, class: 'col-md-6') do %>
+  <% readonly_value = Lookups::Country.find_by(id: form.object.send(:"#{target}_country_id"))&.value %>
+  <%= form.collection_select(:"#{target}_country_id", Lookups::Country.sorted_dropdown, :id, :value, { include_blank: true, readonly_value: readonly_value }, class: 'form-control') %>
+<% end %>

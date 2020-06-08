@@ -1,0 +1,21 @@
+<td colspan="12" style="padding:0">
+  <div id="<%= dom_id(notification) %>_details" class="collapse" style="padding: 0 0em">
+    <div style="padding-left: 40px">
+      <div class="arrow-up"></div>
+    </div>
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="pull-left" style="font-size:1em">
+              <%= notification.title%> <%= timeago_tag(notification.created_at) %>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="panel-body" style="padding-top:8px;padding-bottom:30px">
+        <%= simple_format(notification.body) %>
+      </div>
+    </div>
+  </div>
+</td>

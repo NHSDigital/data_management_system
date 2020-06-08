@@ -1,0 +1,7 @@
+<% if @team.z_team_status_name == 'New' %>
+  <%= link_to 'ACTIVATE',
+                team_path(@team, :team => {z_team_status_id: ZTeamStatus.where(name: 'Active').first.id}),
+                method: :put,
+                class:   @team.users.length.positive? ? 'btn btn-success' : 'btn btn-default disabled' ,
+                id: 'activate_team_button' %>
+<% end %>

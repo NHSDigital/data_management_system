@@ -1,0 +1,16 @@
+
+non_xml:
+  id: 1
+  name: non_xml
+
+xml:
+  id: 2
+  name: xml
+
+table_spec:
+  id: 3
+  name: table_specification
+
+odr:
+  id: 4
+  name: odr

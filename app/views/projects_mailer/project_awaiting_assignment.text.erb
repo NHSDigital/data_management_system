@@ -1,0 +1,18 @@
+##### Project Awaiting Assignment #####
+
+A project requires allocation to an application manager.
+<% if @assigned_by %>
+This was previously assigned to <%= @assigned_by %>.
+<% else %>
+This is because the system could not find an available application manager to which the
+project could be assigned.
+<% end %>
+
+Title: <%= @project.name %>
+Type: <%= @project.project_type %>
+Raised by: <%= @project.owner_full_name %>
+Team: <%= @project.team.name %>
+Organisation: <%= @project.organisation.name %>
+Link: <%= project_url(@project) %>
+
+Please log in and copy/paste the above link into your web browser to view the project.

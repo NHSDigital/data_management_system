@@ -1,0 +1,35 @@
+# Header:
+#   id: 1
+#   name: Header
+#   min_occurs: 1
+#   max_occurs: 1
+#   dataset_version: COSDEightOne
+# Biomarkers:
+#   id: 5
+#   name: Biomarkers
+#   min_occurs: 0
+#   max_occurs: 1
+#   sort: 35
+#   dataset_version: COSDEightOne
+# Diagnosis:
+#   id: 2
+#   name: Diagnosis
+#   min_occurs: 0
+#   max_occurs: 1
+#   sort: 9
+#   dataset_version: COSDEightOne
+# DiagnosisAdditionalItems:
+#   id: 4
+#   parent_id: 2
+#   name: DiagnosisAdditionalItems
+#   min_occurs: 0
+#   max_occurs: 1
+#   sort: 1
+#   dataset_version: COSDEightOne
+# DeathDetails:
+#   id: 3
+#   name: DeathDetails
+#   min_occurs: 0
+#   max_occurs: 1
+#   sort: 38
+#   dataset_version: COSDEightOne

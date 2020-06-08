@@ -1,0 +1,32 @@
+<tr class="<%= node.highlighting %>" id="<%= dom_id(node) %>">
+  <td><%= node_type_label(node) %></td>
+  <td><%= node.name %></td>
+  <td><%= node.annotation %></td>
+  <td><%= node.description %></td>
+  <td><%= node.min_occurs %></td>
+  <td><%= node.max_occurs %></td>
+  <td><%= node.governance&.value %></td>
+  <td>
+    <% unless node.data_item? %>
+      <span data-toggle="collapse" data-target="#<%= dom_id(node) %>_child_nodes">
+        <a href="javascript:;" data-turbolinks="false">
+          <%= pluralize(node.child_nodes.count, 'Node') %>
+        </a>
+      </span>
+    <% end %>
+  </td>
+
+  <td>
+    <div class="pull-right">
+      <% if can?(:destroy, node) %>
+        <%= delete_link(node_path(node), method: :delete, remote: true, data: { confirm: "Are you sure you want to remove #{node.name} from #{@dataset_version.name}?" }, skip_authorization: true)%>
+      <% end %>
+      <% if can?(:update, node) %>
+        <%= edit_link edit_node(node), remote: true, skip_authorization: true %>
+      <% end %>
+      <% if can?(:read, node) %>
+        <%= details_link detail_node(node), remote: true, skip_authorization: true %>
+      <% end %>
+    </div>
+  </td>
+</tr>

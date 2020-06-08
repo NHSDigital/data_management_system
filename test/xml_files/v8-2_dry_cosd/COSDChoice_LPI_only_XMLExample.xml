@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<COSD:COSD xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:COSD="http://www.datadictionary.nhs.uk/messages/COSD-v8-2" xsi:schemaLocation="http://www.datadictionary.nhs.uk/messages/COSD-v8-2 ../Schemas/COSDCOSD_XMLSchema-v8-1.xsd"> 
+  <Id root="60E8A409-24B6-4ADC-9C96-0273F668BDC8"/>
+  <OrganisationIdentifierCodeOfSubmittingOrganisation extension="123"/>
+  <RecordCount value="1"/>
+   <ReportingPeriodStartDate>2018-03-01</ReportingPeriodStartDate>
+  <ReportingPeriodEndDate>2018-03-30</ReportingPeriodEndDate>
+  <FileCreationDateTime>2018-03-30T00:00:00</FileCreationDateTime>
+  <BreastRecord>
+    <Id root="778F1F33-4911-4E50-8E36-3182780F8F94" />
+    <LinkagePatientId>
+      <LocalPatientIdExtended>AB1888555446</LocalPatientIdExtended>
+      <NHSNumberStatusIndicator code="03" />
+      <Birthdate>1971-01-01</Birthdate>
+      <OrganisationIdentifierCodeOfProvider extension="AB1" />
+    </LinkagePatientId>
+    <LinkageDiagnosticDetails>
+      <PrimaryDiagnosis code="C501" />
+      <TumourLaterality code="L" />
+      <DateOfNonPrimaryCancerDiagnosisClinicallyAgreed>2017-01-01</DateOfNonPrimaryCancerDiagnosisClinicallyAgreed>
+    </LinkageDiagnosticDetails>
+  </BreastRecord>
+</COSD:COSD>

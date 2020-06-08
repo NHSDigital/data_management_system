@@ -1,0 +1,254 @@
+<div id='project_summary_data_information' class="row">
+	<div class="col-md-12">
+		<div class="panel panel-default" style="border-top:0px">
+			<div class="panel-heading" style="border-top:0px">
+				<div class="row">
+					<div class="col-md-8">
+						<div class="pull-left" style="font-size:1.5em">
+							Project details
+						</div>
+					</div>
+					<div class="col-md-4">
+						<div class="pull-right">
+							<div id='approve_details_status'>
+								<%= render partial: '/projects/approve_details_section', locals: { project: @project, section: 'all' } %>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<!-- experimental -->
+		<!--
+		<div class="row">
+		<div class="col-md-12">
+		<%# bootstrap_form_for([@project], horizontal: true, readonly: @readonly) do |form| %>
+		<%# render 'project_details', { form: form} %>
+		<%# end %>
+		</div>
+		</div>
+		-->
+
+		<div class="row">
+			<div class="col-md-3 text-right">
+				<label class="control-label">Title</label>
+			</div>
+			<div class="col-md-8">
+				<%= @project.name %>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-md-3 text-right">
+				<label class="control-label">End Uses</label>
+			</div>
+			<div class="col-md-8">
+				<%= @project.end_uses.collect(&:name).join(', ') %>
+			</div>
+		</div>
+
+		<% if @project.end_use_other.present? %>
+			<div class="row">
+				<div class="col-md-3 text-right">
+          <label class="control-label">Other End Use</label>
+				</div>
+				<div class="col-md-8">
+					<%= @project.end_use_other %>
+				</div>
+			</div>
+		<% end %>
+
+		<div class="row">
+			<div class="col-md-3 text-right">
+				<label class="control-label">Description</label>
+			</div>
+			<div class="col-md-8">
+				<%= @project.description %>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-md-3 text-right">
+				<label class="control-label">Will data be used to contact others</label>
+			</div>
+			<div class="col-md-8">
+				<%= @project.data_to_contact_others ? 'Yes' : 'No'%>
+			</div>
+			<% if @project.data_to_contact_others %>
+			<div class="row">
+				<div class="col-md-3"></div>
+				<div class="col-md-8">
+					<%= @project.data_to_contact_others_desc %>
+				</div>
+			</div>
+			<% end %>
+		</div>
+
+		<div class="row">
+			<div class="col-md-3 text-right">
+				<label class="control-label">Project Dates</label>
+			</div>
+			<div class="col-md-6">
+				<%= @project.start_data_date&.strftime('%d/%m/%Y') %> to <%= @project.end_data_date&.strftime('%d/%m/%Y') %>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-md-3 text-right">
+				<label class="control-label">Data held for project</label>
+			</div>
+			<div class="col-md-8">
+				<%= @project.data_already_held_for_project  ? 'Yes' : 'No' %>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-md-3 text-right">
+				<label class="control-label">Applicant</label>
+			</div>
+			<div class="col-md-8">
+				<%= @project.owner_full_name %>
+			</div>
+		</div>
+
+    <div class="row">
+      <div class="col-md-3 text-right">
+        <label class="control-label">Cohort inclusion & exclusion criteria</label>
+      </div>
+      <div class="col-md-8">
+      <%= @project.cohort_inclusion_exclusion_criteria %>
+      </div>
+    </div>
+
+		<div class="row">
+			<div class="col-md-3 text-right">
+				<label class="control-label">Data Linkage and flows</label>
+			</div>
+			<div class="col-md-8">
+				<%= @project.data_linkage %>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-md-3 text-right">
+				<label class="control-label">Refresh frequency</label>
+			</div>
+			<div class="col-md-5">
+				<%= @project.frequency %>
+   			    <% if @project.frequency == 'Other' %>
+				  , <%= @project.frequency_other %>
+			    <% end %>
+		    </div>
+        </div>
+		<div class="row">
+			<div class="col-md-3 text-right">
+				<label class="control-label">Data Linkage and flows</label>
+			</div>
+			<div class="col-md-8">
+				<%= @project.data_linkage %>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-md-3 text-right">
+				<label class="control-label">How data will be used</label>
+			</div>
+			<div class="col-md-8">
+				<%= @project.how_data_will_be_used %>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-md-3 text-right">
+				<label class="control-label">Level of Identifiability</label>
+			</div>
+			<div class="col-md-8">
+				<%= @project.level_of_identifiability %>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-md-3 text-right">
+				<label class="control-label">Has the associate Caldicott guardian (ACG) support been sought / granted ?</label>
+			</div>
+			<div class="col-md-8">
+				<%= @project.acg_support  ? 'Yes' : 'No'%>
+			</div>
+		</div>
+
+    <% if @project.acg_support  %>
+    	<div class="row">
+				<div class="col-md-3 text-right">
+					<label class="control-label">Who</label>
+				</div>
+				<div class="col-md-8">
+					<%= @project.acg_who%>
+				</div>
+      </div>
+   		<div class="row">
+				<div class="col-md-3 text-right">
+					<label class="control-label">When</label>
+				</div>
+				<div class="col-md-8">
+					<%= @project.acg_date.strftime('%d/%m/%Y') unless @project.acg_date.nil? %>
+				</div>
+      </div>
+			<div class="row">
+				<div class="col-md-3 text-right">
+					<label class="control-label">Email</label>
+				</div>
+				<div class="col-md-8">
+					<%= @project.caldicott_email%>
+				</div>
+      </div>
+		<% end %>
+
+		<div class="row">
+			<div class="col-md-3 text-right">
+				<label class="control-label">Outputs</label>
+			</div>
+			<div class="col-md-8">
+				<%= @project.outputs.collect(&:name).join(', ') %>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-md-3 text-right">
+  			<label class="control-label">Other</label>
+      </div>
+			<div class="col-md-8">
+				<%= @project.outputs_other %>
+			</div>
+		</div>
+
+		<!-- experimental -->
+
+		<% if @project.project_comments.details.length > 0 && !(@project.current_state == 'SUBMITTED' && !current_user.odr?) %>
+		<hr>
+		<span data-toggle="collapse" data-target="#project_summary_data_comments">
+			<div class='row'>
+				<div class='col-md-2'>
+					<div style="font-size:1.5em" class='pull-right'>
+					  <a href="#" data-turbolinks="false">
+						  <%= pluralize(@project.project_comments.details.length, 'Comment', plural: 'Comments') %>
+						</a>
+					</div>
+				</div>
+			</div> </span>
+		<div id="project_summary_data_comments" class="collapse" style="padding: 0 1em">
+			<div class='row'>
+				<div class='col-md-2'></div>
+				<div class='col-md-10'>
+					<%= render partial:  '/project_comments/standard_view',
+					locals: { comments: @project.project_comments.details,
+					comment_type: 'DetailJustification',
+					project_data_source_item_id: nil} %>
+				</div>
+			</div>
+		</div>
+		<% end %>
+	</div>
+
+</div>

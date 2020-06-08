@@ -1,0 +1,5 @@
+<% if @destroyed %>
+  jQuery("#<%= dom_id(@project) %>").hide('fast')
+<% else %>
+  alert('Unable to destroy project')
+<% end %>

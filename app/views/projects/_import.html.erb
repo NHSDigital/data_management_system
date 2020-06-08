@@ -1,0 +1,22 @@
+<div class="well" data-controller="pdf-import" style="margin-bottom: 0px;">
+  <%= form_with url: import_team_projects_path(@team), scope: :project, multipart: true do |form| %>
+    <div class="dropzone" data-target="pdf-import.dropzone" style="height: 150px;">
+      <div class="dropzone-content-center text-center">
+        <div class="dropzone-input">
+          <label for="file" style="cursor: pointer; opacity: 0.3; margin-bottom: 0px;">
+            <h1><span class="glyphicon glyphicon-inbox"></span></h1>
+          </label><br />
+          <strong>Drag and drop PDF here</strong><br />
+          <small>or
+            <%= label_tag 'file', 'click', style: 'color: #337ab7; cursor: pointer;' %>&nbsp;to choose a file.
+            <%= file_field_tag 'file', multiple: false, accept: 'application/pdf', style: 'display: none;' %>
+          </small>
+        </div>
+        <strong class="dropzone-uploading text-primary">Uploading&hellip;</strong>
+        <div class="progress">
+          <div class="progress-bar"></div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>

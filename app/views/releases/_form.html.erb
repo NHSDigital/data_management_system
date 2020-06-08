@@ -1,0 +1,70 @@
+<%
+  readonly ||= false
+
+  url = url_for(release) if release.persisted?
+  url ||= polymorphic_url([release.project, :releases])
+%>
+
+<%= bootstrap_form_with model: release, url: url, readonly: readonly, horizontal: true, html: { id: dom_id(release) } do |form| %>
+  <%= form.error_and_warning_alert_boxes %>
+
+  <%= form.control_group(:invoice_requested_date, nil, {}, class: 'col-md-3') do %>
+    <%= form.datepicker_field(:invoice_requested_date) %>
+  <% end %>
+
+  <%= form.control_group(:invoice_sent_date, nil, {}, class: 'col-md-3') do %>
+    <%= form.datepicker_field(:invoice_sent_date) %>
+  <% end %>
+
+  <%= form.control_group(:phe_invoice_number, nil, {}, class: 'col-md-3') do %>
+    <%= form.text_field(:phe_invoice_number) %>
+  <% end %>
+
+  <%= form.control_group(:po_number, nil, {}, class: 'col-md-3') do %>
+    <%= form.text_field(:po_number) %>
+  <% end %>
+
+  <%= form.control_group(:ndg_opt_out_processed_date, nil, {}, class: 'col-md-3') do %>
+    <%= form.datepicker_field(:ndg_opt_out_processed_date) %>
+  <% end %>
+
+  <%= form.control_group(:cprd_reference, nil, {}, class: 'col-md-3') do %>
+    <%= form.text_field(:cprd_reference) %>
+  <% end %>
+
+  <%= form.control_group(:actual_cost, nil, {}, class: 'col-md-3') do %>
+    <%= form.text_field(:actual_cost) %>
+  <% end %>
+
+  <%= form.control_group(:vat_reg, nil, {}, class: 'col-md-3') do %>
+    <%= form.lookup_select(:vat_reg) %>
+  <% end %>
+
+  <%= form.control_group(:income_received, nil, {}, class: 'col-md-3') do %>
+    <%= form.lookup_select(:income_received) %>
+  <% end %>
+
+  <%= form.control_group(:drr_no, nil, {}, class: 'col-md-3') do %>
+    <%= form.text_field(:drr_no) %>
+  <% end %>
+
+  <%= form.control_group(:cost_recovery_applied, nil, {}, class: 'col-md-3') do %>
+    <%= form.lookup_select(:cost_recovery_applied) %>
+  <% end %>
+
+  <%= form.control_group(:individual_to_release, nil, {}, class: 'col-md-3') do %>
+    <%= form.text_field(:individual_to_release) %>
+  <% end %>
+
+  <%= form.control_group(:release_date, nil, {}, class: 'col-md-3') do %>
+    <%= form.datepicker_field(:release_date) %>
+  <% end %>
+
+  <% unless form.readonly? %>
+    <br />
+    <%= form.control_group(nil) do %>
+      <%= form.submit class: 'btn btn-primary' %>
+      <%= link_to('Cancel', project_path(form.object.project, anchor: '!releases'), class: 'btn btn-danger') %>
+    <% end %>
+  <% end %>
+<% end %>

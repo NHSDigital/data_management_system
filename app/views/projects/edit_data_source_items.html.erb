@@ -1,0 +1,129 @@
+<%= bootstrap_form_for([@team, @project], horizontal: true) do |form| %>
+  <div class="panel panel-default">
+
+    <div class="panel-body" style="padding-top:8px;padding-bottom:8px">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="pull-left" style="font-size:1.5em;padding-top:4px">
+             Project <%= @project.name %>: data items
+             <%= link_to "Back to #{@project.name}" , project_url(@project), class: 'btn btn-default' %>
+          </div>
+          <div id='top-buttons' class="btn-toolbar pull-right" style="margin:0 0 0 10px;">
+               <%= cancel_submit @project %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel-footer" style="padding-top:8px;padding-bottom:8px">
+      <div class="row">
+        <div class="col-md-6">
+          <h4><span id='unselected_count'>0</span> Available items, click to select.</h4>
+        </div>
+        <div class="col-md-6">
+          <h4><span id='selected_count'>0</span> Selected items, click to remove. </h4>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6">
+          <div class='row'>
+            <div class="col-md-12">
+              <%= bootstrap_icon_tag('search') + ' Search' %>
+              <%= text_field_tag :search_unselected %>
+              <%= hidden_field_tag :tab, '!data' %>
+              <input class="btn btn-sm btn-primary" type="reset" value="Reset" id='reset_search_unselected'>
+            </div>
+          </div>
+          <div class='row'>
+            <div class="col-md-12">
+              <input id="all_unselected" type="radio" name="select-governance" value="ALL" checked> ALL
+              <input type="radio" name="select-governance" value="NONIDENTIFYINGDATA"> NON-IDENTIFIER
+              <input type="radio" name="select-governance" value="INDIRECTIDENTIFIER"> INDIRECT IDENTIFIER
+              <input type="radio" name="select-governance" value="DIRECTIDENTIFIER"> DIRECT IDENTIFIER
+            </div>
+          </div>
+          <div class='row'>
+            <div class="col-md-12">
+              <%= dataset_filter_options(:selected_datasets) %>
+            </div>
+          </div>
+          <%= table_filter_options(:selected_tables) %>
+        </div>
+
+        <div class="col-md-6">
+          <div class='row'>
+            <div class="col-md-8">
+              <%= bootstrap_icon_tag('search') + ' Search' %>
+              <%= text_field_tag :search_selected %>
+              <%= hidden_field_tag :tab, '!data' %>
+              <input class="btn btn-sm btn-primary" type="reset" value="Reset" id='reset_search_selected'>
+            </div>
+          </div>
+          <div class='row'>
+            <div class="col-md-12">
+              <input id="all_selected" type="radio" name="deselect-governance" value="ALL" checked> ALL
+              <input type="radio" name="deselect-governance" value="NONIDENTIFYINGDATA"> NON-IDENTIFIER
+              <input type="radio" name="deselect-governance" value="INDIRECTIDENTIFIER"> INDIRECT IDENTIFIER
+              <input type="radio" name="deselect-governance" value="DIRECTIDENTIFIER"> DIRECT IDENTIFIER
+            </div>
+          </div>
+          <div class='row'>
+            <div class="col-md-12">
+              <%= dataset_filter_options(:deselect_datasets) %>
+            </div>
+          </div>
+          <%= table_filter_options(:deselect_tables) %>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel-footer" style="padding-top:8px;padding-bottom:8px">
+      <div class="row" id="data_source_items">
+        <%= form.collection_check_boxes :data_source_item_ids, form.object.available_data_source_items, :id, :name do |b| %>
+          <%= b.check_box(class: 'hide', id: 'checkbox_' + dom_id(b.object)) %>
+        <% end %>
+
+        <div class="col-md-6" id="unselected_data_source_items">
+          <!-- TODO: using dataset_versions.last -->
+          <% form.object.available_data_source_items.each do |b| %>
+            <% if !@project.nodes.collect(&:name).include?(b.name) %>
+              <div id="data_source_item_<%= dom_id(b) %>" class="<%= b.governance_value.gsub(' ','') %> <%= b.dataset.name.gsub(' ','') %> <%= b.parent_table_node&.name %> row data-select-row" style="background-color: white; border: 1px solid gray; border-left: 4px solid <%= b.colour %>; margin: 3px">
+                <span class="col-xs-4" style="word-wrap: break-word;">
+                  <strong><%= b.name %></strong>
+                </span>
+                <span class="col-xs-8">
+                  <%= b.description %><%= bootstrap_icon_tag(b.governance) %>
+                </span>
+              </div>
+            <% end %>
+          <% end %>
+        </div>
+
+        <div class="col-md-6" id="selected_data_source_items">
+          <% @project.nodes.order('governance_id').each do |di| %>
+            <div id="data_source_item_<%= dom_id(di) %>" class="<%= di.governance_value.gsub(' ','') %> row data-select-row" style="background-color: white; border: 1px solid gray; border-left: 4px solid <%= di.colour %>; margin: 3px">
+              <span class="col-xs-4">
+                <strong><%= di.name %></strong>
+              </span>
+              <span class="col-xs-8">
+                <%= di.description %>
+              </span>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+   <div class="panel-footer" style="padding-top:8px;padding-bottom:8px">
+     <div class="row">
+       <div class="col-md-12">
+       <%= form.control_group nil do %>
+         <div class='pull-right' id="bottom-buttons">
+           <%= cancel_submit @project %>
+         </div>
+       <% end %>
+       </div>
+     </div>
+   </div>
+<% end %>

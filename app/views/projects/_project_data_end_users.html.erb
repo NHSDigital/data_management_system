@@ -1,0 +1,34 @@
+<div id="project_data_end_users_information" data-turbolinks="false">
+  <div class="col-md-6">
+    <%= bootstrap_panel_tag(capture { %>
+      <div class="pull-right">
+        <% if can?(:create, ProjectAttachment.new(attachable: @project)) && !team_delegate_user?(@project) %>
+          <%= link_to bootstrap_icon_tag('plus') + ' Upload from CSV', new_project_project_attachment_path(@project, name: 'Data End Users'), remote: true, class: 'btn btn-xs btn-primary'%>
+        <% end %>
+        <% if can?(:create, ProjectDataEndUser.new(project: @project)) %>
+          <%= link_to bootstrap_icon_tag('plus') + ' Add End User', new_project_project_data_end_user_path(@project), remote: true, class: 'btn btn-primary btn-xs' %>
+        <% end %>
+      </div>
+
+      <h3 class="panel-title clearfix">End data users</h3>
+      <%= download_link(terms_and_conditions_doc_path, { no_notice: true, title: 'Download Terms & Conditions', text: 'Download', class: 'btn btn-xs btn-default' }) %>
+      <%= download_link(project_end_users_template_csv_path, { no_notice: true, title: 'Download CSV Template', text: 'Download', class: 'btn btn-xs btn-default' }) %>
+
+    <% }) do %>
+      <table data-search="true" data-toggle="table" class="table table-enduser" id="data-end-users-table">
+        <thead>
+          <tr>
+            <th data-sortable="true">First Name</th>
+            <th data-sortable="true">Last Name</th>
+            <th data-sortable="true">Email</th>
+            <th class="col-md-1" title='MBIS T & C accepted'>MBIS T & C accepted</th>
+            <th class="col-md-1"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <%= render partial: @project.project_data_end_users %>
+        </tbody>
+      </table>
+    <% end %>
+  </div>
+</div>

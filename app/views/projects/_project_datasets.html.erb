@@ -1,0 +1,27 @@
+<div class="tab-pane" id="datasets">
+  <div class="panel panel-default" style="border-top: 0px;">
+    <div class="panel-heading">
+      <span style="font-size: 1.5em;">Datasets</span>
+      <div class="pull-right">
+        <%= edit_link project, class: 'btn btn-default', text: true, path: edit_project_path(project, anchor: 'multi_project_datasets') %>
+      </div>
+    </div>
+  </div>
+
+  <table class="table table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% project.datasets.each do |dataset| %>
+        <tr>
+          <td><%= dataset.name %></td>
+          <td><%= dataset.full_name %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

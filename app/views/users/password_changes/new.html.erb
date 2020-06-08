@@ -1,0 +1,22 @@
+<h3>Reset your password</h3>
+
+<div class="jumbotron">
+  <%= bootstrap_form_for(current_user, url: change_password_path, html: { method: :post }, horizontal: 4) do |f| %>
+
+    <%= f.control_group :current_password, 'Current password', {}, { class: 'col-md-4' } do %>
+      <%= f.password_field :current_password, autocomplete: "off" %>
+    <% end %>
+
+    <%= f.control_group :password, 'New password', {}, { class: 'col-md-4' } do %>
+      <%= f.password_field :password, autocomplete: "off" %>
+    <% end %>
+
+    <%= f.control_group :password_confirmation, 'Confirm new password', {}, { class: 'col-md-4' } do %>
+      <%= f.password_field :password_confirmation, autocomplete: "off" %>
+    <% end %>
+
+    <%= f.control_group nil, nil, {}, { class: 'col-md-4' } do %>
+      <%= f.submit 'Update my password', class: 'btn btn-primary btn-block' %>
+    <% end %>
+  <% end %>
+</div>

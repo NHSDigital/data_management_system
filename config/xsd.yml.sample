@@ -1,0 +1,5 @@
+# Copy this file from config/xsd.yml.sample to config/xsd.yml
+# and edit it there.
+---
+run_test: false
+random_optional_elements: false

@@ -1,0 +1,121 @@
+<div class="row">
+  <div class=" col-md-12">
+    <% if @readonly %>
+      <div class="panel panel-default" id="team-details-panel">
+        <div class="panel-body">
+          <div class="row">
+            <div class="col-md-12">
+              <div class="pull-left" style="font-size:1.5em">
+                Team: "<%= @team.name %>"
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+
+
+<div class="row">
+<div class=" col-md-12">
+
+  <ul id="tabs" class="nav nav-tabs" data-tabs='tabs'>
+    <li class="active"><a href="#team" data-toggle='tab'>Details</a></li>
+    <li><a href="#projects" data-toggle='tab'>Projects</a></li>
+    <li><a href="#members" data-toggle='tab'>Members</a></li>
+    <li><a href="#data" data-toggle='tab'>Data</a></li>
+    <li><a href="#audit" data-toggle='tab'>Audit</a></li>
+  </ul>
+
+  <div id="tab-content" class='tab-content'>
+  	<div class="tab-pane active" id="team">
+	<div class="row">
+		<div class="col-md-1"></div>
+		<div class="col-md-8">
+			<%= bootstrap_form_for @team, horizontal: 2, readonly: @readonly do |form| %>
+  <div class="row">
+    <div class=" col-md-12">
+      <div class="panel-footer">
+        <%= render 'team_details', { form: form } %>
+      </div>
+    </div>
+  </div>
+
+<% end %>
+
+        </div>
+    </div>
+    </div>
+
+  	<div class="tab-pane" id="projects">
+	<div class="row">
+		<div class="col-md-1"></div>
+		<div class="col-md-8">
+		<%= bootstrap_panel_tag(capture { %>
+          <% if can?(:create, Project.new(team: @team)) %>
+            <div class="pull-right">
+              <%= link_to(bootstrap_icon_tag('plus') + ' Add New Project', new_team_project_path(@team.id), class: "btn btn-primary btn-xs") if @readonly%>
+            </div>
+          <% end %>
+          <h3 class="panel-title clearfix">Projects</h3>
+        <% }) do %>
+            <%= render 'projects' %>
+          <% end %>
+        </div>
+    </div>
+    </div>
+
+  	<div class="tab-pane" id="members">
+	<div class="row">
+		<div class="col-md-1"></div>
+		<div class="col-md-8">
+			    <%= bootstrap_panel_tag(capture { %>
+      <% if can?(:create, Membership.new(team: @team)) %>
+        <div class="pull-right">
+          <%= link_to(bootstrap_icon_tag('plus') + ' Add', new_team_membership_url(@team.id), remote: true, class: "btn btn-primary btn-xs") if @readonly %>
+        </div>
+      <% end %>
+      <h3 class="panel-title clearfix">Members</h3>
+    <% }) do %>
+      <%= render 'memberships' %>
+    <% end %>
+        </div>
+    </div>
+    </div>
+
+  	<div class="tab-pane" id="data">
+	<div class="row">
+		<div class="col-md-1"></div>
+		<div class="col-md-8">
+			<%= bootstrap_panel_tag(capture { %>
+      <% if can?(:create, TeamDataset.new(team: @team)) %>
+        <div class="pull-right">
+          <%= link_to(bootstrap_icon_tag('plus') + ' Add', new_team_team_dataset_url(@team.id), remote: true, class: "btn btn-primary btn-xs") if @readonly %>
+        </div>
+      <% end %>
+      <h3 class="panel-title clearfix">Data Sources</h3>
+    <% }) do %>
+        <%= render 'datasets' %>
+    <% end %>
+        </div>
+    </div>
+    </div>
+
+  	<div class="tab-pane" id="audit">
+	<div class="row">
+		<div class="col-md-1"></div>
+		<div class="col-md-8">
+			AUDIT
+        </div>
+    </div>
+    </div>
+  </div>
+
+<div>
+<div>
+
+
+
+

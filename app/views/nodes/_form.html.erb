@@ -1,0 +1,23 @@
+<%= form.hidden_field :id, value: @node.id %>
+<%= form.hidden_field :id, type: params[:type] %>
+<%= form.hidden_field :dataset_version_id, value: @node.dataset_version_id %>
+<%= form.control_group :name, 'Name' do %>
+  <%= form.text_field :name %>
+<% end %>
+<%= form.control_group :description, 'Description' do %>
+  <%= form.text_field :description %>
+<% end %>
+<%= form.control_group :min_occurs, 'Min Occurs' do %>
+  <%= form.number_field :min_occurs %>
+<% end %>
+<%= form.control_group :max_occurs, 'Max Occurs' do %>
+  <%= form.number_field :max_occurs %>
+<% end %>
+<%= button_control_group nil do %>
+  <div class='pull-right'>
+    <%= close_modal %>
+    <%= submit_tag('Save', class: 'btn btn-primary', disable_with: 'Saving&hellip;'.html_safe) %>
+  </div>
+<% end %>
+<ul class="errors"></ul>
+

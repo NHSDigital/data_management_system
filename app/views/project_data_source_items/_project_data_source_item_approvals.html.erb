@@ -1,0 +1,55 @@
+<% binding.pry %>
+<td>
+  <a class='governance-tool-tip' data-toggle="tooltip" data-placement="left" title="<%= data_item.node.governance_value.titleize %>">
+    <%= bootstrap_icon_tag(data_item.node.identifiable_icon) %>
+  </a>
+  <%= data_item.node.name %>
+</td>
+<td><%= data_item.node.description %></td>
+<td>
+  <% if data_item.project_comments.count == 0 && data_item.project.current_state.id == 'DRAFT' %>
+    <%= link_to bootstrap_icon_tag('plus') +' Add Justification',
+        new_project_project_comment_path(@project, comment_type: 'DataSourceItemJustification', project_node_id: data_item.id),
+        remote: true,
+        class: 'btn btn-primary btn-xs reject_data_source_item' %>
+  <% elsif data_item.project_comments.count > 0 %>
+    <span data-toggle="collapse" data-target="#<%= dom_id(data_item) %>_comments">
+      <a href="javascript:;" data-turbolinks="false">
+        <%= pluralize(data_item.project_comments.count, 'Comment', plural: 'Comments') %>
+      </a>
+    </span>
+  <% end %>
+</td>
+<td class='text-right'>
+  <% if data_item.project.current_state.id == 'REVIEW' ||
+  	  (data_item.project.current_state.id == 'SUBMITTED' && !current_user.odr?) %>
+    Pending
+  <% else %>
+    <% if current_user.odr? %>
+      <% if data_item.project.current_state.id == 'SUBMITTED'%>
+        <% if data_item.approved.nil? %>
+          <%= link_to bootstrap_icon_tag('ok'), project_node_path(:id => data_item.id, "project_node[approved]" => 'true'), :method => :patch, remote: true, class: 'btn btn-success btn-sm  rce_item' %>
+          <%= link_to bootstrap_icon_tag('remove'), new_project_project_comment_path(data_item.project, comment_type: 'DataSourceItemRejection', project_node_id: data_item.id), remote: true, class: 'btn btn-danger btn-sm reject_data_source_item' %>
+        <% else %>
+          <%= link_to 'X', project_data_source_item_path(:id => data_item.id, "project_data_item[approved]" => ''), method: :patch, remote: true, class: 'btn btn-default btn-xs', title: 'Undo', rel: 'tooltip', "data-placement" => "left" %>
+          <span id="data_item_status" class="label label-<%= approval_button_style(data_item.approved) %>"><%= approval_button_message(data_item.approved) %></span>
+        <% end %>
+      <% else %>
+
+      <% end %>
+    <% else %>
+      <% if current_user.can?(:destroy, data_item) && !team_delegate_user?(@project) %>
+        <div class="pull-right">
+          <%= delete_link(data_item, method: :delete, remote: true, data: { confirm: "Are you sure you want to remove #{data_item.data_source_item.name} from #{@project.name}?" }, id: 'delete_project_data_item' )%>
+        </div>
+     <% end %>
+     <% if data_item.project.current_state.id != 'DRAFT'%>
+        <span id="data_item_status" class="label label-<%= approval_button_style(data_item.approved) %>"><%= approval_button_message(data_item.approved) %></span>
+     <% end %>
+    <% end %>
+  <% end %>
+</td>
+<script type="text/javascript">
+  jQuery("a.governance-tool-tip").tooltip();
+  jQuery('a').tooltip();
+</script>

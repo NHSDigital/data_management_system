@@ -1,0 +1,203 @@
+mbis_admin_phone_number: "in content_template.yml"
+
+terms_and_conditions_message:
+  body: "<p><b>Your responsibilities when handling data extracts approved by MBIS</b></p>
+        <p><b>1.</b> I confirm that I understand the nature of the data to which I will have access and \
+        the responsibilities that access to these data places on me.  I understand that \
+        unauthorised disclosure of identifiable or potentially identifiable data will result in \
+        personal liability, and may be in breach of the Data Protection Act 1998 (and from \
+        25th May 2017, the subsequent or amended data protection legislation in line with the \
+        EU General Data Protection Regulations) and the Statistics and Registration Service \
+        Act 2007.  Any breach is a criminal offence with a maximum penalty of 2 years \
+        imprisonment.  I undertake to act within the PHE Information Governance Policy, \
+        Information Risk Management Policy, Information Security Policy, and Records \
+        Management Policy.</p>
+
+        <p><b>2.</b> I confirm that I am completing on an annual basis the information governance \
+        training set out in the PHE Mandatory Training Policy and any other related training \
+        deemed appropriate by my manager. </p>
+
+        <p><b>3.</b> I confirm that I need the ‘level of access’ to the datasets identified in the data \
+        access agreement in order to deliver the work described.  I confirm that I/an appropriate \
+        person have completed the data release application for the MBIS datasets being accessed \
+        and I will not deviate from this.</p>
+
+        <p><b>4.</b> I confirm all instances of the data will be securely destroyed upon expiration of \
+        the data release application as follows: <br>
+        &nbsp a) destroy paper records containing protected personal data by incineration, pulping or \
+        shredding so that reconstruction is unlikely; and <br>
+        &nbsp b) dispose of electronic media that have been used for protected personal data through \
+        secure destruction, overwriting, erasure or degaussing</p>
+
+        <p><b>5.</b> I agree to destroy all copies of the original data, including temporary copies, \
+        CDs, printed copies, personal copies, back-ups and all other electronic copies.</p>
+
+        <p><b>6.</b> Any data extract taken from the MBIS system will be held securely with access only \
+        given to individuals authorised to view the data.  The data will not be shared with \
+        anyone other than stated on the data release application.</p>
+
+        <p><b>7.</b> If I request an extract of data from MBIS systems then this will be provided to me \
+        in a 7-zip encrypted form.  I agree not to store data originating from MBIS on laptops or \
+        any other portable devices.</p>
+
+        <p><b>Your responsibilities when accessing MBIS</b></p>
+        <p><b>8.</b> I confirm that I will only access MBIS using a PHE-approved computer device from a \
+         PHE office.  I confirm that I will not access MBIS or process data from MBIS from any \
+          non-PHE office or other location.</p>
+
+        <p><b>9.</b> I confirm I will keep my login and password details secure and will not disclose \
+         them to anyone else for any purpose. I will notify the MBIS administrator if I believe \
+          the security of my access to MBIS or the security of any data derived from MBIS may \
+          have been compromised.</p>
+
+        <p><b>10.</b> A Yubikey has been provided for my individual use to access MBIS. I agree that \
+        I am responsible for keeping my Yubikey secure and I agree not to share it with anyone \
+        else, including other MBIS system users.</p>
+
+        <p><b>11.</b> In the case of my Yubikey being lost or damaged, I agree to notify the MBIS \
+        administrator immediately and that I will be responsible for its replacement. </p>
+
+        <p><b>12.</b> I agree that I will store my login details and YubiKey in separate locations. \
+         I MUST notify the MBIS administrator if I believe security may have been compromised.</p>
+
+        <p><b>13.</b> If I no longer require access to MBIS then my Yubikey must promptly and securely \
+        returned to the MBIS administrator at my expense.   I must request that the MBIS \
+        administrator deactivates the Yubikey before I part company with it.</p>
+
+        <p><b>14.</b> I agree that I will not attempt to tamper with or change the Yubikey configuration \
+        in any way.</p>
+
+        <p><b>15.</b> I agree that I will not configure any automated system to connect to MBIS in such \
+        a manner as to risk causing excessive load either on the server or PHE network.</p>
+
+        <p><b>16.</b> I agree that I will always use the Logout button to exit the MBIS application.</p>
+
+        <p><b>17.</b> I recognise that breach of any of the above will result in the termination of my \
+        access to MBIS and revocation of data access rights conferred through use of MBIS.</p>
+
+        <p>I have read and understand the above terms and conditions \
+        and consent to adhere to the rules outlined therein.</p>"
+
+email_admin_incorrect_password:
+  body: "%{full_name} has failed to enter the correct password 3 times - Status set to LOCKOUT\n\n
+        - Please carry out due diligence\n\n
+        - When satisified this is a genuine case reset %{full_name}'s status to 'RESET'\n\n
+        - This will send an email to the user and will generate a temporary password\n\n
+        - The temporary password will expire in 3 days\n\n
+        - The user will then change password to one of own choosing"
+
+user_account_authorization_fail:
+  body: "You are logging in as %{full_name}
+         <h3>You have either</h3>
+         <ol>
+           <li>Failed to enter the correct password 3 times</li>
+           <li>Used a faulty or unauthorised Yubikey</li>
+         </ol>
+         You will be contacted by email with details of how to reset your account"
+
+user_forgot_password:
+  body: "You are logging in as %{full_name}
+         <h3>You have forgotten your password</h3>
+         You will be contacted by email with details of how to reset your account"
+
+user_rejected_terms:
+  body: "You are logging in as %{full_name}
+         <h3>You have failed to accept the Data Management System Terms and Conditions</h3>
+         If this was done in error please contact Data Management System administrator"
+
+email_admin_unauthorised_yubikey:
+  body: "%{full_name} has used and unauthorised Yubikey - Status set to LOCKOUT\n\n
+        - Please carry out due diligence\n\n
+        - When satisified this is a genuine case reset %{full_name}'s status to 'RESET'\n\n
+        - This will send an email to the user and will generate a temporary password\n\n
+        - The temporary password will expire in 3 days\n\n
+        - The user will then change password to one of own choosing"
+
+email_admin_forgotten_password:
+  body: "%{full_name} has forgotten their password and their account has been LOCKOUT\n\n
+        - Please carry out due diligence\n\n
+        - When satisified this is a genuine case reset %{full_name}'s status to 'RESET'\n\n
+        - This will send an email to the user with a temporary password\n\n
+        - The temporary password will expire in 3 days\n\n
+        - The user will then change password to one of own choosing"
+
+email_admin_rejected_terms:
+  body: "%{full_name} has declined the T & Cs, their account has been set to LOCKOUT\n\n
+        - Please carry out due diligence\n\n
+        - When satisified this is a genuine case reset %{full_name}'s status to 'RESET'\n\n
+        - This will send an email to the user with a temporary password\n\n
+        - The temporary password will expire in 3 days\n\n
+        - The user will then change password to one of own choosing"
+
+email_admin_and_odr_new_team:
+  body: "A new team has been created in MBIS as below \n\n
+         %{team_name}, %{team_address}, %{team_postcode} \n\n
+         Status - %{team_status} \\n
+         Contact number - %{team_telephone}\n\n
+         Team members - %{team_members}\n\n
+         Details - %{team_link} \n\n
+         If any problems please contact MBIS Administration on %{mbis_contact_tel}"
+
+email_admin_and_odr_edit_team:
+  body: "Team '%{team_name}' has been updated by MBIS Admin \n\n
+         %{team_changes} \n\n
+         Details - %{team_link} \n\n
+         If any problems please contact MBIS Administration on %{mbis_contact_number}"
+
+email_new_user:
+  body: "%{full_name} Account has been created \n\n
+        - Please carry out due diligence\n\n"
+
+email_user_details_changed:
+  body: "%{full_name} user account has been updated \n\n
+        - Please carry out due diligence\n\n"
+
+email_project_odr_approval_decision:
+  body: "%{project} has been reviewed by ODR and set to a status of %{status} \n\n
+        - Please log in to review comments\n\n"
+
+email_project_odr_approved:
+  body: "Dear User\n\n
+        We are pleased to inform you that your project proposal submitted via MBIS has been approved.\n\n
+        Please ensure you only use the data for the purposes stated in your application and you adhere to the terms and conditions of use of the data set.\n\n
+        Kind Regards\n\n
+        MBIS Administrator\n\n"
+
+email_project_day_expiry:
+  body: "Dear User\n\n
+         We are writing to inform you that your authorised access to %{data_set} will expire in %{number_of_days} days.\n\n
+         To renew your access please login and review your project and re submit for approval.\n\n
+         Kind Regards\n\n
+         MBIS Administrator\n\n"
+
+email_project_expired:
+  body: "Dear User\n\n
+        We are writing to inform you that your authorised access to %{project_name} has now expired.\n\n
+        To renew your access please login and review your expired project and re submit for approval.\n\n
+        Kind Regards\n\n
+        MBIS Administrator\n\n"
+
+email_project_odr_approval_needed:
+  body: "Project has been submitted for approval. \n\n
+        Please login and review this project.\n\n
+        Kind Regards\n\n
+        MBIS Administrator\n\n"
+
+email_project_delegate_approval_needed:
+  body: "Project has been submitted for delegate approval. \n\n
+        Please login and review this project and submit to ODR or return to team.\n\n
+        Kind Regards\n\n
+        MBIS Administrator\n\n"
+
+email_project_delegate_rejection:
+  body: "%{project} has been rejected by the Delegate User and set to a status of %{status} \n\n
+        The comment for the rejection - %{comment} \n\n
+        - Please log in to review comments\n\n"
+
+email_application_manager_dpia_rejected:
+  body: "DPIA has been rejected for %{project} with the comments\n
+        %{comments}\n\n"
+
+email_senior_manager_dpia_moderation:
+  body: "%{project} has been sent for senior application manager moderation with the comments\n
+         %{comments}\n\n"

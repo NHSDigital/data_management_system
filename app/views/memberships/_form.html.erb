@@ -1,0 +1,40 @@
+
+<% if !@membership.persisted? %>
+  <% user_choices = available_users_for_team %>
+  <div class='regimen'>
+    <table class="table table-bordered table-striped table-fixed">
+      <thead>
+        <tr>
+          <td>
+            <h4><span id="filtered_user_count"><%= user_choices.length %></span> Available items</h4>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <%= 'Search' %>
+            <%= text_field_tag :search_users, nil, autocomplete: 'off' %>
+          </td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td id="user_info">
+            <%= form.collection_radio_buttons :user_id, user_choices, :id, :name_and_email do |b| %>
+              <%= b.label(:"data-value" => b.text, style: 'display:block') { b.radio_button + ' ' + b.text } %>
+            <% end %>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+<% end %>
+<%= form.control_group :senior, 'Senior team member?' do %>
+  <% disabled = form.object.new_record? && @team.disable_team_membership_dropdown? %>
+  <%= form.check_box(:senior, disabled: disabled) %>
+<% end %>
+<%= form.control_group nil do %>
+  <div class='pull-right'>
+    <%= close_modal %>
+    <%= submit_tag('Save', class: 'btn btn-primary', disable_with: 'Saving&hellip;'.html_safe) %>
+  </div>
+<% end %>

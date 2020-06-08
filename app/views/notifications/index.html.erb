@@ -1,0 +1,36 @@
+<%= bootstrap_panel_tag(capture { %>
+  <div class='row'>
+
+  	<div class='col-md-9'>
+
+        <%= form_tag notifications_path, method: :get, class: "form-inline"  do %>
+        <h4>Notifications -
+        <small>Filter by Team
+          <%= select_tag :team, options_for_select(@teams, params[:team]), class: 'form-control', selected: params[:team] %></small>
+        <small>Deleted <%= check_box_tag :deleted, 1, params[:deleted], class: 'form-control' %></small>
+        <%= submit_tag "Search", class: "btn btn-default btn-sm" %>
+        </h4>
+      <%end %>
+
+
+
+    </div>
+
+
+   <% if current_user.administrator? %>
+     <div class='col-md-3 text-right'>
+  	   <%= link_to 'Message all users', new_notification_path(Notification.new), remote: true, class: 'btn btn-default' %>
+     </div>
+   <% end %>
+  </div>
+  <% if current_user.standard? && current_user.teams.active.count.zero? %>
+    <h4>
+      <strong>You are not currently a member of any teams. Please contact
+      an Administrator or an Application Manager to be added to a Team</strong>
+    </h4>
+  <% end %>
+<% }) do %>
+<% end %>
+<div id='notifications_div'>
+<%= render 'notifications', notifications: @notifications unless @notifications.nil? %>
+</div>

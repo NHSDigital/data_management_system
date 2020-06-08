@@ -1,0 +1,9 @@
+<%
+  @node ||= @data_item
+  html_content = escape_javascript bootstrap_form_for(
+    @data_item, url: data_item_path(@data_item),
+    remote: true, horizontal: 2) { |form| render('form', form: form, readonly: true) }
+%>
+
+jQuery('#modal_title').html("<%= @data_item.name %> Details");
+jQuery('#modal_body').html('<%= html_content %>').parents('.modal').modal('show');

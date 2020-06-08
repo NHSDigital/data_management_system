@@ -1,0 +1,1002 @@
+---
+1:
+  id: 1
+  name: Haematological
+  description: Haematological DESCRIPTION
+  dataset_version_id: 7
+  sort: 6
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &1 2019-12-09 11:18:45.203635000 Z
+    zone: &2 !ruby/object:ActiveSupport::TimeZone
+      name: Etc/UTC
+    time: *1
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &3 2019-12-09 11:18:45.203635000 Z
+    zone: *2
+    time: *3
+2:
+  id: 2
+  name: CTYA
+  description: CTYA DESCRIPTION
+  dataset_version_id: 7
+  sort: 4
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &4 2019-12-09 11:18:45.206643000 Z
+    zone: *2
+    time: *4
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &5 2019-12-09 11:18:45.206643000 Z
+    zone: *2
+    time: *5
+3:
+  id: 3
+  name: CNS
+  description: CNS DESCRIPTION
+  dataset_version_id: 7
+  sort: 2
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &6 2019-12-09 11:18:45.209209000 Z
+    zone: *2
+    time: *6
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &7 2019-12-09 11:18:45.209209000 Z
+    zone: *2
+    time: *7
+4:
+  id: 4
+  name: Colorectal
+  description: Colorectal DESCRIPTION
+  dataset_version_id: 7
+  sort: 3
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &8 2019-12-09 11:18:45.212030000 Z
+    zone: *2
+    time: *8
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &9 2019-12-09 11:18:45.212030000 Z
+    zone: *2
+    time: *9
+5:
+  id: 5
+  name: Lung
+  description: Lung DESCRIPTION
+  dataset_version_id: 7
+  sort: 9
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &10 2019-12-09 11:18:45.214211000 Z
+    zone: *2
+    time: *10
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &11 2019-12-09 11:18:45.214211000 Z
+    zone: *2
+    time: *11
+6:
+  id: 6
+  name: HeadNeck
+  description: HeadNeck DESCRIPTION
+  dataset_version_id: 7
+  sort: 7
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &12 2019-12-09 11:18:45.216686000 Z
+    zone: *2
+    time: *12
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &13 2019-12-09 11:18:45.216686000 Z
+    zone: *2
+    time: *13
+7:
+  id: 7
+  name: Gynaecological
+  description: Gynaecological DESCRIPTION
+  dataset_version_id: 7
+  sort: 5
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &14 2019-12-09 11:18:45.219093000 Z
+    zone: *2
+    time: *14
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &15 2019-12-09 11:18:45.219093000 Z
+    zone: *2
+    time: *15
+8:
+  id: 8
+  name: Liver
+  description: Liver DESCRIPTION
+  dataset_version_id: 7
+  sort: 8
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &16 2019-12-09 11:18:45.221471000 Z
+    zone: *2
+    time: *16
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &17 2019-12-09 11:18:45.221471000 Z
+    zone: *2
+    time: *17
+9:
+  id: 9
+  name: Other
+  description: Other DESCRIPTION
+  dataset_version_id: 7
+  sort: 10
+  core: true
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &18 2019-12-09 11:18:45.223615000 Z
+    zone: *2
+    time: *18
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &19 2019-12-09 11:18:45.223615000 Z
+    zone: *2
+    time: *19
+10:
+  id: 10
+  name: Sarcoma
+  description: Sarcoma DESCRIPTION
+  dataset_version_id: 7
+  sort: 11
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &20 2019-12-09 11:18:45.227010000 Z
+    zone: *2
+    time: *20
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &21 2019-12-09 11:18:45.227010000 Z
+    zone: *2
+    time: *21
+11:
+  id: 11
+  name: Breast
+  description: Breast DESCRIPTION
+  dataset_version_id: 7
+  sort: 1
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &22 2019-12-09 11:18:45.229566000 Z
+    zone: *2
+    time: *22
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &23 2019-12-09 11:18:45.229566000 Z
+    zone: *2
+    time: *23
+12:
+  id: 12
+  name: Skin
+  description: Skin DESCRIPTION
+  dataset_version_id: 7
+  sort: 12
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &24 2019-12-09 11:18:45.231849000 Z
+    zone: *2
+    time: *24
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &25 2019-12-09 11:18:45.231849000 Z
+    zone: *2
+    time: *25
+13:
+  id: 13
+  name: Urological
+  description: Urological DESCRIPTION
+  dataset_version_id: 7
+  sort: 14
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &26 2019-12-09 11:18:45.234219000 Z
+    zone: *2
+    time: *26
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &27 2019-12-09 11:18:45.234219000 Z
+    zone: *2
+    time: *27
+14:
+  id: 14
+  name: UpperGI
+  description: UpperGI DESCRIPTION
+  dataset_version_id: 7
+  sort: 13
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &28 2019-12-09 11:18:45.236702000 Z
+    zone: *2
+    time: *28
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &29 2019-12-09 11:18:45.236702000 Z
+    zone: *2
+    time: *29
+15:
+  id: 15
+  name: Haematological
+  description: Haematological DESCRIPTION
+  dataset_version_id: 6
+  sort: 6
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &30 2019-12-09 11:18:45.238991000 Z
+    zone: *2
+    time: *30
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &31 2019-12-09 11:18:45.238991000 Z
+    zone: *2
+    time: *31
+16:
+  id: 16
+  name: CTYA
+  description: CTYA DESCRIPTION
+  dataset_version_id: 6
+  sort: 4
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &32 2019-12-09 11:18:45.241328000 Z
+    zone: *2
+    time: *32
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &33 2019-12-09 11:18:45.241328000 Z
+    zone: *2
+    time: *33
+17:
+  id: 17
+  name: CNS
+  description: CNS DESCRIPTION
+  dataset_version_id: 6
+  sort: 2
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &34 2019-12-09 11:18:45.243762000 Z
+    zone: *2
+    time: *34
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &35 2019-12-09 11:18:45.243762000 Z
+    zone: *2
+    time: *35
+18:
+  id: 18
+  name: Colorectal
+  description: Colorectal DESCRIPTION
+  dataset_version_id: 6
+  sort: 3
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &36 2019-12-09 11:18:45.246145000 Z
+    zone: *2
+    time: *36
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &37 2019-12-09 11:18:45.246145000 Z
+    zone: *2
+    time: *37
+19:
+  id: 19
+  name: Lung
+  description: Lung DESCRIPTION
+  dataset_version_id: 6
+  sort: 9
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &38 2019-12-09 11:18:45.248330000 Z
+    zone: *2
+    time: *38
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &39 2019-12-09 11:18:45.248330000 Z
+    zone: *2
+    time: *39
+20:
+  id: 20
+  name: HeadNeck
+  description: HeadNeck DESCRIPTION
+  dataset_version_id: 6
+  sort: 7
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &40 2019-12-09 11:18:45.250753000 Z
+    zone: *2
+    time: *40
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &41 2019-12-09 11:18:45.250753000 Z
+    zone: *2
+    time: *41
+21:
+  id: 21
+  name: Gynaecological
+  description: Gynaecological DESCRIPTION
+  dataset_version_id: 6
+  sort: 5
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &42 2019-12-09 11:18:45.253026000 Z
+    zone: *2
+    time: *42
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &43 2019-12-09 11:18:45.253026000 Z
+    zone: *2
+    time: *43
+22:
+  id: 22
+  name: Liver
+  description: Liver DESCRIPTION
+  dataset_version_id: 6
+  sort: 8
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &44 2019-12-09 11:18:45.255223000 Z
+    zone: *2
+    time: *44
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &45 2019-12-09 11:18:45.255223000 Z
+    zone: *2
+    time: *45
+23:
+  id: 23
+  name: Other
+  description: Other DESCRIPTION
+  dataset_version_id: 6
+  sort: 10
+  core: true
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &46 2019-12-09 11:18:45.257293000 Z
+    zone: *2
+    time: *46
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &47 2019-12-09 11:18:45.257293000 Z
+    zone: *2
+    time: *47
+24:
+  id: 24
+  name: Sarcoma
+  description: Sarcoma DESCRIPTION
+  dataset_version_id: 6
+  sort: 11
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &48 2019-12-09 11:18:45.259480000 Z
+    zone: *2
+    time: *48
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &49 2019-12-09 11:18:45.259480000 Z
+    zone: *2
+    time: *49
+25:
+  id: 25
+  name: Breast
+  description: Breast DESCRIPTION
+  dataset_version_id: 6
+  sort: 1
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &50 2019-12-09 11:18:45.261844000 Z
+    zone: *2
+    time: *50
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &51 2019-12-09 11:18:45.261844000 Z
+    zone: *2
+    time: *51
+26:
+  id: 26
+  name: Skin
+  description: Skin DESCRIPTION
+  dataset_version_id: 6
+  sort: 12
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &52 2019-12-09 11:18:45.264027000 Z
+    zone: *2
+    time: *52
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &53 2019-12-09 11:18:45.264027000 Z
+    zone: *2
+    time: *53
+27:
+  id: 27
+  name: Urological
+  description: Urological DESCRIPTION
+  dataset_version_id: 6
+  sort: 14
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &54 2019-12-09 11:18:45.266519000 Z
+    zone: *2
+    time: *54
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &55 2019-12-09 11:18:45.266519000 Z
+    zone: *2
+    time: *55
+28:
+  id: 28
+  name: UpperGI
+  description: UpperGI DESCRIPTION
+  dataset_version_id: 6
+  sort: 13
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &56 2019-12-09 11:18:45.269160000 Z
+    zone: *2
+    time: *56
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &57 2019-12-09 11:18:45.269160000 Z
+    zone: *2
+    time: *57
+29:
+  id: 29
+  name: Haematological
+  description: Haematological DESCRIPTION
+  dataset_version_id: 10
+  sort: 6
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &58 2019-12-09 11:18:45.271567000 Z
+    zone: *2
+    time: *58
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &59 2019-12-09 11:18:45.271567000 Z
+    zone: *2
+    time: *59
+30:
+  id: 30
+  name: CTYA
+  description: CTYA DESCRIPTION
+  dataset_version_id: 10
+  sort: 4
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &60 2019-12-09 11:18:45.273520000 Z
+    zone: *2
+    time: *60
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &61 2019-12-09 11:18:45.273520000 Z
+    zone: *2
+    time: *61
+31:
+  id: 31
+  name: CNS
+  description: CNS DESCRIPTION
+  dataset_version_id: 10
+  sort: 2
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &62 2019-12-09 11:18:45.276120000 Z
+    zone: *2
+    time: *62
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &63 2019-12-09 11:18:45.276120000 Z
+    zone: *2
+    time: *63
+32:
+  id: 32
+  name: Colorectal
+  description: Colorectal DESCRIPTION
+  dataset_version_id: 10
+  sort: 3
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &64 2019-12-09 11:18:45.278759000 Z
+    zone: *2
+    time: *64
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &65 2019-12-09 11:18:45.278759000 Z
+    zone: *2
+    time: *65
+33:
+  id: 33
+  name: Lung
+  description: Lung DESCRIPTION
+  dataset_version_id: 10
+  sort: 9
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &66 2019-12-09 11:18:45.280883000 Z
+    zone: *2
+    time: *66
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &67 2019-12-09 11:18:45.280883000 Z
+    zone: *2
+    time: *67
+34:
+  id: 34
+  name: HeadNeck
+  description: HeadNeck DESCRIPTION
+  dataset_version_id: 10
+  sort: 7
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &68 2019-12-09 11:18:45.283019000 Z
+    zone: *2
+    time: *68
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &69 2019-12-09 11:18:45.283019000 Z
+    zone: *2
+    time: *69
+35:
+  id: 35
+  name: Gynaecological
+  description: Gynaecological DESCRIPTION
+  dataset_version_id: 10
+  sort: 5
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &70 2019-12-09 11:18:45.285124000 Z
+    zone: *2
+    time: *70
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &71 2019-12-09 11:18:45.285124000 Z
+    zone: *2
+    time: *71
+36:
+  id: 36
+  name: Liver
+  description: Liver DESCRIPTION
+  dataset_version_id: 10
+  sort: 8
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &72 2019-12-09 11:18:45.287620000 Z
+    zone: *2
+    time: *72
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &73 2019-12-09 11:18:45.287620000 Z
+    zone: *2
+    time: *73
+37:
+  id: 37
+  name: Other
+  description: Other DESCRIPTION
+  dataset_version_id: 10
+  sort: 10
+  core: true
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &74 2019-12-09 11:18:45.291020000 Z
+    zone: *2
+    time: *74
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &75 2019-12-09 11:18:45.291020000 Z
+    zone: *2
+    time: *75
+38:
+  id: 38
+  name: Sarcoma
+  description: Sarcoma DESCRIPTION
+  dataset_version_id: 10
+  sort: 11
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &76 2019-12-09 11:18:45.294318000 Z
+    zone: *2
+    time: *76
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &77 2019-12-09 11:18:45.294318000 Z
+    zone: *2
+    time: *77
+39:
+  id: 39
+  name: Breast
+  description: Breast DESCRIPTION
+  dataset_version_id: 10
+  sort: 1
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &78 2019-12-09 11:18:45.296646000 Z
+    zone: *2
+    time: *78
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &79 2019-12-09 11:18:45.296646000 Z
+    zone: *2
+    time: *79
+40:
+  id: 40
+  name: Skin
+  description: Skin DESCRIPTION
+  dataset_version_id: 10
+  sort: 12
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &80 2019-12-09 11:18:45.298801000 Z
+    zone: *2
+    time: *80
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &81 2019-12-09 11:18:45.298801000 Z
+    zone: *2
+    time: *81
+41:
+  id: 41
+  name: Urological
+  description: Urological DESCRIPTION
+  dataset_version_id: 10
+  sort: 14
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &82 2019-12-09 11:18:45.300990000 Z
+    zone: *2
+    time: *82
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &83 2019-12-09 11:18:45.300990000 Z
+    zone: *2
+    time: *83
+42:
+  id: 42
+  name: UpperGI
+  description: UpperGI DESCRIPTION
+  dataset_version_id: 10
+  sort: 13
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &84 2019-12-09 11:18:45.303454000 Z
+    zone: *2
+    time: *84
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &85 2019-12-09 11:18:45.303454000 Z
+    zone: *2
+    time: *85
+43:
+  id: 43
+  name: Haematological
+  description: Haematological DESCRIPTION
+  dataset_version_id: 12
+  sort: 6
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &86 2019-12-09 11:18:45.305604000 Z
+    zone: *2
+    time: *86
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &87 2019-12-09 11:18:45.305604000 Z
+    zone: *2
+    time: *87
+44:
+  id: 44
+  name: CTYA
+  description: CTYA DESCRIPTION
+  dataset_version_id: 12
+  sort: 4
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &88 2019-12-09 11:18:45.307705000 Z
+    zone: *2
+    time: *88
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &89 2019-12-09 11:18:45.307705000 Z
+    zone: *2
+    time: *89
+45:
+  id: 45
+  name: CNS
+  description: CNS DESCRIPTION
+  dataset_version_id: 12
+  sort: 2
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &90 2019-12-09 11:18:45.310038000 Z
+    zone: *2
+    time: *90
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &91 2019-12-09 11:18:45.310038000 Z
+    zone: *2
+    time: *91
+46:
+  id: 46
+  name: Colorectal
+  description: Colorectal DESCRIPTION
+  dataset_version_id: 12
+  sort: 3
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &92 2019-12-09 11:18:45.312543000 Z
+    zone: *2
+    time: *92
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &93 2019-12-09 11:18:45.312543000 Z
+    zone: *2
+    time: *93
+47:
+  id: 47
+  name: Lung
+  description: Lung DESCRIPTION
+  dataset_version_id: 12
+  sort: 9
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &94 2019-12-09 11:18:45.314675000 Z
+    zone: *2
+    time: *94
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &95 2019-12-09 11:18:45.314675000 Z
+    zone: *2
+    time: *95
+48:
+  id: 48
+  name: HeadNeck
+  description: HeadNeck DESCRIPTION
+  dataset_version_id: 12
+  sort: 7
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &96 2019-12-09 11:18:45.317205000 Z
+    zone: *2
+    time: *96
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &97 2019-12-09 11:18:45.317205000 Z
+    zone: *2
+    time: *97
+49:
+  id: 49
+  name: Gynaecological
+  description: Gynaecological DESCRIPTION
+  dataset_version_id: 12
+  sort: 5
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &98 2019-12-09 11:18:45.319518000 Z
+    zone: *2
+    time: *98
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &99 2019-12-09 11:18:45.319518000 Z
+    zone: *2
+    time: *99
+50:
+  id: 50
+  name: Liver
+  description: Liver DESCRIPTION
+  dataset_version_id: 12
+  sort: 8
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &100 2019-12-09 11:18:45.321752000 Z
+    zone: *2
+    time: *100
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &101 2019-12-09 11:18:45.321752000 Z
+    zone: *2
+    time: *101
+51:
+  id: 51
+  name: Other
+  description: Other DESCRIPTION
+  dataset_version_id: 12
+  sort: 10
+  core: true
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &102 2019-12-09 11:18:45.323975000 Z
+    zone: *2
+    time: *102
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &103 2019-12-09 11:18:45.323975000 Z
+    zone: *2
+    time: *103
+52:
+  id: 52
+  name: Sarcoma
+  description: Sarcoma DESCRIPTION
+  dataset_version_id: 12
+  sort: 11
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &104 2019-12-09 11:18:45.326495000 Z
+    zone: *2
+    time: *104
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &105 2019-12-09 11:18:45.326495000 Z
+    zone: *2
+    time: *105
+53:
+  id: 53
+  name: Breast
+  description: Breast DESCRIPTION
+  dataset_version_id: 12
+  sort: 1
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &106 2019-12-09 11:18:45.329179000 Z
+    zone: *2
+    time: *106
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &107 2019-12-09 11:18:45.329179000 Z
+    zone: *2
+    time: *107
+54:
+  id: 54
+  name: Skin
+  description: Skin DESCRIPTION
+  dataset_version_id: 12
+  sort: 12
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &108 2019-12-09 11:18:45.331543000 Z
+    zone: *2
+    time: *108
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &109 2019-12-09 11:18:45.331543000 Z
+    zone: *2
+    time: *109
+55:
+  id: 55
+  name: Urological
+  description: Urological DESCRIPTION
+  dataset_version_id: 12
+  sort: 14
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &110 2019-12-09 11:18:45.333674000 Z
+    zone: *2
+    time: *110
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &111 2019-12-09 11:18:45.333674000 Z
+    zone: *2
+    time: *111
+56:
+  id: 56
+  name: UpperGI
+  description: UpperGI DESCRIPTION
+  dataset_version_id: 12
+  sort: 13
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &112 2019-12-09 11:18:45.336225000 Z
+    zone: *2
+    time: *112
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &113 2019-12-09 11:18:45.336225000 Z
+    zone: *2
+    time: *113
+57:
+  id: 57
+  name: CTYA
+  description: CTYA DESCRIPTION
+  dataset_version_id: 11
+  sort: 4
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &114 2019-12-09 11:18:45.338324000 Z
+    zone: *2
+    time: *114
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &115 2019-12-09 11:18:45.338324000 Z
+    zone: *2
+    time: *115
+58:
+  id: 58
+  name: CNS
+  description: CNS DESCRIPTION
+  dataset_version_id: 11
+  sort: 2
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &116 2019-12-09 11:18:45.340553000 Z
+    zone: *2
+    time: *116
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &117 2019-12-09 11:18:45.340553000 Z
+    zone: *2
+    time: *117
+59:
+  id: 59
+  name: Colorectal
+  description: Colorectal DESCRIPTION
+  dataset_version_id: 11
+  sort: 3
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &118 2019-12-09 11:18:45.342930000 Z
+    zone: *2
+    time: *118
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &119 2019-12-09 11:18:45.342930000 Z
+    zone: *2
+    time: *119
+60:
+  id: 60
+  name: Lung
+  description: Lung DESCRIPTION
+  dataset_version_id: 11
+  sort: 9
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &120 2019-12-09 11:18:45.345279000 Z
+    zone: *2
+    time: *120
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &121 2019-12-09 11:18:45.345279000 Z
+    zone: *2
+    time: *121
+61:
+  id: 61
+  name: HeadNeck
+  description: HeadNeck DESCRIPTION
+  dataset_version_id: 11
+  sort: 7
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &122 2019-12-09 11:18:45.347527000 Z
+    zone: *2
+    time: *122
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &123 2019-12-09 11:18:45.347527000 Z
+    zone: *2
+    time: *123
+62:
+  id: 62
+  name: Gynaecological
+  description: Gynaecological DESCRIPTION
+  dataset_version_id: 11
+  sort: 5
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &124 2019-12-09 11:18:45.349757000 Z
+    zone: *2
+    time: *124
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &125 2019-12-09 11:18:45.349757000 Z
+    zone: *2
+    time: *125
+63:
+  id: 63
+  name: Other
+  description: Other DESCRIPTION
+  dataset_version_id: 11
+  sort: 0
+  core: true
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &126 2019-12-09 11:18:45.352326000 Z
+    zone: *2
+    time: *126
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &127 2019-12-09 11:18:45.352326000 Z
+    zone: *2
+    time: *127
+64:
+  id: 64
+  name: Sarcoma
+  description: Sarcoma DESCRIPTION
+  dataset_version_id: 11
+  sort: 11
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &128 2019-12-09 11:18:45.354747000 Z
+    zone: *2
+    time: *128
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &129 2019-12-09 11:18:45.354747000 Z
+    zone: *2
+    time: *129
+65:
+  id: 65
+  name: Breast
+  description: Breast DESCRIPTION
+  dataset_version_id: 11
+  sort: 1
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &130 2019-12-09 11:18:45.357117000 Z
+    zone: *2
+    time: *130
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &131 2019-12-09 11:18:45.357117000 Z
+    zone: *2
+    time: *131
+66:
+  id: 66
+  name: Skin
+  description: Skin DESCRIPTION
+  dataset_version_id: 11
+  sort: 12
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &132 2019-12-09 11:18:45.359862000 Z
+    zone: *2
+    time: *132
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &133 2019-12-09 11:18:45.359862000 Z
+    zone: *2
+    time: *133
+67:
+  id: 67
+  name: Urological
+  description: Urological DESCRIPTION
+  dataset_version_id: 11
+  sort: 14
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &134 2019-12-09 11:18:45.362603000 Z
+    zone: *2
+    time: *134
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &135 2019-12-09 11:18:45.362603000 Z
+    zone: *2
+    time: *135
+68:
+  id: 68
+  name: UpperGI
+  description: UpperGI DESCRIPTION
+  dataset_version_id: 11
+  sort: 13
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &136 2019-12-09 11:18:45.364718000 Z
+    zone: *2
+    time: *136
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &137 2019-12-09 11:18:45.364718000 Z
+    zone: *2
+    time: *137
+69:
+  id: 69
+  name: CategoryOne
+  description: CategoryOne DESCRIPTION
+  dataset_version_id: 13
+  sort: 1
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &138 2019-12-09 11:18:45.367222000 Z
+    zone: *2
+    time: *138
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &139 2019-12-09 11:18:45.367222000 Z
+    zone: *2
+    time: *139
+70:
+  id: 70
+  name: CategoryTwo
+  description: CategoryTwo DESCRIPTION
+  dataset_version_id: 13
+  sort: 2
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &140 2019-12-09 11:18:45.370603000 Z
+    zone: *2
+    time: *140
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &141 2019-12-09 11:18:45.370603000 Z
+    zone: *2
+    time: *141
+71:
+  id: 71
+  name: CategoryCore
+  description: CategoryCorw DESCRIPTION
+  dataset_version_id: 13
+  sort: 3
+  core: true
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &140 2019-12-09 11:18:45.370603000 Z
+    zone: *2
+    time: *140
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &141 2019-12-09 11:18:45.370603000 Z
+    zone: *2
+    time: *141

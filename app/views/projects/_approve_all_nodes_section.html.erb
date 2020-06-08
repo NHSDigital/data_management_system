@@ -1,0 +1,11 @@
+<% if can?(:approve, @project) %>
+  <div class="pull-right">
+    <%= link_to 'Approve All', update_all_project_project_nodes_path(project_id: @project.id, "project_node[approved]" => 'true'), method: :patch, remote: true, class: 'btn btn-success btn-sm' %>
+    <%= link_to 'Undo All', update_all_project_project_nodes_path(project_id: @project.id, "project_node[approved]" => ''), method: :patch, remote: true, class: 'btn btn-danger btn-sm' %>
+    <%= link_to 'X', update_all_project_project_nodes_path(project_id: @project.id, "project_node[approved]" => ''), method: :patch, remote: true, class: 'btn btn-default btn-xs', title: 'Undo', rel: 'tooltip', "data-placement" => "left" %>
+  </div>
+<% end %>
+
+<script type="text/javascript">
+  jQuery('a').tooltip();
+</script>

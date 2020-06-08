@@ -1,0 +1,4 @@
+<h1>Editing <%= @node.name %></h1>
+<%= bootstrap_form_for @node, url: node_path(@node), horizontal: 2 do |form| %>
+  <%= render 'form', { form: form, url: dataset_version_nodes_path(@node) } %>
+<% end %>

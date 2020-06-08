@@ -1,0 +1,54 @@
+<%
+  readonly ||= false
+
+  url = url_for(contract) if contract.persisted?
+  url ||= polymorphic_url([contract.project, :contracts])
+%>
+
+<%= bootstrap_form_with model: contract, url: url, readonly: readonly, horizontal: true, html: { id: dom_id(contract) } do |form| %>
+  <%= form.error_and_warning_alert_boxes %>
+
+  <%= form.control_group(:contract_version, nil, {}, class: 'col-md-3') do %>
+    <%= form.text_field(:contract_version) %>
+  <% end %>
+
+  <%= form.control_group(:contract_start_date, nil, {}, class: 'col-md-3') do %>
+    <%= form.datepicker_field(:contract_start_date) %>
+  <% end %>
+
+  <%= form.control_group(:contract_end_date, nil, {}, class: 'col-md-3') do %>
+    <%= form.datepicker_field(:contract_end_date) %>
+  <% end %>
+
+  <%= form.control_group(:contract_sent_date, nil, {}, class: 'col-md-3') do %>
+    <%= form.datepicker_field(:contract_sent_date) %>
+  <% end %>
+
+  <%= form.control_group(:contract_returned_date, nil, {}, class: 'col-md-3') do %>
+    <%= form.datepicker_field(:contract_returned_date) %>
+  <% end %>
+
+  <%= form.control_group(:contract_executed_date, nil, {}, class: 'col-md-3') do %>
+    <%= form.datepicker_field(:contract_executed_date) %>
+  <% end %>
+
+  <%= form.control_group(:advisory_letter_date, nil, {}, class: 'col-md-3') do %>
+    <%= form.datepicker_field(:advisory_letter_date) %>
+  <% end %>
+
+  <%= form.control_group(:destruction_form_received_date, nil, {}, class: 'col-md-3') do %>
+    <%= form.datepicker_field(:destruction_form_received_date) %>
+  <% end %>
+
+  <%= form.control_group(:upload) do %>
+    <%= form.file_field(:upload, multiple: false, accept: '.doc,.docx,.pdf', readonly_value: form.object.attachment_file_name) %>
+  <% end %>
+
+  <% unless form.readonly? %>
+    <br />
+    <%= form.control_group(nil) do %>
+      <%= form.submit class: 'btn btn-primary' %>
+      <%= link_to('Cancel', project_path(form.object.project, anchor: '!contracts'), class: 'btn btn-danger') %>
+    <% end %>
+  <% end %>
+<% end %>

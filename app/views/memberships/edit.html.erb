@@ -1,0 +1,5 @@
+<h1>Editing <%= "#{@membership.member_full_name}'s #{@membership.team_name} membership" %></h1>
+
+<%= bootstrap_form_for @membership, horizontal: 2 do |form| %>
+  <%= render 'form', { form: form} %>
+<% end %>

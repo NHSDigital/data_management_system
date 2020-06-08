@@ -1,0 +1,1067 @@
+---
+- name: Deceased_Residence
+  min_occurs: 0
+  max_occurs: 1
+  sort: 0
+  node_type: Nodes::Entity
+  children:
+  - name: PCDR
+    min_occurs: 1
+    max_occurs: 1
+    sort: 0
+    description: Postcode of usual residence of deceased
+    governance: INDIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: ADDRDT
+    min_occurs: 1
+    max_occurs: 1
+    sort: 1
+    description: Usual address of deceased
+    governance: DIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: CCGR
+    min_occurs: 1
+    max_occurs: 1
+    sort: 2
+    description: Clinical Commissioning Group of usual residence
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: CTRYR
+    min_occurs: 1
+    max_occurs: 1
+    sort: 3
+    description: Country code for usual residence of deceased
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: CTYDR
+    min_occurs: 1
+    max_occurs: 1
+    sort: 4
+    description: County district code of usual residence of deceased
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: CTYR
+    min_occurs: 1
+    max_occurs: 1
+    sort: 5
+    description: County code of usual residence of deceased
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: GORR
+    min_occurs: 1
+    max_occurs: 1
+    sort: 6
+    description: Government office region code of usual residence of deceased
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: HAUTR
+    min_occurs: 1
+    max_occurs: 1
+    sort: 7
+    description: 'England: 1993-2002 strategic health authority for place of residence
+      of deceased, 2003- Primary Care Trust (PCT) for place of residence. Wales: Health
+      authority for place of residence'
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: HROR
+    min_occurs: 1
+    max_occurs: 1
+    sort: 8
+    description: 'England: 1993-2002 Health and social care directorate for place
+      of residence of deceased, 2003 - Strategic health authority for place of residence
+      of deceased. Wales: Health authority regional office for place of residence'
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: LOAR
+    min_occurs: 1
+    max_occurs: 1
+    sort: 9
+    description: Lowest Output Area for usual residence of deceased - Currently not
+      available, will be space filled
+    governance: INDIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: LSOAR
+    min_occurs: 1
+    max_occurs: 1
+    sort: 10
+    description: Lower super area code for usual residence of deceased - (available
+      2013 onwards)
+    governance: INDIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: WARDR
+    min_occurs: 1
+    max_occurs: 1
+    sort: 11
+    description: Ward code of usual residence of deceased
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: CCG9R
+    min_occurs: 1
+    max_occurs: 1
+    sort: 12
+    description: Clinical Commissioning Group of usual residence
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: GOR9R
+    min_occurs: 1
+    max_occurs: 1
+    sort: 13
+    description: Government office region code of usual residence of deceased
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: WARD9R
+    min_occurs: 1
+    max_occurs: 1
+    sort: 14
+    description: Ward code of usual residence of deceased
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+- name: Record management_Identifier
+  min_occurs: 0
+  max_occurs: 1
+  sort: 1
+  node_type: Nodes::Entity
+  children:
+  - name: MBISID
+    min_occurs: 1
+    max_occurs: 1
+    sort: 0
+    description: Unique identifier from ONS
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: LEDRID
+    min_occurs: 1
+    max_occurs: 1
+    sort: 1
+    description: LEDR ID Unique identifier from LEDR Not available on M204
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+- name: Care pre-death
+  min_occurs: 0
+  max_occurs: 1
+  sort: 2
+  node_type: Nodes::Entity
+  children:
+  - name: CESTSTAY
+    min_occurs: 1
+    max_occurs: 1
+    sort: 0
+    description: Duration of stay in a Communal Establishment
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+- name: Death event_Mechanism
+  min_occurs: 0
+  max_occurs: 1
+  sort: 3
+  node_type: Nodes::Entity
+  children:
+  - name: COD10R
+    min_occurs: 20
+    max_occurs: 20
+    sort: 0
+    description: Cause of death row position. CODROW pre ICD10
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: COD10RF
+    min_occurs: 20
+    max_occurs: 20
+    sort: 1
+    description: Final cause of death row position. CODROW pre ICD10
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: CODT
+    min_occurs: 5
+    max_occurs: 5
+    sort: 2
+    description: Cause of death Text (only present if free format (CODFFT)  not present
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: WIGWO9_WIGWO10
+    min_occurs: 1
+    max_occurs: 1
+    sort: 3
+    description: Wigglesworth code - although these fields are available, their content
+      is presumed unsafe, therefore blanks will be output
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: WIGWO9F_WIGWO10F
+    min_occurs: 1
+    max_occurs: 1
+    sort: 4
+    description: Final Wigglesworth code - although these fields are available, their
+      content is presumed unsafe, therefore blanks will be output
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: LINEN09_LNENO10
+    min_occurs: 20
+    max_occurs: 20
+    sort: 5
+    description: Line number of cause text line for ICD10 code generated
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: LINENO9F_LNENO10F
+    min_occurs: 20
+    max_occurs: 20
+    sort: 6
+    description: Final line number of cause text line for ICD cause code generated
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: CERTTYPE
+    min_occurs: 1
+    max_occurs: 1
+    sort: 7
+    description: Certification type
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: CODFFT
+    min_occurs: 65
+    max_occurs: 65
+    sort: 8
+    description: Up to 65 lines of cause of death free format text
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: ICD9_ICD10
+    min_occurs: 20
+    max_occurs: 20
+    sort: 9
+    description: ICD9 code pre 2000, International ICD10 code 2000 - 2013, IRIS ICD10
+      code 2014 onwards- non neonatal deaths only
+    governance: DIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: ICD9F_ICD10F
+    min_occurs: 20
+    max_occurs: 20
+    sort: 10
+    description: ICD9 final code pre 2000, final international ICD10 code 2000 - 2013,
+      IRIS ICD10PV code 2014 onwards - non neonatal deaths only
+    governance: DIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: ICD9PV_ICD10PV
+    min_occurs: 20
+    max_occurs: 20
+    sort: 11
+    description: ICD9PV code pre 2000, International ICD10PV code 2000 - 2013, IRIS
+      ICD10PV code 2014 onwards - neonatal deaths only
+    governance: DIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: ICD9PVF_ICD10PVF
+    min_occurs: 20
+    max_occurs: 20
+    sort: 12
+    description: Final ICD9PV code pre 2000, final International ICD10PV code 2000
+      - 2013, final IRIS ICD10PV code 2014 onwards - neonatal deaths only
+    governance: DIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: ICD9SC_ICD10SC
+    min_occurs: 1
+    max_occurs: 1
+    sort: 13
+    description: Secondary Cause code - ICD9 pre 2000, international ICD10 2000 -
+      2013, European(IRIS) code 2014 onwards- non neonatal deaths only
+    governance: DIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: ICD9SCF_ICD10SCF
+    min_occurs: 1
+    max_occurs: 1
+    sort: 14
+    description: Final Secondary cause code -  ICD9 pre 2000, international ICD10
+      2000 - 2013, European(IRIS) code 2014 onwards- non neonatal deaths only
+    governance: DIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: ICD9U_ICD10U
+    min_occurs: 1
+    max_occurs: 1
+    sort: 15
+    description: Underlying cause code - Underlying cause code - ICD9 pre 2000, international
+      ICD10 2000 - 2013, European(IRIS) code 2014 onwards- non neonatal deaths only
+    governance: DIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: ICD9UF_ICD10UF
+    min_occurs: 1
+    max_occurs: 1
+    sort: 16
+    description: Final Underlying cause code - ICD9 pre 2000, international ICD10
+      2000 - 2013, European(IRIS) code 2014- non neonatal deaths only
+    governance: DIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: ICD_FUTURE1
+    min_occurs: 1
+    max_occurs: 1
+    sort: 17
+    description: One of two fields enabling future proofing for ICD coded outcomes
+    governance: DIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: ICD_FUTURE2
+    min_occurs: 1
+    max_occurs: 1
+    sort: 18
+    description: One of two fields enabling future proofing for ICD coded outcomes
+    governance: DIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+- name: Death event__Date
+  min_occurs: 0
+  max_occurs: 1
+  sort: 4
+  node_type: Nodes::Entity
+  children:
+  - name: DODDY
+    min_occurs: 1
+    max_occurs: 1
+    sort: 0
+    description: Date of death day
+    governance: INDIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: DODMT
+    min_occurs: 1
+    max_occurs: 1
+    sort: 1
+    description: Date of death month
+    governance: INDIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: DODYR
+    min_occurs: 1
+    max_occurs: 1
+    sort: 2
+    description: Date of death year
+    governance: INDIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+- name: Deceased_Age
+  min_occurs: 0
+  max_occurs: 1
+  sort: 5
+  node_type: Nodes::Entity
+  children:
+  - name: AGEC
+    min_occurs: 1
+    max_occurs: 1
+    sort: 0
+    description: Calculated age of deceased
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+- name: OtherPossibleDataFields
+  min_occurs: 0
+  max_occurs: 1
+  sort: 6
+  node_type: Nodes::Entity
+  children:
+  - name: AGECUNIT
+    min_occurs: 1
+    max_occurs: 1
+    sort: 0
+    description: Units age stored in 1 Deceased_Age (1 = years, 2 = months, 3 = weeks,
+      4 = days < 7)
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+- name: DeceasedChild_Age
+  min_occurs: 0
+  max_occurs: 1
+  sort: 7
+  node_type: Nodes::Entity
+  children:
+  - name: AGEU1D
+    min_occurs: 1
+    max_occurs: 1
+    sort: 0
+    description: Age of deceased if under 24hours
+    governance: INDIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+- name: Deceased_Name
+  min_occurs: 0
+  max_occurs: 1
+  sort: 8
+  node_type: Nodes::Entity
+  children:
+  - name: AKSNAMD
+    min_occurs: 5
+    max_occurs: 5
+    sort: 0
+    description: Supplementary surnames of deceased
+    governance: DIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: AKFNAMD1
+    min_occurs: 5
+    max_occurs: 5
+    sort: 1
+    description: Supplementary first forenames of deceased
+    governance: DIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: AKFNAMD2
+    min_occurs: 5
+    max_occurs: 5
+    sort: 2
+    description: Supplementary second forenames of deceased
+    governance: DIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: AKFNAMD3
+    min_occurs: 5
+    max_occurs: 5
+    sort: 3
+    description: Supplementary third forenames of deceased
+    governance: DIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: AKFND4I
+    min_occurs: 5
+    max_occurs: 5
+    sort: 4
+    description: Supplementary fourth forename - Initials only of deceased
+    governance: DIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: ALIASD
+    min_occurs: 2
+    max_occurs: 2
+    sort: 5
+    description: 'Concatenated version of alias, also known as or even maiden names
+      of deceased '
+    governance: DIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: FNAMD1
+    min_occurs: 1
+    max_occurs: 1
+    sort: 6
+    description: First forename of deceased
+    governance: DIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: FNAMD2
+    min_occurs: 1
+    max_occurs: 1
+    sort: 7
+    description: Second forename of deceased
+    governance: DIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: FNAMD3
+    min_occurs: 1
+    max_occurs: 1
+    sort: 8
+    description: Third forename of deceased
+    governance: DIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: FNAMDX
+    min_occurs: 2
+    max_occurs: 2
+    sort: 9
+    description: Extra forenames of deceased
+    governance: DIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: NAMEMAID
+    min_occurs: 1
+    max_occurs: 1
+    sort: 10
+    description: Maiden name of deceased married woman
+    governance: DIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: SNAMD
+    min_occurs: 1
+    max_occurs: 1
+    sort: 11
+    description: Surname of deceased
+    governance: DIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+- name: Deceased_Birth
+  min_occurs: 0
+  max_occurs: 1
+  sort: 9
+  node_type: Nodes::Entity
+  children:
+  - name: CTRYPOB
+    min_occurs: 1
+    max_occurs: 1
+    sort: 0
+    description: Country code for place of birth of deceased
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: DOBDY
+    min_occurs: 1
+    max_occurs: 1
+    sort: 1
+    description: Date of birth day
+    governance: INDIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: DOBMT
+    min_occurs: 1
+    max_occurs: 1
+    sort: 2
+    description: Date of birth month
+    governance: INDIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: DOBYR
+    min_occurs: 1
+    max_occurs: 1
+    sort: 3
+    description: Date of birth year
+    governance: INDIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: POBT
+    min_occurs: 1
+    max_occurs: 1
+    sort: 4
+    description: Place of Birth text of deceased
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+- name: Death Event_MarriageStatus
+  min_occurs: 0
+  max_occurs: 1
+  sort: 10
+  node_type: Nodes::Entity
+  children:
+  - name: MARSTAT
+    min_occurs: 1
+    max_occurs: 1
+    sort: 0
+    description: Marital status of the deceased
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+- name: Deceased_Identifier
+  min_occurs: 0
+  max_occurs: 1
+  sort: 11
+  node_type: Nodes::Entity
+  children:
+  - name: NHSNO
+    min_occurs: 5
+    max_occurs: 5
+    sort: 0
+    description: NHSNO from NHSCR (or other sources including corrections)
+    governance: DIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: NHSNORSS
+    min_occurs: 1
+    max_occurs: 1
+    sort: 1
+    description: NHSNO as given by Informant
+    governance: DIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+- name: Deceased_Employment
+  min_occurs: 0
+  max_occurs: 1
+  sort: 12
+  node_type: Nodes::Entity
+  children:
+  - name: OCCDT
+    min_occurs: 1
+    max_occurs: 1
+    sort: 0
+    description: Occupation of deceased text
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: OCCFFT
+    min_occurs: 4
+    max_occurs: 4
+    sort: 1
+    description: Occupation of deceased free format text
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: OCCTYPE
+    min_occurs: 1
+    max_occurs: 1
+    sort: 2
+    description: Occupation of deceased type
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+- name: Deceased_Sex
+  min_occurs: 0
+  max_occurs: 1
+  sort: 13
+  node_type: Nodes::Entity
+  children:
+  - name: SEX
+    min_occurs: 1
+    max_occurs: 1
+    sort: 0
+    description: "(from Statistical DB),Coded sex of the deceased"
+    governance: INDIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+- name: Third party Non-professional_SpouseAge
+  min_occurs: 0
+  max_occurs: 1
+  sort: 14
+  node_type: Nodes::Entity
+  children:
+  - name: AGECS
+    min_occurs: 1
+    max_occurs: 1
+    sort: 0
+    description: Calculated age of spouse
+    governance: INDIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+- name: Deceased or Third party Non-professional_Employment
+  min_occurs: 0
+  max_occurs: 1
+  sort: 15
+  node_type: Nodes::Entity
+  children:
+  - name: EMPRSSDM
+    min_occurs: 1
+    max_occurs: 1
+    sort: 0
+    description: Employment status of deceased of mother of a deceased juvenile (Pre
+      SOC2000)
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: INDDMT
+    min_occurs: 1
+    max_occurs: 1
+    sort: 1
+    description: Industry text for deceased or mother of a deceased juvenile
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: INDHFT
+    min_occurs: 1
+    max_occurs: 1
+    sort: 2
+    description: 'Industry text for deceased''s spouse or Father of deceased juvenile '
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: RETINDM
+    min_occurs: 1
+    max_occurs: 1
+    sort: 3
+    description: Retired indicator for deceased or mother of deceased juvenile
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: SOC2KDM
+    min_occurs: 1
+    max_occurs: 1
+    sort: 4
+    description: Standard occupation classification of deceased or mother of deceased
+      juvenile (SOC 2000). Since 2011, this field has contained the SOC2010 standard
+      occupation classification
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: SOC90DM
+    min_occurs: 1
+    max_occurs: 1
+    sort: 5
+    description: OCC90 Standard Occupation classification of deceased or mother of
+      deceased juvenile
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: SOC90HF
+    min_occurs: 1
+    max_occurs: 1
+    sort: 6
+    description: OCC90 Standard Occupation classification of deceased or mother of
+      deceased juvenile
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+- name: Third party Non-professional_Employment
+  min_occurs: 0
+  max_occurs: 1
+  sort: 16
+  node_type: Nodes::Entity
+  children:
+  - name: EMPRSSHF
+    min_occurs: 1
+    max_occurs: 1
+    sort: 0
+    description: Employment status of deceased's spouse or father of a deceased juvenile
+      (Pre SOC2000)
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: EMPSECDM
+    min_occurs: 1
+    max_occurs: 1
+    sort: 1
+    description: Employment status of deceased or mother of deceased juvenile SOC2000
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: EMPSECHF
+    min_occurs: 1
+    max_occurs: 1
+    sort: 2
+    description: Employment status of deceased's spouse or father of a deceased juvenile
+      SOC2000
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: EMPSTDM
+    min_occurs: 1
+    max_occurs: 1
+    sort: 3
+    description: Employment status of deceased or mother of a deceased juvenile OCC90
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: EMPSTHF
+    min_occurs: 1
+    max_occurs: 1
+    sort: 4
+    description: Employment status of deceased's spouse or father of a deceased juvenile
+      OCC90
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: OCC90DM
+    min_occurs: 1
+    max_occurs: 1
+    sort: 5
+    description: Standard occupation classification code of deceased or mother of
+      deceased juvenile - OCC90
+    governance: INDIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: OCC90HF
+    min_occurs: 1
+    max_occurs: 1
+    sort: 6
+    description: Standard occupation classification code of deceased's spouse or father
+      of deceased juvenile - OCC90
+    governance: INDIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: OCCHFT
+    min_occurs: 1
+    max_occurs: 1
+    sort: 7
+    description: Occupation of husband or father of deceased
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: OCCMT
+    min_occurs: 1
+    max_occurs: 1
+    sort: 8
+    description: Occupation of Mother of deceased juvenile
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: RETINHF
+    min_occurs: 1
+    max_occurs: 1
+    sort: 9
+    description: Retired indicator for deceased's spouse or father of deceased juvenile
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: SOC2KHF
+    min_occurs: 1
+    max_occurs: 1
+    sort: 10
+    description: Standard occupation classification of deceased's spouse or father
+      of deceased juvenile (SOC 2000). Since 2011, this field has contained the SOC2010
+      standard occupation classification.
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+- name: Third party Non-professional_Name
+  min_occurs: 0
+  max_occurs: 1
+  sort: 17
+  node_type: Nodes::Entity
+  children:
+  - name: NAMEHF
+    min_occurs: 1
+    max_occurs: 1
+    sort: 0
+    description: Name of spouse or father of a deceased juvenile
+    governance: DIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: NAMEM
+    min_occurs: 1
+    max_occurs: 1
+    sort: 1
+    description: Name of Mother of a deceased juvenile
+    governance: DIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+- name: Third party Non-professional_Socio-economic
+  min_occurs: 0
+  max_occurs: 1
+  sort: 18
+  node_type: Nodes::Entity
+  children:
+  - name: SCLASDM
+    min_occurs: 1
+    max_occurs: 1
+    sort: 0
+    description: Social Class for deceased/mother of deceased juvenile
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: SCLASHF
+    min_occurs: 1
+    max_occurs: 1
+    sort: 1
+    description: Social Class for spouse/father of deceased juvenile
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: SEC90DM
+    min_occurs: 1
+    max_occurs: 1
+    sort: 2
+    description: Social economic classification for deceased/mother of juvenile (pre
+      2000)
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: SEC90HF
+    min_occurs: 1
+    max_occurs: 1
+    sort: 3
+    description: Social economic classification for spouse/father of juvenile (pre
+      2000)
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: SECCATHF
+    min_occurs: 1
+    max_occurs: 1
+    sort: 4
+    description: NS- SEC Social economic classification for spouse/father of juvenile
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: SECCLRDM
+    min_occurs: 1
+    max_occurs: 1
+    sort: 5
+    description: 'NS - SEC Social economic classification for deceased/mother of juvenile '
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: SECCLRHF
+    min_occurs: 1
+    max_occurs: 1
+    sort: 6
+    description: 'NS- SEC Social economic classification for spouse/father of juvenile '
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+- name: Deceased or Third party Non-professional_Socio-economic
+  min_occurs: 0
+  max_occurs: 1
+  sort: 19
+  node_type: Nodes::Entity
+  children:
+  - name: SECCATDM
+    min_occurs: 1
+    max_occurs: 1
+    sort: 0
+    description: 'NS - SEC Social economic classification for deceased/mother of juvenile '
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+- name: ProcessingEventOrProcess_Inquest
+  min_occurs: 0
+  max_occurs: 1
+  sort: 20
+  node_type: Nodes::Entity
+  children:
+  - name: CORAREAT
+    min_occurs: 1
+    max_occurs: 1
+    sort: 0
+    description: Coroners area (Inquest)
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: CORCERTT
+    min_occurs: 1
+    max_occurs: 1
+    sort: 1
+    description: Coroners certification text
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: DOINQT
+    min_occurs: 1
+    max_occurs: 1
+    sort: 2
+    description: Date of Inquest
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: INQCERT
+    min_occurs: 1
+    max_occurs: 1
+    sort: 3
+    description: Inquest certificate type
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+- name: ProcessingEventOrProcess_DeathRegistration
+  min_occurs: 0
+  max_occurs: 1
+  sort: 21
+  node_type: Nodes::Entity
+  children:
+  - name: DOR
+    min_occurs: 1
+    max_occurs: 1
+    sort: 0
+    description: Date of Registration
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+- name: ProcessingEventOrProcess_Postmortem
+  min_occurs: 0
+  max_occurs: 1
+  sort: 22
+  node_type: Nodes::Entity
+  children:
+  - name: POSTMORT
+    min_occurs: 1
+    max_occurs: 1
+    sort: 0
+    description: Post mortem indicator
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+- name: Professional_Name
+  min_occurs: 0
+  max_occurs: 1
+  sort: 23
+  node_type: Nodes::Entity
+  children:
+  - name: CERTIFER
+    min_occurs: 1
+    max_occurs: 1
+    sort: 0
+    description: 'Name and Qualifications of certifying Doctor on Medical Certificate '
+    governance: DIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: NAMEC
+    min_occurs: 1
+    max_occurs: 1
+    sort: 1
+    description: Name of Coroner
+    governance: DIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: NAMECON
+    min_occurs: 1
+    max_occurs: 1
+    sort: 2
+    description: Name of consultant (if applicable)
+    governance: DIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+- name: Death Event__Location
+  min_occurs: 0
+  max_occurs: 1
+  sort: 24
+  node_type: Nodes::Entity
+  children:
+  - name: CESTRSSR
+    min_occurs: 1
+    max_occurs: 1
+    sort: 0
+    description: Communal establishment code of residence (If applicable
+    governance: DIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+- name: Death event__LocationArea
+  min_occurs: 0
+  max_occurs: 1
+  sort: 25
+  node_type: Nodes::Entity
+  children:
+  - name: CCGPOD
+    min_occurs: 1
+    max_occurs: 1
+    sort: 0
+    description: Clinical Commissioning Group for place of death
+    governance: DIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: CTYDPOD
+    min_occurs: 1
+    max_occurs: 1
+    sort: 1
+    description: County district for place of death
+    governance: DIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: CTYPOD
+    min_occurs: 1
+    max_occurs: 1
+    sort: 2
+    description: County code for place of death
+    governance: DIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: HAUTPOD
+    min_occurs: 1
+    max_occurs: 1
+    sort: 3
+    description: 'England: 1993-2002 strategic health authority for place of death,
+      2003- Primary Care Trust (PCT) for place of death. Wales: Health authority for
+      place of death'
+    governance: DIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: HROPOD
+    min_occurs: 1
+    max_occurs: 1
+    sort: 4
+    description: 'England: 1993-2002 Health and social care directorate for place
+      of death. 2003 - Strategic health authority for place of death. Wales: Health
+      authority regional office for place of death'
+    governance: DIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: CCG9POD
+    min_occurs: 1
+    max_occurs: 1
+    sort: 5
+    description: Clinical Commissioning Group for place of death
+    governance: DIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+- name: Death event_Location
+  min_occurs: 0
+  max_occurs: 1
+  sort: 26
+  node_type: Nodes::Entity
+  children:
+  - name: CESTRSS
+    min_occurs: 1
+    max_occurs: 1
+    sort: 0
+    description: Communal establishment code RSS
+    governance: DIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+- name: Death event__Location
+  min_occurs: 0
+  max_occurs: 1
+  sort: 27
+  node_type: Nodes::Entity
+  children:
+  - name: DESTER
+    min_occurs: 1
+    max_occurs: 1
+    sort: 0
+    description: Destination if event occurred en route
+    governance: DIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: LOAPOD
+    min_occurs: 1
+    max_occurs: 1
+    sort: 1
+    description: ",Lowest Output Area for place of death - - Currently not available,
+      will be space filled"
+    governance: DIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: LSOAPOD
+    min_occurs: 1
+    max_occurs: 1
+    sort: 2
+    description: Lower super area code for place of death - - Currently not available,
+      will be space filled
+    governance: DIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: PCDPOD
+    min_occurs: 1
+    max_occurs: 1
+    sort: 3
+    description: postcode of place of death of deceased
+    governance: DIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: PLOACC9_PLOACC10
+    min_occurs: 1
+    max_occurs: 1
+    sort: 4
+    description: Place of occurrence of Accident (if accidental death)
+    governance: DIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: PODT
+    min_occurs: 1
+    max_occurs: 1
+    sort: 5
+    description: Place of Death text
+    governance: DIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+- name: Death event__LocationType
+  min_occurs: 0
+  max_occurs: 1
+  sort: 28
+  node_type: Nodes::Entity
+  children:
+  - name: ESTTYPED
+    min_occurs: 1
+    max_occurs: 1
+    sort: 0
+    description: Establishment type where death occurred
+    governance: DIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: NHSIND
+    min_occurs: 1
+    max_occurs: 1
+    sort: 1
+    description: NHS Establishment Indicator
+    governance: DIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: PODQUAL
+    min_occurs: 1
+    max_occurs: 1
+    sort: 2
+    description: Place of death qualifier
+    governance: DIRECT IDENTIFIER
+    node_type: Nodes::DataItem

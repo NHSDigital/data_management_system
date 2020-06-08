@@ -1,0 +1,12 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+active:
+  name: Active
+  id: 1
+
+deleted:
+  name: Deleted
+
+new:
+  name: New
+  id: 3

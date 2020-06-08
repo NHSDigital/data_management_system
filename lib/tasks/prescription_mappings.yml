@@ -1,0 +1,62 @@
+---
+header_lines: 2
+footer_lines: 0
+klass: unknown
+columns:
+- column: DEMOG
+  mappings:
+  - field: demog
+- column: PRESC_DATE
+  mappings:
+  - field: presc_date
+- column: PART_MONTH
+  mappings:
+  - field: part_month
+- column: PRESC_POSTCODE
+  mappings:
+  - field: presc_postcode
+- column: PCO_CODE
+  mappings:
+  - field: pco_code
+- column: PCO_NAME
+  mappings:
+  - field: pco_name
+- column: PRACTICE_CODE
+  mappings:
+  - field: practice_code
+- column: PRACTICE_NAME
+  mappings:
+  - field: practice_name
+- column: NIC
+  mappings:
+  - field: nic
+- column: PRESC_QUANTITY
+  mappings:
+  - field: presc_quantity
+- column: ITEM_NUMBER
+  mappings:
+  - field: item_number
+- column: UNIT_OF_MEASURE
+  mappings:
+  - field: unit_of_measure
+- column: PAY_QUANTITY
+  mappings:
+  - field: pay_quantity
+- column: DRUG_PAID
+  mappings:
+  - field: drug_paid
+- column: BNF_CODE
+  mappings:
+  - field: bnf_code
+- column: PAT_AGE
+  mappings:
+  - field: pat_age
+- column: PF_EXEMPT_CAT
+  mappings:
+  - field: pf_exempt_cat
+- column: ETP_EXEMPT_CAT
+  mappings:
+  - field: etp_exempt_cat
+- column: ETP_INDICATOR
+  mappings:
+  - field: etp_indicator

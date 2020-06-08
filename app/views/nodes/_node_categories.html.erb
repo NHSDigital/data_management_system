@@ -1,0 +1,39 @@
+<button class="btn btn-link btn-sm" type="button" data-toggle="collapse"
+        data-target="#node-categories-form" id='node-categories'
+        aria-expanded="false" aria-controls="node-categories-form">
+  View/Manage Node Categories
+</button>
+<% url = node_node_categories_path(node) %>
+<%= form_tag(url, method: :patch, remote: true) %>
+  <div class="collapse" id="node-categories-form">
+    <div class="card card-body">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>Category</th>
+            <th>Apply</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @dataset_version.categories.each do |cat| %>
+            <% already_granted = node.categories.include? cat %>
+            <tr>
+              <td><%= cat.name %></td>
+              <td>
+                <%= hidden_field_tag "node_categories[#{cat.id}]", nil %>
+                <%= check_box_tag    "node_categories[#{cat.id}]", 1, already_granted %>
+              </td>
+            </tr>
+          <% end %>
+        </body>
+      </table>
+      <% if can?(:create, NodeCategory) %>
+        <div class="row">
+          <div class="col-md-12">
+            <%= submit_tag 'Update Node Categories', class: 'btn btn-primary btn-block' %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,11 @@
+<%
+  @node ||= @choice
+  html_content = escape_javascript bootstrap_form_for(
+    @choice, url: choice_path(@choice),
+    remote: true, horizontal: 2) { |form| render('form', form: form) }
+%>
+
+jQuery('#modal_title').html("Editing Node: <%= @choice.name %>");
+jQuery('#modal_body').html('<%= html_content %>').parents('.modal').modal('show');
+$(toggle_node_form_element('existing-node', 'add-existing-node'));
+<%= render "nodes/save" %>

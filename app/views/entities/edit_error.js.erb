@@ -1,0 +1,10 @@
+<%
+  @node ||= @entity
+  html_content = escape_javascript bootstrap_form_for(
+    @node, url: edit_error_entity_path(@node),
+    remote: true, horizontal: 2) { |form| render('form', form: form) }
+%>
+
+jQuery('#modal_title').html("Editing Node: <%= @node.name %>");
+jQuery('#modal_body').html('<%= html_content %>').parents('.modal').modal('show');
+<%= render "nodes/save" %>

@@ -1,0 +1,96 @@
+<div id="project_memberships_information">
+  <div class="panel panel-default" style="border-top:0px">
+    <div class="panel-heading" style="border-top:0px">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="pull-left" style="font-size:1.5em">
+            Project Users
+          </div>
+        </div>
+        <div class="col-md-6">
+          <% if @project.project? %>
+            <div class="pull-right">
+              <div id='approve_members_status'>
+                  <%= render partial: '/projects/approve_member_section', locals: { project: @project } %>
+                </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-6">
+    <%= bootstrap_panel_tag(capture { %>
+      <div class="pull-right">
+        <% if can?(:update, @project) %>
+          <%= link_to(bootstrap_icon_tag('plus') + ' Edit', edit_project_grants_path(@project), class: "btn btn-primary btn-xs") if @readonly %>
+        <% end %>
+      </div>
+      <h3 class="panel-title clearfix">Project Grants</h3>
+    <% }) do %>
+      <table class="table table-hover" id='project_member_table'>
+        <thead>
+          <tr>
+            <th>User</th>
+            <th>Email</th>
+            <% ProjectRole.grantable_by_owner.each do |role|%>
+              <th><%= role.name %></th>
+            <% end %>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="bg-info" id="<%= dom_id(@project.owner) %>">
+            <td><%= @project.owner.full_name %></td>
+            <td><%= "#{@project.owner.email} #{project_owner_text}" %></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <% @project.grants.without_project_owner.each do |grant| %>
+            <tr class='project_members_table' id="<%= dom_id(grant.user) %>">
+              <% if grant.user.flagged_as_deleted? %>
+                <% suffix = '(User flagged as deleted)' %>
+              <% end %>
+              <td><%= link_to "#{grant.user.full_name}", user_url(grant.user) %> <em class="text-muted"><%= suffix %></em></td>
+              <td><%= grant.user.email %></td>
+              <% ProjectRole.grantable_by_owner.each do |role|%>
+                <td>
+                  <%= grant.user.role?(role, at: @project) && bootstrap_icon_tag(:ok) %>
+                </td>
+              <% end %>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% end %>
+
+    <% if @project.project_comments.members.length > 0 && !(@project.current_state == 'SUBMITTED' && !current_user.odr?) %>
+      <%= bootstrap_panel_tag(capture { %>
+        <h3 class="panel-title clearfix">Comments</h3>
+      <% }) do %>
+        <div class='row'>
+          <div class='col-md-12'>
+            <span data-toggle="collapse" data-target="#project_memberships_comments">
+              <div class='row'>
+                <div class='col-md-12'>
+                  <div style="font-size:1.5em">
+                    <a href="#" data-turbolinks="false">
+                      <%= pluralize(@project.project_comments.members.length, 'Comment', plural: 'Comments') %>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </span>
+            <div id="project_memberships_comments" class="collapse" style="padding: 0 1em">
+              <%= render partial:  '/project_comments/standard_view',
+                             locals: { comments: @project.project_comments.members,
+                                       comment_type: 'MemberJustification',
+                                       project_data_source_item_id: nil
+                                      } %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+</div>

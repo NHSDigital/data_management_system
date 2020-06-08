@@ -1,0 +1,14 @@
+<%
+  @project ||= @project_data_source_item.project # shallow routing means this may not have been set
+%>
+<% @project.project_data_source_items.each do |item| %>
+  $('#<%= "project_data_source_item_#{item.id}"%>').html("<%= escape_javascript(render partial: 'project_data_source_item_approvals', locals: { data_item: item } ) %>");
+<% end %>
+
+$('#data_item_approval_status').html("<%= escape_javascript approval_button_message(@project.data_items_approved) %>");
+$('#data_item_approval_status').removeClass().addClass('label label-<%= approval_button_style(@project.data_items_approved) %>');
+
+$('#all_approvals_answered').html("<%= escape_javascript approval_button_message(@project.can_submit_approvals) %>");
+$('#all_approvals_answered').removeClass().addClass('label label-<%= escape_javascript approval_button_style(@project.can_submit_approvals)%>');
+
+$('#save_and_submit_approvals_button').removeClass().addClass('btn btn-success <%= 'disabled' if @project.can_submit_approvals.nil? %>');

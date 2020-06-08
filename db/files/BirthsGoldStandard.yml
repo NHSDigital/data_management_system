@@ -1,0 +1,662 @@
+---
+- name: Record management_Identifier
+  min_occurs: 0
+  max_occurs: 1
+  sort: 0
+  node_type: Nodes::Entity
+  children:
+  - name: MBISM204ID
+    min_occurs: 1
+    max_occurs: 1
+    sort: 0
+    description: Unique identifier from ONS extract
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: LEDRM204ID
+    min_occurs: 1
+    max_occurs: 1
+    sort: 1
+    description: LEDR identifier
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+- name: Birth Event_Measurement
+  min_occurs: 0
+  max_occurs: 1
+  sort: 1
+  node_type: Nodes::Entity
+  children:
+  - name: BIRTHWGT
+    min_occurs: 1
+    max_occurs: 1
+    sort: 0
+    description: Birth weight of child in grams
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+- name: Third party Non-professional_Date
+  min_occurs: 0
+  max_occurs: 1
+  sort: 2
+  node_type: Nodes::Entity
+  children:
+  - name: DOBF
+    min_occurs: 1
+    max_occurs: 1
+    sort: 0
+    description: Date of birth of father of child
+    governance: INDIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: DOBM
+    min_occurs: 1
+    max_occurs: 1
+    sort: 1
+    description: Date of birth of mother of child
+    governance: INDIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+- name: Registration_
+  min_occurs: 0
+  max_occurs: 1
+  sort: 3
+  node_type: Nodes::Entity
+  children:
+  - name: DOR
+    min_occurs: 1
+    max_occurs: 1
+    sort: 0
+    description: Date of registration
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+- name: Birth Event_Multiple births
+  min_occurs: 0
+  max_occurs: 1
+  sort: 4
+  node_type: Nodes::Entity
+  children:
+  - name: MULTBTH
+    min_occurs: 1
+    max_occurs: 1
+    sort: 0
+    description: Multiple Birth Indicator
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: MULTTYPE
+    min_occurs: 1
+    max_occurs: 1
+    sort: 1
+    description: Multiple birth type
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+- name: Birth Event_Stillbirth
+  min_occurs: 0
+  max_occurs: 1
+  sort: 5
+  node_type: Nodes::Entity
+  children:
+  - name: SBIND
+    min_occurs: 1
+    max_occurs: 1
+    sort: 0
+    description: Stillbirth indicator
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: GESTATN
+    min_occurs: 1
+    max_occurs: 1
+    sort: 1
+    description: Gestation period (stillbirths only)
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: COD10R
+    min_occurs: 20
+    max_occurs: 20
+    sort: 2
+    description: Cause of stillbirth row position (Stillbirths only)
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: CODFFT
+    min_occurs: 5
+    max_occurs: 5
+    sort: 3
+    description: Cause of death free format  (Stillbirths only)
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: DEATHLAB
+    min_occurs: 1
+    max_occurs: 1
+    sort: 4
+    description: Death during labour (stillbirths only)
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: WIGWO10
+    min_occurs: 1
+    max_occurs: 1
+    sort: 5
+    description: 'ONS Hierarchical Classification of Stillbirth for ICD10 '
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: ICD9PV_ICD10PV
+    min_occurs: 20
+    max_occurs: 20
+    sort: 6
+    description: ICD10 code Stillbirths only
+    governance: DIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: ICD9PVF_ICD10PVF
+    min_occurs: 20
+    max_occurs: 20
+    sort: 7
+    description: Final ICD10 code (still births only)
+    governance: DIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+- name: Birth Event__Date
+  min_occurs: 0
+  max_occurs: 1
+  sort: 6
+  node_type: Nodes::Entity
+  children:
+  - name: DOB
+    min_occurs: 1
+    max_occurs: 1
+    sort: 0
+    description: Date of birth of child
+    governance: INDIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+- name: ChildBorn_Name
+  min_occurs: 0
+  max_occurs: 1
+  sort: 7
+  node_type: Nodes::Entity
+  children:
+  - name: FNAMCH1
+    min_occurs: 1
+    max_occurs: 1
+    sort: 0
+    description: First forename of child
+    governance: DIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: FNAMCH2
+    min_occurs: 1
+    max_occurs: 1
+    sort: 1
+    description: Second forename of child
+    governance: DIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: FNAMCH3
+    min_occurs: 1
+    max_occurs: 1
+    sort: 2
+    description: Third forename of child
+    governance: DIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: FNAMCHX
+    min_occurs: 1
+    max_occurs: 1
+    sort: 3
+    description: All Extra forenames of child are captured in this field
+    governance: DIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: SNAMCH
+    min_occurs: 1
+    max_occurs: 1
+    sort: 4
+    description: Surname of child
+    governance: DIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+- name: ChildBorn_Identifier
+  min_occurs: 0
+  max_occurs: 1
+  sort: 8
+  node_type: Nodes::Entity
+  children:
+  - name: NHSNO
+    min_occurs: 1
+    max_occurs: 1
+    sort: 0
+    description: NHS number of child
+    governance: DIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+- name: ChildBorn_Sex
+  min_occurs: 0
+  max_occurs: 1
+  sort: 9
+  node_type: Nodes::Entity
+  children:
+  - name: SEX
+    min_occurs: 1
+    max_occurs: 1
+    sort: 0
+    description: Coded sex of child
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+- name: Third party Non-professional_MotherResidence
+  min_occurs: 0
+  max_occurs: 1
+  sort: 10
+  node_type: Nodes::Entity
+  children:
+  - name: ADDRMT
+    min_occurs: 1
+    max_occurs: 1
+    sort: 0
+    description: Usual address of Mother
+    governance: DIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: CCGRM
+    min_occurs: 1
+    max_occurs: 1
+    sort: 1
+    description: Clinical Commissioning Group for usual residence of mother
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: CTYDRM
+    min_occurs: 1
+    max_occurs: 1
+    sort: 2
+    description: County district code of usual residence of mother of child
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: CTYRM
+    min_occurs: 1
+    max_occurs: 1
+    sort: 3
+    description: County code of usual residence of mother of child
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: GORRM
+    min_occurs: 1
+    max_occurs: 1
+    sort: 4
+    description: Government Office Region code of usual residence of mother of child
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: HAUTRM
+    min_occurs: 1
+    max_occurs: 1
+    sort: 5
+    description: Health Authority code for usual residence of mother of child
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: HRORM
+    min_occurs: 1
+    max_occurs: 1
+    sort: 6
+    description: Health Regional Office code for usual residence of mother of child
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: LOARM
+    min_occurs: 1
+    max_occurs: 1
+    sort: 7
+    description: Lowest Output Area for usual residence of mother of child
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: LSOARM
+    min_occurs: 1
+    max_occurs: 1
+    sort: 8
+    description: Lower Super Output Area for usual residence of mother of child
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: PCDRM
+    min_occurs: 1
+    max_occurs: 1
+    sort: 9
+    description: Postcode of usual residence of mother of child
+    governance: INDIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: STREGRM
+    min_occurs: 1
+    max_occurs: 1
+    sort: 10
+    description: Standard region  code of usual residence of mother of child
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: WARDRM
+    min_occurs: 1
+    max_occurs: 1
+    sort: 11
+    description: Ward code of usual residence of mother of child
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: CCG9RM
+    min_occurs: 1
+    max_occurs: 1
+    sort: 12
+    description: Clinical Commissioning Group for usual residence of mother
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: GOR9RM
+    min_occurs: 1
+    max_occurs: 1
+    sort: 13
+    description: Government Office Region code of usual residence of mother of child
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: WARD9RM
+    min_occurs: 1
+    max_occurs: 1
+    sort: 14
+    description: Ward code of usual residence of mother of child
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+- name: Third party Non-professional_ParentAge
+  min_occurs: 0
+  max_occurs: 1
+  sort: 11
+  node_type: Nodes::Entity
+  children:
+  - name: AGEBF
+    min_occurs: 1
+    max_occurs: 1
+    sort: 0
+    description: Age of father at birth of child
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: AGEBM
+    min_occurs: 1
+    max_occurs: 1
+    sort: 1
+    description: Age of mother at birth of child
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: AGEMF
+    min_occurs: 1
+    max_occurs: 1
+    sort: 2
+    description: Age of father at marriage to child's mother
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: AGEMM
+    min_occurs: 1
+    max_occurs: 1
+    sort: 3
+    description: Age of mother at marriage to child's father
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+- name: Birth Event_MarriageStatus
+  min_occurs: 0
+  max_occurs: 1
+  sort: 12
+  node_type: Nodes::Entity
+  children:
+  - name: BTHIMAR
+    min_occurs: 1
+    max_occurs: 1
+    sort: 0
+    description: Birth in marriage indicator
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: DURMAR
+    min_occurs: 1
+    max_occurs: 1
+    sort: 1
+    description: Duration of marriage
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+- name: Birth Event__LocationArea
+  min_occurs: 0
+  max_occurs: 1
+  sort: 13
+  node_type: Nodes::Entity
+  children:
+  - name: CCGPOB
+    min_occurs: 1
+    max_occurs: 1
+    sort: 0
+    description: Clinical Commissioning Group for place of birth of child
+    governance: DIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: CTYPOB
+    min_occurs: 1
+    max_occurs: 1
+    sort: 1
+    description: County code for place of birth of child
+    governance: DIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: HAUTPOB
+    min_occurs: 1
+    max_occurs: 1
+    sort: 2
+    description: Health Authority code for place of birth of child
+    governance: DIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: HROPOB
+    min_occurs: 1
+    max_occurs: 1
+    sort: 3
+    description: Health Regional Office code for place of birth of child
+    governance: DIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: LOAPOB
+    min_occurs: 1
+    max_occurs: 1
+    sort: 4
+    description: Lowest Output Area for place of birth
+    governance: DIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: LSOAPOB
+    min_occurs: 1
+    max_occurs: 1
+    sort: 5
+    description: Lower Super Output Area for place of birth
+    governance: DIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+- name: Birth Event__Location
+  min_occurs: 0
+  max_occurs: 1
+  sort: 14
+  node_type: Nodes::Entity
+  children:
+  - name: CESTRSS
+    min_occurs: 1
+    max_occurs: 1
+    sort: 0
+    description: Communal Establishment code
+    governance: DIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: NHSIND
+    min_occurs: 1
+    max_occurs: 1
+    sort: 1
+    description: NHS Establishment indicator
+    governance: DIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: PCDPOB
+    min_occurs: 1
+    max_occurs: 1
+    sort: 2
+    description: Postcode for place of birth of child
+    governance: DIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: POBT
+    min_occurs: 1
+    max_occurs: 1
+    sort: 3
+    description: Place of birth text
+    governance: DIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: CCG9POB
+    min_occurs: 1
+    max_occurs: 1
+    sort: 4
+    description: Clinical Commissioning Group for place of birth of child
+    governance: DIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+- name: Birth Event__LocationType
+  min_occurs: 0
+  max_occurs: 1
+  sort: 15
+  node_type: Nodes::Entity
+  children:
+  - name: ESTTYPEB
+    min_occurs: 1
+    max_occurs: 1
+    sort: 0
+    description: Establishment type where birth occurred
+    governance: DIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+- name: Third party Non-professional_ParentBirth
+  min_occurs: 0
+  max_occurs: 1
+  sort: 16
+  node_type: Nodes::Entity
+  children:
+  - name: CTRYPOBF
+    min_occurs: 1
+    max_occurs: 1
+    sort: 0
+    description: Country code of place of birth of father of child
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: CTRYPOBM
+    min_occurs: 1
+    max_occurs: 1
+    sort: 1
+    description: Country code of place of birth of mother of child
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+- name: Third party Non-professional_Employment
+  min_occurs: 0
+  max_occurs: 1
+  sort: 17
+  node_type: Nodes::Entity
+  children:
+  - name: EMPSECF
+    min_occurs: 1
+    max_occurs: 1
+    sort: 0
+    description: Employment status of father of child (SOC2000)
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: EMPSECM
+    min_occurs: 1
+    max_occurs: 1
+    sort: 1
+    description: Employment status of mother of child (SOC2000)
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: EMPSTF
+    min_occurs: 1
+    max_occurs: 1
+    sort: 2
+    description: Employment status of father of child (OCC90M)
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: EMPSTM
+    min_occurs: 1
+    max_occurs: 1
+    sort: 3
+    description: Employment status of mother of child (OCC90M)
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: SOC2KF
+    min_occurs: 1
+    max_occurs: 1
+    sort: 4
+    description: Coded occupation (ONS Classification SOC2000 & SOC2010) for father
+      of child
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: SOC2KM
+    min_occurs: 1
+    max_occurs: 1
+    sort: 5
+    description: Coded occupation (ONS Classification SOC2000 & SOC2010) for mother
+      of child
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: SOC90F
+    min_occurs: 1
+    max_occurs: 1
+    sort: 6
+    description: Coded occupation (ONS Classification SOC1990) for father of child
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: SOC90M
+    min_occurs: 1
+    max_occurs: 1
+    sort: 7
+    description: Coded occupation (ONS Classification SOC1990) for mother of child
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+- name: Third party Non-professional_ParentName
+  min_occurs: 0
+  max_occurs: 1
+  sort: 18
+  node_type: Nodes::Entity
+  children:
+  - name: FNAMF
+    min_occurs: 1
+    max_occurs: 1
+    sort: 0
+    description: First three Forename(s) of father/parent in this field
+    governance: INDIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: FNAMFX
+    min_occurs: 1
+    max_occurs: 1
+    sort: 1
+    description: Any Extra forename(s) of father/parent in this field
+    governance: INDIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: FNAMM
+    min_occurs: 1
+    max_occurs: 1
+    sort: 2
+    description: First three Forenames of mother in this field
+    governance: INDIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: FNAMMX
+    min_occurs: 1
+    max_occurs: 1
+    sort: 3
+    description: Any Extra forename(s) of mother in this field
+    governance: INDIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: NAMEMAID
+    min_occurs: 1
+    max_occurs: 1
+    sort: 4
+    description: Mother's maiden name
+    governance: DIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: SNAMF
+    min_occurs: 1
+    max_occurs: 1
+    sort: 5
+    description: Surname of father/parent
+    governance: INDIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: SNAMM
+    min_occurs: 1
+    max_occurs: 1
+    sort: 6
+    description: Surname of mother
+    governance: INDIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+  - name: SNAMMCF
+    min_occurs: 1
+    max_occurs: 1
+    sort: 7
+    description: Surname of mother at marriage to child's father/parent
+    governance: INDIRECT IDENTIFIER
+    node_type: Nodes::DataItem
+- name: Third party Non-professional_Socio-economic
+  min_occurs: 0
+  max_occurs: 1
+  sort: 19
+  node_type: Nodes::Entity
+  children:
+  - name: SECCATF
+    min_occurs: 1
+    max_occurs: 1
+    sort: 0
+    description: Socio-economic class of Father
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem
+  - name: SECCATM
+    min_occurs: 1
+    max_occurs: 1
+    sort: 1
+    description: Socio-economic class of Mother
+    governance: NON IDENTIFYING DATA
+    node_type: Nodes::DataItem

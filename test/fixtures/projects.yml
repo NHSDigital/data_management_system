@@ -1,0 +1,146 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+one:
+  project_type: project
+  name: MyString
+  description: MyText
+  start_data_date: <%= DateTime.now + 6.months %>
+  end_data_date: <%= DateTime.now + 7.months %>
+  team: team_one
+  how_data_will_be_used: MyText
+  head_of_profession: MyString
+  data_access_address: MyString
+  data_access_postcode: MyString
+  data_to_contact_others: true
+  data_to_contact_others_desc: do something
+
+two:
+  project_type: project
+  name: MyString2
+  description: MyText
+  start_data_date: <%= DateTime.now + 6.months %>
+  end_data_date: <%= DateTime.now + 7.months %>
+  team: team_ONE_member
+  how_data_will_be_used: MyText
+  head_of_profession: MyString
+  data_access_address: MyString
+  data_access_postcode: MyString
+  data_to_contact_others: true
+  data_to_contact_others_desc: do something
+
+new_project:
+  project_type: project
+  name: new_project
+  description: This project is in the new state
+  start_data_date: <%= DateTime.now + 6.months %>
+  end_data_date: <%= DateTime.now + 7.months %>
+  team: new_team
+  how_data_will_be_used: For testing a new project
+  head_of_profession: Sideshow Bob
+  data_access_address: MyString
+  data_access_postcode: MyString
+  data_to_contact_others: true
+  data_to_contact_others_desc: do something
+
+pending_project:
+  project_type: project
+  name: pending_project
+  description: This project is in the pending approval state
+  start_data_date: <%= DateTime.now + 6.months %>
+  end_data_date: <%= DateTime.now + 7.months %>
+  team: pending_team
+  how_data_will_be_used: For testing a pending project
+  head_of_profession: Sideshow Bob
+  data_access_address: MyString
+  data_access_postcode: MyString
+  data_to_contact_others: true
+  data_to_contact_others_desc: do something
+
+approved_project:
+  project_type: project
+  name: approved_project
+  description: This project is in the approved state
+  start_data_date: <%= DateTime.now + 6.months %>
+  end_data_date: <%= DateTime.now + 7.months %>
+  team: approved_team
+  how_data_will_be_used: For testing an approved project
+  head_of_profession: Sideshow Bob
+  data_access_address: MyString
+  details_approved: true
+  members_approved: true
+  legal_ethical_approved: true
+  data_access_postcode: MyString
+  data_to_contact_others: true
+  data_to_contact_others_desc: do something
+
+rejected_project:
+  project_type: project
+  name: rejected_project
+  description: This project is in the rejected state
+  start_data_date: <%= DateTime.now + 6.months %>
+  end_data_date: <%= DateTime.now + 7.months %>
+  team: rejected_team
+  how_data_will_be_used: For testing an approved project
+  head_of_profession: Sideshow Bob
+  data_access_address: MyString
+  details_approved: false
+  members_approved: false
+  legal_ethical_approved: false
+  data_access_postcode: MyString
+  data_to_contact_others: true
+  data_to_contact_others_desc: do something
+
+deleted_project:
+  project_type: project
+  name: deleted_project
+  description: This project is to be placed in deleted state
+  start_data_date: <%= DateTime.now + 6.months %>
+  end_data_date: <%= DateTime.now + 7.months %>
+  team: deleted_team
+  how_data_will_be_used: For testing an approved project
+  head_of_profession: Sideshow Bob
+  data_access_address: MyString
+  details_approved: false
+  members_approved: false
+  data_access_postcode: MyString
+  data_to_contact_others: true
+  data_to_contact_others_desc: do something
+
+pending_delegate_project:
+  project_type: project
+  name: pending_delegate_project
+  description: This project is in the pending DELEGATE approval state
+  start_data_date: <%= DateTime.now + 6.months %>
+  end_data_date: <%= DateTime.now + 7.months %>
+  team: pending_delegate_team
+  how_data_will_be_used: For testing a pending project
+  head_of_profession: Sideshow Bob
+  data_access_address: MyString
+  data_access_postcode: MyString
+  data_to_contact_others: true
+  data_to_contact_others_desc: do something
+
+new_delegate_project:
+  project_type: project
+  name: new_delegate_project
+  description: This project is in the new state
+  start_data_date: <%= DateTime.now + 6.months %>
+  end_data_date: <%= DateTime.now + 7.months %>
+  team: new_delegate_team
+  how_data_will_be_used: For testing a new delegate project
+  head_of_profession: Sideshow Bob
+  data_access_address: MyString
+  data_access_postcode: MyString
+  data_to_contact_others: true
+  data_to_contact_others_desc: do something
+
+dummy_project:
+  team: team_one
+  project_type: dummy
+  name: Dummy Project
+  description: Barebones project for testing workflow behaviour
+
+test_application:
+  team: team_one
+  project_type: application
+  name: Test Application
+  description: A test application

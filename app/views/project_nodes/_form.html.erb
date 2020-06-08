@@ -1,0 +1,19 @@
+<%= bootstrap_form_for [@project, @project_node], horizontal: 2 do |form| %>
+
+
+  <%= form.control_group :data_source_item_id, 'Item' do %>
+    <%= form.select :data_source_item_id, options_from_collection_for_select(@project.unselected_available_data_source_items.order('name'), :id, :friendly_name) %>
+    NON: Non Identifier, IND: Indirect Identifier, DIR: Direct Identifier
+  <% end %>
+
+  <%= form.control_group :comment, 'Justification' do %>
+    <%= form.text_area :comment, required: true %>
+  <% end %>
+
+  <%= form.control_group nil do %>
+    <div class="pull-right">
+      <%= link_to("Don't save".html_safe, @project, class: 'btn btn-default') %>
+      <%= submit_tag('Save', class: 'btn btn-primary', disable_with: 'Saving&hellip;'.html_safe) %>
+    </div>
+  <% end %>
+<% end %>

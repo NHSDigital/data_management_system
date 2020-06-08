@@ -1,0 +1,36 @@
+# Created by `bin/rails lookup:create_fixture[SecurityAssurance]` at 2019-11-07 09:47:20 UTC
+---
+iso_27001:
+  id: 1
+  value: ISO 27001
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &1 2019-01-23 10:11:00.392360000 Z
+    zone: &2 !ruby/object:ActiveSupport::TimeZone
+      name: Etc/UTC
+    time: *1
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &3 2019-01-23 10:11:00.392360000 Z
+    zone: *2
+    time: *3
+dsp_toolkit:
+  id: 2
+  value: Data Security and Protection Toolkit
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &4 2019-01-23 10:11:00.395621000 Z
+    zone: *2
+    time: *4
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &5 2019-01-23 10:11:00.395621000 Z
+    zone: *2
+    time: *5
+slsp:
+  id: 3
+  value: Project specific System Level Security Policy
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &6 2019-01-23 10:11:00.398971000 Z
+    zone: *2
+    time: *6
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &7 2019-01-23 10:11:00.398971000 Z
+    zone: *2
+    time: *7

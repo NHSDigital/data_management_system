@@ -1,0 +1,187 @@
+<%= form.hidden_field :team_id, value: @team.id %>
+<%= form.hidden_field :project_type_id %>
+
+<% if (params[:controller] == 'projects' && ['new','show','create', 'duplicate'].include?(params[:action])) ||
+	  (params[:controller] == 'projects' && params[:action] == 'edit' && params[:section] == 'all') %>
+
+  <fieldset>
+	<legend>Project summary information</legend>
+    <%= form.hidden_field :clone_of, value: @project.clone_of %>
+
+    <%= form.control_group :name, 'Title' do %>
+      <%= form.text_field :name %>
+    <% end %>
+
+    <%= render 'project_details_section_one', { form: form } if @full_form %>
+    <%= render 'project_details_section_one_hidden', { form: form } unless @full_form %>
+    <%= render 'project_details_data_dates', { form: form } %>
+    <%= render 'project_details_section_two', { form: form } if @full_form %>
+    <%= render 'project_details_section_two_hidden', { form: form } unless @full_form %>
+    <%= render 'projects/project_owner_grant', form: form if @duplicate %>
+<% end %>
+
+<% if show_legal? %>
+
+  <fieldset>
+	<legend>Legal</legend>
+    <div class='row form-group'>
+      <label class="control-label col-md-3">
+      	Informed patient consent ?
+      </label>
+      <div class='col-md-3'>
+        <%= form.select :informed_patient_consent, [['Yes',true],['No',false]], {include_blank: true, required: true} %>
+      </div>
+    </div>
+
+		<div class='row form-group'>
+      <label class="control-label col-md-3">
+      	Direct Care
+      </label>
+      <div class='col-md-3'>
+        <%= form.select :direct_care, [['Yes',true],['No',false]], {include_blank: true, required: true} %>
+      </div>
+    </div>
+
+
+		<div class='row form-group'>
+		  <label class="control-label col-md-3">
+		     Section 251 Exempt
+		   </label>
+		   <div class='col-md-3'>
+		     <%= form.select :section_251_exempt, [['Yes',true],['No',false]], {include_blank: true, required: true} %>
+		   </div>
+	  </div>
+
+		<div class='row form-group'>
+      <label class="control-label col-md-3" for="project_acg_who">CAG REG</label>
+      <div class='col-md-9'>
+        <%= form.text_field :cag_ref%>
+      </div>
+    </div>
+
+    <div class='row form-group'>
+	    <label class="control-label col-md-3" for="project_start_date">Date of CAG Approval</label>
+	    <div class='col-md-3'>
+			  <%= form.text_field :date_of_approval, data: { provide: 'datepicker'} %>
+	    </div>
+	  </div>
+		<div class='row form-group'>
+	    <label class="control-label col-md-3" for="project_start_date">Date of CAG renewal</label>
+	    <div class='col-md-3'>
+			  <%= form.text_field :date_of_renewal, data: { provide: 'datepicker'} %>
+	    </div>
+	  </div>
+
+		<div class='row form-group'>
+		  <label class="control-label col-md-3" title='Control of Patient Information Regulations 2002'>
+		     Regulation 3 Health Services
+		   </label>
+		   <div class='col-md-3'>
+		     <%= form.select :regulation_health_services, [['Yes',true],['No',false]], {include_blank: true, required: true} %>
+		   </div>
+	  </div>
+<% end %>
+
+<% if show_legal_gateway? %>
+
+		<div class='mortality-extra'>
+      <legend>Legal gateway to Process ONS mortality data</legend>
+      <div class='row form-group'>
+        <label class="control-label col-md-3" for="project_acg_support">
+          Informed Patient Consent (Mortality)
+        </label>
+        <div class='col-md-3'>
+          <%= form.select :informed_patient_consent_mortality, [['Yes',true],['No',false]], {include_blank: true, required: true} %>
+        </div>
+      </div>
+
+      <div class='row form-group'>
+        <label class="control-label col-md-3" for="project_acg_support">
+          S42 of the SRSA 2007 amended by S287 of the health and Social care act 2012
+        </label>
+        <div class='col-md-3'>
+          <%= form.select :s42_of_srsa, [['Yes',true],['No',false]], {include_blank: true, required: true} %>
+        </div>
+      </div>
+
+      <div class='row form-group'>
+        <label class="control-label col-md-3">
+          Approved research accreditation
+        </label>
+        <div class='col-md-3'>
+          <%= form.select :approved_research_accreditation, [['Yes',true],['No',false]], {include_blank: true, required: true} %>
+        </div>
+      </div>
+    </div>
+  </fieldset>
+<% end %>
+
+<% if show_legal? %>
+  <fieldset>
+	<legend>Ethical</legend>
+    <div class='row form-group'>
+      <label class="control-label col-md-3">
+      	Has ethics approval been obtained
+      </label>
+      <div class='col-md-3'>
+        <%= form.select :ethics_approval_obtained, [['Yes',true],['No',false]], {include_blank: true, required: true} %>
+      </div>
+    </div>
+
+    <div class='row form-group', data-depends-on="#project_ethics_approval_obtained", data-depends-on-value="true">
+      <label class="control-label col-md-3" for="project_acg_who">NREC Name</label>
+      <div class='col-md-9'>
+        <%= form.text_field :ethics_approval_nrec_name, "data-depends-on" => "#project_ethics_approval_obtained", "data-depends-on-value" => "true" %>
+      </div>
+    </div>
+    <div class='row form-group', data-depends-on="#project_ethics_approval_obtained", data-depends-on-value="true">
+      <label class="control-label col-md-3" for="project_acg_date">NREC ref</label>
+      <div class='col-md-9'>
+        <%= form.text_field :ethics_approval_nrec_ref, "data-depends-on" => "#project_ethics_approval_obtained", "data-depends-on-value" => "true" %>
+      </div>
+    </div>
+
+  </fieldset>
+
+  <fieldset>
+	<legend>Confidentiality and data protection assurance</legend>
+    <label class="control-label col-md-3" for="project_trackwise_id" title='EITHER a) upload a completed system level security policy for ODR review after project creation OR b) Provide a trackwise ID number'>
+      Trackwise ID
+    </label>
+    <div class='col-md-9'>
+      <%= form.text_field :trackwise_id %>
+    </div>
+  </fieldset>
+
+<% end %>
+
+<% if show_all? %>
+  <fieldset>
+	<legend>Expected outputs</legend>
+
+    <div class='row form-group'>
+      <label class="control-label col-md-3" for="project_outputs">Outputs</label>
+      <div class='col-md-9'>
+				<%= form.collection_check_boxes(:output_ids, Output.all, :id, :name) %>
+        <%# form.select :outputs, ['Internal meeting', 'External meeting', 'Internal report', 'External report', 'Conference', 'Publication', 'Other'], {include_blank: true, required: true} %>
+      </div>
+    </div>
+
+    <div class='row form-group'>
+      <label class="control-label col-md-3" for="outputs_other">Other</label>
+      <div class='col-md-9'>
+        <%= form.text_area :outputs_other %>
+      </div>
+    </div>
+
+  </fieldset>
+
+<% end %>
+
+<%= form.control_group nil do %>
+	<div class="pull-right">
+		<%= link_to("Don't save".html_safe, @project, class: 'btn btn-default') %>
+		<%# submit_tag('Save', class: 'btn btn-primary', data: { confirm: "Please select a data source." }) %>
+		<%= submit_tag('Save', class: 'btn btn-primary') %>
+	</div>
+<% end %>

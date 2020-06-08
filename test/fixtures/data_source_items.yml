@@ -1,0 +1,61 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+birth_gold_dob:
+  name: dateofbirth
+  governance: 'DIRECT IDENTIFIER'
+  data_source: births_gold
+
+birth_gold_surname:
+  name: surname
+  governance: 'DIRECT IDENTIFIER'
+  data_source: births_gold
+
+birth_gold_forename:
+  name: forename
+  governance: 'DIRECT IDENTIFIER'
+  data_source: births_gold
+
+birth_transaction_dob:
+  name: dateofbirth
+  governance: 'DIRECT IDENTIFIER'
+  data_source: births_transaction
+
+death_gold_forename:
+  name: forename
+  governance: 'INDIRECT IDENTIFIER'
+  data_source: deaths_gold
+  description: gold forename
+
+death_gold_surname:
+  name: surname
+  governance: 'DIRECT IDENTIFIER'
+  data_source: deaths_gold
+  description: gold surname
+
+death_gold_dateofbirth:
+  name: dateofbirth
+  governance: 'DIRECT IDENTIFIER'
+  data_source: deaths_gold
+  description: gold date of birth
+
+deaths_gold_non_ident:
+  name: some_non_ident_data
+  governance: 'NON IDENTIFYING DATA'
+  data_source: deaths_gold
+  description: some non identifyign data item
+
+deaths_gold_icd_item:
+  name: ICD10_A
+  governance: 'DIRECT IDENTIFIER'
+  data_source: deaths_gold
+  description: an ICD item
+  category: death_golds_category_1
+  occurrences: 1
+
+deaths_gold_location_item:
+  name: LOCITEM
+  governance: 'DIRECT IDENTIFIER'
+  data_source: deaths_gold
+  description: a location item
+  category: death_golds_Location_1
+  occurrences: 1

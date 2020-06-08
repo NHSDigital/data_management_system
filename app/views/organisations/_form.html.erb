@@ -1,0 +1,28 @@
+<%
+  readonly ||= false
+%>
+
+  <%= bootstrap_form_for @organisation, horizontal: 2, readonly: readonly do |form| %>
+    <%= form.error_and_warning_alert_boxes %>
+    <div class="well">
+      <%= form.control_group(:name) { form.text_field :name, class: 'mandatory' } %>
+      <%= form.control_group(:organisation_type, nil, style: 'margin-bottom: 0px;') do %>
+        <%= form.collection_select :organisation_type_id, Lookups::OrganisationType.all, :id, :value, { include_blank: true }, class: 'form-control mandatory' %>
+      <% end %>
+      <%= form.control_group(:organisation_type_other, '') do %>
+        <%= form.text_field :organisation_type_other, placeholder: "If 'Other' please specify" %>
+      <% end %>
+      
+      <%= render 'shared/addresses', form: form, klass: @organisation %>
+
+      <% unless readonly %>
+        <%= form.control_group nil do %>
+          <div class="pull-right">
+            <%= link_to 'Cancel', @organisation, class: 'btn btn-default' %>
+            <%= form.submit class: 'btn btn-primary' %>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+</div>

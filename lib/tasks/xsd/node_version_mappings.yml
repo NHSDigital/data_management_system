@@ -1,0 +1,1321 @@
+---
+- dataset: COSD
+  semver_version_current: 9-0
+  semver_version_to_diff: 8-1
+  mappings:
+  - xsd_element_name_current: Id
+    xsd_element_name_original: Id
+    parent_current: COSD
+    parent_original: COSD
+  - xsd_element_name_current: OrganisationIdentifierCodeOfSubmittingOrganisation
+    xsd_element_name_original: OrganisationIdentifierCodeOfSubmittingOrganisation
+    parent_current: COSD
+    parent_original: COSD
+  - xsd_element_name_current: RecordCount
+    xsd_element_name_original: RecordCount
+    parent_current: COSD
+    parent_original: COSD
+  - xsd_element_name_current: ReportingPeriodStartDate
+    xsd_element_name_original: ReportingPeriodStartDate
+    parent_current: COSD
+    parent_original: COSD
+  - xsd_element_name_current: ReportingPeriodEndDate
+    xsd_element_name_original: ReportingPeriodEndDate
+    parent_current: COSD
+    parent_original: COSD
+  - xsd_element_name_current: FileCreationDateTime
+    xsd_element_name_original: FileCreationDateTime
+    parent_current: COSD
+    parent_original: COSD
+  - xsd_element_name_current: ReferralAndFirstStageOfPatientPathwayCTYA
+    xsd_element_name_original: CTYACoreReferralAndFirstStageOfPatientPathway
+    parent_current: ReferralAndFirstStageOfPatientPathway
+    parent_original: CTYACoreReferralAndFirstStageOfPatientPathway
+  - xsd_element_name_current: SpecialtyReferrerToSpecialist
+    xsd_element_name_original: MainSpecialtyCodeCancerReferral
+    parent_current: ReferralAndFirstStageOfPatientPathwayCTYA
+    parent_original: ReferralAndFirstStageOfPatientPathwayCTYA
+  - xsd_element_name_current: ImagingCNS
+    xsd_element_name_original: ImagingCNS
+    parent_current: Imaging
+    parent_original: CNSCoreImaging
+  - xsd_element_name_current: LesionLocationRadiological
+    xsd_element_name_original: LesionLocation
+    parent_current: ImagingCNS
+    parent_original: ImagingCNS
+  - xsd_element_name_current: NumberOfLesionsRadiological
+    xsd_element_name_original: NumberOfLesions
+    parent_current: ImagingCNS
+    parent_original: ImagingCNS
+  - xsd_element_name_current: LesionSizeRadiological
+    xsd_element_name_original: LesionSizeRadiological
+    parent_current: ImagingCNS
+    parent_original: ImagingCNS
+  - xsd_element_name_current: PrincipalDiagnosticImagingType
+    xsd_element_name_original: PrincipalDiagnosticImagingType
+    parent_current: ImagingCNS
+    parent_original: ImagingCNS
+  - xsd_element_name_current: DiagnosisBoneAndSoftTissue
+    xsd_element_name_original: DiagnosisBoneAndSoftTissue
+    parent_current: Diagnosis
+    parent_original: SarcomaCoreDiagnosis
+  - xsd_element_name_current: SarcomaTumourSiteBone
+    xsd_element_name_original: BoneSarcomaTumourSite
+    parent_current: DiagnosisBoneAndSoftTissue
+    parent_original: DiagnosisBoneAndSoftTissue
+  - xsd_element_name_current: SarcomaTumourSubsiteBone
+    xsd_element_name_original: BoneSarcomaTumourSubSite
+    parent_current: DiagnosisBoneAndSoftTissue
+    parent_original: DiagnosisBoneAndSoftTissue
+  - xsd_element_name_current: SarcomaTumourSiteSoftTissue
+    xsd_element_name_original: SarcomaTumourSiteSoftTissue
+    parent_current: DiagnosisBoneAndSoftTissue
+    parent_original: DiagnosisBoneAndSoftTissue
+  - xsd_element_name_current: SarcomaTumourSubsiteSoftTissue
+    xsd_element_name_original: SarcomaTumourSubsiteSoftTissue
+    parent_current: DiagnosisBoneAndSoftTissue
+    parent_original: DiagnosisBoneAndSoftTissue
+  - xsd_element_name_current: MultifocalOrSynchronousTumourIndicator
+    xsd_element_name_original: MultifocalSynchronousTumourInd
+    parent_current: DiagnosisBoneAndSoftTissue
+    parent_original: DiagnosisBoneAndSoftTissue
+  - xsd_element_name_current: DiagnosisColorectal
+    xsd_element_name_original: DiagnosisColorectal
+    parent_current: Diagnosis
+    parent_original: ColorectalCoreDiagnosis
+  - xsd_element_name_current: SynchronousTumourIndicator
+    xsd_element_name_original: SynchronousTumourColonLocation
+    parent_current: DiagnosisColorectal
+    parent_original: DiagnosisColorectal
+  - xsd_element_name_current: TumourHeightAboveAnalVerge
+    xsd_element_name_original: TumourHeightAboveAnalVerge
+    parent_current: DiagnosisColorectal
+    parent_original: DiagnosisColorectal
+  - xsd_element_name_current: DiagnosisCTYA
+    xsd_element_name_original: DiagnosisCTYA
+    parent_current: Diagnosis
+    parent_original: CTYACoreDiagnosis
+  - xsd_element_name_current: ConsultantSpecialtyAtDiagnosis
+    xsd_element_name_original: MainSpecialtyCode
+    parent_current: DiagnosisCTYA
+    parent_original: DiagnosisCTYA
+  - xsd_element_name_current: ConsultantAgeSpecialtyAtDiagnosis
+    xsd_element_name_original: CTYAAgeCategoryAtDiag
+    parent_current: DiagnosisCTYA
+    parent_original: DiagnosisCTYA
+  - xsd_element_name_current: DiagnosisCTYANeuroblastoma
+    xsd_element_name_original: DiagnosisCTYANeuroblastoma
+    parent_current: Diagnosis
+    parent_original: CTYACoreDiagnosis
+  - xsd_element_name_current: LifeThreateningSymptomsAtPresentation
+    xsd_element_name_original: LifeThreateningSymptomsIndicator
+    parent_current: DiagnosisCTYANeuroblastoma
+    parent_original: DiagnosisCTYANeuroblastoma
+  - xsd_element_name_current: DiagnosisLiver
+    xsd_element_name_original: DiagnosisLiver
+    parent_current: Diagnosis
+    parent_original: LiverCoreDiagnosis
+  - xsd_element_name_current: LiverSurveillanceScans
+    xsd_element_name_original: LiverCancerSurveillanceScanIndicator
+    parent_current: DiagnosisLiver
+    parent_original: DiagnosisLiver
+  - xsd_element_name_current: LiverCirrhosisType
+    xsd_element_name_original: LiverCirrhosisType
+    parent_current: DiagnosisLiver
+    parent_original: DiagnosisLiver
+  - xsd_element_name_current: CauseOfLiverCirrhosis
+    xsd_element_name_original: LiverCirrhosisCauseType
+    parent_current: DiagnosisLiver
+    parent_original: DiagnosisLiver
+  - xsd_element_name_current: DiagnosisMixedPhenotypeAcuteLeukaemia
+    xsd_element_name_original: DiagnosisMixedPhenotypeAcuteLeukaemia
+    parent_current: DiagnosisHaematological
+    parent_original: HaematologicalCoreDiagnosis
+  - xsd_element_name_current: MixedPhenotypeSymptomsAtDiagnosis
+    xsd_element_name_original: MixedPhenotypeAcuteLeukaemiaSymptomsAtDiagnosis
+    parent_current: DiagnosisMixedPhenotypeAcuteLeukaemia
+    parent_original: DiagnosisMixedPhenotypeAcuteLeukaemia
+  - xsd_element_name_current: EgilScore
+    xsd_element_name_original: EuropeanGroupForTheImmunologicalClassificationOfLeukaemiaScoringSystemScore
+    parent_current: DiagnosisMixedPhenotypeAcuteLeukaemia
+    parent_original: DiagnosisMixedPhenotypeAcuteLeukaemia
+  - xsd_element_name_current: DiagnosisAcuteMyeloidLeukaemia
+    xsd_element_name_original: DiagnosisAcuteMyeloidLeukaemia
+    parent_current: DiagnosisHaematological
+    parent_original: HaematologicalCoreDiagnosis
+  - xsd_element_name_current: FabClassification
+    xsd_element_name_original: FrenchAmericanBritishClassificationAcuteMyeloidLeukaemia
+    parent_current: DiagnosisAcuteMyeloidLeukaemia
+    parent_original: DiagnosisAcuteMyeloidLeukaemia
+  - xsd_element_name_current: PaediatricCytogeneticMolecularGeneticRiskGroup
+    xsd_element_name_original: CytogeneticRiskGroupPaediatricMolecularGeneticAbnormalities
+    parent_current: DiagnosisAcuteMyeloidLeukaemia
+    parent_original: DiagnosisAcuteMyeloidLeukaemia
+  - xsd_element_name_current: AmlRiskFactors
+    xsd_element_name_original: AcuteMyeloidLeukaemiaRiskFactorsAtDiagnosis
+    parent_current: DiagnosisAcuteMyeloidLeukaemia
+    parent_original: DiagnosisAcuteMyeloidLeukaemia
+  - xsd_element_name_current: DiagnosisPaediatricMyelodysplasia
+    xsd_element_name_original: DiagnosisPaediatricMyelodysplasia
+    parent_current: DiagnosisHaematological
+    parent_original: HaematologicalCoreDiagnosis
+  - xsd_element_name_current: PaediatricMyelodysplasia
+    xsd_element_name_original: PaediatricMyelodysplasiaClinicalFindingsAtDiagnosis
+    parent_current: DiagnosisPaediatricMyelodysplasia
+    parent_original: DiagnosisPaediatricMyelodysplasia
+  - xsd_element_name_current: UnderlyingDiseaseAssociatedWithMds
+    xsd_element_name_original: UnderlyingDiseaseAssociatedWithMyelodysplasiaAtDiagnosis
+    parent_current: DiagnosisPaediatricMyelodysplasia
+    parent_original: DiagnosisPaediatricMyelodysplasia
+  - xsd_element_name_current: CongenitalAnomalies
+    xsd_element_name_original: CongenitalAnomaliesComment
+    parent_current: DiagnosisPaediatricMyelodysplasia
+    parent_original: DiagnosisPaediatricMyelodysplasia
+  - xsd_element_name_current: MyelodysplasiaSymptomsAtDiagnosis
+    xsd_element_name_original: OtherMyelodysplasiaSymptomsAtDiagnosis
+    parent_current: DiagnosisPaediatricMyelodysplasia
+    parent_original: DiagnosisPaediatricMyelodysplasia
+  - xsd_element_name_current: DiagnosisProstate
+    xsd_element_name_original: DiagnosisProstate
+    parent_current: Diagnosis
+    parent_original: UrologicalCoreDiagnosis
+  - xsd_element_name_current: DiagnosisRhabdomyosarcomaAndOtherSoftTissueSarcomas
+    xsd_element_name_original: DiagnosisRhabdomyosarcomaAndOtherSoftTissueSarcomas
+    parent_current: DiagnosisSarcomaChoice
+    parent_original: SarcomaCoreDiagnosis
+  - xsd_element_name_current: IrsPostSurgicalGroup
+    xsd_element_name_original: IntergroupRhabdomyosarcomaStudyPostSurgicalGroup
+    parent_current: DiagnosisRhabdomyosarcomaAndOtherSoftTissueSarcomas
+    parent_original: DiagnosisRhabdomyosarcomaAndOtherSoftTissueSarcomas
+  - xsd_element_name_current: IrsPostSurgicalGroupDate
+    xsd_element_name_original: IntergroupRhabdomyosarcomaStudyPostSurgicalGroupDate
+    parent_current: DiagnosisRhabdomyosarcomaAndOtherSoftTissueSarcomas
+    parent_original: DiagnosisRhabdomyosarcomaAndOtherSoftTissueSarcomas
+  - xsd_element_name_current: RhabdomyosarcomaSitePrognosisCode
+    xsd_element_name_original: RhabdomyosarcomaSitePrognosisCode
+    parent_current: DiagnosisRhabdomyosarcomaAndOtherSoftTissueSarcomas
+    parent_original: DiagnosisRhabdomyosarcomaAndOtherSoftTissueSarcomas
+  - xsd_element_name_current: DiagnosisEwings
+    xsd_element_name_original: DiagnosisEwings
+    parent_current: DiagnosisSarcomaChoice
+    parent_original: SarcomaCoreDiagnosis
+  - xsd_element_name_current: TumourVolumeAtDiagnosis
+    xsd_element_name_original: TumourVolumeAtDiagnosisCode
+    parent_current: DiagnosisEwings
+    parent_original: DiagnosisEwings
+  - xsd_element_name_current: LowGradeGlioma
+    xsd_element_name_original: LowGradeGlioma
+    parent_current: Diagnosis
+    parent_original: CNSCoreDiagnosis
+  - xsd_element_name_current: VisualAcuityAtPresentation
+    xsd_element_name_original: VisualAcuityTestResultAtDiagnosis
+    parent_current: LowGradeGlioma
+    parent_original: LowGradeGlioma
+  - xsd_element_name_current: VisualFieldsAtPresentation
+    xsd_element_name_original: VisualFieldTestResultAtDiagnosis
+    parent_current: LowGradeGlioma
+    parent_original: LowGradeGlioma
+  - xsd_element_name_current: CancerCarePlanChronicMyeloidLeukaemia
+    xsd_element_name_original: CancerCarePlanChronicMyeloidLeukaemia
+    parent_current: CancerCarePlanHaematologicalChoice
+    parent_original: HaematologicalCoreCancerCarePlan
+  - xsd_element_name_current: SokalIndexChronicMyeloidLeukaemia
+    xsd_element_name_original: SokalChronicMyeloidLeukaemiaScore
+    parent_current: CancerCarePlanChronicMyeloidLeukaemia
+    parent_original: CancerCarePlanChronicMyeloidLeukaemia
+  - xsd_element_name_current: CancerCarePlanMyelodysplasia
+    xsd_element_name_original: CancerCarePlanMyelodysplasia
+    parent_current: CancerCarePlanHaematologicalChoice
+    parent_original: HaematologicalCoreCancerCarePlan
+  - xsd_element_name_current: Ipss-rMyelodysplasia
+    xsd_element_name_original: IntlPrognosticScore
+    parent_current: CancerCarePlanMyelodysplasia
+    parent_original: CancerCarePlanMyelodysplasia
+  - xsd_element_name_current: CancerCarePlanChronicLymphoidLeukaemia
+    xsd_element_name_original: CancerCarePlanChronicLymphoidLeukaemia
+    parent_current: CancerCarePlanHaematologicalChoice
+    parent_original: HaematologicalCoreCancerCarePlan
+  - xsd_element_name_current: SplenomegalyIndicator
+    xsd_element_name_original: SplenomegalyInd
+    parent_current: CancerCarePlanChronicLymphoidLeukaemia
+    parent_original: CancerCarePlanChronicLymphoidLeukaemia
+  - xsd_element_name_current: CancerCarePlanFollicularLymphoma
+    xsd_element_name_original: CancerCarePlanFollicularLymphoma
+    parent_current: CancerCarePlanHaematologicalChoice
+    parent_original: HaematologicalCoreCancerCarePlan
+  - xsd_element_name_current: Flipi2IndexScore
+    xsd_element_name_original: FollicularLymphomaIntlPrognosticScore
+    parent_current: CancerCarePlanFollicularLymphoma
+    parent_original: CancerCarePlanFollicularLymphoma
+  - xsd_element_name_current: CancerCarePlanDLBCL
+    xsd_element_name_original: CancerCarePlanDLBCL
+    parent_current: CancerCarePlanHaematologicalChoice
+    parent_original: HaematologicalCoreCancerCarePlan
+  - xsd_element_name_current: RipiIndexForDlbclScore
+    xsd_element_name_original: RevisedIntlPrognosticScore
+    parent_current: CancerCarePlanDLBCL
+    parent_original: CancerCarePlanDLBCL
+  - xsd_element_name_current: CancerCarePlanHodgkinsLymphoma
+    xsd_element_name_original: CancerCarePlanHodgkinsLymphoma
+    parent_current: CancerCarePlanHaematologicalChoice
+    parent_original: HaematologicalCoreCancerCarePlan
+  - xsd_element_name_current: HasencleverIndex
+    xsd_element_name_original: HasencleverIndexScore
+    parent_current: CancerCarePlanHodgkinsLymphoma
+    parent_original: CancerCarePlanHodgkinsLymphoma
+  - xsd_element_name_current: CancerCarePlanALL
+    xsd_element_name_original: CancerCarePlanALL
+    parent_current: CancerCarePlanHaematologicalChoice
+    parent_original: HaematologicalCoreCancerCarePlan
+  - xsd_element_name_current: ExtramedullaryDisease
+    xsd_element_name_original: ExtraMedullaryDiseaseSite
+    parent_current: CancerCarePlanALL
+    parent_original: CancerCarePlanALL
+  - xsd_element_name_current: CancerCarePlanCNS
+    xsd_element_name_original: CancerCarePlanCNS
+    parent_current: CancerCarePlan
+    parent_original: CNSCoreCancerCarePlan
+  - xsd_element_name_current: MdtProvisionalDiagnosisIcd
+    xsd_element_name_original: ICDProvisionalDiagnosis
+    parent_current: CancerCarePlanCNS
+    parent_original: CancerCarePlanCNS
+  - xsd_element_name_current: CancerCarePlanUrological
+    xsd_element_name_original: CancerCarePlanUrological
+    parent_current: CancerCarePlan
+    parent_original: UrologicalCoreCancerCarePlan
+  - xsd_element_name_current: EstimatedGlomerularFiltrationRate
+    xsd_element_name_original: EstimatedGlomerularFiltrationRate
+    parent_current: CancerCarePlanUrological
+    parent_original: CancerCarePlanUrological
+  - xsd_element_name_current: Hydronephrosis
+    xsd_element_name_original: HydronephrosisCode
+    parent_current: CancerCarePlanUrological
+    parent_original: CancerCarePlanUrological
+  - xsd_element_name_current: S-category
+    xsd_element_name_original: SCategoryCode
+    parent_current: CancerCarePlanUrological
+    parent_original: CancerCarePlanUrological
+  - xsd_element_name_current: StagingCNS
+    xsd_element_name_original: StagingCNS
+    parent_current: StagingSiteSpecific
+    parent_original: CNSCoreStaging
+  - xsd_element_name_current: ChangStagingSystemStage
+    xsd_element_name_original: ChangStagingSystemStage
+    parent_current: StagingCNS
+    parent_original: StagingCNS
+  - xsd_element_name_current: StagingRenalTumours
+    xsd_element_name_original: StagingRenalTumours
+    parent_current: StagingCTYAChoice
+    parent_original: CTYACoreStaging
+  - xsd_element_name_current: WilmsTumourStage
+    xsd_element_name_original: WILMSTumourStage
+    parent_current: StagingRenalTumours
+    parent_original: StagingRenalTumours
+  - xsd_element_name_current: StagingNeuroblastoma
+    xsd_element_name_original: StagingNeuroblastoma
+    parent_current: StagingCTYAChoice
+    parent_original: CTYACoreStaging
+  - xsd_element_name_current: InternationalNeuroblastomaRiskGroupInrgStagingSystem
+    xsd_element_name_original: IntlRiskGroupStagingSystemStage
+    parent_current: StagingNeuroblastoma
+    parent_original: StagingNeuroblastoma
+  - xsd_element_name_current: StagingHepatoblastoma
+    xsd_element_name_original: StagingHepatoblastoma
+    parent_current: StagingCTYAChoice
+    parent_original: CTYACoreStaging
+  - xsd_element_name_current: PretextStagingSystemStage
+    xsd_element_name_original: PretextStage
+    parent_current: StagingHepatoblastoma
+    parent_original: StagingHepatoblastoma
+  - xsd_element_name_current: PretextAnnotationFactors
+    xsd_element_name_original: PretextStageOutsideLiver
+    parent_current: StagingHepatoblastoma
+    parent_original: StagingHepatoblastoma
+  - xsd_element_name_current: StagingRetinoblastoma
+    xsd_element_name_original: StagingRetinoblastoma
+    parent_current: StagingCTYAChoice
+    parent_original: CTYACoreStaging
+  - xsd_element_name_current: InternationalStagingSystemForRetinoblastoma
+    xsd_element_name_original: RetinoblastomaStagingSystem
+    parent_current: StagingRetinoblastoma
+    parent_original: StagingRetinoblastoma
+  - xsd_element_name_current: StagingGynaecological
+    xsd_element_name_original: StagingGynaecological
+    parent_current: StagingSiteSpecific
+    parent_original: GynaecologicalCoreStaging
+  - xsd_element_name_current: FinalFigoStage
+    xsd_element_name_original: FinalFigoStage
+    parent_current: StagingGynaecological
+    parent_original: StagingGynaecological
+  - xsd_element_name_current: StagingAnnArbor
+    xsd_element_name_original: StagingAnnArbor
+    parent_current: SiteSpecificHaematologicalChoice
+    parent_original: HaematologicalCoreStaging
+  - xsd_element_name_current: AnnArborStage
+    xsd_element_name_original: AnnArborStage
+    parent_current: StagingAnnArbor
+    parent_original: StagingAnnArbor
+  - xsd_element_name_current: StagingCLL
+    xsd_element_name_original: StagingChronicLymphoidLeukaemia
+    parent_current: SiteSpecificHaematologicalChoice
+    parent_original: HaematologicalCoreStaging
+  - xsd_element_name_current: BinetStage
+    xsd_element_name_original: BinetStage
+    parent_current: StagingCLL
+    parent_original: StagingChronicLymphoidLeukaemia
+  - xsd_element_name_current: StagingMyeloma
+    xsd_element_name_original: StagingMyeloma
+    parent_current: SiteSpecificHaematologicalChoice
+    parent_original: HaematologicalCoreStaging
+  - xsd_element_name_current: R-issStageForMyeloma
+    xsd_element_name_original: IntlStagingSystemStage
+    parent_current: StagingMyeloma
+    parent_original: StagingMyeloma
+  - xsd_element_name_current: StagingNonHodgkinLymphoma
+    xsd_element_name_original: StagingNonHodgkinLymphoma
+    parent_current: SiteSpecificHaematologicalChoice
+    parent_original: HaematologicalCoreStaging
+  - xsd_element_name_current: MurphyStJudeStage
+    xsd_element_name_original: MurphyStJudeStage
+    parent_current: StagingNonHodgkinLymphoma
+    parent_original: StagingNonHodgkinLymphoma
+  - xsd_element_name_current: StagingLiver
+    xsd_element_name_original: StagingLiver
+    parent_current: StagingSiteSpecific
+    parent_original: LiverCoreStaging
+  - xsd_element_name_current: BarcelonaClinicLiverCancerBclcStage
+    xsd_element_name_original: BarcelonaClinicLiverCancerStage
+    parent_current: StagingLiver
+    parent_original: StagingLiver
+  - xsd_element_name_current: StagingTesticular
+    xsd_element_name_original: StagingTesticular
+    parent_current: StagingSiteSpecific
+    parent_original: UrologicalCoreStaging
+  - xsd_element_name_current: StageGroupingTesticular
+    xsd_element_name_original: StageGroupingTesticularCancer
+    parent_current: StagingTesticular
+    parent_original: StagingTesticular
+  - xsd_element_name_current: ExtranodalMetastases
+    xsd_element_name_original: ExtentMetastaticSpread
+    parent_current: StagingTesticular
+    parent_original: StagingTesticular
+  - xsd_element_name_current: LungMetastasesSub-stageGrouping
+    xsd_element_name_original: LungMetastasesSubStageGrouping
+    parent_current: StagingTesticular
+    parent_original: StagingTesticular
+  - xsd_element_name_current: SurgeryCNS
+    xsd_element_name_original: SurgeryAndOtherProceduresCNS
+    parent_current: Surgery
+    parent_original: CNSCoreSurgeryAndOtherProcedures
+  - xsd_element_name_current: TumourLocationSurgical
+    xsd_element_name_original: TumourLocationSurgical
+    parent_current: SurgeryCNS
+    parent_original: SurgeryAndOtherProceduresCNS
+  - xsd_element_name_current: BiopsyType
+    xsd_element_name_original: BiopsyTypeCNSTumours
+    parent_current: SurgeryCNS
+    parent_original: SurgeryAndOtherProceduresCNS
+  - xsd_element_name_current: ExcisionOrProcedureType
+    xsd_element_name_original: ExcisionTypeCNSTumours
+    parent_current: SurgeryCNS
+    parent_original: SurgeryAndOtherProceduresCNS
+  - xsd_element_name_current: SurgeryGynaecological
+    xsd_element_name_original: SurgeryAndOtherProceduresGynaecological
+    parent_current: Surgery
+    parent_original: GynaecologicalCoreSurgeryAndOtherProcedures
+  - xsd_element_name_current: SurgeonGrade
+    xsd_element_name_original: CareProfessionalSeniorSurgeonGrade
+    parent_current: SurgeryGynaecological
+    parent_original: SurgeryAndOtherProceduresGynaecological
+  - xsd_element_name_current: ResidualDisease
+    xsd_element_name_original: ResidualDiseaseSize
+    parent_current: SurgeryGynaecological
+    parent_original: SurgeryAndOtherProceduresGynaecological
+  - xsd_element_name_current: SurgeryLiver
+    xsd_element_name_original: SurgeryAndOtherProceduresLiver
+    parent_current: Surgery
+    parent_original: SurgeryAndOtherProcedures
+  - xsd_element_name_current: SurgeryType
+    xsd_element_name_original: LiverSurgeryPerformedType
+    parent_current: SurgeryLiver
+    parent_original: SurgeryAndOtherProceduresLiver
+  - xsd_element_name_current: SurgeryLCCOP
+    xsd_element_name_original: SurgeryAndOtherProceduresLCCOP
+    parent_current: Surgery
+    parent_original: LungCoreSurgeryAndOtherProcedures
+  - xsd_element_name_current: RegionalAnaestheticTechnique
+    xsd_element_name_original: RegionalAnaestheticTechnique
+    parent_current: SurgeryLCCOP
+    parent_original: SurgeryAndOtherProceduresLCCOP
+  - xsd_element_name_current: SurgeryBCCSCCandMM
+    xsd_element_name_original: SurgeryAndOtherProceduresBCCSCCandMM
+    parent_current: Surgery
+    parent_original: SkinCoreSurgeryAndOtherProcedures
+  - xsd_element_name_current: GradeOfClinicianSurgeonOperating
+    xsd_element_name_original: OperatingSurgeonGrade
+    parent_current: SurgeryBCCSCCandMM
+    parent_original: SurgeryAndOtherProceduresBCCSCCandMM
+  - xsd_element_name_current: MemberOfSpecialistMdt
+    xsd_element_name_original: MemberOfSpecialistMDT
+    parent_current: SurgeryBCCSCCandMM
+    parent_original: SurgeryAndOtherProceduresBCCSCCandMM
+  - xsd_element_name_current: SurgeryGeneral
+    xsd_element_name_original: SurgeryAndOtherProceduresGeneral
+    parent_current: Surgery
+    parent_original: UpperGICoreSurgeryAndOtherProcedures
+  - xsd_element_name_current: PalliativeTreatmentReasonUpperGi
+    xsd_element_name_original: PalliativeTreatmentReasonCode
+    parent_current: SurgeryGeneral
+    parent_original: SurgeryAndOtherProceduresGeneral
+  - xsd_element_name_current: SurgeryLiverClolangiocarcinomaPancreatic
+    xsd_element_name_original: SurgeryAndOtherProceduresLiverClolangiocarcinomaPancreatic
+    parent_current: Surgery
+    parent_original: UpperGICoreSurgeryAndOtherProcedures
+  - xsd_element_name_current: SurgicalPalliationType
+    xsd_element_name_original: SurgicalPalliationType
+    parent_current: SurgeryLiverClolangiocarcinomaPancreatic
+    parent_original: SurgeryAndOtherProceduresLiverClolangiocarcinomaPancreatic
+  - xsd_element_name_current: SurgeryEndoRadioPancreaticOesoGastric
+    xsd_element_name_original: SurgeryAndOtherProceduresEndoRadioPancreaticOesoGastric
+    parent_current: Surgery
+    parent_original: UpperGICoreSurgeryAndOtherProcedures
+  - xsd_element_name_current: EndoscopicProcedureType
+    xsd_element_name_original: EndoscopicProcedureType
+    parent_current: SurgeryEndoRadioPancreaticOesoGastric
+    parent_original: SurgeryAndOtherProceduresEndoRadioPancreaticOesoGastric
+  - xsd_element_name_current: SurgeryEndoRadioMain
+    xsd_element_name_original: SurgeryAndOtherProceduresEndoRadioMain
+    parent_current: Surgery
+    parent_original: UpperGICoreSurgeryAndOtherProcedures
+  - xsd_element_name_current: EndoscopicOrRadiologicalComplicationType
+    xsd_element_name_original: EndoscopicOrRadiologicalComplicationType
+    parent_current: SurgeryEndoRadioMain
+    parent_original: SurgeryAndOtherProceduresEndoRadioMain
+  - xsd_element_name_current: TreatmentBladder
+    xsd_element_name_original: TreatmentBladder
+    parent_current: TreatmentUrologicalChoice
+    parent_original: UrologicalCoreTreatment
+  - xsd_element_name_current: IntravesicalChemotherapyReceivedIndicator
+    xsd_element_name_original: IntravesicalChemRecInd
+    parent_current: IntravesicalChoice
+    parent_original: TreatmentBladder
+  - xsd_element_name_current: IntravesicalImmunotherapyReceivedIndicator
+    xsd_element_name_original: IntravesicalImmunoRecInd
+    parent_current: IntravesicalChoice
+    parent_original: TreatmentBladder
+  - xsd_element_name_current: TreatmentProstate
+    xsd_element_name_original: TreatmentProstate
+    parent_current: TreatmentUrologicalChoice
+    parent_original: UrologicalCoreTreatment
+  - xsd_element_name_current: Procedure-NerveSparing
+    xsd_element_name_original: ProstateNerveSparingSurgeryType
+    parent_current: TreatmentProstate
+    parent_original: TreatmentProstate
+  - xsd_element_name_current: RadicalProstatectomyMarginStatus
+    xsd_element_name_original: RadicalProstatectomyMarginStatus
+    parent_current: TreatmentProstate
+    parent_original: TreatmentProstate
+  - xsd_element_name_current: TreatmentLiver
+    xsd_element_name_original: TreatmentForLiverMetastasisAndLiverHepatocellularCarcinomaHCC
+    parent_current: Treatment
+    parent_original: LiverCoreTreatment
+  - xsd_element_name_current: AblativeTherapyType
+    xsd_element_name_original: AblativeTherapyType
+    parent_current: TreatmentLiver
+    parent_original: TreatmentForLiverMetastasisAndLiverHepatocellularCarcinomaHCC
+  - xsd_element_name_current: EmbolisationModality
+    xsd_element_name_original: LiverTransarterialEmbolisationMaterialInjectionType
+    parent_current: TreatmentLiver
+    parent_original: TreatmentForLiverMetastasisAndLiverHepatocellularCarcinomaHCC
+  - xsd_element_name_current: TreatmentCCLG
+    xsd_element_name_original: SurgeryAndOtherProceduresChildrensCancerAndLeukaemia
+    parent_current: Treatment
+    parent_original: CTYACoreSurgeryAndOtherProcedures
+  - xsd_element_name_current: TreatedAccordingToCclgGuidelines
+    xsd_element_name_original: CCLGPatientTreatedInd
+    parent_current: TreatmentCCLG
+    parent_original: SurgeryAndOtherProceduresChildrensCancerAndLeukaemia
+  - xsd_element_name_current: CclgGuidelineName
+    xsd_element_name_original: CCLGGuidelineName
+    parent_current: TreatmentCCLG
+    parent_original: SurgeryAndOtherProceduresChildrensCancerAndLeukaemia
+  - xsd_element_name_current: PreTreatmentAssessment
+    xsd_element_name_original: PretreatmentAssessment
+    parent_current: Record
+    parent_original: HeadNeckCore
+  - xsd_element_name_current: CancerDentalAssessmentDate
+    xsd_element_name_original: CancerDentalAssessmentDate
+    parent_current: PreTreatmentAssessment
+    parent_original: PretreatmentAssessment
+  - xsd_element_name_current: CareContactDateDietitianInitial
+    xsd_element_name_original: DietitianCareContactDate
+    parent_current: PreTreatmentAssessment
+    parent_original: PretreatmentAssessment
+  - xsd_element_name_current: CareContactDateSltInitial
+    xsd_element_name_original: CareContactDateSpeechAndLanguageTherapistInitial
+    parent_current: PreTreatmentAssessment
+    parent_original: PretreatmentAssessment
+  - xsd_element_name_current: PostTreatmentAssessment
+    xsd_element_name_original: PostTreatmentAssessment
+    parent_current: Record
+    parent_original: HeadNeckCore
+  - xsd_element_name_current: ClinicalStatusAssessmentDateCancer
+    xsd_element_name_original: ClinicalStatusAssessmentDate
+    parent_current: PostTreatmentAssessment
+    parent_original: PostTreatmentAssessment
+  - xsd_element_name_current: PrimaryTumourStatus
+    xsd_element_name_original: PrimaryTumourStatus
+    parent_current: PostTreatmentAssessment
+    parent_original: PostTreatmentAssessment
+  - xsd_element_name_current: NodalStatus
+    xsd_element_name_original: NodalStatus
+    parent_current: PostTreatmentAssessment
+    parent_original: PostTreatmentAssessment
+  - xsd_element_name_current: MetastaticStatus
+    xsd_element_name_original: MetastaticStatus
+    parent_current: PostTreatmentAssessment
+    parent_original: PostTreatmentAssessment
+  - xsd_element_name_current: SpeechLanguageAssessmentDate
+    xsd_element_name_original: SpeechLangAssessDate
+    parent_current: PostTreatmentAssessment
+    parent_original: PostTreatmentAssessment
+  - xsd_element_name_current: AlphaFetoproteinCerebrospinalFluid
+    xsd_element_name_original: AlphaFetoproteinMaximumAtDiagnosis
+    parent_current: LaboratoryResultsCNSChoice
+    parent_original: CNSCoreLabResGermCellCNSGermCellNonCNSHepatoblastomaAndHepatocellularCa
+  - xsd_element_name_current: BetaHumanChorionicGonadotropinCerebrospinalFluid
+    xsd_element_name_original: BetaHumanChorionicGonadotropinMaximumAtDiagnosis
+    parent_current: LaboratoryResultsCNSChoice
+    parent_original: CNSCoreLabResGermCellCNSAndNonGermCellCNSTumours
+  - xsd_element_name_current: LaboratoryResultsNeuroblastoma
+    xsd_element_name_original: LaboratoryResultsNeuroblastoma
+    parent_current: LaboratoryResults
+    parent_original: CTYACore
+  - xsd_element_name_current: UrineVmaCreatinineRatio
+    xsd_element_name_original: UrineVMACreatinineRatio
+    parent_current: LaboratoryResultsNeuroblastoma
+    parent_original: LaboratoryResultsNeuroblastoma
+  - xsd_element_name_current: LaboratoryResultsVarious
+    xsd_element_name_original: LaboratoryResultsVarious
+    parent_current: LaboratoryResultsHaematologicalChoice
+    parent_original: HaematologicalCore
+  - xsd_element_name_current: WhiteBloodCellCountHighestPreTreatment
+    xsd_element_name_original: WhiteBloodCellCountHighestPre
+    parent_current: LaboratoryResultsVarious
+    parent_original: LaboratoryResultsVarious
+  - xsd_element_name_current: BoneMarrowBlasts
+    xsd_element_name_original: BoneMarrowBlastCellsPercentage
+    parent_current: LaboratoryResultsVariousCTYA
+    parent_original: LaboratoryResultsVarious
+  - xsd_element_name_current: CytogeneticsSubsidiaryComment
+    xsd_element_name_original: CytogeneticFindingsComment
+    parent_current: LaboratoryResultsVariousCTYA
+    parent_original: LaboratoryResultsVarious
+  - xsd_element_name_current: LaboratoryResultsPaediatricMyelodysplasia
+    xsd_element_name_original: LaboratoryResultsPaediatricMyelodysplasia
+    parent_current: LaboratoryResultsHaematologicalChoice
+    parent_original: HaematologicalCore
+  - xsd_element_name_current: Cellularity
+    xsd_element_name_original: CellularityPercentage
+    parent_current: LaboratoryResultsPaediatricMyelodysplasia
+    parent_original: LaboratoryResultsPaediatricMyelodysplasia
+  - xsd_element_name_current: DebTest
+    xsd_element_name_original: DiepoxybutaneTestResult
+    parent_current: LaboratoryResultsPaediatricMyelodysplasia
+    parent_original: LaboratoryResultsPaediatricMyelodysplasia
+  - xsd_element_name_current: DysplasticHaemopoiesis
+    xsd_element_name_original: DysplasticHaemopoiesisType
+    parent_current: LaboratoryResultsPaediatricMyelodysplasia
+    parent_original: LaboratoryResultsPaediatricMyelodysplasia
+  - xsd_element_name_current: LaboratoryResultsAcuteLymphoblasticLeukaemiaResponse
+    xsd_element_name_original: LaboratoryResultsAcuteLymphoblasticLeukaemiaResponse
+    parent_current: LaboratoryResultsHaematologicalChoice
+    parent_original: HaematologicalCore
+  - xsd_element_name_current: LaboratoryResultsRhabdomyosarcomaAndOtherSoftTissueSarcomas
+    xsd_element_name_original: LaboratoryResultsRhabdomyosarcomaAndOtherSoftTissueSarcoma
+    parent_current: LaboratoryResultsSarcomaChoice
+    parent_original: SarcomaCore
+  - xsd_element_name_current: CytogeneticsForAlveolarRhabdomyosarcoma
+    xsd_element_name_original: CytogeneticPresenceTypeRhabdomyosarcoma
+    parent_current: LaboratoryResultsRhabdomyosarcomaAndOtherSoftTissueSarcomas
+    parent_original: LaboratoryResultsRhabdomyosarcomaAndOtherSoftTissueSarcoma
+  - xsd_element_name_current: LaboratoryResultsEwings
+    xsd_element_name_original: LaboratoryResultsEwings
+    parent_current: LaboratoryResultsSarcomaChoice
+    parent_original: SarcomaCore
+  - xsd_element_name_current: CytogeneticsForEwingsSarcoma
+    xsd_element_name_original: CytogeneticAnalysisCode
+    parent_current: LaboratoryResultsEwings
+    parent_original: LaboratoryResultsEwings
+  - xsd_element_name_current: S-categoryAfp
+    xsd_element_name_original: SCategoryAplhaFetoProtein
+    parent_current: LaboratoryResultsUrological
+    parent_original: CancerCarePlanUrological
+  - xsd_element_name_current: S-categoryHcg
+    xsd_element_name_original: SCategoryHumanChorionicGonadotrophin
+    parent_current: LaboratoryResultsUrological
+    parent_original: CancerCarePlanUrological
+  - xsd_element_name_current: S-categoryLdh
+    xsd_element_name_original: SCategoryLactateDehydrogenase
+    parent_current: LaboratoryResultsUrological
+    parent_original: CancerCarePlanUrological
+  - xsd_element_name_current: NormalLdh
+    xsd_element_name_original: LactateDehydrogenaseLevelNormalUpperLimit
+    parent_current: LaboratoryResultsUrological
+    parent_original: LaboratoryResultsGeneral
+  - xsd_element_name_current: PrognosticIndex
+    xsd_element_name_original: PrognosticIndex
+    parent_current: Record
+    parent_original: BreastCore
+  - xsd_element_name_current: NpiScore
+    xsd_element_name_original: NottinghamPrognosticIndexScore
+    parent_current: PrognosticIndex
+    parent_original: PrognosticIndex
+  - xsd_element_name_current: RenalTumours
+    xsd_element_name_original: RenalTumours
+    parent_current: Record
+    parent_original: CTYACore
+  - xsd_element_name_current: RiskClassificationPathologicalAfterImmediateNephrectomy
+    xsd_element_name_original: PathRiskCodePostNephrectomy
+    parent_current: RenalTumoursGroup
+    parent_original: RenalTumours
+  - xsd_element_name_current: RiskClassificationPathologicalAfterPreoperativeChemotherapy
+    xsd_element_name_original: PathRiskCodePostPreOpChemo
+    parent_current: RenalTumoursGroup
+    parent_original: RenalTumours
+  - xsd_element_name_current: Retinoblastoma
+    xsd_element_name_original: Retinoblastoma
+    parent_current: Record
+    parent_original: CTYACore
+  - xsd_element_name_current: RetinoblastomaAssessmentLaterality
+    xsd_element_name_original: AssessmentLaterality
+    parent_current: Retinoblastoma
+    parent_original: Retinoblastoma
+  - xsd_element_name_current: InternationalClassificationForIntraocularRetinoblastoma
+    xsd_element_name_original: IntlClassificationIntraocular
+    parent_current: Retinoblastoma
+    parent_original: Retinoblastoma
+  - xsd_element_name_current: Chemotherapy
+    xsd_element_name_original: Chemotherapy
+    parent_current: Record
+    parent_original: CTYACore
+  - xsd_element_name_current: SpecialtySubCodeChemotherapyConsultant
+    xsd_element_name_original: CTAGAgeCategoryPrescChemo
+    parent_current: Chemotherapy
+    parent_original: Chemotherapy
+  - xsd_element_name_current: AnnArborSymptoms
+    xsd_element_name_original: AnnArborSymptomsInd
+    parent_current: AnnArborExtensions
+    parent_original: StagingAnnArbor
+  - xsd_element_name_current: AnnArborExtranodality
+    xsd_element_name_original: AnnArborExtranodalityInd
+    parent_current: AnnArborExtensions
+    parent_original: StagingAnnArbor
+  - xsd_element_name_current: AnnArborBulk
+    xsd_element_name_original: AnnArborBulkInd
+    parent_current: AnnArborExtensions
+    parent_original: StagingAnnArbor
+  - xsd_element_name_current: AnnArborSplenicInvolvement
+    xsd_element_name_original: AnnArborSplenicInd
+    parent_current: AnnArborExtensions
+    parent_original: StagingAnnArbor
+  - xsd_element_name_current: PortalInvasion
+    xsd_element_name_original: PortalVeinInvasionIndicationCode
+    parent_current: TreatmentAndPrognosticIndicatorsLiver
+    parent_original: StagingLiver
+  - xsd_element_name_current: UkeldScore
+    xsd_element_name_original: UKModelForEndStageLiverDiseaseScore
+    parent_current: TreatmentAndPrognosticIndicatorsLiver
+    parent_original: StagingLiver
+  - xsd_element_name_current: PrimaryInductionFailure
+    xsd_element_name_original: PrimaryInductionChemotherapyFailureIndicator
+    parent_current: AcuteLeukaemias
+    parent_original: AcuteLeukaemias
+  - xsd_element_name_current: TransthoracicEchocardiogramResult
+    xsd_element_name_original: TransthoracicEchocardiogramResult
+    parent_current: TransthoracicEchocardiogram
+    parent_original: ImagingNationalLungCancerAudit
+  - xsd_element_name_current: DiffusionCapacityDlcoOrTlcoResult
+    xsd_element_name_original: DiffusionCapacityTestResult
+    parent_current: DiffusionCapacity
+    parent_original: DiagnosisNationalLungCancerAudit
+  - xsd_element_name_current: Fev1Percentage
+    xsd_element_name_original: PercentForcedExpVol1Sec
+    parent_current: Fev1
+    parent_original: CancerCarePlanLung
+  - xsd_element_name_current: Fev1AbsoluteValue
+    xsd_element_name_original: AmountForcedExpVol1Sec
+    parent_current: Fev1
+    parent_original: CancerCarePlanLung
+  - xsd_element_name_current: CardiopulmonaryTestType
+    xsd_element_name_original: CardiopulmonaryTestType
+    parent_current: CardiopulmonaryTest
+    parent_original: SurgeryAndOtherProceduresNationalLungCancerAudit
+  - xsd_element_name_current: CardiopulmonaryExerciseTestResultNlca
+    xsd_element_name_original: CardiopulmonaryExerciseTestResult
+    parent_current: CardiopulmonaryTest
+    parent_original: SurgeryAndOtherProceduresNationalLungCancerAudit
+  - xsd_element_name_current: ProstateBiopsyTechnique
+    xsd_element_name_original: PretreatmentProstateBiopsyTechniqueType
+    parent_current: DiagnosticProceduresProstate
+    parent_original: DiagnosisProstate
+- dataset: COSD_Pathology
+  semver_version_current: 4-1
+  semver_version_to_diff: 3-0
+  mappings:
+  # PathologyBreast
+  - xsd_element_name_current: PathologyBreast
+    xsd_element_name_original: PathologyBreast
+    parent_current: Pathology
+    parent_original: BreastCorePathology
+  - xsd_element_name_current: MultifocalTumourIndicatorBreast
+    xsd_element_name_original: MultifocalTumourInd
+    parent_current: PathologyBreast
+    parent_original: PathologyBreast
+  - xsd_element_name_current: DcisGrade
+    xsd_element_name_original: DCISGrade
+    parent_current: PathologyBreast
+    parent_original: PathologyBreast
+  - xsd_element_name_current: DcisPleomorphicOrDcisLikeLcisSize
+    xsd_element_name_original: NonInvasiveTumourSize
+    parent_current: PathologyBreast
+    parent_original: PathologyBreast
+  - xsd_element_name_current: WholeTumourInvasiveDcisSize
+    xsd_element_name_original: WholeTumourSize
+    parent_current: PathologyBreast
+    parent_original: PathologyBreast
+  - xsd_element_name_current: MetastasisExtentCode
+    xsd_element_name_original: MetastasisExtentCode
+    parent_current: PathologyBreast
+    parent_original: PathologyBreast
+  - xsd_element_name_current: DistanceToMargin
+    xsd_element_name_original: DistanceToMargin
+    parent_current: PathologyBreast
+    parent_original: PathologyBreast
+  - xsd_element_name_current: ErAllredScore
+    xsd_element_name_original: ERAllredScore
+    parent_current: PathologyBreast
+    parent_original: PathologyBreast
+  - xsd_element_name_current: ErStatus
+    xsd_element_name_original: EstrogenReceptorStatus
+    parent_current: PathologyBreast
+    parent_original: PathologyBreast
+  - xsd_element_name_current: PrAllredScore
+    xsd_element_name_original: PRAllredScore
+    parent_current: PathologyBreast
+    parent_original: PathologyBreast
+  - xsd_element_name_current: PrStatus
+    xsd_element_name_original: PRStatus
+    parent_current: PathologyBreast
+    parent_original: PathologyBreast
+  - xsd_element_name_current: Her2Status
+    xsd_element_name_original: HER2Status
+    parent_current: PathologyBreast
+    parent_original: PathologyBreast
+  - xsd_element_name_current: Her2IshStatus
+    xsd_element_name_original: HER2ISHStatus
+    parent_current: PathologyBreast
+    parent_original: PathologyBreast
+  - xsd_element_name_current: CytologyBreast
+    xsd_element_name_original: CytologyBreast
+    parent_current: PathologyBreast
+    parent_original: PathologyBreast
+  - xsd_element_name_current: CytologyNode
+    xsd_element_name_original: CytologyNode
+    parent_current: PathologyBreast
+    parent_original: PathologyBreast
+  - xsd_element_name_current: CoreBiopsyBreast
+    xsd_element_name_original: CoreBiopsyBreast
+    parent_current: PathologyBreast
+    parent_original: PathologyBreast
+  - xsd_element_name_current: CoreBiopsyNode
+    xsd_element_name_original: CoreBiopsyNode
+    parent_current: PathologyBreast
+    parent_original: PathologyBreast
+  # PathologyRenalPaediatricKidney
+    xsd_element_name_current: PathologyRenalPaediatricKidney
+    xsd_element_name_original: PathologyRenalPaediatricKidney
+    parent_current: Pathology
+    parent_original: CTYACorePathology
+  - xsd_element_name_current: TumourRupture
+    xsd_element_name_original: TumourRuptureInd
+    parent_current: PathologyRenalPaediatricKidney
+    parent_original: PathologyRenalPaediatricKidney
+  - xsd_element_name_current: AnaplasticNephroblastoma
+    xsd_element_name_original: AnaplasticNephroblastomaType
+    parent_current: PathologyRenalPaediatricKidney
+    parent_original: PathologyRenalPaediatricKidney
+  - xsd_element_name_current: PerirenalFatInvasion
+    xsd_element_name_original: PerirenalFatInvasion
+    parent_current: PathologyRenalPaediatricKidney
+    parent_original: PathologyRenalPaediatricKidney
+  - xsd_element_name_current: RenalSinusInvasion
+    xsd_element_name_original: RenalSinusInvasion
+    parent_current: PathologyRenalPaediatricKidney
+    parent_original: PathologyRenalPaediatricKidney
+  - xsd_element_name_current: RenalVeinTumour
+    xsd_element_name_original: RenalVeinTumourInd
+    parent_current: PathologyRenalPaediatricKidney
+    parent_original: PathologyRenalPaediatricKidney
+  - xsd_element_name_current: TumourLocalStagePathological
+    xsd_element_name_original: TumourLocalStage
+    parent_current: PathologyRenalPaediatricKidney
+    parent_original: PathologyRenalPaediatricKidney
+  # PathologyCNS
+  - xsd_element_name_current: PathologyCNS
+    xsd_element_name_original: PathologyCNS
+    parent_current: Pathology
+    parent_original: CNSCorePathology
+  - xsd_element_name_current: MolecularDiagnosticsCode
+    xsd_element_name_original: MolecularDiagnosticCode
+    parent_current: PathologyCNS
+    parent_original: PathologyCNS
+  - xsd_element_name_current: ImmunohistochemistryHormoneExpressionType
+    xsd_element_name_original: HormoneExpressionType
+    parent_current: PathologyCNS
+    parent_original: PathologyCNS
+  # PathologyColorectal
+  - xsd_element_name_current: PathologyColorectal
+    xsd_element_name_original: PathologyColorectal
+    parent_current: Pathology
+    parent_original: ColorectalCorePathology
+  - xsd_element_name_current: PositiveProximalOrDistalResectionMargin
+    xsd_element_name_original: MarginInvolvedIndCodePosProx
+    parent_current: PathologyColorectal
+    parent_original: PathologyVarious
+  - xsd_element_name_current: DistanceToCircumferentialMargin
+    xsd_element_name_original: DistanceClosestNonPeritonealisedMargin
+    parent_current: PathologyColorectal
+    parent_original: PathologyColorectal
+  - xsd_element_name_current: PlaneOfSurgicalExcision
+    xsd_element_name_original: PlaneOfSurgicalExcisionType
+    parent_current: PathologyColorectal
+    parent_original: PathologyColorectal
+  - xsd_element_name_current: DistanceFromDentateLine
+    xsd_element_name_original: DistanceDentateLine
+    parent_current: PathologyColorectal
+    parent_original: PathologyColorectal
+  - xsd_element_name_current: DistanceBeyondMuscularisPropria
+    xsd_element_name_original: DistanceBeyondMuscularisPropria
+    parent_current: PathologyColorectal
+    parent_original: PathologyColorectal
+  - xsd_element_name_current: ResponseToPreoperativeTherapy
+    xsd_element_name_original: PreopTherapyResponseType
+    parent_current: PathologyColorectal
+    parent_original: PathologyColorectal
+  - xsd_element_name_current: StatusOfCircumferentialExcisionMargin
+    xsd_element_name_original: MarginInvolvedIndCodeCirc
+    parent_current: PathologyColorectal
+    parent_original: PathologyVarious
+  # PathologyGynaecological
+  - xsd_element_name_current: PathologyGynaecological
+    xsd_element_name_original: PathologyGynaecological
+    parent_current: Pathology
+    parent_original: GynaecologicalCorePathology
+  - xsd_element_name_current: FallopianTubeInvolvement
+    xsd_element_name_original: FallopianTubeInvolvement
+    parent_current: PathologyGynaecological
+    parent_original: PathologyGynaecological
+  - xsd_element_name_current: OvarianInvolvement
+    xsd_element_name_original: OvarianInvolvement
+    parent_current: PathologyGynaecological
+    parent_original: PathologyGynaecological
+  - xsd_element_name_current: SerosalInvolvement
+    xsd_element_name_original: SerosalInvolvement
+    parent_current: PathologyGynaecological
+    parent_original: PathologyGynaecological
+  - xsd_element_name_current: OmentalInvolvement
+    xsd_element_name_original: OmentumInvolvement
+    parent_current: PathologyGynaecological
+    parent_original: PathologyGynaecological
+  # PathologyFTOvarianEpithelialPP
+  - xsd_element_name_current: PathologyFTOvarianEpithelialPP
+    xsd_element_name_original: PathologyFTOvarianEpithelialPP
+    parent_current: Pathology
+    parent_original: GynaecologicalCorePathology
+  - xsd_element_name_current: CapsuleStatus
+    xsd_element_name_original: CapsuleStatus
+    parent_current: PathologyFTOvarianEpithelialPP
+    parent_original: PathologyFTOvarianEpithelialPP
+  - xsd_element_name_current: OvarianSurfaceInvolvement
+    xsd_element_name_original: OvarianSurfaceInvolvement
+    parent_current: PathologyFTOvarianEpithelialPP
+    parent_original: PathologyFTOvarianEpithelialPP
+  - xsd_element_name_current: PeritonealCytology
+    xsd_element_name_original: PeritonealCytology
+    parent_current: PathologyFTOvarianEpithelialPP
+    parent_original: PathologyFTOvarianEpithelialPP
+  - xsd_element_name_current: PeritonealInvolvement
+    xsd_element_name_original: PeritonealInvolvement
+    parent_current: PathologyFTOvarianEpithelialPP
+    parent_original: PathologyFTOvarianEpithelialPP
+  # PathologyEndometrial
+  - xsd_element_name_current: PathologyEndometrial
+    xsd_element_name_original: PathologyEndometrial
+    parent_current: Pathology
+    parent_original: GynaecologicalCorePathology
+  - xsd_element_name_current: InvolvementOfCervicalStroma
+    xsd_element_name_original: InvolvementCervicalStroma
+    parent_current: PathologyEndometrial
+    parent_original: PathologyEndometrial
+  - xsd_element_name_current: MyometrialInvasion
+    xsd_element_name_original: MyometrialInvasion
+    parent_current: PathologyEndometrial
+    parent_original: PathologyEndometrial
+  - xsd_element_name_current: ParametriumInvolvement
+    xsd_element_name_original: ParametriumInvolvement
+    parent_current: PathologyEndometrial
+    parent_original: PathologyEndometrial
+  - xsd_element_name_current: PeritonealWashings
+    xsd_element_name_original: PeritonealWashings
+    parent_current: PathologyEndometrial
+    parent_original: PathologyEndometrial
+  # PathologyCervical
+  - xsd_element_name_current: PathologyCervical
+    xsd_element_name_original: PathologyCervical
+    parent_current: GynaecologicalCorePathology
+    parent_original: GynaecologicalCore
+  - xsd_element_name_current: CginGrade
+    xsd_element_name_original: CGINGrade
+    parent_current: PathologyCervical
+    parent_original: PathologyCervical
+  - xsd_element_name_current: CinGrade
+    xsd_element_name_original: CINGrade
+    parent_current: PathologyCervical
+    parent_original: PathologyCervical
+  - xsd_element_name_current: Smile
+    xsd_element_name_original: SmileIndCode
+    parent_current: PathologyCervical
+    parent_original: PathologyCervical
+  - xsd_element_name_current: ExcisionMarginPreInvasive
+    xsd_element_name_original: ResectionMarginInvolvementInd
+    parent_current: PathologyCervical
+    parent_original: PathologyCervical
+  - xsd_element_name_current: ParacervicalOrParametrialInvolvement
+    xsd_element_name_original: ParacervicalParametrialInvolvement
+    parent_current: PathologyCervical
+    parent_original: PathologyCervical
+  - xsd_element_name_current: ThicknessUninvolvedStroma
+    xsd_element_name_original: ThicknessUninvolvedStroma
+    parent_current: PathologyCervical
+    parent_original: PathologyCervical
+  - xsd_element_name_current: VaginalInvolvement
+    xsd_element_name_original: VaginalInvolvement
+    parent_current: PathologyCervical
+    parent_original: PathologyCervical
+  - xsd_element_name_current: InvasiveThickness
+    xsd_element_name_original: InvasiveThickness
+    parent_current: PathologyCervical
+    parent_original: PathologyFTOvarianEpithelialPP
+  # PathologyNodes
+  - xsd_element_name_current: PathologyNodes
+    xsd_element_name_original: PathologyNodes
+    parent_current: Pathology
+    parent_original: GynaecologicalCorePathology
+  - xsd_element_name_current: NodesExaminedNumberPara-aortic
+    xsd_element_name_original: NumberNodesExaminedParaAortic
+    parent_current: PathologyNodes
+    parent_original: PathologyNodes
+  - xsd_element_name_current: NodesPositiveNumberPara-aortic
+    xsd_element_name_original: NumberNodesPositiveParaAortic
+    parent_current: PathologyNodes
+    parent_original: PathologyNodes
+  - xsd_element_name_current: NodesExaminedNumberPelvic
+    xsd_element_name_original: NumberNodesExaminedPelvic
+    parent_current: PathologyNodes
+    parent_original: PathologyNodes
+  - xsd_element_name_current: NodesPositiveNumberPelvic
+    xsd_element_name_original: NumberNodesPositivePelvic
+    parent_current: PathologyNodes
+    parent_original: PathologyNodes
+  - xsd_element_name_current: NodesExaminedNumberInguino-femoral
+    xsd_element_name_original: NumberNodesExaminedInguinoFemoral
+    parent_current: PathologyNodes
+    parent_original: PathologyNodes
+  - xsd_element_name_current: NodesPositiveNumberInguino-femoral
+    xsd_element_name_original: NumberNodesPositiveInguinoFemoral
+    parent_current: PathologyNodes
+    parent_original: PathologyNodes
+  - xsd_element_name_current: ExtranodalSpread
+    xsd_element_name_original: ExtranodalSpreadIndicator
+    parent_current: PathologyNodes
+    parent_original: PathologyNodes
+  - xsd_element_name_current: PathologyHeadNeckVarious
+    xsd_element_name_original: PathologyHeadNeck
+    parent_current: Pathology
+    parent_original: Pathology
+  - xsd_element_name_current: MaximumDepthOfInvasion
+    xsd_element_name_original: MaximumDepthInvasion
+    parent_current: PathologyHeadNeckVarious
+    parent_original: PathologyHeadNeck
+  - xsd_element_name_current: BoneInvasion
+    xsd_element_name_original: BoneInvasionIndCode
+    parent_current: PathologyHeadNeckVarious
+    parent_original: PathologyHeadNeck
+  - xsd_element_name_current: CartilageInvasion
+    xsd_element_name_original: CartilageInvasionIndCode
+    parent_current: PathologyHeadNeckVarious
+    parent_original: PathologyHeadNeck
+  - xsd_element_name_current: NeckDissectionLaterality
+    xsd_element_name_original: AnatomicalSideNeckDissection
+    parent_current: PathologyHeadNeckVarious
+    parent_original: PathologyHeadNeck
+  - xsd_element_name_current: PathologySalivary
+    xsd_element_name_original: PathologySalivary
+    parent_current: Pathology
+    parent_original: Pathology
+  - xsd_element_name_current: MacroscopicExtraglandularExtension
+    xsd_element_name_original: MacroscopicExtraglandularExtIndCode
+    parent_current: PathologySalivary
+    parent_original: PathologySalivary     
+  # PathologyGeneralAndSalivary
+  - xsd_element_name_current: PathologyGeneralAndSalivary
+    xsd_element_name_original: PathologyGeneralAndSalivary
+    parent_current: Pathology
+    parent_original: HeadNeckCorePathology
+  - xsd_element_name_current: PositiveNodesLaterality
+    xsd_element_name_original: AnatomicalSidePositiveNodes
+    parent_current: PathologyGeneralAndSalivary
+    parent_original: PathologyGeneralAndSalivary
+  - xsd_element_name_current: LargestMetastasisLeftNeck
+    xsd_element_name_original: LargestMetastasisLeftNeck
+    parent_current: PathologyGeneralAndSalivary
+    parent_original: PathologyGeneralAndSalivary
+  - xsd_element_name_current: LargestMetastasisRightNeck
+    xsd_element_name_original: LargestMetastasisRightNeck
+    parent_current: PathologyGeneralAndSalivary
+    parent_original: PathologyGeneralAndSalivary
+  - xsd_element_name_current: ExtracapsularSpread
+    xsd_element_name_original: ExtraCapsularSpreadIndCode
+    parent_current: PathologyGeneralAndSalivary
+    parent_original: PathologyGeneralAndSalivary
+  # PathologyLung
+  - xsd_element_name_current: PathologyLung
+    xsd_element_name_original: PathologyLung
+    parent_current: Pathology
+    parent_original: LungCorePathology
+  - xsd_element_name_current: ExtentOfAtelectasis
+    xsd_element_name_original: ExtentOfAtelectasis
+    parent_current: PathologyLung
+    parent_original: PathologyLung
+  - xsd_element_name_current: ExtentOfPleuralInvasion
+    xsd_element_name_original: ExtentOfPleuralInvasion
+    parent_current: PathologyLung
+    parent_original: PathologyLung
+  - xsd_element_name_current: PericardialInvasion
+    xsd_element_name_original: PericardiumTumourInvasionInd
+    parent_current: PathologyLung
+    parent_original: PathologyLung
+  - xsd_element_name_current: DiaphragmInvasion
+    xsd_element_name_original: DiaphragmTumourInvasionInd
+    parent_current: PathologyLung
+    parent_original: PathologyLung
+  - xsd_element_name_current: InvasionIntoGreatVessel
+    xsd_element_name_original: GreatVesselsTumourInvasionInd
+    parent_current: PathologyLung
+    parent_original: PathologyLung
+  - xsd_element_name_current: InvasionIntoHeart
+    xsd_element_name_original: HeartTumourInvasionInd
+    parent_current: PathologyLung
+    parent_original: PathologyLung
+  - xsd_element_name_current: MalignantPleuralEffusion
+    xsd_element_name_original: MalignantPleuralEffusionInd
+    parent_current: PathologyLung
+    parent_original: PathologyLung
+  - xsd_element_name_current: SatelliteTumourNodulesLocation
+    xsd_element_name_original: TumourNodulesLocation
+    parent_current: PathologyLung
+    parent_original: PathologyLung
+  # PathologyBoneAndSoftTissue
+  - xsd_element_name_current: PathologyBoneAndSoftTissue
+    xsd_element_name_original: PathologyBoneAndSoftTissue
+    parent_current: Pathology
+    parent_original: SarcomaCorePathology
+  - xsd_element_name_current: GeneticConfirmationIndicator
+    xsd_element_name_original: GeneticConfirmationInd
+    parent_current: PathologyBoneAndSoftTissue
+    parent_original: PathologyBoneAndSoftTissue
+  # PathologyBone
+  - xsd_element_name_current: PathologyBone
+    xsd_element_name_original: PathologyBone
+    parent_current: Pathology
+    parent_original: SarcomaCorePathology
+  - xsd_element_name_current: ExtentOfLocalSpreadBone
+    xsd_element_name_original: TumourBreachIdentifier
+    parent_current: PathologyBone
+    parent_original: PathologyBone
+  - xsd_element_name_current: TumourNecrosis
+    xsd_element_name_original: TumourNecrosis
+    parent_current: PathologyBone
+    parent_original: PathologyBone
+  # PathologySoftTissue
+  - xsd_element_name_current: PathologySoftTissue
+    xsd_element_name_original: PathologySoftTissue
+    parent_current: Pathology
+    parent_original: SarcomaCorePathology
+  - xsd_element_name_current: TumourDepth
+    xsd_element_name_original: TumourDepth
+    parent_current: PathologySoftTissue
+    parent_original: PathologySoftTissue
+  - xsd_element_name_current: MitoticRateSarcoma
+    xsd_element_name_original: MitoticRateSarcoma
+    parent_current: PathologySoftTissue
+    parent_original: PathologySoftTissue
+  # PathologySkin
+  - xsd_element_name_current: PathologyMM
+    xsd_element_name_original: PathologyMM
+    parent_current: PathologySkin
+    parent_original: SkinCorePathology
+  - xsd_element_name_current: PathologySCC
+    xsd_element_name_original: PathologySCC
+    parent_current: PathologySkin
+    parent_original: SkinCorePathology
+  - xsd_element_name_current: ClarksLevelIvIndicator
+    xsd_element_name_original: ClarksLevelIVInd
+    parent_current: PathologySCC
+    parent_original: PathologySCC
+  - xsd_element_name_current: LesionVerticalThicknessGreaterThan2mmIndicator
+    xsd_element_name_original: VerticalThicknessGreat2mmInd
+    parent_current: PathologySCC
+    parent_original: PathologySCC
+  - xsd_element_name_current: UlcerationIndicator
+    xsd_element_name_original: UlcerationInd
+    parent_current: PathologyMM
+    parent_original: PathologyMM
+  - xsd_element_name_current: MitoticRateSkin
+    xsd_element_name_original: MitoticRate
+    parent_current: PathologyMM
+    parent_original: PathologyMM
+  - xsd_element_name_current: MicrosatelliteOrIn-transitMetastasisIndicator
+    xsd_element_name_original: MicrosatteliteInTransMetaInc
+    parent_current: PathologyMM
+    parent_original: PathologyMM
+  - xsd_element_name_current: TumourRegressionIndicator
+    xsd_element_name_original: TumourRegressionInd
+    parent_current: PathologyMM
+    parent_original: PathologyMM
+  - xsd_element_name_current: BreslowThickness
+    xsd_element_name_original: BreslowThickness
+    parent_current: PathologyMM
+    parent_original: PathologyMM
+  - xsd_element_name_current: TumourInfiltratingLymphocytesTils
+    xsd_element_name_original: TILSType
+    parent_current: PathologyMM
+    parent_original: PathologyMM
+  - xsd_element_name_current: SentinelNodesExaminedNumber
+    xsd_element_name_original: SentinelNodesSampled
+    parent_current: PathologyMM
+    parent_original: PathologyMM
+  - xsd_element_name_current: SentinelNodesPositiveNumber
+    xsd_element_name_original: SentinelNodesPositive
+    parent_current: PathologyMM
+    parent_original: PathologyMM
+  - xsd_element_name_current: PostSnbCompletionLymphadenectomy-NodesSampledNumber
+    xsd_element_name_original: NoOfNodesSampledPostSNBCompLymphadenectomy
+    parent_current: PathologyMM
+    parent_original: PathologyMM
+  - xsd_element_name_current: PostSnbCompletionLymphadenectomy-NodesPositiveNumber
+    xsd_element_name_original: NoOfNodesPositivePostSNBCompLymphadenectomy
+    parent_current: PathologyMM
+    parent_original: PathologyMM
+  # PathologyVarious
+  - xsd_element_name_current: PathologyVarious
+    xsd_element_name_original: PathologyVarious
+    parent_current: Pathology
+    parent_original: UpperGICorePathology
+  - xsd_element_name_current: TotalNumberOfColorectalMetastasesInLiverCode
+    xsd_element_name_original: NumberofColorectalMetastasesInLiverCode
+    parent_current: PathologyVarious
+    parent_original: PathologyVarious
+  - xsd_element_name_current: ExcisionMarginProximalDistal
+    xsd_element_name_original: MarginInvolvedIndCodePosProx
+    parent_current: PathologyVarious
+    parent_original: PathologyVarious
+  - xsd_element_name_current: ExcisionMarginCircumferential
+    xsd_element_name_original: MarginInvolvedIndCodeCirc
+    parent_current: PathologyVarious
+    parent_original: PathologyVarious
+  - xsd_element_name_current: PathologyBladder
+    xsd_element_name_original: PathologyBladder
+    parent_current: PathologyUrological
+    parent_original: UrologicalCorePathology
+  - xsd_element_name_current: DetrusorMusclePresenceIndicator
+    xsd_element_name_original: DetrosorMusclePresenceIndCode
+    parent_current: PathologyBladder
+    parent_original: PathologyBladder
+  - xsd_element_name_current: TumourGradeUrological
+    xsd_element_name_original: TumourGradeUrology
+    parent_current: PathologyBladder
+    parent_original: PathologyBladder
+  - xsd_element_name_current: PathologyKidney
+    xsd_element_name_original: PathologyKidney
+    parent_current: PathologyUrological
+    parent_original: UrologicalCorePathology
+  - xsd_element_name_current: TumourNecrosisIndicator
+    xsd_element_name_original: TumourNecrosisInd
+    parent_current: PathologyKidney
+    parent_original: PathologyKidney
+  - xsd_element_name_current: PerinephricFatInvasion
+    xsd_element_name_original: TumourInvIndPerinephricFat
+    parent_current: PathologyKidney
+    parent_original: PathologyKidney
+  - xsd_element_name_current: AdrenalInvasion
+    xsd_element_name_original: TumourInvIndAdrenal
+    parent_current: PathologyKidney
+    parent_original: PathologyKidney
+  - xsd_element_name_current: RenalVeinTumour
+    xsd_element_name_original: RenalVeinTumourInd
+    parent_current: PathologyKidney
+    parent_original: PathologyKidney
+  - xsd_element_name_current: GerotasFasciaInvasion
+    xsd_element_name_original: TumourInvIndGerotasFascia
+    parent_current: PathologyKidney
+    parent_original: PathologyKidney
+  - xsd_element_name_current: PathologyPenis
+    xsd_element_name_original: PathologyPenis
+    parent_current: PathologyUrological
+    parent_original: UrologicalCorePathology
+  - xsd_element_name_current: CorpusSpongiosumInvasion
+    xsd_element_name_original: TumourInvIndCorpusSpongiosum
+    parent_current: PathologyPenis
+    parent_original: PathologyPenis
+  - xsd_element_name_current: CorpusCavernosumInvasion
+    xsd_element_name_original: TumourInvIndCorpusCavernosum
+    parent_current: PathologyPenis
+    parent_original: PathologyPenis
+  - xsd_element_name_current: UrethraOrProstateInvasion
+    xsd_element_name_original: TumourInvIndUrethraOrProstate
+    parent_current: PathologyPenis
+    parent_original: PathologyPenis
+  - xsd_element_name_current: PathologyProstate
+    xsd_element_name_original: PathologyProstate
+    parent_current: PathologyUrological
+    parent_original: UrologicalCorePathology
+  - xsd_element_name_current: GleasonGradePrimary
+    xsd_element_name_original: GleasonGradePrimary
+    parent_current: PathologyProstate
+    parent_original: PathologyProstate
+  - xsd_element_name_current: GleasonGradeSecondary
+    xsd_element_name_original: GleasonGradeSecondary
+    parent_current: PathologyProstate
+    parent_original: PathologyProstate
+  - xsd_element_name_current: GleasonGradeTertiary
+    xsd_element_name_original: GleasonGradeTertiary
+    parent_current: PathologyProstate
+    parent_original: PathologyProstate
+  - xsd_element_name_current: PerineuralInvasion
+    xsd_element_name_original: PerineuralInvasionInd
+    parent_current: PathologyProstate
+    parent_original: PathologyProstate
+  - xsd_element_name_current: TurpTumourPercentage
+    xsd_element_name_original: TurpTumourPercentage
+    parent_current: PathologyProstate
+    parent_original: PathologyProstate
+  - xsd_element_name_current: PathologyTesticular
+    xsd_element_name_original: PathologyTesticular
+    parent_current: PathologyUrological
+    parent_original: UrologicalCorePathology
+  - xsd_element_name_current: ReteTestesInvasion
+    xsd_element_name_original: TumourInvIndReteTestis
+    parent_current: PathologyTesticular
+    parent_original: PathologyTesticular

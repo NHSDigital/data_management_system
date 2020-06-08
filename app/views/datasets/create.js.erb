@@ -1,0 +1,9 @@
+<%
+  @datasets = Dataset.all.sort_by(&:name)
+  @team ||= @dataset.team
+%>
+
+jQuery('#modal').modal('hide');
+window.location.reload();
+// jQuery('#datasets').replaceWith(
+//   '<%= escape_javascript(render 'teams/datasets') %>');

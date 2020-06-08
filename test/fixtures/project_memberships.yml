@@ -1,0 +1,55 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+standard_membership:
+  project: one
+  membership: member_of_multiple_teams
+
+senior_user_membership:
+  project: one
+  membership: member_of_multiple_teams_2
+
+senior_project_membership:
+  project: two
+  membership: second_team_membership
+  senior: true
+
+new_senior_user:
+  project: new_project
+  membership: new_senior_membership
+  senior: true
+
+new_standard_user:
+  project: new_project
+  membership: new_standard_membership
+
+pending_senior_user:
+  project: pending_project
+  membership: pending_senior_membership
+
+pending_standard_user:
+  project: pending_project
+  membership: pending_standard_membership
+
+pending_delegate_senior_user:
+  project: pending_delegate_project
+  membership: pending_delegate_senior_membership
+
+pending_delegate_standard_user:
+  project: pending_delegate_project
+  membership: pending_delegate_standard_membership
+
+approved_senior_user:
+  project: approved_project
+  membership: approved_senior_membership
+
+approved_standard_user:
+  project: approved_project
+  membership: approved_standard_membership
+
+rejected_senior_user:
+  project: rejected_project
+  membership: rejected_senior_membership
+
+rejected_standard_user:
+  project: rejected_project
+  membership: rejected_standard_membership

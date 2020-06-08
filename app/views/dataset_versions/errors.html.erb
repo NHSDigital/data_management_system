@@ -1,0 +1,7 @@
+<%= bootstrap_panel_tag panel_heading_segments(
+  left: publish_link,
+  center: content_tag(:h4) { "Invalid Nodes for #{@dataset_version.name}"},
+  right: link_to('Back to Dataset Version', @dataset_version, class: 'btn btn-default')
+) do %>
+<%= render 'invalid_nodes' %>
+<% end %>

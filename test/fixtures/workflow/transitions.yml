@@ -1,0 +1,257 @@
+one:
+  project_type: dummy
+  from_state_id: DRAFT
+  next_state_id: STEP_ONE
+
+two:
+  project_type: dummy
+  from_state_id: STEP_ONE
+  next_state_id: STEP_TWO
+
+three:
+  project_type: dummy
+  from_state_id: STEP_TWO
+  next_state_id: STEP_ONE
+
+four:
+  project_type: dummy
+  from_state_id: STEP_TWO
+  next_state_id: FINISHED
+
+project_draft_review:
+  project_type: project
+  from_state_id: DRAFT
+  next_state_id: REVIEW
+
+project_draft_deleted:
+  project_type: project
+  from_state_id: DRAFT
+  next_state_id: DELETED
+
+project_draft_expired:
+  project_type: project
+  from_state_id: DRAFT
+  next_state_id: EXPIRED
+
+project_review_draft:
+  project_type: project
+  from_state_id: REVIEW
+  next_state_id: DRAFT
+
+project_review_submitted:
+  project_type: project
+  from_state_id: REVIEW
+  next_state_id: SUBMITTED
+
+project_review_rejected:
+  project_type: project
+  from_state_id: REVIEW
+  next_state_id: REJECTED
+
+project_review_deleted:
+  project_type: project
+  from_state_id: REVIEW
+  next_state_id: DELETED
+
+project_review_expired:
+  project_type: project
+  from_state_id: REVIEW
+  next_state_id: EXPIRED
+
+project_draft_submitted:
+  project_type: project
+  from_state_id: SUBMITTED
+  next_state_id: DRAFT
+
+project_submitted_approved:
+  project_type: project
+  from_state_id: SUBMITTED
+  next_state_id: APPROVED
+  requires_yubikey: true
+
+project_submitted_rejected:
+  project_type: project
+  from_state_id: SUBMITTED
+  next_state_id: REJECTED
+
+project_submitted_deleted:
+  project_type: project
+  from_state_id: SUBMITTED
+  next_state_id: DELETED
+
+project_submitted_expired:
+  project_type: project
+  from_state_id: SUBMITTED
+  next_state_id: EXPIRED
+
+project_approved_submitted:
+  project_type: project
+  from_state_id: APPROVED
+  next_state_id: SUBMITTED
+
+project_aproved_deleted:
+  project_type: project
+  from_state_id: APPROVED
+  next_state_id: DELETED
+
+project_approved_expired:
+  project_type: project
+  from_state_id: APPROVED
+  next_state_id: EXPIRED
+
+project_rejected_draft:
+  project_type: project
+  from_state_id: REJECTED
+  next_state_id: DRAFT
+
+project_rejected_deleted:
+  project_type: project
+  from_state_id: REJECTED
+  next_state_id: DELETED
+
+project_rejected_expired:
+  project_type: project
+  from_state_id: REJECTED
+  next_state_id: EXPIRED
+
+project_expired_deleted:
+  project_type: project
+  from_state_id: EXPIRED
+  next_state_id: DELETED
+
+eoi_draft_submitted:
+  project_type: eoi
+  from_state_id: DRAFT
+  next_state_id: SUBMITTED
+
+eoi_draft_deleted:
+  project_type: eoi
+  from_state_id: DRAFT
+  next_state_id: DELETED
+
+eoi_submitted_draft:
+  project_type: eoi
+  from_state_id: SUBMITTED
+  next_state_id: DRAFT
+
+eoi_submitted_approved:
+  project_type: eoi
+  from_state_id: SUBMITTED
+  next_state_id: APPROVED
+
+eoi_submitted_rejected:
+  project_type: eoi
+  from_state_id: SUBMITTED
+  next_state_id: REJECTED
+
+eoi_approved_deleted:
+  project_type: eoi
+  from_state_id: APPROVED
+  next_state_id: DELETED
+
+eoi_rejected_deleted:
+  project_type: eoi
+  from_state_id: REJECTED
+  next_state_id: DELETED
+
+application_draft_submitted:
+  project_type: application
+  from_state_id: DRAFT
+  next_state_id: SUBMITTED
+
+application_submitted_dpia_start:
+  project_type: application
+  from_state_id: SUBMITTED
+  next_state_id: DPIA_START
+
+application_dpia_rejected_dpia_start:
+  project_type: application
+  from_state_id: DPIA_REJECTED
+  next_state_id: DPIA_START
+
+application_contract_rejected_dpia_start:
+  project_type: application
+  from_state_id: CONTRACT_REJECTED
+  next_state_id: DPIA_START
+
+application_dpia_start_dpia_review:
+  project_type: application
+  from_state_id: DPIA_START
+  next_state_id: DPIA_REVIEW
+
+application_dpia_review_dpia_rejected:
+  project_type: application
+  from_state_id: DPIA_REVIEW
+  next_state_id: DPIA_REJECTED
+
+application_dpia_review_dpia_moderation:
+  project_type: application
+  from_state_id: DPIA_REVIEW
+  next_state_id: DPIA_MODERATION
+
+application_dpia_moderation_dpia_rejected:
+  project_type: application
+  from_state_id: DPIA_MODERATION
+  next_state_id: DPIA_REJECTED
+
+application_dpia_moderation_contract_draft:
+  project_type: application
+  from_state_id: DPIA_MODERATION
+  next_state_id: CONTRACT_DRAFT
+  requires_yubikey: true
+
+application_contract_draft_contract_rejected:
+  project_type: application
+  from_state_id: CONTRACT_DRAFT
+  next_state_id: CONTRACT_REJECTED
+
+application_contract_draft_contract_completed:
+  project_type: application
+  from_state_id: CONTRACT_DRAFT
+  next_state_id: CONTRACT_COMPLETED
+  requires_yubikey: true
+
+application_amend_dpia_start:
+  project_type: application
+  from_state_id: AMEND
+  next_state_id: DPIA_START
+
+application_dpia_start_amend:
+  project_type: application
+  from_state_id: DPIA_START
+  next_state_id: AMEND
+
+application_dpia_review_amend:
+  project_type: application
+  from_state_id: DPIA_REVIEW
+  next_state_id: AMEND
+
+application_dpia_moderation_amend:
+  project_type: application
+  from_state_id: DPIA_MODERATION
+  next_state_id: AMEND
+
+application_dpia_rejected_amend:
+  project_type: application
+  from_state_id: DPIA_REJECTED
+  next_state_id: AMEND
+
+application_contract_draft_amend:
+  project_type: application
+  from_state_id: CONTRACT_DRAFT
+  next_state_id: AMEND
+
+application_contract_rejected_amend:
+  project_type: application
+  from_state_id: CONTRACT_REJECTED
+  next_state_id: AMEND
+
+application_contract_completed_amend:
+  project_type: application
+  from_state_id: CONTRACT_COMPLETED
+  next_state_id: AMEND
+
+application_submitted_draft:
+  project_type: application
+  from_state_id: SUBMITTED
+  next_state_id: DRAFT

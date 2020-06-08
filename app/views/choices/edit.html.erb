@@ -1,0 +1,4 @@
+<h1>Editing <%= @choice.name %></h1>
+<%= bootstrap_form_for @choice, url: choice_path(@choice), horizontal: 2 do |form| %>
+  <%= render 'form', { form: form, url: dataset_version_choices_path(@choice) } %>
+<% end %>

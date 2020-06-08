@@ -1,0 +1,12 @@
+##### Project Assignment #####
+
+A project has been assigned to you by <%= @assigned_by || 'the MBIS system' %>.
+
+Title: <%= @project.name %>
+Type: <%= @project.project_type %>
+Raised by: <%= @project.owner_full_name %>
+Team: <%= @project.team.name %>
+Organisation: <%= @project.organisation.name %>
+Link: <%= project_url(@project) %>
+
+Please log in and copy/paste the above link into your web browser to view the project.

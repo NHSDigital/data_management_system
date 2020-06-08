@@ -1,0 +1,23 @@
+<%= bootstrap_form_for([@dataset_version, @category_choice], url: dataset_version_category_choices_path(@dataset_version, @category_choice), horizontal: true) do |form| %>
+  <%= form.hidden_field :id, value: @category_choice.id %>
+  <%= form.hidden_field :parent_id, value: @category_choice.parent_id %>
+  <!-- TODO: sort -->
+  <%= form.hidden_field :sort, value: 0 %>
+  <%= form.hidden_field :dataset_version_id, value: @dataset_version.id %>
+  <%= form.control_group :name, 'Name' do %>
+    <%= form.text_field :name %>
+  <% end %>
+  <%= form.control_group :min_occurs, 'Min Occurs' do %>
+    <%= form.number_field :min_occurs %>
+  <% end %>
+  <%= form.control_group :max_occurs, 'Max Occurs' do %>
+    <%= form.number_field :max_occurs %>
+  <% end %>
+  <%= button_control_group nil do %>
+    <div class='pull-right'>
+      <%= close_modal %>
+      <%= submit_tag('Save', class: 'btn btn-primary', disable_with: 'Saving&hellip;'.html_safe) %>
+    </div>
+  <% end %>
+  <ul class="errors"></ul>
+<% end %>

@@ -1,0 +1,10 @@
+<!-- TODO: sort -->
+<%= f.hidden_field :sort, value: 0 %>
+<%= f.hidden_field :dataset_version_id, value: @dataset_version.id %>
+<% %w[name field_number field_name field_type allow_nulls hes_field_name field_description validation_rules].each do |field| %>
+  <%= f.control_group field.to_s, field.humanize do %>
+    <%= f.text_field field.to_s, { readonly: readonly, readonly_value: @node.send(field) } %>
+  <% end %>
+<% end %>
+<%= render 'nodes/child_node_errors', f: f %>
+

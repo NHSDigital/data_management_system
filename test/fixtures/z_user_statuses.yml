@@ -1,0 +1,16 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+active_user_status:
+  name: Active
+
+deleted_user_status:
+  name: Deleted
+
+lockout_user_status:
+  name: Lockout
+
+reset_user_status:
+  name: Reset
+
+suspended_user_status:
+  name: Suspended

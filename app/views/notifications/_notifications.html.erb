@@ -1,0 +1,44 @@
+<table class="table table-hover" id="notifications_table">
+  <thead>
+    <th>Subject</th>
+    <th>Details</th>
+    <th>Team</th>
+    <th>Created</th>
+  </thead>
+  <tbody>
+    <% notifications.each do |n|
+      notification = n.notification %>
+      <tr id="<%= dom_id(notification) %>" class="<%= 'unread_notification' if n.status == 'new' %>">
+        <td width="15%">
+          <%= notification.title %>
+        </td>
+        <td width="40%">
+          <%= truncate(notification.body, length: 80, separator: ' ') %>
+          <span data-toggle="collapse" data-target="#<%= dom_id(notification) %>_details">
+            <% if n.status == 'new' %>
+              <%= link_to 'more', mark_notification_as_read_path(:id => n.id, "user_notification[status]" => 'read'), :method => :patch,
+                   remote: true, class: 'more_or_less',
+                   id: "notification_#{n.id.to_s}_link" %>
+            <% else %>
+              <a href="#" class="more_or_less" data-turbolinks="false">more</a>
+            <% end %>
+          </span>
+        </td>
+        <td width="20%"><%= notification.team.name if !notification.team.nil?%></td>
+        <td width="15%">
+          <%= notification.created_at.strftime('%d-%b-%y %H:%M') %>
+          <div class="pull-right">
+            <%= button_group do %>
+              <%# if can?(:destroy, n) && n.status != 'deleted'%>
+                <%= delete_link(n, method: :delete, data: { confirm: 'Are you sure you want to delete this notification' }, id: 'delete_notification' )%>
+              <%# end %>
+            <% end %>
+          </div>
+        </td>
+      </tr>
+      <tr class="comments">
+        <%= render 'detail', notification: notification %>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

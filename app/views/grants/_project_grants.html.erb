@@ -1,0 +1,42 @@
+<div class="panel panel-default" id="user-project-grants">
+  <div class="panel-heading">Project Roles</div>
+  <% if @grants.projects.length.positive? %>
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>Team</th>
+          <% ProjectRole.all.each do |role| %>
+            <th><%= role.name %></th>
+          <% end %>
+          <th>
+            <% if can?(:edit_project_grants, @user) %>
+              <%= edit_link edit_project_user_grants_path(@user), class: 'btn btn-default btn-xs pull-right', text: true, skip_authorization: true %>
+            <% end %>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- TODO: scope of projects for team -->
+        <% projects = @grants.projects.map(&:project).uniq.sort_by { |t| t.try(:name).to_s } %>
+        <% projects.each do |project| %>
+          <tr>
+            <td><%= link_to(project.name, project)  %></td>
+            <% ProjectRole.all.each do |role| %>
+              <td>
+                <%= @user.role?(role, at: project) && bootstrap_icon_tag(:ok) %>
+              </td>
+            <% end %>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <% if can?(:edit_project_grants, @user) %>
+      <div class="clearfix">
+        <%= edit_link edit_project_user_grants_path(@user), class: 'btn btn-default btn-xs pull-right', text: true, skip_authorization: true %>
+      </div>
+    <% end %>
+
+    <p class="lead text-center">This user currently has no project granted roles</p>
+  <% end %>
+</div>

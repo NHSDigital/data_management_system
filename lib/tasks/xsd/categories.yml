@@ -1,0 +1,493 @@
+---
+Haematological_8_3:
+  name: Haematological
+  description: Haematological DESCRIPTION
+  dataset_version: 8-3
+  dataset_name: COSD
+  sort: 6
+CTYA_8_3:
+  name: CTYA
+  description: CTYA DESCRIPTION
+  dataset_version: 8-3
+  dataset_name: COSD
+  sort: 4
+CNS_8_3:
+  name: CNS
+  description: CNS DESCRIPTION
+  dataset_version: 8-3
+  dataset_name: COSD
+  sort: 2
+Colorectal_8_3:
+  name: Colorectal
+  description: Colorectal DESCRIPTION
+  dataset_version: 8-3
+  dataset_name: COSD
+  sort: 3
+Lung_8_3:
+  name: Lung
+  description: Lung DESCRIPTION
+  dataset_version: 8-3
+  dataset_name: COSD
+  sort: 9
+HeadNeck_8_3:
+  name: HeadNeck
+  description: HeadNeck DESCRIPTION
+  dataset_version: 8-3
+  dataset_name: COSD
+  sort: 7
+Gynaecological_8_3:
+  name: Gynaecological
+  description: Gynaecological DESCRIPTION
+  dataset_version: 8-3
+  dataset_name: COSD
+  sort: 5
+Liver_8_3:
+  name: Liver
+  description: Liver DESCRIPTION
+  dataset_version: 8-3
+  dataset_name: COSD
+  sort: 8
+Other_8_3:
+  name: Other
+  description: Other DESCRIPTION
+  dataset_version: 8-3
+  dataset_name: COSD
+  sort: 10
+Sarcoma_8_3:
+  name: Sarcoma
+  description: Sarcoma DESCRIPTION
+  dataset_version: 8-3
+  dataset_name: COSD
+  sort: 11
+Breast_8_3:
+  name: Breast
+  description: Breast DESCRIPTION
+  dataset_version: 8-3
+  dataset_name: COSD
+  sort: 1
+Skin_8_3:
+  name: Skin
+  description: Skin DESCRIPTION
+  dataset_version: 8-3
+  dataset_name: COSD
+  sort: 12
+Urological_8_3:
+  name: Urological
+  description: Urological DESCRIPTION
+  dataset_version: 8-3
+  dataset_name: COSD
+  sort: 14
+UpperGI_8_3:
+  name: UpperGI
+  description: UpperGI DESCRIPTION
+  dataset_version: 8-3
+  dataset_name: COSD
+  sort: 13
+Haematological_8_2:
+  name: Haematological
+  description: Haematological DESCRIPTION
+  dataset_version: 8-2
+  dataset_name: COSD
+  sort: 6
+CTYA_8_2:
+  name: CTYA
+  description: CTYA DESCRIPTION
+  dataset_version: 8-2
+  dataset_name: COSD
+  sort: 4
+CNS_8_2:
+  name: CNS
+  description: CNS DESCRIPTION
+  dataset_version: 8-2
+  dataset_name: COSD
+  sort: 2
+Colorectal_8_2:
+  name: Colorectal
+  description: Colorectal DESCRIPTION
+  dataset_version: 8-2
+  dataset_name: COSD
+  sort: 3
+Lung_8_2:
+  name: Lung
+  description: Lung DESCRIPTION
+  dataset_version: 8-2
+  dataset_name: COSD
+  sort: 9
+HeadNeck_8_2:
+  name: HeadNeck
+  description: HeadNeck DESCRIPTION
+  dataset_version: 8-2
+  dataset_name: COSD
+  sort: 7
+Gynaecological_8_2:
+  name: Gynaecological
+  description: Gynaecological DESCRIPTION
+  dataset_version: 8-2
+  dataset_name: COSD
+  sort: 5
+Liver_8_2:
+  name: Liver
+  description: Liver DESCRIPTION
+  dataset_version: 8-2
+  dataset_name: COSD
+  sort: 8
+Other_8_2:
+  name: Other
+  description: Other DESCRIPTION
+  dataset_version: 8-2
+  dataset_name: COSD
+  sort: 10
+Sarcoma_8_2:
+  name: Sarcoma
+  description: Sarcoma DESCRIPTION
+  dataset_version: 8-2
+  dataset_name: COSD
+  sort: 11
+Breast_8_2:
+  name: Breast
+  description: Breast DESCRIPTION
+  dataset_version: 8-2
+  dataset_name: COSD
+  sort: 1
+Skin_8_2:
+  name: Skin
+  description: Skin DESCRIPTION
+  dataset_version: 8-2
+  dataset_name: COSD
+  sort: 12
+Urological_8_2:
+  name: Urological
+  description: Urological DESCRIPTION
+  dataset_version: 8-2
+  dataset_name: COSD
+  sort: 14
+UpperGI_8_2:
+  name: UpperGI
+  description: UpperGI DESCRIPTION
+  dataset_version: 8-2
+  dataset_name: COSD
+  sort: 13
+Pathology_Haematological_3_1:
+  name: Haematological
+  description: Haematological DESCRIPTION
+  dataset_version: 3-1
+  dataset_name: COSD_Pathology
+  sort: 6
+Pathology_CTYA_3_1:
+  name: CTYA
+  description: CTYA DESCRIPTION
+  dataset_version: 3-1
+  dataset_name: COSD_Pathology
+  sort: 4
+Pathology_CNS_3_1:
+  name: CNS
+  description: CNS DESCRIPTION
+  dataset_version: 3-1
+  dataset_name: COSD_Pathology
+  sort: 2
+Pathology_Colorectal_3_1:
+  name: Colorectal
+  description: Colorectal DESCRIPTION
+  dataset_version: 3-1
+  dataset_name: COSD_Pathology
+  sort: 3
+Pathology_Lung_3_1:
+  name: Lung
+  description: Lung DESCRIPTION
+  dataset_version: 3-1
+  dataset_name: COSD_Pathology
+  sort: 9
+Pathology_HeadNeck_3_1:
+  name: HeadNeck
+  description: HeadNeck DESCRIPTION
+  dataset_version: 3-1
+  dataset_name: COSD_Pathology
+  sort: 7
+Pathology_Gynaecological_3_1:
+  name: Gynaecological
+  description: Gynaecological DESCRIPTION
+  dataset_version: 3-1
+  dataset_name: COSD_Pathology
+  sort: 5
+Pathology_Liver_3_1:
+  name: Liver
+  description: Liver DESCRIPTION
+  dataset_version: 3-1
+  dataset_name: COSD_Pathology
+  sort: 8
+Pathology_Other_3_1:
+  name: Other
+  description: Other DESCRIPTION
+  dataset_version: 3-1
+  dataset_name: COSD_Pathology
+  sort: 10
+Pathology_Sarcoma_3_1:
+  name: Sarcoma
+  description: Sarcoma DESCRIPTION
+  dataset_version: 3-1
+  dataset_name: COSD_Pathology
+  sort: 11
+Pathology_Breast_3_1:
+  name: Breast
+  description: Breast DESCRIPTION
+  dataset_version: 3-1
+  dataset_name: COSD_Pathology
+  sort: 1
+Pathology_Skin_3_1:
+  name: Skin
+  description: Skin DESCRIPTION
+  dataset_version: 3-1
+  dataset_name: COSD_Pathology
+  sort: 12
+Pathology_Urological_3_1:
+  name: Urological
+  description: Urological DESCRIPTION
+  dataset_version: 3-1
+  dataset_name: COSD_Pathology
+  sort: 14
+Pathology_UpperGI_3_1:
+  name: UpperGI
+  description: UpperGI DESCRIPTION
+  dataset_version: 3-1
+  dataset_name: COSD_Pathology
+  sort: 13
+Haematological_9_0:
+  name: Haematological
+  description: Haematological DESCRIPTION
+  dataset_version: 9-0
+  dataset_name: COSD
+  sort: 6
+CTYA_9_0:
+  name: CTYA
+  description: CTYA DESCRIPTION
+  dataset_version: 9-0
+  dataset_name: COSD
+  sort: 4
+CNS_9_0:
+  name: CNS
+  description: CNS DESCRIPTION
+  dataset_version: 9-0
+  dataset_name: COSD
+  sort: 2
+Colorectal_9_0:
+  name: Colorectal
+  description: Colorectal DESCRIPTION
+  dataset_version: 9-0
+  dataset_name: COSD
+  sort: 3
+Lung_9_0:
+  name: Lung
+  description: Lung DESCRIPTION
+  dataset_version: 9-0
+  dataset_name: COSD
+  sort: 9
+HeadNeck_9_0:
+  name: HeadNeck
+  description: HeadNeck DESCRIPTION
+  dataset_version: 9-0
+  dataset_name: COSD
+  sort: 7
+Gynaecological_9_0:
+  name: Gynaecological
+  description: Gynaecological DESCRIPTION
+  dataset_version: 9-0
+  dataset_name: COSD
+  sort: 5
+Liver_9_0:
+  name: Liver
+  description: Liver DESCRIPTION
+  dataset_version: 9-0
+  dataset_name: COSD
+  sort: 8
+Other_9_0:
+  name: Other
+  description: Other DESCRIPTION
+  dataset_version: 9-0
+  dataset_name: COSD
+  sort: 10
+Sarcoma_9_0:
+  name: Sarcoma
+  description: Sarcoma DESCRIPTION
+  dataset_version: 9-0
+  dataset_name: COSD
+  sort: 11
+Breast_9_0:
+  name: Breast
+  description: Breast DESCRIPTION
+  dataset_version: 9-0
+  dataset_name: COSD
+  sort: 1
+Skin_9_0:
+  name: Skin
+  description: Skin DESCRIPTION
+  dataset_version: 9-0
+  dataset_name: COSD
+  sort: 12
+Urological_9_0:
+  name: Urological
+  description: Urological DESCRIPTION
+  dataset_version: 9-0
+  dataset_name: COSD
+  sort: 14
+UpperGI_9_0:
+  name: UpperGI
+  description: UpperGI DESCRIPTION
+  dataset_version: 9-0
+  dataset_name: COSD
+  sort: 13
+Pathology_CTYA_4_1:
+  name: CTYA
+  description: CTYA DESCRIPTION
+  dataset_version: 4-1
+  dataset_name: COSD_Pathology
+  sort: 4
+Pathology_CNS_4_1:
+  name: CNS
+  description: CNS DESCRIPTION
+  dataset_version: 4-1
+  dataset_name: COSD_Pathology
+  sort: 2
+Pathology_Colorectal_4_1:
+  name: Colorectal
+  description: Colorectal DESCRIPTION
+  dataset_version: 4-1
+  dataset_name: COSD_Pathology
+  sort: 3
+Pathology_Lung_4_1:
+  name: Lung
+  description: Lung DESCRIPTION
+  dataset_version: 4-1
+  dataset_name: COSD_Pathology
+  sort: 9
+Pathology_HeadNeck_4_1:
+  name: HeadNeck
+  description: HeadNeck DESCRIPTION
+  dataset_version: 4-1
+  dataset_name: COSD_Pathology
+  sort: 7
+Pathology_Gynaecological_4_1:
+  name: Gynaecological
+  description: Gynaecological DESCRIPTION
+  dataset_version: 4-1
+  dataset_name: COSD_Pathology
+  sort: 5
+Pathology_Other_4_1:
+  name: Other
+  description: Other DESCRIPTION
+  dataset_version: 4-1
+  dataset_name: COSD_Pathology
+  sort: 0
+Pathology_Sarcoma_4_1:
+  name: Sarcoma
+  description: Sarcoma DESCRIPTION
+  dataset_version: 4-1
+  dataset_name: COSD_Pathology
+  sort: 11
+Pathology_Breast_4_1:
+  name: Breast
+  description: Breast DESCRIPTION
+  dataset_version: 4-1
+  dataset_name: COSD_Pathology
+  sort: 1
+Pathology_Skin_4_1:
+  name: Skin
+  description: Skin DESCRIPTION
+  dataset_version: 4-1
+  dataset_name: COSD_Pathology
+  sort: 12
+Pathology_Urological_4_1:
+  name: Urological
+  description: Urological DESCRIPTION
+  dataset_version: 4-1
+  dataset_name: COSD_Pathology
+  sort: 14
+Pathology_UpperGI_4_1:
+  name: UpperGI
+  description: UpperGI DESCRIPTION
+  dataset_version: 4-1
+  dataset_name: COSD_Pathology
+  sort: 13
+CategoryOne_1_0:
+  name: CategoryOne
+  description: CategoryOne DESCRIPTION
+  dataset_version: 1-0
+  dataset_name: MultipleRecordTypeDataset
+  sort: 1
+CategoryTwo_1_0:
+  name: CategoryTwo
+  description: CategoryTwo DESCRIPTION
+  dataset_version: 1-0
+  dataset_name: MultipleRecordTypeDataset
+  sort: 2
+Pathology_CTYA_4_1_1:
+  name: CTYA
+  description: CTYA DESCRIPTION
+  dataset_version: 4-1-1
+  dataset_name: COSD_Pathology
+  sort: 4
+Pathology_CNS_4_1_1:
+  name: CNS
+  description: CNS DESCRIPTION
+  dataset_version: 4-1-1
+  dataset_name: COSD_Pathology
+  sort: 2
+Pathology_Colorectal_4_1_1:
+  name: Colorectal
+  description: Colorectal DESCRIPTION
+  dataset_version: 4-1-1
+  dataset_name: COSD_Pathology
+  sort: 3
+Pathology_Lung_4_1_1:
+  name: Lung
+  description: Lung DESCRIPTION
+  dataset_version: 4-1-1
+  dataset_name: COSD_Pathology
+  sort: 9
+Pathology_HeadNeck_4_1_1:
+  name: HeadNeck
+  description: HeadNeck DESCRIPTION
+  dataset_version: 4-1-1
+  dataset_name: COSD_Pathology
+  sort: 7
+Pathology_Gynaecological_4_1_1:
+  name: Gynaecological
+  description: Gynaecological DESCRIPTION
+  dataset_version: 4-1-1
+  dataset_name: COSD_Pathology
+  sort: 5
+Pathology_Other_4_1_1:
+  name: Other
+  description: Other DESCRIPTION
+  dataset_version: 4-1-1
+  dataset_name: COSD_Pathology
+  sort: 0
+Pathology_Sarcoma_4_1_1:
+  name: Sarcoma
+  description: Sarcoma DESCRIPTION
+  dataset_version: 4-1-1
+  dataset_name: COSD_Pathology
+  sort: 11
+Pathology_Breast_4_1_1:
+  name: Breast
+  description: Breast DESCRIPTION
+  dataset_version: 4-1-1
+  dataset_name: COSD_Pathology
+  sort: 1
+Pathology_Skin_4_1_1:
+  name: Skin
+  description: Skin DESCRIPTION
+  dataset_version: 4-1-1
+  dataset_name: COSD_Pathology
+  sort: 12
+Pathology_Urological_4_1_1:
+  name: Urological
+  description: Urological DESCRIPTION
+  dataset_version: 4-1-1
+  dataset_name: COSD_Pathology
+  sort: 14
+Pathology_UpperGI_4_1_1:
+  name: UpperGI
+  description: UpperGI DESCRIPTION
+  dataset_version: 4-1-1
+  dataset_name: COSD_Pathology
+  sort: 13

@@ -1,0 +1,35 @@
+<%
+  readonly ||= false
+
+  url = url_for(project_amendment) if project_amendment.persisted?
+  url ||= polymorphic_url([project_amendment.project, :project_amendments])
+%>
+
+<%= bootstrap_form_with model: project_amendment, url: url, readonly: readonly, horizontal: 2, html: { id: dom_id(project_amendment) } do |form| %>
+  <%= form.error_and_warning_alert_boxes %>
+
+  <%= form.control_group(:requested_at, nil, {}, class: 'col-xs-5 col-sm-4 col-md-3') do %>
+    <%= form.datepicker_field(:requested_at) %>
+  <% end %>
+
+  <%= form.control_group(:upload) do %>
+    <%= form.file_field(:upload, multiple: false, accept: 'application/pdf') %>
+  <% end %>
+
+  <%= form.control_group(:labels) do %>
+    <% ProjectAmendment::LABELS.each do |label| %>
+      <div class="checkbox">
+        <label>
+          <%= check_box_tag :'project_amendment[labels][]', label, label.in?(form.object.labels) %>
+          <%= label %>
+        </label>
+      </div>
+    <% end %>
+  <% end %>
+
+  <br />
+  <%= form.control_group(nil) do %>
+    <%= form.submit class: 'btn btn-primary' %>
+    <%= link_to('Cancel', project_path(form.object.project, anchor: '!amendments'), class: 'btn btn-danger') %>
+  <% end %>
+<% end %>

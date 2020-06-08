@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Data Management System</title>
+  <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
+  <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
+  <%= javascript_pack_tag    'application' %>
+  <%= csrf_meta_tags %>
+
+  <% if Rails.env.test? %>
+    <%# Prevent Turbolinks from rendering a temporary DOM that messes with capybara: %>
+    <meta name="turbolinks-cache-control" content="no-cache">
+  <% end %>
+</head>
+<body>
+  <%= render :partial => "shared/menu_bar" %>
+
+  <div class="container<%= '-fluid' if @fluid_layout %>">
+    <% sidebar_content = yield(:sidebar)
+      if sidebar_content.present? %>
+        <div class="row">
+          <div class="col-md-3">
+            <%= sidebar_content  %>
+          </div>
+          <div class="col-md-9">
+            <%= render :partial => 'shared/flash_messages' %>
+            <%= yield %>
+          </div>
+        </div>
+    <% else %>
+      <%= render :partial => 'shared/flash_messages' %>
+      <%= yield %>
+    <% end %>
+  </div>
+
+  <div>
+    <div class="modal" id="modal" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+            <h4 class="modal-title" id="modal_title"></h4>
+          </div>
+          <div class="modal-body clearfix" id="modal_body">
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+    <%= yield(:modals) %>
+  </div>
+</body>
+</html>

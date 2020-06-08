@@ -1,0 +1,12 @@
+<%
+  @node ||= @data_item
+  html_content = escape_javascript bootstrap_form_for(
+    @data_item, url: data_item_path(@data_item),
+    remote: true, horizontal: 2) { |form| render('form', form: form) }
+%>
+
+jQuery('#modal_title').html("Editing Node: <%= @data_item.name %>");
+jQuery('#modal_body').html('<%= html_content %>').parents('.modal').modal('show');
+$(toggle_node_form_element('data-dictionary-element', 'add-dde'));
+$(toggle_node_form_element('governance', 'add-governance'));
+<%= render "nodes/save" %>

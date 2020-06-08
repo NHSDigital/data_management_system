@@ -1,0 +1,16 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+simple_user:
+  title: Simple user notification
+  body: single user notification
+  user_id: standard_user
+
+simple_admin:
+  title: Simple admin notifications
+  body: Simple admin notifications body
+  admin_users: true
+
+simple_odr:
+  title: Simple odr notifications
+  body: Simple admin notifications body
+  odr_users: true

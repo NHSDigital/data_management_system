@@ -1,0 +1,19 @@
+<h1>Project Awaiting Assignment</h1>
+<hr />
+
+<p>
+  A project requires allocation to an application manager.
+  <% if @assigned_by %>
+    This was previously assigned to <%= @assigned_by %>.
+  <% else %>
+    This is because the system could not find an available application manager to which the
+    project could be assigned.
+  <% end %>
+</p>
+
+<%= render 'project_details', project: @project %>
+
+<p>
+  Please <%= link_to 'log in', root_url %> and use the link above to view the
+  project.
+</p>

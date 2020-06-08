@@ -1,0 +1,61 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+# This model initially had no columns defined. If you add columns to the
+# model remove the '{}' from the fixture names and add the columns immediately
+# below each fixture, per the syntax in the comments below
+#
+# team_one_deaths_gold:
+#   team: team_one
+#   dataset: deaths_gold_standard
+#
+# team_one_deaths_transaction:
+#   team: team_one
+#   dataset: deaths_transaction
+#
+# team_ONE_member_deaths_transaction:
+#   team: team_ONE_member
+#   dataset: deaths_transaction
+#
+# team_many_members_deaths_gold:
+#   team: team_ONE_member
+#   dataset: births_gold_standard
+#
+# new_deaths_gold:
+#   team: new_team
+#   dataset: deaths_gold_standard
+#
+# pending_deaths_gold:
+#   team: pending_team
+#   dataset: deaths_gold_standard
+#
+# pending_delegate_deaths_gold:
+#   team: pending_delegate_team
+#   dataset: deaths_gold_standard
+#
+# new_delegate_deaths_gold:
+#   team: new_delegate_team
+#   dataset: deaths_gold_standard
+#
+# approved_deaths_gold:
+#   team: approved_team
+#   dataset: deaths_gold_standard
+#
+# rejected_deaths_gold:
+#   team: rejected_team
+#   dataset: deaths_gold_standard
+#
+# deleted_deaths_gold:
+#   team: deleted_team
+#   dataset: deaths_gold_standard
+#
+# team_two_deaths_gold_standard:
+#   team: team_two
+#   dataset: deaths_gold_standard
+#
+# team_two_death_transaction:
+#   team: team_two
+#   dataset: deaths_transaction
+#
+# team_two_births_gold_standard:
+#   team: team_two
+#   dataset: births_gold_standard

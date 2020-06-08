@@ -1,0 +1,18 @@
+developer:
+  name: Developer
+  sort: 1
+odr_application_manager:
+  name: ODR Application Manager
+  sort: 2
+odr:
+  name: ODR
+  sort: 3
+odr_senior_application_manager:
+  name: ODR Senior Application Manager
+  sort: 4
+dataset_viewer:
+  name: Dataset Viewer
+  sort: 5
+dataset_viewer_analyst:
+  name: Dataset Viewer Analyst
+  sort: 6

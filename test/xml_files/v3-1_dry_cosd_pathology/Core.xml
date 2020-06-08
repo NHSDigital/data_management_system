@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<COSD_Pathology:COSD_Pathology xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:COSD_Pathology="http://www.datadictionary.nhs.uk/messages/COSD_Pathology-v3-1"
+  xsi:schemaLocation="http://www.datadictionary.nhs.uk/messages/COSD_Pathology-v3-1 ../Schemas/COSDCOSD_XMLSchema-v8-1.xsd">
+<Id root="60E8A409-24B6-4ADC-9C96-0273F668BDC8"/>
+<OrganisationIdentifierCodeOfSubmittingOrganisation extension="123"/>
+<RecordCount value="1"/>
+ 	<ReportingPeriodStartDate>2018-03-01</ReportingPeriodStartDate>
+<ReportingPeriodEndDate>2018-03-30</ReportingPeriodEndDate>
+<FileCreationDateTime>2018-03-30T00:00:00</FileCreationDateTime>
+  <OtherRecord>
+    <Id root="778F1F33-4911-4E50-8E36-3182780F8F94" />
+    <LinkagePatientId>
+      <NHSNumber extension="1231357990" />
+      <LocalPatientIdExtended>AB1888555446</LocalPatientIdExtended>
+      <NHSNumberStatusIndicator code="03" />
+      <Birthdate>1971-01-01</Birthdate>
+      <OrganisationIdentifierCodeOfProvider extension="AB1" />
+    </LinkagePatientId>
+    <Demographics>
+      <PersonFamilyName>CORE</PersonFamilyName>
+      <PersonGivenName>CORE</PersonGivenName>
+      <Address>
+        <UnstructuredAddress>
+          <StreetAddressLine>CORE STREET</StreetAddressLine>
+        </UnstructuredAddress>
+      </Address>
+      <Postcode>AB1 3CD</Postcode>
+      <Gender code="1"/>
+    </Demographics>
+    <Pathology>
+      <InvestigationResultDate>2018-01-01</InvestigationResultDate>
+      <ServiceReportId extension="SERVICEID"/>
+      <PathologyObservationReportId extension="PATHID"/>
+      <ServiceReportStatus code="2"/>
+      <PathTestReqCareProfCode extension="WHATISTH"/>
+      <OrganisationSiteIdentifierOfPathologyTestRequest extension="AB123"/>
+      <SampleCollectionDate>2018-01-01</SampleCollectionDate>
+      <SampleReceiptDate>2018-01-01</SampleReceiptDate>
+      <OrganisationIdentifierOfReportingPathologist extension="AB123"/>
+      <PathologistConsultantCode extension="C1234567"/>
+      <SpecimenNature code="2"/>
+      <SNOMEDVersionPathology code="02"/>
+      <TumourLaterality code="9"/>
+      <PathologyInvestigationType code="CY"/>
+      <PathologyReportText>BLAH</PathologyReportText>
+      <LesionSizePathological value="1.1"/>
+      <GradeOfDiff code="G2"/>
+      <CancerVascLymphInvasion code="99"/>
+      <ExcisionMargin code="02"/>
+      <SyncTumourInd code="Y"/>
+      <NumberNodesExamined value="1"/>
+      <NumberNodesPositive value="1"/>
+      <TNMCodingEdition code="2"/>
+      <TNMVersionNumberPathological>8</TNMVersionNumberPathological>
+      <PathTCategory>1</PathTCategory>
+      <PathNCategory>0</PathNCategory>
+      <PathMCategory>0</PathMCategory>
+      <PathTNMStage>1</PathTNMStage>
+      <NeoadjuvantTherapyInd code="Y"/>
+    </Pathology>
+  </OtherRecord>
+</COSD_Pathology:COSD_Pathology>

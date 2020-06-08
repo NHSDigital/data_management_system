@@ -1,0 +1,22 @@
+<%= render layout: @user.to_partial_path do %>
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th>Team</th>
+        <th>Organisation</th>
+        <th>Location</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @user.teams.each do |team| %>
+        <tr id="<%= dom_id(team) %>">
+          <td><%= link_to "#{team.name}", team_url(team) %></td>
+          <td><%= link_to "#{team.organisation.name}", organisation_url(team.organisation) %></td>
+          <td><%= team.location %></td>
+          <td><%= team.z_team_status.name %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% end %>

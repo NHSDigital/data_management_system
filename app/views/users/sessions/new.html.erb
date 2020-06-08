@@ -1,0 +1,97 @@
+<h3>Welcome to the <%= t 'system.description' %></h3>
+
+<%= bootstrap_alert_tag(:danger) do %>
+  <% if primary_is_live && login_message.blank? %>
+    <strong>This is the <%= Rails.env.upcase %> version of the <%= t 'system.description' %>.</strong>
+    <br/ >If you are not sure if you should be using this version of the system, please seek advice before continuing.
+  <% else # not live, or there is a login message %>
+    <h4><%= login_message.html_safe %></h4>
+
+    <% unless primary_is_live %>
+      If you are not sure if you should be using this version of the system, please seek advice before continuing.
+      <br />Changes made here will be lost and cannot be transferred into the live system.
+    <% end %>
+
+    <% if Rails.env.development? %>
+      <br/>Connecting to
+      <%= ActiveRecord::Base.configurations[Rails.env].
+      to_hash.select{|k,v| ['host','database'].include?(k)}.
+      collect{|k,v| "#{k}: #{v}"}.sort.join(", ") %><br/>
+      Subversion revision: <%= @svn_revision %>
+      <br/>Rails version: <%= Rails.version %>
+      <!-- RUBY_VERSION <%= RUBY_VERSION %>, RUBY_PLATFORM <%= RUBY_PLATFORM %>, RUBY_RELEASE_DATE <%= RUBY_RELEASE_DATE %>, RUBY_PATCHLEVEL <%= RUBY_PATCHLEVEL %> -->
+    <% end %>
+  <% end %>
+<% end %>
+
+<!--[if lt IE 8]>
+<% if ie8_compatibility_view_on? %>
+  <%= bootstrap_alert_tag(:danger) do %>
+    <p><strong>You are using Internet Explorer 8 with compatibility view enabled.</strong></p>
+    <p>Please disable <em>Compatibility View</em> from the <em>Tools</em> menu before continuing.</p>
+  <% end %>
+<% else %>
+  <%= bootstrap_alert_tag(:danger) do %>
+    <p><strong>You are using Internet Explorer 7 browser (or earlier), which is not supported by <%= t 'system.name' %>.</strong></p>
+    <p>You need to upgrade to a more modern browser.</p>
+  <% end %>
+<% end %>
+<![endif]-->
+<!--[if IE 8 ]>
+  <%= bootstrap_alert_tag(:danger) do %>
+    <p><strong>You are using Internet Explorer 8, which no longer receives security updates.</strong></p>
+    <p>Please ask your IT department to upgrade it to a more modern browser.</strong></p>
+  <% end %>
+<![endif]-->
+
+<%= bootstrap_alert_tag(:info, dismissible: false) do %>
+  <strong>Legal Notice</strong>
+  This system is a restricted access system; only personnel authorised by <%= t 'system.organisation_abbreviation' %> may access this system.
+  Unauthorised access is prohibited and is contrary to the
+  <%= link_to 'Computer Misuse Act 1990', 'http://www.legislation.gov.uk/ukpga/1990/18/contents', :target => :new, :class => 'alert-link' %>,
+  which may result in criminal offences and a claim for damages.
+  All activity on this system is subject to monitoring.
+  If information collected reveals possible criminal activity or
+  activity that exceeds privileges, evidence of such activity may
+  be provided to the relevant authorities for further action.
+  <strong>By continuing past this point you expressly consent to this
+  monitoring.</strong>
+<% end %>
+
+<div class="jumbotron">
+  <%= bootstrap_form_for(resource, as: resource_name, url: session_path(resource_name), horizontal: 4) do |f| %>
+
+    <% if @yubikey_username.present? %>
+      <%= f.control_group :username, 'Username', {}, { class: 'col-md-4' } do %>
+        <%= f.text_field :username, disabled: true %>
+        <%= f.hidden_field :username %>
+      <% end %>
+
+      <%= f.control_group :password, 'Password', {}, { class: 'col-md-4' } do %>
+        <%= f.password_field :password, autocomplete: 'off', autofocus: true %>
+      <% end %>
+
+    <% else %>
+
+      <%= f.control_group :username, 'Username', {}, { class: 'col-md-4' } do %>
+        <%= f.text_field :username, autofocus: true %>
+      <% end %>
+
+      <%= f.control_group :password, 'Password', {}, { class: 'col-md-4' } do %>
+        <%= f.password_field :password, autocomplete: 'off' %>
+      <% end %>
+    <% end %>
+
+    <%= f.control_group nil, nil, {}, { class: 'col-md-4' } do %>
+      <%= f.submit 'Log in', class: 'btn btn-primary btn-block' %>
+
+      <div style="text-align:center;margin-top:1em;">
+        <%= render "users/shared/links" %>
+      </div>
+    <% end %>
+  <% end %>
+</div>
+
+<div style="margin-bottom:20px;">
+  <%#= TODO: phe_logo %>
+</div>

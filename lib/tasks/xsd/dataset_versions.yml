@@ -1,0 +1,32 @@
+# COSD 8-1 a representation of original NHS produced schems
+COSD_EIGHT_ONE:
+  dataset: COSD
+  semver_version: 8-1
+COSD_EIGHT_TWO:
+  dataset: COSD
+  semver_version: 8-2
+COSD_EIGHT_THREE:
+  dataset: COSD
+  semver_version: 8-3
+SACT_TWO_ZERO:
+  dataset: SACT
+  semver_version: 2-0
+# Path 3-0 a representation of original NHS produced schems
+COSD_PATHOLOGY_THREE_ZERO:
+  dataset: COSD_Pathology
+  semver_version: 3-0
+COSD_PATHOLOGY_THREE_ONE:
+  dataset: COSD_Pathology
+  semver_version: 3-1
+COSD_PATHOLOGY_FOUR_ONE:
+  dataset: COSD_Pathology
+  semver_version: 4-1
+COSD_NINE_ZERO:
+  dataset: COSD
+  semver_version: 9-0
+MultipleRecordTypeDataset_ONE_ZERO:
+  dataset: MultipleRecordTypeDataset
+  semver_version: 1-0
+COSD_PATHOLOGY_FOUR_ONE_ONE:
+  dataset: COSD_Pathology
+  semver_version: 4-1-1

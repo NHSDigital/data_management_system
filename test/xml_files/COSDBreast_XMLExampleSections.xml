@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<COSD:COSD xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:COSD="http://www.datadictionary.nhs.uk/messages/COSD-v8-3">
+  <Id root="60E8A409-24B6-4ADC-9C96-0273F668BDC8"/>
+  <OrganisationIdentifierCodeOfSubmittingOrganisation extension="ABC12"/>
+  <RecordCount value="1"/>
+   <ReportingPeriodStartDate>2018-03-01</ReportingPeriodStartDate>
+  <ReportingPeriodEndDate>2018-03-30</ReportingPeriodEndDate>
+  <FileCreationDateTime>2018-03-30T00:00:00</FileCreationDateTime>
+  <BreastRecord>
+    <Id root="778F1F33-4911-4E50-8E36-3182780F8F94" />
+    <LinkagePatientId>
+      <NHSNumber extension="1111111111" />
+      <LocalPatientIdExtended>AB1888555446</LocalPatientIdExtended>
+      <NHSNumberStatusIndicator code="03" />
+      <Birthdate>1971-01-01</Birthdate>
+      <OrganisationIdentifierCodeOfProvider extension="AB1" />
+    </LinkagePatientId>
+
+    <LinkageDiagnosticDetails>
+      <PrimaryDiagnosis code="C501" />
+      <TumourLaterality code="L" />
+      <ClinicalDateCancerDiagnosis>2017-01-01</ClinicalDateCancerDiagnosis>
+      <DateOfNonPrimaryCancerDiagnosisClinicallyAgreed>2017-01-01</DateOfNonPrimaryCancerDiagnosisClinicallyAgreed>
+    </LinkageDiagnosticDetails>
+
+    <NonPrimaryCancerPathwayRoute>
+      <NonPrimaryCancerPathwayType code="01" />
+      <CancerRecurrenceOrMetastaticDiseaseType code="01" />
+      <MetastaticSite code="98" />
+      <CancerProgressionICD code="c509" />
+    </NonPrimaryCancerPathwayRoute>
+
+    <Demographics>
+      <PersonFamilyName>COSD</PersonFamilyName>
+      <PersonGivenName>BREAST</PersonGivenName>
+      <Address>
+        <!-- <UnstructuredAddress>
+          <StreetAddressLine>1 Main Road</StreetAddressLine>
+        </UnstructuredAddress> -->
+        <StructuredAddress>
+          <StreetAddressLine>1 Structured Road</StreetAddressLine>
+          <StreetAddressLine>Structureville</StreetAddressLine>
+          <StreetAddressLine>Struct Town</StreetAddressLine>
+          <StreetAddressLine>Structshire</StreetAddressLine>
+          <StreetAddressLine>ST1RUC</StreetAddressLine>
+        </StructuredAddress>
+      </Address>
+      <!-- <Postcode>
+        <postalCode>AB1 3CD</postalCode>
+      </Postcode> -->
+      <Gender code="2" />
+      <PersonStatedSexualOrientationCodeAtDiagnosis code="Z" />
+      <GMPSpecified extension="G1234566" />
+      <GMPRegistration extension="F12345" />
+      <PersonBirthFamilyName>COSD</PersonBirthFamilyName>
+      <Ethnicity code="A" />
+    </Demographics>
+
+    <ReferralAndFirstStageOfPatientPathway>
+      <SourceOfReferralOutPatients code="03" />
+      <DateFirstSeen>2018-03-01</DateFirstSeen>
+      <ConsultantCode extension="C1234567" />
+      <OrganisationSiteIdentifierOfProviderFirstSeen extension="AB101" />
+      <SpecialistDateFirstSeen>2018-03-01</SpecialistDateFirstSeen>
+      <OrganisationSiteIdentifierOfProviderFirstCancerSpecialist extension="ABC01" />
+      <CancerOrSymptomaticBreastReferralPatientStatus code="08" />
+      <CancerSymptomsDateFirstNoted>2014-02-02</CancerSymptomsDateFirstNoted>
+      <ClinicalAssessment>
+        <DateOfClinicalAssessment>2018-03-01</DateOfClinicalAssessment>
+        <OrganisationSiteIdentifierOfClinicalAssessment extension="ABC01" />
+        <ResultCodeClinicalAssessment code="P1" />
+      </ClinicalAssessment>
+      <ClinicalAssessment>
+        <DateOfClinicalAssessment>2018-03-02</DateOfClinicalAssessment>
+        <OrganisationSiteIdentifierOfClinicalAssessment extension="ABC02" />
+        <ResultCodeClinicalAssessment code="P2" />
+      </ClinicalAssessment>
+      <ClinicalAssessment>
+        <DateOfClinicalAssessment>2018-03-03</DateOfClinicalAssessment>
+        <OrganisationSiteIdentifierOfClinicalAssessment extension="ABC03" />
+        <ResultCodeClinicalAssessment code="P3" />
+      </ClinicalAssessment>
+    </ReferralAndFirstStageOfPatientPathway>
+
+    <NonPrimaryCancerPathway>
+      <SourceOfReferralForOutPatientsNonPrimaryCancerPathway code="97" />
+      <PalliativeCareSpecialistSeenIndicatorCancerRecurrence code="9" />
+    </NonPrimaryCancerPathway>
+
+    <Imaging>
+      <OrganisationSiteIdentifierOfImaging extension="AB101" />
+      <ProcedureDate>2018-03-03</ProcedureDate>
+      <CancerImagingOutcome code="05" />
+      <ImagingDetails>
+        <CancerImagingModality code="C02X" />
+        <ImagingAnatomicalSite code="CZ002" />
+        <ImagingAnatomicalSide code="8" />
+      </ImagingDetails>
+      <ImagingCodeSNOMEDCT code="123456" />
+      <NICIPCode code="NICIP" />
+      <ImagingReportText><![CDATA[No mets]]></ImagingReportText>
+      <LesionSizeRadiological value="120.01" />
+    </Imaging>
+
+    <Diagnosis>
+      <OrganisationSiteIdentifierOfDiagnosis extension="ABC01" />
+      <BasisOfCancerDiagnosis code="7" />
+      <SNOMEDVersionDiagnosis code="99" />
+      <MorphologySNOMEDDiagnosis code="M85003" />
+      <MorphologyICDODiagnosis code="M85003" />
+      <TopographyICDO code="T04010" />
+      <DiagnosisGradeOfDifferentiation code="G2" />
+      <AdultPerformanceStatus code="2" />
+      <DiagnosisSNOMEDCT code="123456" />
+      <CancerRecurrenceCarePlanInd code="NN" />
+      <CancerMetastaticDiseaseType code="03" />
+      <MetastaticSite code="98" />
+      <DiagnosisAdditionalItems>
+        <PrimaryDiagnosisCancerComment><![CDATA[TestData]]></PrimaryDiagnosisCancerComment>
+        <SecondaryDiagnosisICD code="D059" />
+        <SecondaryDiagnosisICD code="D059" />
+        <SecondaryDiagnosisCancerComment><![CDATA[TestData]]></SecondaryDiagnosisCancerComment>
+        <FamilialCancerSyndromeIndicator code="9" />
+        <FamilialCancerSyndromeComment><![CDATA[TestData]]></FamilialCancerSyndromeComment>
+        <TissueBankedAtDiagnosisIndicator code="9" />
+        <TissueTypeBankedAtDiagnosis code="5" />
+      </DiagnosisAdditionalItems>
+      <DiagnosisBreast>
+        <MenopausalStatusCodeBreastCancerAtDiagnosis code="9" />
+      </DiagnosisBreast>
+    </Diagnosis>
+
+    <PersonObservation>
+      <PersonHeightInMetres value="1.71" />
+      <PersonObservationWeight value="75.57" />
+      <BodyMassIndex value="25.8" />
+      <ObservationDate>2018-03-04</ObservationDate>
+    </PersonObservation>
+
+    <ClinicalNurseSpecialistAndRiskFactorAssessments>
+      <ClinicalNurseSpecialistIndicationCode code="Y5" />
+      <SmokingStatusCode code="Z" />
+      <AlcoholHistoryCancerInLastThreeMonths code="3" />
+      <AlcoholHistoryCancerBeforeLastThreeMonths code="2" />
+    </ClinicalNurseSpecialistAndRiskFactorAssessments>
+
+    <ClinicalNurseSpecialistHolisticNeedsAssessment>
+      <HNACompletedDate>2018-03-05</HNACompletedDate>
+      <HNAPointOfPathway code="03" />
+    </ClinicalNurseSpecialistHolisticNeedsAssessment>
+
+    <MultidisciplinaryTeamMeetings>
+      <TeamMeetingDate>2018-03-05</TeamMeetingDate>
+      <OrganisationSiteIdentifierOfMultidisciplinaryTeamMeeting extension="ABC99" />
+      <TeamMeetingType>0101</TeamMeetingType>
+      <TeamMeetingTypeComment><![CDATA[TestData]]></TeamMeetingTypeComment>
+    </MultidisciplinaryTeamMeetings>
+
+    <CancerCarePlan>
+      <CancerMultiTeamDiscussionDate>2014-02-01</CancerMultiTeamDiscussionDate>
+      <ConsultantCodeMultidisciplinaryTeamLead extension="C1234567" />
+      <CancerCarePlanIntent code="Z" />
+      <PlannedCancerTreatmentType code="06" />
+      <NoCancerTreatmentReason code="99" />
+      <AdultComorbidityEvaluation code="2" />
+    </CancerCarePlan>
+
+    <MolecularBiomarkersGermlineTesting>
+      <OfferStatusGermlineGeneticTest code="01" />
+      <GermlineGeneticTestTypeOffered code="01" />
+      <OtherGermlineGeneticTestTypeOffered><![CDATA[TestData]]></OtherGermlineGeneticTestTypeOffered>
+      <ActivityOfferDate>2018-03-05</ActivityOfferDate>
+      <OrganisationIdentifierReportingLaboratory extension="ABC22" />
+      <OfferStatusReferralRegionalClinicalGeneticsService code="03" />
+    </MolecularBiomarkersGermlineTesting>
+
+    <MolecularBiomarkersSomaticTesting>
+      <StratifiedMedicineMolecularTestPerformedIndicator code="Y" />
+      <GeneStratificationBiomarkerAnalysed code="06" />
+      <OtherGeneStratificationBiomarkerTypeAnalysedComment><![CDATA[TestData]]></OtherGeneStratificationBiomarkerTypeAnalysedComment>
+      <GeneStratificationBiomarkerAnalysedDate>2018-03-05</GeneStratificationBiomarkerAnalysedDate>
+      <OrganisationIdentifierReportingLaboratory extension="ABC22" />
+    </MolecularBiomarkersSomaticTesting>
+
+    <ClinicalTrials>
+      <CancerPatientTrialStatus code="02" />
+      <ClinicalTrialDecisionDate>2018-03-05</ClinicalTrialDecisionDate>
+      <ClinicalTrialStartDate>2018-03-05</ClinicalTrialStartDate>
+      <CancerClinicalTrialTreatmentType code="06" />
+    </ClinicalTrials>
+
+    <Staging>
+      <FinalPreTreatmentTCategory>2</FinalPreTreatmentTCategory>
+      <FinalPreTreatmentNCategory>0</FinalPreTreatmentNCategory>
+      <FinalPreTreatmentMCategory>0</FinalPreTreatmentMCategory>
+      <FinalPreTreatmentTNMStageGrouping>2A</FinalPreTreatmentTNMStageGrouping>
+      <OrganisationSiteIdentifierOfTNMStageGroupingFinalPretreatment extension="ABC22" />
+      <FinalPreTreatmentTNMStageGroupingDate>2018-03-04</FinalPreTreatmentTNMStageGroupingDate>
+      <IntegratedStageTCategory>2</IntegratedStageTCategory>
+      <IntegratedStageNCategory>0</IntegratedStageNCategory>
+      <IntegratedStageMCategory>0</IntegratedStageMCategory>
+      <IntegratedStageTNMStageGrouping>3B</IntegratedStageTNMStageGrouping>
+      <OrganisationSiteIdentifierOfTNMStageGroupingIntegrated extension="ABC22" />
+      <IntegratedStageTNMStageGroupingDate>2018-03-05</IntegratedStageTNMStageGroupingDate>
+      <TNMCodingEdition code="1" />
+      <TNMVersionNumberStaging>8</TNMVersionNumberStaging>
+    </Staging>
+
+    <Treatment>
+      <CancerTreatmentEventType code="01" />
+      <AdjunctiveTherapyType code="1" />
+      <CancerTreatmentIntent code="01" />
+      <CancerTreatmentStartDate>2018-03-05</CancerTreatmentStartDate>
+      <CancerTreatmentModality code="01" />
+      <OrganisationSiteIdentifierOfProviderCancerTreatmentStartDate extension="AB101" />
+      <ConsultantCode extension="C1234567" />
+      <SurgeryAndOtherProcedures>
+        <ProcedureDate>2018-03-05</ProcedureDate>
+        <ConsultantCodeResponsibleSurgeon extension="C1234567" />
+        <PrimaryProcedureOPCS code="B283" />
+        <PrimaryProcedureSNOMEDCT code="123456" />
+        <ProcedureOPCS code="B283" />
+        <ProcedureSNOMEDCT code="123456" />
+        <AdditionalUnplannedProcedureRequiredIndicator code="N" />
+        <HospitalDischargeDate>2018-05-08</HospitalDischargeDate>
+        <HospitalDischargeDestinationCode code="19" />
+        <ASAPhysicalStatusClassificationSystemCode code="2" />
+        <SurgicalAccessType code="Z" />
+        <SurgeryAndOtherProceduresStemCellTransplantation>
+          <StemCellInfusionSourceCode code="B" />
+          <StemCellInfusionDonorType code="1" />
+          <StemCellTransplantConditioningRegimen code="2" />
+        </SurgeryAndOtherProceduresStemCellTransplantation>
+      </SurgeryAndOtherProcedures>
+    </Treatment>
+
+    <LaboratoryResultsGeneral>
+      <LactateDehydrogenaseLevelPeakAtDiagnosis value="123" />
+      <LactateDehydrogenaseLevelNormalUpperLimit value="530" />
+    </LaboratoryResultsGeneral>
+
+    <LabResGermCellCNSAndNonGermCellCNSTumours>
+      <BetaHumanChorionicGonadotropinMaximumAtDiagnosis value="111" />
+    </LabResGermCellCNSAndNonGermCellCNSTumours>
+
+    <LabResGermCellCNSGermCellNonCNSHepatoblastomaAndHepatocellularCa>
+      <AlphaFetoproteinMaximumAtDiagnosis value="3365" />
+    </LabResGermCellCNSGermCellNonCNSHepatoblastomaAndHepatocellularCa>
+
+    <PrognosticIndex>
+      <NottinghamPrognosticIndexScore value="10.50" />
+    </PrognosticIndex>
+
+    <Pathology>
+      <InvestigationResultDate>2018-03-05</InvestigationResultDate>
+      <ServiceReportId extension="TNQ1235648" />
+      <PathologyObservationReportId extension="TNQ12546325" />
+      <ServiceReportStatus code="1" />
+      <PathTestReqCareProfCode extension="C2253657" />
+      <OrganisationSiteIdentifierOfPathologyTestRequest extension="ABC22" />
+      <SampleCollectionDate>2018-03-05</SampleCollectionDate>
+      <SampleReceiptDate>2018-03-05</SampleReceiptDate>
+      <OrganisationIdentifierOfReportingPathologist extension="ABC22" />
+      <PathologistConsultantCode extension="C2253658" />
+      <SpecimenNature code="1" />
+      <SNOMEDVersionPathology code="01" />
+      <TopographySNOMEDPathology code="S24456" />
+      <MorphologySNOMEDPathology code="M85003" />
+      <PrimaryDiagnosisICDPath code="C502" />
+      <TumourLaterality code="L" />
+      <PathologyInvestigationType code="BU" />
+      <PathologyReportText><![CDATA[BREAST PATH REPORT]]></PathologyReportText>
+      <LesionSizePathological value="22.60" />
+      <GradeOfDiff code="GX" />
+      <CancerVascLymphInvasion code="YU" />
+      <ExcisionMargin code="02" />
+      <SyncTumourInd code="N" />
+      <NumberNodesExamined value="99" />
+      <NumberNodesPositive value="10" />
+      <TNMCodingEdition code="1" />
+      <TNMVersionNumberPathological>8</TNMVersionNumberPathological>
+      <PathTCategory>4</PathTCategory>
+      <PathNCategory>3</PathNCategory>
+      <PathMCategory>1</PathMCategory>
+      <PathTNMStage>4a</PathTNMStage>
+      <NeoadjuvantTherapyInd code="9" />
+      <PathologyBreast>
+        <MultifocalTumourInd code="9" />
+        <DCISGrade code="H" />
+        <NonInvasiveTumourSize value="123.45" />
+        <WholeTumourSize value="222.33" />
+        <MetastasisExtentCode code="3" />
+        <DistanceToMargin value="22.9" />
+        <ERAllredScore code="0" />
+        <EstrogenReceptorStatus code="X" />
+        <PRAllredScore code="0" />
+        <PRStatus code="N" />
+        <HER2Status code="X" />
+        <HER2ISHStatus code="N" />
+        <CytologyBreast code="C5" />
+        <CytologyNode code="C5" />
+        <CoreBiopsyBreast code="B5b" />
+        <CoreBiopsyNode code="B5" />
+      </PathologyBreast>
+    </Pathology>
+
+    <DeathDetails>
+      <PersonDeathDate>2018-03-09</PersonDeathDate>
+      <DeathLocationType code="10" />
+    </DeathDetails>
+  </BreastRecord>
+</COSD:COSD>

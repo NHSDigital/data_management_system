@@ -1,0 +1,12 @@
+<h1>Welcome to <%= t 'system.name' %></h1>
+<h3>Please select your active team for this session</h3>
+
+<div class="row">
+  <div class="col-md-12" id="memberships-panel">
+    <%= bootstrap_panel_tag(capture { %>
+      <h3 class="panel-title clearfix">Teams</h3>
+    <% }) do %>
+      <%= render partial: '/teams/teams_table', locals: { teams: current_user.teams.active } %>
+    <% end %>
+  </div>
+</div>

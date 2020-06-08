@@ -1,0 +1,3 @@
+<% if can?(:create, dataset => DatasetVersion) && !readonly %>
+  <%= link_to bootstrap_icon_tag('plus') +' Add New Version', new_dataset_dataset_version_path(dataset), remote: true, class: 'btn btn-primary btn-xs reject_data_source_item' %>
+<% end %>

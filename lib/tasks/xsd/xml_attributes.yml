@@ -1,0 +1,12 @@
+code:
+  name: code
+  use: required
+value:
+  name: value
+  use: required
+extension:
+  name: extension
+  use: required
+root:
+  name: root
+  use: required

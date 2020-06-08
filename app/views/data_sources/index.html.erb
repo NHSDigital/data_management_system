@@ -1,0 +1,41 @@
+<%= bootstrap_panel_tag panel_heading_segments(
+  center: content_tag(:h4) { 'Listing Data Sources' },
+) do %>
+<% end %>
+
+<table class="table table-hover" id="data_sources_table">
+  <thead>
+    <tr>
+    <th>Name</th>
+    <th>Title</th>
+    <th>Terms</th>
+    <th>No. of Data Items</th>
+    <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @data_sources.each do |data_source| %>
+      <tr>
+      <td><%= data_source.name %></td>
+      <td><%= data_source.title %></td>
+      <td><%= data_source.terms.nil? ? 'X' : 'Y' %></td>
+      <td><%= data_source.data_source_items.count %></td>
+        <td>
+          <div class="pull-right">
+            <%= button_group do %>
+              <% if can?(:destroy, data_source) %>
+                <%= delete_link(data_source, method: :delete, data: { confirm: "Are you sure you want to delete Data Source: #{data_source.name}" } )%>
+              <% end %>
+            <% end %>
+            <%= button_group do %>
+              <% if can?(:update, data_source) %>
+                 <%= edit_link edit_data_source_path(data_source) %>
+              <% end %>
+              <%= details_link data_source %>
+            <% end %>
+          </div>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

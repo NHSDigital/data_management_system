@@ -1,0 +1,230 @@
+<div id='project_legal_ethical_information' class="row" data-turbolinks="false">
+  <div class="col-md-12">
+    <div class="panel panel-default" style="border-top:0px">
+      <div class="panel-heading" style="border-top:0px">
+        <div class="row">
+          <div class="col-md-8">
+            <div class="pull-left" style="font-size:1.5em">
+            Legal / Ethical details
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="pull-right">
+              <div id='approve_legal_status'>
+                <%= render partial: '/projects/approve_legal_section', locals: { project: @project, section: 'legal' } %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class='row'>
+  <div>
+    <div class="row">
+      <div class="col-md-3 text-right"><strong class>Informed patient consent ? </strong></div>
+      <div class="col-md-9"><%= @project.informed_patient_consent ? 'Yes' : 'No'%></div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-3 text-right"><strong class>Direct Care </strong></div>
+      <div class="col-md-9"><%= @project.direct_care ? 'Yes' : 'No'%></div>
+    </div>
+    <div class="row">
+      <div class="col-md-3 text-right pull-left">Please upload signed letter from Caldicott Guardian or other approved signatory support  for processing of the date</div>
+      <div class="col-md-9">
+      	<% if @project.project_attachments.caldicott_letter.count > 0 %>
+      	  <% the_file = @project.project_attachments.caldicott_letter.first%>
+          <% if current_user.can?(:destroy, the_file) %>
+            <% if @project.current_state.id != 'SUBMITTED' %>
+              <div>
+              	<%# timeago_tag(the_file.created_at) %>
+              	<%= link_to the_file.attachment_file_name, the_file %>
+                <%# delete_link(the_file, method: :delete, remote: true, data: { confirm: "Are you sure you want to remove #{the_file.name} from #{@project.name}?" } )%>
+              </div>
+            <% end %>
+          <% end %>
+      	<% else %>
+          <% if can?(:create, ProjectAttachment.new(attachable: @project)) %>
+           <%= link_to bootstrap_icon_tag('plus') + ' Upload', new_project_project_attachment_path(@project, name: 'Calidicott Approval Letter'), remote: true, class: 'btn btn-xs btn-primary'%>
+          <% else %>
+            <strong class>No Calidicott Approval Letter Attached</strong>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-3 text-right"><strong class>Section 251 Exempt</strong></div>
+      <div class="col-md-9"><%= @project.section_251_exempt ? 'Yes' : 'No'%></div>
+    </div>
+    <div class="row">
+      <div class="col-md-3 text-right pull-left">Section 251 exemption form</div>
+      <div class="col-md-9">
+      	<% if @project.project_attachments.exemption_251.count > 0 %>
+      	  <% the_file = @project.project_attachments.exemption_251.first%>
+          <% if current_user.can?(:destroy, the_file) %>
+            <% if @project.current_state.id != 'SUBMITTED' %>
+              <div>
+                <%= link_to the_file.attachment_file_name, the_file %>
+                <%# delete_link(the_file, method: :delete, remote: true, data: { confirm: "Are you sure you want to remove #{the_file.name} from #{@project.name}?" } )%>
+              </div>
+            <% end %>
+          <% end %>
+      	<% else %>
+          <% if can?(:create, ProjectAttachment.new(attachable: @project)) %>
+           <%= link_to bootstrap_icon_tag('plus') + ' Upload', new_project_project_attachment_path(@project, name: 'Section 251 Exemption'), remote: true, class: 'btn btn-xs btn-primary'%>
+          <% else %>
+            <strong class>No Section 251 Exemption Attached</strong>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-3 text-right"><strong class>CAG REF</strong></div>
+      <div class="col-md-9"><%= @project.cag_ref %></div>
+    </div>
+
+    <div class="row">
+			<div class="col-md-3 text-right"><strong class>Date of CAG approval</strong></div>
+      <div class="col-md-9"><%= @project.date_of_approval.strftime('%d/%m/%Y') unless @project.date_of_approval.nil? %></div>
+    </div>
+
+    <div class="row">
+			<div class="col-md-3 text-right"><strong class>Date of CAG renewal</strong></div>
+      <div class="col-md-9"><%= @project.date_of_renewal.strftime('%d/%m/%Y') unless @project.date_of_renewal.nil? %></div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-3 text-right"><label class="control-label" title='Control of Patient Information Regulations 2002'>
+		     Regulation 3 Health Services
+      </div>
+      <div class="col-md-9"><%= @project.regulation_health_services ? 'Yes' : 'No'%></div>
+    </div>
+
+    <div class="row"><div class="col-md-3 text-right">&nbsp;</div></div>
+
+    <% if mortality_data_sources? %>
+      <div class="row">
+        <div class="col-md-3 text-right"><strong class>Informed Patient Consent (Mortality):</strong></div>
+        <div class="col-md-9"><%= @project.informed_patient_consent_mortality  ? 'Yes' : 'No'%></div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-3 text-right"><strong class>S42 of the SRSA 2007:</strong></div>
+        <div class="col-md-9"><%= @project.s42_of_srsa  ? 'Yes' : 'No'%></div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-3 text-right"><strong class>Approved researcher accreditation:</strong></div>
+        <div class="col-md-9"><%= @project.approved_research_accreditation  ? 'Yes' : 'No'%></div>
+      </div>
+
+      <div class="row"><div class="col-md-3 text-right">&nbsp;</div></div>
+    <% end %>
+
+    <div class="row">
+      <div class="col-md-3 text-right"><strong class>Has ethics approval been obtained:</strong></div>
+      <div class="col-md-9"><%= @project.ethics_approval_obtained ? 'Yes' : 'No'%></div>
+    </div>
+
+
+    <% if @project.ethics_approval_obtained %>
+      <div class="row">
+        <div class="col-md-3 text-right"><strong class>If yes, by whom: </strong></div>
+        <div class="col-md-9"><%= @project.ethics_approval_nrec_name %></div>
+      </div>
+      <div class="row">
+        <div class="col-md-3 text-right"><strong class>NREC Ref: </strong></div>
+        <div class="col-md-9"><%= @project.ethics_approval_nrec_ref %></div>
+      </div>
+    <% end %>
+
+    <div class="row">
+      <div class="col-md-3 text-right"><strong class>Trackwise ID:</strong></div>
+      <div class="col-md-9"><%= @project.trackwise_id %></div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-3 text-right pull-left"><label class="control-label" title='System level Security Policy'>
+        SLSP
+      </div>
+      <div class="col-md-9">
+      	<% if @project.project_attachments.slsp.count > 0 %>
+      	  <% the_file = @project.project_attachments.slsp.first%>
+          <% if current_user.can?(:destroy, the_file) %>
+            <% if @project.current_state.id != 'SUBMITTED' %>
+              <div>
+              	<%= link_to the_file.attachment_file_name, the_file %>
+              </div>
+            <% end %>
+          <% end %>
+      	<% else %>
+          <% if can?(:create, ProjectAttachment.new(attachable: @project)) %>
+           <%= link_to bootstrap_icon_tag('plus') + ' Upload', new_project_project_attachment_path(@project, name: 'SLSP'), remote: true, class: 'btn btn-xs btn-primary'%>
+          <% else %>
+            <strong class>No SLSP Attached</strong>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="row"><div class="col-md-3 text-right">&nbsp;</div></div>
+
+    <div class="row">
+      <div class="col-md-3 text-right"><strong class>REC Approval Letter:</strong></div>
+      <div class="col-md-9">
+      	<% if @project.project_attachments.rec_approval.count > 0 %>
+      	  <% the_file = @project.project_attachments.rec_approval.first%>
+          <% if current_user.can?(:destroy, the_file) %>
+            <% if @project.current_state.id != 'SUBMITTED' %>
+              <div>
+                <%= link_to the_file.attachment_file_name, the_file %>
+                <%# delete_link(the_file, method: :delete, remote: true, data: { confirm: "Are you sure you want to remove #{the_file.name} from #{@project.name}?" } )%>
+              </div>
+            <% end %>
+          <% end %>
+      	<% else %>
+          <% if can?(:create, ProjectAttachment.new(attachable: @project)) %>
+           <%= link_to bootstrap_icon_tag('plus') + ' Upload', new_project_project_attachment_path(@project, name: 'REC Approval Letter'), remote: true, class: 'btn btn-xs btn-primary'%>
+          <% else %>
+            <strong class>No REC Approval Letter Attached</strong>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+
+
+  </div>
+  </div>
+    <% if @project.project_comments.legal.length > 0 && !(@project.current_state.id == 'SUBMITTED' && !current_user.odr?) %>
+      <div class='row'>
+  	    <div class='col-md-12'>
+
+      <hr>
+      <span data-toggle="collapse" data-target="#project_memberships_comments">
+        <div class='row'>
+          <div class='col-md-9'>
+            <a href="#" data-turbolinks="false">
+              <div style="font-size:1.5em">
+                <%= pluralize(@project.project_comments.legal.length, 'Comment', plural: 'Comments') %>
+              </div>
+            </a>
+          </span>
+        </div>
+      </div>
+      <div id="project_memberships_comments" class="collapse" style="padding: 0 1em">
+        <%= render partial:  '/project_comments/standard_view',
+                             locals: { comments: @project.project_comments.legal,
+                                       comment_type: 'MemberJustification',
+                                       project_data_source_item_id: nil
+                                      } %>
+      </div>
+      </div>
+      </div>
+    <% end %>
+
+
+
+</div>

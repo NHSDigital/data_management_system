@@ -1,0 +1,38 @@
+<div class="row">
+  <div class="col-md-12" id="projects-panel">
+    <%= bootstrap_panel_tag(capture { %>
+      <div class="pull-right">
+        <% if current_user.can?(:import, Project) %>
+          <button type="button" class="btn btn-primary btn-xs" data-toggle="collapse" data-target="#pdfImport">
+            <%= bootstrap_icon_tag('cloud-upload') %>&nbsp;Import
+          </button>
+        <% end %>
+
+        <% if can?(:create, Project.new(team: @team)) %>
+          <% if @team.users.size > 0 && @team.z_team_status_name == 'Active'%>
+            <%= new_project_dropdown_button(@team, class: 'btn btn-primary btn-xs dropdown-toggle') if @readonly %>
+          <% end %>
+        <% end %>
+      </div>
+
+      <h3 class="panel-title clearfix">Projects</h3>
+      <small>
+      <% if params[:project_types] == 'not_in_use' %>
+        Showing inactive projects (Deleted,Suspended,Closed,Expired) <%= link_to 'click to see active projects', team_url%>
+      <% else %>
+        Showing active projects <%= link_to 'click to see inactive projects', team_url(project_types: 'not_in_use')%>
+      <% end %>
+
+      </small>
+    <% }) do %>
+        <% if true || current_user.can?(:import, Project) %>
+          <div class="collapse" id="pdfImport">
+            <div class="panel-body">
+              <%= render 'projects/import' %>
+            </div>
+          </div>
+        <% end %>
+        <%= render 'projects/projects_table', projects: @projects %>
+    <% end %>
+  </div>
+</div>

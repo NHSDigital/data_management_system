@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  attachable: one (Project)
+  name: Project attachment one
+  comments: Some comments
+
+two:
+  attachable: two (Project)
+  name: MyString
+  comments: MyString

@@ -1,0 +1,8 @@
+<%= render layout: 'layout', locals: { dpia: @dpia } do %>
+  <div class="pull-right">
+    <%= edit_link(@dpia, text: true, class: 'btn btn-default') %>
+    <%= download_link(@dpia, path: download_data_privacy_impact_assessment_path(@dpia), text: true, class: 'btn btn-primary', disabled: @dpia.attachment_file_name.blank?, data: { turbolinks: false }) %>
+  </div>
+
+  <%= render 'form', dpia: @dpia, readonly: true %>
+<% end %>

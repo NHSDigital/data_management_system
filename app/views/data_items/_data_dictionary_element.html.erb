@@ -1,0 +1,26 @@
+  <% dde_choices = data_dictionary %>
+  <table class="table table-fixed">
+    <thead>
+      <tr>
+        <td>
+          <h4><span id="filtered_dde_count"><%= dde_choices.length %></span> Elements</h4>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <%= 'Search' %>
+          <%= text_field_tag :search_ddes, nil, autocomplete: 'off' %>
+        </td>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td id="dde_items">
+          <%= form.collection_radio_buttons :data_dictionary_element_name, dde_choices, :to_s, :to_s do |b| %>
+            <%= b.label(:"data-value" => b.value, style: 'display:block') { b.radio_button + ' ' + b.text } %>
+          <% end %>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+

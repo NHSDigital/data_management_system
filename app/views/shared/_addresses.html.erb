@@ -1,0 +1,10 @@
+<div class='row' id="multi-addresses">
+  <%= form.control_group :addresses, link_to_add_address('Add Address', form, :addresses, class: 'btn btn-primary') do %>
+    <ul class='repeatable-fields list-group'>
+      <%= form.fields_for :addresses, klass.addresses || Address.new do |builder| %>
+        <%= render 'shared/address', form: builder %>
+      <% end %>
+    </ul>
+  <% end %>
+</div>
+    

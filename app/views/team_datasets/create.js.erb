@@ -1,0 +1,4 @@
+jQuery('#modal').modal('hide');
+<% @readonly = true %>
+jQuery('#datasources-panel').replaceWith('<%= escape_javascript(render 'teams/datasets') %>');
+$("#activate_button").html("<%= raw escape_javascript(render(:partial => 'teams/activate_team_button')) %>")

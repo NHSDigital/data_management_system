@@ -1,0 +1,21 @@
+<table class="table" id="<%= dom_id(node)%>_child_node_table">
+  <thead>
+    <tr>
+      <th width="10">Type</th>
+      <th width="15%">Name</th>
+      <th width="15%">Annotation/Data Dictionary Name</th>
+      <th width="25%">Description</th>
+      <th width="2%">Min Occurs</th>
+      <th width="2%">Max Occurs</th>
+      <th width="10%">Governance</th>
+      <th width="4%">Child nodes</th>
+      <th width="17%">
+    </tr>
+  </thead>
+  <tbody>
+    <% node.child_nodes.sorted.each do |node| %>
+      <%= render 'nodes/details', node: node %>
+      <%= render 'nodes/child_node_details', node: node %>
+    <% end %>
+  </tbody>
+</table>

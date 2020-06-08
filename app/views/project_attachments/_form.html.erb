@@ -1,0 +1,30 @@
+<%
+  attachment_types = ProjectAttachment.relevant_types_for(@project)
+%>
+
+<%= bootstrap_form_for([@project, @project_attachment], :html => {:class => "form-horizontal center", :multipart => 'true'}, horizontal: 2) do |form| %>
+  <% if params[:name] && attachment_types.include?(params[:name]) %>
+  	<%= form.control_group :name, 'File type' do %>
+      <%= form.text_field :name, value: params[:name], readonly: true %>
+    <% end %>
+  <% else %>
+    <%= form.control_group :name, 'File type' do %>
+      <%= form.select :name, attachment_types, { include_blank: 'File type ...' }, required: true %>
+    <% end %>
+  <% end %>
+
+  <%= form.control_group [:project_attachment, :upload] do %>
+    <% if form.object.new_record? %>
+      <%= form.file_field :upload, label: 'Upload Attachment', readonly_value: form.object.attachment_file_name, :id => 'project_attachment_input_field', :required => true  %>
+    <% else %>
+      <p class="form-control-static"><%= form.object.attachment_file_name %></p>
+    <% end %>
+  <% end %>
+
+  <%= form.control_group nil do %>
+    <div class="pull-right">
+      <%= link_to "Don't save".html_safe, "#", data: {toggle: "modal", target: "#modal"}, class: 'btn btn-default' %>
+      <%= submit_tag('Save', class: 'btn btn-primary', disable_with: 'Saving&hellip;'.html_safe) %>
+    </div>
+  <% end %>
+<% end %>

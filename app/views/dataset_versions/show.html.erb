@@ -1,0 +1,30 @@
+<%= render 'user_actions' %>
+
+<%
+root = @dataset_version.version_entity
+
+@selected_node = Node.find_by_id(params['node'])
+
+if @selected_node
+  @ancestors = ancestors(@selected_node)
+else
+  @selected_node = root
+  @ancestors = []
+end
+%>
+
+<ol class="breadcrumb">
+  <% @ancestors.reverse.each do |ancestor| %>
+    <%= content_tag(:li, link_to(ancestor.name, node: ancestor.id)) %>
+  <% end %>
+  <%= content_tag(:li, @selected_node.name, class: 'active') %>
+</ol>
+
+<div class="row">
+  <div class="col-md-6">
+    <%= render_tree(root, @selected_node, @ancestors) %>
+  </div>
+  <div class="col-md-6">
+    <%= render "nodes/types/#{@selected_node.class.name.demodulize.underscore}", node: @selected_node %>
+  </div>
+</div>

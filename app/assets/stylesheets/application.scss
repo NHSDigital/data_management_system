@@ -1,0 +1,186 @@
+/*
+*= require ndr_ui
+*= require bootstrap-table
+*= require ndr_ui/datepicker
+*/
+@import "phe_logo";
+@import "file_upload";
+@import "nodes";
+
+// Ensure date picker renders over bootstrap's static nav, modals, tooltips etc
+.datepicker {
+  z-index: 1100 !important; // Backport to NdrUI?
+}
+
+// btn-danger should appear as a ghost button when not interacted with
+.btn-danger {
+  color: #ac2925;
+  background-color: white;
+}
+
+
+.nav-tabs > li.active > a,
+.nav-tabs > li.active > a:focus,
+.nav-tabs > li.active > a:hover{
+  background-color: #F5F5F5 !important;
+  color: #333;
+}
+
+.icon-danger {
+  color: #ac2925;
+}
+
+.icon-warning {
+  color: orange;
+}
+
+.icon-success {
+  color: green;
+}
+
+.label-new {
+  background-color: #DCB81F;
+}
+
+.unread {
+//  font-weight: bold;
+}
+
+tr.comments:hover {
+  background-color: white !important;
+}
+
+.arrow-up {
+  width: 0;
+  height: 0;
+  border-left: 15px solid transparent;
+  border-right: 15px solid transparent;
+
+  border-bottom: 15px solid #ddd;
+//  border-bottom: 15px solid #f5f5f5;
+}
+
+.tabs-left {
+  border-bottom: none;
+  padding-top: 2px;
+}
+.tabs-left {
+  border-right: 1px solid #ddd;
+}
+.tabs-left>li {
+  float: none;
+  margin-bottom: 2px;
+}
+.tabs-left>li {
+  margin-right: -1px;
+}
+.tabs-left>li.active>a,
+.tabs-left>li.active>a:hover,
+.tabs-left>li.active>a:focus {
+  border-bottom-color: #ddd;
+  border-right-color: transparent;
+}
+
+.tabs-left>li>a {
+  border-radius: 4px 0 0 4px;
+  margin-right: 0;
+  display:block;
+}
+.vertical-text {
+  margin-top:50px;
+  border: none;
+  position: relative;
+}
+.vertical-text>li {
+  height: 20px;
+  width: 120px;
+  margin-bottom: 100px;
+}
+.vertical-text>li>a {
+  border-bottom: 1px solid #ddd;
+  border-right-color: transparent;
+  text-align: center;
+  border-radius: 4px 4px 0px 0px;
+}
+.vertical-text>li.active>a,
+.vertical-text>li.active>a:hover,
+.vertical-text>li.active>a:focus {
+  border-bottom-color: transparent;
+  border-right-color: #ddd;
+  border-left-color: #ddd;
+}
+.vertical-text.tabs-left {
+  left: -50px;
+}
+.vertical-text.tabs-left>li {
+  -webkit-transform: rotate(-90deg);
+  -moz-transform: rotate(-90deg);
+  -ms-transform: rotate(-90deg);
+  -o-transform: rotate(-90deg);
+  transform: rotate(-90deg);
+}
+
+.panel-heading {line-height:32px;}
+
+// Nav pills with hidden chevrons
+.nav li {
+  i.arrow {
+    visibility: hidden;
+  }
+
+  &.active i.arrow {
+    visibility: visible;
+  }
+}
+
+.label-white {
+  background-color: #fff;
+  color: #000;
+  border: 1px solid #ccc;
+}
+.label-black {
+  background-color: #000;
+  color: #fff;
+  border: 1px solid #000;
+}
+
+.unread_notification {
+  font-weight: bold;}
+
+.table-enduser {
+    table-layout: fixed;
+    word-wrap: break-word;
+}
+
+$phe-primary: #98002e;
+$phe-secondary: #00b092;
+
+.panel-phe-primary {
+  border-color: $phe-primary;
+
+  .panel-heading {
+    color: #fff;
+    background-color: $phe-primary;
+    border-color: darken(adjust-hue($phe-primary, -10), 5%);
+  }
+}
+
+.panel-phe-secondary {
+  border-color: $phe-secondary;
+
+  .panel-heading {
+    color: #fff;
+    background-color: $phe-secondary;
+    border-color: darken(adjust-hue($phe-secondary, -10), 5%);
+  }
+}
+
+.mandatory {
+  background-color: lightpink
+}
+
+#datasets-table {
+  &.table > tbody + tbody {
+    border-top: 0;
+  }
+}

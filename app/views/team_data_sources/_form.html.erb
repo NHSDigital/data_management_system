@@ -1,0 +1,12 @@
+<%= bootstrap_form_for [@team, @team_data_source], remote: true, horizontal: 2 do |form| %>
+  <%= form.control_group :data_source_id, 'Data Source' do %>
+    <%= form.select :data_source_id, @team.data_sources_not_in_use.collect {|ds| [ ds.name, ds.id ] }, { include_blank: @team.data_source_prompt }, disabled: @team.disable_data_source_dropdown? %>
+  <% end %>
+
+  <%= form.control_group nil do %>
+    <div class='pull-right'>
+      <%= close_modal %>
+      <%= submit_tag('Save', class: 'btn btn-primary', disable_with: 'Saving&hellip;'.html_safe) %>
+    <div>
+  <% end %>
+<% end %>

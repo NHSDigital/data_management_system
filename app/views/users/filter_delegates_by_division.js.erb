@@ -1,0 +1,7 @@
+(function() {
+  var $select  = $('select#team_delegate_approver'),
+      previous = $select.val(),
+      markup   = '<%= j options_from_collection_for_select(@filtered_delegates, :id, :full_name) %>';
+
+  $select.html(markup).val(previous);
+})();

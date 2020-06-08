@@ -1,0 +1,370 @@
+module Workflow
+  # Defines high level grants relating to workflows.
+  class Ability
+    include CanCan::Ability
+
+    def initialize(user)
+      @user = user
+
+      as_basic_user
+      as_project_member
+      as_project_senior
+      as_team_delegate
+      as_odr_user
+      as_administrator
+
+      merge(ProjectWorkflowAbility.new(user))
+      merge(EoiWorkflowAbility.new(user))
+      merge(ApplicationWorkflowAbility.new(user))
+    end
+
+    private
+
+    def as_basic_user; end
+
+    def as_project_member
+      role = ProjectRole.can_edit
+      roleable_type = 'ProjectRole'
+      project_ids =
+        @user.projects.active.through_grant_of(role, roleable_type).pluck('grants.project_id')
+      can :read, ProjectState, project_id: project_ids
+    end
+
+    # TODO: disable a project contributor from transitioning
+    def as_project_senior
+      role = TeamRole.applicants
+      roleable_type = 'TeamRole'
+      teams = @user.teams.through_grant_of(role, roleable_type)
+      project_conditions = { team: teams }
+      can :read,       ProjectState, project: project_conditions
+      can :transition, Project,      project_conditions
+    end
+
+    def accessible_projects_via(role, roleable_type, user)
+      user.projects.active.through_grant_of(role, roleable_type)
+    end
+
+    def as_team_delegate
+      role = TeamRole.delegates
+      roleable_type = 'TeamRole'
+      teams = @user.teams.through_grant_of(role, roleable_type)
+      project_conditions = { team: teams }
+
+      can :read,       ProjectState, project: project_conditions
+      can :transition, Project,      project_conditions
+    end
+
+    def as_odr_user
+      return unless @user.application_manager? || @user.senior_application_manager? || @user.odr?
+
+      can :read,       ProjectState
+      can :transition, Project
+    end
+
+    def as_administrator; end
+  end
+
+  # Defines authorization rules relating to the project workflow.
+  class ProjectWorkflowAbility
+    include CanCan::Ability
+
+    def initialize(user)
+      @user = user
+
+      as_basic_user
+      as_project_member
+      as_project_senior
+      as_team_delegate
+      as_odr_user
+      as_administrator
+    end
+
+    private
+
+    def as_basic_user; end
+
+    def as_project_member; end
+
+    def as_project_senior
+      project_conditions = {
+        project_type: { name: 'Project' },
+        grants: { user_id: @user.id, roleable: ProjectRole.fetch(:owner) }
+      }
+
+      can :create,    ProjectState, state: { id: 'DRAFT' },
+                                    project: project_conditions.merge(
+                                      current_state: { id: %w[REVIEW SUBMITTED REJECTED] }
+                                    )
+
+      can :create,    ProjectState, state: { id: 'REVIEW' },
+                                    project: project_conditions.merge(
+                                      current_state: { id: 'DRAFT' }
+                                    )
+
+      can :create,    ProjectState, state: { id: 'DELETED' },
+                                    project: project_conditions
+    end
+
+    def as_team_delegate
+      project_conditions = {
+        project_type: { name: 'Project' },
+        team: { grants: { user_id: @user.id, roleable: TeamRole.delegates } }
+      }
+
+      can :create, ProjectState, state: { id: %w[SUBMITTED REJECTED] },
+                                 project: project_conditions.merge(
+                                   current_state: { id: 'REVIEW' }
+                                 )
+    end
+
+    def as_odr_user
+      return unless @user.odr?
+
+      project_conditions = { project_type: { name: 'Project' } }
+
+      # Technically possible by pre-existing code behaviour, but undesirable?
+      # can :create, ProjectState, state: { id: 'SUBMITTED' },
+      #                            project: project_conditions.merge(
+      #                              current_state: { id: %w[APPROVED REJECTED] }
+      #                            )
+
+      can :create, ProjectState, state: { id: %w[APPROVED REJECTED] },
+                                 project: project_conditions.merge(
+                                   current_state: { id: 'SUBMITTED' }
+                                 )
+    end
+
+    def as_administrator
+      return unless @user.administrator?
+
+      can :read, ProjectState
+    end
+  end
+
+  # Defines authorization rules relating to the project workflow.
+  class EoiWorkflowAbility
+    include CanCan::Ability
+
+    def initialize(user)
+      @user = user
+
+      as_basic_user
+      as_project_member
+      as_project_senior
+      as_team_delegate
+      as_odr_user
+      as_application_manager
+      as_administrator
+    end
+
+    private
+
+    def as_basic_user; end
+
+    def as_project_member; end
+
+    def as_project_senior
+      project_conditions = { project_type: { name: 'EOI' },
+                             grants: { user_id: @user.id, roleable: ProjectRole.fetch(:owner) } }
+
+      can :create, ProjectState, state: { id: 'DRAFT' },
+                                 project: project_conditions.merge(
+                                   current_state: { id: 'SUBMITTED' }
+                                 )
+
+      can :create, ProjectState, state: { id: 'SUBMITTED' },
+                                 project: project_conditions.merge(
+                                   current_state: { id: 'DRAFT' }
+                                 )
+
+      can :create, ProjectState, state: { id: 'DELETED' },
+                                 project: project_conditions.merge(
+                                   current_state: { id: %w[DRAFT APPROVED REJECTED] }
+                                 )
+    end
+
+    def as_team_delegate; end
+
+    def as_odr_user
+      return unless @user.application_manager? || @user.senior_application_manager? || @user.odr?
+
+      can :create, ProjectState, state: { id: %w[APPROVED REJECTED] },
+                                 project: {
+                                   project_type: { name: 'EOI' },
+                                   assigned_user_id: @user.id,
+                                   current_state: { id: 'SUBMITTED' }
+                                 }
+    end
+
+    # TODO: there may be more needed for this and Application ProjectType
+    def as_application_manager
+      return unless @user.application_manager?
+
+      can :create, ProjectState, state: { id: 'DRAFT' },
+                                 project: {
+                                   project_type: { name: 'EOI' },
+                                   current_state: { id: 'SUBMITTED' }
+                                 }
+
+      can :create, ProjectState, state: { id: 'SUBMITTED' },
+                                 project: {
+                                   project_type: { name: 'EOI' },
+                                   current_state: { id: %w[DRAFT SUBMITTED] }
+                                 }
+
+      can :create, ProjectState, state: { id: 'DELETED' },
+                                 project: {
+                                   project_type: { name: 'EOI' },
+                                   current_state: { id: 'SUBMITTED' }
+                                 }
+
+      can :create, ProjectState, state: { id: 'DELETED' },
+                                 project: {
+                                   project_type: { name: 'EOI' },
+                                   current_state: { id: %w[DRAFT APPROVED REJECTED] }
+                                 }
+    end
+
+    def as_administrator; end
+  end
+
+  # Defines authorization rules relating to the Application workflow.
+  class ApplicationWorkflowAbility
+    include CanCan::Ability
+
+    def initialize(user)
+      @user = user
+
+      as_basic_user
+      as_project_member
+      as_project_senior
+      as_team_delegate
+      as_odr_user
+      as_administrator
+    end
+
+    private
+
+    def as_basic_user; end
+
+    def as_project_member; end
+
+    def as_project_senior
+      can :create, ProjectState, state: { id: %w[SUBMITTED] },
+                                 project: {
+                                   project_type: { name: 'Application' },
+                                   current_state: { id: %w[DRAFT] },
+                                   grants: { user_id: @user.id, roleable: ProjectRole.fetch(:owner) }
+                                 }
+
+      can :create, ProjectState, state: { id: %w[DRAFT] },
+                                project: {
+                                  project_type: { name: 'Application' },
+                                  current_state: { id: %w[SUBMITTED] },
+                                  grants: { user_id: @user.id, roleable: ProjectRole.fetch(:owner) }
+                                }
+    end
+
+    def as_team_delegate; end
+
+    def as_odr_user
+      if @user.application_manager?
+        can :create, ProjectState, state: { id: %w[SUBMITTED] },
+                                   project: {
+                                     project_type: { name: 'Application' },
+                                     current_state: { id: %w[DRAFT] }
+                                   }
+
+        can :create, ProjectState, state: { id: %w[DRAFT] },
+                                   project: {
+                                     project_type: { name: 'Application' },
+                                     current_state: { id: %w[SUBMITTED] }
+                                   }
+
+        can :create, ProjectState, state: { id: %w[DPIA_START] },
+                                   project: {
+                                     project_type: { name: 'Application' },
+                                     assigned_user_id: @user.id,
+                                     current_state: {
+                                       id: %w[
+                                         SUBMITTED
+                                         DPIA_REJECTED
+                                         CONTRACT_REJECTED
+                                         AMEND
+                                       ]
+                                     }
+                                   }
+
+        can :create, ProjectState, state: { id: %w[DPIA_REVIEW] },
+                                   project: {
+                                     project_type: { name: 'Application' },
+                                     assigned_user_id: @user.id,
+                                     current_state: { id: 'DPIA_START' }
+                                   }
+
+        can :create, ProjectState, state: { id: %w[DPIA_REJECTED] },
+                                   project: {
+                                     project_type: { name: 'Application' },
+                                     assigned_user_id: @user.id,
+                                     current_state: { id: 'DPIA_REVIEW' }
+                                   }
+
+        can :create, ProjectState, state: { id: %w[DPIA_MODERATION] },
+                                   project: {
+                                     project_type: { name: 'Application' },
+                                     assigned_user_id: @user.id,
+                                     current_state: { id: 'DPIA_REVIEW' }
+                                   }
+
+        can :create, ProjectState, state: { id: 'AMEND' },
+                                   project: {
+                                      project_type: { name: 'Application' },
+                                      assigned_user_id: @user.id,
+                                      current_state: {
+                                        id: %w[
+                                          DPIA_START
+                                          DPIA_REVIEW
+                                          DPIA_MODERATION
+                                          DPIA_REJECTED
+                                          CONTRACT_DRAFT
+                                          CONTRACT_REJECTED
+                                          CONTRACT_COMPLETED
+                                        ]
+                                      }
+                                   }
+      end
+
+      if @user.senior_application_manager?
+        can :create, ProjectState, state: { id: %w[DPIA_REJECTED] },
+                                   project: {
+                                     project_type: { name: 'Application' },
+                                     assigned_user_id: @user.id,
+                                     current_state: { id: 'DPIA_MODERATION' }
+                                   }
+
+        can :create, ProjectState, state: { id: %w[CONTRACT_DRAFT] },
+                                   project: {
+                                     project_type: { name: 'Application' },
+                                     assigned_user_id: @user.id,
+                                     current_state: { id: 'DPIA_MODERATION' }
+                                   }
+      end
+
+      if @user.odr?
+        can :create, ProjectState, state: { id: %w[CONTRACT_REJECTED] },
+                                   project: {
+                                     project_type: { name: 'Application' },
+                                     current_state: { id: 'CONTRACT_DRAFT' }
+                                   }
+
+        can :create, ProjectState, state: { id: %w[CONTRACT_COMPLETED] },
+                                   project: {
+                                     project_type: { name: 'Application' },
+                                     current_state: { id: 'CONTRACT_DRAFT' }
+                                   }
+      end
+    end
+
+    def as_administrator; end
+  end
+end

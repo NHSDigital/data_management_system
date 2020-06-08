@@ -1,0 +1,13 @@
+<div class="col-md-12" id="team-datasets-panel">
+  <%= bootstrap_panel_tag(capture { %>
+        <div class="pull-right">
+          <%= link_to bootstrap_icon_tag('plus') +' Add New Dataset', new_team_dataset_path(@team, dataset: { team_id: @team.id }),
+              remote: true, class: 'btn btn-success btn-xs' if can?(:create, @team => Dataset) %></th>
+        </div>
+    <h3 class="panel-title clearfix">Datasets</h3>
+  <% }) do %>
+  <table class="table table-hover" id="memberships-table">
+    <%= render 'datasets/dataset_table_body', datasets: @team.datasets.sort_by(&:name), readonly: false %>
+  </table>
+  <% end %>
+</div>

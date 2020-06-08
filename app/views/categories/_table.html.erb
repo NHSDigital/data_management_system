@@ -1,0 +1,39 @@
+<div id='dataset-version-categories'>
+  <%= link_to('Back to Dataset Version', @dataset_version, class: 'btn btn-default')%>
+  <table class="table table-hover" id="dataset-version-category-table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+        <th></th>
+      </tr>
+      <div class="pull-right">
+        <% if can?(:update, Category) %>
+          <%= link_to bootstrap_icon_tag('plus') +' Add New Category', new_dataset_version_category_path(@dataset_version), remote: true, class: 'btn btn-primary' %>
+        <% end %>
+      </div>
+    </thead>
+    <tbody>
+      <% @categories.each do |category| %>
+        <tr id="<%= dom_id(category) %>">
+          <td><%= category.name %></td>
+          <td><%= category.description %></td>
+          <td>
+            <div class="pull-right">
+              <%= button_group do %>
+                <% if can?(:destroy, category) %>
+                  <%= delete_link(category, method: :delete, remote: true, data:
+                      { confirm: "Are you sure you want to delete Category: #{category.name}" } )
+                  %>
+                <% end %>
+                <% if can?(:update, category) %>
+                   <%= edit_link edit_category_path(category), remote: true, skip_authorization: true %>
+                <% end %>
+              <% end %>
+            </div>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

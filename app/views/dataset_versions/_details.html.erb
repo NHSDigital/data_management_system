@@ -1,0 +1,31 @@
+<tr class="<%= node.highlighting %>" id="<%= dom_id(node) %>">
+  <td><%= node_type_label(node) %></td>
+  <td>
+    <%= content_tag(:div, content_tag(:label, node.reference, class: 'label label-info')) %>
+    <%= node.data_item? ? node.name : link_to(node.name, node: node.id) %>
+    <%= content_tag(:div, node.annotation, class: 'text-muted') unless node.annotation == 'TEMP ANNOTATION' || node.name == node.annotation %>
+  </td>
+  <% if node.dataset.dataset_type_name == 'table_specification' || node.group? %>
+    <td></td>
+  <% else %>
+    <td><%= node.min_occurs %>..<%= node.max_occurrences_star %></td>
+  <% end %>
+  <td><%= node.governance&.value %></td>
+  <td rowspan="2">
+    <div class="pull-right">
+      <% if can?(:destroy, node) %>
+        <%= delete_link(node_path(node), method: :delete, remote: true, data: { confirm: "Are you sure you want to remove #{node.name} from #{@dataset_version.name}?" }, skip_authorization: true)%>
+      <% end %>
+      <% if can?(:update, node) %>
+        <%= edit_link edit_node(node), remote: true, skip_authorization: true %>
+      <% end %>
+      <% if can?(:read, node) && node.data_item? %>
+        <%= details_link detail_node(node), remote: true, skip_authorization: true %>
+      <% end %>
+    </div>
+  </td>
+</tr>
+<tr></tr>
+<tr id="<%= dom_id(node) %>_description" class="<%= node.highlighting %>">
+  <td style="border-top: 0;padding-top: 0;" colspan="4"><small><%= node.description %></small></td>
+</tr>

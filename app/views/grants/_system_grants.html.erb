@@ -1,0 +1,36 @@
+<div class="panel panel-default" id="user-system-grants">
+  <div class="panel-heading">System Roles</div>
+  <% if @grants.systems.length.positive? %>
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <% SystemRole.all.each do |role| %>
+            <th><%= role.name %></th>
+          <% end %>
+          <th>
+            <% if can?(:edit_system_grants, @user) %>
+              <%= edit_link edit_system_user_grants_path(@user), class: 'btn btn-default btn-xs pull-right', text: 'true', skip_authorization: true  %>
+            <% end %>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <% SystemRole.all.each do |role| %>
+            <td>
+              <%= @user.role?(role) && bootstrap_icon_tag(:ok) %>
+            </td>
+          <% end %>
+        </tr>
+      </tbody>
+    </table>
+  <% else %>
+    <% if can?(:edit_system_grants, @user) %>
+      <div class="clearfix">
+        <%= edit_link edit_system_user_grants_path(@user), class: 'btn btn-default btn-xs pull-right', text: true, skip_authorization: true %>
+      </div>
+    <% end %>
+
+    <p class="lead text-center">This user currently has no system granted roles</p>
+  <% end %>
+</div>

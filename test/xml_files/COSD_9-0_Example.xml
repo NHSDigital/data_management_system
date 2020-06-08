@@ -1,0 +1,460 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<COSD:COSD xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:COSD="http://www.datadictionary.nhs.uk/messages/COSD-v9-0"
+           xsi:schemaLocation="http://www.datadictionary.nhs.uk/messages/COSD-v9-0 ../Schemas/COSDCOSD_XMLSchema-v9-0.xsd">
+  <Id root="60E8A409-24B6-4ADC-9C96-0273F668BDC8"/>
+  <OrganisationIdentifierCodeOfSubmittingOrganisation extension="ABC12"/>
+  <RecordCount value="1"/>
+   <ReportingPeriodStartDate>2018-03-01</ReportingPeriodStartDate>
+  <ReportingPeriodEndDate>2018-03-30</ReportingPeriodEndDate>
+  <FileCreationDateTime>2018-03-30T00:00:00</FileCreationDateTime>
+  <!-- Primary Pathway -->
+  <BreastRecord>
+    <Id root="778F1F33-4911-4E50-8E36-3182780F8F91" />
+    <LinkagePatientId>
+      <NhsNumber extension="1111111111" />
+      <LocalPatientIdentifier>AB1888555446</LocalPatientIdentifier>
+      <NhsNumberStatusIndicatorCode code="03" />
+      <PersonBirthDate>1971-01-01</PersonBirthDate>
+      <OrganisationIdentifierCodeOfProvider extension="AB1" />
+    </LinkagePatientId>
+
+    <PrimaryPathway>
+      <LinkageDiagnosticDetails>
+        <PrimaryDiagnosisIcd code="C501" />
+        <TumourLaterality code="L" />
+        <DateOfPrimaryDiagnosisClinicallyAgreed>2017-01-01</DateOfPrimaryDiagnosisClinicallyAgreed>
+      </LinkageDiagnosticDetails>
+    </PrimaryPathway>
+  </BreastRecord>
+
+  <!-- Recurrence -->
+  <BreastRecord>
+    <Id root="778F1F33-4911-4E50-8E36-3182780F8F92" />
+    <LinkagePatientId>
+      <NhsNumber extension="1111111111" />
+      <LocalPatientIdentifier>AB1888555446</LocalPatientIdentifier>
+      <NhsNumberStatusIndicatorCode code="03" />
+      <PersonBirthDate>1971-01-01</PersonBirthDate>
+      <OrganisationIdentifierCodeOfProvider extension="AB1" />
+    </LinkagePatientId>
+
+    <NonPrimaryPathway>
+      <DateOfNonPrimaryCancerDiagnosisClinicallyAgreed>2017-01-01</DateOfNonPrimaryCancerDiagnosisClinicallyAgreed>
+      <Recurrence>
+        <OriginalPrimaryDiagnosisIcd code="M1234"/>
+        <MetastaticTypeAndSiteRecurrence>
+          <MetastaticType code="01"/>
+          <MetastaticSite code="02"/>
+        </MetastaticTypeAndSiteRecurrence>
+        <PalliativeCareSpecialistSeenIndicatorCancerRecurrence code="9"/>
+        <Relapse-MethodOfDetection code="1"/>
+      </Recurrence>
+      <NonPrimaryCancerPathwayReferral>
+        <SourceOfReferralForNonPrimaryCancerPathway code="01"/>
+        <DateFirstSeen-NonPrimaryCancerPathway>2017-01-02</DateFirstSeen-NonPrimaryCancerPathway>
+        <OrganisationSiteIdentifierProviderFirstSeen-NonPrimaryCancerPathway extension="ABC12"/>
+        <!-- <CancerOrSymptomaticBreastReferralPatientStatusnonPrimary code="36"/> -->
+      </NonPrimaryCancerPathwayReferral>
+    </NonPrimaryPathway>
+  </BreastRecord>
+
+  <!-- Progression -->
+  <BreastRecord>
+    <Id root="778F1F33-4911-4E50-8E36-3182780F8F92" />
+    <LinkagePatientId>
+      <NhsNumber extension="1111111111" />
+      <LocalPatientIdentifier>AB1888555446</LocalPatientIdentifier>
+      <NhsNumberStatusIndicatorCode code="03" />
+      <PersonBirthDate>1971-01-01</PersonBirthDate>
+      <OrganisationIdentifierCodeOfProvider extension="AB1" />
+    </LinkagePatientId>
+
+    <NonPrimaryPathway>
+      <DateOfNonPrimaryCancerDiagnosisClinicallyAgreed>2017-01-01</DateOfNonPrimaryCancerDiagnosisClinicallyAgreed>
+      <Progression>
+        <ProgressionIcd code="M1234"/>
+        <MetastaticTypeAndSiteProgression>
+          <MetastaticType code="01"/>
+          <MetastaticSite code="02"/>
+        </MetastaticTypeAndSiteProgression>
+      </Progression>
+    </NonPrimaryPathway>
+  </BreastRecord>
+
+  <!-- Transformation Morphology choice 1 -->
+  <BreastRecord>
+    <Id root="778F1F33-4911-4E50-8E36-3182780F8F92" />
+    <LinkagePatientId>
+      <NhsNumber extension="1111111111" />
+      <LocalPatientIdentifier>AB1888555446</LocalPatientIdentifier>
+      <NhsNumberStatusIndicatorCode code="03" />
+      <PersonBirthDate>1971-01-01</PersonBirthDate>
+      <OrganisationIdentifierCodeOfProvider extension="AB1" />
+    </LinkagePatientId>
+
+    <NonPrimaryPathway>
+      <DateOfNonPrimaryCancerDiagnosisClinicallyAgreed>2017-01-01</DateOfNonPrimaryCancerDiagnosisClinicallyAgreed>
+      <Transformation>
+        <OriginalMorphologyIcd-o-3 code="M12345"/>
+        <OriginalMorphologySnomed code="123456"/>
+        <MorphologyIcd-o-3Transformation code="M1234"/>
+        <MorphologySNOMEDTransformation>
+          <MorphologySnomedTransformation code="T1UU6S5624JNUHF51F"/>
+          <SnomedVersionTransformation code="02"/>
+        </MorphologySNOMEDTransformation>
+      </Transformation>
+    </NonPrimaryPathway>
+  </BreastRecord>
+
+  <!-- Transformation Morphology choice 2 -->
+  <BreastRecord>
+    <Id root="778F1F33-4911-4E50-8E36-3182780F8F92" />
+    <LinkagePatientId>
+      <NhsNumber extension="1111111111" />
+      <LocalPatientIdentifier>AB1888555446</LocalPatientIdentifier>
+      <NhsNumberStatusIndicatorCode code="03" />
+      <PersonBirthDate>1971-01-01</PersonBirthDate>
+      <OrganisationIdentifierCodeOfProvider extension="AB1" />
+    </LinkagePatientId>
+
+    <NonPrimaryPathway>
+      <DateOfNonPrimaryCancerDiagnosisClinicallyAgreed>2017-01-01</DateOfNonPrimaryCancerDiagnosisClinicallyAgreed>
+      <Transformation>
+        <OriginalMorphologyIcd-o-3 code="M12345"/>
+        <OriginalMorphologySnomed code="123456"/>
+        <MorphologySNOMEDTransformation>
+          <MorphologySnomedTransformation code="123456"/>
+          <SnomedVersionTransformation code="01"/>
+        </MorphologySNOMEDTransformation>
+      </Transformation>
+    </NonPrimaryPathway>
+  </BreastRecord>
+
+  <!-- Recurrence with diagnosis and staging => invalid-->
+  <BreastRecord>
+    <Id root="778F1F33-4911-4E50-8E36-3182780F8F92" />
+    <LinkagePatientId>
+      <NhsNumber extension="1111111111" />
+      <LocalPatientIdentifier>AB1888555446</LocalPatientIdentifier>
+      <NhsNumberStatusIndicatorCode code="03" />
+      <PersonBirthDate>1971-01-01</PersonBirthDate>
+      <OrganisationIdentifierCodeOfProvider extension="AB1" />
+    </LinkagePatientId>
+
+    <NonPrimaryPathway>
+      <DateOfNonPrimaryCancerDiagnosisClinicallyAgreed>2017-01-01</DateOfNonPrimaryCancerDiagnosisClinicallyAgreed>
+      <Recurrence>
+        <OriginalPrimaryDiagnosisIcd code="M1234"/>
+        <MetastaticTypeAndSiteRecurrence>
+          <MetastaticType code="01"/>
+          <MetastaticSite code="02"/>
+        </MetastaticTypeAndSiteRecurrence>
+        <PalliativeCareSpecialistSeenIndicatorCancerRecurrence code="9"/>
+        <Relapse-MethodOfDetection code="1"/>
+      </Recurrence>
+      <!-- <Diagnosis>
+        <OrganisationSiteIdentifierOfDiagnosis extension="ABC01" />
+        <BasisOfDiagnosisCancer code="7" />
+        <SnomedVersionDiagnosis code="99" />
+        <MorphologySnomedDiagnosis code="M85003" />
+        <MorphologyIcd-o-3 code="M85003" />
+        <TopographyIcd-o-3 code="T04010" />
+        <GradeOfDifferentiationAtDiagnosis code="G2" />
+        <PerformanceStatusAdult code="2" />
+        <DiagnosisCodeSnomedCt code="123456" />
+        <CancerRecurrenceCarePlanInd code="NN" />
+        <MetastaticType code="03" />
+        <MetastaticSite code="98" />
+        <DiagnosisAdditionalItems>
+          <PrimaryDiagnosisSubsidiaryComment><![CDATA[TestData]]></PrimaryDiagnosisSubsidiaryComment>
+          <SecondaryDiagnosisIcd code="D059" />
+          <SecondaryDiagnosisIcd code="D059" />
+          <OtherSignificantDiagnosisSubsidiaryComment><![CDATA[TestData]]></OtherSignificantDiagnosisSubsidiaryComment>
+          <FamilialCancerSyndrome code="9" />
+          <FamilialCancerSyndromeSubsidiaryComment><![CDATA[TestData]]></FamilialCancerSyndromeSubsidiaryComment>
+          <BankedTissueAtDiagnosis code="9" />
+          <TypeOfTissueBankedAtDiagnosis code="5" />
+        </DiagnosisAdditionalItems>
+      </Diagnosis>
+      <Staging>
+        <TCategoryFinalPretreatment>2</TCategoryFinalPretreatment>
+        <NCategoryFinalPretreatment>0</NCategoryFinalPretreatment>
+        <MCategoryFinalPretreatment>0</MCategoryFinalPretreatment>
+        <TnmStageGroupingFinalPretreatment>2A</TnmStageGroupingFinalPretreatment>
+        <OrganisationSiteIdentifierReportedPretreatmentTnmStage extension="ABC22" />
+        <StageDateFinalPretreatmentStage>2018-03-04</StageDateFinalPretreatmentStage>
+        <TCategoryIntegratedStage>2</TCategoryIntegratedStage>
+        <NCategoryIntegratedStage>0</NCategoryIntegratedStage>
+        <MCategoryIntegratedStage>0</MCategoryIntegratedStage>
+        <TnmStageGroupingIntegrated>3B</TnmStageGroupingIntegrated>
+        <OrganisationSiteIdentifierReportedIntegratedTnmStage extension="ABC22" />
+        <StageDateIntegratedStage>2018-03-05</StageDateIntegratedStage>
+        <TnmCodingEdition code="1" />
+        <TnmVersionNumberStaging>8</TnmVersionNumberStaging>
+      </Staging> -->
+    </NonPrimaryPathway>
+    <Demographics>
+      <PersonFamilyName>COSD</PersonFamilyName>
+      <PersonGivenName>BREAST</PersonGivenName>
+      <Address>
+        <StructuredAddress>
+          <StreetAddressLine>1 Structured Road</StreetAddressLine>
+          <StreetAddressLine>Structureville</StreetAddressLine>
+          <StreetAddressLine>Struct Town</StreetAddressLine>
+          <StreetAddressLine>Structshire</StreetAddressLine>
+          <StreetAddressLine>ST1RUC</StreetAddressLine>
+        </StructuredAddress>
+      </Address>
+      <PersonStatedGenderCode code="2" />
+      <PersonSexualOrientationCodeAtDiagnosis code="Z" />
+      <GeneralMedicalPractitionerSpecified extension="C123456"/>
+      <PersonFamilyNameAtBirth>COSD</PersonFamilyNameAtBirth>
+      <EthnicCategory code="A" />
+    </Demographics>
+  </BreastRecord>
+
+  <!-- Primary with Diagnosis and Staging -->
+  <BreastRecord>
+    <Id root="778F1F33-4911-4E50-8E36-3182780F8F91" />
+    <LinkagePatientId>
+      <NhsNumber extension="1111111111" />
+      <LocalPatientIdentifier>AB1888555446</LocalPatientIdentifier>
+      <NhsNumberStatusIndicatorCode code="03" />
+      <PersonBirthDate>1971-01-01</PersonBirthDate>
+      <OrganisationIdentifierCodeOfProvider extension="AB1" />
+    </LinkagePatientId>
+
+    <PrimaryPathway>
+      <LinkageDiagnosticDetails>
+        <PrimaryDiagnosisIcd code="C501" />
+        <TumourLaterality code="L" />
+        <DateOfPrimaryDiagnosisClinicallyAgreed>2017-01-01</DateOfPrimaryDiagnosisClinicallyAgreed>
+      </LinkageDiagnosticDetails>
+      <ReferralAndFirstStageOfPatientPathway>
+        <SourceOfReferralForOut-patients code="03" />
+        <DateFirstSeen>2018-03-01</DateFirstSeen>
+        <ConsultantFirstSeen>
+          <ProfessionalRegistrationIssuerCode-ConsultantFirstSeen code="02" />
+          <ProfessionalRegistrationEntryIdentifier-ConsultantFirstSeen>SOMETHING</ProfessionalRegistrationEntryIdentifier-ConsultantFirstSeen>
+        </ConsultantFirstSeen>
+        <OrganisationSiteIdentifierProviderFirstSeen extension="AB101" />
+        <DateFirstSeenCancerSpecialist>2018-03-01</DateFirstSeenCancerSpecialist>
+        <OrganisationSiteIdentifierProviderFirstCancerSpecialist extension="ABC01" />
+        <!-- <CancerOrSymptomaticBreastReferralPatientStatusnonPrimary code="08" /> -->
+        <CancerSymptomsFirstNotedDate>2014-02-02</CancerSymptomsFirstNotedDate>
+      </ReferralAndFirstStageOfPatientPathway>
+      <Diagnosis>
+        <OrganisationSiteIdentifierOfDiagnosis extension="ABC01" />
+        <BasisOfDiagnosisCancer code="7" />
+        <MorphologyIcd-o-3 code="M85003" />
+        <MorphologySNOMED>
+          <MorphologySnomedDiagnosis code="M85003" />
+          <SnomedVersionDiagnosis code="99" />
+        </MorphologySNOMED>
+        <TopographyIcd-o-3 code="T04010" />
+        <GradeOfDifferentiationAtDiagnosis code="G2" />
+        <PerformanceStatusAdult code="2" />
+        <DiagnosisCodeSnomedCt code="123456" />
+        <MetastaticTypeAndSiteDiagnosis>
+          <MetastaticType code="03" />
+          <MetastaticSite code="98" />
+        </MetastaticTypeAndSiteDiagnosis>
+        <MetastaticTypeAndSiteDiagnosis>
+          <MetastaticType code="03" />
+          <MetastaticSite code="98" />
+        </MetastaticTypeAndSiteDiagnosis>
+        <DiagnosisAdditionalItems>
+          <PrimaryDiagnosisSubsidiaryComment><![CDATA[TestData]]></PrimaryDiagnosisSubsidiaryComment>
+          <SecondaryDiagnosisIcd code="D059" />
+          <SecondaryDiagnosisIcd code="D059" />
+          <OtherSignificantDiagnosisSubsidiaryComment><![CDATA[TestData]]></OtherSignificantDiagnosisSubsidiaryComment>
+          <FamilialCancerSyndrome code="9" />
+          <FamilialCancerSyndromeSubsidiaryComment><![CDATA[TestData]]></FamilialCancerSyndromeSubsidiaryComment>
+        </DiagnosisAdditionalItems>
+        <BankedTissue>
+          <BankedTissueAtDiagnosis code="9" />
+          <TypeOfTissueBankedAtDiagnosis code="5" />
+        </BankedTissue>
+      </Diagnosis>
+      <Staging>
+        <TCategoryFinalPretreatment>2</TCategoryFinalPretreatment>
+        <NCategoryFinalPretreatment>0</NCategoryFinalPretreatment>
+        <MCategoryFinalPretreatment>0</MCategoryFinalPretreatment>
+        <TnmStageGroupingFinalPretreatment>2A</TnmStageGroupingFinalPretreatment>
+        <OrganisationSiteIdentifierReportedPretreatmentTnmStage extension="ABC22" />
+        <StageDateFinalPretreatmentStage>2018-03-04</StageDateFinalPretreatmentStage>
+        <TCategoryIntegratedStage>2</TCategoryIntegratedStage>
+        <NCategoryIntegratedStage>0</NCategoryIntegratedStage>
+        <MCategoryIntegratedStage>0</MCategoryIntegratedStage>
+        <TnmStageGroupingIntegrated>3B</TnmStageGroupingIntegrated>
+        <OrganisationSiteIdentifierReportedIntegratedTnmStage extension="ABC22" />
+        <StageDateIntegratedStage>2018-03-05</StageDateIntegratedStage>
+        <TnmCodingEdition code="1" />
+        <TnmVersionNumberStaging>8</TnmVersionNumberStaging>
+      </Staging>
+    </PrimaryPathway>
+    <Demographics>
+      <PersonFamilyName>COSD</PersonFamilyName>
+      <PersonGivenName>BREAST</PersonGivenName>
+      <Address>
+        <StructuredAddress>
+          <StreetAddressLine>1 Structured Road</StreetAddressLine>
+          <StreetAddressLine>Structureville</StreetAddressLine>
+          <StreetAddressLine>Struct Town</StreetAddressLine>
+          <StreetAddressLine>Structshire</StreetAddressLine>
+          <StreetAddressLine>ST1RUC</StreetAddressLine>
+        </StructuredAddress>
+      </Address>
+      <PersonStatedGenderCode code="2" />
+      <PersonSexualOrientationCodeAtDiagnosis code="Z" />
+      <GeneralMedicalPractitionerSpecified extension="C123456"/>
+      <PersonFamilyNameAtBirth>COSD</PersonFamilyNameAtBirth>
+      <EthnicCategory code="A" />
+    </Demographics>
+    <DiagnosticProcedures>
+      <OrganisationSiteIdentifierDiagnosticProcedure extension="ABC12"/>
+      <DiagnosticProcedureDate>2017-01-03</DiagnosticProcedureDate>
+      <DiagnosticProcedureOpcs code="Z123"/>
+      <SentinelNodeBiopsy>
+        <SentinelNodeBiopsyOutcome code="P"/>
+      </SentinelNodeBiopsy>
+    </DiagnosticProcedures>
+    <MultidisciplinaryTeamMeetings>
+      <MultidisciplinaryTeamMeetingDetail>
+        <MultidisciplinaryTeamMeetingDiscussionType code="1"/>
+        <MultidisciplinaryTeamMeetingDate>2018-03-05</MultidisciplinaryTeamMeetingDate>
+        <OrganisationSiteIdentifierOfMultidisciplinaryTeamMeeting extension="ABC99" />
+        <MultidisciplinaryTeamMeetingType>0101</MultidisciplinaryTeamMeetingType>
+        <MultidisciplinaryMeetingTypeComment><![CDATA[TestData]]></MultidisciplinaryMeetingTypeComment>
+      </MultidisciplinaryTeamMeetingDetail>
+    </MultidisciplinaryTeamMeetings>
+  </BreastRecord>
+
+  <LungRecord>
+    <Id root="778F1F33-4911-4E50-8E36-3182780F8F91" />
+    <LinkagePatientId>
+      <NhsNumber extension="1111111111" />
+      <LocalPatientIdentifier>AB1888555446</LocalPatientIdentifier>
+      <NhsNumberStatusIndicatorCode code="03" />
+      <PersonBirthDate>1971-01-01</PersonBirthDate>
+      <OrganisationIdentifierCodeOfProvider extension="AB1" />
+    </LinkagePatientId>
+
+    <PrimaryPathway>
+      <LinkageDiagnosticDetails>
+        <PrimaryDiagnosisIcd code="C501" />
+        <TumourLaterality code="L" />
+        <DateOfPrimaryDiagnosisClinicallyAgreed>2017-01-01</DateOfPrimaryDiagnosisClinicallyAgreed>
+      </LinkageDiagnosticDetails>
+      <ReferralAndFirstStageOfPatientPathway>
+        <SourceOfReferralForOut-patients code="03" />
+        <DateFirstSeen>2018-03-01</DateFirstSeen>
+        <ConsultantFirstSeen>
+          <ProfessionalRegistrationIssuerCode-ConsultantFirstSeen code="02" />
+          <ProfessionalRegistrationEntryIdentifier-ConsultantFirstSeen>SOMETHING</ProfessionalRegistrationEntryIdentifier-ConsultantFirstSeen>
+        </ConsultantFirstSeen>
+        <OrganisationSiteIdentifierProviderFirstSeen extension="AB101" />
+        <DateFirstSeenCancerSpecialist>2018-03-01</DateFirstSeenCancerSpecialist>
+        <OrganisationSiteIdentifierProviderFirstCancerSpecialist extension="ABC01" />
+        <!-- <CancerOrSymptomaticBreastReferralPatientStatusnonPrimary code="08" /> -->
+        <CancerSymptomsFirstNotedDate>2014-02-02</CancerSymptomsFirstNotedDate>
+      </ReferralAndFirstStageOfPatientPathway>
+      <Diagnosis>
+        <OrganisationSiteIdentifierOfDiagnosis extension="ABC01" />
+        <BasisOfDiagnosisCancer code="7" />
+        <MorphologyIcd-o-3 code="M85003" />
+        <MorphologySNOMED>
+          <MorphologySnomedDiagnosis code="M85003" />
+          <SnomedVersionDiagnosis code="99" />
+        </MorphologySNOMED>
+        <TopographyIcd-o-3 code="T04010" />
+        <GradeOfDifferentiationAtDiagnosis code="G2" />
+        <PerformanceStatusAdult code="2" />
+        <DiagnosisCodeSnomedCt code="123456" />
+        <MetastaticTypeAndSiteDiagnosis>
+          <MetastaticType code="03" />
+          <MetastaticSite code="98" />
+        </MetastaticTypeAndSiteDiagnosis>
+      </Diagnosis>
+    </PrimaryPathway>
+    <Demographics>
+      <PersonFamilyName>COSD</PersonFamilyName>
+      <PersonGivenName>LUNG</PersonGivenName>
+      <Address>
+        <StructuredAddress>
+          <StreetAddressLine>1 Structured Road</StreetAddressLine>
+          <StreetAddressLine>Structureville</StreetAddressLine>
+          <StreetAddressLine>Struct Town</StreetAddressLine>
+          <StreetAddressLine>Structshire</StreetAddressLine>
+          <StreetAddressLine>ST1RUC</StreetAddressLine>
+        </StructuredAddress>
+      </Address>
+      <PersonStatedGenderCode code="2" />
+      <PersonSexualOrientationCodeAtDiagnosis code="Z" />
+      <GeneralMedicalPractitionerSpecified extension="C123456"/>
+      <PersonFamilyNameAtBirth>COSD</PersonFamilyNameAtBirth>
+      <EthnicCategory code="A" />
+    </Demographics>
+    <DiagnosticProcedures>
+      <OrganisationSiteIdentifierDiagnosticProcedure extension="ABC12"/>
+      <DiagnosticProcedureDate>2017-01-03</DiagnosticProcedureDate>
+      <DiagnosticProcedureOpcs code="Z123"/>
+      <SentinelNodeBiopsy>
+        <SentinelNodeBiopsyOutcome code="P"/>
+      </SentinelNodeBiopsy>
+      <DiagnosticProceduresLung>
+        <TransthoracicEchocardiogram>
+          <TransthoracicEchocardiogramResult value="11"/>
+        </TransthoracicEchocardiogram>
+      </DiagnosticProceduresLung>
+    </DiagnosticProcedures>
+  </LungRecord>
+  <!-- Primary Pathway Site Specific Staging Choice -->
+  <HaematologicalRecord>
+    <Id root="778F1F33-4911-4E50-8E36-3182780F8F91" />
+    <LinkagePatientId>
+      <NhsNumber extension="1111111111" />
+      <LocalPatientIdentifier>AB1888555446</LocalPatientIdentifier>
+      <NhsNumberStatusIndicatorCode code="03" />
+      <PersonBirthDate>1971-01-01</PersonBirthDate>
+      <OrganisationIdentifierCodeOfProvider extension="AB1" />
+    </LinkagePatientId>
+
+    <PrimaryPathway>
+      <LinkageDiagnosticDetails>
+        <PrimaryDiagnosisIcd code="C501" />
+        <TumourLaterality code="L" />
+        <DateOfPrimaryDiagnosisClinicallyAgreed>2017-01-01</DateOfPrimaryDiagnosisClinicallyAgreed>
+      </LinkageDiagnosticDetails>
+      <Staging>
+        <TCategoryFinalPretreatment>2</TCategoryFinalPretreatment>
+        <NCategoryFinalPretreatment>0</NCategoryFinalPretreatment>
+        <MCategoryFinalPretreatment>0</MCategoryFinalPretreatment>
+        <TnmStageGroupingFinalPretreatment>2A</TnmStageGroupingFinalPretreatment>
+        <OrganisationSiteIdentifierReportedPretreatmentTnmStage extension="ABC22" />
+        <StageDateFinalPretreatmentStage>2018-03-04</StageDateFinalPretreatmentStage>
+        <TCategoryIntegratedStage>2</TCategoryIntegratedStage>
+        <NCategoryIntegratedStage>0</NCategoryIntegratedStage>
+        <MCategoryIntegratedStage>0</MCategoryIntegratedStage>
+        <TnmStageGroupingIntegrated>3B</TnmStageGroupingIntegrated>
+        <OrganisationSiteIdentifierReportedIntegratedTnmStage extension="ABC22" />
+        <StageDateIntegratedStage>2018-03-05</StageDateIntegratedStage>
+        <TnmCodingEdition code="1" />
+        <TnmVersionNumberStaging>8</TnmVersionNumberStaging>
+      </Staging>
+      <StagingSiteSpecific>
+        <OrganisationSiteIdentifierSiteSpecificStage extension="ABC12"/>
+        <StageDateSiteSpecificStage>2017-01-03</StageDateSiteSpecificStage>
+        <StagingHaematological>
+          <StagingAnnArbor>
+            <AnnArborStage code="1"/>
+          </StagingAnnArbor>
+          <!-- <StagingCLL>
+            <BinetStage code="A"/>
+          </StagingCLL> -->
+        </StagingHaematological>
+      </StagingSiteSpecific>
+    </PrimaryPathway>
+  </HaematologicalRecord>
+</COSD:COSD>

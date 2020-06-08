@@ -1,0 +1,33 @@
+<%= render layout: @user.to_partial_path do %>
+  <% url = user_grants_url(@user) %>
+  <%= form_tag(url, method: :patch) %>
+    <h4>System Roles</h4>
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <% SystemRole.all.each do |role| %>
+            <th><%= role.name %></th>
+          <% end %>
+        </tr>
+      </thead>
+      <tbody>
+        <% SystemRole.all.each do |role| %>
+        <% already_granted = @user.role?(role) %>
+          <td>
+            <%= hidden_field_tag "grants[SystemRole][system][#{role.id}]", nil %>
+            <%= check_box_tag    "grants[SystemRole][system][#{role.id}]", 1, already_granted %>
+          </td>
+        <% end %>
+      </tbody>
+    </table>
+
+    <div class="row">
+      <div class="col-md-2 col-md-offset-4">
+        <%= link_to 'Cancel', url, class: 'btn btn-default btn-block' %>
+      </div>
+      <div class="col-md-2">
+        <%= submit_tag 'Update Roles', class: 'btn btn-primary btn-block' %>
+      </div>
+    </div>
+  </form>
+<% end %>

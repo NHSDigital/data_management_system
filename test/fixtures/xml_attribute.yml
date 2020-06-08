@@ -1,0 +1,50 @@
+---
+1:
+  id: 1
+  name: code
+  use: required
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &1 2019-12-09 11:18:13.443820000 Z
+    zone: &2 !ruby/object:ActiveSupport::TimeZone
+      name: Etc/UTC
+    time: *1
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &3 2019-12-09 11:18:13.443820000 Z
+    zone: *2
+    time: *3
+2:
+  id: 2
+  name: value
+  use: required
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &4 2019-12-09 11:18:13.445323000 Z
+    zone: *2
+    time: *4
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &5 2019-12-09 11:18:13.445323000 Z
+    zone: *2
+    time: *5
+3:
+  id: 3
+  name: extension
+  use: required
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &6 2019-12-09 11:18:13.446209000 Z
+    zone: *2
+    time: *6
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &7 2019-12-09 11:18:13.446209000 Z
+    zone: *2
+    time: *7
+4:
+  id: 4
+  name: root
+  use: required
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &8 2019-12-09 11:18:13.446978000 Z
+    zone: *2
+    time: *8
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &9 2019-12-09 11:18:13.446978000 Z
+    zone: *2
+    time: *9

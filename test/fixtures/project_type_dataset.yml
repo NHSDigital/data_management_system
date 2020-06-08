@@ -1,0 +1,12 @@
+mbis_deaths_gold: 
+  project_type: project
+  dataset_id: 81
+mbis_deaths_tran:
+  project_type: project
+  dataset_id: 80
+mbis_births_gold:
+  project_type: project
+  dataset_id: 79
+mbis_births_tran:
+  project_type: project
+  dataset_id: 82

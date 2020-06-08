@@ -1,0 +1,41 @@
+<div id="data-items-panel">
+  <table class="table table-hover" id="data_source_items_table">
+    <thead>
+      <tr>
+        <th width="15%">Name</th>
+        <th width="50%">Description</th>
+        <th width="5%">Occurrences</th>
+        <th width="10%">Category</th>
+        <th width="10%">Governance</th>
+        <th width="10%">
+          <div class="pull-right">
+            <%= link_to(bootstrap_icon_tag('plus') + ' New data item', new_data_source_data_source_item_url(@data_source.id), remote: true, class: 'btn btn-primary btn-sm') if can?(:create, DataSourceItem.new(data_source: @data_source)) %>
+          </div>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @data_source.data_source_items.sort_by(&:name).each do |data_source_item| %>
+        <tr class="<%= data_source_item.highlighting %>" id="<%= dom_id(data_source_item) %>">
+          <td><%= data_source_item.name %></td>
+          <td><%= data_source_item.description %></td>
+          <td><%= data_source_item.occurrences %></td>
+          <td><%= data_source_item.category %></td>
+          <td>
+            <%= data_source_item.governance %>
+          </td>
+          <td>
+            <div class="pull-right">
+              <% if can?(:destroy, data_source_item) %>
+                <%= delete_link(data_source_item, method: :delete, remote: true, data: { confirm: "Are you sure you want to remove #{data_source_item.name} from #{@data_source.name}?" } )%>
+              <% end %>
+              <% if can?(:update, data_source_item) %>
+                <%= edit_link edit_data_source_item_url(data_source_item), remote: true %>
+              <% end %>
+            </div>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

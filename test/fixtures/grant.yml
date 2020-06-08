@@ -1,0 +1,359 @@
+# Project owner grants 
+owner_project_one:
+  roleable: owner
+  roleable_type: ProjectRole
+  user: standard_user1
+  project: one
+
+senior_project_membership:
+  project: two
+  user: standard_user
+  roleable: owner
+  roleable_type: ProjectRole
+
+read_only_project_two:
+  roleable: read_only
+  roleable_type: ProjectRole
+  user: senior_project_user
+  project: two
+
+owner_new_project:
+  roleable: owner
+  roleable_type: ProjectRole
+  user: senior_project_user
+  project: new_project
+
+# Removing from fixtures, as pending_senior_user is already the owner of this project
+# owner_pending_project:
+#   roleable: owner
+#   roleable_type: ProjectRole
+#   user: pending_senior_user
+#   project: pending_project
+
+owner_approved_project:
+  roleable: owner
+  roleable_type: ProjectRole
+  user: approved_senior_user
+  project: approved_project
+
+owner_rejected_project:
+  roleable: owner
+  roleable_type: ProjectRole
+  user: rejected_senior_user
+  project: rejected_project
+
+owner_deleted_project:
+  roleable: owner
+  roleable_type: ProjectRole
+  user: deleted_senior_user
+  project: deleted_project
+
+# original project membership grants
+standard_membership:
+  project: one
+  user: standard_user2
+  roleable: read_only
+  roleable_type: ProjectRole
+
+senior_user_membership:
+  project: one
+  user: standard_user1
+  roleable: owner
+  roleable_type: ProjectRole
+
+new_senior_user:
+  project: new_project
+  user: new_senior_user
+  roleable: contributor
+  roleable_type: ProjectRole
+
+new_standard_user:
+  project: new_project
+  user: new_standard_user
+  roleable: contributor
+  roleable_type: ProjectRole
+
+pending_senior_user:
+  project: pending_project
+  user: pending_senior_user
+  roleable: owner
+  roleable_type: ProjectRole
+
+pending_standard_user:
+  project: pending_project
+  user: pending_standard_user
+  roleable: contributor
+  roleable_type: ProjectRole
+
+pending_delegate_senior_user:
+  project: pending_delegate_project
+  user: pending_delegate_senior_user
+  roleable: owner
+  roleable_type: ProjectRole
+
+new_delegate_project_owner:
+  project: new_delegate_project
+  user: pending_delegate_senior_user
+  roleable: owner
+  roleable_type: ProjectRole
+
+pending_delegate_standard_user:
+  project: pending_delegate_project
+  user: pending_delegate_standard_user
+  roleable: contributor
+  roleable_type: ProjectRole
+
+approved_senior_user:
+  project: approved_project
+  user: approved_senior_user
+  roleable: owner
+  roleable_type: ProjectRole
+
+approved_standard_user:
+  project: approved_project
+  user: approved_standard_user
+  roleable: contributor
+  roleable_type: ProjectRole
+
+rejected_senior_user:
+  project: rejected_project
+  user: rejected_senior_user
+  roleable: owner
+  roleable_type: ProjectRole
+
+rejected_standard_user:
+  project: rejected_project
+  user: rejected_standard_user
+  roleable: contributor
+  roleable_type: ProjectRole
+
+dummy_project_owner:
+  project: dummy_project
+  user: dummy_project_owner
+  roleable: owner
+  roleable_type: ProjectRole
+
+# Team grants
+team_with_one_user:
+  team: team_ONE_member
+  user: standard_user_one_team
+  roleable: team_read_only
+  roleable_type: TeamRole
+
+team_with_many_members_1:
+  team: team_MANY_members
+  user: standard_user1
+  roleable: team_read_only
+  roleable_type: TeamRole
+
+team_with_many_members_2:
+  team: team_MANY_members
+  user: standard_user2
+  roleable: team_read_only
+  roleable_type: TeamRole
+
+member_of_multiple_teams:
+  team: team_one
+  user: standard_user2
+  roleable: team_read_only
+  roleable_type: TeamRole
+
+member_of_multiple_teams_2:
+  team: team_one
+  user: standard_user1
+  roleable: mbis_applicant
+  roleable_type: TeamRole
+
+second_team_membership_1:
+  team: team_two
+  user: standard_user2
+  roleable: mbis_applicant
+  roleable_type: TeamRole
+
+second_team_membership:
+  team: team_two
+  user: senior_project_user
+  roleable: mbis_applicant
+  roleable_type: TeamRole
+
+senior_project_user_team_two_odr_applicant:
+  team: team_two
+  user: senior_project_user
+  roleable: odr_applicant
+  roleable_type: TeamRole
+
+new_senior_membership:
+  team: new_team
+  user: new_senior_user
+  roleable: mbis_applicant
+  roleable_type: TeamRole
+
+new_standard_membership:
+  team: new_team
+  user: new_standard_user
+  roleable: team_read_only
+  roleable_type: TeamRole
+
+pending_senior_membership:
+  team: pending_team
+  user: pending_senior_user
+  roleable: mbis_applicant
+  roleable_type: TeamRole
+
+pending_standard_membership:
+  team: pending_team
+  user: pending_standard_user
+  roleable: team_read_only
+  roleable_type: TeamRole
+
+pending_delegate_senior_membership:
+  team: pending_delegate_team
+  user: pending_delegate_senior_user
+  roleable: mbis_applicant
+  roleable_type: TeamRole
+
+pending_delegate_standard_membership:
+  team: pending_delegate_team
+  user: pending_delegate_standard_user
+  roleable: team_read_only
+  roleable_type: TeamRole
+
+pending_delegate_user_membership:
+  team: pending_delegate_team
+  user: mbis_delegate
+  roleable: team_read_only
+  roleable_type: TeamRole
+
+new_delegate_user_membership:
+  team: new_delegate_team
+  user: delegate_user2
+  roleable: mbis_delegate
+  roleable_type: TeamRole
+
+approved_senior_membership:
+  team: approved_team
+  user: approved_senior_user
+  roleable: mbis_applicant
+  roleable_type: TeamRole
+
+approved_standard_membership:
+  team: approved_team
+  user: approved_standard_user
+  roleable: team_read_only
+  roleable_type: TeamRole
+
+rejected_senior_membership:
+  team: rejected_team
+  user: rejected_senior_user
+  roleable: mbis_applicant
+  roleable_type: TeamRole
+
+rejected_standard_membership:
+  team: rejected_team
+  user: rejected_standard_user
+  roleable: team_read_only
+  roleable_type: TeamRole
+
+many_team_user_1:
+  team: team_MANY_members
+  user: standard_user_multiple_teams
+  roleable: team_read_only
+  roleable_type: TeamRole
+
+many_team_user_2:
+  team: team_MANY_members_2
+  user: standard_user_multiple_teams
+  roleable: team_read_only
+  roleable_type: TeamRole
+
+# team delegates
+
+pending_delegate_team:
+  team: pending_delegate_team
+  user: delegate_user1
+  roleable: mbis_delegate
+  roleable_type: TeamRole
+
+new_team:
+  team: new_team
+  user: delegate_user1
+  roleable: mbis_delegate
+  roleable_type: TeamRole
+
+approved_team:
+  team: approved_team
+  user: delegate_user1
+  roleable: mbis_delegate
+  roleable_type: TeamRole
+
+team_one_delegate_one:
+  team: team_one
+  user: delegate_user1
+  roleable: mbis_delegate
+  roleable_type: TeamRole
+
+team_one_delegate_three:
+  team: team_one
+  user: delegate_user3
+  roleable: mbis_delegate
+  roleable_type: TeamRole
+
+contributor_grant:
+  project: one
+  user: contributor
+  roleable: contributor
+  roleable_type: ProjectRole
+
+application_owner:
+  project: test_application
+  user: standard_user
+  roleable: owner
+  roleable_type: ProjectRole
+
+# odr grants
+odr_user_one:
+  user: odr_user
+  roleable: odr
+  roleable_type: SystemRole
+
+odr_user_two:
+  user: odr_user2
+  roleable: odr
+  roleable_type: SystemRole
+
+# application managers
+
+application_manager_one:
+  user: application_manager_one
+  roleable: odr_application_manager
+  roleable_type: SystemRole
+
+application_manager_two:
+  user: application_manager_two
+  roleable: odr_application_manager
+  roleable_type: SystemRole
+
+application_manager_three:
+  user: application_manager_three
+  roleable: odr_application_manager
+  roleable_type: SystemRole
+
+# senior application managers
+
+senior_application_manager_one:
+  user: senior_application_manager_one
+  roleable: odr_senior_application_manager
+  roleable_type: SystemRole
+
+# team dataset manager
+dataset_manager_mbis:
+  user: team_dataset_manager
+  roleable: dataset_manager
+  roleable_type: TeamRole
+  team: mbis
+
+dataset_manager_non_dataset_manager_for_another_team:
+  user: team_dataset_manager
+  roleable: mbis_applicant
+  roleable_type: TeamRole
+  team: ncras

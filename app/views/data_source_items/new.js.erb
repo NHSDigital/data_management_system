@@ -1,0 +1,6 @@
+<%
+  html_content = escape_javascript bootstrap_form_for([@data_source, @data_source_item], remote: true, horizontal: true) { |form| render('form', form: form) }
+%>
+
+jQuery('#modal_title').html('Add a new Data Item');
+jQuery('#modal_body').html('<%= html_content %>').parents('.modal').modal('show');

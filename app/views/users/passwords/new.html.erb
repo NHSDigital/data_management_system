@@ -1,0 +1,19 @@
+<h3>Forgot your password?</h3>
+
+<div class="jumbotron">
+  <%= bootstrap_form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post }, horizontal: 4) do |f| %>
+  <%# bootstrap_form_for(resource, as: resource_name, url: forgot_password_path, html: { method: :post }, horizontal: 4) do |f| %>
+
+    <%= f.control_group :email, 'Email', {}, { class: 'col-md-4' } do %>
+      <%= f.text_field :email, autofocus: true %>
+    <% end %>
+
+    <%= f.control_group nil, nil, {}, { class: 'col-md-4' } do %>
+      <%= f.submit 'Send me reset password instructions', class: 'btn btn-primary btn-block' %>
+
+      <div style="text-align:center;margin-top:1em;">
+        <%= render "users/shared/links" %>
+      </div>
+    <% end %>
+  <% end %>
+</div>

@@ -1,0 +1,361 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<COSD:COSD xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:COSD="http://www.datadictionary.nhs.uk/messages/COSD-v8-2" xsi:schemaLocation="http://www.datadictionary.nhs.uk/messages/COSD-v8-2 ../Schemas/COSDCOSD_XMLSchema-v8-1.xsd"> 
+  <Id root="60E8A409-24B6-4ADC-9C96-0273F668BDC8"/>
+  <OrganisationIdentifierCodeOfSubmittingOrganisation extension="123"/>
+  <RecordCount value="1"/>
+     <ReportingPeriodStartDate>2018-03-01</ReportingPeriodStartDate>
+  <ReportingPeriodEndDate>2018-03-30</ReportingPeriodEndDate>
+  <FileCreationDateTime>2018-03-30T00:00:00</FileCreationDateTime>
+  <HaematologicalRecord>
+    <Id root="778F1F33-4911-4E50-8E36-3182780F8F94" />
+    <LinkagePatientId>
+      <NHSNumber extension="1111111111" />
+      <LocalPatientIdExtended>AB1888555446</LocalPatientIdExtended>
+      <NHSNumberStatusIndicator code="03" />
+      <Birthdate>1969-01-01</Birthdate>
+      <OrganisationIdentifierCodeOfProvider extension="AB1" />
+    </LinkagePatientId>
+    <LinkageDiagnosticDetails>
+      <PrimaryDiagnosis code="C911" />
+      <TumourLaterality code="8" />
+      <ClinicalDateCancerDiagnosis>2018-01-01</ClinicalDateCancerDiagnosis>
+    </LinkageDiagnosticDetails>
+    <Demographics>
+      <PersonFamilyName>COSD</PersonFamilyName>
+      <PersonGivenName>HAEMATOLOGICAL</PersonGivenName>
+      <Address>
+        <UnstructuredAddress>
+          <StreetAddressLine>1 Main Road</StreetAddressLine>
+        </UnstructuredAddress>
+      </Address>
+      <Postcode>SE1 8UG</Postcode>
+      <Gender code="1" />
+      <PersonStatedSexualOrientationCodeAtDiagnosis code="Z" />
+      <GMPSpecified extension="G1234566" />
+      <GMPRegistration extension="F12345" />
+      <PersonBirthFamilyName>COSD</PersonBirthFamilyName>
+      <Ethnicity code="A" />
+    </Demographics>
+    <ReferralAndFirstStageOfPatientPathway>
+      <SourceOfReferralOutPatients code="03" />
+      <DateFirstSeen>2018-03-01</DateFirstSeen>
+      <ConsultantCode extension="C1234567" />
+      <OrganisationSiteIdentifierOfProviderFirstSeen extension="AB101" />
+      <SpecialistDateFirstSeen>2018-03-01</SpecialistDateFirstSeen>
+      <OrganisationSiteIdentifierOfProviderFirstCancerSpecialist extension="ABC01" />
+      <CancerOrSymptomaticBreastReferralPatientStatus code="08" />
+      <CancerSymptomsDateFirstNoted>2014-02-02</CancerSymptomsDateFirstNoted>
+    </ReferralAndFirstStageOfPatientPathway>
+    <Imaging>
+      <OrganisationSiteIdentifierOfImaging extension="AB101" />
+      <ProcedureDate>2018-03-03</ProcedureDate>
+      <CancerImagingOutcome code="05" />
+      <NICIPCode code="NICIP" />
+      <CancerImagingModality code="C02X" />
+      <ImagingAnatomicalSite code="CZ002" />
+      <ImagingAnatomicalSide code="8" />
+      <ImagingCodeSNOMEDCT code="123456" />
+      <ImagingReportText><![CDATA[No mets]]></ImagingReportText>
+      <LesionSizeRadiological value="120.01" />
+    </Imaging>
+    <Diagnosis>
+      <OrganisationSiteIdentifierOfDiagnosis extension="ABC01" />
+      <BasisOfCancerDiagnosis code="7" />
+      <SNOMEDVersionDiagnosis code="99" />
+      <MorphologySNOMEDDiagnosis code="M98013" />
+      <MorphologyICDODiagnosis code="M98013" />
+      <TopographyICDO code="T04010" />
+      <DiagnosisGradeOfDifferentiation code="G2" />
+      <AdultPerformanceStatus code="2" />
+      <DiagnosisSNOMEDCT code="123456" />
+      <CancerRecurrenceCarePlanInd code="NN" />
+      <CancerMetastaticDiseaseType code="03" />
+      <MetastaticSite code="98" />
+      <CancerProgressionAgreedDatePrimaryCancerPathway>2018-03-03</CancerProgressionAgreedDatePrimaryCancerPathway>
+      <SNOMEDVersionCancerTransformation code="99" />
+      <MorphologySNOMEDCancerTransformation code="123456" />
+      <MorphologyICDOCancerTransformation code="?????" />
+      <CancerTransformationAgreedDatePrimaryCancerPathway>2018-03-03</CancerTransformationAgreedDatePrimaryCancerPathway>
+      <DiagnosisAdditionalItems>
+        <PrimaryDiagnosisCancerComment><![CDATA[TestData]]></PrimaryDiagnosisCancerComment>
+        <SecondaryDiagnosisICD code="C920" />
+        <SecondaryDiagnosisCancerComment><![CDATA[TestData]]></SecondaryDiagnosisCancerComment>
+        <FamilialCancerSyndromeIndicator code="9" />
+        <FamilialCancerSyndromeComment><![CDATA[TestData]]></FamilialCancerSyndromeComment>
+        <TissueBankedAtDiagnosisIndicator code="9" />
+        <TissueTypeBankedAtDiagnosis code="5" />
+      </DiagnosisAdditionalItems>
+      <DiagnosisMixedPhenotypeAcuteLeukaemia>
+        <MixedPhenotypeAcuteLeukaemiaSymptomsAtDiagnosis code="1"/>
+        <MixedPhenotypeAcuteLeukaemiaSymptomsAtDiagnosis code="2"/>
+        <MixedPhenotypeAcuteLeukaemiaSymptomsAtDiagnosis code="3"/>
+        <EuropeanGroupForTheImmunologicalClassificationOfLeukaemiaScoringSystemScore code="1"/>
+      </DiagnosisMixedPhenotypeAcuteLeukaemia>
+      <DiagnosisAcuteMyeloidLeukaemia>
+        <FrenchAmericanBritishClassificationAcuteMyeloidLeukaemia code="M0" />
+        <CytogeneticRiskGroupPaediatricMolecularGeneticAbnormalities code="1" />
+        <AcuteMyeloidLeukaemiaRiskFactorsAtDiagnosis code="3" />
+      </DiagnosisAcuteMyeloidLeukaemia>
+      <DiagnosisPaediatricMyelodysplasia>
+        <PaediatricMyelodysplasiaClinicalFindingsAtDiagnosis code="1"/>
+        <PaediatricMyelodysplasiaClinicalFindingsAtDiagnosis code="4"/>
+        <PaediatricMyelodysplasiaClinicalFindingsAtDiagnosis code="5"/>
+        <UnderlyingDiseaseAssociatedWithMyelodysplasiaAtDiagnosis code="1"/>
+        <UnderlyingDiseaseAssociatedWithMyelodysplasiaAtDiagnosis code="5"/>
+        <UnderlyingDiseaseAssociatedWithMyelodysplasiaAtDiagnosis code="9"/>
+        <CongenitalAnomaliesComment><![CDATA[TestData]]></CongenitalAnomaliesComment>
+        <OtherMyelodysplasiaSymptomsAtDiagnosis code="1"/>
+        <OtherMyelodysplasiaSymptomsAtDiagnosis code="3"/>
+        <OtherMyelodysplasiaSymptomsAtDiagnosis code="5"/>
+      </DiagnosisPaediatricMyelodysplasia>
+      <DiagnosisAcuteLymphoblasticLeukaemia>
+        <RiskGroupAllocationAcuteLymphoblasticLeukaemia code="3"/>
+      </DiagnosisAcuteLymphoblasticLeukaemia>
+    </Diagnosis>
+    <PersonObservation>
+      <PersonHeightInMetres value="1.71" />
+      <PersonObservationWeight value="75.57" />
+      <BodyMassIndex value="25.8" />
+      <ObservationDate>2018-03-04</ObservationDate>
+    </PersonObservation>
+    <ClinicalNurseSpecialistAndRiskFactorAssessments>
+      <ClinicalNurseSpecialistIndicationCode code="Y5" />
+      <SmokingStatusCode code="Z" />
+      <AlcoholHistoryCancerInLastThreeMonths code="3" />
+      <AlcoholHistoryCancerBeforeLastThreeMonths code="2" />
+    </ClinicalNurseSpecialistAndRiskFactorAssessments>
+    <ClinicalNurseSpecialistHolisticNeedsAssessment>
+      <HNACompletedDate>2018-03-05</HNACompletedDate>
+      <HNAPointOfPathway code="03" />
+    </ClinicalNurseSpecialistHolisticNeedsAssessment>
+    <MultidisciplinaryTeamMeetings>
+      <TeamMeetingDate>2018-03-05</TeamMeetingDate>
+      <OrganisationSiteIdentifierOfMultidisciplinaryTeamMeeting extension="ABC99" />
+      <TeamMeetingType>0601</TeamMeetingType>
+      <TeamMeetingTypeComment><![CDATA[TestData]]></TeamMeetingTypeComment>
+    </MultidisciplinaryTeamMeetings>
+    <CancerCarePlan>
+      <CancerMultiTeamDiscussionDate>2014-02-01</CancerMultiTeamDiscussionDate>
+      <ConsultantCodeMultidisciplinaryTeamLead extension="C1234567" />
+      <CancerCarePlanIntent code="Z" />
+      <PlannedCancerTreatmentType code="06" />
+      <NoCancerTreatmentReason code="99" />
+      <AdultComorbidityEvaluation code="2" />
+      <CancerCarePlanVarious>
+        <NumberAbnormalNodalAreas value="7" />
+        <PrimaryExtranodalSite code="01" />
+        <NumberExtranodalSitesCode code="0" />
+      </CancerCarePlanVarious>
+      <CancerCarePlanChronicMyeloidLeukaemia>
+        <SpleenCostalMargin value="1"/>
+        <SokalChronicMyeloidLeukaemiaScore value="1.1"/>
+      </CancerCarePlanChronicMyeloidLeukaemia>
+      <CancerCarePlanMyelodysplasia>
+        <IntlPrognosticScore value="1.1"/>
+      </CancerCarePlanMyelodysplasia>
+      <CancerCarePlanChronicLymphoidLeukaemia>
+        <!-- <HepatomegalyInd>Y</HepatomegalyInd> -->
+        <!-- <SplenomegalyInd>N</SplenomegalyInd> -->
+        <HepatomegalyInd code="Y"/>
+        <SplenomegalyInd code="N"/>
+        <NumberLymphadenopathies value="3" />
+      </CancerCarePlanChronicLymphoidLeukaemia>
+      <CancerCarePlanFollicularLymphoma>
+        <FollicularLymphomaIntlPrognosticScore value="1"/>
+      </CancerCarePlanFollicularLymphoma>
+      <CancerCarePlanDLBCL>
+        <RevisedIntlPrognosticScore value="1"/>
+      </CancerCarePlanDLBCL>
+      <CancerCarePlanHodgkinsLymphoma>
+        <HasencleverIndexScore value="1"/>
+      </CancerCarePlanHodgkinsLymphoma>
+      <CancerCarePlanALL>
+        <ExtraMedullaryDiseaseSite code="1"/>
+        <ExtraMedullaryDiseaseSite code="2"/>
+        <ExtraMedullaryDiseaseSite code="3"/>
+      </CancerCarePlanALL>
+    </CancerCarePlan>
+    <MolecularBiomarkersGermlineTesting>
+      <OfferStatusGermlineGeneticTest code="04" />
+      <GermlineGeneticTestTypeOffered code="98" />
+      <OtherGermlineGeneticTestTypeOffered><![CDATA[TestData]]></OtherGermlineGeneticTestTypeOffered>
+      <ActivityOfferDate>2018-03-05</ActivityOfferDate>
+      <OrganisationIdentifierReportingLaboratory extension="ABC22" />
+      <OfferStatusReferralRegionalClinicalGeneticsService code="04" />
+    </MolecularBiomarkersGermlineTesting>
+    <MolecularBiomarkersSomaticTesting>
+      <StratifiedMedicineMolecularTestPerformedIndicator code="Y" />
+      <GeneStratificationBiomarkerAnalysed code="98" />
+      <OtherGeneStratificationBiomarkerTypeAnalysedComment><![CDATA[TestData]]></OtherGeneStratificationBiomarkerTypeAnalysedComment>
+      <GeneStratificationBiomarkerAnalysedDate>2018-03-05</GeneStratificationBiomarkerAnalysedDate>
+      <OrganisationIdentifierReportingLaboratory extension="ABC22" />
+    </MolecularBiomarkersSomaticTesting>
+    <ClinicalTrials>
+      <CancerPatientTrialStatus code="02" />
+      <ClinicalTrialDecisionDate>2018-03-05</ClinicalTrialDecisionDate>
+      <ClinicalTrialStartDate>2018-03-05</ClinicalTrialStartDate>
+      <CancerClinicalTrialTreatmentType code="02" />
+    </ClinicalTrials>
+    <Staging>
+      <StagingAnnArbor>
+        <AnnArborStage code="1"/>
+        <AnnArborStageDate>2018-03-05</AnnArborStageDate>
+        <AnnArborSymptomsInd code="A"/>
+        <AnnArborExtranodalityInd code="E"/>
+        <AnnArborBulkInd code="X"/>
+        <AnnArborSplenicInd code="S"/>
+      </StagingAnnArbor>
+      <StagingChronicLymphoidLeukaemia>
+        <BinetStage code="A" />
+        <BinetStageDate>2018-03-04</BinetStageDate>
+      </StagingChronicLymphoidLeukaemia>
+      <StagingMyeloma>
+        <IntlStagingSystemStage code="1"/>
+        <IntlStagingSystemStageDate>2018-03-05</IntlStagingSystemStageDate>
+      </StagingMyeloma>
+      <StagingNonHodgkinLymphoma>
+        <MurphyStJudeStage code="1"/>
+        <MurphyStJudeStageDate>2018-03-05</MurphyStJudeStageDate>
+      </StagingNonHodgkinLymphoma>
+    </Staging>
+    <Treatment>
+      <CancerTreatmentEventType code="01" />
+      <AdjunctiveTherapyType code="2" />
+      <CancerTreatmentIntent code="02" />
+      <CancerTreatmentStartDate>2018-03-05</CancerTreatmentStartDate>
+      <CancerTreatmentModality code="02" />
+      <OrganisationSiteIdentifierOfProviderCancerTreatmentStartDate extension="AB101" />
+      <ConsultantCode extension="C1234567" />
+      <SurgeryAndOtherProcedures>
+        <PrimaryProcedureOPCS code="X352" />
+        <PrimaryProcedureSNOMEDCT code="123456" />
+        <ProcedureOPCS code="B283" />
+        <ProcedureSNOMEDCT code="123456" />
+        <HospitalDischargeDate>2018-05-08</HospitalDischargeDate>
+        <HospitalDischargeDestinationCode code="19" />
+        <SurgeryAndOtherProceduresStemCellTransplantation>
+          <StemCellInfusionSourceCode code="B" />
+          <StemCellInfusionDonorType code="1" />
+          <StemCellTransplantConditioningRegimen code="3" />
+        </SurgeryAndOtherProceduresStemCellTransplantation>
+        <AcuteLeukaemias>
+          <PrimaryInductionChemotherapyFailureIndicator code="N" />
+        </AcuteLeukaemias>
+      </SurgeryAndOtherProcedures>
+    </Treatment>
+    <Treatment>
+      <CancerTreatmentEventType code="02" />
+      <AdjunctiveTherapyType code="9" />
+      <CancerTreatmentIntent code="02" />
+      <CancerTreatmentStartDate>2018-03-06</CancerTreatmentStartDate>
+      <CancerTreatmentModality code="08" />
+      <OrganisationSiteIdentifierOfProviderCancerTreatmentStartDate extension="AB101" />
+      <ConsultantCode extension="C1234567" />
+      <ActiveMonitoring>
+        <MonitoringIntent code="2" />
+      </ActiveMonitoring>
+    </Treatment>
+    <LaboratoryResultsGeneral>
+      <LactateDehydrogenaseLevelPeakAtDiagnosis value="99"/>
+      <LactateDehydrogenaseLevelNormalUpperLimit value="1"/>
+    </LaboratoryResultsGeneral>
+    <LabResGermCellCNSAndNonGermCellCNSTumours>
+      <BetaHumanChorionicGonadotropinMaximumAtDiagnosis value="44"/>
+    </LabResGermCellCNSAndNonGermCellCNSTumours>
+    <LabResGermCellCNSGermCellNonCNSHepatoblastomaAndHepatocellularCa>
+      <AlphaFetoproteinMaximumAtDiagnosis value="55"/>
+    </LabResGermCellCNSGermCellNonCNSHepatoblastomaAndHepatocellularCa>
+    <LaboratoryResultsVarious>
+      <PlateletsCount value="1021" />
+      <WhiteBloodCellCountHighestPre value="99.9" />
+      <HaemoglobinConcentration value="99" />
+      <KaryotypeTestOutcome code="I"/>
+      <BoneMarrowBlastCellsPercentage value="1"/>
+      <NeutrophilCount value="1.1"/>
+      <AlbuminLevel value="10"/>
+      <Beta2MicroglobulinLevel value="999.1"/>
+      <!-- <Beta2MicroglobulinLevel value="1.111111"/> -->
+      <LymphocyteCount value="1.1"/>
+      <LactateDehydrogenaseLevel code="A"/>
+      <MyeloblastsPercent value="1"/>
+      <BasophilsPercent value="1"/>
+      <EosinophilsPercent value="1"/>
+      <CytogeneticRiskCodeAcuteMyeloidLeukaemia code="F" />
+      <CytogeneticFindingsComment><![CDATA[TestData]]></CytogeneticFindingsComment>
+    </LaboratoryResultsVarious>
+    <LaboratoryResultsPaediatricMyelodysplasia>
+      <CellularityPercentage value="53"/>
+      <DiepoxybutaneTestResult code="P"/>
+      <DysplasticHaemopoiesisType code="1"/>
+    </LaboratoryResultsPaediatricMyelodysplasia>
+    <LaboratoryResultsAcuteLymphoblasticLeukaemiaResponse>
+      <D29BoneMarrowTestResult code="M1"/>
+      <!-- <D29MinimalResidualDiseaseResult value="1.1"/> -->
+      <!-- <D29MinimalResidualDiseaseResult value="1.1"/> -->
+      <!-- <D29MinimalResidualDiseaseResult value="0.0"/> -->
+      <!-- <D29MinimalResidualDiseaseResult value="0.01"/> -->
+      <D29MinimalResidualDiseaseResult value="0.99"/>
+      <!-- <D29MinimalResidualDiseaseResult value="0.9999"/> -->
+      <!-- <D29MinimalResidualDiseaseResult value="0.9999"/> -->
+      <!-- <D29MinimalResidualDiseaseResult value="1.0000"/> -->      
+      <D29StatusOfExtramedullaryDisease code="1"/>
+    </LaboratoryResultsAcuteLymphoblasticLeukaemiaResponse>
+    <LaboratoryResultsNonHodgkinLymphoma>
+      <ALK1Status code="N"/>
+    </LaboratoryResultsNonHodgkinLymphoma>
+    <Pathology>
+      <InvestigationResultDate>2018-03-05</InvestigationResultDate>
+      <ServiceReportId extension="TNQ1235648" />
+      <PathologyObservationReportId extension="TNQ12546325" />
+      <ServiceReportStatus code="1" />
+      <PathTestReqCareProfCode extension="C2253657" />
+      <OrganisationSiteIdentifierOfPathologyTestRequest extension="ABC22" />
+      <SampleCollectionDate>2018-03-05</SampleCollectionDate>
+      <SampleReceiptDate>2018-03-05</SampleReceiptDate>
+      <OrganisationIdentifierOfReportingPathologist extension="ABC22" />
+      <PathologistConsultantCode extension="C2253658" />
+      <SpecimenNature code="1" />
+      <SNOMEDVersionPathology code="01" />
+      <TopographySNOMEDPathology code="123456" />
+      <MorphologySNOMEDPathology code="M98013" />
+      <PrimaryDiagnosisICDPath code="C911" />
+      <TumourLaterality code="8" />
+      <PathologyInvestigationType code="BU" />
+      <PathologyReportText><![CDATA[
+
+Anonymous General Hospitals NHS Foundation Trust
+HAEMATOLOGICAL HISTOPATHOLOGY REPORT  PH000000X/0X
+________
+Surname     XXX Forenames   XXX
+Date of birth     01/01/1969  NHS No      123 135 7990
+Clinician   XXX DR    Sex   F
+Date specimen taken     05/03/2018  Patient location
+Hospital No XXX    Date of receipt   05/03/2018
+Hospital    ANONYMOUS GENERAL HOSPITAL    Pathologist Dr XXXX
+________
+CLINICAL DETAILS
+
+blah blah blah
+_______
+SUMMARY
+
+blah blah blah
+
+Authorised by: Dr XXX on 05/03/2018 22:45:20
+]]>
+      </PathologyReportText>
+      <LesionSizePathological value="16.00" />
+      <GradeOfDiff code="GX" />
+      <CancerVascLymphInvasion code="NU" />
+      <ExcisionMargin code="03" />
+      <SyncTumourInd code="N" />
+      <NumberNodesExamined value="99" />
+      <NumberNodesPositive value="10" />
+      <NeoadjuvantTherapyInd code="9" />
+    </Pathology>
+    <DeathDetails>
+      <PersonDeathDate>2018-03-09</PersonDeathDate>
+      <DeathLocationType code="10" />
+    </DeathDetails>
+  </HaematologicalRecord>
+</COSD:COSD>

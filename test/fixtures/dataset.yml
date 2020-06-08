@@ -1,0 +1,124 @@
+---
+5:
+  id: 5
+  name: COSD
+  full_name: Cancer Outcomes and Services Dataset
+  description: "<p>The Cancer Outcomes and Services Data Set (COSDS) provides a standard
+    for secondary uses information required to support implementation and monitoring
+    of Improving Outcomes: a strategy for cancer.</p> <p>This package details the
+    XML Schema Specifications that support the Cancer Outcomes and Services Data Set
+    (COSDS).</p> <p>The Models tab details the structure and content of the schema
+    and the Data Types tab details data types used.</p>"
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &1 2019-12-09 11:18:13.455579000 Z
+    zone: &2 !ruby/object:ActiveSupport::TimeZone
+      name: Etc/UTC
+    time: *1
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &3 2019-12-09 11:19:38.271374000 Z
+    zone: *2
+    time: *3
+  dataset_type_id: 1
+  team: ncras
+6:
+  id: 6
+  name: SACT
+  full_name: Systemic Anti-Cancer Therapy
+  description: Systemic Anti-Cancer Therapy
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &4 2019-12-09 11:18:13.457516000 Z
+    zone: *2
+    time: *4
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &5 2019-12-09 11:19:38.273941000 Z
+    zone: *2
+    time: *5
+  dataset_type_id: 2
+  team: ncras
+7:
+  id: 7
+  name: COSD_Pathology
+  full_name: Cancer Outcomes and Services Dataset (Pathology)
+  description: "<p>The Cancer Outcomes and Services Data Set (Pathology) provides
+    a standard for secondary uses information required to support implementation and
+    monitoring of Improving Outcomes: a strategy for cancer.</p> <p>This package details
+    the XML Schema Specifications that support the Cancer Outcomes and Services Data
+    Set (Pathology).</p> <p>The Models tab details the structure and content of the
+    schema and the Data Types tab details data types used.</p>"
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &6 2019-12-09 11:18:13.459821000 Z
+    zone: *2
+    time: *6
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &7 2019-12-09 11:19:38.272840000 Z
+    zone: *2
+    time: *7
+  dataset_type_id: 1
+  team: ncras
+8:
+  id: 8
+  name: MultipleRecordTypeDataset
+  full_name: Multiple Record Type Dataset
+  description: An example of having additional sections at the Record level
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &8 2019-12-09 11:18:13.461612000 Z
+    zone: *2
+    time: *8
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &9 2019-12-09 11:19:38.029733000 Z
+    zone: *2
+    time: *9
+  dataset_type_id: 1
+  team: ncras
+79:
+  id: 79
+  name: Births Gold Standard
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &10 2019-12-10 12:52:13.380602000 Z
+    zone: *2
+    time: *10
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &11 2019-12-10 12:52:13.380602000 Z
+    zone: *2
+    time: *11
+  dataset_type_id: 4
+  team: mbis
+80:
+  id: 80
+  name: Death Transaction
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &12 2019-12-10 12:52:13.925015000 Z
+    zone: *2
+    time: *12
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &13 2019-12-10 12:52:13.925015000 Z
+    zone: *2
+    time: *13
+  dataset_type_id: 1
+  team: mbis
+81:
+  id: 81
+  name: Deaths Gold Standard
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &14 2019-12-10 12:52:14.579653000 Z
+    zone: *2
+    time: *14
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &15 2019-12-10 12:52:14.579653000 Z
+    zone: *2
+    time: *15
+  dataset_type_id: 1
+  team: mbis
+82:
+  id: 82
+  name: Birth Transaction
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &16 2019-12-10 12:52:15.195059000 Z
+    zone: *2
+    time: *16
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &17 2019-12-10 12:52:15.195059000 Z
+    zone: *2
+    time: *17
+  dataset_type_id: 1
+  team: mbis

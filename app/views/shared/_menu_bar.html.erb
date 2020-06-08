@@ -1,0 +1,95 @@
+<% unless @hide_menu_bar %>
+  <div class="navbar navbar-default navbar-sticky-top" role="navigation">
+    <div class="container">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <%= link_to t('system.name'), root_path, :class => "navbar-brand" %>
+      </div>
+
+      <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+          <ul class="nav navbar-nav">
+            <% if user_signed_in? && current_user.can?(:read, :ndr_errors) %>
+              <li class="dropdown">
+                <%= bootstrap_dropdown_toggle_tag('Dev') %>
+                <ul class="dropdown-menu">
+                  <%= bootstrap_list_link_to('Errors', ndr_error.error_fingerprints_path) %>
+                </ul>
+              </li>
+            <% end %>            
+            <li class="navbar-text success">
+            	<strong>
+                <%= mode_text(current_user) %>
+              </strong>
+            </li>
+          </ul>
+
+          <ul class="nav navbar-nav navbar-right">
+            <% if user_signed_in? %>
+              <%= bootstrap_list_link_to 'Notifications', notifications_path %>
+              <%= bootstrap_list_link_to 'Table Specifications', table_specifications_path if Dataset.table_spec.count.positive? %>
+              <%= bootstrap_list_link_to 'Datasets', datasets_path if can? :read, Dataset %>
+              <% if super_user?(current_user) %>
+                <%= bootstrap_list_link_to 'Projects', dashboard_projects_path %>
+              <% else %>
+                <%= bootstrap_list_link_to 'Teams', teams_path %>
+                <%= bootstrap_list_link_to 'Projects', projects_path %>
+              <% end %>
+              <% if current_user.administrator? %>
+                <li class="dropdown">
+                  <%= bootstrap_dropdown_toggle_tag('Reports') %>
+                  <ul class="dropdown-menu">
+                    <%= bootstrap_list_link_to 'Report 1', report1_path %>
+                    <%= bootstrap_list_link_to 'Report 2', report2_path %>
+                  </ul>
+                </li>
+              <% end %>
+              <% if super_user?(current_user) %>
+                <li class="dropdown">
+                  <%= bootstrap_dropdown_toggle_tag('Admin') %>
+                  <ul class="dropdown-menu">
+                    <%= bootstrap_list_link_to 'Data Assets', data_assets_path %>
+                    <%= bootstrap_list_link_to 'Users', users_path %>
+                    <%= bootstrap_list_link_to 'Organisations', organisations_path %>
+                    <%= bootstrap_list_link_to 'Teams', teams_path %>
+                    <%= bootstrap_list_link_to 'Directorates', directorates_path %>
+                    <% if current_user.administrator? %>
+                      <%= bootstrap_list_link_to 'All notifications', user_notifications_path %>
+                    <% end %>
+                  </ul>
+                </li>
+              <% end %>
+
+              <% if Rails.configuration.x.use_ndr_authenticate %>
+                <li><%= sign_out_link %></li>
+              <% else %>
+                <li class="dropdown" id="user-dropdown">
+                  <%= bootstrap_dropdown_toggle_tag(current_user.email) %>
+                  <ul class="dropdown-menu" >
+                    <%= bootstrap_list_link_to 'My Account', current_user %>
+                    <%= bootstrap_list_link_to 'Change password', change_password_path %>
+                    <%= bootstrap_list_divider_tag %>
+                    <%= bootstrap_list_link_to 'Logout', destroy_user_session_path, method: :delete %>
+                  </ul>
+                </li>
+              <% end %>
+            <% else %>
+              <li>
+                <% if Rails.configuration.x.use_ndr_authenticate %>
+                  <%= sign_in_link %>
+                <% else %>
+                  <%= link_to 'Sign in', new_user_session_path %>
+                <% end %>
+              </li>
+            <% end %>
+          </ul>
+        </div><!--/.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+  </div>
+<% end %>

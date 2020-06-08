@@ -1,0 +1,6 @@
+<%= bootstrap_panel_tag panel_heading_segments(
+  center: content_tag(:h4) { 'Listing Data Assets' },
+) do %>
+<% end %>
+<%= render 'datasets/search', url: data_assets_path %>
+<%= render 'datasets/datasets_table' %>

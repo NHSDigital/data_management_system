@@ -1,0 +1,5 @@
+<h1>Create a new <%= params[:type]%> (<%= @dataset_version.name %> - v<%= @dataset_version.semver_version %>) </h1>
+
+<%= bootstrap_form_for [@dataset_version, @node], horizontal: 2 do |form| %>
+  <%= render 'form', { form: form, url: new_dataset_version_node_path(@dataset_version) } %>
+<% end %>

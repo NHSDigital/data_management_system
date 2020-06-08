@@ -1,0 +1,146 @@
+Dataset
+id: 23,
+name: "COSD",
+full_name: "Cancer Outcomes and Services Dataset"
+description: "Description of Cancer Outcomes and Services Dataset"
+created_at: Wed, 14 Nov 2018 15:37:09 UTC +00:00
+updated_at: Wed, 14 Nov 2018 15:37:09 UTC +00:00>
+
+DatasetVersion
+id: 5,
+dataset_id: 23
+semver_version: "8-1"
+created_at: Wed, 14 Nov 2018 15:37:09 UTC +00:00
+updated_at: Wed, 14 Nov 2018 15:37:09 UTC +00:00
+
+Node
+id:
+dataset_version_id:
+type:
+parent_id:
+node_id:
+name:
+reference:
+annotation:
+description:
+min_occurs:
+max_occurs:
+common:
+xml_type_id:
+data_dictionary_element_id:
+group_id:
+choice_id:
+entity_choice_id:
+choice_node_id:
+choice_type_id:
+sort:
+created_at:
+updated_at:
+
+Nodes::Entity
+id:
+dataset_version_id:
+type: Nodes::Entity
+parent_id: can belong to an Entity
+name: e.g LinkagePatientId - At the moment used as schema element name
+description: e.g To carry patient identity details for linkage. 
+min_occurs: 1
+max_occurs: 1
+choice_id:  can belong to a choice
+created_at:
+updated_at:
+  
+
+Nodes::DataItem
+id: 
+dataset_version_id: 
+type: Nodes::DataItem
+node_id: 12636
+name: "AJCCStageGroup"
+reference: "SK12510"
+annotation: "AMERICAN JOINT COMMITTEE ON CANCER STAGE"
+description: Full description
+min_occurs: "0"
+max_occurs: "1"
+common: nil
+xml_type_id: 1432
+data_dictionary_element_id: nil
+group_id: nil
+choice_id: nil
+sort: 1
+created_at:
+updated_at:
+
+Nodes::Choice
+id:
+dataset_version_id: nil
+type: "Nodes::Choice"
+name: "PatientIdentifier"
+min_occurs: "1"
+max_occurs: "2"
+entity_choice_id: 12590
+choice_type_id: 28
+created_at:
+updated_at:
+
+Nodes::DataItemGroup
+id: 636,
+type: "Nodes::DataItemGroup",
+node_id: 106,
+group_id: 626,
+created_at: Tue, 20 Nov 2018 17:22:45 UTC +00:00,
+updated_at: Tue, 20 Nov 2018 17:22:45 UTC +00:00>
+
+Nodes::Group
+id: 13604
+dataset_version_id: 5
+type: "Nodes::Group"
+name: "Haematological"
+description: "Haematological DESCRIPTION"
+sort: 6
+created_at:
+updated_at:
+
+ChoiceType
+id: 1
+name: "mandatory_or"
+created_at: Tue, 20 Nov 2018 17:22:50 UTC +00:00
+updated_at: Tue, 20 Nov 2018 17:22:50 UTC +00:00
+
+XmlType
+id: 1432
+name: "AJCCStageGroup"
+annotation: 
+min_length: 4
+max_length: 4
+pattern: nil
+restriction: "st"
+attribute_name: nil
+namespace_id: nil
+created_at: Thu, 15 Nov 2018 14:48:13 UTC +00:00
+updated_at: Thu, 15 Nov 2018 14:48:13 UTC +00:00
+
+XmlTypeEnumerationValue
+id: 4345
+xml_type_id: 1433
+enumeration_value_id: 4345
+created_at: Thu, 15 Nov 2018 14:48:13 UTC +00:00
+updated_at: Thu, 15 Nov 2018 14:48:13 UTC +00:00
+
+EnumerationValue
+id: 1
+enumeration_value: "9"
+annotation: "9 annotation"
+created_at: Wed, 14 Nov 2018 13:43:22 UTC +00:00
+updated_at: Wed, 14 Nov 2018 13:43:22 UTC +00:00
+
+DataDictionaryElement
+id: 1
+name: "COSDS SUBMISSION IDENTIFIER"
+group: "Core"
+status: "M"
+format_length: "an36"
+national_codes: ""
+link: "https://datadictionary.nhs.uk/data_dictionary/data_field_notes/c/cons/cosds_submission_identifier_de.asp?shownav=0"
+created_at: Tue, 20 Nov 2018 17:22:50 UTC +00:00
+updated_at: Tue, 20 Nov 2018 17:22:50 UTC +00:00

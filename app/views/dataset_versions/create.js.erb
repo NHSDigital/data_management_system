@@ -1,0 +1,11 @@
+<%
+  @datasets ||= Dataset.all
+  @datasets = @datasets.paginate(page: params[:page], per_page: 15)
+  dataset ||= @dataset_version.dataset
+%>
+
+jQuery('#modal').modal('hide');
+window.location.reload();
+// jQuery('#datasets').replaceWith(
+//   '<%= escape_javascript(render 'datasets/datasets_table') %>');
+// jQuery('#<%= dom_id(dataset) %>_versions').collapse('show')

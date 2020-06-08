@@ -1,0 +1,29 @@
+<%= bootstrap_form_for([@project], horizontal: true, readonly: @readonly) do |form| %>
+  <%= form.error_and_warning_alert_boxes %>
+  <%= form.hidden_field(:project_type_id) %>
+  <div class="row">
+    <div class=" col-md-12">
+      <% if @readonly %>
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <div class="row">
+              <div class="col-md-8">
+                <div class="pull-left" style="font-size:1.5em">
+                  Project details
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="pull-right" style="font-size:1.5em">
+                   <%= render partial: '/projects/approve_details_section', locals: { project: @project } %>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% end %>
+        <div class="panel-body" id="project-details">
+          <%= render 'project_details', { form: form } %>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>

@@ -1,0 +1,56 @@
+Documentation by KH 17th Aug 2017
+=================================
+
+ncr-prescr-db1
+==============
+
+In user's account:
+------------------
+
+bin directory, containing tmux (console multiplexer) binary.
+This is needed as the sshd timeout is low and you will get logged out
+automatically otherwise; tmux maintains the connection implicitly by
+updating the timestamp in the status row at the bottom.
+
+There is a symlink:
+
+  loading -> /home/pgsql_recovery/source_data/loading
+
+In loading directory:
+
+Data files
+-----------
+* '*.csv'
+  - Previous csv dumps for 2015/04,05,06,07
+
+Directories
+-----------
+* BNF
+  - Schema and data for BNF lookups
+
+* CAS_Oracle_Dumps
+  - Scripts and (compressed) output for link to Oracle databases.
+    Includes shell/sed/octal voodoo to cater for Oracle sqlldr's line-ending
+    requirements.
+
+Loading scripts
+----------------
+* create_prescr.py  - generate separate CSV files for year/month/part, from
+  source files at /home/pgsql_recovery/source_data/static/PHE_%d%s_pseudonymised.csv
+  [hard-coded filename template]
+                       |
+                       V
+* do_all.sh - simple driver script to run `create_prescr.py' for a hard-coded
+  range of months (parts a and b)
+                       |
+                       V
+* load_tables.sh - called by `do_all.sh'; loads a CSV file specified by
+  year/month/part into the PostgreSQL database
+  [hard-coded with db username] 
+
+Miscellaneous
+---------------
+* truncate_tables.sql  - reset database; for testing
+
+* nohup.out*, full_load_log.txt - log of preprocessing and loading stages
+

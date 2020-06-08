@@ -1,0 +1,26 @@
+<%= bootstrap_form_for @notification, horizontal: 2 do |form| %>
+  <div class="row">
+    <div class=" col-md-12">
+        <div class="panel-footer">
+          <%= bootstrap_form_for @notification, horizontal: 2 do |form| %>
+            <%= form.hidden_field :created_by, value: current_user.id %>
+            <%= form.hidden_field :all_users, value: true %>
+            <%= form.control_group :title, 'Title' do %>
+              <%= form.text_field :title %>
+            <% end %>
+
+            <%= form.control_group :body, 'Message' do %>
+              <%= form.text_area :body, rows: 15 %>
+            <% end %>
+            <%= form.control_group nil do %>
+              <div class='pull-right'>
+                <%= cancel_submit @notification %>
+              </div>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
+

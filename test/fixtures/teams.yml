@@ -1,0 +1,181 @@
+team_one:
+  name: team_one
+  location: Cambridge
+  telephone: 11111111111111111
+  notes: some notes for team one
+  z_team_status_id: 1
+  directorate_id: 1
+  division_id: 1
+  organisation: test_organisation_one
+
+team_two:
+  name: team_two
+  location: Nottingham
+  telephone: 22222222222222222
+  notes: some notes for team two
+  z_team_status_id: 1
+  directorate_id: 1
+  division_id: 1
+  organisation: test_organisation_one
+  delegate_approver: 9001
+
+team_three:
+  name: team_three
+  location: Nottingham
+  telephone: 33333333333333333
+  notes: some notes for team three
+  z_team_status_id: 1
+  directorate_id: 1
+  division_id: 1
+  organisation: test_organisation_one
+  delegate_approver: 9001
+
+team_NO_members:
+  name: team_no_members
+  location: Cambridge
+  postcode: CB1 4DD
+  telephone: 00
+  notes: some notes for a no member team
+  z_team_status_id: 1
+  directorate_id: 1
+  division_id: 1
+  organisation: test_organisation_one
+  delegate_approver: 9001
+
+team_ONE_member:
+  name: team_one_member
+  location: Cambridge
+  telephone: 00
+  notes: some notes for a no member team
+  z_team_status_id: 1
+  directorate_id: 1
+  division_id: 1
+  organisation: test_organisation_one
+  delegate_approver: 9001
+
+team_MANY_members:
+  name: team_many_member
+  location: Cambridge
+  telephone: 00
+  notes: some notes for a many member team
+  z_team_status_id: 1
+  directorate_id: 1
+  division_id: 1
+  organisation: test_organisation_one
+  delegate_approver: 9001
+
+team_MANY_members_2:
+  name: team_many_member_2
+  location: Cambridge
+  telephone: 00
+  notes: some notes for a many member team
+  z_team_status_id: 1
+  directorate_id: 1
+  division_id: 1
+  organisation: test_organisation_one
+  delegate_approver: 9001
+
+new_team:
+  name: team_for a new project
+  location: Cambridge
+  telephone: 00
+  notes: some notes for a many member team
+  z_team_status_id: 1
+  directorate_id: 1
+  division_id: 1
+  organisation: test_organisation_one
+  delegate_approver: 9001
+
+pending_team:
+  name: team_for pending project
+  location: Cambridge
+  telephone: 00
+  notes: some notes for a many member team
+  z_team_status_id: 1
+  directorate_id: 1
+  division_id: 1
+  organisation: test_organisation_one
+  delegate_approver: 9001
+
+pending_delegate_team:
+  name: team_for delegate pending approval project
+  location: Cambridge
+  telephone: 00
+  notes: some notes for a many member team
+  z_team_status_id: 1
+  directorate_id: 1
+  division_id: 1
+  organisation: test_organisation_one
+  delegate_approver: 9001
+
+new_delegate_team:
+  name: new team_for delegate approval
+  location: Cambridge
+  telephone: 00
+  notes: some notes for a many member team
+  z_team_status_id: 1
+  directorate_id: 1
+  division_id: 1
+  organisation: test_organisation_one
+  delegate_approver: 9002
+
+approved_team:
+  name: team_for approved project
+  location: Cambridge
+  telephone: 00
+  notes: some notes for a many member team
+  z_team_status_id: 1
+  directorate_id: 1
+  division_id: 1
+  organisation: test_organisation_one
+  delegate_approver: 9001
+
+rejected_team:
+  name: team_for rejected project
+  location: Cambridge
+  telephone: 00
+  notes: some notes for a many member team
+  z_team_status_id: 1
+  directorate_id: 1
+  division_id: 1
+  organisation: test_organisation_one
+  delegate_approver: 9001
+
+deleted_team:
+  name: team_for deleted project
+  location: Cambridge
+  telephone: 00
+  notes: some notes for a many member team
+  z_team_status_id: 1
+  directorate_id: 1
+  division_id: 1
+  organisation: test_organisation_one
+  delegate_approver: 9001
+
+mbis:
+  name: MBIS
+  location: London
+  telephone: 00
+  notes: Mortality and Births
+  z_team_status_id: 1
+  directorate_id: 1
+  division_id: 1
+  organisation: test_organisation_one
+
+ncras:
+  name: NCRAS
+  location: England
+  telephone: 00
+  notes: National Cancer Registration and Analysis Service
+  z_team_status_id: 1
+  directorate_id: 1
+  division_id: 1
+  organisation: test_organisation_one
+
+org_two_team:
+  name: Dream Team
+  location: England
+  telephone: 00
+  notes: Nightmare
+  z_team_status_id: 1
+  organisation: test_organisation_two

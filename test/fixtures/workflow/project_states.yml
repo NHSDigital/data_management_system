@@ -1,0 +1,54 @@
+one:
+  project: dummy_project
+  state_id: DRAFT
+  user: standard_user1
+
+two:
+  project: one
+  state_id: SUBMITTED
+  user: standard_user1
+
+three:
+  project: two
+  state_id: LIVE
+  user: odr_user
+
+four:
+  project: new_project
+  state_id: DRAFT
+  user: new_senior_user
+
+five:
+  project: pending_project
+  state_id: SUBMITTED
+  user: delegate_user1
+
+six:
+  project: approved_project
+  state_id: APPROVED
+  user: odr_user
+
+seven:
+  project: rejected_project
+  state_id: REJECTED
+  user: odr_user
+
+eight:
+  project: deleted_project
+  state_id: DELETED
+  user: deleted_senior_user
+
+nine:
+  project: pending_delegate_project
+  state_id: REVIEW
+  user: pending_delegate_senior_user
+
+ten:
+  project: new_delegate_project
+  state_id: DRAFT
+  user: pending_delegate_senior_user
+
+eleven:
+  project: test_application
+  state_id: DRAFT
+  user: standard_user1

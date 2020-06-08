@@ -1,0 +1,40 @@
+<div class="tab-pane" id="releases">
+  <div class="panel panel-default" style="border-top: 0px;">
+    <div class="panel-heading" style="font-size: 1.5em;">
+      <%= Release.model_name.human.pluralize %>
+    </div>
+  </div>
+
+  <table class="table table-condensed" id="releasesTable">
+    <thead>
+      <tr>
+        <th><%= Release.human_attribute_name(:phe_invoice_number) %></th>
+        <th><%= Release.human_attribute_name(:po_number) %></th>
+        <th><%= Release.human_attribute_name(:individual_to_release) %></th>
+        <th><%= Release.human_attribute_name(:release_date) %></th>
+        <th>
+          <div class="pull-right">
+            <% if can?(:create, Release.new(project: project)) %>
+              <%= link_to_with_icon(icon: 'plus-sign', text: true, title: 'New', path: new_project_release_path(project), class: 'btn btn-primary btn-xs') %>
+            <% end %>
+          </div>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <% project.releases.accessible_by(current_ability).find_each do |release| %>
+        <%= content_tag(:tr, id: dom_id(release)) do %>
+          <td><%= release.phe_invoice_number %></td>
+          <td><%= release.po_number %></td>
+          <td><%= release.individual_to_release %></td>
+          <td><%= release.release_date&.to_s(:ui) %></td>
+          <td>
+            <div class="pull-right">
+              <%= inline_controls_for(release) %>
+            </div>
+          </td>
+        <% end %>
+      <% end %>
+    </tbody>
+  </table>
+</div>

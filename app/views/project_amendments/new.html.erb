@@ -1,0 +1,8 @@
+<%= render layout: 'layout', locals: { project_amendment: @project_amendment } do %>
+  <div class="row">
+    <div class="col-md-12">
+      <%= content_tag(:h4, "New #{ProjectAmendment.model_name.human}", style: 'margin-left: 10px;') %><hr />
+      <%= render 'form', project_amendment: @project_amendment %>
+    </div>
+  </div>
+<% end %>

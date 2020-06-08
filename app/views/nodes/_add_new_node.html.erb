@@ -1,0 +1,11 @@
+<div class="col-md-6">
+  <div class="pull-right">
+    <%= new_node_dropdown_button(@dataset_version, node) %>
+      <span data-toggle="collapse" data-target="#<%= dom_id(node) %>_child_nodes">
+        <a href="javascript:;" data-turbolinks="false">
+          <button type="button" class="btn btn-default btn-xs"
+           title='Close' re='tooltip' data-placement="right">X</button>
+        </a>
+    </span>
+  </div>
+</div>

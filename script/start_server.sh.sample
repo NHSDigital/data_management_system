@@ -1,0 +1,96 @@
+#!/bin/bash
+
+# ===========================================================
+# DESCRIPTION:
+#   This script prompts for various applications secrets that
+#   would otherwise have to be stored in the filesystem, like
+#   database credentials and secret_key_base, and exports
+#   them into the environment of the master puma process that
+#   it starts.
+#
+# FIRST-TIME INSTALLATION:
+#   cp start_server.sh.sample /home/mbis_beta/start_server.sh
+#   chown mbis_beta /home/mbis_beta/start_server.sh
+#   chmod 764 /home/mbis_beta/start_server.sh
+#
+# USAGE:
+#   sudo -i -u mbis_beta ./start_server.sh
+#
+# PARAMS:
+#   These variables are exported by the script, and can be
+#   supplied in advance if needed:
+#
+#     +--------------------------+-----------------------+
+#     | variable                 | default               |
+#     +--------------------------+-----------------------+
+#     | RAILS_ENV                | "production"          |
+#     | MBIS_DATABASE_USERNAME * | none; required        |
+#     | MBIS_DATABASE_PASSWORD * | none; required        |
+#     | SECRET_KEY_BASE        * | defaults to random    |
+#     +--------------------------+-----------------------+
+#     | * not use yet                                    |
+#     +--------------------------------------------------+
+#
+# ===========================================================
+
+PUMA_CMD=pumactl
+
+# Path to puma configuration, relative to deployment:
+PUMA_CONFIG=config/puma.rb
+
+CURRENT=$HOME/mbis_front/current
+
+if [ ! -e "$CURRENT" ]; then
+  echo Please configure CURRENT in this script!
+  exit 1
+fi
+
+if ! command -v $PUMA_CMD 2>&1 >/dev/null; then
+  echo "$PUMA_CMD not found in PATH!"
+  exit 1
+fi
+
+# =================================================================================================
+# UNCOMMENT THIS TO ALLOW SECRET KEY GENERATION / SUPPLY (currently, its hardcoded)
+#
+# if [ -z "$SECRET_KEY_BASE" ]; then
+#   # Prompt for a secret key if we haven't got one, and it's possible to do so:
+#   if tty -s; then
+#     echo "Rails needs a secret_key_base; you can enter an existing secret to reuse."
+#     echo "Alternatively, leave blank to generate a new one securely."
+#
+#     read -rep "secret_key_base: " SECRET_KEY_BASE
+#     echo ''
+#   fi
+#
+#   # If it is _still_ zero length, then let's generate one:
+#   SECRET_KEY_BASE="${SECRET_KEY_BASE:-$(ruby -rsecurerandom -e 'puts SecureRandom.hex(64)')}"
+# fi
+# export SECRET_KEY_BASE
+# =================================================================================================
+
+# =================================================================================================
+# UNCOMMENT THIS TO ALLOW GATHERING OF DATABASE CREDENTIALS (currently, they're hardcoded)
+#
+# echo You need to enter valid credientials for the three databases.
+# echo ''
+# [ -n "MBIS_DATABASE_USERNAME" ] || read -rep "database username: " MBIS_DATABASE_USERNAME
+# [ -n "MBIS_DATABASE_PASSWORD" ] || read -rsp "database password: " MBIS_DATABASE_PASSWORD
+#
+# export MBIS_DATABASE_USERNAME
+# export MBIS_DATABASE_PASSWORD
+# =================================================================================================
+
+export RAILS_ENV="${RAILS_ENV:-production}"
+
+echo 'Checking credentials...'
+if (cd "$CURRENT" && bundle exec rails runner "User.count; puts 'Credentials OK.'"); then
+  true
+else
+  echo 'Warning: invalid credentials detected! Press enter to continue anyway, or Ctrl-C to abort'
+  read
+fi
+
+# Start puma cluster, using the configuration committed:
+echo 'Starting puma...'
+cd "$CURRENT" && $PUMA_CMD -F $PUMA_CONFIG start

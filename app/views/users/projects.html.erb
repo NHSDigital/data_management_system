@@ -1,0 +1,22 @@
+<%= render layout: @user.to_partial_path do %>
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th>Project</th>
+        <th>Team</th>
+        <th>Applicant</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% projects_for_user.each do |project| %>
+        <tr>
+          <td><%= link_to "#{project.name}", project_url(project) %></td>
+          <td><%= project.team_name %></td>
+          <td><%= project.owner_full_name %></td>
+          <td><%= project_status_label(project) %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% end %>

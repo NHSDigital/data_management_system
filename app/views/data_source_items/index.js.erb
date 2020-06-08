@@ -1,0 +1,6 @@
+<%
+  @data_source ||= @data_source_item.data_source # shallow routing means this may not have been set
+%>
+
+jQuery('#modal').modal('hide');
+jQuery('#data-items-panel').replaceWith('<%= escape_javascript(render 'data_sources/data_source_items') %>');

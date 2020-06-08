@@ -1,0 +1,18 @@
+prescription1:
+  prescription_dataid: 1
+  part_month: 2013-08
+  presc_postcode: CB22
+  drug_paid: £13.28
+  bnf_code: XYZ45
+  pat_age: 44
+# created in ppatients.yml
+  ppatient: patient1
+
+prescription2:
+  prescription_dataid: 2
+  part_month: 2014-03
+  presc_postcode: CB23
+  drug_paid: £99.98
+  bnf_code: FML02
+  pat_age: 28
+  ppatient: patient1

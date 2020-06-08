@@ -1,0 +1,90 @@
+---
+1:
+  id: 1
+  name: mandatory_or
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &1 2019-12-09 11:18:45.175531000 Z
+    zone: &2 !ruby/object:ActiveSupport::TimeZone
+      name: Etc/UTC
+    time: *1
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &3 2019-12-09 11:18:45.175531000 Z
+    zone: *2
+    time: *3
+2:
+  id: 2
+  name: mandatory_and_or
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &4 2019-12-09 11:18:45.176740000 Z
+    zone: *2
+    time: *4
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &5 2019-12-09 11:18:45.176740000 Z
+    zone: *2
+    time: *5
+3:
+  id: 3
+  name: mandatory_unbounded
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &6 2019-12-09 11:18:45.177661000 Z
+    zone: *2
+    time: *6
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &7 2019-12-09 11:18:45.177661000 Z
+    zone: *2
+    time: *7
+4:
+  id: 4
+  name: optional_unbounded
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &8 2019-12-09 11:18:45.178419000 Z
+    zone: *2
+    time: *8
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &9 2019-12-09 11:18:45.178419000 Z
+    zone: *2
+    time: *9
+5:
+  id: 5
+  name: optional_or
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &10 2019-12-09 11:18:45.179187000 Z
+    zone: *2
+    time: *10
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &11 2019-12-09 11:18:45.179187000 Z
+    zone: *2
+    time: *11
+6:
+  id: 6
+  name: optional_and_or
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &12 2019-12-09 11:18:45.179904000 Z
+    zone: *2
+    time: *12
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &13 2019-12-09 11:18:45.179904000 Z
+    zone: *2
+    time: *13
+7:
+  id: 7
+  name: mandatory_multiple_or
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &14 2019-12-09 11:18:45.180586000 Z
+    zone: *2
+    time: *14
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &15 2019-12-09 11:18:45.180586000 Z
+    zone: *2
+    time: *15
+8:
+  id: 8
+  name: mandatory_multiple_and_or
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &16 2019-12-09 11:18:45.181165000 Z
+    zone: *2
+    time: *16
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &17 2019-12-09 11:18:45.181165000 Z
+    zone: *2
+    time: *17

@@ -1,0 +1,7 @@
+<%
+  @readonly = true # ensure the buttons draw!
+%>
+
+jQuery('#modal').modal('hide');
+jQuery('#team-details-panel').replaceWith('<%= escape_javascript(render 'teams/form') %>');
+jQuery('#memberships-panel').replaceWith('<%= escape_javascript(render 'teams/memberships') %>');

@@ -1,0 +1,13 @@
+<table class="table table-condensed table-hover" style="margin-bottom: 0;">
+  <tbody>
+    <tr class="<%= 'active' if selected_node == node %>">
+      <td style="padding-left: <%= 25 * depth %>px">
+        <%= node_type_label(node) %>
+        <%= link_to node.name, node: node.id %>
+      </td>
+      <td class="text-right">
+        <%= pluralize(node.child_nodes.count, 'Node') %>
+      </td>
+    </tr>
+  </tbody>
+</table>

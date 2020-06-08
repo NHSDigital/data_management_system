@@ -1,0 +1,14 @@
+<%
+  project = project_amendment.project
+%>
+
+<%= render 'projects/transition_errors', project: project %>
+<%= render 'projects/header', project: project %>
+
+<ol class="breadcrumb">
+  <li><%= link_to project.model_name.human.pluralize, team_projects_path(project.team) %></li>
+  <li><%= link_to project.name, project_path(project) %></li>
+  <li><%= link_to project_amendment.model_name.human.pluralize, project_path(project, anchor: '!amendments') %></li>
+</ol>
+
+<%= yield %>

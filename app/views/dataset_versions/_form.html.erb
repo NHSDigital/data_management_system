@@ -1,0 +1,11 @@
+<%= bootstrap_form_for([@dataset, @dataset_version], horizontal: true) do |form| %>
+  <%= form.control_group :semver_version, 'Semantic Version' do %>
+    <%= form.text_field :semver_version %>
+  <% end %>
+  <%= button_control_group nil do %>
+    <div class='pull-right'>
+      <%= close_modal %>
+      <%= submit_tag('Save', class: 'btn btn-primary', disable_with: 'Saving&hellip;'.html_safe) %>
+    <div/>
+  <% end %>
+<% end %>

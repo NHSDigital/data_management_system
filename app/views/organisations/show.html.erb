@@ -1,0 +1,38 @@
+<div class="panel panel-default">
+  <div class="panel-body">
+    <div class="row">
+      <div class="col-md-7">
+        <h4>
+          <strong><%= @organisation.name %></strong><br />
+          <small><%= @organisation.organisation_type_value %></small>
+        </h4>
+        <%= address_tag(@organisation) %>
+      </div>
+      <div class="col-md-5">
+        <div class="pull-right">
+          <div class="btn-group">
+            <% if can?(:destroy, @organisation) %>
+              <%= link_to bootstrap_icon_tag('trash icon-white') + ' Delete', @organisation, class: "btn btn-danger", method: :delete, data: { confirm: 'Are you sure?' } %>
+            <% end %>
+          </div>
+          <div class="btn-group">
+            <% if can?(:update, @organisation) %>
+              <%= link_to bootstrap_icon_tag('pencil') + ' Edit', edit_organisation_path(@organisation), class: 'btn btn-default' %>
+            <% end %>
+            <%= versions_link(@organisation) %>
+            <%= link_to 'Back to Organisations', organisations_path, class: 'btn btn-default' %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="panel-footer">
+    <div class="pull-right">
+      <% if can?(:create, @organisation.teams.build) %>
+        <%= link_to bootstrap_icon_tag('plus') + ' Add', new_organisation_team_path(@organisation), class: 'btn btn-primary btn-xs' %>
+      <% end %>
+    </div>
+    <h4 class="panel-title clearfix">Teams</h4>
+  </div>
+  <%= render 'teams/teams_table', teams: @organisation.teams.accessible_by(current_ability) %>
+</div>

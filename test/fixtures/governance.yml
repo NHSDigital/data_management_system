@@ -1,0 +1,10 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+DirectIdentifier:
+  id: 1
+  value: DIRECT IDENTIFIER
+IndirectIdentifier:
+  id: 2
+  value: INDIRECT IDENTIFIER
+NonIdentifyingData:
+  id: 3
+  value: NON IDENTIFYING DATA

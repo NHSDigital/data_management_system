@@ -1,0 +1,19 @@
+<div class='nested-fields'>
+  <!-- TODO: sort -->
+  <%= f.hidden_field :sort, value: 0 %>
+  <%= f.hidden_field :dataset_version_id, value: @dataset_version.id %>
+  <%= f.control_group :name, 'Name' do %>
+    <%= f.text_field :name %>
+  <% end %>
+  <%= f.control_group :description, 'Description' do %>
+    <%= f.text_area :description %>
+  <% end %>
+  <%= f.control_group :min_occurs, 'Min Occurs' do %>
+    <%= f.number_field :min_occurs %>
+  <% end %>
+  <%= f.control_group :max_occurs, 'Max Occurs' do %>
+    <%= f.number_field :max_occurs %>
+  <% end %>
+  <%= render 'nodes/child_node_errors', f: f %>
+  <%= link_to_remove_association "Remove Choice", f, class: 'btn btn-danger' %>
+</div>

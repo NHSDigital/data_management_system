@@ -1,0 +1,8 @@
+<%
+  @readonly = true           # ensure the buttons draw!
+  @team ||= @membership.team # shallow routing means this may not have been set yet
+%>
+
+jQuery('#modal').modal('hide');
+jQuery('#memberships-panel').replaceWith('<%= escape_javascript(render 'teams/memberships') %>');
+$("#activate_button").html("<%= raw escape_javascript(render(:partial => 'teams/activate_team_button')) %>")

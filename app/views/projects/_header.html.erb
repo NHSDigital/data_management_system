@@ -1,0 +1,34 @@
+<div id='project_header' class="row">
+  <div class=" col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <div style="font-size:1.5em">
+          <span id="display_project_name"><%= project.name %></span>
+          <%= project_type_label(project) %>
+          <%= project_status_label(project, id: :project_status) %>
+
+          <div class="pull-right">
+            <span id="transition_controls">
+              <%= render 'projects/transition_controls', project: project %>
+            </span>
+
+            <div class="btn-group">
+              <%= versions_link(project) %>
+              <%= link_to 'Team', team_path(project.team), class: 'btn btn-default' if current_user.can?(:read, project.team) %>
+            </div>
+          </div>
+        </div>
+        <%= odr_reference(project) %>
+      </div>
+      <% if application_manager_project_type?(project) %>
+        <div class="panel-footer">
+          <% if current_user.can?(:assign, project) %>
+            <%= render 'projects/project_assignment_form', project: project %>
+          <% else %>
+            <strong>Application Manager:</strong> <%= project.assigned_user&.full_name || 'Not Assigned' %>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

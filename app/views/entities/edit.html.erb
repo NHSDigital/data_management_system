@@ -1,0 +1,4 @@
+<h1>Editing <%= @entity.name %></h1>
+<%= bootstrap_form_for @entity, url: entity_path(@entity), horizontal: 2 do |form| %>
+  <%= render 'form', { form: form, url: dataset_version_entities_path(@entity) } %>
+<% end %>

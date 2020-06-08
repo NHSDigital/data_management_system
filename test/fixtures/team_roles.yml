@@ -1,0 +1,24 @@
+role_one:
+  name: Bread Role
+  sort: 1
+role_two:
+  name: Ham Role
+  sort: 2
+role_three:
+  name: On a Role
+  sort: 3
+team_read_only:
+  name: Read Only
+  sort: 4
+mbis_applicant:
+  name: MBIS Applicant
+  sort: 5
+mbis_delegate:
+  name: MBIS Delegate
+  sort: 6
+odr_applicant:
+  name: ODR Applicant
+  sort: 7
+dataset_manager:
+  name: Dataset Manager
+  sort: 8

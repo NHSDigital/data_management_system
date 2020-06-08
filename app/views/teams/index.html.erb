@@ -1,0 +1,6 @@
+<%= bootstrap_panel_tag panel_heading_segments(
+  center: content_tag(:h4) { 'Listing Teams' }
+) do %>
+<% end %>
+
+<%= render partial: 'teams_table',  locals: { teams: @teams } %>

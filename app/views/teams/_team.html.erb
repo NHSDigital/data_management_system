@@ -1,0 +1,46 @@
+<%= bootstrap_panel_tag panel_heading_segments(
+  center: content_tag(:h4) do %>
+      <%= @team.name %>
+      <br>
+  <% end
+) do %>
+  <div class="row">
+    <div class="col-md-12" id="projects-panel">
+      <%= bootstrap_panel_tag(capture { %>
+        <% if can?(:create, Project.new(team: @team)) %>
+          <div class="pull-right">
+            <% if @team.datasets.size > 0 && @team.members.size > 0 && @team.z_team_status_name == 'Active'%>
+              <%= new_project_dropdown_button(@team, class: 'btn btn-primary btn-xs dropdown-toggle') if @readonly %>
+            <% end %>
+          </div>
+        <% end %>
+
+        <h3 class="panel-title clearfix">Projects</h3>
+        <small>
+        <% if params[:project_types] == 'not_in_use' %>
+          Showing inactive projects (Deleted,Suspended,Closed,Expired) <%= link_to 'click to see active projects', team_url%>
+        <% else %>
+          Showing active projects <%= link_to 'click to see inactive projects', team_url(project_types: 'not_in_use')%>
+        <% end %>
+
+        </small>
+      <% }) do %>
+        <ul class="nav nav-tabs">
+          <%= tab_to('Details', @team) %>   
+          <%= tab_to(t('team.projects'), team_projects_path(@team), count: @team.projects.reload.count) %>   
+          <!-- <%#= tab_to('Teams', user_teams_path(@team), count: @team.grants.count) %> -->
+          <!-- <%#= tab_to('Projects', user_projects_path(@team), count: @team.grants.count) %> -->
+          <!-- <%#= tab_to('Roles', user_grants_path(@team), count: @team.grants.count) %> -->
+        </ul>
+    
+          <!-- <%#= render 'projects/projects_table', projects: @team.projects.reload %> -->
+      <% end %>
+    </div>
+  </div>
+<% end %>
+
+<br>
+
+<%= yield %>
+
+

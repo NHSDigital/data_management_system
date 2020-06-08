@@ -1,0 +1,9 @@
+<%= render layout: 'layout', locals: { project_amendment: @project_amendment } do %>
+  <%= content_tag(:div, id: dom_id(@project_amendment)) do %>
+    <div class="embed-responsive" style="padding-bottom: 70%; margin-bottom: 20px;">
+      <%= content_tag :object, nil, data: project_amendment_path(@project_amendment, format: :pdf), height: '100%', width: '100%' do %>
+        <p>Your browser does not support PDFs.</p>
+      <% end %>
+    </div>
+  <% end %>
+<% end %>

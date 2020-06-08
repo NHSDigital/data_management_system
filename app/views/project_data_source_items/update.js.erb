@@ -1,0 +1,20 @@
+<%
+  @project ||= @project_data_source_item.project # shallow routing means this may not have been set
+%>
+
+$('#<%= "project_data_source_item_#{@project_data_source_item.id}"%>').html("<%= escape_javascript(render partial: 'project_data_source_item_approvals', locals: { data_item: @project_data_source_item } ) %>");
+
+$(".decline_project_data_source_items").bind('click', function() {
+    if ($(this).nextAll('textarea')[0].value.length < 5){
+      alert('Please add a comment when Declining' );
+      return false;
+    }
+  });
+
+$('#data_item_approval_status').html("<%= escape_javascript approval_button_message(@project_data_source_item.project_data_items_approved) %>");
+$('#data_item_approval_status').removeClass().addClass('label label-<%= approval_button_style(@project_data_source_item.project_data_items_approved) %>');
+
+$('#all_approvals_answered').html("<%= escape_javascript approval_button_message(@project_data_source_item.project_can_submit_approvals) %>");
+$('#all_approvals_answered').removeClass().addClass('label label-<%= escape_javascript approval_button_style(@project_data_source_item.project_can_submit_approvals)%>');
+
+$('#save_and_submit_approvals_button').removeClass().addClass('btn btn-success <%= 'disabled' if @project.can_submit_approvals.nil? %>');

@@ -1,0 +1,1224 @@
+# Any difference in column name and field name is as a result of differences
+# between the specifaction and sample data received
+
+---
+!ruby/object:NdrImport::Table
+canonical_name: death_table
+# only one table so we don't need file/tablename_pattern(s)
+# filename_pattern: !ruby/regexp //
+header_lines: 1
+# Actually up to 2 footer lines (beginning "COUNT IN" | "COUNT OT") but ONS
+# doesn't always include these, so we skip them in the importer instead.
+footer_lines: 0
+format: delimited
+delimiter: "|"
+klass: Pseudo::Death
+columns:
+- column: record id
+  mappings:
+  - field: mbism204id
+- column: ledr id
+  mappings:
+  - field: ledrid
+  # Not preserving single spaces: intentionally blank in M204 output.
+- column: cestrssr
+  mappings:
+  - field: cestrssr
+- column: ceststay
+  mappings:
+  - field: ceststay
+- column: ccgpod
+  mappings:
+  - field: ccgpod
+- column: cestrss
+  mappings:
+  - field: cestrss
+- column: cod10r_1
+  mappings:
+  - field: cod10r_1
+- column: cod10r_2
+  mappings:
+  - field: cod10r_2
+- column: cod10r_3
+  mappings:
+  - field: cod10r_3
+- column: cod10r_4
+  mappings:
+  - field: cod10r_4
+- column: cod10r_5
+  mappings:
+  - field: cod10r_5
+- column: cod10r_6
+  mappings:
+  - field: cod10r_6
+- column: cod10r_7
+  mappings:
+  - field: cod10r_7
+- column: cod10r_8
+  mappings:
+  - field: cod10r_8
+- column: cod10r_9
+  mappings:
+  - field: cod10r_9
+- column: cod10r_10
+  mappings:
+  - field: cod10r_10
+- column: cod10r_11
+  mappings:
+  - field: cod10r_11
+- column: cod10r_12
+  mappings:
+  - field: cod10r_12
+- column: cod10r_13
+  mappings:
+  - field: cod10r_13
+- column: cod10r_14
+  mappings:
+  - field: cod10r_14
+- column: cod10r_15
+  mappings:
+  - field: cod10r_15
+- column: cod10r_16
+  mappings:
+  - field: cod10r_16
+- column: cod10r_17
+  mappings:
+  - field: cod10r_17
+- column: cod10r_18
+  mappings:
+  - field: cod10r_18
+- column: cod10r_19
+  mappings:
+  - field: cod10r_19
+- column: cod10r_20
+  mappings:
+  - field: cod10r_20
+- column: cod10rf_1
+  mappings:
+  - field: cod10rf_1
+- column: cod10rf_2
+  mappings:
+  - field: cod10rf_2
+- column: cod10rf_3
+  mappings:
+  - field: cod10rf_3
+- column: cod10rf_4
+  mappings:
+  - field: cod10rf_4
+- column: cod10rf_5
+  mappings:
+  - field: cod10rf_5
+- column: cod10rf_6
+  mappings:
+  - field: cod10rf_6
+- column: cod10rf_7
+  mappings:
+  - field: cod10rf_7
+- column: cod10rf_8
+  mappings:
+  - field: cod10rf_8
+- column: cod10rf_9
+  mappings:
+  - field: cod10rf_9
+- column: cod10rf_10
+  mappings:
+  - field: cod10rf_10
+- column: cod10rf_11
+  mappings:
+  - field: cod10rf_11
+- column: cod10rf_12
+  mappings:
+  - field: cod10rf_12
+- column: cod10rf_13
+  mappings:
+  - field: cod10rf_13
+- column: cod10rf_14
+  mappings:
+  - field: cod10rf_14
+- column: cod10rf_15
+  mappings:
+  - field: cod10rf_15
+- column: cod10rf_16
+  mappings:
+  - field: cod10rf_16
+- column: cod10rf_17
+  mappings:
+  - field: cod10rf_17
+- column: cod10rf_18
+  mappings:
+  - field: cod10rf_18
+- column: cod10rf_19
+  mappings:
+  - field: cod10rf_19
+- column: cod10rf_20
+  mappings:
+  - field: cod10rf_20
+- column: codt_1
+  mappings:
+  - field: codt_1
+    clean: :itself
+- column: codt_2
+  mappings:
+  - field: codt_2
+    clean: :itself
+- column: codt_3
+  mappings:
+  - field: codt_3
+    clean: :itself
+- column: codt_4
+  mappings:
+  - field: codt_4
+    clean: :itself
+- column: codt_5
+  mappings:
+  - field: codt_5
+    clean: :itself
+- column: ctydpod
+  mappings:
+  - field: ctydpod
+- column: ctypod
+  mappings:
+  - field: ctypod
+- column: dester
+  mappings:
+  - field: dester
+    clean: :itself
+- column: doddy
+  mappings:
+  - field: doddy
+- column: dodmt
+  mappings:
+  - field: dodmt
+- column: dodyr
+  mappings:
+  - field: dodyr
+- column: esttyped
+  mappings:
+  - field: esttyped
+- column: hautpod
+  mappings:
+  - field: hautpod
+- column: hropod
+  mappings:
+  - field: hropod
+- column: icd10_1
+  mappings:
+  - field: icd_1
+- column: icd10_2
+  mappings:
+  - field: icd_2
+- column: icd10_3
+  mappings:
+  - field: icd_3
+- column: icd10_4
+  mappings:
+  - field: icd_4
+- column: icd10_5
+  mappings:
+  - field: icd_5
+- column: icd10_6
+  mappings:
+  - field: icd_6
+- column: icd10_7
+  mappings:
+  - field: icd_7
+- column: icd10_8
+  mappings:
+  - field: icd_8
+- column: icd10_9
+  mappings:
+  - field: icd_9
+- column: icd10_10
+  mappings:
+  - field: icd_10
+- column: icd10_11
+  mappings:
+  - field: icd_11
+- column: icd10_12
+  mappings:
+  - field: icd_12
+- column: icd10_13
+  mappings:
+  - field: icd_13
+- column: icd10_14
+  mappings:
+  - field: icd_14
+- column: icd10_15
+  mappings:
+  - field: icd_15
+- column: icd10_16
+  mappings:
+  - field: icd_16
+- column: icd10_17
+  mappings:
+  - field: icd_17
+- column: icd10_18
+  mappings:
+  - field: icd_18
+- column: icd10_19
+  mappings:
+  - field: icd_19
+- column: icd10_20
+  mappings:
+  - field: icd_20
+- column: icd10f_1
+  mappings:
+  - field: icdf_1
+- column: icd10f_2
+  mappings:
+  - field: icdf_2
+- column: icd10f_3
+  mappings:
+  - field: icdf_3
+- column: icd10f_4
+  mappings:
+  - field: icdf_4
+- column: icd10f_5
+  mappings:
+  - field: icdf_5
+- column: icd10f_6
+  mappings:
+  - field: icdf_6
+- column: icd10f_7
+  mappings:
+  - field: icdf_7
+- column: icd10f_8
+  mappings:
+  - field: icdf_8
+- column: icd10f_9
+  mappings:
+  - field: icdf_9
+- column: icd10f_10
+  mappings:
+  - field: icdf_10
+- column: icd10f_11
+  mappings:
+  - field: icdf_11
+- column: icd10f_12
+  mappings:
+  - field: icdf_12
+- column: icd10f_13
+  mappings:
+  - field: icdf_13
+- column: icd10f_14
+  mappings:
+  - field: icdf_14
+- column: icd10f_15
+  mappings:
+  - field: icdf_15
+- column: icd10f_16
+  mappings:
+  - field: icdf_16
+- column: icd10f_17
+  mappings:
+  - field: icdf_17
+- column: icd10f_18
+  mappings:
+  - field: icdf_18
+- column: icd10f_19
+  mappings:
+  - field: icdf_19
+- column: icd10f_20
+  mappings:
+  - field: icdf_20
+- column: icd10pv_1
+  mappings:
+  - field: icdpv_1
+- column: icd10pv_2
+  mappings:
+  - field: icdpv_2
+- column: icd10pv_3
+  mappings:
+  - field: icdpv_3
+- column: icd10pv_4
+  mappings:
+  - field: icdpv_4
+- column: icd10pv_5
+  mappings:
+  - field: icdpv_5
+- column: icd10pv_6
+  mappings:
+  - field: icdpv_6
+- column: icd10pv_7
+  mappings:
+  - field: icdpv_7
+- column: icd10pv_8
+  mappings:
+  - field: icdpv_8
+- column: icd10pv_9
+  mappings:
+  - field: icdpv_9
+- column: icd10pv_10
+  mappings:
+  - field: icdpv_10
+- column: icd10pv_11
+  mappings:
+  - field: icdpv_11
+- column: icd10pv_12
+  mappings:
+  - field: icdpv_12
+- column: icd10pv_13
+  mappings:
+  - field: icdpv_13
+- column: icd10pv_14
+  mappings:
+  - field: icdpv_14
+- column: icd10pv_15
+  mappings:
+  - field: icdpv_15
+- column: icd10pv_16
+  mappings:
+  - field: icdpv_16
+- column: icd10pv_17
+  mappings:
+  - field: icdpv_17
+- column: icd10pv_18
+  mappings:
+  - field: icdpv_18
+- column: icd10pv_19
+  mappings:
+  - field: icdpv_19
+- column: icd10pv_20
+  mappings:
+  - field: icdpv_20
+- column: icd10pvf_1
+  mappings:
+  - field: icdpvf_1
+- column: icd10pvf_2
+  mappings:
+  - field: icdpvf_2
+- column: icd10pvf_3
+  mappings:
+  - field: icdpvf_3
+- column: icd10pvf_4
+  mappings:
+  - field: icdpvf_4
+- column: icd10pvf_5
+  mappings:
+  - field: icdpvf_5
+- column: icd10pvf_6
+  mappings:
+  - field: icdpvf_6
+- column: icd10pvf_7
+  mappings:
+  - field: icdpvf_7
+- column: icd10pvf_8
+  mappings:
+  - field: icdpvf_8
+- column: icd10pvf_9
+  mappings:
+  - field: icdpvf_9
+- column: icd10pvf_10
+  mappings:
+  - field: icdpvf_10
+- column: icd10pvf_11
+  mappings:
+  - field: icdpvf_11
+- column: icd10pvf_12
+  mappings:
+  - field: icdpvf_12
+- column: icd10pvf_13
+  mappings:
+  - field: icdpvf_13
+- column: icd10pvf_14
+  mappings:
+  - field: icdpvf_14
+- column: icd10pvf_15
+  mappings:
+  - field: icdpvf_15
+- column: icd10pvf_16
+  mappings:
+  - field: icdpvf_16
+- column: icd10pvf_17
+  mappings:
+  - field: icdpvf_17
+- column: icd10pvf_18
+  mappings:
+  - field: icdpvf_18
+- column: icd10pvf_19
+  mappings:
+  - field: icdpvf_19
+- column: icd10pvf_20
+  mappings:
+  - field: icdpvf_20
+- column: icd10sc
+  mappings:
+  - field: icdsc
+- column: icd10scf
+  mappings:
+  - field: icdscf
+- column: icd10u
+  mappings:
+  - field: icdu
+- column: icd10uf
+  mappings:
+  - field: icduf
+- column: ''
+  rawtext_name: icdfuture1
+  # do_not_capture: true
+  mappings:
+  - field: icdfuture1
+- column: ''
+  rawtext_name: icdfuture2
+  # do_not_capture: true
+  mappings:
+  - field: icdfuture2
+- column: lnen10_1
+  mappings:
+  - field: lineno9_1
+- column: lnen10_2
+  mappings:
+  - field: lineno9_2
+- column: lnen10_3
+  mappings:
+  - field: lineno9_3
+- column: lnen10_4
+  mappings:
+  - field: lineno9_4
+- column: lnen10_5
+  mappings:
+  - field: lineno9_5
+- column: lnen10_6
+  mappings:
+  - field: lineno9_6
+- column: lnen10_7
+  mappings:
+  - field: lineno9_7
+- column: lnen10_8
+  mappings:
+  - field: lineno9_8
+- column: lnen10_9
+  mappings:
+  - field: lineno9_9
+- column: lnen10_10
+  mappings:
+  - field: lineno9_10
+- column: lnen10_11
+  mappings:
+  - field: lineno9_11
+- column: lnen10_12
+  mappings:
+  - field: lineno9_12
+- column: lnen10_13
+  mappings:
+  - field: lineno9_13
+- column: lnen10_14
+  mappings:
+  - field: lineno9_14
+- column: lnen10_15
+  mappings:
+  - field: lineno9_15
+- column: lnen10_16
+  mappings:
+  - field: lineno9_16
+- column: lnen10_17
+  mappings:
+  - field: lineno9_17
+- column: lnen10_18
+  mappings:
+  - field: lineno9_18
+- column: lnen10_19
+  mappings:
+  - field: lineno9_19
+- column: lnen10_20
+  mappings:
+  - field: lineno9_20
+- column: lnen10f_1
+  mappings:
+  - field: lineno9f_1
+- column: lnen10f_2
+  mappings:
+  - field: lineno9f_2
+- column: lnen10f_3
+  mappings:
+  - field: lineno9f_3
+- column: lnen10f_4
+  mappings:
+  - field: lineno9f_4
+- column: lnen10f_5
+  mappings:
+  - field: lineno9f_5
+- column: lnen10f_6
+  mappings:
+  - field: lineno9f_6
+- column: lnen10f_7
+  mappings:
+  - field: lineno9f_7
+- column: lnen10f_8
+  mappings:
+  - field: lineno9f_8
+- column: lnen10f_9
+  mappings:
+  - field: lineno9f_9
+- column: lnen10f_10
+  mappings:
+  - field: lineno9f_10
+- column: lnen10f_11
+  mappings:
+  - field: lineno9f_11
+- column: lnen10f_12
+  mappings:
+  - field: lineno9f_12
+- column: lnen10f_13
+  mappings:
+  - field: lineno9f_13
+- column: lnen10f_14
+  mappings:
+  - field: lineno9f_14
+- column: lnen10f_15
+  mappings:
+  - field: lineno9f_15
+- column: lnen10f_16
+  mappings:
+  - field: lineno9f_16
+- column: lnen10f_17
+  mappings:
+  - field: lineno9f_17
+- column: lnen10f_18
+  mappings:
+  - field: lineno9f_18
+- column: lnen10f_19
+  mappings:
+  - field: lineno9f_19
+- column: lnen10f_20
+  mappings:
+  - field: lineno9f_20
+- column: loapod
+  mappings:
+  - field: loapod
+  # Not preserving single spaces: intentionally blank in M204 output.
+- column: lsoapod
+  mappings:
+  - field: lsoapod
+  # Not preserving single spaces: intentionally blank in M204 output.
+- column: nhsind
+  mappings:
+  - field: nhsind
+- column: pcdpod
+  mappings:
+  - field: pcdpod
+- column: ploacc10
+  mappings:
+  - field: ploacc10
+- column: podqual
+  mappings:
+  - field: podqual
+- column: podt
+  mappings:
+  - field: podt
+    clean: :itself
+- column: wigwo910
+  mappings:
+  - field: wigwo10
+  # Not preserving single spaces: intentionally blank in M204 output.
+- column: wigwo910f
+  mappings:
+  - field: wigwo10f
+  # Not preserving single spaces: intentionally blank in M204 output.
+- column: addrdt
+  mappings:
+  - field: addrdt
+    clean: :itself
+- column: agec
+  mappings:
+  - field: agec
+- column: agecunit
+  mappings:
+  - field: agecunit
+- column: ageu1d
+  mappings:
+  - field: ageu1d
+- column: aksnamd1
+  mappings:
+  - field: aksnamd_1
+- column: aksnamd2
+  mappings:
+  - field: aksnamd_2
+- column: aksnamd3
+  mappings:
+  - field: aksnamd_3
+- column: aksnamd4
+  mappings:
+  - field: aksnamd_4
+- column: aksnamd5
+  mappings:
+  - field: aksnamd_5
+- column: akfnamd1a
+  mappings:
+  - field: akfnamd_1_1
+- column: akfnamd1b
+  mappings:
+  - field: akfnamd_1_2
+- column: akfnamd1c
+  mappings:
+  - field: akfnamd_1_3
+- column: akfnamd1d
+  mappings:
+  - field: akfnamd_1_4
+- column: akfnamd1e
+  mappings:
+  - field: akfnamd_1_5
+- column: akfnamd2a
+  mappings:
+  - field: akfnamd_2_1
+- column: akfnamd2b
+  mappings:
+  - field: akfnamd_2_2
+- column: akfnamd2c
+  mappings:
+  - field: akfnamd_2_3
+- column: akfnamd2d
+  mappings:
+  - field: akfnamd_2_4
+- column: akfnamd2e
+  mappings:
+  - field: akfnamd_2_5
+- column: akfnamd3a
+  mappings:
+  - field: akfnamd_3_1
+- column: akfnamd3b
+  mappings:
+  - field: akfnamd_3_2
+- column: akfnamd3c
+  mappings:
+  - field: akfnamd_3_3
+- column: akfnamd3d
+  mappings:
+  - field: akfnamd_3_4
+- column: akfnamd3e
+  mappings:
+  - field: akfnamd_3_5
+- column: akfnd4ia
+  mappings:
+  - field: akfndi_1
+- column: akfnd4ib
+  mappings:
+  - field: akfndi_2
+- column: akfnd4ic
+  mappings:
+  - field: akfndi_3
+- column: akfnd4id
+  mappings:
+  - field: akfndi_4
+- column: akfnd4ie
+  mappings:
+  - field: akfndi_5
+- column: aliasd1
+  mappings:
+  - field: aliasd_1
+    clean: :itself
+- column: aliasd2
+  mappings:
+  - field: aliasd_2
+    clean: :itself
+- column: ccgr
+  mappings:
+  - field: ccgr
+- column: ctrypob
+  mappings:
+  - field: ctrypob
+- column: ctryr
+  mappings:
+  - field: ctryr
+- column: ctydr
+  mappings:
+  - field: ctydr
+- column: ctyr
+  mappings:
+  - field: ctyr
+- column: dobdy
+  mappings:
+  - field: dobdy
+- column: dobmt
+  mappings:
+  - field: dobmt
+- column: dobyr
+  mappings:
+  - field: dobyr
+- column: fnamd1
+  mappings:
+  - field: fnamd1
+- column: fnamd2
+  mappings:
+  - field: fnamd2
+- column: fnamd3
+  mappings:
+  - field: fnamd3
+- column: fnamdx1
+  mappings:
+  - field: fnamdx_1
+- column: fnamdx2
+  mappings:
+  - field: fnamdx_2
+- column: gorr
+  mappings:
+  - field: gorr
+- column: hautr
+  mappings:
+  - field: hautr
+- column: hror
+  mappings:
+  - field: hror
+- column: loar
+  mappings:
+  - field: loar
+- column: lsoar
+  mappings:
+  - field: lsoar
+- column: marstat
+  mappings:
+  - field: marstat
+- column: namemaid
+  mappings:
+  - field: namemaid
+- column: nhsno1
+  mappings:
+  - field: nhsno_1
+- column: nhsno2
+  mappings:
+  - field: nhsno_2
+- column: nhsno3
+  mappings:
+  - field: nhsno_3
+- column: nhsno4
+  mappings:
+  - field: nhsno_4
+- column: nhsno5
+  mappings:
+  - field: nhsno_5
+- column: nhsnorss
+  mappings:
+  - field: nhsnorss
+- column: occdt
+  mappings:
+  - field: occdt
+- column: occfft_1
+  mappings:
+  - field: occfft_1
+    clean: :itself
+- column: occfft_2
+  mappings:
+  - field: occfft_2
+    clean: :itself
+- column: occfft_3
+  mappings:
+  - field: occfft_3
+    clean: :itself
+- column: occfft_4
+  mappings:
+  - field: occfft_4
+    clean: :itself
+- column: occtype
+  mappings:
+  - field: occtype
+- column: pcdr
+  mappings:
+  - field: pcdr
+- column: pobt
+  mappings:
+  - field: pobt
+    clean: :itself
+- column: sex
+  mappings:
+  - field: sex
+- column: snamd
+  mappings:
+  - field: snamd
+- column: wardr
+  mappings:
+  - field: wardr
+- column: agecs
+  mappings:
+  - field: agecs
+- column: emprssdm
+  mappings:
+  - field: emprssdm
+- column: emprsshf
+  mappings:
+  - field: emprsshf
+- column: empsecdm
+  mappings:
+  - field: empsecdm
+- column: empsechf
+  mappings:
+  - field: empsechf
+- column: empstdm
+  mappings:
+  - field: empstdm
+- column: empsthf
+  mappings:
+  - field: empsthf
+- column: inddmt
+  mappings:
+  - field: inddmt
+- column: indhft
+  mappings:
+  - field: indhft
+- column: namehf
+  mappings:
+  - field: namehf
+    clean: :itself
+- column: namem
+  mappings:
+  - field: namem
+    clean: :itself
+- column: occ90dm
+  mappings:
+  - field: occ90dm
+- column: occ90hf
+  mappings:
+  - field: occ90hf
+- column: occhft
+  mappings:
+  - field: occhft
+    clean: :itself
+- column: occmt
+  mappings:
+  - field: occmt
+    clean: :itself
+- column: retindm
+  mappings:
+  - field: retindm
+- column: retinhf
+  mappings:
+  - field: retindhf
+- column: sclasdm
+  mappings:
+  - field: sclasdm
+- column: sclashf
+  mappings:
+  - field: sclashf
+- column: sec90dm
+  mappings:
+  - field: sec90dm
+- column: sec90hf
+  mappings:
+  - field: sec90hf
+- column: seccatdm
+  mappings:
+  - field: seccatdm
+- column: seccathf
+  mappings:
+  - field: seccathf
+- column: secclrdm
+  mappings:
+  - field: secclrdm
+- column: secclrhf
+  mappings:
+  - field: secclrhf
+- column: soc2kdm
+  mappings:
+  - field: soc2kdm
+- column: soc2khf
+  mappings:
+  - field: soc2khf
+- column: soc90dm
+  mappings:
+  - field: soc90dm
+- column: soc90hf
+  mappings:
+  - field: soc90hf
+- column: certtype
+  mappings:
+  - field: certtype
+- column: corareat
+  mappings:
+  - field: corareat
+- column: corcertt
+  mappings:
+  - field: corcertt
+    clean: :itself
+- column: doinqt
+  mappings:
+  - field: doinqt
+- column: dor
+  mappings:
+  - field: dor
+- column: inqcert
+  mappings:
+  - field: inqcert
+- column: postmort
+  mappings:
+  - field: postmort
+- column: certifer
+  mappings:
+  - field: certifer
+    clean: :itself
+- column: namec
+  mappings:
+  - field: namec
+- column: namecon
+  mappings:
+  - field: namecon
+- column: codft_1
+  mappings:
+  - field: codfft_1
+    clean: :itself
+- column: codft_2
+  mappings:
+  - field: codfft_2
+    clean: :itself
+- column: codft_3
+  mappings:
+  - field: codfft_3
+    clean: :itself
+- column: codft_4
+  mappings:
+  - field: codfft_4
+    clean: :itself
+- column: codft_5
+  mappings:
+  - field: codfft_5
+    clean: :itself
+- column: codft_6
+  mappings:
+  - field: codfft_6
+    clean: :itself
+- column: codft_7
+  mappings:
+  - field: codfft_7
+    clean: :itself
+- column: codft_8
+  mappings:
+  - field: codfft_8
+    clean: :itself
+- column: codft_9
+  mappings:
+  - field: codfft_9
+    clean: :itself
+- column: codft_10
+  mappings:
+  - field: codfft_10
+    clean: :itself
+- column: codft_11
+  mappings:
+  - field: codfft_11
+    clean: :itself
+- column: codft_12
+  mappings:
+  - field: codfft_12
+    clean: :itself
+- column: codft_13
+  mappings:
+  - field: codfft_13
+    clean: :itself
+- column: codft_14
+  mappings:
+  - field: codfft_14
+    clean: :itself
+- column: codft_15
+  mappings:
+  - field: codfft_15
+    clean: :itself
+- column: codft_16
+  mappings:
+  - field: codfft_16
+    clean: :itself
+- column: codft_17
+  mappings:
+  - field: codfft_17
+    clean: :itself
+- column: codft_18
+  mappings:
+  - field: codfft_18
+    clean: :itself
+- column: codft_19
+  mappings:
+  - field: codfft_19
+    clean: :itself
+- column: codft_20
+  mappings:
+  - field: codfft_20
+    clean: :itself
+- column: codft_21
+  mappings:
+  - field: codfft_21
+    clean: :itself
+- column: codft_22
+  mappings:
+  - field: codfft_22
+    clean: :itself
+- column: codft_23
+  mappings:
+  - field: codfft_23
+    clean: :itself
+- column: codft_24
+  mappings:
+  - field: codfft_24
+    clean: :itself
+- column: codft_25
+  mappings:
+  - field: codfft_25
+    clean: :itself
+- column: codft_26
+  mappings:
+  - field: codfft_26
+    clean: :itself
+- column: codft_27
+  mappings:
+  - field: codfft_27
+    clean: :itself
+- column: codft_28
+  mappings:
+  - field: codfft_28
+    clean: :itself
+- column: codft_29
+  mappings:
+  - field: codfft_29
+    clean: :itself
+- column: codft_30
+  mappings:
+  - field: codfft_30
+    clean: :itself
+- column: codft_31
+  mappings:
+  - field: codfft_31
+    clean: :itself
+- column: codft_32
+  mappings:
+  - field: codfft_32
+    clean: :itself
+- column: codft_33
+  mappings:
+  - field: codfft_33
+    clean: :itself
+- column: codft_34
+  mappings:
+  - field: codfft_34
+    clean: :itself
+- column: codft_35
+  mappings:
+  - field: codfft_35
+    clean: :itself
+- column: codft_36
+  mappings:
+  - field: codfft_36
+    clean: :itself
+- column: codft_37
+  mappings:
+  - field: codfft_37
+    clean: :itself
+- column: codft_38
+  mappings:
+  - field: codfft_38
+    clean: :itself
+- column: codft_39
+  mappings:
+  - field: codfft_39
+    clean: :itself
+- column: codft_40
+  mappings:
+  - field: codfft_40
+    clean: :itself
+- column: codft_41
+  mappings:
+  - field: codfft_41
+    clean: :itself
+- column: codft_42
+  mappings:
+  - field: codfft_42
+    clean: :itself
+- column: codft_43
+  mappings:
+  - field: codfft_43
+    clean: :itself
+- column: codft_44
+  mappings:
+  - field: codfft_44
+    clean: :itself
+- column: codft_45
+  mappings:
+  - field: codfft_45
+    clean: :itself
+- column: codft_46
+  mappings:
+  - field: codfft_46
+    clean: :itself
+- column: codft_47
+  mappings:
+  - field: codfft_47
+    clean: :itself
+- column: codft_48
+  mappings:
+  - field: codfft_48
+    clean: :itself
+- column: codft_49
+  mappings:
+  - field: codfft_49
+    clean: :itself
+- column: codft_50
+  mappings:
+  - field: codfft_50
+    clean: :itself
+- column: codft_51
+  mappings:
+  - field: codfft_51
+    clean: :itself
+- column: codft_52
+  mappings:
+  - field: codfft_52
+    clean: :itself
+- column: codft_53
+  mappings:
+  - field: codfft_53
+    clean: :itself
+- column: codft_54
+  mappings:
+  - field: codfft_54
+    clean: :itself
+- column: codft_55
+  mappings:
+  - field: codfft_55
+    clean: :itself
+- column: codft_56
+  mappings:
+  - field: codfft_56
+    clean: :itself
+- column: codft_57
+  mappings:
+  - field: codfft_57
+    clean: :itself
+- column: codft_58
+  mappings:
+  - field: codfft_58
+    clean: :itself
+- column: codft_59
+  mappings:
+  - field: codfft_59
+    clean: :itself
+- column: codft_60
+  mappings:
+  - field: codfft_60
+    clean: :itself
+- column: codft_61
+  mappings:
+  - field: codfft_61
+    clean: :itself
+- column: codft_62
+  mappings:
+  - field: codfft_62
+    clean: :itself
+- column: codft_63
+  mappings:
+  - field: codfft_63
+    clean: :itself
+- column: codft_64
+  mappings:
+  - field: codfft_64
+    clean: :itself
+- column: codft_65
+  mappings:
+  - field: codfft_65
+    clean: :itself
+- column: ccg9pod
+  mappings:
+  - field: ccg9pod
+- column: ccg9r
+  mappings:
+  - field: ccg9r
+- column: gor9r
+  mappings:
+  - field: gor9r
+- column: ward9r
+  mappings:
+  - field: ward9r

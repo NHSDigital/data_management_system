@@ -1,0 +1,10 @@
+$('#approve_members_status').html("<%= escape_javascript(render partial: '/projects/approve_member_section', locals: { project: @project } ) %>");
+
+$('#user_approval_status').html("<%= escape_javascript approval_button_message(@project.members_approved) %>");
+$('#user_approval_status').removeClass().addClass('label label-<%= approval_button_style(@project.members_approved) %>');
+
+$('#all_approvals_answered').html("<%= escape_javascript approval_button_message(@project.can_submit_approvals) %>");
+$('#all_approvals_answered').removeClass().addClass('label label-<%= approval_button_style(@project.can_submit_approvals) %>');
+$('#save_and_submit_approvals_button').removeClass().addClass('btn btn-success <%= 'disabled' if @project.can_submit_approvals.nil? %>');
+
+jQuery('#transition_controls').html("<%= escape_javascript render('projects/transition_controls', project: @project) %>")

@@ -1,0 +1,6 @@
+<div class='nested-fields'>
+  <div class='field inline'>
+    <%= f.collection_select :child_node_ids, version_nodes(@dataset_version), :id, :name %>
+  </div>    
+  <%= link_to_remove_association "Remove Choice", f, class: 'btn btn-danger' %>
+</div>

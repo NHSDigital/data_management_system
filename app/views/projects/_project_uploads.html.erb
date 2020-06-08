@@ -1,0 +1,82 @@
+<%
+  attachment_types    = ProjectAttachment.relevant_types_for(@project)
+  grouped_attachments = @project.project_attachments.group_by(&:name)
+%>
+
+<div id="project_uploads" data-turbolinks="false">
+  <div class="panel panel-default" style="border-top: 0px; font-size: 1.5em;">
+    <div class="panel-heading">
+      <div>Uploads</div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-3" id="project-upload-items">
+      <nav class="nav-sidebar" style="margin-bottom: 15px;">
+        <ul class="nav nav-pills nav-stacked">
+          <% css = ['active'] %>
+          <% attachment_types.each do |type| %>
+            <%= content_tag :li, class: css.pop do %>
+              <%= link_to "##{type.parameterize}", data: { toggle: "tab" } do %>
+                <%= type %>
+                <span class="badge"><%= grouped_attachments.fetch(type, []).size %></span>
+                <i class="arrow pull-right"><%= bootstrap_icon_tag('chevron-right') %></i>
+              <% end %>
+            <% end %>
+          <% end %>
+        </ul>
+      </nav>
+    </div>
+    <div class="col-md-9">
+      <div class="tab-content">
+        <% css = ['active'] %>
+        <% attachment_types.each do |type| %>
+          <%= content_tag :div, class: ["tab-pane"] << css.pop, id: type.parameterize do %>
+            <div class="panel panel-default">
+              <div class="panel-heading" >
+                <%= type %>
+                <div class="pull-right" >
+                  <% if can?(:create, ProjectAttachment.new(attachable: @project, name: type)) %>
+                    <% if type == ProjectAttachment::Names::DATA_AGREEMENT %>
+                      <%= download_link(data_access_agreement_path, { text: 'Download', class: 'btn btn-xs btn-default' }) %>
+                    <% end %>
+
+                    <%= link_to bootstrap_icon_tag('plus') + ' Upload',
+                                new_project_project_attachment_path(@project, name: type),
+                                remote: true, class: 'btn btn-xs btn-primary'%>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+
+            <% attachments = grouped_attachments.fetch(type, []) %>
+            <% if attachments.any? %>
+              <table class='table table-hover'>
+                <thead>
+                  <td>Filename</td>
+                  <td>Uploaded</td>
+                  <td></td>
+                </thead>
+                <tbody>
+                  <% attachments.each do |document| %>
+                    <%= content_tag :tr, id: dom_id(document) do %>
+                      <td><%= link_to bootstrap_icon_tag('eye-open') + ' ' + document.attachment_file_name, document %></td>
+                      <td><%= timeago_tag(document.created_at) %></td>
+                      <td>
+                        <div class="pull-right">
+                          <%= delete_link(document, remote: true, data: { confirm: "Are you sure you want to remove #{document.name} from #{@project.name}?" } )%>
+                        </div>
+                      </td>
+                    <% end %>
+                  <% end %>
+                </tbody>
+              </table>
+            <% else %>
+              <div>No files uploaded</div>
+            <% end %>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

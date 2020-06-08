@@ -1,0 +1,18 @@
+test_organisation_one:
+  name: Test Organisation One
+  add1: Address1
+  add2: Address2
+  city: Somewhere
+  postcode: ZZ99 9ZZ
+  country_id: XKU
+  organisation_type_id: 6
+
+test_organisation_two:
+  name: Test Organisation Two
+  add1: Address1
+  add2: Address2
+  city: Somewhere
+  postcode: ZZ99 9ZZ
+  country_id: XKU
+  organisation_type_id: 9
+  organisation_type_other: Intergalactic Empire

@@ -1,0 +1,18 @@
+<div class="panel panel-default panel-category_choice">
+  <div class="panel-heading">
+    <div class="row">
+      <div class="col-md-7">
+        <h3 class="panel-title">
+          <%= node_type_label(node) %> <%= node.name %>
+        </h3>
+      </div>
+      <div class="col-md-5 text-right">
+        <%= link_to 'View/Manage Categories',
+            dataset_version_categories_path(@dataset_version),
+            class: "btn btn-sm btn-default" %>
+        <%= new_node_dropdown_button(@dataset_version, node) %>
+      </div>
+    </div>
+  </div>
+  <%= render partial: 'dataset_versions/child_nodes_table', locals: { node: node } %>
+</div>

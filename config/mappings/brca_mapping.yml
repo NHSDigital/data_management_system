@@ -1,0 +1,36 @@
+# Any difference in column name and field name is as a result of differences
+# between the specifaction and sample data received
+
+---
+!ruby/object:NdrImport::Table
+canonical_name: brca_table
+# only one table so we don't need file/tablename_pattern(s)
+# filename_pattern: !ruby/regexp //
+header_lines: 0
+# Actually up to 2 footer lines (beginning "COUNT IN" | "COUNT OT") but ONS
+# doesn't always include these, so we skip them in the importer instead.
+footer_lines: 0
+format: csv
+klass: BRCArecord #TODO: how is this actually used? Just as an identifier?
+columns:
+- column: dummy
+  mappings:
+  - field: pseudo_id1
+- column: dummy
+  mappings:
+  - field: pseudo_id2
+- column: dummy
+  mappings:
+  - field: key_bundle
+- column: dummy
+  mappings:
+  - field: encrypted_demog
+- column: dummy
+  mappings:
+  - field: clinical.to_json
+- column: dummy
+  mappings:
+  - field: encrypted_rawtext_demog
+- column: dummy
+  mappings:
+  - field: rawtext_clinical.to_json

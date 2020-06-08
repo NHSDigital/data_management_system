@@ -1,0 +1,28 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+# General MemberRejection DetailRejection DataSourceItemRejection
+# MemberJustification DetailJustification DataSourceItemJustification
+
+rejected_details_comment:
+  project: rejected_project
+  user: odr_user
+  user_role: 'odr'
+  comment_type: 'DetailRejection'
+  comment: 'These details are all wrong ....'
+
+rejected_members_comment:
+  project: rejected_project
+  user: odr_user
+  user_role: 'odr'
+  comment_type: 'MemberRejection'
+  comment: 'youre not allowed to include bob'
+
+rejected_data_source_item_comment:
+  project: rejected_project
+  user: odr_user
+  user_role: 'odr'
+  comment_type: 'DataSourceItemRejection'
+  comment: 'you are not allowed this data item'
+  project_node: rejected_dob
+
+
+

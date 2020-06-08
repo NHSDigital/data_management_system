@@ -1,0 +1,8 @@
+<%
+  @datasets = Dataset.all
+%>
+
+jQuery('#modal').modal('hide');
+jQuery('#datasets_information').replaceWith(
+  '<%= escape_javascript(render 'datasets/datasets_table') %>');
+

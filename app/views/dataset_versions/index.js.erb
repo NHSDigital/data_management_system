@@ -1,0 +1,9 @@
+<%
+  @datasets = Dataset.all
+  dataset ||= @dataset_version.dataset
+%>
+
+jQuery('#modal').modal('hide');
+jQuery('#datasets_information').replaceWith(
+  '<%= escape_javascript(render 'datasets/datasets_table') %>');
+jQuery('#<%= dom_id(dataset) %>_versions').collapse('show')

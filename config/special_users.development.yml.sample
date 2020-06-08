@@ -1,0 +1,4 @@
+---
+application_manager:
+  - application_manager_one@phe.gov.uk
+  - application_manager_two@phe.gov.uk

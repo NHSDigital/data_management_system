@@ -1,0 +1,26 @@
+<%
+  html_content = escape_javascript bootstrap_form_for(@project, remote: true, horizontal: true) { |form| render('project_details', form: form) }
+%>
+
+jQuery('#modal_title').html("Duplicating Project <%= Project.find(@project.clone_of).name %>");
+jQuery('#modal_body').html('<%= html_content %>').parents('.modal').modal('show');
+
+$('*[data-depends-on]').each(function() {
+  var $this = $(this);
+  var master = $this.data('dependsOn').toString();
+  var value = $this.data('dependsOnValue');
+  if (typeof(value) != 'undefined') {
+    $this.dependsOn(master, value);
+  } else {
+    $this.dependsOn(master);
+  }
+});
+
+$("#project_team_dataset_id").each(function(e){
+  var ds = document.getElementById("project_team_dataset_id");
+  var terms = ds.options[ds.selectedIndex].dataset.terms;
+  document.getElementById("dataset_terms_message").innerHTML = terms;
+});
+
+$('.dataset_terms').hide();
+$('#project_data_source_terms_accepted').prop('checked', true);

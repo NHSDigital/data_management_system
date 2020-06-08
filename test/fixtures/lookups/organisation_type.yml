@@ -1,0 +1,103 @@
+# Created by `bin/rails lookup:create_fixture[OrganisationType]` at 2019-02-20 09:27:23 UTC
+---
+1:
+  id: 1
+  value: Academic Institution (UK)
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &1 2019-01-23 10:11:00.046387000 Z
+    zone: &2 !ruby/object:ActiveSupport::TimeZone
+      name: Etc/UTC
+    time: *1
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &3 2019-01-23 10:11:00.046387000 Z
+    zone: *2
+    time: *3
+2:
+  id: 2
+  value: Commercial
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &4 2019-01-23 10:11:00.050432000 Z
+    zone: *2
+    time: *4
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &5 2019-01-23 10:11:00.050432000 Z
+    zone: *2
+    time: *5
+3:
+  id: 3
+  value: CQC Registered Health and/or Social Care Provider
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &6 2019-01-23 10:11:00.053956000 Z
+    zone: *2
+    time: *6
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &7 2019-01-23 10:11:00.053956000 Z
+    zone: *2
+    time: *7
+4:
+  id: 4
+  value: CQC Approved National Contractor
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &8 2019-01-23 10:11:00.058117000 Z
+    zone: *2
+    time: *8
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &9 2019-01-23 10:11:00.058117000 Z
+    zone: *2
+    time: *9
+5:
+  id: 5
+  value: Local Authority
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &10 2019-01-23 10:11:00.062878000 Z
+    zone: *2
+    time: *10
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &11 2019-01-23 10:11:00.062878000 Z
+    zone: *2
+    time: *11
+6:
+  id: 6
+  value: Government Agency (Health and Social Care)
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &12 2019-01-23 10:11:00.082965000 Z
+    zone: *2
+    time: *12
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &13 2019-01-23 10:11:00.082965000 Z
+    zone: *2
+    time: *13
+7:
+  id: 7
+  value: Government Agency (outside of Health and Adult Social Care)
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &14 2019-01-23 10:11:00.087660000 Z
+    zone: *2
+    time: *14
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &15 2019-01-23 10:11:00.087660000 Z
+    zone: *2
+    time: *15
+8:
+  id: 8
+  value: Independent Sector Organisation
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &16 2019-01-23 10:11:00.093563000 Z
+    zone: *2
+    time: *16
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &17 2019-01-23 10:11:00.093563000 Z
+    zone: *2
+    time: *17
+9:
+  id: 9
+  value: Other
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &18 2019-01-23 10:11:00.101604000 Z
+    zone: *2
+    time: *18
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &19 2019-01-23 10:11:00.101604000 Z
+    zone: *2
+    time: *19
+

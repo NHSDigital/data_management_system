@@ -1,0 +1,23 @@
+# Migrate schema to production server
+
+- edit mbis/config/database.yml, production section:
+
+production:
+  <<: *default
+  database: prescr_lv01
+  username: <name of db user>
+  password: <%= ENV['MBIS_DATABASE_PASSWORD'] %>
+  host: localhost
+  port: 5000
+
+
+# --- Set up ssh tunnel to prescriptions database server ---
+# prescription server is currently at ncr-prescr-db1.phe.gov.uk
+# - use OS user password, not db user!
+$ ssh -N -L 5000:127.0.0.1:5432 <name of OS user>@<prescription server>
+
+# --- Set database user's password for Rails use ---
+$ export MBIS_DATABASE_PASSWORD='some_password'
+
+# --- Run Rails migration ---
+bundle exec rails db:migrate RAILS_ENV=production

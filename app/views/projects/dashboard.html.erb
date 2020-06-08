@@ -1,0 +1,37 @@
+<h3 class="center-block text-center">Projects Dashboard</h3>
+<hr />
+<%= render 'search' %>
+
+<% if @my_projects.any? %>
+  <%= bootstrap_panel_tag 'My Projects' do %>
+    <%= render 'projects_table', projects: @my_projects %>
+    <%= will_paginate @my_projects, class: 'pagination center-block text-center', param_name: :my_projects_page, params: params %>
+  <% end %>
+<% end %>
+
+<% if @assigned_projects.any? %>
+  <%= bootstrap_panel_tag 'Assigned Projects' do %>
+    <%= render 'projects_table', projects: @assigned_projects %>
+    <%= will_paginate @assigned_projects, class: 'pagination center-block text-center', param_name: :assigned_projects_page, params: params %>
+  <% end %>
+<% end %>
+
+<% if @unassigned_projects.any? %>
+  <%= bootstrap_panel_tag 'Unassigned Projects', id: 'unassigned-projects' do %>
+    <%= render 'projects_table', projects: @unassigned_projects %>
+    <%= will_paginate @unassigned_projects, class: 'pagination center-block text-center', param_name: :unassigned_projects_page, params: params %>
+  <% end %>
+<% end %>
+
+<% if @projects.any? %>
+  <%= bootstrap_panel_tag 'All Projects', id: 'all-projects' do %>
+    <%= render 'projects_table', projects: @projects %>
+    <%= will_paginate @projects, class: 'pagination center-block text-center', param_name: :projects_page, params: params %>
+  <% end %>
+<% end %>
+
+<% if @projects.none? %>
+<div class="alert alert-warning text-center" role="alert">
+  No projects found!
+</div>
+<% end %>

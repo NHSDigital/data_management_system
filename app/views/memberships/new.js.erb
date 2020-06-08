@@ -1,0 +1,6 @@
+<%
+  html_content = escape_javascript bootstrap_form_for([@team, @membership], remote: true, horizontal: false) { |form| render('form', form: form) }
+%>
+
+jQuery('#modal_title').html('Create a New Team Member');
+jQuery('#modal_body').html('<%= html_content %>').parents('.modal').modal('show');

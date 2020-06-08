@@ -1,0 +1,5 @@
+<% if can?(:publish, DatasetVersion) %>
+  <%= form_with(url: publish_dataset_version_path(@dataset_version, state: 1), action: :publish, method: :patch, local: false, html: { style: 'display: inline;' }) do |form| %>  
+    <%= button_tag('Publish', type: 'submit', class: 'btn-sm btn-primary') %>
+  <% end %>
+<% end %>

@@ -1,0 +1,250 @@
+# Files in the config/locales directory are used for internationalization
+# and are automatically loaded by Rails. If you want to use locales other
+# than English, add the necessary files in this directory.
+#
+# To use the locales, use `
+.t`:
+#
+#     I18n.t 'hello'
+#
+# In views, this is aliased to just `t`:
+#
+#     <%= t('hello') %>
+#
+# To use a different locale, set it with `I18n.locale`:
+#
+#     I18n.locale = :es
+#
+# This would use the information in config/locales/es.yml.
+#
+# To learn more, please read the Rails Internationalization guide
+# available at http://guides.rubyonrails.org/i18n.html.
+
+en:
+  system:
+    name: Data Management System
+    description: Data Management System
+    organisation_abbreviation: PHE
+  errors:
+    alertbox:
+      heading: "%{reason} prevented this record from being saved."
+      base: 'Overall errors:'
+      other:
+        readonly: "Specific errors:"
+        editing: "Specific errors:"
+    messages:
+      not_after: cannot be after %{comparison}
+      not_before: cannot be before %{comparison}
+      no_future: cannot be after Current Date
+      bad_pdf: invalid PDF file
+      lookup: is not recognized as valid
+  helpers:
+    submit:
+      workflow/project_state:
+        review: Submit for Delegate Approval
+        draft: Return to draft
+        submitted: Submit to ODR
+        rejected: Decline
+        deleted: Delete
+        submitted: Submit
+        approved: Approve
+        amend: Amend
+        completed: Proceed to Application
+        dpia_start: Begin DPIA
+        dpia_review: Send for Peer Review
+        dpia_moderation: Send for Moderation
+        dpia_rejected: Reject DPIA
+        contract_draft: Start Contract Drafting
+        contract_rejected: Reject Contract
+        contract_completed: Mark Contract as Completed
+  workflow/state:
+    draft: New
+    review: Delegate Approval
+    submitted: Pending
+    rejected: Declined
+    dpia_start: DPIA
+    dpia_review: DPIA Peer Review
+    dpia_moderation: DPIA Moderation
+    dpia_rejected: DPIA Rejected
+    contract_draft: Contract Draft
+    contract_rejected: Contracted Rejected
+    contract_completed: Contract Completed
+  projects:
+    application:
+      form:
+        name: Project Title
+        description: "Lay Summary: Overall Project Aims"
+        why_data_required: "Lay Summary: Why this project is needed"
+        how_data_will_be_used: "Lay Summary: How will PHE data be used"
+        public_benefit: "Lay Summary: What are the anticipated public benefits"
+        data_end_use: Summary of project type
+        start_data_date: Project Start Date
+        end_data_date: Project End Date
+        duration: Project duration
+        level_of_identifiability: "Classification of data requested:"
+        data_asset_required: Please add all datasets that are requested as part of this application
+        data_linkage: Outline any data linkage requirements
+        onwardly_share: Do you plan to onwardly share the data?
+        onwardly_share_detail: If yes, please provide detail of who and under what conditions
+        data_already_held_for_project: Is data already held for this project/purpose?
+        data_already_held_detail: Provide the dataset name, classification of the data…
+        data_to_contact_others: Does this project involve patient contact
+        data_to_contact_others_desc: If yes, please give details
+        programme_support: Has programme support been granted?
+        programme_support_detail: Has programme support been granted, detail?
+        scrn_id: Programme approval reference
+        programme_approval_date: Date of programme approval
+        phe_contacts: Please identify any contacts within PHE
+        acg_who: Caldicott Guardian Name
+        section_251_exempt: Which S251 exemption is required for this project
+        cag_ref: S251 (CAG) Ref
+        date_of_renewal: S251 Date of next renewal
+        project_lawful_bases: Project lawful bases – 6.1a-f and 9.2a-j
+        article6: Article 6 lawful basis for processing personal data
+        article9: Article 9 condition for processing special category
+        ethics_approval_nrec_name: REC Committee Name
+        ethics_approval_nrec_ref: REC reference number
+        processing_territory: Territory of processing
+        processing_territory_other: Territory of processing, other
+        dpa_org_code: DP Registration Code
+        dpa_org_name: DP Registered Organisation name
+        dpa_registration_end_date: DP Registration expiration date
+        security_assurance: Data Security and Protection Toolkit
+        ig_code: DSP Organisation Code
+        awarding_body_ref: "Funder: Awarding body reference"
+        processing_territory_outsourced: "Data Processor: Territory of processing"
+        processing_territory_outsourced_other: "Data Processor: Territory of processing, other"
+        dpa_org_code_outsourced: "Data Processor: DPA Org Code"
+        dpa_org_name_outsourced: "Data Processor: DPA Org Name"
+        dpa_registration_end_date_outsourced: "Data Processor: Registration End Date"
+        security_assurance_outsourced: "Data Processor: Security Assurance"
+        ig_code_outsourced: "Data Processor: DSP Organisation Code"
+        ig_toolkit_version_outsourced: "Data Processor: DSP Organisation Code"
+        main_contact_name: Primary contact name (if different from above)
+        main_contact_email: Primary contact email
+        closure_date: Closure Date
+      organisation:
+        sponsor_name: 'Sponsor: Name of sponsor'
+        sponsor_add1: 'Sponsor: Address line 1'
+        sponsor_add2: 'Sponsor: Address line 2'
+        sponsor_city: 'Sponsor: City'
+        sponsor_postcode: 'Sponsor: Postcode'
+        sponsor_country: 'Sponsor: Country'
+        funder_name: 'Funder: Name of awarding institution'
+        funder_add1: 'Funder: Address line 1'
+        funder_add2: 'Funder: Address line 2'
+        funder_city: 'Funder: City'
+        funder_postcode: 'Funder: Postcode'
+        funder_country: 'Funder: Country'
+        data_processor_name: "Data Processor: Name"
+        data_processor_add1: "Data Processor: Address line 1"
+        data_processor_add2: "Data Processor: Address line 2"
+        data_processor_city: "Data Processor: City"
+        data_processor_postcode: "Data Processor: Postcode"
+        data_processor_country: "Data Processor: Country"
+    project_owner_grant:
+      owner: Chief Investigator Name
+    project_data_items:
+      justification:
+        Please add a justification for data items where required (i.e Direct Identifiers, ICD and
+        Locations items)
+    eoi:
+      form:
+        name: Project Title
+        level_of_identifiability: Classification of data requested
+        project_end_uses: Summary of project type
+        project_purpose: Enquiry details
+  project_types:
+    project: MBIS Application
+    eoi: ODR EOI
+    application: ODR Application
+  dataset_type:
+    xml:
+      name: XML
+      nodes:
+        entity: Entity
+        group: Group
+        category_choice: Category Choice
+        choice: Choice
+        data_item: Data Item
+    non_xml:
+      name: Non XML
+      nodes:
+        entity: Entity
+        group: Group
+        category_choice: Category Choice
+        choice: Choice
+        data_item: Data Item
+    table_specification:
+      name: Table Specificaton
+      nodes:
+        entity: Server
+        group: Group
+        database: Database
+        table: Table
+        category_choice: Category Choice
+        choice: Choice
+        data_item: Data Item
+        data_item_group: Data Item Group
+    odr:
+      name: Data Asset
+      nodes:
+        entity: Asset
+        group: Group
+        category_choice: Category Choice
+        choice: Choice
+        data_item: Data Item
+  era_fields:
+    ebr: 'e_base_record(s):'
+    ebr_rawtext_name: 'rawtext_name:'
+    ebr_virtual_name: 'virtual_field_name(s):'
+    event: 'event:'
+    event_field_name: 'event_field_name:'
+    lookup_table: 'lookup_table:'
+    comments: 'comments:'
+  activerecord:
+    errors:
+      models:
+        project:
+          attributes:
+            base:
+              outstanding_approvals: requires approvals to be completed
+              not_approvable: cannot be approved
+              premature_transition: not ready for transition
+              no_attached_dpia: no DPIA document(s) attached
+              no_attached_contract: no contract document(s) attached
+            data_items:
+              unjustified: require justification
+    models:
+      project_amendment: Amendment
+      data_privacy_impact_assessment:
+        one: DPIA
+        other: DPIAs
+    attributes:
+      project:
+        name: Project Title
+      data_privacy_impact_assessment:
+        ig_toolkit_version: Year of IG assessment status
+        ig_score: IG score
+        ig_assessment_status_id: IG assessment status
+        review_meeting_date: Date of ODR review meeting
+        dpia_decision_date: DPIA decision date
+        upload: DPIA document
+      contract:
+        contract_sent_date: Date contract sent to applicant
+        contract_returned_date: Date contract returned by applicant
+        contract_start_date: Contract start date
+        contract_end_date: Contract end date
+        contract_executed_date: Contract executed (all parties)
+        contract_version: Type of contract sent
+        advisory_letter_date: Advisory letter sent
+        destruction_form_received_date: Destruction form received
+      release:
+        phe_invoice_number: PHE Invoice number
+        po_number: PO number
+        ndg_opt_out_processed_date: National processing data opt outs completed
+        cprd_reference: CPRD reference
+        vat_reg: VAT registered
+        drr_no: DRR No
+        individual_to_release: Name(s) of individuals releasing data
+        release_date: Data Release date

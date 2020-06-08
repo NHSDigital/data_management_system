@@ -1,0 +1,11 @@
+<h1>Project Assignment</h1>
+<hr />
+
+<p>A project has been assigned to you by <%= @assigned_by || 'the MBIS system' %>.</p>
+
+<%= render 'project_details', project: @project %>
+
+<p>
+  Please <%= link_to 'log in', root_url %> and use the link above to view the
+  project.
+</p>

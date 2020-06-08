@@ -1,0 +1,21 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+deaths_gold:
+  name: Deaths Gold
+  title: Deaths gold dataset
+
+deaths_transaction:
+  name: Death Transaction
+  title: Deaths transaction dataset
+
+births_gold:
+  name: Births Gold
+  title: Births gold dataset
+
+births_transaction:
+  name: Births Transaction
+  title: Births transaction dataset
+
+deaths_gold_standard:
+  name: Deaths Gold Standard
+  title: Deaths Gold Standard dataset

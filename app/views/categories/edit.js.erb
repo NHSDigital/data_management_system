@@ -1,0 +1,8 @@
+  <%
+    html_content = escape_javascript bootstrap_form_for(
+      @category, url: category_path(@category),
+      remote: true, horizontal: 2) { |form| render('form', form: form) }
+  %>
+
+jQuery('#modal_title').html("Editing Category: <%= @category.name %>");
+jQuery('#modal_body').html('<%= html_content %>').parents('.modal').modal('show');

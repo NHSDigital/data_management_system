@@ -1,0 +1,14 @@
+<%= bootstrap_form_for([@dataset_version, @category],
+    url: dataset_version_categories_path(@dataset_version, @category),
+    horizontal: true) do |form| %>
+  <%= form.hidden_field :dataset_version_id, value: @dataset_version.id %>
+  <%= form.hidden_field :sort, value: 0 %>
+  <%= form.control_group(:name) { form.text_field :name } %>
+  <%= form.control_group(:description) { form.text_field :description } %>
+  <%= button_control_group nil do %>
+    <div class='pull-right'>
+      <%= close_modal %>
+      <%= submit_tag('Save', class: 'btn btn-primary', disable_with: 'Saving&hellip;'.html_safe) %>
+    <div/>
+  <% end %>
+<% end %>

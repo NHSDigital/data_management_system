@@ -1,0 +1,36 @@
+# Created by `bin/rails lookup:create_fixture[ProcessingTerritory]` at 2019-11-07 09:47:00 UTC
+---
+uk:
+  id: 1
+  value: UK
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &1 2019-01-23 10:11:01.502375000 Z
+    zone: &2 !ruby/object:ActiveSupport::TimeZone
+      name: Etc/UTC
+    time: *1
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &3 2019-01-23 10:11:01.502375000 Z
+    zone: *2
+    time: *3
+eea:
+  id: 2
+  value: EEA
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &4 2019-01-23 10:11:01.510213000 Z
+    zone: *2
+    time: *4
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &5 2019-11-01 14:18:34.023100000 Z
+    zone: *2
+    time: *5
+other:
+  id: 3
+  value: Other
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &6 2019-01-23 10:11:01.521886000 Z
+    zone: *2
+    time: *6
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &7 2019-01-23 10:11:01.521886000 Z
+    zone: *2
+    time: *7

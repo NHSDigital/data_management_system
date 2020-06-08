@@ -1,0 +1,17 @@
+<%= bootstrap_form_for([@data_source, @data_source_item], horizontal: true) do |f| %>
+  <%= form.control_group :name, 'Name' do %>
+    <%= form.text_field :name %>
+  <% end %>
+  <%= form.control_group :description, 'Description' do %>
+    <%= form.text_field :description %>
+  <% end %>
+  <%= form.control_group :governance, 'Governance' do %>
+    <%= form.select(:governance, DataSourceItem::GOVERNANCES, {}, { include_blank: true }) %>
+  <% end %>
+  <%= button_control_group nil do %>
+    <div class='pull-right'>
+      <%= link_to("Don't save".html_safe, @data_source_item.data_source, class: 'btn btn-default') %>
+      <%= submit_tag('Save', class: 'btn btn-primary', disable_with: 'Saving&hellip;'.html_safe) %>
+    <div/>
+  <% end %>
+<% end %>

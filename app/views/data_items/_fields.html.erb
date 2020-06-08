@@ -1,0 +1,34 @@
+<!-- TODO: sort -->
+<%= f.hidden_field :sort, value: 0 %>
+<%= f.hidden_field :dataset_version_id, value: @dataset_version.id %>
+<%= f.control_group :reference, 'Reference' do %>
+  <%= f.text_field :reference, { readonly: readonly, readonly_value: @node.reference } %>
+<% end %>  
+<%= f.control_group :name, 'Name' do %>
+  <%= f.text_field :name, { readonly: readonly, readonly_value: @node.name } %>
+<% end %>
+<%= f.control_group :description, 'Description' do %>
+  <%= f.text_area :description, { readonly: readonly, readonly_value: @node.min_occurs } %>
+<% end %>
+<%= f.control_group :min_occurs, 'Min Occurs' do %>
+  <%= f.number_field :min_occurs, { readonly: readonly, readonly_value: @node.max_occurrences } %>
+<% end %>
+<%= f.control_group :max_occurs, 'Max Occurs' do %>
+  <%= f.number_field :max_occurs, { readonly: readonly, readonly_value: @node.name } %>
+<% end %>
+<% unless readonly %>
+  <%= f.control_group :add_governance, 'Add Governance?' do %>  
+    <input type="checkbox" id="add-governance">
+    <div class='governance'>
+      <%= f.collection_select :governance_id, Governance.all, :id, :value, include_blank: true %>
+    </div>
+  <% end %>
+  <%= f.control_group :add_data_dictionary_element, 'Add Data Dictionary Element?' do %>  
+    <input type="checkbox" id="add-dde">
+    <div class='data-dictionary-element'>
+      <%= render 'data_items/data_dictionary_element', form: f %>
+    </div>
+  <% end %>
+<% end %>
+<%= render 'nodes/child_node_errors', f: f %>
+

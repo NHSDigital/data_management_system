@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<COSD_Pathology:COSD_Pathology xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:COSD_Pathology="http://www.datadictionary.nhs.uk/messages/COSD_Pathology-v3-1"
+  xsi:schemaLocation="http://www.datadictionary.nhs.uk/messages/COSD_Pathology-v3-1 ../Schemas/COSDCOSD_XMLSchema-v8-1.xsd"> 
+  <Id root="18DA78B8-44A4-4AA7-95B0-87C198E6B0AE"></Id>
+  <OrganisationIdentifierCodeOfSubmittingOrganisation extension="RA123"/>
+  <RecordCount value="1"></RecordCount>
+  <ReportingPeriodStartDate>2018-02-09</ReportingPeriodStartDate>
+  <ReportingPeriodEndDate>2018-02-09</ReportingPeriodEndDate>
+  <FileCreationDateTime>2018-02-09T12:34:56</FileCreationDateTime>
+  <BreastRecord>
+    <Id root="B63AFD92-568E-4845-A0CE-2643FE15DE08"></Id>
+    <LinkagePatientId>
+      <NHSNumber extension="1234567890" />
+      <LocalPatientIdExtended>AB1888555446</LocalPatientIdExtended>
+      <NHSNumberStatusIndicator code="02" />
+      <Birthdate>1980-01-01</Birthdate>
+      <OrganisationIdentifierCodeOfProvider extension="RA123" />
+    </LinkagePatientId>
+    <Demographics>
+      <PersonFamilyName>BLOGGS</PersonFamilyName>
+      <PersonGivenName>JOANNE</PersonGivenName>
+      <Address>
+        <UnstructuredAddress>
+          <StreetAddressLine>123 THE STREET, ANYTOWN, ANYCOUNTY</StreetAddressLine>
+        </UnstructuredAddress>
+      </Address>
+      <Postcode>ZZ99 9ZZ</Postcode>
+      <Gender code="2" />
+    </Demographics>
+    <Pathology>
+      <InvestigationResultDate>2013-01-15</InvestigationResultDate>
+      <ServiceReportId extension="PH000000X/0X" />
+      <PathologyObservationReportId extension="PH00000xx/0xx"/>
+      <ServiceReportStatus code="1" />
+      <PathTestReqCareProfCode extension="C9999998" />
+      <OrganisationSiteIdentifierOfPathologyTestRequest extension="RA123" />
+      <SampleCollectionDate>2013-01-15</SampleCollectionDate>
+      <SampleReceiptDate>2013-01-15</SampleReceiptDate>
+      <OrganisationIdentifierOfReportingPathologist extension="RA123" />
+      <PathologistConsultantCode extension="C9999998" />
+      <SpecimenNature code="1" />
+      <SNOMEDVersionPathology code="01" />
+      <TopographySNOMEDPathology code="T04030"/>
+      <MorphologySNOMEDPathology code="M80003"/>
+      <PrimaryDiagnosisICDPath code="C50.9" />
+      <TumourLaterality code="L" />
+      <PathologyInvestigationType code="EX" />
+      <PathologyReportText><![CDATA[PATHOOGY TEXT]]>
+      </PathologyReportText>
+      <LesionSizePathological value="12.34" />
+      <GradeOfDiff code="GX" />
+      <CancerVascLymphInvasion code="NU" />
+      <ExcisionMargin code="03" />
+      <SyncTumourInd code="N" />
+      <NumberNodesExamined value="99" />
+      <NumberNodesPositive value="0" />
+      <TNMCodingEdition code="1" />
+      <TNMVersionNumberPathological>8</TNMVersionNumberPathological>
+      <PathTCategory>X</PathTCategory>
+      <PathNCategory>X</PathNCategory>
+      <PathMCategory>X</PathMCategory>
+      <PathTNMStage>X</PathTNMStage>
+      <NeoadjuvantTherapyInd code="9" />
+      <PathologyBreast>
+        <MultifocalTumourInd code="9" />
+        <DCISGrade code="X" />
+        <NonInvasiveTumourSize value="123.45" />
+        <WholeTumourSize value="123.45" />
+        <MetastasisExtentCode code="9" />
+        <DistanceToMargin value="12.3" />
+        <ERAllredScore code="0" />
+        <EstrogenReceptorStatus code="X" />
+        <PRAllredScore code="0" />
+        <PRStatus code="X" />
+        <HER2Status code="X" />
+        <HER2ISHStatus code="N" />
+        <CytologyBreast code="C1" />
+        <CytologyNode code="C1" />
+        <CoreBiopsyBreast code="B1" />
+        <CoreBiopsyNode code="B1" />
+      </PathologyBreast>
+    </Pathology>
+  </BreastRecord>
+</COSD_Pathology:COSD_Pathology>

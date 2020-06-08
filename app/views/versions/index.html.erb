@@ -1,0 +1,54 @@
+<div class="panel panel-default" id="version-index-details">
+  <div class="panel-body" style="padding-top:8px;padding-bottom:8px">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="pull-left" style="font-size:1.5em;padding-top:4px">
+           <%= @parent.model_name.human %> Audit
+        </div>
+
+        <div class="btn-toolbar pull-left" style="margin:0 0 0 10px;">
+          <div class="btn-group">
+            <%# link_to 'Return', instance.try(:team) || instance.try(:project) || instance, class: 'btn btn-default' %>
+            <%= link_to 'Return to ' + @parent.model_name.human, @parent, class: 'btn btn-default' %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<table class="table table-hover" id="version-table">
+  <thead>
+    <tr>
+      <th>User</th>
+      <th>Item</th>
+      <th>Action</th>
+      <th>Updated</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @all_versions.each do |version| %>
+      <tr>
+        <td>
+          <% if version.whodunnit.nil? %>
+            <em>Auto-generated for testing<em>
+          <% else %>
+            <%= User.find_by(id: version.whodunnit)&.full_name || 'Unknown' %>
+          <% end %>
+        </td>
+        <td><%= version.item_type.underscore.humanize %></td>
+        <td><%= version.event %></td>
+        <td><%= timeago_tag(version.created_at) %></td>
+        <td>
+          <% if version.whodunnit.nil? %>
+            <em>Auto-generated for testing<em>
+          <% else %>
+            <%= link_to 'Details', version_path(version), remote: true, class: 'btn btn-default' %>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+<%= will_paginate @all_versions %>

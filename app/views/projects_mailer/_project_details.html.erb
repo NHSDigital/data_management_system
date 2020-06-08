@@ -1,0 +1,26 @@
+<table>
+  <tr>
+    <td><strong style="margin-right: 5px;">Title:</strong></td>
+    <td><%= project.name %></td>
+  </tr>
+  <tr>
+    <td><strong style="margin-right: 5px;">Type:</strong></td>
+    <td><%= project.project_type_name %></td>
+  </tr>
+  <tr>
+    <td><strong style="margin-right: 5px;">Raised by:</strong></td>
+    <td><%= project.owner_full_name %></td>
+  </tr>
+  <tr>
+    <td><strong style="margin-right: 5px;">Team:</strong></td>
+    <td><%= project.team.name %></td>
+  </tr>
+  <tr>
+    <td><strong style="margin-right: 5px;">Organisation:</strong></td>
+    <td><%= project.organisation.name %></td>
+  </tr>
+  <tr>
+    <td><strong style="margin-right: 5px;">Link:</strong></td>
+    <td><%= link_to nil, project_url(project) %></td>
+  </tr>
+</table>

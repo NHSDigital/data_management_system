@@ -1,0 +1,26 @@
+  <% existing_version_nodes = version_nodes(@dataset_version) %>
+  <table class="table table-fixed">
+    <thead>
+      <tr>
+        <td>
+          <h4><span id="filtered_existing_node_count"><%= existing_version_nodes.length %></span> Nodes</h4>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <%= 'Search' %>
+          <%= text_field_tag :search_existing_nodes, nil, autocomplete: 'off' %>
+        </td>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td id="existing_nodes">
+          <%= form.collection_check_boxes :existing_name, existing_version_nodes, :to_s, :to_s do |b| %>
+            <%= b.label(:"data-value" => b.value, style: 'display:block') { b.check_box + ' ' + b.text } %>
+          <% end %>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+

@@ -1,0 +1,18 @@
+<div id='datasets_information'>
+  <table class="table table-hover" id="datasets-table">
+    <thead>
+      <tr>
+      <th>Team</th>
+      <th>Name</th>
+      <th>Version</th>
+      <th>Title</th>
+      <th colspan="2" class="text-right">No. of Data Items</th>
+      <th>Terms</th>
+      <th></th>
+      </tr>
+    </thead>
+    <%= render 'datasets/dataset_table_body', datasets: @datasets, readonly: true %>
+  </table>
+
+  <%= will_paginate @datasets %>
+</div>

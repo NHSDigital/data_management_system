@@ -1,0 +1,34 @@
+<div id="tab-content" class='tab-content clearfix'>
+  <div class="tab-pane  active in" id="details" >
+    <%= render partial: 'project_summary_data' %>
+  </div>
+  <div class="tab-pane " id="data">
+    <%= render partial: 'project_data_items' %>
+  </div>
+  <div class="tab-pane " id="legal">
+    <%= render partial: 'project_legal_ethical' %>
+  </div>
+  <div class="tab-pane " id="users">
+    <div class="row">
+      <div class="col-md-12" >
+        <div class="panel panel-default" style="border-top:0px">
+          <%= render partial: 'project_grants' %>
+          <%= render partial: 'project_data_end_users' %>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="tab-pane " id="uploads">
+    <%= render partial: 'project_uploads' %>
+  </div>
+  <div class="tab-pane " id="comments">
+    <%= render partial: 'project_comments' %>
+  </div>
+  <!--
+  <div class="tab-pane " id="actions">
+    <%#render partial: 'project_actions' %>
+  </div>-->
+  <%= render 'project_datasets',  project: @project %>
+  <%= render 'project_timeline',  project: @project %>
+  <%= render 'project_heirarchy', project: @project %>
+</div>

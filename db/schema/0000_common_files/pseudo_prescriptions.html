@@ -1,0 +1,878 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Docutils 0.13.1: http://docutils.sourceforge.net/" />
+<title></title>
+<style type="text/css">
+
+/*
+:Author: David Goodger (goodger@python.org)
+:Id: $Id: html4css1.css 7952 2016-07-26 18:15:59Z milde $
+:Copyright: This stylesheet has been placed in the public domain.
+
+Default cascading style sheet for the HTML output of Docutils.
+
+See http://docutils.sf.net/docs/howto/html-stylesheets.html for how to
+customize this style sheet.
+*/
+
+/* used to remove borders from tables and images */
+.borderless, table.borderless td, table.borderless th {
+  border: 0 }
+
+table.borderless td, table.borderless th {
+  /* Override padding for "table.docutils td" with "! important".
+     The right padding separates the table cells. */
+  padding: 0 0.5em 0 0 ! important }
+
+.first {
+  /* Override more specific margin styles with "! important". */
+  margin-top: 0 ! important }
+
+.last, .with-subtitle {
+  margin-bottom: 0 ! important }
+
+.hidden {
+  display: none }
+
+.subscript {
+  vertical-align: sub;
+  font-size: smaller }
+
+.superscript {
+  vertical-align: super;
+  font-size: smaller }
+
+a.toc-backref {
+  text-decoration: none ;
+  color: black }
+
+blockquote.epigraph {
+  margin: 2em 5em ; }
+
+dl.docutils dd {
+  margin-bottom: 0.5em }
+
+object[type="image/svg+xml"], object[type="application/x-shockwave-flash"] {
+  overflow: hidden;
+}
+
+/* Uncomment (and remove this text!) to get bold-faced definition list terms
+dl.docutils dt {
+  font-weight: bold }
+*/
+
+div.abstract {
+  margin: 2em 5em }
+
+div.abstract p.topic-title {
+  font-weight: bold ;
+  text-align: center }
+
+div.admonition, div.attention, div.caution, div.danger, div.error,
+div.hint, div.important, div.note, div.tip, div.warning {
+  margin: 2em ;
+  border: medium outset ;
+  padding: 1em }
+
+div.admonition p.admonition-title, div.hint p.admonition-title,
+div.important p.admonition-title, div.note p.admonition-title,
+div.tip p.admonition-title {
+  font-weight: bold ;
+  font-family: sans-serif }
+
+div.attention p.admonition-title, div.caution p.admonition-title,
+div.danger p.admonition-title, div.error p.admonition-title,
+div.warning p.admonition-title, .code .error {
+  color: red ;
+  font-weight: bold ;
+  font-family: sans-serif }
+
+/* Uncomment (and remove this text!) to get reduced vertical space in
+   compound paragraphs.
+div.compound .compound-first, div.compound .compound-middle {
+  margin-bottom: 0.5em }
+
+div.compound .compound-last, div.compound .compound-middle {
+  margin-top: 0.5em }
+*/
+
+div.dedication {
+  margin: 2em 5em ;
+  text-align: center ;
+  font-style: italic }
+
+div.dedication p.topic-title {
+  font-weight: bold ;
+  font-style: normal }
+
+div.figure {
+  margin-left: 2em ;
+  margin-right: 2em }
+
+div.footer, div.header {
+  clear: both;
+  font-size: smaller }
+
+div.line-block {
+  display: block ;
+  margin-top: 1em ;
+  margin-bottom: 1em }
+
+div.line-block div.line-block {
+  margin-top: 0 ;
+  margin-bottom: 0 ;
+  margin-left: 1.5em }
+
+div.sidebar {
+  margin: 0 0 0.5em 1em ;
+  border: medium outset ;
+  padding: 1em ;
+  background-color: #ffffee ;
+  width: 40% ;
+  float: right ;
+  clear: right }
+
+div.sidebar p.rubric {
+  font-family: sans-serif ;
+  font-size: medium }
+
+div.system-messages {
+  margin: 5em }
+
+div.system-messages h1 {
+  color: red }
+
+div.system-message {
+  border: medium outset ;
+  padding: 1em }
+
+div.system-message p.system-message-title {
+  color: red ;
+  font-weight: bold }
+
+div.topic {
+  margin: 2em }
+
+h1.section-subtitle, h2.section-subtitle, h3.section-subtitle,
+h4.section-subtitle, h5.section-subtitle, h6.section-subtitle {
+  margin-top: 0.4em }
+
+h1.title {
+  text-align: center }
+
+h2.subtitle {
+  text-align: center }
+
+hr.docutils {
+  width: 75% }
+
+img.align-left, .figure.align-left, object.align-left, table.align-left {
+  clear: left ;
+  float: left ;
+  margin-right: 1em }
+
+img.align-right, .figure.align-right, object.align-right, table.align-right {
+  clear: right ;
+  float: right ;
+  margin-left: 1em }
+
+img.align-center, .figure.align-center, object.align-center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+table.align-center {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.align-left {
+  text-align: left }
+
+.align-center {
+  clear: both ;
+  text-align: center }
+
+.align-right {
+  text-align: right }
+
+/* reset inner alignment in figures */
+div.align-right {
+  text-align: inherit }
+
+/* div.align-center * { */
+/*   text-align: left } */
+
+.align-top    {
+  vertical-align: top }
+
+.align-middle {
+  vertical-align: middle }
+
+.align-bottom {
+  vertical-align: bottom }
+
+ol.simple, ul.simple {
+  margin-bottom: 1em }
+
+ol.arabic {
+  list-style: decimal }
+
+ol.loweralpha {
+  list-style: lower-alpha }
+
+ol.upperalpha {
+  list-style: upper-alpha }
+
+ol.lowerroman {
+  list-style: lower-roman }
+
+ol.upperroman {
+  list-style: upper-roman }
+
+p.attribution {
+  text-align: right ;
+  margin-left: 50% }
+
+p.caption {
+  font-style: italic }
+
+p.credits {
+  font-style: italic ;
+  font-size: smaller }
+
+p.label {
+  white-space: nowrap }
+
+p.rubric {
+  font-weight: bold ;
+  font-size: larger ;
+  color: maroon ;
+  text-align: center }
+
+p.sidebar-title {
+  font-family: sans-serif ;
+  font-weight: bold ;
+  font-size: larger }
+
+p.sidebar-subtitle {
+  font-family: sans-serif ;
+  font-weight: bold }
+
+p.topic-title {
+  font-weight: bold }
+
+pre.address {
+  margin-bottom: 0 ;
+  margin-top: 0 ;
+  font: inherit }
+
+pre.literal-block, pre.doctest-block, pre.math, pre.code {
+  margin-left: 2em ;
+  margin-right: 2em }
+
+pre.code .ln { color: grey; } /* line numbers */
+pre.code, code { background-color: #eeeeee }
+pre.code .comment, code .comment { color: #5C6576 }
+pre.code .keyword, code .keyword { color: #3B0D06; font-weight: bold }
+pre.code .literal.string, code .literal.string { color: #0C5404 }
+pre.code .name.builtin, code .name.builtin { color: #352B84 }
+pre.code .deleted, code .deleted { background-color: #DEB0A1}
+pre.code .inserted, code .inserted { background-color: #A3D289}
+
+span.classifier {
+  font-family: sans-serif ;
+  font-style: oblique }
+
+span.classifier-delimiter {
+  font-family: sans-serif ;
+  font-weight: bold }
+
+span.interpreted {
+  font-family: sans-serif }
+
+span.option {
+  white-space: nowrap }
+
+span.pre {
+  white-space: pre }
+
+span.problematic {
+  color: red }
+
+span.section-subtitle {
+  /* font-size relative to parent (h1..h6 element) */
+  font-size: 80% }
+
+table.citation {
+  border-left: solid 1px gray;
+  margin-left: 1px }
+
+table.docinfo {
+  margin: 2em 4em }
+
+table.docutils {
+  margin-top: 0.5em ;
+  margin-bottom: 0.5em }
+
+table.footnote {
+  border-left: solid 1px black;
+  margin-left: 1px }
+
+table.docutils td, table.docutils th,
+table.docinfo td, table.docinfo th {
+  padding-left: 0.5em ;
+  padding-right: 0.5em ;
+  vertical-align: top }
+
+table.docutils th.field-name, table.docinfo th.docinfo-name {
+  font-weight: bold ;
+  text-align: left ;
+  white-space: nowrap ;
+  padding-left: 0 }
+
+/* "booktabs" style (no vertical lines) */
+table.docutils.booktabs {
+  border: 0px;
+  border-top: 2px solid;
+  border-bottom: 2px solid;
+  border-collapse: collapse;
+}
+table.docutils.booktabs * {
+  border: 0px;
+}
+table.docutils.booktabs th {
+  border-bottom: thin solid;
+  text-align: left;
+}
+
+h1 tt.docutils, h2 tt.docutils, h3 tt.docutils,
+h4 tt.docutils, h5 tt.docutils, h6 tt.docutils {
+  font-size: 100% }
+
+ul.auto-toc {
+  list-style-type: none }
+
+</style>
+<style type="text/css">
+
+/*
+*   math2html: convert LaTeX equations to HTML output.
+*
+*   Copyright (C) 2009,2010 Alex Fernández
+*
+*   Released under the terms of the `2-Clause BSD license'_, in short:
+*   Copying and distribution of this file, with or without modification,
+*   are permitted in any medium without royalty provided the copyright
+*   notice and this notice are preserved.
+*   This file is offered as-is, without any warranty.
+*
+* .. _2-Clause BSD license: http://www.spdx.org/licenses/BSD-2-Clause
+*
+*   Based on eLyXer: convert LyX source files to HTML output.
+*   http://elyxer.nongnu.org/
+*/
+/* --end--
+* CSS file for LaTeX formulas.
+*/
+
+/* Formulas */
+.formula {
+	text-align: center;
+	font-family: "Droid Serif", "DejaVu Serif", "STIX", serif;
+	margin: 1.2em 0;
+}
+span.formula {
+	white-space: nowrap;
+}
+div.formula {
+	padding: 0.5ex;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+/* Basic features */
+a.eqnumber {
+	display: inline-block;
+	float: right;
+	clear: right;
+	font-weight: bold;
+}
+span.unknown {
+	color: #800000;
+}
+span.ignored, span.arraydef {
+	display: none;
+}
+.formula i {
+	letter-spacing: 0.1ex;
+}
+
+/* Alignment */
+.align-left, .align-l {
+	text-align: left;
+}
+.align-right, .align-r {
+	text-align: right;
+}
+.align-center, .align-c {
+	text-align: center;
+}
+
+/* Structures */
+span.overline, span.bar {
+	text-decoration: overline;
+}
+.fraction, .fullfraction {
+	display: inline-block;
+	vertical-align: middle;
+	text-align: center;
+}
+.fraction .fraction {
+	font-size: 80%;
+	line-height: 100%;
+}
+span.numerator {
+	display: block;
+}
+span.denominator {
+	display: block;
+	padding: 0ex;
+	border-top: thin solid;
+}
+sup.numerator, sup.unit {
+	font-size: 70%;
+	vertical-align: 80%;
+}
+sub.denominator, sub.unit {
+	font-size: 70%;
+	vertical-align: -20%;
+}
+span.sqrt {
+	display: inline-block;
+	vertical-align: middle;
+	padding: 0.1ex;
+}
+sup.root {
+	font-size: 70%;
+	position: relative;
+	left: 1.4ex;
+}
+span.radical {
+	display: inline-block;
+	padding: 0ex;
+	font-size: 150%;
+	vertical-align: top;
+}
+span.root {
+	display: inline-block;
+	border-top: thin solid;
+	padding: 0ex;
+	vertical-align: middle;
+}
+span.symbol {
+	line-height: 125%;
+	font-size: 125%;
+}
+span.bigsymbol {
+	line-height: 150%;
+	font-size: 150%;
+}
+span.largesymbol {
+	font-size: 175%;
+}
+span.hugesymbol {
+	font-size: 200%;
+}
+span.scripts {
+	display: inline-table;
+	vertical-align: middle;
+}
+.script {
+	display: table-row;
+	text-align: left;
+	line-height: 150%;
+}
+span.limits {
+	display: inline-table;
+	vertical-align: middle;
+}
+.limit {
+	display: table-row;
+	line-height: 99%;
+}
+sup.limit, sub.limit {
+	line-height: 100%;
+}
+span.symbolover {
+	display: inline-block;
+	text-align: center;
+	position: relative;
+	float: right;
+	right: 100%;
+	bottom: 0.5em;
+	width: 0px;
+}
+span.withsymbol {
+	display: inline-block;
+}
+span.symbolunder {
+	display: inline-block;
+	text-align: center;
+	position: relative;
+	float: right;
+	right: 80%;
+	top: 0.3em;
+	width: 0px;
+}
+
+/* Environments */
+span.array, span.bracketcases, span.binomial, span.environment {
+	display: inline-table;
+	text-align: center;
+	border-collapse: collapse;
+	margin: 0em;
+	vertical-align: middle;
+}
+span.arrayrow, span.binomrow {
+	display: table-row;
+	padding: 0ex;
+	border: 0ex;
+}
+span.arraycell, span.bracket, span.case, span.binomcell, span.environmentcell {
+	display: table-cell;
+	padding: 0ex 0.2ex;
+	line-height: 99%;
+	border: 0ex;
+}
+/*
+* CSS file for LaTeX formulas, extra stuff:
+* binomials, vertical braces, stackrel, fonts and colors.
+*/
+
+/* Inline binomials */
+span.binom {
+	display: inline-block;
+	vertical-align: middle;
+	text-align: center;
+	font-size: 80%;
+}
+span.binomstack {
+	display: block;
+	padding: 0em;
+}
+
+/* Over- and underbraces */
+span.overbrace {
+	border-top: 2pt solid;
+}
+span.underbrace {
+	border-bottom: 2pt solid;
+}
+
+/* Stackrel */
+span.stackrel {
+	display: inline-block;
+	text-align: center;
+}
+span.upstackrel {
+	display: block;
+	padding: 0em;
+	font-size: 80%;
+	line-height: 64%;
+	position: relative;
+	top: 0.15em;
+
+}
+span.downstackrel {
+	display: block;
+	vertical-align: bottom;
+	padding: 0em;
+}
+
+/* Fonts */
+span.mathsf, span.textsf {
+	font-style: normal;
+	font-family: sans-serif;
+}
+span.mathrm, span.textrm {
+	font-style: normal;
+	font-family: serif;
+}
+span.text, span.textnormal {
+	font-style: normal;
+}
+span.textipa {
+	color: #008080;
+}
+span.fraktur {
+	font-family: "Lucida Blackletter", eufm10, blackletter;
+}
+span.blackboard {
+	font-family: Blackboard, msbm10, serif;
+}
+span.scriptfont {
+	font-family: "Monotype Corsiva", "Apple Chancery", "URW Chancery L", cursive;
+	font-style: italic;
+}
+
+/* Colors */
+span.colorbox {
+	display: inline-block;
+	padding: 5px;
+}
+span.fbox {
+	display: inline-block;
+	border: thin solid black;
+	padding: 2px;
+}
+span.boxed, span.framebox {
+	display: inline-block;
+	border: thin solid black;
+	padding: 5px;
+}
+
+
+</style>
+</head>
+<body>
+<div class="document">
+
+
+<div class="section" id="pseudonymisation-and-loading-procedures">
+<h1>Pseudonymisation and loading procedures</h1>
+</div>
+<div class="section" id="for-the-prescriptions-database">
+<h1>for the prescriptions database</h1>
+<p><em>Documentation by KH - 11th November 2016</em></p>
+<div class="section" id="overview">
+<h2>Overview</h2>
+<p>This article describes the pseudonymisation and loading procedure used for electronic prescription data.</p>
+<p>ONS executes a procedure which pseudonymises the patient data at source.
+This data is sent to PHE on an encrypted disk.</p>
+<p>The procedure is implemented in a Ruby script and uses standard third-party encryption and hashing modules.</p>
+<p>For each month's data:</p>
+<ul class="simple">
+<li>Generate initial salts</li>
+<li>Create encrypted versions of strings containing NHS number and date of birth ('demographics')</li>
+<li>Generate and encrypt key used to encrypt the demographics</li>
+<li>For each row (item) of prescription data: output a comma-separated row of text</li>
+</ul>
+</div>
+<hr class="docutils" />
+<div class="section" id="data-sizes">
+<h2>Data sizes</h2>
+<ul class="simple">
+<li>One month's data: ~ 81 million rows in a CSV file.</li>
+<li>Each CSV file is ~ 33Gb.</li>
+<li>The estimated division into PostgreSQL table sizes is:
+- ppatient_rawdata: 7.5Gb
+- ppatients: 10Gb
+- prescription_data: 14Gb</li>
+</ul>
+</div>
+<hr class="docutils" />
+<div class="section" id="pseudonymisation-process">
+<h2>Pseudonymisation process</h2>
+<p>Variables which are read by PHE from the data file and stored in the database are boxed.</p>
+<ul>
+<li><p class="first">These initial random strings are 64 characters long (= 32 bytes = 256 bits):</p>
+<p>salt1 <span class="formula"> ← </span> 'abc..'</p>
+<p>salt2 <span class="formula"> ← </span> 'def..'</p>
+</li>
+<li><p class="first">A hashed version of a string derived from the patient's NHS number:</p>
+<p>pseudo_id1 <span class="formula"> ← </span> SHA2('nhsnumber_'+NHSNUMBER, salt1)</p>
+</li>
+<li><p class="first">A random sequence of 32 bytes is used to create a key for encryption of demographics:</p>
+<p>demog_key  <span class="formula"> ← </span> random(32 bytes)</p>
+</li>
+<li><p class="first">Create Key Encryption Key and encrypt demographics (NHS number and date of birth):</p>
+<p>key_bundle <span class="formula"> ← </span> base64(AES-256-CBC(SHA256('nhsnumber_'+NHSNUMBER+salt2), demog_key))</p>
+<p><em>Note that</em> SHA256(NHS number+salt2) <em>is used as the key to encrypt the demog_key here, and demog_key
+is the data which is encrypted.</em></p>
+<p>all_demographics <span class="formula"> ← </span> '{&quot;nhsnumber&quot;:&quot;NHSNUMBER&quot;,&quot;birthdate&quot;:&quot;1970-02-03&quot;}'</p>
+<p>encrypted_demographics <span class="formula"> ← </span> base64(AES-256-CBC(SHA256(demog_key), all_demographics))</p>
+</li>
+<li><p class="first">Output one row per prescription item. CSV format is used. The layout in table 1 shows the mapping process
+(the field names are slightly different in the received form).</p>
+</li>
+</ul>
+</div>
+<div class="section" id="table-1-source-to-database-mapping">
+<h2>Table 1: Source to database mapping</h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="16%" />
+<col width="13%" />
+<col width="15%" />
+<col width="27%" />
+<col width="29%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">CSV field</th>
+<th class="head">pseudo_id1</th>
+<th class="head">key_bundle</th>
+<th class="head">encrypted_demographics</th>
+<th class="head">prescription data fields</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>Table column</td>
+<td>pseudo_id1</td>
+<td>decrypt_key</td>
+<td>rawdata</td>
+<td>part_month etc.</td>
+</tr>
+<tr><td>Table name</td>
+<td>ppatients</td>
+<td colspan="2">ppatient_rawdata</td>
+<td>prescription_data</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr class="docutils" />
+<div class="section" id="table-linkage">
+<h2>Table linkage</h2>
+<img alt="prescription_tables.png" src="prescription_tables.png" />
+</div>
+<hr class="docutils" />
+<div class="section" id="loading-process">
+<h2>Loading process</h2>
+<p>Received CSV file has the current naming scheme:</p>
+<p>e.g. PHE_201504_pseudonymised.csv</p>
+<p>for year 2015, month 4.</p>
+<ol class="arabic simple">
+<li>Direct load method</li>
+</ol>
+<blockquote>
+<p>The live PostgreSQL database is called verb+prescr_lv01+. Login to the server <strong>ncr-prescr-db1</strong> with <strong>ssh</strong> first.</p>
+<ul>
+<li><p class="first">For a first-time run, with an empty database - from psql:</p>
+<pre class="literal-block">
+\i defer_constraints.sql
+</pre>
+<p>to delay foreign-key constraint validation until after transaction. This is a one-off,
+as it isn't created by the Rails migration.</p>
+</li>
+<li><p class="first">(also for testing) To clear the prescriptions-related tables (<strong>and</strong> e_batch, ze_type and zprovider):</p>
+<pre class="literal-block">
+\i truncate_tables.sql
+</pre>
+</li>
+<li><p class="first">A single CSV file (one month's data) is too large to process as a whole on a
+server with 8Gb RAM. This is because the cache created to hold patient_rawdata
+becomes too large as the source data is processed.</p>
+<p>Instead, a workaround is to process each CSV file in two equal parts.</p>
+<p>Rows are selected by the first hex digit of the pseudo_id1 field:</p>
+<p>Part <strong>a</strong>: match first digit of pseudo_id1 in [0-7]</p>
+<p>Part <strong>b</strong>: match first digit of pseudo_id1 in [8-f]</p>
+<p>These hex digits in general will be nearly equally distributed across the source
+CSV file.</p>
+<p>The procedure is now to process each part in turn; create the CSV files then load
+them into the database.</p>
+<p>For a single month, it is critical to load part <strong>a</strong> into the database before creating
+the part <strong>b</strong> files --- to generate the correct patient_id and ppatient_rawdata_id counters.</p>
+</li>
+<li><p class="first">Part <strong>a</strong></p>
+<pre class="literal-block">
+# specify year, month and part parameters
+$ ./create_prescr.rb 2015 4 a
+</pre>
+<p>This script creates 4 CSV files for one month's data:</p>
+<pre class="literal-block">
+e_batch_201504a.csv
+ppatients_201504a.csv
+ppatient_rawdata_201504a.csv
+prescription_data_201504a.csv
+</pre>
+<p>Estimated time: Total 1h 10mins.</p>
+</li>
+<li><p class="first">To load the 4 CSV files directly into the database tables:</p>
+<pre class="literal-block">
+\i load_tables_a.sql
+</pre>
+<p>Estimated time: Total 1h 10mins.</p>
+</li>
+<li><p class="first">Part <strong>b</strong></p>
+<pre class="literal-block">
+# specify year, month and part parameters
+$ ./create_prescr.rb 2015 4 b
+</pre>
+<p>This script creates 4 CSV files for one month's data:</p>
+<pre class="literal-block">
+e_batch_201504b.csv
+ppatients_201504b.csv
+ppatient_rawdata_201504b.csv
+prescription_data_201504b.csv
+</pre>
+<p>Estimated time: Total 1h 10mins.</p>
+</li>
+<li><p class="first">To load the 4 CSV files directly into the database tables:</p>
+<pre class="literal-block">
+\i load_tables_b.sql
+</pre>
+<p>Estimated time: Total 1h 10mins.</p>
+<p>Note that the part <strong>b</strong> loader does not add another e_batch entry; there is only one
+per month's data.</p>
+</li>
+</ul>
+</blockquote>
+<ol class="arabic simple" start="2">
+<li>Native Rails method (ActiveRecord)</li>
+</ol>
+<blockquote>
+<p>For the live database, this can only be run on the app server (<strong>ncr-prescr-app1</strong>) -
+<em>not</em> the database server (<strong>ncr-prescr-db1</strong>).</p>
+<ul>
+<li><p class="first">In MBIS, run the rake task</p>
+<pre class="literal-block">
+rails prescription:import_pseudonymised
+</pre>
+<p>Estimated time: 2 days per month's data.</p>
+</li>
+</ul>
+</blockquote>
+</div>
+<hr class="docutils" />
+<div class="section" id="loading-into-casref">
+<h2>Loading into CASREF</h2>
+<p>Loading the prescription data into the CASREF database (Oracle) consists of two steps:</p>
+<ol class="arabic simple">
+<li>Match patients in the prescription database with patients in CASREF - by <strong>pseudo_id1</strong>.</li>
+<li>Select the matched patients' prescription data and use an Oracle utility (<strong>SQL*Loader</strong>) to load
+the data into CASREF.</li>
+</ol>
+<p>An auxiliary SQL table, <strong>prescription_patientids</strong>, is created by the first step. Its definition is shown in table 2.</p>
+<p>Table 2: Matched CASREF patients</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="27%" />
+<col width="73%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Field</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>pseudo_id1</td>
+<td>encrypted NHS number</td>
+</tr>
+<tr><td>patientid</td>
+<td>CASREF ID of matched patient</td>
+</tr>
+</tbody>
+</table>
+<p>The scheme is to select <span class="formula"><span class="fraction"><span class="ignored">(</span><span class="numerator">1</span><span class="ignored">)/(</span><span class="denominator">16</span><span class="ignored">)</span></span></span> th of the patients by matching only those with <strong>pseudo_id1</strong>
+beginning with the hex digit 0.</p>
+<p>In this case, the auxiliary table is called <strong>prescription_patientids_prefix0</strong>.</p>
+</div>
+</div>
+</div>
+</body>
+</html>

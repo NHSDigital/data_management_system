@@ -1,0 +1,11 @@
+yes:
+  id: Y
+  value: 'Yes'
+
+no:
+  id: N
+  value: 'No'
+
+na:
+  id: NA
+  value: Not Applicable

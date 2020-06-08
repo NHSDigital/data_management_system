@@ -1,0 +1,36 @@
+<%
+  html_content = render("projects/#{@project.project_type_name.downcase}/form")
+%>
+
+jQuery('#modal_title').html("Editing Project: <%= @project.name %>");
+jQuery('#modal_body').html('<%= j(html_content) %>').parents('.modal').modal('show');
+
+$('*[data-depends-on]').each(function() {
+  var $this = $(this);
+  var master = $this.data('dependsOn').toString();
+  var value = $this.data('dependsOnValue');
+  if (typeof(value) != 'undefined') {
+    $this.dependsOn(master, value);
+  } else {
+    $this.dependsOn(master);
+  }
+});
+
+$("#project_team_dataset_id").each(function(e){
+  var ds = document.getElementById("project_team_dataset_id");
+  var terms = ds.options[ds.selectedIndex].dataset.terms;
+  document.getElementById("dataset_terms_message").innerHTML = terms;
+});
+
+$('.dataset_terms').hide();
+$('#project_data_source_terms_accepted').prop('checked', true);
+
+$('#project_team_dataset_id').on('change', function() {
+  window.alert("Changing the data source will remove any data source items associated with this project")
+  $('.dataset_terms').show();
+  var ds = document.getElementById("project_team_dataset_id");
+  var terms = ds.options[ds.selectedIndex].dataset.terms;
+  document.getElementById("dataset_terms_message").innerHTML = terms;
+  $('dataset_terms_accepted').prop('checked', false);
+  $('#project_data_source_terms_accepted').prop('checked', false);
+});

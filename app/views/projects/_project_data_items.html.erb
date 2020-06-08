@@ -1,0 +1,87 @@
+<div id='project_data_items_information' class="row">
+  <div class=" col-md-12">
+    <div class="panel panel-default" style="border-top:0px">
+      <div class="panel-heading" style="border-top:0px">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="pull-left" style="font-size:1.5em">
+              Data Items Selected
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="pull-right">
+                <% if can?(:update, @project) %>
+                  <%= link_to bootstrap_icon_tag('pencil') + ' Add / Remove data items', edit_data_source_items_project_path(@project) , class: 'btn btn-primary' %>
+                <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-12">
+      <div class="pull-right">
+        <div id='approve_all_data_source_items'>
+          <%= render partial: '/projects/approve_all_nodes_section', locals: { project: @project } %>
+        </div>
+      </div>
+    </div>
+    <div id="project-data-items">
+      <% if @project.unjustified_data_items.positive? %>
+        <%= bootstrap_alert_tag 'danger', t('.justification'), dismissable: true %>
+      <% end %>
+
+      <table class="table table-hover" >
+        <thead>
+          <tr>
+            <th width="10%">Dataset</th>
+            <th width="20%">Name</th>
+            <th width="40%">Description</th>
+            <th width="20%">Comments</th>
+            <th width="10%">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @project.project_nodes.sort_by { |i| i.governance&.value }.each do |data_item| %>
+            <tr id="<%= dom_id(data_item) %>" class='project_data_items_table'>
+              <%= render partial: '/project_nodes/project_node_approvals', locals: { data_item: data_item } %>
+            </tr>
+            <% if data_item.project_comments.length.positive? %>
+              <tr class="comments">
+                <td colspan="12" style="padding:0">
+                  <div id="<%= dom_id(data_item) %>_comments" class="collapse" style="padding: 0 0em">
+                  <div style="padding-left: 25px">
+                    <div class="arrow-up"></div>
+                  </div>
+                    <div class="panel panel-default">
+                      <div class="panel-heading">
+                        <div class="row">
+                          <div class="col-md-6">
+                            <div class="pull-left" style="font-size:1em">
+                              Comments
+                            </div>
+                          </div>
+                          <div class="col-md-6">
+                            <div class="pull-right">
+                              <% if @project.current_state.id != 'SUBMITTED' || current_user.odr?%>
+                                <%= link_to bootstrap_icon_tag('plus') +' Add comment', new_project_project_comment_path(@project, comment_type: 'DataSourceItemJustification', project_node_id: data_item.id), remote: true, class: 'btn btn-primary btn-xs reject_data_source_item' %>
+                              <% end %>
+                              <span data-toggle="collapse" data-target="#<%= dom_id(data_item) %>_comments" class: 'btn btn-default btn-xs' data-turbolinks="false">
+                                <button type="button" class="btn btn-default btn-xs"
+                                 title='Close' re='tooltip' data-placement="right">X</button>
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <%= render partial: 'project_comments/project_comments_table', locals: { data_item: data_item } %>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

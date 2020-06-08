@@ -1,0 +1,60 @@
+.dropzone {
+  position: relative;
+  outline: 2px dashed lightgray;
+
+  // -webkit-transition: outline .15s ease-in-out, outline-offset .15s ease-in-out;
+  // transition: outline .15s ease-in-out, outline-offset .15s ease-in-out;
+
+  // center content vertically and horizontally
+  .dropzone-content-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 90%;
+    transform: translate(-50%, -50%);
+  }
+
+  .dropzone-uploading {
+    display: none;
+  }
+
+  .progress {
+    display: none;
+
+    .progress-bar {
+      width: 0%;
+    }
+  }
+}
+
+// Utility classes for making dropzone boxes of various aspect ratios
+.dropzone-4x3 {
+  padding-top: 75%;
+}
+.dropzone-16x9 {
+  padding-top: 56.25%;
+}
+.dropzone-21x9 {
+  padding-top: 42.85%;
+}
+
+.dropzone.is-dragover {
+  // outline: 2px solid lightgray;
+  // outline-offset: -5px;
+}
+
+// prevent bounce on child elements
+.dropzone.is-dragover * {
+  pointer-events: none;
+}
+
+.dropzone.upload-in-progress {
+  .progress,
+  .dropzone-uploading {
+    display: inherit;
+  }
+
+  .dropzone-input {
+    display: none;
+  }
+}

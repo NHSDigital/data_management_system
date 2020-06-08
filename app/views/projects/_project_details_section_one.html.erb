@@ -1,0 +1,25 @@
+<div class='row form-group'>
+  <label class="control-label col-md-3" for="project_end_uses">End Uses</label>
+  <div class='col-md-9'>
+  <%= form.collection_check_boxes(:end_use_ids, EndUse.all, :id, :name) %>
+  </div>
+</div>
+
+<div class='row form-group', data-depends-on="#project_end_use", data-depends-on-value="Other">
+  <label class="control-label col-md-3" for="end_use_other">Other</label>
+  <div class='col-md-9'>
+    <%= form.text_area :end_use_other, "data-depends-on" => "#project_end_use", "data-depends-on-value" => "Other", class: '' %>
+  </div>
+</div>
+
+<%= form.control_group :description, 'Project summary' do %>
+  <%= form.text_area :description %>
+<% end %>
+
+<%= form.control_group :data_to_contact_others, 'Will this data be used to contact others ?' do %>
+  <%= form.select :data_to_contact_others, [['Yes',true],['No',false]], {include_blank: true, required: true} %>
+<% end %>
+
+<%= form.control_group :data_to_contact_others_desc, 'Who ?',  "data-depends-on" => "#project_data_to_contact_others", "data-depends-on-value" => "true" do %>
+  <%= form.text_area :data_to_contact_others_desc, "data-depends-on" => "#project_data_to_contact_others", "data-depends-on-value" => "true" %>
+<% end %>

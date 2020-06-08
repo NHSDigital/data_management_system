@@ -1,0 +1,11 @@
+<%
+  @node ||= @choice
+  html_content = escape_javascript bootstrap_form_for([@dataset_version, @choice],
+    url: dataset_version_choices_path(@dataset_version),
+    remote: true, horizontal: true) { |form| render('form', form: form) }
+%>
+
+jQuery('#modal_title').html('Add a new Choice');
+jQuery('#modal_body').html('<%= html_content %>').parents('.modal').modal('show');
+$(toggle_node_form_element('existing-node', 'add-existing-node'));
+<%= render "nodes/save" %>

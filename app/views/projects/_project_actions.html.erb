@@ -1,0 +1,55 @@
+<!-- CURRENTLY NOT USED -->
+
+<div class="row">
+  <div class=" col-md-12">
+    <div class="panel panel-default" style="border-top:0px">
+      <div class="panel-heading" style="border-top:0px">
+        <div class="row">
+          <div class="col-md-8">
+            <div class="pull-left" style="font-size:1.5em">
+              Project Actions
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="project-details">
+      <% if @project.current_state.id == 'DRAFT' %>
+        This is a new project - do x,Y,Z and then submit
+      <% elsif @project.current_state.id == 'SUBMITTED' %>
+        <% if current_user.odr? %>
+          <ul>
+            <li> <%= link_to 'Save and return to project list', '/projects', class: 'btn btn-primary'%></li>
+              <li>
+                * need to make available when overall status is approved or declined <br />
+                <%= link_to 'Save and submit decisions',
+                          odr_submit_project_approvals_project_path(:id => @project.id),
+                          class: 'btn btn-primary',
+                          data: {confirm: 'Are you sure you want to submit this project ?'}%>
+              <p>This will save your judgements& notify the user team of your decisions and comments</p>
+              <p>Approved projects - the MBIS admin will be informed and will start the extracts for the user team </p>
+              <p>Declined projects - the user team will be able to edit the project details and resubmit for approval</p>
+              </li>
+
+            <li>
+            <%= link_to 'Reset all approval details',
+                        reset_project_approvals_project_path(:id => @project.id),
+                        class: 'btn btn-primary',
+                        data: {confirm: 'Are you sure you want to reset all project approval information ?'}%>
+            <p>All approval data related to this project will be removed</p>
+            </li>
+          </ul>
+        <% else %>
+          Project currently being approved by ODR
+        <% end %>
+      <% elsif @project.current_state.id == 'APPROVED' %>
+         Approved project - GET DATA EXTRACTS ?!?
+      <% elsif @project.current_state.id == 'REJECTED' %>
+         Rejected project - do x,Y,Z and then submit
+      <% else %>
+         NOT SURE WHAT STATE PROJECT IS IN - DELETED / SUSPENDED
+      <% end %>
+    </div>
+  </div>
+</div>

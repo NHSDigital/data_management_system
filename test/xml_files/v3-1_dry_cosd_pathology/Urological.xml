@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<COSD_Pathology:COSD_Pathology xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:COSD_Pathology="http://www.datadictionary.nhs.uk/messages/COSD_Pathology-v3-1"
+  xsi:schemaLocation="http://www.datadictionary.nhs.uk/messages/COSD_Pathology-v3-1 ../Schemas/COSDCOSD_XMLSchema-v8-1.xsd">
+  <Id root="18DA78B8-44A4-4AA7-95B0-87C198E6B0AE"></Id>
+  <OrganisationIdentifierCodeOfSubmittingOrganisation extension="RA123"/>
+  <RecordCount value="1"></RecordCount>
+  <ReportingPeriodStartDate>2018-02-09</ReportingPeriodStartDate>
+  <ReportingPeriodEndDate>2018-02-09</ReportingPeriodEndDate>
+  <FileCreationDateTime>2018-02-09T12:34:56</FileCreationDateTime>
+  <UrologicalRecord>
+    <Id root="B63AFD92-568E-4845-A0CE-2643FE15DE08"></Id>
+    <LinkagePatientId>
+      <NHSNumber extension="1234567890" />
+      <LocalPatientIdExtended>AB1888555446</LocalPatientIdExtended>
+      <NHSNumberStatusIndicator code="02" />
+      <Birthdate>1900-01-01</Birthdate>
+      <OrganisationIdentifierCodeOfProvider extension="RA123" />
+    </LinkagePatientId>
+    <Demographics>
+      <PersonFamilyName>BLOGGS</PersonFamilyName>
+      <PersonGivenName>JOHN</PersonGivenName>
+      <Address>
+        <UnstructuredAddress>
+          <StreetAddressLine>123 THE STREET, ANYTOWN, ANYCOUNTY</StreetAddressLine>
+        </UnstructuredAddress>
+      </Address>
+      <Postcode>ZZ99 9ZZ</Postcode>
+      <Gender code="1" />
+    </Demographics>
+    <Pathology>
+      <InvestigationResultDate>2018-03-05</InvestigationResultDate>
+      <ServiceReportId extension="TNQ1235648" />
+      <PathologyObservationReportId extension="TNQ12546325" />
+      <ServiceReportStatus code="1" />
+      <PathTestReqCareProfCode extension="C2253657" />
+      <OrganisationSiteIdentifierOfPathologyTestRequest extension="ABC22" />
+      <SampleCollectionDate>2018-03-05</SampleCollectionDate>
+      <SampleReceiptDate>2018-03-05</SampleReceiptDate>
+      <OrganisationIdentifierOfReportingPathologist extension="ABC22" />
+      <PathologistConsultantCode extension="C2253658" />
+      <SpecimenNature code="1" />
+      <SNOMEDVersionPathology code="01" />
+      <TopographySNOMEDPathology code="123456" />
+      <MorphologySNOMEDPathology code="M85003" />
+      <PrimaryDiagnosisICDPath code="C50.9" />
+      <TumourLaterality code="L" />
+      <PathologyInvestigationType code="BU" />
+      <PathologyReportText><![CDATA[PATHOLOGY DATA]]></PathologyReportText>
+      <LesionSizePathological value="22.60" />
+      <GradeOfDiff code="GX" />
+      <CancerVascLymphInvasion code="YU" />
+      <ExcisionMargin code="02" />
+      <SyncTumourInd code="N" />
+      <NumberNodesExamined value="99" />
+      <NumberNodesPositive value="10" />
+      <TNMCodingEdition code="1" />
+      <TNMVersionNumberPathological>8</TNMVersionNumberPathological>
+      <PathTCategory>2a</PathTCategory>
+      <PathNCategory>0</PathNCategory>
+      <PathMCategory>0</PathMCategory>
+      <PathTNMStage>2</PathTNMStage>
+      <NeoadjuvantTherapyInd code="9" />
+      <PathologyBladder>
+        <DetrosorMusclePresenceIndCode code="1" />
+        <TumourGradeUrology code="L" />
+      </PathologyBladder>
+      <PathologyKidney>
+        <TumourNecrosisInd code="Y" />
+        <TumourInvIndPerinephricFat code="N" />
+        <TumourInvIndAdrenal code="Y" />
+        <RenalVeinTumourInd code="N" />
+        <TumourInvIndGerotasFascia code="Y" />
+      </PathologyKidney>
+      <PathologyPenis>
+        <TumourInvIndCorpusSpongiosum code="Y" />
+        <TumourInvIndCorpusCavernosum code="N" />
+        <TumourInvIndUrethraOrProstate code="Y" />
+      </PathologyPenis>
+      <PathologyProstate>
+        <!-- contradiction in use of code attribute between spec and schema. NHS have a list. spec does not --> 
+        <!-- <GleasonGradePrimary code="3" />
+        <GleasonGradeSecondary code="3" />
+        <GleasonGradeTertiary code="3" /> -->
+        <GleasonGradePrimary>3</GleasonGradePrimary>
+        <GleasonGradeSecondary>3</GleasonGradeSecondary>
+        <GleasonGradeTertiary>3</GleasonGradeTertiary>
+        <PerineuralInvasionInd code="X" />
+        <OrganConfinedInd code="X" />
+        <TumourInvIndSeminalVesicles code="X" />
+        <TurpTumourPercentage value="99" />
+      </PathologyProstate>
+      <PathologyTesticular>
+        <TumourInvIndReteTestis code="Y" />
+      </PathologyTesticular>
+    </Pathology>
+  </UrologicalRecord>
+</COSD_Pathology:COSD_Pathology>

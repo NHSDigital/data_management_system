@@ -1,0 +1,45 @@
+<div id="data-items-panel">
+  <table class="table table-hover" id="data_source_items_table">
+    <thead>
+      <tr>
+        <th width="15%">Name</th>
+        <th width="50%">Description</th>
+        <th width="5%">Occurrences</th>
+        <th width="10%">Category</th>
+        <th width="10%">Governance</th>
+        <th width="10%">
+          <div class="pull-right">
+            <!-- TODO: using dataset_versions.last -->
+            <%= link_to(bootstrap_icon_tag('plus') + ' New data item', new_dataset_node_url(@dataset.id), remote: true, class: 'btn btn-primary btn-sm') if can?(:create, Nodes::DataItem.new(dataset_version: @dataset.dataset_versions.last)) %>
+          </div>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- TODO: using dataset_versions.last -->
+      <% @dataset.dataset_versions.last.data_items.sort_by(&:name).each do |data_item| %>
+        <tr class="<%= data_item.highlighting %>" id="<%= dom_id(data_item) %>">
+          <td><%= data_item.name %></td>
+          <td><%= data_item.description %></td>
+          <td><%= data_item.max_occurs %></td>
+          <!-- TODO: hardcoded to use parent_node name as category -->
+          <td><%= data_item.parent_node.name %></td>
+          <td>
+            <%= data_item.governance_value %>
+          </td>
+          <td>
+            <div class="pull-right">
+              <% if can?(:destroy, data_item) %>
+              <!-- TODO: restore -->
+                <!-- <%#= delete_link(data_item, method: :delete, remote: true, data: { confirm: "Are you sure you want to remove #{data_item.name} from #{@dataset.name}?" } )%> -->
+              <% end %>
+              <% if can?(:update, data_item) %>
+                <%= edit_link edit_node_url(data_item), remote: true %>
+              <% end %>
+            </div>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

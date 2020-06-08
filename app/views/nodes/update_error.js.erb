@@ -1,0 +1,9 @@
+<%
+  @dataset_version_invalid_nodes = @dataset_version.send(:invalid_nodes_for_schema_build)
+%>
+jQuery('#modal').modal('hide');
+jQuery('#node-errors').replaceWith(
+  '<%= escape_javascript(render 'dataset_versions/invalid_nodes',
+  dataset_version: @dataset_version,
+  dataset_version_invalid_nodes: @dataset_version_invalid_nodes) %>');
+jQuery('#publish').replaceWith('<%= escape_javascript(publish_link(false)) %>');

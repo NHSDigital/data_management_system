@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<COSD:COSD xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:COSD="http://www.datadictionary.nhs.uk/messages/COSD-v8-2" xsi:schemaLocation="http://www.datadictionary.nhs.uk/messages/COSD-v8-2 ../Schemas/COSDCOSD_XMLSchema-v8-1.xsd"> 
+  <Id root="60E8A409-24B6-4ADC-9C96-0273F668BDC8"/>
+  <OrganisationIdentifierCodeOfSubmittingOrganisation extension="123"/>
+  <RecordCount value="1"/>
+     <ReportingPeriodStartDate>2018-03-01</ReportingPeriodStartDate>
+  <ReportingPeriodEndDate>2018-03-30</ReportingPeriodEndDate>
+  <FileCreationDateTime>2018-03-30T00:00:00</FileCreationDateTime>
+  <SkinRecord>
+    <Id root="778F1F33-4911-4E50-8E36-3182780F8F94" />
+    <LinkagePatientId>
+      <NHSNumber extension="1111111111" />
+      <LocalPatientIdExtended>AB1888555446</LocalPatientIdExtended>
+      <NHSNumberStatusIndicator code="03" />
+      <Birthdate>1969-01-01</Birthdate>
+      <OrganisationIdentifierCodeOfProvider extension="AB1" />
+    </LinkagePatientId>
+    <LinkageDiagnosticDetails>
+      <PrimaryDiagnosis code="C445" />
+      <TumourLaterality code="8" />
+      <ClinicalDateCancerDiagnosis>2018-01-01</ClinicalDateCancerDiagnosis>
+    </LinkageDiagnosticDetails>
+    <Demographics>
+      <PersonFamilyName>COSD</PersonFamilyName>
+      <PersonGivenName>SKIN</PersonGivenName>
+      <Address>
+        <UnstructuredAddress>
+          <StreetAddressLine>1 Main Road</StreetAddressLine>
+        </UnstructuredAddress>
+      </Address>
+      <Postcode>SE1 8UG</Postcode>
+      <Gender code="1" />
+      <PersonStatedSexualOrientationCodeAtDiagnosis code="Z" />
+      <GMPSpecified extension="G1234566" />
+      <GMPRegistration extension="F12345" />
+      <PersonBirthFamilyName>COSD</PersonBirthFamilyName>
+      <Ethnicity code="A" />
+    </Demographics>
+    <Imaging>
+      <OrganisationSiteIdentifierOfImaging extension="AB101" />
+      <ProcedureDate>2018-03-03</ProcedureDate>
+      <CancerImagingOutcome code="05" />
+      <NICIPCode code="NICIP" />
+      <CancerImagingModality code="C02X" />
+      <ImagingAnatomicalSite code="CZ002" />
+      <ImagingAnatomicalSide code="8" />
+      <ImagingCodeSNOMEDCT code="123456" />
+      <ImagingReportText><![CDATA[No mets]]></ImagingReportText>
+      <LesionSizeRadiological value="120.01" />
+    </Imaging>
+    <Diagnosis> 
+      <OrganisationSiteIdentifierOfDiagnosis extension="ABC01" />
+      <BasisOfCancerDiagnosis code="7" />
+      <SNOMEDVersionDiagnosis code="99" />
+      <MorphologySNOMEDDiagnosis code="M80903" />
+      <MorphologyICDODiagnosis code="M80903" />
+      <TopographyICDO code="T02400" />
+      <DiagnosisGradeOfDifferentiation code="GX" />
+      <AdultPerformanceStatus code="2" />
+      <DiagnosisSNOMEDCT code="123456" />
+      <DiagnosisMalignantMelanoma>
+        <SentinelNodeBiopsy code="Y" />
+        <SentinelNodeBiopsyDate>2018-03-03</SentinelNodeBiopsyDate>
+        <OrganisationIdentifierReportingLaboratory extension="ABC01" />
+        <SentinelNodeBiopsyOutcome code="P" />
+      </DiagnosisMalignantMelanoma>
+    </Diagnosis>
+    <MultidisciplinaryTeamMeetings>
+      <TeamMeetingDate>2018-03-05</TeamMeetingDate>
+      <OrganisationSiteIdentifierOfMultidisciplinaryTeamMeeting extension="ABC99" />
+      <TeamMeetingType>1001</TeamMeetingType>
+    </MultidisciplinaryTeamMeetings>
+    <Staging>
+       <FinalPreTreatmentTCategory>1</FinalPreTreatmentTCategory>
+       <FinalPreTreatmentNCategory>0</FinalPreTreatmentNCategory>
+       <FinalPreTreatmentMCategory>0</FinalPreTreatmentMCategory>
+       <FinalPreTreatmentTNMStageGrouping>1a</FinalPreTreatmentTNMStageGrouping>
+       <OrganisationSiteIdentifierOfTNMStageGroupingFinalPretreatment extension="ABC22"/>
+       <FinalPreTreatmentTNMStageGroupingDate>2018-03-05</FinalPreTreatmentTNMStageGroupingDate>
+       <IntegratedStageTCategory>2</IntegratedStageTCategory>
+       <IntegratedStageNCategory>0</IntegratedStageNCategory>
+       <IntegratedStageMCategory>0</IntegratedStageMCategory>
+       <IntegratedStageTNMStageGrouping>1a</IntegratedStageTNMStageGrouping>
+       <OrganisationSiteIdentifierOfTNMStageGroupingIntegrated extension="ABC22"/>
+       <IntegratedStageTNMStageGroupingDate>2018-03-05</IntegratedStageTNMStageGroupingDate>
+       <TNMCodingEdition code="1"/>
+       <TNMVersionNumberStaging>8</TNMVersionNumberStaging>
+       <StagingBCCSCCandMM>
+         <AJCCStageGroup>AJCC</AJCCStageGroup>
+         <AJCCStageGroupDate>2018-03-05</AJCCStageGroupDate>
+       </StagingBCCSCCandMM>
+    </Staging>
+    <Treatment>
+      <CancerTreatmentEventType code="01" />
+      <AdjunctiveTherapyType code="1" />
+      <CancerTreatmentIntent code="01" />
+      <CancerTreatmentStartDate>2018-03-05</CancerTreatmentStartDate>
+      <CancerTreatmentModality code="01" />
+      <OrganisationSiteIdentifierOfProviderCancerTreatmentStartDate extension="AB101" />
+      <ConsultantCode extension="C1234567" />
+      <SurgeryAndOtherProcedures>
+        <ProcedureDate>2018-03-05</ProcedureDate>
+        <ConsultantCodeResponsibleSurgeon extension="C1234567" />
+        <PrimaryProcedureOPCS code="S064" />
+        <PrimaryProcedureSNOMEDCT code="123456" />
+        <ProcedureOPCS code="B283" />
+        <ProcedureSNOMEDCT code="123456" />
+        <HospitalDischargeDate>2018-05-08</HospitalDischargeDate>
+        <HospitalDischargeDestinationCode code="19" />
+        <SurgeryAndOtherProceduresBCCSCCandMM>
+          <OperatingSurgeonGrade code="CD" />
+          <MemberOfSpecialistMDT code="Y" />
+        </SurgeryAndOtherProceduresBCCSCCandMM>
+      </SurgeryAndOtherProcedures>
+    </Treatment>
+    <Pathology>
+      <InvestigationResultDate>2018-03-05</InvestigationResultDate>
+      <ServiceReportId extension="TNQ1235648" />
+      <PathologyObservationReportId extension="TNQ12546325" />
+      <ServiceReportStatus code="1" />
+      <PathTestReqCareProfCode extension="C2253657" />
+      <OrganisationSiteIdentifierOfPathologyTestRequest extension="ABC22" />
+      <SampleCollectionDate>2018-03-05</SampleCollectionDate>
+      <SampleReceiptDate>2018-03-05</SampleReceiptDate>
+      <OrganisationIdentifierOfReportingPathologist extension="ABC22" />
+      <PathologistConsultantCode extension="C2253658" />
+      <SpecimenNature code="1" />
+      <SNOMEDVersionPathology code="01" />
+      <TopographySNOMEDPathology code="123456" />
+      <MorphologySNOMEDPathology code="M80903" />
+      <PrimaryDiagnosisICDPath code="C445" />
+      <TumourLaterality code="8" />
+      <PathologyInvestigationType code="EX" />
+      <PathologyReportText><![CDATA[ Path]]>
+      </PathologyReportText>
+      <LesionSizePathological value="22.60" />
+      <GradeOfDiff code="GX" />
+      <CancerVascLymphInvasion code="YU" />
+      <ExcisionMargin code="02" />
+      <SyncTumourInd code="N" />
+      <NumberNodesExamined value="10" />
+      <NumberNodesPositive value="0" />
+      <TNMCodingEdition code="1" />
+      <TNMVersionNumberPathological>8</TNMVersionNumberPathological>
+      <NeoadjuvantTherapyInd code="9" />
+      <PathologyBCCSCCandMM>
+        <SkinCancerLesionNumber extension="2" />
+      </PathologyBCCSCCandMM>
+      <PathologyBCCandSCC>
+        <PerineuralInvasionInd code="Y" />
+        <LesionDiameterGreater20mm code="Y" />
+        <TumourInvasionIndPT3 code="N" />
+        <TumourInvasionIndPT4 code="N" />
+      </PathologyBCCandSCC>
+      <PathologySCC>
+        <ClarksLevelIVInd code="Y"/>
+        <VerticalThicknessGreat2mmInd code="Y"/>
+      </PathologySCC>
+      <PathologyMM>
+        <UlcerationInd code="Y" />
+        <MitoticRate value="121" />
+        <MicrosatteliteInTransMetaInc code="X" />
+        <TumourRegressionInd code="N" />
+        <BreslowThickness value="22.21" />
+        <TILSType code="A" />
+        <SentinelNodesSampled value="12" />
+        <SentinelNodesPositive value="1" />
+        <NoOfNodesSampledPostSNBCompLymphadenectomy value="10" />
+        <NoOfNodesPositivePostSNBCompLymphadenectomy value="3" />
+      </PathologyMM>
+    </Pathology>
+    <DeathDetails>
+      <PersonDeathDate>2018-03-09</PersonDeathDate>
+      <DeathLocationType code="10" />
+    </DeathDetails>
+  </SkinRecord>
+</COSD:COSD>

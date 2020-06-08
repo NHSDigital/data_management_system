@@ -1,0 +1,33 @@
+  <h2>All notifications created by system - limited to most recent 250</h2>
+  <table class="table table-hover" id="user-notifications_table">
+    <thead>
+      <tr>
+      	<td>Message</td>
+      	<td>Sent</td>
+      	<td>Users</td>
+      </tr>
+    </thead>
+    <tbody>
+      <% @notifications.each do |n| %>
+        <tr>
+        	<td><%= n.title %></td>
+        	<td><%= n.created_at %></td>
+        	<td>
+        	  <% n.user_notifications.each do |un| %>
+        	    <%= un.user.email %>
+         	    <% if un.user.administrator? %>
+          		  ADMIN
+                <% elsif un.user.odr? %>
+                  ODR
+                <% elsif un.notification.user_id %>
+                  USER
+                <% elsif un.notification.team_id && Team.find(un.notification.team_id).users.applicants.collect(&:id).include?(un.user_id) %>
+                  SENIOR
+        	    <% end %>
+        	    <br>
+        	  <% end %>
+            </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>

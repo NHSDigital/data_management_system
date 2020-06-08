@@ -1,0 +1,65 @@
+draft:
+  id: DRAFT
+
+finished:
+  id: FINISHED
+
+step_one:
+  id: STEP_ONE
+
+step_two:
+  id: STEP_TWO
+
+approved:
+  id: APPROVED
+
+closed:
+  id: CLOSED
+
+deleted:
+  id: DELETED
+
+expired:
+  id: EXPIRED
+
+live:
+  id: LIVE
+
+rejected:
+  id: REJECTED
+
+review:
+  id: REVIEW
+
+submitted:
+  id: SUBMITTED
+
+suspended:
+  id: SUSPENDED
+
+completed:
+  id: COMPLETED
+
+dpia_start:
+  id: DPIA_START
+
+dpia_review:
+  id: DPIA_REVIEW
+
+dpia_moderation:
+  id: DPIA_MODERATION
+
+dpia_rejected:
+  id: DPIA_REJECTED
+
+contract_draft:
+  id: CONTRACT_DRAFT
+
+contract_rejected:
+  id: CONTRACT_REJECTED
+
+contract_completed:
+  id: CONTRACT_COMPLETED
+
+amend:
+  id: AMEND

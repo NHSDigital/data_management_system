@@ -1,0 +1,32 @@
+<%
+# set default local variable(s)
+divider = nil if local_assigns[:divider].nil?
+%>
+<table class="table <%=child_node_table_id(@dataset_version)%>"
+       id="<%= dom_id(node)%>_child_node_table" 
+       data-url="<%= sort_dataset_version_nodes_path(@dataset_version) %>">
+  <thead>
+    <tr>
+      <th width="10">Type</th>
+      <th width="">
+        Name
+        <div class="text-muted">Annotation/Data Dictionary Name</div>
+      </th>
+      <th width=""></th>
+      <th width="">Governance</th>
+      <th></th>
+    </tr>
+  </thead>
+  <% sorted_child_nodes = node.child_nodes.sorted %>
+  <% sorted_child_nodes.each do |child_node| %>
+    <tbody id="body_<%= dom_id(child_node) %>"> 
+      <%= render 'dataset_versions/details', node: child_node %>
+      <% if divider && child_node != sorted_child_nodes.last %>
+        <tr class="divider">
+          <td colspan="5" class="text-center"><b><%= divider %></b></td>
+        </tr>
+      <% end %>
+      <%= render 'nodes/era_fields', node: child_node %>
+    </tbody>
+  <% end %>
+</table>

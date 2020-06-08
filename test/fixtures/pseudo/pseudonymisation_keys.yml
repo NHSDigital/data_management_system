@@ -1,0 +1,9 @@
+pseudonymisation_key1:
+  pseudonymisation_keyid: 1
+  key_name: "unittest_pseudo_prescr"
+  e_type: "PSPRESCRIPTION"
+
+pseudonymisation_key2:
+  pseudonymisation_keyid: 2
+  key_name: "unittest_encrypt"
+

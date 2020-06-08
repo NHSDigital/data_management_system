@@ -1,0 +1,95 @@
+<%
+  blame = User.find_by(id: @version.whodunnit)&.full_name || 'Unknown'
+%>
+
+<% if 0 == @version.index %>
+  <%# @version.index[0] does not have an @updated_object, so we show the original version
+      using @deserialized_object_changes[data_item].last
+      Example @deserialized_object_changes:
+        { "id"        =>[nil, 4],
+          "email"     =>["", "test@test.com"],
+          "first_name"=>[nil, "Test"],
+          "last_name" =>[nil, "Test"],
+          "telephone" =>[nil, "01223"]
+        }
+  %>
+  <div class= "panel panel-default">
+    <div class= "panel-heading">
+      <%# @version.whodunnit is nil if user is created using rake db:seed %>
+      <strong>
+        Created: <%= @version.created_at.to_time.to_formatted_s(:long_ordinal) %>
+        <%= "by #{blame}" if @version.whodunnit.present? %>
+      </strong>
+    </div>
+    <table class="table table-hover table-bordered">
+      <% (@deserialized_object_changes.keys - ['updated_at']).each do |data_item| %>
+        <tr>
+          <th><%= data_item.sub(/\Az_/i, '').humanize %></th>
+          <td><%= @deserialized_object_changes[data_item].last %></td>
+        </tr>
+      <% end %>
+    </table>
+  </div>
+<% elsif @version.object_changes.nil? %>
+  <p>Deleted: <%= @version.created_at %></p>
+  <%= "by #{blame}" if @version.whodunnit.present? %>
+<% else %>
+  <div class= "panel panel-default">
+    <div class= "panel-heading">
+      <% date = @version.changeset['updated_at'].last.to_time %>
+      <strong>
+        Updated: <%= date.to_formatted_s(:long_ordinal) %>
+        <%= "by #{blame}" if @version.whodunnit.present? %>
+      </strong>
+    </div>
+    <table class="table table-hover table-bordered">
+      <thead>
+        <tr>
+          <th class="col-md-4"></th>
+          <th class="col-md-4">Previous</th>
+          <th class="col-md-4">Changes</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% (@updated_object.keys - ['created_at', 'updated_at']).each do |data_item| %>
+          <% next if @updated_object[data_item].blank?  %>
+          <tr>
+            <th><%= data_item.sub(/\Az_/i, '').humanize %></th>
+            <% if @updated_object[data_item].is_a?(Array) %>
+              <td><%= @updated_object[data_item].first.inspect %></td>
+              <td class="<%= audit_highlighting(@updated_object[data_item]) %>">
+                <% if @updated_object[data_item].last.blank? %>
+                  <i><span class="text-muted">blank</span></i>
+                <% else %>
+                  <%= @updated_object[data_item].last %>
+                <% end %>
+              </td>
+            <% else %>
+              <td><%= @updated_object[data_item] %></td>
+              <td></td>
+            <% end %>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% end %>
+<nav>
+  <% if version_count(@version) > 1 %>
+    <div class="row">
+      <div class="col-md-6">
+        <% if @version.previous %>
+          <%= link_to('Previous', version_path(@version.previous), remote: request.xhr?, class: 'btn btn-default btn-block') %>
+        <% end %>
+      </div>
+      <div class="col-md-6">
+        <% if @version.next %>
+          <%= link_to('Next', version_path(@version.next), remote: request.xhr?, class: 'btn btn-default btn-block') %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+  <div class="row">
+    <p class="text-center" style="margin:10px 0 0 0">Version <%= @version.index + 1 %> of <%= version_count(@version) %></p>
+  </div>
+</nav>

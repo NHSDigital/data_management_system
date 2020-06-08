@@ -1,0 +1,16 @@
+<%= bootstrap_form_for [@project, @project_comment], horizontal: 2 do |form| %>
+  <!-- HIDDEN -->
+  <%= form.hidden_field :comment_type, value: params[:comment_type] %>
+  <%= form.hidden_field :project_node_id, value: params[:project_node_id] %>
+
+  <%= form.control_group :comment, 'Comment' do %>
+    <%= form.text_area :comment, label: 'Comment', :id => 'project_comment_text_field', :required => true %>
+  <% end %>
+
+  <%= form.control_group nil do %>
+    <div class="pull-right">
+      <%= close_modal %>
+      <%= submit_tag('Save', class: 'btn btn-primary', disable_with: 'Saving&hellip;'.html_safe) %>
+    </div>
+  <% end %>
+<% end %>

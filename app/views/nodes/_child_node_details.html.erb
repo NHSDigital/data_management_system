@@ -1,0 +1,24 @@
+<% unless node.data_item? %>
+  <tr class="child_nodes">
+    <td colspan="12" style="padding:0">
+      <div id="<%= dom_id(node) %>_child_nodes" class="collapse" style="padding: 0 0em">
+      <div style="padding-left: 25px">
+        <div class="arrow-up"></div>
+      </div>
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="pull-left" style="font-size:1em">
+                  Child Nodes
+                </div>
+              </div>
+              <%= render 'nodes/add_new_node', dataset_version: @dataset_version, node: node %>
+            </div>
+          </div>
+          <%= render partial: 'nodes/child_nodes_table', locals: { node: node } %>
+        </div>
+      </div>
+    </td>
+  </tr>
+<% end %>

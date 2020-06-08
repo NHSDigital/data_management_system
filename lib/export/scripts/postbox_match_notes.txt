@@ -1,0 +1,91 @@
+# Patient matching notes for POSTBOx files, task #22443, MBIS project 99
+
+# Split input file
+TODAY=`date +%Y%m%d`
+BASENAME=postbox_noheader
+
+split -a1 -l 1000000 private/mbis_data/"$BASENAME".csv private/mbis_data/"$BASENAME"_
+
+wc -l private/mbis_data/"$BASENAME"_*
+
+# Run matching against split death files
+# Takes about 32.5 hours to match 15 million records (on 2020-04-18)
+for fn in private/mbis_data/"$BASENAME"_*; do
+  fn0="`basename "$fn"`"
+  echo Starting $fn0 at `date`
+  bin/rake export:matched infile="$fn0" outfile="${TODAY}_${fn0}_match.csv" e_type=PSDEATH klass=Export::PostboxDeathsFile allow_fuzzy=true RAILS_ENV=production
+done
+
+# Merge the result files, by finding the date of birth from the match file for each output row
+# Flag DOB_MATCH=1 if dates of birth match; remove DOB columns from output
+# Takes about 6 minutes
+for fn in private/mbis_data/"$BASENAME"_*; do
+  fn0="`basename "$fn"`"
+  outfile0="${TODAY}_${fn0}_match.csv"
+  outfile="${TODAY}_${fn0}_join.csv"
+  echo Joining $outfile0
+  fn0="$fn0" outfile0="$outfile0" outfile="$outfile" ruby -rcsv -e '
+    infile = CSV.read("private/mbis_data/#{ENV["fn0"]}")
+    dobs = Hash[infile.collect { |patientid, nhsno, dob| [patientid, dob] }]
+    CSV.open("private/mbis_data/#{ENV["outfile"]}", "wb", row_sep: "\r\n") do |csv_out|
+      CSV.foreach("private/mbis_data/#{ENV["outfile0"]}").with_index { |row, i|
+        dob_cols = row[-6..-4]
+        row = row[0..-7] + row[-3..-1] # Remove DOB from output
+        if i == 0 # Header row
+          raise "Invalid PATIENTID column #{row[0]}" unless row[0] == "PATIENTID"
+          raise "Invalid DOB columns #{dob_cols}" unless dob_cols == %w[DOBDY DOBMT DOBYR]
+          dob_match = "DOB_MATCH"
+        else
+          dob_cols_iso = dob_cols.reverse.join("-")
+          dob_match = (dob_cols_iso == dobs[row[0]] ? 1 : 0)
+        end
+        row << dob_match
+        csv_out << row
+      }
+    end'
+done
+
+# Keep only 1 row per patientid
+# Takes about 4 minutes
+for fn in private/mbis_data/"$BASENAME"_*; do
+  fn0="`basename "$fn"`"
+  outfile1="${TODAY}_${fn0}_join.csv"
+  outfile2="${TODAY}_${fn0}_merge.csv"
+  echo Merging $outfile1
+  outfile1="$outfile1" outfile2="$outfile2" ruby -rcsv -e '
+    outfile1 = CSV.read("private/mbis_data/#{ENV["outfile1"]}")
+    header = outfile1.shift
+    raise "Invalid PATIENTID column #{header[0]}" unless header[0] == "PATIENTID"
+    CSV.open("private/mbis_data/#{ENV["outfile2"]}", "wb", row_sep: "\r\n") do |csv_out|
+      csv_out << header
+      outfile1.group_by(&:first).each do |patientid, rows|
+        csv_out << rows[0]
+      end
+    end'
+done
+
+# Merge the output files
+(cat private/mbis_data/"${TODAY}_${BASENAME}"_?_match.csv | head -1;
+for fn in private/mbis_data/"${TODAY}_${BASENAME}"_?_match.csv; do
+  tail -n+2 "$fn"
+done) > private/mbis_data/"${TODAY}_${BASENAME}_match.csv"
+
+# Merge the output files
+(cat private/mbis_data/"${TODAY}_${BASENAME}"_?_join.csv | head -1;
+for fn in private/mbis_data/"${TODAY}_${BASENAME}"_?_join.csv; do
+  tail -n+2 "$fn"
+done) > private/mbis_data/"${TODAY}_${BASENAME}_join.csv"
+
+# Merge the output files
+(cat private/mbis_data/"${TODAY}_${BASENAME}"_?_merge.csv | head -1;
+for fn in private/mbis_data/"${TODAY}_${BASENAME}"_?_merge.csv; do
+  tail -n+2 "$fn"
+done) > private/mbis_data/"${TODAY}_${BASENAME}_merge.csv"
+
+cd private/mbis_data
+mv "${TODAY}_${BASENAME}_merge.csv" "${TODAY}_postbox_merge.csv"
+7za a -p -mm=Deflate -mem=AES256 -tzip "${TODAY}_postbox_merge".{zip,csv}
+7za a -p -sdel "${TODAY}_postbox_merge".{7z,csv}
+rm -f "${TODAY}_${BASENAME}"*[^z] "${BASENAME}"_?
+
+# Distribute file "${TODAY}_postbox_merge".7z

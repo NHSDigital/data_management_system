@@ -1,0 +1,22 @@
+<% project.transitionable_states.each do |state| %>
+  <% next unless current_user.can?(:create, Workflow::ProjectState.new(project: project, state: state)) %>
+
+  <% if requires_modal_comments_for_transition_to?(state) %>
+    <%= transition_button(project, state, type: 'button', data: { toggle: 'modal', target: "\#modal-#{state.id.downcase}" }) %>
+    <% content_for :modals do %>
+      <%= render 'projects/modal_transition_comments', project: project, state: state %>
+    <% end %>
+  <% else %>
+    <%= form_with(url: transition_project_path(project, state: state.id), method: :patch, local: false, data: { confirm: 'Are you sure?' }, html: { style: 'display: inline;' }) do |form| %>
+      <%= transition_button(project, state, type: 'submit') %>
+    <% end %>
+  <% end %>
+<% end %>
+
+<%# TODO: Is there a better way of doing this that fits in with the state machine type setup? %>
+<% if can?(:reset_project_approvals, project) %>
+  <div class="btn-group">
+    <%= link_to 'Reset Approvals', reset_project_approvals_project_path(project), class: 'btn btn-default', id: 'reset_approvals_button',
+                'data-confirm' => 'Are you sure you want to reset all project approval information ?' %>
+  </div>
+<% end %>

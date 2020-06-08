@@ -1,0 +1,57 @@
+<%= bootstrap_panel_tag panel_heading_segments(
+  center: content_tag(:h4) { 'Listing Directorates' },
+#  right: (link_to('Create New Directorate', new_directorate_path, class: 'btn btn-primary') if current_user.administrator?)
+  right: (link_to bootstrap_icon_tag('plus') + ' Add Directorate', new_directorate_path, remote: true, class: 'btn btn-primary' if current_user.administrator?)
+) do %>
+<% end %>
+
+<table class="table" id='directorates_information'>
+  <thead>
+    <tr>
+      <th class='col-md-2'>Name</th>
+      <th class='col-md-1'>Users</th>
+      <th class='col-md-1'>Teams</th>
+      <th class='col-md-6'>Divisions</th>
+      <th class='col-md-2'></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @directorates.order('name').each do |dir| %>
+      <tr>
+        <td><%= dir.name %></td>
+        <td><%= dir.users.count %></td>
+        <td><%= dir.teams.count %></td>
+        <td>
+        	<% if dir.divisions.count == 0 %>
+        	  No divisions setup
+        	<% else %>
+        	  <% dir.divisions.order('name').each do |div| %>
+        	    <div class='row'>
+                  <div class='col-md-10'>
+                    <%= div.name %>,
+                    <strong>Head of Profession: </strong><%= div.head_of_profession %>
+                    <% if !div.active? %>
+                      <span class="label label-danger">Inactive</span>
+                    <% end %>
+                  </div>
+        	  	  <div class='col-md-2'>
+        	        <%= edit_link div, remote: true %>
+        	        <%# edit_link edit_division_path(directorate_id: dir.id), remote: true %>
+                    <%# delete_link(div, method: :delete, data: { confirm: "Are you sure you want to delete #{dir.name}" } )%>
+                  </div>
+                </div>
+        	  <% end %>
+        	<% end %>
+        </td>
+        <td>
+          <div class="pull-right">
+          	<%= link_to bootstrap_icon_tag('plus') + ' Add division', new_division_path(directorate_id: dir.id), remote: true, class: 'btn btn-primary btn-xs' if current_user.administrator? %>
+            <% if can?(:destroy, dir)  %>
+              <%= delete_link(dir, method: :delete, data: { confirm: "Are you sure you want to delete #{dir.name}" } )%>
+            <% end %>
+          </div>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

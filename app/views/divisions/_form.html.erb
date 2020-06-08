@@ -1,0 +1,18 @@
+<%= bootstrap_form_for @division, horizontal: 2, readonly: @readonly do |form| %>
+  <%= form.hidden_field :directorate_id %>
+  <%= form.control_group :name, 'Name' do %>
+    <%= form.text_field :name %>
+  <% end %>
+  <%= form.control_group :head_of_profession, 'Head of profession' do %>
+    <%= form.text_field :head_of_profession %>
+  <% end %>
+  <%= form.control_group :active, 'Active' do %>
+    <%= form.check_box :active %>
+  <% end %>
+  <%= form.control_group nil do %>
+    <div class='pull-right'>
+      <%= close_modal %>
+      <%= submit_tag('Save', class: 'btn btn-primary', disable_with: 'Saving&hellip;'.html_safe) %>
+    </div>
+  <% end %>
+<% end %>

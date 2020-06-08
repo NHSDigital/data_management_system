@@ -1,0 +1,34 @@
+---
+COSD:
+  name: COSD
+  full_name: Cancer Outcomes and Services Dataset
+  description: "<p>The Cancer Outcomes and Services Data Set (COSDS) provides a standard for 
+                secondary uses information required to support implementation and monitoring of
+                Improving Outcomes: a strategy for cancer.</p>
+                <p>This package details the XML Schema Specifications that support the Cancer 
+                Outcomes and Services Data Set (COSDS).</p>
+                <p>The Models tab details the structure and content of the schema and the Data 
+                Types tab details data types used.</p>"
+SACT:
+  name: SACT
+  full_name: Systemic Anti-Cancer Therapy
+  description: Systemic Anti-Cancer Therapy
+COSD_Pathology:
+  name: COSD_Pathology
+  full_name: Cancer Outcomes and Services Dataset (Pathology)
+  description: "<p>The Cancer Outcomes and Services Data Set (Pathology) provides a standard for 
+                secondary uses information required to support implementation and monitoring of
+                Improving Outcomes: a strategy for cancer.</p>
+                <p>This package details the XML Schema Specifications that support the Cancer 
+                Outcomes and Services Data Set (Pathology).</p>
+                <p>The Models tab details the structure and content of the schema and the Data 
+                Types tab details data types used.</p>"
+MultipleRecordTypeDataset:
+  name: MultipleRecordTypeDataset
+  full_name: Multiple Record Type Dataset
+  description: An example of having additional sections at the Record level
+  
+  
+
+  
+
