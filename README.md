@@ -1,3 +1,5 @@
+[![CircleCI](https://circleci.com/gh/publichealthengland/data_management_system.svg?style=shield)](https://app.circleci.com/pipelines/github/publichealthengland/data_management_system)
+
 # Data Management System
 
 * Rails version 5.0.0
