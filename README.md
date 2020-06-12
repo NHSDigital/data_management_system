@@ -1,36 +1,45 @@
-== README
+# Data Management System
 
-= Mortality and Births Information System
 * Rails version 5.0.0
 * Ruby version is 2.3.1
 
-* System dependencies:
+## System dependencies
+
   * ndr_dev_support (1.2.1)
   * ndr_error (1.1.1)
   * ndr_support (5.0.0)
   * ndr_ui (1.4.0)
 
-* Configuration
+## Configuration
 
-  Create and edit config/database.yml and config/secrets.yml
+Create and edit `config/database.yml` and `config/secrets.yml`
 
-* Database creation
-  $ rails db:create
-  $ rails db:migrate
-* Database initialization
-  $ rails db:seed
-* How to run the test suite:
-  $ rails db:migrate RAILS_ENV=test
-  $ bin/rails test
-* Deployment instructions
-  Will need security credentials for server, currently : mbis_beta@ncr-prescr-app2.phe.gov.uk
-  Currently deployed to : https://prescriptions.phe.nhs.uk
-  In local repository:
-    $ bundle exec cap mbis_beta deploy:update
-  If db migrations are needed speak to db team
-  The restart service can be a bit flaky so best to kill main puma process then run ./start_server.sh from /home/mbis_front on server
+### Database creation
+```
+$ rails db:create
+$ rails db:migrate
+```
+### Database initialization
+```
+$ rails db:seed
+```
+### How to run the test suite
+```
+$ rails db:migrate RAILS_ENV=test
+$ bin/rails test
+```
 
-= Front End / User Guide
+### Deployment instructions
+Will need security credentials for server, currently : mbis_beta@ncr-prescr-app2.phe.gov.uk
+Currently deployed to : https://prescriptions.phe.nhs.uk
+In local repository:
+```
+$ bundle exec cap mbis_beta deploy:update
+```
+If db migrations are needed speak to db team
+The restart service can be a bit flaky so best to kill main puma process then run `./start_server.sh` from `/home/mbis_front` on server
+
+## Front End / User Guide
 
 This web application will be used to manage how and who has access to various data extracts from ODR.
 
@@ -56,46 +65,46 @@ This web application will be used to manage how and who has access to various da
 - If project is rejected it goes back to team to fix any problems
 - If project is approved then data distribution can happen
 
-Notification system
+### Notification system
 The system is dependent on lots of notifications and a 'framework' is in place, however this may not be the most robust solution.
-New notifications can be create with command similar to :
-  $ Notification.create!(title: custom_title,
-                         body: CONTENT_TEMPLATES['email_project_expired']['body'] %
-                         { variable_1 : variable_1_value, variable_2 : variable_2_value },
-                        admin_users: true/false,
-                        odr_users: true/false,
-                        senior_users: true/false,
-                        user_id: ID,
-                        projet_id: ID,
-                        team_id: ID
-                        all_users: true/false)
-
+New notifications can be create with command similar to:
+```ruby
+Notification.create!(title: custom_title,
+                      body: CONTENT_TEMPLATES['email_project_expired']['body'] %
+                      { variable_1 : variable_1_value, variable_2 : variable_2_value },
+                     admin_users: true/false,
+                     odr_users: true/false,
+                     senior_users: true/false,
+                     user_id: ID,
+                     projet_id: ID,
+                     team_id: ID
+                     all_users: true/false)
+```
 The Notification table is the master table for the 'notification' it uses a content template defined in config/content_templates.yml.
 This template can be supplemented with given variables and the 'types' of users who should receive the message specified.
 This Notification record is then used to generate individual user messages UserNotifications (after_save on Notification) so that each user can maintain a read / not read status.
 
-
-Turbolinks:
+### Turbolinks
 Turbolinks5 has been removed from this project due to problems when using with Bootstrap (jQuery related)
 To add Turbolinks:
-    Add the turbolinks gem, version 5, to your Gemfile: gem 'turbolinks', '~> 5.0.0'
-    Run bundle install
-    Add //= require turbolinks to your JavaScript manifest file (found at app/assets/javascripts/application.js ).
+* Add the `turbolinks` gem, version 5, to your Gemfile: `gem 'turbolinks', '~> 5.0.0'`
+* Run `bundle install`
+* Add `//= require turbolinks` to your JavaScript manifest file (found at `app/assets/javascripts/application.js`).
 
-Workflows:
-  Unlike other NDR projects where a workflow represents a series of discrete units of work that
-  occur sequentially, project workflows in MBIS are more akin to a collection of states in which a
-  project exists and moves between throughout its lifetime, each of which being able to
-  direct/control the next valid/available state(s).
+### Workflows:
+Unlike other NDR projects where a workflow represents a series of discrete units of work that
+occur sequentially, project workflows in MBIS are more akin to a collection of states in which a
+project exists and moves between throughout its lifetime, each of which being able to
+direct/control the next valid/available state(s).
 
-  Project workflows are not strictly linear; although they have states that can be considered as
-  the start/end of the flow, they can be somewhat cyclic in nature (e.g. the feedback loop of
-  submission/rejection/resubmission). It is also possible for a workflow to have multiple potential
-  end points.
+Project workflows are not strictly linear; although they have states that can be considered as
+the start/end of the flow, they can be somewhat cyclic in nature (e.g. the feedback loop of
+submission/rejection/resubmission). It is also possible for a workflow to have multiple potential
+end points.
 
-  All workflow related logic has been encapsulated within the `Workflow` module and contains the
-  following components:
-
+All workflow related logic has been encapsulated within the `Workflow` module and contains the
+following components:
+```
   +----------------------------------------------------------------------------------------------+
   | Workflow::State               | Model   | Defines all of the potential states for projects.  |
   +----------------------------------------------------------------------------------------------+
@@ -121,12 +130,13 @@ Workflows:
   |                               |         | endpoint/action for users to trigger changes to a  |
   |                               |         | project's state.                                   |
   +----------------------------------------------------------------------------------------------+
+```
 
-  CanCan is used to control if and when an end user can make changes to a project's state.
-  At the highest level, a user must be authorised to perform the :transition action however this
-  alone is not sufficient; the user must also be able to :create the prospective
-  `Workflow::ProjectState` record. This gives provides a second guard to ensure that the user is
-  authorised to put the project into the requested state. This also allows for a relatively fine
-  grained control mechanism as we can judiciously apply conditions to the CanCan rules to limit
-  the scope of when a user may make a state change (e.g. by specifying what a project's current
-  state must be for user to make that change).
+CanCan is used to control if and when an end user can make changes to a project's state.
+At the highest level, a user must be authorised to perform the :transition action however this
+alone is not sufficient; the user must also be able to :create the prospective
+`Workflow::ProjectState` record. This gives provides a second guard to ensure that the user is
+authorised to put the project into the requested state. This also allows for a relatively fine
+grained control mechanism as we can judiciously apply conditions to the CanCan rules to limit
+the scope of when a user may make a state change (e.g. by specifying what a project's current
+state must be for user to make that change).
