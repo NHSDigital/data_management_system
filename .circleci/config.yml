@@ -35,6 +35,15 @@ jobs:
           keys:
             - dms-{{ checksum "Gemfile.lock" }}
             - dms-
+      - restore_cache:
+          keys:
+            - npm-cache-{{ arch }}-{{ .Branch }}-{{ checksum "yarn.lock" }}
+            - npm-cache-{{ arch }}-{{ .Branch }}
+            - npm-cache
+      - restore_cache:
+          keys:
+            - asset-cache-{{ arch }}-{{ .Branch }}
+            - asset-cache-
       - run:
           name: Install dependencies
           command: bundle check --path=vendor/bundle || bundle install --path=vendor/bundle --jobs 4 --retry 3
@@ -42,6 +51,21 @@ jobs:
           key: dms-{{ checksum "Gemfile.lock" }}
           paths:
             - vendor/bundle
+      - run:
+          name: Install JS dependencies
+          command: yarn install
+      - save_cache:
+          key: npm-cache-{{ arch }}-{{ .Branch }}-{{ checksum "yarn.lock" }}
+          paths:
+            - node_modules
+      - run:
+          name: Precompile assets
+          command: RAILS_ENV=test bundle exec rails assets:precompile
+      - save_cache:
+          key: asset-cache-{{ arch }}-{{ .Branch }}-{{ epoch }}
+          paths:
+            - public/assets
+            - tmp/cache/assets/sprockets
       - run:
           name: Database Setup
           command: |
