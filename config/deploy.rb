@@ -40,21 +40,28 @@ set :shared_paths, %w(
   config/master.key
   log
   private/mbis_data
+  private/pseudonymised_data
   tmp
 )
 
 # paths in shared/ that the application can write to:
 set :explicitly_writeable_shared_paths, %w( log tmp tmp/pids )
 
-set :asset_script, <<~SHELL
+set :build_script, <<~SHELL
   set -e
-  cp config/database.yml.sample config/database.yml
-  ruby -ryaml -e "puts YAML.dump('production' => { 'secret_key_base' => 'compile_me' })" > config/secrets.yml
   for fname in config/special_users.production.yml config/admin_users.yml config/odr_users.yml \
                config/user_yubikeys.yml; do
     rm -f "$fname"
     svn export --force "#{secondary_repo}/$fname" "$fname"
   done
+SHELL
+
+set :asset_script, <<~SHELL
+  set -e
+  cp config/database.yml.sample config/database.yml
+  ruby -ryaml -e "puts YAML.dump('production' => { 'secret_key_base' => 'compile_me' })" > config/secrets.yml
+  touch config/special_users.production.yml config/admin_users.yml config/odr_users.yml \
+        config/user_yubikeys.yml
   for fname in config/credentials.yml.enc; do
     rm -f "$fname"
     svn export --force "#{credentials_repo}/$fname" "$fname"
@@ -81,6 +88,12 @@ before 'deploy:restart',     'deploy:check_umask'         # Deployment needs a p
 
 before 'ndr_dev_support:update_out_of_bundle_gems' do
   set :out_of_bundle_gems, webapp_deployment ? %w[puma nio4r] : %w[]
+end
+
+namespace :ndr_dev_support do
+  task :remove_svn_cache_if_needed do
+    # no-op now we're using GitHub / branches
+  end
 end
 
 namespace :bundle do
