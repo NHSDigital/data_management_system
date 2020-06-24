@@ -429,4 +429,50 @@ namespace :xsd do
 
     previous.first.id
   end
+
+  # this wil automatically update EnumerationValueDatasetVersion so that v9.0.0 values are
+  # available in v9.0.1
+  task build_cosd_v9_0_1: :environment do
+    cosd = Dataset.find_by(name: 'COSD')
+
+    v9_0_0 = DatasetVersion.find_by(dataset_id: cosd.id, semver_version: '9.0')
+    v9_0_1 = DatasetVersion.find_or_create_by!(dataset_id: cosd.id, semver_version: '9.0.1')
+    v9_e_values = EnumerationValueDatasetVersion.where(dataset_version_id: v9_0_0.id)
+    node_count = Node.count
+    cat_count  = Category.count
+    evdv_count = EnumerationValueDatasetVersion.count
+    print "building\n"
+    Node.transaction do
+      # clone enumeration value options
+      v9_e_values.each do |val|
+        EnumerationValueDatasetVersion.find_or_create_by!(enumeration_value_id: val.enumeration_value_id,
+                                                          dataset_version_id: v9_0_1.id)
+      end
+
+      # clone categories
+      v9_0_0.categories.each do |category|
+        Category.find_or_create_by!(name: category.name, sort: category.sort,
+                                    dataset_version_id: v9_0_1.id, core: category.core)
+      end
+
+      fname = Rails.root.join('lib', 'tasks', 'xsd', 'COSDv9.0.1.yml')
+
+      YAML.safe_load(File.open(fname), [Symbol]).each do |row|
+        print "Building nodes for #{v9_0_1.semver_version}\n"
+        node = build_node(row, v9_0_1)
+        if row['children'].present?
+          row['children'].each do |child_row|
+            build_child(node, child_row, v9_0_1)
+          end
+        end
+        node.save!
+      end
+    end
+    print "NODE COUNT BEFORE                                    => #{node_count}\n"
+    print "NODE COUNT AFTER                                     => #{Node.count}\n"
+    print "CATEGORY COUNT BEFORE                                => #{cat_count}\n"
+    print "CATEGORY COUNT AFTER                                 => #{Category.count}\n"
+    print "ENUMERATION VALUE DATASET VERSION LINKS COUNT BEFORE => #{evdv_count}\n"
+    print "ENUMERATION VALUE DATASET VERSION LINKS COUNT AFTER  => #{EnumerationValueDatasetVersion.count}\n"
+  end
 end
