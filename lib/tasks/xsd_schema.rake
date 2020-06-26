@@ -121,6 +121,7 @@ namespace :xsd do
   end
 
   def save_to_zip(dataset, version, version_previous)
+    check_folder_path
     fname = "#{Date.current.strftime('%Y%m%d')}_#{Time.now.getlocal.strftime('%H%M%S')}_"
     d_version = dataset.dataset_versions.find_by(semver_version: version)
     d_version_previous = dataset.dataset_versions.find_by(semver_version: version_previous)
@@ -151,5 +152,32 @@ namespace :xsd do
 
     changelog = Nodes::ChangeLog.new(dataset, version_previous, version, false, zipfile)
     changelog.save_file
+  end
+
+  task save_schema_pack: :environment do
+    # dataset          = ask('Dataset Name:')
+    # version          = ask('Dataset Version:')
+    # version_previous = ask('Dataset Version previous to diff:')
+    dataset          = 'COSD'
+    version          = '9.0.1'
+    version_previous = '9.0'
+
+    dataset          = Dataset.find_by(name: dataset)
+    raise "No dataset found for #{dataset_name}"             if dataset.nil?
+
+    started = Time.now.getlocal
+    print "STARTED => #{started}\n"
+    save_to_zip(dataset, version, version_previous)
+    finished = Time.now.getlocal
+    print "FINISHED => #{finished}\n"
+    print "DURATION => #{(finished - started).round(2)} seconds\n"
+    print "Done\n"
+  end
+
+  def check_folder_path
+    tmp_folder = Rails.root.join('tmp', 'schema_packs')
+    return if Dir.exist?(tmp_folder)
+
+    FileUtils.mkdir_p(tmp_folder)
   end
 end
