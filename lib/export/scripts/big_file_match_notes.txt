@@ -1,0 +1,36 @@
+# Patient matching notes for big files, e.g. task #23192
+# TODO: Refactor with postbox_match_notes.txt, task #22443, MBIS project 99
+
+# Split input file (with possible header row)
+BASENAME=matchfile_noheader
+egrep -vi 'nhs_?number' pii_uid_mbis_extract_request.csv > "$BASENAME".csv
+
+TODAY=`date +%Y%m%d`
+BASENAME=matchfile_noheader
+split -a1 -l 1000000 private/mbis_data/"$BASENAME".csv private/mbis_data/"$BASENAME"_
+
+wc -l private/mbis_data/"$BASENAME"_*
+
+# Run matching against split death files
+# Takes about 15 hours to match 2.9 million records (on 2020-07-02)
+for fn in private/mbis_data/"$BASENAME"_*; do
+  fn0="`basename "$fn"`"
+  echo Starting $fn0 at `date`
+  bin/rake export:matched infile="$fn0" outfile="${TODAY}_${fn0}_match.csv" e_type=PSDEATH klass=Export::UnifiedInfectionDatasetFile allow_fuzzy=false RAILS_ENV=production
+done
+
+# Merge the output files
+(cat private/mbis_data/"${TODAY}_${BASENAME}"_?_match.csv | head -1;
+for fn in private/mbis_data/"${TODAY}_${BASENAME}"_?_match.csv; do
+  tail -n+2 "$fn"
+done) > private/mbis_data/"${TODAY}_${BASENAME}_match.csv"
+
+
+# Create output file
+DEST=uid_mbis
+cd private/mbis_data
+mv "${TODAY}_${BASENAME}_match.csv" "${TODAY}_${DEST}_match.csv"
+7za a -p -sdel "${TODAY}_${DEST}_match".{7z,csv}
+rm -f "${TODAY}_${BASENAME}"*[^z] "${BASENAME}"_?
+
+# Distribute file "${TODAY}_${DEST}_match".7z
