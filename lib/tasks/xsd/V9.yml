@@ -2660,11 +2660,11 @@
                 max_occurs: 1
                 sort: 10
                 reference: CR7100
-                rawtext_name: originalmorphology_icdo3
-                virtual_field: originalmorphology_icdo3
-                encore_event: Vtransformation
-                encore_event_field: originalmorphology_icdo3
-                e_base_record: e_cosd_xml_transformation
+                rawtext_name: originalprimarydiagnosis_icd
+                virtual_field: originalprimarydiagnosis_icd
+                encore_event: Vrecurrence
+                encore_event_field: originalprimarydiagnosis_icd
+                e_base_record: e_cosd_xml_recurrence
                 annotation: PRIMARY DIAGNOSIS (ICD ORIGINAL)
                 description: PRIMARY DIAGNOSIS (ICD ORIGINAL)
                 node_type: Nodes::DataItem
@@ -2787,7 +2787,7 @@
                   virtual_field: metastases
                   encore_event: metastaticsite
                   encore_event_field: metastaticsite
-                  e_base_record: e_cosd_xml_recurrence
+                  e_base_record: e_cosd_xml_progression
                   annotation: CANCER METASTATIC DISEASE TYPE
                   description: Indicate the type of recurrence or metastatic disease
                     diagnosed by the clinical team
@@ -2804,7 +2804,7 @@
                   virtual_field: metastases
                   encore_event: metastaticsite
                   encore_event_field: metastaticsite
-                  e_base_record: e_cosd_xml_recurrence
+                  e_base_record: e_cosd_xml_progression
                   annotation: METASTATIC SITE (AT DIAGNOSIS)
                   description: The site of the metastatic disease, if any More than
                     one site can be recorded
