@@ -2,14 +2,14 @@
 
 # Data Management System
 
-* Rails version 5.0.0
-* Ruby version is 2.3.1
+* Rails version 6.0.3.2
+* Ruby version is 2.6.3
 
 ## System dependencies
 
-  * ndr_dev_support (1.2.1)
-  * ndr_error (1.1.1)
-  * ndr_support (5.0.0)
+  * ndr_dev_support ~> 5.7
+  * ndr_error '~> 2.0'
+  * ndr_support '~> 5.3'
   * ndr_ui (1.4.0)
 
 ## Configuration
