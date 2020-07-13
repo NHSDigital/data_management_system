@@ -1,6 +1,166 @@
 module Export
   # Base class for exporting mapped MBIS death data files
   class DeathFile < BaseFile
+    # Special, repeated fields, e.g. there are 20 icd fields: icd_1 .. icd_20 fields
+    SPECIAL = {
+      # Auto-generated using:
+      # $ cat config/mappings/deaths_mapping.yml |grep -e 'field:'|cut -d: -f2-|tr -d " " | \
+      #   egrep '_'| sed -e 's/_[0-9][0-9]*$//'|uniq -c|sed -Ee 's/ *([0-9]+) (.*)/      \2:'\
+      #   '-> { (1..\1).collect { |i| "\2_#{i}" } },/'
+      cod10r: -> { (1..20).collect { |i| "cod10r_#{i}" } },
+      cod10rf: -> { (1..20).collect { |i| "cod10rf_#{i}" } },
+      codt: -> { (1..5).collect { |i| "codt_#{i}" } },
+      icd: -> { (1..20).collect { |i| "icd_#{i}" } },
+      icdf: -> { (1..20).collect { |i| "icdf_#{i}" } },
+      icdpv: -> { (1..20).collect { |i| "icdpv_#{i}" } },
+      icdpvf: -> { (1..20).collect { |i| "icdpvf_#{i}" } },
+      lineno9: -> { (1..20).collect { |i| "lineno9_#{i}" } },
+      lineno9f: -> { (1..20).collect { |i| "lineno9f_#{i}" } },
+      aksnamd: -> { (1..5).collect { |i| "aksnamd_#{i}" } },
+      akfnamd_1: -> { (1..5).collect { |i| "akfnamd_1_#{i}" } },
+      akfnamd_2: -> { (1..5).collect { |i| "akfnamd_2_#{i}" } },
+      akfnamd_3: -> { (1..5).collect { |i| "akfnamd_3_#{i}" } },
+      akfndi: -> { (1..5).collect { |i| "akfndi_#{i}" } },
+      aliasd: -> { (1..2).collect { |i| "aliasd_#{i}" } },
+      fnamdx: -> { (1..2).collect { |i| "fnamdx_#{i}" } },
+      nhsno: -> { (1..5).collect { |i| "nhsno_#{i}" } },
+      occfft: -> { (1..4).collect { |i| "occfft_#{i}" } },
+      codfft: -> { (1..65).collect { |i| "codfft_#{i}" } }
+    }.freeze
+
+    # Maps death dataset Node names to field values
+    NODE_TO_FIELD_MAP = {
+      # DatasetVersion.find(4).nodes.sort_by(&:id).collect { |node| [node.name, node.description] }
+      # TODO: Add compound fields from MBIS dataset description
+      'MBISID' => 'mbisid', # Special, combines mbism204id / ledrid
+      'LEDRID' => 'ledrid',
+      'CESTRSSR' => 'cestrssr',
+      'CESTSTAY' => 'ceststay',
+      'CCGPOD' => 'ccgpod',
+      'CESTRSS' => 'cestrss',
+      'COD10R' => 'cod10r', # Repeated field x 20
+      'COD10RF' => 'cod10rf', # Repeated field x 20
+      'CODT' => 'codt', # Repeated field x 5
+      'CTYDPOD' => 'ctydpod',
+      'CTYPOD' => 'ctypod',
+      'DESTER' => 'dester',
+      'DODDY' => 'doddy',
+      'DODMT' => 'dodmt',
+      'DODYR' => 'dodyr',
+      'ESTTYPED' => 'esttyped',
+      'HAUTPOD' => 'hautpod',
+      'HROPOD' => 'hropod',
+      'ICD9_ICD10' => 'icd', # Repeated field x 20
+      'ICD9F_ICD10F' => 'icdf', # Repeated field x 20
+      'ICD9PV_ICD10PV' => 'icdpv', # Repeated field x 20
+      'ICD9PVF_ICD10PVF' => 'icdpvf', # Repeated field x 20
+      'ICD9SC_ICD10SC' => 'icdsc',
+      'ICD9SCF_ICD10SCF' => 'icdscf',
+      'ICD9U_ICD10U' => 'icdu',
+      'ICD9UF_ICD10UF' => 'icduf',
+      'ICD_FUTURE1' => 'icdfuture1',
+      'ICD_FUTURE2' => 'icdfuture2',
+      'LINEN09_LNENO10' => 'lineno9', # Repeated field x 20
+      'LINENO9F_LNENO10F' => 'lineno9f', # Repeated field x 20
+      'LOAPOD' => 'loapod',
+      'LSOAPOD' => 'lsoapod',
+      'NHSIND' => 'nhsind',
+      'PCDPOD' => 'pcdpod',
+      'PLOACC9_PLOACC10' => 'ploacc10',
+      'PODQUAL' => 'podqual',
+      'PODT' => 'podt',
+      'WIGWO9_WIGWO10' => 'wigwo10',
+      'WIGWO9F_WIGWO10F' => 'wigwo10f',
+      'ADDRDT' => 'addrdt',
+      'AGEC' => 'agec',
+      'AGECUNIT' => 'agecunit',
+      'AGEU1D' => 'ageu1d',
+      'AKSNAMD' => 'aksnamd', # Repeated field x 5
+      'AKFNAMD1' => 'akfnamd_1', # Repeated field x 5
+      'AKFNAMD2' => 'akfnamd_2', # Repeated field x 5
+      'AKFNAMD3' => 'akfnamd_3', # Repeated field x 5
+      'AKFND4I' => 'akfndi', # Repeated field x 5
+      'ALIASD' => 'aliasd', # Repeated field x 2
+      'CCGR' => 'ccgr',
+      'CTRYPOB' => 'ctrypob',
+      'CTRYR' => 'ctryr',
+      'CTYDR' => 'ctydr',
+      'CTYR' => 'ctyr',
+      'DOBDY' => 'dobdy',
+      'DOBMT' => 'dobmt',
+      'DOBYR' => 'dobyr',
+      'FNAMD1' => 'fnamd1',
+      'FNAMD2' => 'fnamd2',
+      'FNAMD3' => 'fnamd3',
+      'FNAMDX' => 'fnamdx', # Repeated field x 2
+      'GORR' => 'gorr',
+      'HAUTR' => 'hautr',
+      'HROR' => 'hror',
+      'LOAR' => 'loar',
+      'LSOAR' => 'lsoar',
+      'MARSTAT' => 'marstat',
+      'NAMEMAID' => 'namemaid',
+      'NHSNO' => 'nhsno', # Repeated field x 5
+      'NHSNORSS' => 'nhsnorss',
+      'OCCDT' => 'occdt',
+      'OCCFFT' => 'occfft', # Repeated field x 4
+      'OCCTYPE' => 'occtype',
+      'PCDR' => 'pcdr',
+      'POBT' => 'pobt',
+      'SEX' => 'sex_statistical', # Special, derived from sex
+      'SNAMD' => 'snamd',
+      'WARDR' => 'wardr',
+      'AGECS' => 'agecs',
+      'EMPRSSDM' => 'emprssdm',
+      'EMPRSSHF' => 'emprsshf',
+      'EMPSECDM' => 'empsecdm',
+      'EMPSECHF' => 'empsechf',
+      'EMPSTDM' => 'empstdm',
+      'EMPSTHF' => 'empsthf',
+      'INDDMT' => 'inddmt',
+      'INDHFT' => 'indhft',
+      'NAMEHF' => 'namehf',
+      'NAMEM' => 'namem',
+      'OCC90DM' => 'occ90dm',
+      'OCC90HF' => 'occ90hf',
+      'OCCHFT' => 'occhft',
+      'OCCMT' => 'occmt',
+      'RETINDM' => 'retindm',
+      'RETINHF' => 'retindhf',
+      'SCLASDM' => 'sclasdm',
+      'SCLASHF' => 'sclashf',
+      'SEC90DM' => 'sec90dm',
+      'SEC90HF' => 'sec90hf',
+      'SECCATDM' => 'seccatdm',
+      'SECCATHF' => 'seccathf',
+      'SECCLRDM' => 'secclrdm',
+      'SECCLRHF' => 'secclrhf',
+      'SOC2KDM' => 'soc2kdm',
+      'SOC2KHF' => 'soc2khf',
+      'SOC90DM' => 'soc90dm',
+      'SOC90HF' => 'soc90hf',
+      'CERTTYPE' => 'certtype',
+      'CORAREAT' => 'corareat',
+      'CORCERTT' => 'corcertt',
+      'DOINQT' => 'doinqt',
+      'DOR' => 'dor',
+      'INQCERT' => 'inqcert',
+      'POSTMORT' => 'postmort',
+      'CERTIFER' => 'certifer',
+      'NAMEC' => 'namec',
+      'NAMECON' => 'namecon',
+      'CODFFT' => 'codfft', # Repeated field x 65
+      'CCG9POD' => 'ccg9pod',
+      'CCG9R' => 'ccg9r',
+      'GOR9R' => 'gor9r',
+      'WARD9R' => 'ward9r'
+    }.freeze
+
+    def self.dataset_version
+      DatasetVersion.joins(:dataset).
+        find_by(datasets: { name: 'Death Transaction' }, semver_version: '1.0')
+    end
+
     # Export data to file, returns number of records emitted
     def export
       i = 0
