@@ -233,8 +233,8 @@ class Ability
     can %i[create read], Project
     can %i[create read], ProjectAttachment
     can %i[update destroy edit_data_source_items],
-        Project, current_state: { id: 'DRAFT' }
-    [ProjectDataset, ProjectNode].each { |klass| application_manager_draft_ability(klass) }
+        Project, current_state: { id: %w[DRAFT AMEND] }
+    [ProjectDataset, ProjectNode].each { |klass| application_manager_edit_ability(klass) }
 
     cannot :edit_system_grants, User
     can %i[read toggle destroy], Grant
@@ -346,8 +346,7 @@ class Ability
       dataset: { dataset_type: { name: %w[xml non_xml table_specification] } } }
   end
 
-  def application_manager_draft_ability(klass)
-    can %i[create update destroy edit_data_source_items],
-        klass, project: { current_state: { id: 'DRAFT' } }
+  def application_manager_edit_ability(klass)
+    can %i[create update destroy], klass, project: { current_state: { id: %w[DRAFT AMEND] } }
   end
 end

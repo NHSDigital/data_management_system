@@ -808,8 +808,11 @@ class AbilityTest < ActiveSupport::TestCase
   test 'update application as ODR application manager' do
     user = users(:application_manager_one)
 
-    @project.stubs current_state: workflow_states(:draft)
-    assert user.can? :update, @project
+    editable_states.each do |state|
+      @project.stubs current_state: workflow_states(state)
+      assert user.can? :update, @project
+    end
+
     no_edit_states.each do |state|
       @project.stubs current_state: workflow_states(state)
       refute user.can? :update, @project
@@ -819,8 +822,11 @@ class AbilityTest < ActiveSupport::TestCase
   test 'create project attachments when as application manager' do
     user = users(:application_manager_one)
 
-    @project.stubs current_state: workflow_states(:draft)
-    assert user.can? :create, @project.project_attachments.build
+    editable_states.each do |state|
+      @project.stubs current_state: workflow_states(state)
+      assert user.can? :create, @project.project_attachments.build
+    end
+
     no_edit_states.each do |state|
       @project.stubs current_state: workflow_states(state)
       assert user.can? :create, @project.project_attachments.build
@@ -830,8 +836,11 @@ class AbilityTest < ActiveSupport::TestCase
   test 'create project datasets when in DRAFT as application manager' do
     user = users(:application_manager_one)
 
-    @project.stubs current_state: workflow_states(:draft)
-    assert user.can? :create, @project.project_datasets.build
+    editable_states.each do |state|
+      @project.stubs current_state: workflow_states(state)
+      assert user.can? :create, @project.project_datasets.build
+    end
+
     no_edit_states.each do |state|
       @project.stubs current_state: workflow_states(state)
       refute user.can? :create, @project.project_datasets.build
@@ -841,8 +850,11 @@ class AbilityTest < ActiveSupport::TestCase
   test 'create project nodes when in DRAFT as application manager' do
     user = users(:application_manager_one)
 
-    @project.stubs current_state: workflow_states(:draft)
-    assert user.can? :create, @project.project_nodes.build
+    editable_states.each do |state|
+      @project.stubs current_state: workflow_states(state)
+      assert user.can? :create, @project.project_nodes.build
+    end
+
     no_edit_states.each do |state|
       @project.stubs current_state: workflow_states(state)
       refute user.can? :create, @project.project_nodes.build
@@ -869,6 +881,10 @@ class AbilityTest < ActiveSupport::TestCase
 
   def no_edit_states
     %i[submitted dpia_start dpia_review dpia_moderation dpia_rejected
-       contract_draft contract_rejected contract_completed amend]
+       contract_draft contract_rejected contract_completed]
+  end
+
+  def editable_states
+    %i[draft amend]
   end
 end
