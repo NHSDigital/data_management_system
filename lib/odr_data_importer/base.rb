@@ -14,9 +14,17 @@ module OdrDataImporter
     include NdrImport::Helpers::File::Excel
     include OdrDataImporter::OrganisationsAndTeams
     include OdrDataImporter::Users
+    include OdrDataImporter::OrganisationUpdater
+    include OdrDataImporter::OrganisationImporter
+    include OdrDataImporter::TeamsImporter
+    include OdrDataImporter::UsersImporter
+    include OdrDataImporter::ApplicationImporter
+    include OdrDataImporter::AmendmentImporter
+    include OdrDataImporter::DpiaImporter
 
     attr_accessor :excel_file
     def initialize(fname, worksheet = nil)
+      @fname = fname
       @excel_file = read_excel_file(SafePath.new('db_files').join(fname), worksheet)
     end
 
