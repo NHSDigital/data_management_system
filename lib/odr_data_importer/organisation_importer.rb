@@ -4,6 +4,8 @@ module OdrDataImporter
       @excel_file.shift # remove headers
 
       existing_organisations_count = Organisation.count
+      existed = []
+      log_to_process_count(@excel_file.count)
 
       @excel_file.each do |org_name, org_type|
         type = org_type.upcase
@@ -11,21 +13,24 @@ module OdrDataImporter
         type = Lookups::OrganisationType.find_by(value: mapped_type)
 
         organisation = Organisation.where('name ILIKE ?', org_name.strip)
-        next if organisation.present?
-
-        if mapped_type == 'Other'
-          Organisation.create(name: org_name,
-                              organisation_type: type,
-                              organisation_type_other: 'Unknown')
+        if organisation.present?
+          existed << org_name
         else
-          Organisation.create(name: org_name, organisation_type: type)
+          org_attrs = { name: org_name, organisation_type: type }
+          org_attrs.merge!(organisation_type_other: 'Unknown') if mapped_type == 'Other'
+          Organisation.create!(org_attrs)
         end
       end
 
       updated_organisations_count = Organisation.count
       new_organisations = updated_organisations_count - existing_organisations_count
 
-      puts "Created #{new_organisations} Organisations"
+      # print "already existed\n"
+      # existed.each do |name|
+      #   print "#{name}\n"
+      # end
+      print "#{existed.count} organisations already existed\n"
+      print "#{new_organisations} Organisations created\n"
     end
 
     private
