@@ -22,9 +22,12 @@ module OdrDataImporter
       missing_org  = []
       missing_team = []
       user_count   = 0
+      updated      = 0
+      created      = 0
       grant_before = Grant.count
       users.each do |application_log, first_name, last_name, _, email|
         user = User.find_or_initialize_by(email: email.downcase)
+        updated += 1 unless user.id.nil?
         user.first_name = first_name
         user.last_name  = last_name
         team_name = teams_hash[application_log][:team_name]
@@ -40,14 +43,15 @@ module OdrDataImporter
             missing_team << team_name
           else
             user.grants.find_or_initialize_by(team: team, roleable: TeamRole.fetch(:odr_applicant))
-            user_count += 1
+            created += 1 if user.id.nil?
           end
-          user.save!
+          user.save! unless @test_mode
         end
       end
       print "#{missing_org.count} missing organisations!\n"
       print "#{missing_team.count} missing teams!\n"
-      print "#{user_count} created!\n"
+      print "#{created} created!\n"
+      print "#{updated} updated!\n"
       print "#{Grant.count - grant_before} grants created!\n"
     end
   end

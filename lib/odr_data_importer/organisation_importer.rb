@@ -18,7 +18,7 @@ module OdrDataImporter
         else
           org_attrs = { name: org_name, organisation_type: type }
           org_attrs.merge!(organisation_type_other: 'Unknown') if mapped_type == 'Other'
-          Organisation.create!(org_attrs)
+          Organisation.create!(org_attrs) unless @test_mode
         end
       end
 
