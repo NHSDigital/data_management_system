@@ -69,6 +69,8 @@ en:
     contract_draft: Contract Draft
     contract_rejected: Contracted Rejected
     contract_completed: Contract Completed
+    data_released: Data Released
+    data_destroyed: Data Destroyed
   projects:
     application:
       form:
