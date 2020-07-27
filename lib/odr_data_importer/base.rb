@@ -23,9 +23,10 @@ module OdrDataImporter
     include OdrDataImporter::DpiaImporter
 
     attr_accessor :excel_file
-    def initialize(fname, worksheet = nil)
-      @fname = fname
+    def initialize(fname, worksheet = nil, test_mode = 'true')
+      @fname      = fname
       @excel_file = read_excel_file(SafePath.new('tmp').join(fname), worksheet)
+      @test_mode  = ActiveModel::Type::Boolean.new.cast(test_mode)
     end
 
     def import_eois!
@@ -128,6 +129,7 @@ module OdrDataImporter
     end
 
     def log_to_process_count(total)
+      print "***TEST_MODE***\n" if @test_mode
       print "#{'*' * 10}\n"
       print "Number of rows in tab to process => #{total}\n"
     end
