@@ -133,5 +133,13 @@ module OdrDataImporter
       print "#{'*' * 10}\n"
       print "Number of rows in tab to process => #{total}\n"
     end
+
+    def errors_to_file(errors, filename)
+      filename = "#{Time.current.strftime('%Y%m%d')}_#{filename}.csv"
+      file = Rails.root.join('tmp').join(filename)
+      CSV.open(outfile, 'wb') do |csv_out|
+        errors.each { |error| csv_out << error }
+      end
+    end
   end
 end

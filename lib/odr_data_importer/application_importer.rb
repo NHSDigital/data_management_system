@@ -40,6 +40,7 @@ module OdrDataImporter
       would_be_valid   = 0
       would_be_invalid = 0
       missing_owners   = []
+      missing_dataset  = []
       header = @excel_file.shift.map(&:downcase)
       log_to_process_count(@excel_file.count)
       # let's build these now as some as missing.
@@ -95,7 +96,8 @@ module OdrDataImporter
               application.valid? ? would_be_valid += 1 : would_be_invalid +=1
               build_rest_of_application(application, attrs)
 
-              binding.pry unless application.valid?
+              # binding.pry unless application.valid?
+              missing_dataset << application.application_log if application.project_datasets.empty?
               application.save! unless @test_mode
               print "#{counter += 1}\r"
             end
@@ -107,10 +109,9 @@ module OdrDataImporter
       print "#{counter} applications created\n"
       print "#{would_be_valid} valid\n"
       print "#{would_be_invalid} invalid\n"
-      print "MISSING OWNERS\n"
-      missing_owners.each do |owner|
-        print "#{owner}\n"
-      end
+      print "#{missing_dataset.count} missing a dataset"
+      errors_to_file(missing_owners, 'missing_owners')
+      errors_to_file(missing_dataset, 'missing_dataset')
     end
       
     def build_rest_of_application(application, attrs)
