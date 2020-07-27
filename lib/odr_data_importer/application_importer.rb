@@ -1,5 +1,12 @@
 module OdrDataImporter
   module ApplicationImporter
+    STATUS_MAPPING = {
+      'NEW'              => 'DRAFT',
+      'PENDING'          => 'SUBMITTED',
+      'CLOSED'           => 'REJECTED',
+      'DPIA_PEER_REVIEW' => 'DPIA_REVIEW'
+    }
+
     def import_application_managers(header)
       app_mans = []
       @excel_file.each do |application|
@@ -20,16 +27,19 @@ module OdrDataImporter
         unless email.in? ENV['not_real_managers'].split.map { |name| "#{name}@phe.gov.uk" }
           user.grants.build(roleable: SystemRole.fetch(:application_manager))
         end
-        user.save!
+        user.save! unless @test_mode
         counter += 1
       end
       print "#{counter} application managers created\n"
     end
 
     def import_applications
-      missing_org  = []
-      missing_team = []
-      counter      = 0
+      missing_org      = []
+      missing_team     = []
+      counter          = 0
+      would_be_valid   = 0
+      would_be_invalid = 0
+      missing_owners   = []
       header = @excel_file.shift.map(&:downcase)
       log_to_process_count(@excel_file.count)
       # let's build these now as some as missing.
@@ -78,8 +88,16 @@ module OdrDataImporter
               missing_team << team_name
             else
               application.team = team
-              # build_rest_of_application(application, attrs)
-              counter +=1
+
+              application.owner = User.find_by(email: attrs['applicant_email'].downcase)
+              # raise "no user/owner found for #{attrs['applicant_email']}" if application.owner.nil?
+              missing_owners.push attrs['applicant_email'] if application.owner.nil?
+              application.valid? ? would_be_valid += 1 : would_be_invalid +=1
+              build_rest_of_application(application, attrs)
+
+              binding.pry unless application.valid?
+              application.save! unless @test_mode
+              print "#{counter += 1}\r"
             end
           end
         end
@@ -87,6 +105,12 @@ module OdrDataImporter
       print "#{missing_org.count} missing organisations\n"
       print "#{missing_team.count} missing teams\n"
       print "#{counter} applications created\n"
+      print "#{would_be_valid} valid\n"
+      print "#{would_be_invalid} invalid\n"
+      print "MISSING OWNERS\n"
+      missing_owners.each do |owner|
+        print "#{owner}\n"
+      end
     end
       
     def build_rest_of_application(application, attrs)
@@ -116,10 +140,16 @@ module OdrDataImporter
       end
 
       # App_status
-      # TODO: TBC - Waiting for mapping
+      state = attrs['app_status'].upcase
+      state = STATUS_MAPPING[state] || state
+      project_state = Workflow::State.find(state)
+      state_missing_msg = "missing status #{attrs['app_status']} for #{attrs['application_log']}"
 
-      # description
-      # TODO: This will be corrected in the import spreadsheet
+      raise state_missing_msg if project_state.nil?
+
+      application.states << project_state
+
+      application.description = attrs['description']
 
       # level_of_identifiability
       if attrs['level_of_identifiability'].present?
@@ -185,7 +215,9 @@ module OdrDataImporter
 
       application.owner = User.where('email ILIKE ?', attrs['applicant_email']).first
 
-      application.save! if application.valid?
+      # We can't have the same application name per team
+      application.name = application.name + " #{attrs['application_log']}"
+      application
     end
 
     def application_project_type
