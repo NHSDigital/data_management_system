@@ -1,5 +1,16 @@
 require 'test_helper'
 class DatasetVersionTest < ActiveSupport::TestCase
+  def setup
+    @dataset = Dataset.find_by(name: 'COSD')
+    @dataset_version = @dataset.dataset_versions.new(semver_version: '10.0')
+    @dataset_version.save!
+    EnumerationValueDatasetVersion.create!(enumeration_value: EnumerationValue.find(1),
+                                           dataset_version: @dataset_version)
+    @version_entity = Nodes::Entity.new(name: 'COSD', min_occurs: 1, max_occurs: 1,
+                                        description: @dataset.description, sort: 0,
+                                        dataset_version: @dataset_version)
+  end
+
   test 'version_entity' do
     assert DatasetVersion.find_by(semver_version: '8.2').version_entity.present?
     assert_equal 'COSD', DatasetVersion.find_by(semver_version: '8.2').version_entity.name
@@ -119,6 +130,115 @@ class DatasetVersionTest < ActiveSupport::TestCase
     
     assert dv.core_category.present?
     refute sact_version.core_category.present?
+  end
+
+  test 'enumeration values should be cloned' do
+    data_item = Nodes::DataItem.new(name: 'test_item_name', min_occurs: 0,
+                                    dataset_version: @dataset_version)
+    @version_entity.child_nodes << data_item
+    @version_entity.save!
+
+    @dataset_version.clone_version('11.0')
+    new_version = DatasetVersion.find_by(semver_version: '11.0')
+
+    assert_equal new_version.enumeration_values, @dataset_version.enumeration_values
+  end
+
+  test 'cloning dataset_version expected DataItem node attributes cloned' do
+    data_item = Nodes::DataItem.new(name: 'test_item_name', sort: 1, min_occurs: 0, max_occurs: 2,
+                                    reference: 'test_reference', annotation: 'test_annotation',
+                                    description: 'test_description', xml_type_id: 2,
+                                    data_dictionary_element_id: 393,
+                                    dataset_version: @dataset_version)
+    @version_entity.child_nodes << data_item
+    @version_entity.save!
+    @dataset_version.clone_version('11.0')
+    new_version = DatasetVersion.find_by(semver_version: '11.0')
+    cloned_data_item = new_version.nodes.find_by(name: 'test_item_name')
+
+    assert_equal cloned_data_item.type, data_item.type
+    assert_equal cloned_data_item.xml_type_id, data_item.xml_type_id
+    assert_equal cloned_data_item.min_occurs, data_item.min_occurs
+    assert_equal cloned_data_item.max_occurs, data_item.max_occurs
+    assert_equal cloned_data_item.data_dictionary_element_id, data_item.data_dictionary_element_id
+    assert_equal cloned_data_item.reference, data_item.reference
+    assert_equal cloned_data_item.annotation, data_item.annotation
+    assert_equal cloned_data_item.description, data_item.description
+    refute_equal cloned_data_item.dataset_version_id, data_item.dataset_version_id
+    assert_equal cloned_data_item.dataset_version_id, new_version.id
+  end
+
+  test 'cloning dataset_version expected Choice node attributes cloned' do
+    choice = Nodes::Choice.new(name: 'test_item_name', sort: 1, min_occurs: 1, max_occurs: 2,
+                               reference: 'test_reference', annotation: 'test_annotation',
+                               description: 'test_description', choice_type_id: 1,
+                               dataset_version: @dataset_version)
+    @version_entity.child_nodes << choice
+    @version_entity.save!
+    @dataset_version.clone_version('11.0')
+    new_version = DatasetVersion.find_by(semver_version: '11.0')
+
+    cloned_choice = new_version.nodes.find_by(name: 'test_item_name')
+
+    assert_equal cloned_choice.type, choice.type
+    assert_nil cloned_choice.xml_type_id, choice.xml_type_id
+    assert_equal cloned_choice.min_occurs, choice.min_occurs
+    assert_equal cloned_choice.max_occurs, choice.max_occurs
+    assert_nil cloned_choice.data_dictionary_element_id, choice.data_dictionary_element_id
+    assert_equal cloned_choice.choice_type_id, choice.choice_type_id
+    assert_equal cloned_choice.reference, choice.reference
+    assert_equal cloned_choice.annotation, choice.annotation
+    assert_equal cloned_choice.description, choice.description
+    refute_equal cloned_choice.dataset_version_id, choice.dataset_version_id
+    assert_equal cloned_choice.dataset_version_id, new_version.id
+  end
+
+  test 'cloning dataset_version expected CategoryChoice node attributes cloned' do
+    category_choice = Nodes::CategoryChoice.new(name: 'test_item_name', sort: 1, min_occurs: 1,
+                                                reference: 'test_reference',
+                                                annotation: 'test_annotation',
+                                                description: 'test_description',
+                                                dataset_version: @dataset_version)
+    @version_entity.child_nodes << category_choice
+    @version_entity.save!
+    @dataset_version.clone_version('11.0')
+    new_version = DatasetVersion.find_by(semver_version: '11.0')
+
+    cloned_category_choice = new_version.nodes.find_by(name: 'test_item_name')
+
+    assert_equal cloned_category_choice.type, category_choice.type
+    assert_nil cloned_category_choice.xml_type_id, category_choice.xml_type_id
+    assert_equal cloned_category_choice.min_occurs, category_choice.min_occurs
+    assert_nil cloned_category_choice.max_occurs, category_choice.max_occurs
+    assert_nil cloned_category_choice.data_dictionary_element_id, category_choice.data_dictionary_element_id
+    assert_equal cloned_category_choice.reference, category_choice.reference
+    assert_equal cloned_category_choice.annotation, category_choice.annotation
+    assert_equal cloned_category_choice.description, category_choice.description
+    refute_equal cloned_category_choice.dataset_version_id, category_choice.dataset_version_id
+    assert_equal cloned_category_choice.dataset_version_id, new_version.id
+  end
+
+  test 'cloning dataset_version expected Group node attributes cloned' do
+    group = Nodes::Group.new(name: 'test_item_name', sort: 0, reference: 'test_reference',
+                             annotation: 'test_annotation', description: 'test_description',
+                             dataset_version: @dataset_version)
+    @version_entity.child_nodes << group
+    @version_entity.save!
+    @dataset_version.clone_version('11.0')
+    new_version = DatasetVersion.find_by(semver_version: '11.0')
+
+    cloned_group = new_version.nodes.find_by(name: 'test_item_name')
+
+    assert_equal cloned_group.type, group.type
+    assert_nil cloned_group.xml_type_id, group.xml_type_id
+    assert_nil cloned_group.min_occurs, group.min_occurs
+    assert_nil cloned_group.max_occurs, group.max_occurs
+    assert_nil cloned_group.data_dictionary_element_id, group.data_dictionary_element_id
+    assert_equal cloned_group.reference, group.reference
+    assert_equal cloned_group.annotation, group.annotation
+    assert_equal cloned_group.description, group.description
+    refute_equal cloned_group.dataset_version_id, group.dataset_version_id
+    assert_equal cloned_group.dataset_version_id, new_version.id
   end
 
   private
