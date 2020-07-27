@@ -6,41 +6,49 @@ module OdrDataImporter
       # application_log | First_name | Last_name | Username | applicant_email
       users = @excel_file # this is now an array of users
 
-      # I need to work out how to load the teams file, I might need to hard code it for now
-      teams = read_excel_file(SafePath.new('db_files').join(@fname), 'Teams')
-      teams.shift # remove headers
-      # teams headers: application_log | Organisation_name | team_name
+      log_to_process_count(@excel_file.count)
 
-      teams_hash = {}
-      teams.each do |team|
-        teams_hash[team[0]] = { org_name: team[1], team_name: team[2]}
+      # I need to work out how to load the teams file, I might need to hard code it for now
+      teams = read_excel_file(SafePath.new('tmp').join(@fname), 'Applications')
+      header = teams.shift # remove headers
+
+      # teams headers: application_log | Organisation_name | team_name
+      teams_hash = teams.each_with_object({}) do |row, hash|
+        app_attrs = header.zip(row).to_h
+        hash[app_attrs['application_log']] = { org_name: app_attrs['Organisation_name'],
+                                               team_name: app_attrs['team_name'] }
       end
 
+      missing_org  = []
+      missing_team = []
+      user_count   = 0
+      grant_before = Grant.count
       users.each do |application_log, first_name, last_name, _, email|
         user = User.find_or_initialize_by(email: email.downcase)
-        user.update(first_name: first_name, last_name: last_name)
+        user.first_name = first_name
+        user.last_name  = last_name
         team_name = teams_hash[application_log][:team_name]
         org       = teams_hash[application_log][:org_name]
 
         organisation = Organisation.where('name ILIKE ?', org)&.first
 
         if organisation.blank?
-          puts "Organisation #{org} doesn't exist"
-          next
-        end
-
-        team = organisation&.teams&.where('name ILIKE ?', team_name)&.first
-
-        if team.blank?
-          # make this blow up if they are not in a team - for now make it output the team
-          puts "Team #{team_name} doesn't exist"
-          next
+          missing_org << org
         else
-          user.grants << Grant.new(team: team, roleable: TeamRole.fetch(:odr_applicant))
+          team = organisation&.teams&.where('name ILIKE ?', team_name)&.first
+          if team.blank?
+            missing_team << team_name
+          else
+            user.grants.find_or_initialize_by(team: team, roleable: TeamRole.fetch(:odr_applicant))
+            user_count += 1
+          end
+          user.save!
         end
-
-        user.save!
       end
+      print "#{missing_org.count} missing organisations!\n"
+      print "#{missing_team.count} missing teams!\n"
+      print "#{user_count} created!\n"
+      print "#{Grant.count - grant_before} grants created!\n"
     end
   end
 end
