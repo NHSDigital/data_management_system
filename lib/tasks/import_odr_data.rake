@@ -34,38 +34,44 @@ namespace :odr do
   end
 
   task update_organisations: :environment do
-    update_orgs = OdrDataImporter::Base.new(ENV['application_fname'], 'Orgs - name update')
+    update_orgs = OdrDataImporter::Base.new(ENV['application_fname'], 'Orgs - name update', ENV['test_mode'])
     update_orgs.update_organisation_names
   end
 
   task create_new_organisations: :environment do
-    import_orgs = OdrDataImporter::Base.new(ENV['application_fname'], 'Orgs - New')
+    import_orgs =
+      OdrDataImporter::Base.new(ENV['application_fname'], 'Orgs - New', ENV['test_mode'])
     import_orgs.import_organisations
   end
 
   # We'll import this from the applications tab
   task import_teams: :environment do
-    import_teams = OdrDataImporter::Base.new(ENV['application_fname'], 'Applications')
+    import_teams = 
+      OdrDataImporter::Base.new(ENV['application_fname'], 'Applications', ENV['test_mode'])
     import_teams.import_teams
   end
 
   task import_users: :environment do
-    import_users = OdrDataImporter::Base.new(ENV['application_fname'], 'Users')
+    import_users = 
+      OdrDataImporter::Base.new(ENV['application_fname'], 'Users', ENV['test_mode'])
     import_users.import_users
   end
 
   task import_applications: :environment do
-    import_applications = OdrDataImporter::Base.new(ENV['application_fname'], 'Applications')
+    import_applications = 
+      OdrDataImporter::Base.new(ENV['application_fname'], 'Applications', ENV['test_mode'])
     import_applications.import_applications
   end
 
   task import_amendments: :environment do
-    import_amendments = OdrDataImporter::Base.new(ENV['amendments_fname'], 'Amendments')
+    import_amendments =
+      OdrDataImporter::Base.new(ENV['amendments_fname'], 'Amendments', ENV['test_mode'])
     import_amendments.import_amendments
   end
 
   task import_dpias: :environment do
-    import_dpias = OdrDataImporter::Base.new(ENV['dpias_fname'], 'DPIA_data for migration')
+    import_dpias =
+      OdrDataImporter::Base.new(ENV['dpias_fname'], 'DPIA_data for migration', ENV['test_mode'])
     import_dpias.import_dpias
   end
 
