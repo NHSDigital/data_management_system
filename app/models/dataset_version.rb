@@ -114,6 +114,8 @@ class DatasetVersion < ApplicationRecord
       new_version = DatasetVersion.create!(semver_version: new_version_no, dataset_id: dataset_id)
       clone_categories(new_version)
       clone_nodes(new_version)
+      clone_enumeration_value_dataset_versions(new_version)
+      new_version
     end
   end
 
@@ -223,6 +225,15 @@ class DatasetVersion < ApplicationRecord
       build_child(new_version_entity, child_node, dataset_version)
     end
     new_version_entity.save!
+  end
+
+  # set the new cloned version to build enueration values
+  def clone_enumeration_value_dataset_versions(dataset_version)
+    enumeration_value_dataset_versions.each do |ev_dv|
+      dataset_version.enumeration_value_dataset_versions.create!(
+        enumeration_value: ev_dv.enumeration_value
+      )
+    end
   end
 
   def create_version_entity
