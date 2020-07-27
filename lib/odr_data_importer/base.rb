@@ -25,7 +25,7 @@ module OdrDataImporter
     attr_accessor :excel_file
     def initialize(fname, worksheet = nil)
       @fname = fname
-      @excel_file = read_excel_file(SafePath.new('db_files').join(fname), worksheet)
+      @excel_file = read_excel_file(SafePath.new('tmp').join(fname), worksheet)
     end
 
     def import_eois!
@@ -125,6 +125,11 @@ module OdrDataImporter
       {
         'Cancer registry' => 'Cancer Registry'
       }
+    end
+
+    def log_to_process_count(total)
+      print "#{'*' * 10}\n"
+      print "Number of rows in tab to process => #{total}\n"
     end
   end
 end
