@@ -28,7 +28,8 @@ module OdrDataImporter
             team_already_existed += 1
           else
             # puts team_name.strip
-            org.teams.find_or_create_by!(name: team_name.strip, z_team_status: active_team_status)
+            org.teams.find_or_create_by!(name: team_name.strip, 
+                                         z_team_status: active_team_status) unless @test_mode
             counter += 1
           end
         end

@@ -13,7 +13,7 @@ module OdrDataImporter
         if org.nil?
           not_found << current_name
         else
-          org.update(name: new_name)
+          org.update(name: new_name) unless @test_mode
           organisations_updated += 1
         end
       end
