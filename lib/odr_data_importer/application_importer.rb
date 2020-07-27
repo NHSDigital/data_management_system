@@ -41,6 +41,7 @@ module OdrDataImporter
       would_be_invalid = 0
       missing_owners   = []
       missing_dataset  = []
+      @missing_dataset_names = []
       header = @excel_file.shift.map(&:downcase)
       log_to_process_count(@excel_file.count)
       # let's build these now as some as missing.
@@ -103,15 +104,16 @@ module OdrDataImporter
             end
           end
         end
+        print "#{missing_org.count} missing organisations\n"
+        print "#{missing_team.count} missing teams\n"
+        print "#{counter} applications created\n"
+        print "#{would_be_valid} valid\n"
+        print "#{would_be_invalid} invalid\n"
+        print "#{missing_dataset.count} missing a dataset\n"
+        errors_to_file(missing_owners, 'missing_owners')
+        errors_to_file(missing_dataset, 'applications_missing_dataset')
+        errors_to_file(@missing_dataset_names, 'missing_dataset_names')
       end
-      print "#{missing_org.count} missing organisations\n"
-      print "#{missing_team.count} missing teams\n"
-      print "#{counter} applications created\n"
-      print "#{would_be_valid} valid\n"
-      print "#{would_be_invalid} invalid\n"
-      print "#{missing_dataset.count} missing a dataset"
-      errors_to_file(missing_owners, 'missing_owners')
-      errors_to_file(missing_dataset, 'missing_dataset')
     end
       
     def build_rest_of_application(application, attrs)
@@ -165,30 +167,18 @@ module OdrDataImporter
         end
       end
 
-      # TODO: I think this shouldnt be ID's...
-        # data_asset_required
-        # if attrs['data_asset_required'].present?
-        #   # The spreadsheet is ID's at the minute. This should change to names...
-        #   attrs['data_asset_required'].split(';').each do |dataset_id|
-        #     if Dataset.find(dataset_id).blank?
-        #       next
-        #       # raise "#{attrs['project_title']}: No dataset found for #{dataset_id}"
-        #     else
-        #       pd = ProjectDataset.new(dataset: Dataset.find(dataset_id),
-        #                             terms_accepted: true)
-        #       application.project_datasets << pd
-        #     end
-        #   end
-        # attrs['data_asset_required'].split(';').each do |dataset_name|
-        #   if Dataset.where('name ILIKE ?', dataset_name).first.blank?
-        #     raise "#{attrs['project_title']}: No dataset found for #{dataset_name}" 
-        #   else
-        #     pd = ProjectDataset.new(dataset: Dataset.find_by(name: dataset_name),
-        #                           terms_accepted: true)
-        #     application.project_datasets << pd
-        #   end
-        # end
-      # end
+      # data_asset_required
+      if attrs['data_asset_required'].present?
+        attrs['data_asset_required'].split(';').each do |dataset_name|
+          dataset = Dataset.find_by(name: dataset_name)
+          if dataset.nil?
+            @missing_dataset_names << dataset_name
+          else
+            application.project_datasets << ProjectDataset.new(dataset: dataset,
+                                                               terms_accepted: true)
+          end
+        end
+      end
 
       # section_251_exempt
       # TODO: ID's dont make sense.
