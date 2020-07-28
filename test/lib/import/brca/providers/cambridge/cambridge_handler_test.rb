@@ -106,20 +106,20 @@ class CambridgeHandlerTest < ActiveSupport::TestCase
 
   def clinical_json
     { sex: '1',
-      consultantcode: 'C3333333',
+      consultantcode: 'Consultant Code',
       authoriseddate: '2017-08-17T00:00:00.000+01:00',
       sortdate: '2017-07-31T00:00:00.000+01:00',
       specimentype: '5',
       gene: '8',
       requesteddate: '2017-07-31T00:00:00.000+01:00',
-      age: 88 }.to_json
+      age: 999 }.to_json
   end
 
   def rawtext_clinical_json
     { sex: 'M',
-      providercode: 'Clinical Genetics',
+      providercode: 'Provider Address',
       consultantname: 'Consultant Name',
-      servicereportidentifier: 'GM01.2345',
+      servicereportidentifier: 'Service Report Identifier',
       status: 'NHS',
       gene: 'BRCA2',
       referencetranscriptid: 'NM_000059.3',

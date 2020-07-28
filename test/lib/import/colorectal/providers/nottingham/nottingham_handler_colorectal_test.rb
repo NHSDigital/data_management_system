@@ -57,7 +57,7 @@ class NottinghamHandlerColorectalTest < ActiveSupport::TestCase
 
   test 'add_scope' do
     @handler.add_scope(@genotype, @record)
-    assert_equal 'Targeted mutation test', @genotype.attribute_map['genetictestscope']
+    assert_equal 'Targeted Colorectal mutation test', @genotype.attribute_map['genetictestscope']
   end
 
   test 'extract_variantclass_from_genotype' do
