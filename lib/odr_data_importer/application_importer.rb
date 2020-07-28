@@ -98,7 +98,8 @@ module OdrDataImporter
               build_rest_of_application(application, attrs)
 
               # binding.pry unless application.valid?
-              missing_dataset << application.application_log if application.project_datasets.empty?
+              missing_dataset << application.application_log if 
+                application.project_datasets.empty? && attrs['data_asset_required'].present?
               application.save! unless @test_mode
               print "#{counter += 1}\r"
             end

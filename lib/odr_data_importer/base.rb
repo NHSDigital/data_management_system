@@ -21,6 +21,10 @@ module OdrDataImporter
     include OdrDataImporter::ApplicationImporter
     include OdrDataImporter::AmendmentImporter
     include OdrDataImporter::DpiaImporter
+    include OdrDataImporter::ContractImporter
+    include OdrDataImporter::ReleaseImporter
+    include OdrDataImporter::ApplicationMatcher
+    include OdrDataImporter::ApplicationSubClassImporter
 
     attr_accessor :excel_file
     def initialize(fname, worksheet = nil, test_mode = 'true')
@@ -140,6 +144,7 @@ module OdrDataImporter
       CSV.open(file, 'wb') do |csv_out|
         errors.each { |error| csv_out << Array.wrap(error) }
       end
+      print "tmp/#{filename} output file created\n"
     end
   end
 end
