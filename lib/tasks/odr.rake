@@ -2,20 +2,22 @@ namespace :odr do
   desc 'missing dataset for legacy data import'
   task datasets: :environment do
     initial = Dataset.count
-    missing_datasets.each do |info_hash|
-      org  = Organisation.find_by(name: info_hash[:organisation])
-      raise 'no organisation found in db!' if org.nil?
+    Dataset.transaction do
+      missing_datasets.each do |info_hash|
+        org  = Organisation.find_by(name: info_hash[:organisation])
+        raise 'no organisation found in db!' if org.nil?
 
-      team = org.teams.find_by(name: info_hash[:team])
-      raise 'no team found in db!' if team.nil?
+        team = org.teams.find_by(name: info_hash[:team])
+        raise 'no team found in db!' if team.nil?
     
-      info_hash[:datasets].each do |name|
-        dataset = Dataset.new(team: team, name: name, dataset_type: DatasetType.find_by(name: 'odr'))
-        dataset.dataset_versions.build(semver_version: '1.0')
-        dataset.save!
+        info_hash[:datasets].each do |name|
+          dataset = Dataset.new(team: team, name: name, dataset_type: DatasetType.find_by(name: 'odr'))
+          dataset.dataset_versions.build(semver_version: '1.0')
+          dataset.save!
+        end
       end
+      print "created #{Dataset.count - initial} datasets\n"
     end
-    print "created #{Dataset.count - initial} datasets\n"
   end
 
   task datasets_down: :environment do
@@ -36,7 +38,8 @@ namespace :odr do
           "Local surveys of oral health among children and adults.",
           "National Enhanced Surveillance System for Verotoxigenic Escherichia coli (VTEC)", 
           "British Paediatric Surveillance Unit (BPSU) haemolytic uraemic syndrome (HUS) Surveillance",
-          "DataMart Respiratory Viruses Laboratory Surveillance System"
+          "DataMart Respiratory Viruses Laboratory Surveillance System",
+          "Infectious Diseases in Pregnancy"
         ]
       },
       {
@@ -48,12 +51,12 @@ namespace :odr do
         organisation: 'Public Health England',
         team: 'NCRAS',
         datasets: ["Cancer Registration - QoL of Cancer Survivors (Breast, Colorectal, Prostate, Non-Hodgkin’s Lymphoma)"]
+      },
+      {
+        organisation: 'Public Health England',
+        team: 'ODR',
+        datasets: ["NATSAL (National Survey of Sexual Attitudes and Lifestyles) 2010 sample linkage"]
       }
-      
-      # TODO: don't know team
-      # "Infectious Diseases in Pregnancy",
-      # "NATSAL (National Survey of Sexual Attitudes and Lifestyles) 2010 sample linkage",
-      
     ]
   end
 
@@ -63,7 +66,7 @@ namespace :odr do
     raise 'organisation not found!' if org.nil?
 
     initial = Team.count
-    ['NIS', 'PHE Screening', 'NCRAS'].each do |name|
+    ['NIS', 'PHE Screening', 'NCRAS', 'ODR'].each do |name|
       org.teams.find_or_create_by!(name: name, z_team_status: ZTeamStatus.find_by(name: 'Active'))
     end
     print "#{Team.count - initial} teams created\n"
