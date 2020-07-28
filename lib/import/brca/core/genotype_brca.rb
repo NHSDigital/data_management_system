@@ -13,7 +13,7 @@ module Import
       # However, each genotype also contains all the information available about test and result
       # level fields, so that the storage processor can match and create the appropriate tables
       class GenotypeBrca < Import::Genotype
-        BRCA_REGEX = /(?:b)?(?:r)?(?:c)?(?:a)?(1|2)/i.freeze
+        BRCA_REGEX = /brca(1|2)/i.freeze
 
         def other_gene
           gene = @attribute_map['gene']
@@ -29,18 +29,18 @@ module Import
 
         def add_gene(brca_input)
           case brca_input
+          when nil
+            @logger.error 'Null input for gene'
           when Integer
             gene_integer_input(brca_input)
           when String
             gene_string_input(brca_input)
-          when nil
-            @logger.error 'Null input for gene'
           else
             @logger.error "Bad input type given for brca1/2 extraction: #{brca_input}"
           end
         end
 
-        def gene_integer_input(brca_input)
+        def gene_integer_input(brca_input) # edit so that doesn't guess BRCA genes from Colorectal Genes
           if (1..2).cover? brca_input
             # BRCA 1 and 2 map to gene codes 7 and 8
             @attribute_map['gene'] = brca_input + 6

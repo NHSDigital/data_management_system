@@ -21,20 +21,20 @@ module Import
       # Provides the handler appropriate for the dataformat from each center
       class BRCAHandlerMapping
         HANDLER_MAPPING = {
-          'RR8' => Leeds::LeedsHandler,
-          'RNZ' => Salisbury::SalisburyHandler,
-          'RVJ' => Bristol::BristolHandler,
-          'RTD' => Newcastle::NewcastleHandler,
-          'RX1' => Nottingham::NottinghamHandler,
-          'RCU' => Sheffield::SheffieldHandler,
+          'RR8' => Import::Brca::Providers::Leeds::LeedsHandler,
+          'RNZ' => Import::Brca::Providers::Salisbury::SalisburyHandler,
+          'RVJ' => Import::Brca::Providers::Bristol::BristolHandler,
+          'RTD' => Import::Brca::Providers::Newcastle::NewcastleHandler,
+          'RX1' => Import::Brca::Providers::Nottingham::NottinghamHandler,
+          'RCU' => Import::Brca::Providers::Sheffield::SheffieldHandler,
           'R0A' => Manchester::ManchesterHandler,
           'RJ1' => StThomas::StThomasHandler,
-          'RQ3' => Birmingham::BirminghamHandler,
+          'RQ3' => Import::Brca::Providers::Birmingham::BirminghamHandler,
           'RGT' => Import::Brca::Providers::Cambridge::CambridgeHandler,
-          'RTH' => Oxford::OxfordHandler,
+          'RTH' => Import::Brca::Providers::Oxford::OxfordHandler,
           'RJ7' => StGeorge::StGeorgeHandler,
           'RPY' => RoyalMarsden::RoyalMarsdenHandler,
-          'R1K' => LondonKgc::LondonKgcHandler
+          'R1K' => Import::Brca::Providers::LondonKgc::LondonKgcHandler
         }.freeze
 
         def self.get_handler(provider_code)
