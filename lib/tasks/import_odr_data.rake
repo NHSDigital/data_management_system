@@ -64,15 +64,23 @@ namespace :odr do
   end
 
   task import_amendments: :environment do
-    import_amendments =
-      OdrDataImporter::Base.new(ENV['amendments_fname'], 'Amendments', ENV['test_mode'])
-    import_amendments.import_amendments
+    importer = OdrDataImporter::Base.new(ENV['amendments_fname'], nil, ENV['test_mode'])
+    importer.import_application_sub_class(:create_amendment)
   end
 
   task import_dpias: :environment do
-    import_dpias =
-      OdrDataImporter::Base.new(ENV['dpias_fname'], 'DPIA_data for migration', ENV['test_mode'])
-    import_dpias.import_dpias
+    importer = OdrDataImporter::Base.new(ENV['dpias_fname'], nil, ENV['test_mode'])
+    importer.import_application_sub_class(:create_dpia)
+  end
+
+  task import_contracts: :environment do
+    importer = OdrDataImporter::Base.new(ENV['contracts_fname'], nil, ENV['test_mode'])
+    importer.import_application_sub_class(:create_contract)
+  end
+  
+  task import_releases: :environment do
+    importer = OdrDataImporter::Base.new(ENV['releases_fname'], nil, ENV['test_mode'])
+    importer.import_application_sub_class(:create_release)
   end
 
   # temp task to recreate live orgs in local env
