@@ -3,8 +3,10 @@ module OdrDataImporter
     def import_amendments
       pre_migration_count = ProjectAmendment.count
       amendment_headers = @excel_file.shift.map(&:downcase)
+      log_to_process_count(@excel_file.count)
 
-      applications = read_excel_file(SafePath.new('db_files').join('Application data 20200713.xlsx'), 'Applications')
+      applications = read_excel_file(SafePath.new('tmp').join('Application data 20200724.xlsx'), 'Applications')
+      
       # TODO: applications = read_excel_file(SafePath.new('db_files').join(ENV['application_fname']), 'Applications')
 
       applications_headers = applications.shift.map(&:downcase)
@@ -17,7 +19,7 @@ module OdrDataImporter
           name: applications_attrs['name']
         }
       end
-
+      binding.pry
       missing_ids = []
       @excel_file.each do |amendment|
         amendment_attrs = amendment_headers.zip(amendment).to_h
