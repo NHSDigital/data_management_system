@@ -4,6 +4,8 @@ module OdrDataImporter
     def import_application_sub_class(create_sub_class)
       header = @excel_file.shift.map(&:downcase)
       log_to_process_count(@excel_file.count)
+
+      @excel_file.map { |a| attrs = header.zip(a).to_h; attrs['application_log'] }.uniq.count
       @existing_application_logs = build_application_log_lookup
 
       no_parent_applications = []

@@ -68,6 +68,7 @@ module OdrDataImporter
             application.assigned_to = app_man
           end
 
+          # TODO: this is a string - don't need to find user
           # receiptsentby - just a string name
           # if attrs['receiptsentby'].present?
           #   receipt_sent_by = attrs['receiptsentby']&.split
@@ -205,7 +206,8 @@ module OdrDataImporter
       # or the mappings in fetch_security_assurance is that correct? 
       # I cannot find IG Toolkit Level 2 anywhere actually…
 
-      application.owner = User.where('email ILIKE ?', attrs['applicant_email']).first
+      # TODO: already done
+      # application.owner = User.where('email ILIKE ?', attrs['applicant_email']).first
 
       # We can't have the same application name per team
       application.name = application.name + " #{attrs['application_log']}"
