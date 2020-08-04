@@ -6,7 +6,7 @@ class SheffieldHandlerTest < ActiveSupport::TestCase
     @genotype = Import::Brca::Core::GenotypeBrca.new(@record)
     # TODO: Fully qualify CambridgeHandler in cambridge_handler.rb
     @importer_stdout, @importer_stderr = capture_io do
-      @handler = Sheffield::SheffieldHandler.new(EBatch.new)
+      @handler = Import::Brca::Providers::Sheffield::SheffieldHandler.new(EBatch.new)
     end
 
     @logger = Import::Log.get_logger
@@ -17,7 +17,7 @@ class SheffieldHandlerTest < ActiveSupport::TestCase
     @logger.expects(:debug).with('PERFORMING TEST for: BRCA1 and 2 familial mutation')
     @logger.expects(:debug).with('ADDED TARGETED TEST for: BRCA1 and 2 familial mutation')
     @handler.add_test_scope(@genotype, @record)
-    assert_equal 'Targeted mutation test', @genotype.attribute_map['genetictestscope']
+    assert_equal 'Targeted BRCA mutation test', @genotype.attribute_map['genetictestscope']
 
     fullscreen_record = build_raw_record('pseudo_id1' => 'bob')
     fullscreen_record.mapped_fields['genetictestscope'] = 'Breast Ovarian & Colorectal cancer panel'
@@ -43,31 +43,31 @@ class SheffieldHandlerTest < ActiveSupport::TestCase
 
   def clinical_to_json
     { sex: '1',
-      consultantcode: 'C3456789',
-      providercode: 'RCUEF',
+      consultantcode: 'Consultant Code',
+      providercode: 'Provider Code',
       collecteddate: '2018-06-13T00:00:00.000+01:00',
       receiveddate: '2018-06-13T00:00:00.000+01:00',
       authoriseddate: '2018-07-04T00:00:00.000+01:00',
-      servicereportidentifier: 'S1234567',
+      servicereportidentifier: 'Service Report Identifier',
       sortdate: '2018-06-13T00:00:00.000+01:00',
       genetictestscope: 'BRCA1 and 2 familial mutation',
       specimentype: '5',
-      genotype: 'BRCA2: c.[520Cu003eT];[520=]  p.[(?)];[(=)]',
+      genotype: 'BRCA2: c.[520C>T];[520=]  p.[(?)];[(=)]',
       age: 63 }.to_json
   end
 
   def rawtext_to_clinical_to_json
     { sex: 'Male',
-      servicereportidentifier: 'S1234567',
-      providercode: 'Sheffield Childrens NHS Foundation Trust',
-      consultantname: 'Dr A B Cdef',
+      servicereportidentifier: 'Service Report Identifier',
+      providercode: 'Provider Address',
+      consultantname: 'Consultant Name',
       patienttype: 'NHS',
       moleculartestingtype: 'Predictive testing',
       specimentype: 'Blood',
       collecteddate: '13/06/2018',
       receiveddate: '13/06/2018',
       authoriseddate: '04/07/2018',
-      genotype: 'BRCA2: c.[520Cu003eT];[520=]  p.[(?)];[(=)]',
+      genotype: 'BRCA2: c.[520C>T];[520=]  p.[(?)];[(=)]',
       genetictestscope: 'BRCA1 and 2 familial mutation',
       karyotypingmethod: 'BRCA2 gene sequencing' }.to_json
   end

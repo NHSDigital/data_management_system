@@ -5,7 +5,7 @@ class LondonKgcHandlerTest < ActiveSupport::TestCase
     @record   = build_raw_record('pseudo_id1' => 'bob')
     @genotype = Import::Brca::Core::GenotypeBrca.new(@record)
     @importer_stdout, @importer_stderr = capture_io do
-      @handler = LondonKgc::LondonKgcHandler.new(EBatch.new)
+      @handler = Import::Brca::Providers::LondonKgc::LondonKgcHandler.new(EBatch.new)
     end
     @logger = Import::Log.get_logger
   end
@@ -14,33 +14,45 @@ class LondonKgcHandlerTest < ActiveSupport::TestCase
     assert_match(/could not extract path to corrections file for/i, @importer_stdout)
   end
 
-  test 'process_cdna_change' do
+  # test 'process_cdna_change' do
+  #   @logger.expects(:debug).with('SUCCESSFUL cdna change parse for: 697G>A')
+  #   @handler.process_cdna_change(@genotype, @record)
+  #   assert_equal 2, @genotype.attribute_map['teststatus']
+  #   nomutation_record = build_raw_record('pseudo_id1' => 'bob')
+  #   nomutation_record.mapped_fields['genotype'] = 'No mutation detected'
+  #   @logger.expects(:debug).with('No mutation detected')
+  #   @handler.process_cdna_change(@genotype, nomutation_record)
+  #   assert_equal 1, @genotype.attribute_map['teststatus']
+  #   broken_record = build_raw_record('pseudo_id1' => 'bob')
+  #   broken_record.mapped_fields['genotype'] = 'Cabbage'
+  #   @logger.expects(:debug).with('Impossible to parse cdna change')
+  #   @handler.process_cdna_change(@genotype, broken_record)
+  # end
+
+  test 'process_gene' do
+    @logger.expects(:debug).with('SUCCESSFUL gene parse for: BRCA1')
     @logger.expects(:debug).with('SUCCESSFUL cdna change parse for: 697G>A')
-    @handler.process_cdna_change(@genotype, @record)
+    @logger.expects(:debug).with('SUCCESSFUL protein impact parse for: Val233Ile')
+    @handler.process_gene(@genotype, @record)
+    assert_equal 7, @genotype.attribute_map['gene']
     assert_equal 2, @genotype.attribute_map['teststatus']
     nomutation_record = build_raw_record('pseudo_id1' => 'bob')
     nomutation_record.mapped_fields['genotype'] = 'No mutation detected'
     @logger.expects(:debug).with('No mutation detected')
-    @handler.process_cdna_change(@genotype, nomutation_record)
-    assert_equal 1, @genotype.attribute_map['teststatus']
-    broken_record = build_raw_record('pseudo_id1' => 'bob')
-    broken_record.mapped_fields['genotype'] = 'Cabbage'
-    @logger.expects(:debug).with('Impossible to parse cdna change')
-    @handler.process_cdna_change(@genotype, broken_record)
-  end
-
-  test 'process_gene' do
-    @logger.expects(:debug).with('Successful parse for BRCA1')
-    @handler.process_gene(@genotype, @record)
-    assert_equal 7, @genotype.attribute_map['gene']
+    @handler.process_gene(@genotype, nomutation_record)
     nogene_record = build_raw_record('pseudo_id1' => 'bob')
     nogene_record.mapped_fields['genotype'] = 'Cabbage c.666A>O'
-    @logger.expects(:debug).with('No gene detected')
+    @logger.expects(:debug).with('Impossible to parse cdna change')
     @handler.process_gene(@genotype, nogene_record)
+    doublegene_record = build_raw_record('pseudo_id1' => 'bob')
+    doublegene_record.mapped_fields['genotype'] = 'BRCA1 c.697G>A p.(Val233Ile) BRCA2 c.666C>G p.(Val666Hys)'
+    @logger.expects(:debug).with('SUCCESSFUL cdna change parse for: BRCA1 and BRCA2')
+    genotypes = @handler.process_gene(@genotype, doublegene_record)
+    assert_equal 2, genotypes.size
   end
 
   test 'process_varpathclass' do
-    @logger.expects(:debug).with('SUCCESSFUL cdna change parse for: 3')
+    @logger.expects(:debug).with('SUCCESSFUL variantpathclass parse for: 3')
     @handler.process_varpathclass(@genotype, @record)
     assert_equal 3, @genotype.attribute_map['variantpathclass']
   end
@@ -72,11 +84,11 @@ class LondonKgcHandlerTest < ActiveSupport::TestCase
 
   def clinical_json
     { sex: '2',
-      providercode: 'R1K01',
+      providercode: 'Provider Code',
       collecteddate: '2015-11-11T00:00:00.000+00:00',
       receiveddate: '2015-11-11T00:00:00.000+00:00',
       authoriseddate: '2015-12-08T00:00:00.000+00:00',
-      servicereportidentifier: '0012G012345',
+      servicereportidentifier: 'Service Report Identifier',
       specimentype: '5',
       genotype: 'BRCA1 c.697G>A p.(Val233Ile)',
       variantpathclass: '3 - uncertain',
@@ -89,12 +101,12 @@ class LondonKgcHandlerTest < ActiveSupport::TestCase
       'test type 1': 'Next Gen Sequencing',
       'test type 2': '',
       sex: 'F',
-      'clinician desc': 'Some Body',
+      'clinician desc': 'Clinician Desc',
       consultantcode: nil,
       'specialty desc': 'CLINICAL GENETICS',
-      providercode: 'NW Thames Regional Genetics Service',
-      'source desc': 'NWTRGS - KENNEDY-GALTON CENTRE',
-      'source ccg desc': 'NHS EALING CCG',
+      providercode: 'Provider Address',
+      'source desc': 'Source Desc',
+      'source ccg desc': 'Source CCG DESC',
       servicereportidentifier: '0012G012345',
       specimentype: 'Blood',
       collecteddate: '2015-11-11 00:00:00',

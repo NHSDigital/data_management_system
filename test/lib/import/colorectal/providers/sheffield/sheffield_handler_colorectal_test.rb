@@ -28,9 +28,15 @@ class SheffieldHandlerColorectalTest < ActiveSupport::TestCase
     Import::Brca::Core::RawRecord.new(default_options.merge!(options))
   end
 
-  test 'add_colorectal_from_raw_test' do
+  test 'add_test_scope_from_karyo' do
     @logger.expects(:debug).with('ADDED FULL_SCREEN TEST for: MLH1 MSH2 & MSH6')
     @handler.add_test_scope_from_karyo(@genotype, @record)
+  end
+
+  test 'add_colorectal_from_raw_test' do
+    # @logger.expects(:debug).with('ADDED FULL_SCREEN TEST for: MLH1 MSH2 & MSH6')
+    # @handler.add_test_scope_from_karyo(@genotype, @record)
+    @genotype.attribute_map['genetictestscope'] = 'Full screen Colorectal Lynch or MMR'
     @logger.expects(:debug).with('SUCCESSFUL gene parse for negative test for: MSH2')
     @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH2')
     @logger.expects(:debug).with('SUCCESSFUL gene parse for negative test for: MSH6')
@@ -39,7 +45,15 @@ class SheffieldHandlerColorectalTest < ActiveSupport::TestCase
     @logger.expects(:debug).with('SUCCESSFUL cdna change parse for: 1653dup')
     @logger.expects(:debug).with('SUCCESSFUL protein change parse for: Thr552fs')
     @handler.add_colorectal_from_raw_test(@genotype, @record)
-    assert_equal 'c.1653dup', @genotype.attribute_map['codingdnasequencechange']
+    @logger.expects(:debug).with('SUCCESSFUL gene parse for negative test for: MSH2')
+    @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH2')
+    @logger.expects(:debug).with('SUCCESSFUL gene parse for negative test for: MSH6')
+    @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH6')
+    @logger.expects(:debug).with('SUCCESSFUL gene parse for MLH1')
+    @logger.expects(:debug).with('SUCCESSFUL cdna change parse for: 1653dup')
+    @logger.expects(:debug).with('SUCCESSFUL protein change parse for: Thr552fs')
+    raw_test = @handler.add_colorectal_from_raw_test(@genotype, @record)
+    assert_equal 3, raw_test.size
   end
 
   test 'process_teststatus' do
@@ -55,8 +69,8 @@ class SheffieldHandlerColorectalTest < ActiveSupport::TestCase
 
   def clinical_json
     { sex: '2',
-      consultantcode: 'C3456789',
-      providercode: 'RCUEF',
+      consultantcode: 'C1234567',
+      providercode: 'Provider Code',
       collecteddate: '2014-01-09T00:00:00.000+00:00',
       receiveddate: '2014-01-09T00:00:00.000+00:00',
       authoriseddate: '2014-04-09T00:00:00.000+01:00',
@@ -65,14 +79,14 @@ class SheffieldHandlerColorectalTest < ActiveSupport::TestCase
       genetictestscope: 'Colorectal cancer panel',
       specimentype: '5',
       genotype: 'MLH1: c.[1653dup];[=] p.[(Thr552fs)];[(=)]',
-      age: 64 }.to_json
+      age: 999 }.to_json
   end
 
   def rawtext_clinical_json
     { sex:                     'Female',
       servicereportidentifier: 'S1234567',
-      providercode:            'Sheffield Childrens NHS Foundation Trust',
-      consultantname:          'Dr A B Cdef',
+      providercode:            'Provider Code',
+      consultantname:          'Consultant Name',
       patienttype:             'NHS',
       moleculartestingtype:    'Diagnostic testing',
       specimentype:            'Blood',

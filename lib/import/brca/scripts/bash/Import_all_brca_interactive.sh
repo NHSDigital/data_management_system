@@ -26,22 +26,13 @@ done
 
 RTD () {
 MBIS=$1
-    PROV='RTD'
+PROV='RTD'
 IFS=$'\n'
 for x in $(find  $DIRPATH/$FILEPATH -type f -name "*pseudo" -path "*/RTD/*" \
--not -path "*/2017-05-11/*" \
--not -path "*/2017-08-02/*" \
--not -path "*/2017-12-04/*" \
-! -name "c687591ef56698ec8dde11e2a7420caea0c6173c_09.2018_CAPP2 Pilot data upload.xlsx.pseudo" \
-! -name "3268d1e4e28913926cc534d3b8658eca36907050_09.2018_CAPP2 Full Data Upload.xlsx.pseudo"  \
-! -name "a34f62c8499c20a48d5c5c228f5084f8f994e84c_10.2018_CAPP2 Full Data Upload.xlsx.pseudo" \
-! -name "dda53265da69898d1e9725919a3a706c5003cd79_01.11.2006 to 30.06.2019_NUTH Colorectal Data - November 2006 to June 2019.xlsx.pseudo" \
-! -name "1b2d27101d5a8ba9471d3e31ee60ad26964affb7_12.2019_NDR - Colorectal.xls.pseudo" \
-! -name "0731b0a6b8087fa77e4488ea7cb0f4254864a4bb_12.2019_NDR - Other Cancers.xls.pseudo" \
-! -name "b725d664af1bcce326a9433794e00243f36a5227_2019_NDR - Colorectal Cancer.xlsx.pseudo")
+          | egrep -v ".*Colorectal.*pseudo|.*Other Cancers.*pseudo|.*Dummy.*pseudo|.*CAPP2.*pseudo")
 do
 IFS="$OIFS"
-$BRAKE import:brca fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
+bundle exec rake import:brca fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
 done
 }
 
@@ -57,7 +48,7 @@ for x in $(find  $DIRPATH/$FILEPATH -type f -name "*.pseudo" -path "*/$PROV/*"  
 ! -name "abb7505fa1c13e0d675e969d52f357002b560dab_01.04.2018 to 27.12.2019_MMR 010418_271219.xlsx.pseudo")
 do
 IFS="$OIFS"
-$BRAKE import:brca fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
+bundle exec rake import:brca fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
 done
 }
 
@@ -77,7 +68,7 @@ for x in $(find  $DIRPATH/$FILEPATH -type f -name "*.pseudo" -path "*/$PROV/*" \
 )
 do
 IFS="$OIFS"
-$BRAKE import:brca fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
+bundle exec rake import:brca fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
 done
 }
 
@@ -93,7 +84,7 @@ for x in $(find  $DIRPATH/$FILEPATH -type f -name "*.pseudo" -path "*/$PROV/*" -
 ! -name "dc7887680a728a55cb0ae04d1209f963f3d9f429_12.2019_Lynch Challenge Dec2019v7.xlsx.pseudo")
 do
 IFS="$OIFS"
-$BRAKE import:brca fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
+bundle exec rake import:brca fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
 done
 }
 
@@ -117,7 +108,7 @@ IFS=$'\n'
 for x in $(find  $DIRPATH/$FILEPATH -type f -name "*.pseudo" -path "*/$PROV/*" )
 do
 IFS="$OIFS"
-$BRAKE import:brca fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
+bundle exec rake import:brca fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
 done
 }
 
@@ -202,7 +193,7 @@ R1K () {
 MBIS=$1
 PROV='R1K'
 IFS=$'\n'
-for x in $(find  $DIRPATH/$FILEPATH -type f -name "*.pseudo" -path "*/$PROV/*" \
+for x in $(find  $DIRPATH/$FILEPATH -type f -name "*BRCA*.pseudo" -path "*/$PROV/*" \
 ! -name "d66a0bfbd7d994b76c7db3f5c38e2ea3e44118fc_01.2020_CRC2015_2016KGC.xlsx.pseudo")
 do
 IFS="$OIFS"
