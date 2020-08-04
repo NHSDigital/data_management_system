@@ -62,7 +62,7 @@ module Colorectal
       def add_gene_colorectal(colorectal_input)
         case colorectal_input
         when Integer then
-          if colorectal_input == (1432 || 358 || 577 || 2744 || 2804 || 2808 || 2850 || 3394 || 3408 || 5000 || 62 || 72 || 76 || 1882 || 3108)
+          if [1432,358,577,2744,2804,2808,2850,3394,3408,5000,62,72,76,1882,3108].include? colorectal_input
             @attribute_map['gene'] = colorectal_input
             @logger.debug "SUCCESSFUL gene parse for #{colorectal_input}"
           else
@@ -108,7 +108,7 @@ module Colorectal
         when :full_screen
           @attribute_map['genetictestscope'] = 'Full screen Colorectal Lynch or MMR'
         when :targeted_mutation
-          @attribute_map['genetictestscope'] = 'Targeted mutation test'
+          @attribute_map['genetictestscope'] = 'Targeted Colorectal mutation test'
         when :aj_screen
           @attribute_map['genetictestscope'] = 'AJ screen'
         when :polish_screen

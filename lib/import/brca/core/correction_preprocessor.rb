@@ -56,7 +56,6 @@ module Import
             line_counter += 1
           end
           @total_lines = line_counter
-          # binding.pry
         end
 
         def apply_correction(record)

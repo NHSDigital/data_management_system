@@ -165,7 +165,7 @@ module Import
             geno = record.mapped_fields['genetictestscope']
             karyo = record.raw_fields['karyotypingmethod']
             genotypes = []
-            if genocolorectal.attribute_map['genetictestscope'] == 'Targeted mutation test'
+            if genocolorectal.attribute_map['genetictestscope'] == 'Targeted Colorectal mutation test'
               if NULL_TARGETED_TEST_REGEX.match(colo_string)
                 genocolorectal.add_status(1)
                 genocolorectal.add_gene_colorectal(COLORECTAL_GENES_REGEX.match(colo_string)[:colorectal])
