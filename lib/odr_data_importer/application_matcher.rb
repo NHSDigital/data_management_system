@@ -2,7 +2,8 @@ module OdrDataImporter
   # we'll need multiple times
   module ApplicationMatcher
     def find_existing_application(attrs)
-      existing_id = existing_application_log_for(attrs['application_log'])
+      application_log = attrs['application_log'] || attrs['application log']
+      existing_id = existing_application_log_for(application_log)
       return if existing_id.nil?
 
       applications = Project.of_type_application.where(application_log: existing_id)
