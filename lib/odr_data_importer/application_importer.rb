@@ -24,7 +24,7 @@ module OdrDataImporter
         user.last_name  = email.gsub('@phe.gov.uk','').split('.').last
         # !!! ODR have application managers who aren't actually part of ODR or application managers.
         # try taking off the role
-        unless email.in? ENV['not_real_managers'].split.map { |name| "#{name}@phe.gov.uk" }
+        unless email.in?(ENV['not_real_managers'].split.map { |name| "#{name}@phe.gov.uk" })
           user.grants.build(roleable: SystemRole.fetch(:application_manager))
         end
         user.save! unless @test_mode
@@ -68,16 +68,8 @@ module OdrDataImporter
             application.assigned_to = app_man
           end
 
-          # TODO: this is a string - don't need to find user
-          # receiptsentby - just a string name
-          # if attrs['receiptsentby'].present?
-          #   receipt_sent_by = attrs['receiptsentby']&.split
-          #   application.receiptsentby = User.find_by(first_name: receipt_sent_by[0],
-          #                                            last_name: receipt_sent_by[1])
-          # end
+          application.receiptsentby = attrs['receiptsentby'] if attrs['receiptsentby'].present?
 
-
-          # TODO: I think I am missing some organisations locally...
           # Organisation & team
           org_name = attrs['organisation_name']
           org = Organisation.where('name ILIKE ?', org_name.strip)&.first
@@ -117,7 +109,7 @@ module OdrDataImporter
         errors_to_file(@missing_dataset_names, 'missing_dataset_names')
       end
     end
-      
+
     def build_rest_of_application(application, attrs)
       # article 6 & article 9 - Legal Basis
       lawful_bases = []
@@ -183,12 +175,12 @@ module OdrDataImporter
       end
 
       # section_251_exempt
-      # TODO: ID's dont make sense.
+# TODO: ID's dont make sense.
       # Lookups::CommonLawExemption.pluck(:id, :value)
       # => [[1, "Informed Consent"], [2, "Direct Care Relationship"], [3, "S251 Regulation 2"], [4, "S251 Regulation 3"], [5, "S251 Regulation 5"], [6, "Other"]]
 
       # data_linkage
-      # TODO: data_linkage this is a text field that the form says ‘Specify any data linkage requirements and data flows’ but the spreadsheet is boolean?
+      application.data_linkage = attrs['data_linkage']
 
       # data_already_held_for_project
       application.data_already_held_detail = attrs['data_already_held_for_project']
@@ -199,15 +191,12 @@ module OdrDataImporter
           'value ILIKE ?', attrs['processing_territory_id']).first
       end
 
-      # TODO: security_assurance_id
+# TODO: security_assurance_id
       application.security_assurance_id =
         Lookups::SecurityAssurance.where('value ILIKE ?', attrs['security_assurance_id']).first
       # security_assurance_id doesn’t match values I have in Lookups::SecurityAssurance 
       # or the mappings in fetch_security_assurance is that correct? 
       # I cannot find IG Toolkit Level 2 anywhere actually…
-
-      # TODO: already done
-      # application.owner = User.where('email ILIKE ?', attrs['applicant_email']).first
 
       # We can't have the same application name per team
       application.name = application.name + " #{attrs['application_log']}"
