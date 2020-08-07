@@ -21,8 +21,6 @@ module OdrDataImporter
     end
 
     def update_application(application, attrs)
-      # TODO:
-      return
       attrs.each do |attr|
         next if attr[1].blank?
 
@@ -31,18 +29,27 @@ module OdrDataImporter
           'amendment_type: data flows, data items, data sources, processing purpose, ' \
             'data processor, duration, other',
           'assigned_to',
-          'project_type'
+          'project_type',
+          'project_title',
+          'team_name'
         ]
-        next if attr[0].downcase.in? ignored_fields
+        field = field_mapping[attr[0]] || attr[0]
+        next if field.downcase.in? ignored_fields
 
-        field = attr[0].to_sym
+        field = field.to_sym
         new_data = attr[1]
 
         application[field] = new_data
-
-        # TODO: Make this better
-        application.save unless @test_mode
       end
+
+      print "Updated #{application.application_log}\n" if application.changed?
+      application.save unless @test_mode
+    end
+
+    def field_mapping
+      {
+        'dpaorgname' => 'dpa_org_name'
+      }
     end
   end
 end
