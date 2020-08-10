@@ -126,7 +126,7 @@ class NotificationRecipientsTest < ActionDispatch::IntegrationTest
 
     assert_equal 'pending_delegate_project - has been submitted for approval', Notification.last.title
     users_notified = Notification.last.users.collect(&:id).sort
-    users_who_should_be_notified = [@odr_users, project.users.collect(&:id)].flatten.uniq.sort
+    users_who_should_be_notified = project.users.map(&:id).uniq.sort
     assert_equal users_notified, users_who_should_be_notified
   end
 
