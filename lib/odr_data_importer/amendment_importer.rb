@@ -7,14 +7,16 @@ module OdrDataImporter
       amendment_type = amendment_type&.split(';')
       amendment_type&.map!(&:titleize)
 
+      # Give amendments a silly date if missing
+      amendment_attrs['amendment_date'] ||= '1900-01-01'
       # labels: [], created_at: nil, updated_at: nil, project_state_id: nil>
-      application.project_amendments.new(requested_at: amendment_attrs['amendment_date'],
-                                         labels: amendment_type)
+      application.project_amendments.find_or_initialize_by(requested_at: amendment_attrs['amendment_date'],
+                                                           labels: amendment_type)
 
       # amendment is not valid without an attachment
       # pa.valid? => false
       # pa.errors.messages => {:attachment=>["can't be blank"]}
-      application.save(validate: false) unless @test_mode
+      application.project_amendments.each { |pa| pa.save!(validate: false) } unless @test_mode
 
       # update the application
       update_application(application, amendment_attrs) unless @test_mode
@@ -38,17 +40,47 @@ module OdrDataImporter
 
         field = field.to_sym
         new_data = attr[1]
-
-        application[field] = new_data
+        if field_requires_lookup?(field) && new_data.present?
+          send("amend_#{field}", application, field, attr)
+        else
+          application[field] = new_data
+        end
       end
 
-      print "Updated #{application.application_log}\n" if application.changed?
-      application.save unless @test_mode
+      print "Updating #{application.application_log}\n" if application.changed?
+      application.save! unless @test_mode
     end
 
     def field_mapping
       {
         'dpaorgname' => 'dpa_org_name'
+      }
+    end
+
+    def field_requires_lookup?(field)
+      %i[security_assurance_id processing_territory_id].include? field
+    end
+
+    def amend_security_assurance_id(application, field, attr)
+      sa = Lookups::SecurityAssurance.find_by(value: security_assurance_mapping[attr[1]])
+      application[field] = sa.id unless sa.nil?
+    end
+
+
+    def amend_processing_territory_id(application, field, attr)
+      pt = Lookups::SecurityAssurance.find_by(value: attr[1])
+      application[field] = pt.id unless pt.nil?
+    end
+
+    def security_assurance_mapping
+      {
+        'Data Security and Protection (DSP)  Toolkit' => 'Data Security and Protection Toolkit',
+        'DSP Toolkit' => 'Data Security and Protection Toolkit',
+        'IG Toolkit Level 2' => 'Data Security and Protection Toolkit',
+        'ISO 27001' => 'ISO 27001',
+        'SLSP' => 'Project specific System Level Security Policy',
+        'Not Applicable' => nil,
+        'N/A' => nil
       }
     end
   end
