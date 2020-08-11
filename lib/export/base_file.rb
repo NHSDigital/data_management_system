@@ -68,15 +68,18 @@ module Export
       # Commonest DODDY has 17926 entries in 2016 subset
       # Commonest ICD10_1 has 42457 entries in 2016 subset
       # But the data shows that DOR never changes (for the same MBISM204ID)
-      matches += Pseudo::Ppatient.find_matching_ppatients(
-        '', '', '', nil,
-        scope: Pseudo::Ppatient.where('e_batch_id < ?', ppat.e_batch_id).joins(:death_data).where(
-          '(death_data.dor = :dor and death_data.lsoar = :lsoar) or
-           (death_data.dor = :dor and death_data.icd_1 = :icd_1) or
-           (death_data.lsoar = :lsoar and death_data.icd_1 = :icd_1)',
-          ActiveSupport::HashWithIndifferentAccess.new(ppat.death_data.attributes)
-        ), e_types: ppat.e_batch.e_type, match_blank: false, limit: 1000
-      ) if matches.empty? && nhsnumber.blank? && [postcode, birthdate].any?(&:blank?)
+      if matches.empty? && ppat.is_a?(Pseudo::Death) && nhsnumber.blank? &&
+         [postcode, birthdate].any?(&:blank?)
+        matches += Pseudo::Ppatient.find_matching_ppatients(
+          '', '', '', nil,
+          scope: Pseudo::Ppatient.where('e_batch_id < ?', ppat.e_batch_id).joins(:death_data).where(
+            '(death_data.dor = :dor and death_data.lsoar = :lsoar) or
+             (death_data.dor = :dor and death_data.icd_1 = :icd_1) or
+             (death_data.lsoar = :lsoar and death_data.icd_1 = :icd_1)',
+            ActiveSupport::HashWithIndifferentAccess.new(ppat.death_data.attributes)
+          ), e_types: ppat.e_batch.e_type, match_blank: false, limit: 1000
+        )
+      end
       matches.each do |ppat2|
         ppat2.unlock_demographics('', '', '', :match) # Unlock mbism204id / ledrid for matching
         same_person = if ppat2.demographics['ledrid'] && ppat.demographics['ledrid']
