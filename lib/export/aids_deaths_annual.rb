@@ -26,7 +26,9 @@ module Export
       %w[icdsc icdscf icdu icduf] +
       %w[podt dod dob sex ctrypob occdt pobt corcertt dor] +
       (1..6).collect { |i| "codt_codfft_#{i}" } +
-      (1..4).collect { |i| "occfft_#{i}" }
+      (1..4).collect { |i| "occfft_#{i}" } + 
+      %w[snamd] +
+      (1..5).collect  { |i| "aksnamd_#{i}" }
     end
 
     private
