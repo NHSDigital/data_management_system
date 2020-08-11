@@ -14,10 +14,23 @@ module OdrDataImporter
     include NdrImport::Helpers::File::Excel
     include OdrDataImporter::OrganisationsAndTeams
     include OdrDataImporter::Users
+    include OdrDataImporter::OrganisationUpdater
+    include OdrDataImporter::OrganisationImporter
+    include OdrDataImporter::TeamsImporter
+    include OdrDataImporter::UsersImporter
+    include OdrDataImporter::ApplicationImporter
+    include OdrDataImporter::AmendmentImporter
+    include OdrDataImporter::DpiaImporter
+    include OdrDataImporter::ContractImporter
+    include OdrDataImporter::ReleaseImporter
+    include OdrDataImporter::ApplicationMatcher
+    include OdrDataImporter::ApplicationSubClassImporter
 
     attr_accessor :excel_file
-    def initialize(fname, worksheet = nil)
-      @excel_file = read_excel_file(SafePath.new('db_files').join(fname), worksheet)
+    def initialize(fname, worksheet = nil, test_mode = 'true')
+      @fname      = fname
+      @excel_file = read_excel_file(SafePath.new('tmp').join(fname), worksheet)
+      @test_mode  = ActiveModel::Type::Boolean.new.cast(test_mode)
     end
 
     def import_eois!
@@ -117,6 +130,21 @@ module OdrDataImporter
       {
         'Cancer registry' => 'Cancer Registry'
       }
+    end
+
+    def log_to_process_count(total)
+      print "***TEST_MODE***\n" if @test_mode
+      print "#{'*' * 10}\n"
+      print "Number of rows in tab to process => #{total}\n"
+    end
+
+    def errors_to_file(errors, filename)
+      filename = "#{Time.current.strftime('%Y%m%d')}_#{filename}.csv"
+      file = Rails.root.join('tmp').join(filename)
+      CSV.open(file, 'wb') do |csv_out|
+        errors.each { |error| csv_out << Array.wrap(error) }
+      end
+      print "tmp/#{filename} output file created\n"
     end
   end
 end
