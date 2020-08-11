@@ -1,11 +1,7 @@
 namespace :odr do
   task import_spreadsheet: %i[clean_existing_organisations update_organisations
                               create_new_organisations import_teams import_users
-                              import_applications]
-
-  # task odr_spreadsheet: %i[update_organisations create_new_organisations
-  #                          import_teams import_users
-  #                          import_applications import_amendments import_dpias ]
+                              import_applications import_amendments import_dpias import_releases]
 
   # Live seems to be in odd state for some orgs
   task clean_existing_organisations: :environment do
