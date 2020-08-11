@@ -28,7 +28,7 @@ module OdrDataImporter
     end
 
     def build_application_log_lookup
-      applications = read_excel_file(SafePath.new('tmp').join('Application data 20200724.xlsx'), 'Applications')
+      applications = read_excel_file(SafePath.new('tmp').join('Application data 20200728.xlsx'), 'Applications')
       applications_headers = applications.shift.map(&:downcase)
 
       applications.each_with_object([]) do |application, application_logs|
