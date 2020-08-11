@@ -99,10 +99,10 @@ module Export
 
       pattern = SURVEILLANCE_CODES[@filter]
       return false if @icd_fields_all.none? { |field| ppat.death_data[field] =~ pattern }
-      if %w[cara cara_all].include?(@filter) &&
+      if %w[cara cara_all rd rd_all].include?(@filter) &&
          (ppat.death_data['gorr'] == 'W' || ppat.death_data['gor9r'] == 'W99999999') &&
          !extract_field(ppat, 'patientid')
-        # For CARA, exclude death matches for patients in Wales, except when extracting
+        # For CARA / RD, exclude death matches for patients in Wales, except when extracting
         # matching death details for known patients.
         return false
       end
