@@ -27,6 +27,9 @@ module OdrDataImporter
       grant_before = Grant.count
       users.each do |application_log, first_name, last_name, _, email|
         user = User.find_or_initialize_by(email: email.downcase)
+        # don't update if exactly the same
+        next if user.id && (user.first_name == first_name) && (user.last_name == last_name)
+
         updated += 1 unless user.id.nil?
         user.first_name = first_name
         user.last_name  = last_name
