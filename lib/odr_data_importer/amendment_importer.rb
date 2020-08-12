@@ -8,8 +8,11 @@ module OdrDataImporter
       amendment_type&.map!(&:titleize)
 
       # Give amendments a silly date if missing
+      amendment_attrs['amendment_date'] = nil if amendment_attrs['amendment_date'] == '?'
       amendment_attrs['amendment_date'] ||= '1900-01-01'
       # labels: [], created_at: nil, updated_at: nil, project_state_id: nil>
+      # default nil amendment type. this is a validation normally being bypassed
+      amendment_type ||= %w[Other]
       application.project_amendments.find_or_initialize_by(requested_at: amendment_attrs['amendment_date'],
                                                            labels: amendment_type)
 
@@ -27,6 +30,7 @@ module OdrDataImporter
         next if attr[1].blank?
 
         ignored_fields = [
+          'application_log',
           'amendment_date',
           'amendment_type: data flows, data items, data sources, processing purpose, ' \
             'data processor, duration, other',
