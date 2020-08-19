@@ -16,7 +16,7 @@ class DeclinePendingProjectTest < ActionDispatch::IntegrationTest
     login_and_accept_terms(users(:application_manager_one))
     visit project_path(@project)
 
-    click_button('Decline')
+    click_button('Close')
 
     within '#modal-rejected' do
       select 'Duplicate', from: 'project[closure_reason_id]'
@@ -24,7 +24,7 @@ class DeclinePendingProjectTest < ActionDispatch::IntegrationTest
     end
 
     within('#project_header') do
-      assert page.has_content?('Declined')
+      assert page.has_content?('Closed')
     end
 
     within('#details') do

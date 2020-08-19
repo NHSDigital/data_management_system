@@ -9,7 +9,7 @@
           <h4 class="modal-title"><%= state.name %></h4>
         </div>
         <div class="modal-body">
-          <% if state.id == 'REJECTED' && current_user.application_manager? && project.eoi? %>
+          <% if state.id == 'REJECTED' && current_user.application_manager? && project.odr? %>
             <div class="form-group">
               <%= form.label :closure_reason_id, 'Closure Reason' %>
               <%= form.collection_select(:closure_reason_id, Lookups::ClosureReason.rejectable, :id, :value, {}, class: 'form-control') %>
