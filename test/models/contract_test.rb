@@ -1,6 +1,16 @@
 require 'test_helper'
 
 class ContractTest < ActiveSupport::TestCase
+  def setup
+    @data_released_project ||= projects(:test_application)
+    %w[SUBMITTED DPIA_START DPIA_REVIEW DPIA_MODERATION CONTRACT_DRAFT
+       CONTRACT_COMPLETED DATA_RELEASED].each do |state|
+      Workflow::ProjectState.create!(state_id: state,
+                                     project_id: @data_released_project.id,
+                                     user_id: User.first.id)
+    end
+  end
+
   test 'should belong to a project' do
     project  = projects(:one)
     contract = project.contracts.build
@@ -41,6 +51,33 @@ class ContractTest < ActiveSupport::TestCase
 
     with_versioning do
       assert_auditable contract
+    end
+  end
+
+  test 'should not auto transition to data destroyed if a destruction date is not present' do
+    assert_no_changes -> { @data_released_project.current_state } do
+      @data_released_project.contracts.build.tap do |contract|
+        contract.save!
+      end
+    end
+  end
+
+  test 'should auto transition to data destroyed if a any destruction date is present' do
+    assert_changes -> { @data_released_project.current_state.id }, 'DATA_DESTROYED' do
+      @data_released_project.contracts.build.tap do |contract|
+        contract.destruction_form_received_date = Date.current
+        contract.save!
+      end
+    end
+  end
+
+  test 'should not auto transition to data destroyed if not in correct previous state' do
+    @data_released_project.transition_to!(Workflow::State.find_by(id: 'AMEND'))
+    assert_no_changes -> { @data_released_project.current_state } do
+      @data_released_project.contracts.build.tap do |contract|
+        contract.destruction_form_received_date = Date.current
+        contract.save!
+      end
     end
   end
 end
