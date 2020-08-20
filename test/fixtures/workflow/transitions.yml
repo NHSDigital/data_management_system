@@ -255,3 +255,18 @@ application_submitted_draft:
   project_type: application
   from_state_id: SUBMITTED
   next_state_id: DRAFT
+
+application_contract_completed_data_released:
+  project_type: application
+  from_state_id: CONTRACT_COMPLETED
+  next_state_id: DATA_RELEASED
+
+application_data_released_data_destroyed:
+  project_type: application
+  from_state_id: DATA_RELEASED
+  next_state_id: DATA_DESTROYED
+
+application_data_released_amend:
+  project_type: application
+  from_state_id: DATA_RELEASED
+  next_state_id: AMEND
