@@ -44,7 +44,7 @@ en:
         review: Submit for Delegate Approval
         draft: Return to draft
         submitted: Submit to ODR
-        rejected: Decline
+        rejected: Close
         deleted: Delete
         submitted: Submit
         approved: Approve
@@ -61,7 +61,7 @@ en:
     draft: New
     review: Delegate Approval
     submitted: Pending
-    rejected: Declined
+    rejected: Closed
     dpia_start: DPIA
     dpia_review: DPIA Peer Review
     dpia_moderation: DPIA Moderation

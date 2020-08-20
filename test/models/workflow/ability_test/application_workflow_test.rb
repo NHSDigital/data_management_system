@@ -25,6 +25,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
       @project.stubs current_state: workflow_states(:submitted)
       refute user.can? :create, @project.project_states.build(state: workflow_states(:draft))
@@ -36,6 +37,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
       @project.stubs current_state: workflow_states(:dpia_start)
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
@@ -47,6 +49,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
       @project.stubs current_state: workflow_states(:dpia_review)
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
@@ -58,6 +61,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
       @project.stubs current_state: workflow_states(:dpia_moderation)
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
@@ -69,6 +73,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
       @project.stubs current_state: workflow_states(:dpia_rejected)
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
@@ -80,6 +85,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
       @project.stubs current_state: workflow_states(:contract_draft)
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
@@ -91,6 +97,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
       @project.stubs current_state: workflow_states(:contract_rejected)
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
@@ -102,6 +109,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
       @project.stubs current_state: workflow_states(:contract_completed)
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
@@ -113,6 +121,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
       @project.stubs current_state: workflow_states(:amend)
       refute user.can? :create, @project.project_states.build(state: workflow_states(:draft))
@@ -125,6 +134,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
     end
 
     test 'application workflow as project member' do
@@ -140,6 +150,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
       @project.stubs current_state: workflow_states(:submitted)
       refute user.can? :create, @project.project_states.build(state: workflow_states(:draft))
@@ -151,6 +162,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
       @project.stubs current_state: workflow_states(:dpia_start)
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
@@ -162,6 +174,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
       @project.stubs current_state: workflow_states(:dpia_review)
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
@@ -173,6 +186,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
       @project.stubs current_state: workflow_states(:dpia_moderation)
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
@@ -184,6 +198,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
       @project.stubs current_state: workflow_states(:dpia_rejected)
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
@@ -195,6 +210,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
       @project.stubs current_state: workflow_states(:contract_draft)
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
@@ -206,6 +222,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
       @project.stubs current_state: workflow_states(:contract_rejected)
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
@@ -217,6 +234,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
       @project.stubs current_state: workflow_states(:contract_completed)
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
@@ -228,6 +246,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
       @project.stubs current_state: workflow_states(:amend)
       refute user.can? :create, @project.project_states.build(state: workflow_states(:draft))
@@ -240,6 +259,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
     end
 
     test 'application workflow as project senior' do
@@ -255,6 +275,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
       @project.stubs current_state: workflow_states(:submitted)
       assert user.can? :create, @project.project_states.build(state: workflow_states(:draft))
@@ -266,6 +287,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
       @project.stubs current_state: workflow_states(:dpia_start)
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
@@ -277,6 +299,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
       @project.stubs current_state: workflow_states(:dpia_review)
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
@@ -288,6 +311,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
       @project.stubs current_state: workflow_states(:dpia_moderation)
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
@@ -299,6 +323,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
       @project.stubs current_state: workflow_states(:dpia_rejected)
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
@@ -310,6 +335,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
       @project.stubs current_state: workflow_states(:contract_draft)
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
@@ -321,6 +347,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
       @project.stubs current_state: workflow_states(:contract_rejected)
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
@@ -332,6 +359,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
       @project.stubs current_state: workflow_states(:contract_completed)
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
@@ -343,6 +371,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
       @project.stubs current_state: workflow_states(:amend)
       refute user.can? :create, @project.project_states.build(state: workflow_states(:draft))
@@ -355,6 +384,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
     end
 
     test 'application workflow as team delegate' do
@@ -370,6 +400,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
       @project.stubs current_state: workflow_states(:submitted)
       refute user.can? :create, @project.project_states.build(state: workflow_states(:draft))
@@ -381,6 +412,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
       @project.stubs current_state: workflow_states(:dpia_start)
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
@@ -392,6 +424,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
       @project.stubs current_state: workflow_states(:dpia_review)
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
@@ -403,6 +436,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
       @project.stubs current_state: workflow_states(:dpia_moderation)
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
@@ -414,6 +448,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
       @project.stubs current_state: workflow_states(:dpia_rejected)
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
@@ -425,6 +460,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
       @project.stubs current_state: workflow_states(:contract_draft)
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
@@ -436,6 +472,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
       @project.stubs current_state: workflow_states(:contract_rejected)
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
@@ -447,6 +484,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
       @project.stubs current_state: workflow_states(:contract_completed)
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
@@ -458,6 +496,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
       @project.stubs current_state: workflow_states(:amend)
       refute user.can? :create, @project.project_states.build(state: workflow_states(:draft))
@@ -470,6 +509,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
     end
 
     test 'application workflow as ODR user' do
@@ -485,6 +525,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
       @project.stubs current_state: workflow_states(:submitted), assigned_user_id: user.id
       refute user.can? :create, @project.project_states.build(state: workflow_states(:draft))
@@ -496,6 +537,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
       @project.stubs current_state: workflow_states(:dpia_start), assigned_user_id: user.id
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
@@ -507,6 +549,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
       @project.stubs current_state: workflow_states(:dpia_review), assigned_user_id: user.id
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
@@ -518,6 +561,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
       @project.stubs current_state: workflow_states(:dpia_moderation), assigned_user_id: user.id
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
@@ -529,6 +573,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
       @project.stubs current_state: workflow_states(:dpia_rejected), assigned_user_id: user.id
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
@@ -540,6 +585,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
       @project.stubs current_state: workflow_states(:contract_draft), assigned_user_id: user.id
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
@@ -551,6 +597,7 @@ module Workflow
       assert user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       assert user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
       @project.stubs current_state: workflow_states(:contract_rejected), assigned_user_id: user.id
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
@@ -562,6 +609,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
       @project.stubs current_state: workflow_states(:contract_completed), assigned_user_id: user.id
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
@@ -573,6 +621,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
       @project.stubs current_state: workflow_states(:amend)
       refute user.can? :create, @project.project_states.build(state: workflow_states(:draft))
@@ -585,6 +634,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
     end
 
     test 'application workflow as ODR application manager' do
@@ -600,6 +650,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      assert user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
       @project.stubs current_state: workflow_states(:submitted), assigned_user_id: user.id
       assert user.can? :create, @project.project_states.build(state: workflow_states(:draft))
@@ -611,6 +662,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      assert user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
       @project.stubs current_state: workflow_states(:dpia_start), assigned_user_id: user.id
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
@@ -622,6 +674,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       assert user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      assert user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
       @project.stubs current_state: workflow_states(:dpia_review), assigned_user_id: user.id
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
@@ -633,6 +686,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       assert user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      assert user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
       @project.stubs current_state: workflow_states(:dpia_moderation), assigned_user_id: user.id
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
@@ -644,6 +698,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       assert user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      assert user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
       @project.stubs current_state: workflow_states(:dpia_rejected), assigned_user_id: user.id
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
@@ -655,6 +710,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       assert user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      assert user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
       @project.stubs current_state: workflow_states(:contract_draft), assigned_user_id: user.id
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
@@ -666,6 +722,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       assert user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      assert user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
       @project.stubs current_state: workflow_states(:contract_rejected), assigned_user_id: user.id
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
@@ -677,6 +734,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       assert user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      assert user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
       @project.stubs current_state: workflow_states(:contract_completed), assigned_user_id: user.id
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
@@ -688,6 +746,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       assert user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      assert user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
       @project.stubs current_state: workflow_states(:amend)
       refute user.can? :create, @project.project_states.build(state: workflow_states(:draft))
@@ -700,6 +759,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      assert user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
     end
 
     test 'application workflow as ODR senior application manager' do
@@ -715,6 +775,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
       @project.stubs current_state: workflow_states(:submitted), assigned_user_id: user.id
       refute user.can? :create, @project.project_states.build(state: workflow_states(:draft))
@@ -726,6 +787,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
       @project.stubs current_state: workflow_states(:dpia_start), assigned_user_id: user.id
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
@@ -737,6 +799,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
       @project.stubs current_state: workflow_states(:dpia_review), assigned_user_id: user.id
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
@@ -748,7 +811,8 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
-
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
+      
       @project.stubs current_state: workflow_states(:dpia_moderation), assigned_user_id: user.id
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
@@ -759,6 +823,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
       @project.stubs current_state: workflow_states(:dpia_rejected), assigned_user_id: user.id
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
@@ -770,6 +835,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
       @project.stubs current_state: workflow_states(:contract_draft), assigned_user_id: user.id
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
@@ -781,6 +847,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
       @project.stubs current_state: workflow_states(:contract_rejected), assigned_user_id: user.id
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
@@ -792,6 +859,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
       @project.stubs current_state: workflow_states(:contract_completed), assigned_user_id: user.id
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
@@ -803,6 +871,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
       @project.stubs current_state: workflow_states(:amend)
       refute user.can? :create, @project.project_states.build(state: workflow_states(:draft))
@@ -815,6 +884,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
     end
 
 
