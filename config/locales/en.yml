@@ -57,6 +57,8 @@ en:
         contract_draft: Start Contract Drafting
         contract_rejected: Reject Contract
         contract_completed: Mark Contract as Completed
+        data_released: Flag as Data Released
+        data_destroyed: Flag as Data Destroyed
   workflow/state:
     draft: New
     review: Delegate Approval

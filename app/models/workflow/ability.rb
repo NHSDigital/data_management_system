@@ -353,6 +353,17 @@ module Workflow
                                         ]
                                       }
                                    }
+        # plan.io 23971
+        can :create, ProjectState, state: { id: %w[DATA_RELEASED] },
+                                   project: {
+                                     project_type: { name: 'Application' },
+                                     current_state: { id: 'CONTRACT_COMPLETED' }
+                                   }
+        can :create, ProjectState, state: { id: %w[DATA_DESTROYED AMEND] },
+                                   project: {
+                                     project_type: { name: 'Application' },
+                                     current_state: { id: 'DATA_RELEASED' }
+                                   }
       end
 
       if @user.senior_application_manager?
