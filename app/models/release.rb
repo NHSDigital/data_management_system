@@ -23,7 +23,7 @@ class Release < ApplicationRecord
   end
 
   def apply_auto_transition
-    return unless project_state.state_id == 'CONTRACT_COMPLETED'
+    return unless project_state&.state_id == 'CONTRACT_COMPLETED'
     return unless release_date
 
     project.transition_to!(Workflow::State.find_by(id: 'DATA_RELEASED'))
