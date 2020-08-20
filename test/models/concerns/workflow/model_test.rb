@@ -278,6 +278,14 @@ module Workflow
       assert project.transition_to(workflow_states(:contract_draft))
     end
 
+    test 'return previous state' do
+      project = projects(:test_application)
+      assert_nil project.previous_state
+
+      project.transition_to!(Workflow::State.find_by(id: 'SUBMITTED'))
+      assert_equal 'DRAFT', project.previous_state.id
+    end
+
     private
 
     def add_attachment(project, type, filename: 'foo.txt', contents: SecureRandom.hex)
