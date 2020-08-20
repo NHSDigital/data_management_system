@@ -80,6 +80,12 @@ module Workflow
       end
     end
 
+    def previous_state
+      return if states.blank?
+
+      states.order(:created_at)[-2]
+    end
+
     private
 
     # To set specific critera for a given state, define
