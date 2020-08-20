@@ -40,7 +40,7 @@ module ProjectsHelper
     'CONTRACT_REJECTED'  => 'label-danger',
     'CONTRACT_COMPLETED' => 'label-success',
     'DATA_RELEASED'  => 'label-success',
-    'DATA_DESTROYED' => 'label-warning'
+    'DATA_DESTROYED' => 'label-danger'
   }.freeze
 
   def new_project_dropdown_button(team, **html_options)
