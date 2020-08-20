@@ -332,6 +332,27 @@ module Workflow
                                         ]
                                       }
                                    }
+        can :create, ProjectState, state: { id: 'REJECTED' },
+                                   project: {
+                                      project_type: { name: 'Application' },
+                                      assigned_user_id: @user.id,
+                                      current_state: {
+                                        id: %w[
+                                          DPIA_START
+                                          DPIA_REVIEW
+                                          DPIA_MODERATION
+                                          DPIA_REJECTED
+                                          CONTRACT_REJECTED
+                                          CONTRACT_COMPLETED
+                                          CONTRACT_DRAFT
+                                          SUBMITTED
+                                          AMEND
+                                          DRAFT
+                                          DATA_RELEASED
+                                          DATA_DESTROYED
+                                        ]
+                                      }
+                                   }
       end
 
       if @user.senior_application_manager?

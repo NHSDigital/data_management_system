@@ -399,7 +399,11 @@ class Project < ApplicationRecord
     end
     items
   end
-  
+
+  def odr?
+    eoi? || application?
+  end
+
   private
 
   def project_type_inquirer
