@@ -38,7 +38,7 @@ module Mbis
     if File.exist?(smtp_fname)
       config.action_mailer.smtp_settings =
         YAML.load_file(smtp_fname)[Rails.env]
-    else
+    elsif !Rails.env.test?
       $stderr.puts 'Warning: Missing config/smtp_settings.yml -- some services may not work.'
     end
   end
