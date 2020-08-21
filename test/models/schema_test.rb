@@ -221,8 +221,8 @@ class SchemaTest < ActiveSupport::TestCase
 
   # should clear from last run but only build once for current run
   def remove_previous_schema_files
-    system('rm tmp/sample_xml/*.xml')
-    system('rm tmp/schema/*.xsd')
+    system('rm -f tmp/sample_xml/*.xml')
+    system('rm -f tmp/schema/*.xsd')
   end
 
   def build_schema_files
