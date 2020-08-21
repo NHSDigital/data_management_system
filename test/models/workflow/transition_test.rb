@@ -5,6 +5,12 @@ module Workflow
   class TransitionTest < ActiveSupport::TestCase
     def setup
       @transition = workflow_transitions(:one)
+      @project = create_project(
+        team: teams(:team_one),
+        project_type: project_types(:application),
+        project_purpose: 'previous state test',
+        assigned_user: users(:application_manager_one)
+      )
     end
 
     test 'should belong to an initial State' do
@@ -48,6 +54,16 @@ module Workflow
 
       assert_includes Transition.applicable_to(project_types(:dummy)), @transition
       assert_includes Transition.applicable_to(project_types(:project)), @transition
+    end
+
+    test 'previous_state_before_closure scope' do
+      @project.transition_to!(workflow_states(:draft))
+      transition         = workflow_transitions(:application_draft_rejected)
+      not_previous_state = workflow_transitions(:application_rejected_data_destroyed)
+      @project.reload
+      @project.transition_to!(workflow_states(:rejected))
+      assert_includes Transition.previous_state_before_closure(@project.reload), transition
+      refute_includes Transition.previous_state_before_closure(@project.reload), not_previous_state
     end
   end
 end

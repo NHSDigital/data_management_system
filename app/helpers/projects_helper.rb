@@ -102,6 +102,7 @@ module ProjectsHelper
 
     icon = STATE_TRANSITION_BUTTON_ICONS[state.id]
     text = t(i18n_key, scope: i18n_scope, default: i18n_default)
+    text += ' (reinstating previous state)' if project.closed?
     text = bootstrap_icon_tag(icon) + " #{text}" if icon
 
     button_tag(text, button_options)

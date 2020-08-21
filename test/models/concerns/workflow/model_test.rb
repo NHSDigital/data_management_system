@@ -163,7 +163,6 @@ module Workflow
 
     test 'returning to draft should reset approvals' do
       project = projects(:rejected_project)
-
       assert_changes -> { project.details_approved }, from: false, to: nil do
         assert_changes -> { project.members_approved }, from: false, to: nil do
           assert_changes -> { project.legal_ethical_approved }, from: false, to: nil do
@@ -282,10 +281,24 @@ module Workflow
       project = projects(:test_application)
       assert_nil project.previous_state
 
-      project.transition_to!(Workflow::State.find_by(id: 'SUBMITTED'))
-      assert_equal 'DRAFT', project.previous_state.id
+      project.transition_to!(workflow_states(:submitted))
+      assert_equal 'DRAFT', project.previous_state_id
     end
 
+    test 'transitionable_states if current state rejected includes previous state' do
+    project = projects(:test_application)
+      project.transition_to!(workflow_states(:submitted))
+      project.transition_to!(workflow_states(:rejected))
+      assert_equal 1, project.transitionable_states.size
+      assert_includes project.transitionable_states, workflow_states(:submitted)
+
+      project.transition_to!(workflow_states(:submitted))
+      project.transition_to!(workflow_states(:dpia_start))
+      project.transition_to!(workflow_states(:rejected))
+      assert_equal 1, project.transitionable_states.size
+      assert_includes project.transitionable_states, workflow_states(:dpia_start)
+    end
+    
     private
 
     def add_attachment(project, type, filename: 'foo.txt', contents: SecureRandom.hex)

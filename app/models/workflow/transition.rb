@@ -15,5 +15,10 @@ module Workflow
       where(project_type: project_type).
         or(where(project_type: nil))
     }
+
+    scope :previous_state_before_closure, ->(project) {
+      where.not(from_state: 'REJECTED').
+        or(where(from_state: 'REJECTED', next_state: project.previous_state_id))
+    }
   end
 end
