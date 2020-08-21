@@ -23,7 +23,8 @@ module Workflow
                               class_name: 'Workflow::State'
 
       has_many :transitionable_states, ->(project) {
-        merge(Transition.applicable_to(project.project_type))
+        merge(Transition.applicable_to(project.project_type)).
+        merge(Transition.previous_state_before_closure(project))
       }, through: :current_state, class_name: 'Workflow::State'
 
       scope :in_progress, -> { joins(:current_state).merge(State.non_terminal) }
@@ -81,9 +82,13 @@ module Workflow
     end
 
     def previous_state
-      return if states.blank?
+      return if project_states.blank?
 
-      states.order(:created_at)[-2]
+      project_states.order(:created_at)[-2]
+    end
+
+    def previous_state_id
+      previous_state&.state_id
     end
 
     private

@@ -404,6 +404,10 @@ class Project < ApplicationRecord
     eoi? || application?
   end
 
+  def closed?
+    current_state&.id == 'REJECTED'
+  end
+
   private
 
   def project_type_inquirer
