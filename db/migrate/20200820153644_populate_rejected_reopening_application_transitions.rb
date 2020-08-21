@@ -14,7 +14,7 @@ class PopulateRejectedReopeningApplicationTransitions < ActiveRecord::Migration[
   REJECTED     = 'REJECTED'.freeze
   PROJECT_TYPE = ProjectType.find_by!(name: 'Application')
 
-  # next starting_id => 77
+  # next starting_id => 76 (DATA_DESTROYED removed in subsequent migration)
   def change
     starting_id = 65
     from_states.each_with_index do |state, i|
