@@ -96,7 +96,7 @@ def bootstrap_download_helper
   DownloadHelpers.create_directory
 
   chrome = Capybara.drivers[:chrome]
-  Capybara.drivers[:chrome] = lambda do |app|
+  Capybara.register_driver(:chrome) do |app|
     chrome.call(app).tap do |driver|
       driver.browser.download_path = DownloadHelpers.directory
     end
