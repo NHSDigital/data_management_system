@@ -129,5 +129,44 @@ module Pseudo
         end
       end
     end
+
+    test 'codt_codfft_extra for Model 204 / LEDR codt' do
+      death = Death.new
+      fields = (1..5).collect { |i| ["codt_#{i}".to_sym, "codt_#{i}"] }.to_h
+      death.build_death_data(fields)
+      (1..5).each { |i| assert_equal("codt_#{i}", death.codt_codfft_extra(i)) }
+      (1..5).each { |i| assert_equal("codt_#{i}", death.codt_codfft_extra(i, 255)) }
+      (1..4).each { |i| assert_equal("codt_#{i}", death.codt_codfft_extra(i, 255)) }
+      # No need to append extra codfft text onto the last record
+      assert_equal('codt_5', death.codt_codfft_extra(5, 255, true))
+    end
+
+    test 'codt_codfft_extra for LEDR codftt_1' do
+      death = Death.new
+      death.build_death_data(codfft_1: 'x' * (255 * 5 + 3))
+      (1..5).each { |i| assert_equal('x' * 75, death.codt_codfft_extra(i)) }
+      (1..5).each { |i| assert_equal('x' * 255, death.codt_codfft_extra(i, 255)) }
+      (1..4).each { |i| assert_equal('x' * 255, death.codt_codfft_extra(i, 255)) }
+      # Cannot append extra codfft text onto the last record, as it's already 255 characters long
+      assert_equal('x' * 255, death.codt_codfft_extra(5, 255, true))
+    end
+
+    test 'codt_codfft_extra for Model 204 codftt_1 to codfft_65' do
+      death = Death.new
+      fields = (1..65).collect { |i| ["codfft_#{i}".to_sym, "codfft_#{i}"] }.to_h
+      death.build_death_data(fields)
+      (1..5).each { |i| assert_equal("codfft_#{i}", death.codt_codfft_extra(i)) }
+      (1..5).each { |i| assert_equal("codfft_#{i}", death.codt_codfft_extra(i, 255)) }
+      (1..4).each { |i| assert_equal("codfft_#{i}", death.codt_codfft_extra(i, 255)) }
+      # Append extra codfft rows onto the last record, up to 255 characters
+      # i.e. (5..65).collect { |i| "codfft_#{i}" }.join("\n")[0..254]
+      assert_equal("codfft_5\ncodfft_6\ncodfft_7\ncodfft_8\ncodfft_9\ncodfft_10\ncodfft_11\n" \
+                   "codfft_12\ncodfft_13\ncodfft_14\ncodfft_15\ncodfft_16\ncodfft_17\n" \
+                   "codfft_18\ncodfft_19\ncodfft_20\ncodfft_21\ncodfft_22\ncodfft_23\n" \
+                   "codfft_24\ncodfft_25\ncodfft_26\ncodfft_27\ncodfft_28\ncodfft_29\ncodfft_30\n",
+                   death.codt_codfft_extra(5, 255, true))
+      assert_equal("codfft_5\ncodfft_6\ncodfft_7\ncodfft_8\ncodfft_9\ncodfft_10\ncodfft_11\n" \
+                   "codfft_12\n", death.codt_codfft_extra(5, 75, true))
+    end
   end
 end

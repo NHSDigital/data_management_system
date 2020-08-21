@@ -247,10 +247,12 @@ module Export
         i = Regexp.last_match(1).to_i
         # LEDR workaround: split long CODFFT_1 into 75 character blocks to support older extracts.
         # In LEDR extracts, CODFFT_1 is often >= 75 characters, and CODFFT_2..CDOFFT_65 are blank
-        codfft_1 = ppat.death_data.codfft_1
-        return codfft_1[(i - 1) * 75..(i * 75) - 1] if codfft_1 && codfft_1.size > 75
-
-        return death_field(ppat, "codfft_#{i}") || (death_field(ppat, "codt_#{i}") if i <= 5)
+        return ppat.codt_codfft_extra(i)
+      when /^codt_codfft_([0-9]+)_255$/ # Prefer CODFFT to CODT, up to 255 characters per entry
+        i = Regexp.last_match(1).to_i
+        return ppat.codt_codfft_extra(i, 255)
+      when /^codt_codfft_5_255extra$/ # Prefer CODFFT to CODT, up to 255 characters, append extras
+        return ppat.codt_codfft_extra(5, 255, true)
       when /^icd_icdf_([0-9]+)$/ # Prefer ICDF to ICD, if present
         i = Regexp.last_match(1).to_i
         return death_field(ppat, "icdf_#{i}") || death_field(ppat, "icd_#{i}")

@@ -48,6 +48,25 @@ module Pseudo
       causes.compact
     end
 
+    # Extract codt or codfft field, splitting long LEDR codfft_1, and merge extra
+    # codfft rows if necessary into the final record.
+    def codt_codfft_extra(i, chunk_size = 75, merge_extra = false)
+      raise 'Invalid index' unless (1..65).include?(i)
+      raise 'Invalid chunk_size' unless chunk_size >= 75
+      raise 'merge_extra supported only for i >= 5' if merge_extra && i < 5
+
+      # LEDR workaround: split long CODFFT_1 into 75+ character blocks to support older extracts.
+      # In LEDR extracts, CODFFT_1 is often >= 75 characters, and CODFFT_2..CDOFFT_65 are blank
+      codfft = death_data.codfft_1
+      return codfft[(i - 1) * chunk_size..(i * chunk_size) - 1] if codfft && codfft.size > 75
+
+      result = death_data["codfft_#{i}"] || (death_data["codt_#{i}"] if i <= 5)
+      return result unless merge_extra
+
+      ([result] + (i + 1..65).collect { |j| death_data["codfft_#{j}"] }).
+        compact.join("\n")[0..chunk_size - 1]
+    end
+
     # Textual reference to identify record ppatientid, mbism204id / ledrid
     def record_reference
       "ppatientid #{id}, " + (if demographics['ledrid'] then "LEDRID #{demographics['ledrid']}"
