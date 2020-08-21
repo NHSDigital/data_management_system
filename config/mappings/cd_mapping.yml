@@ -212,8 +212,9 @@ cd:
   unpack_pattern: a7
 - column: occupation
   unpack_pattern: a75
-- column: occupation_husband_father
-  unpack_pattern: a75
+# Column no longer in encore / CARA CSV file, fixed-width cancer deaths discontinued, plan.io #23600
+# - column: occupation_husband_father
+#   unpack_pattern: a75
 - column: occupation_mother
   unpack_pattern: a75
 - column: dateofdeath
