@@ -61,7 +61,9 @@ module Workflow
       transition         = workflow_transitions(:application_draft_rejected)
       not_previous_state = workflow_transitions(:application_rejected_data_destroyed)
       @project.reload
-      @project.transition_to!(workflow_states(:rejected))
+      assert_changes -> { @project.closure_date } do
+        @project.transition_to!(workflow_states(:rejected))
+      end
       assert_includes Transition.previous_state_before_closure(@project.reload), transition
       refute_includes Transition.previous_state_before_closure(@project.reload), not_previous_state
     end
