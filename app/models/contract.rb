@@ -17,6 +17,7 @@ class Contract < ApplicationRecord
   end
 
   before_validation :associate_with_project_state
+  after_save :apply_auto_transition
 
   def upload=(file)
     (attachment || build_attachment).upload = file
@@ -26,5 +27,12 @@ class Contract < ApplicationRecord
 
   def associate_with_project_state
     self.project_state ||= project&.current_project_state
+  end
+
+  def apply_auto_transition
+    return unless project_state.state_id == 'DATA_RELEASED'
+    return unless destruction_form_received_date
+
+    project.transition_to!(Workflow::State.find_by(id: 'DATA_DESTROYED'))
   end
 end

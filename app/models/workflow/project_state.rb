@@ -13,6 +13,8 @@ module Workflow
     has_many :project_attachments, inverse_of: :project_state
 
     validate :ensure_state_is_transitionable, on: :create
+    after_save :update_project_closure_date
+    after_save :remove_project_closure_date
 
     private
 
@@ -21,6 +23,19 @@ module Workflow
       return if project.transitionable_states.exists?(state.id)
 
       errors.add(:state, :invalid)
+    end
+
+    def update_project_closure_date
+      return unless state_id == 'REJECTED'
+
+      project.update(closure_date: created_at)
+    end
+
+    def remove_project_closure_date
+      return if state_id == 'REJECTED'
+      return unless project.previous_state_id == 'REJECTED'
+
+      project.update(closure_date: nil, closure_reason_id: nil)
     end
   end
 end

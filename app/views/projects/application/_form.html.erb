@@ -255,6 +255,9 @@
       <% form.text_area :additional_info, rows: 5 %>
     <% end %>
     <% if readonly %>
+      <%= form.control_group(:closure_reason, t('.closure_reason')) do %>
+        <%= form.collection_select(:closure_reason, Lookups::ClosureReason.all, :id, :value, { include_blank: true, readonly_value: form.object.closure_reason&.value }, class: 'form-control') %>
+      <% end %>
       <%= form.control_group(:closure_date, t('.closure_date'), {}, class: 'col-md-3') do %>
         <%= form.datepicker_field :closure_date %>
       <% end %>

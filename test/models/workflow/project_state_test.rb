@@ -5,6 +5,12 @@ module Workflow
   class ProjectStateTest < ActiveSupport::TestCase
     def setup
       @project_state = workflow_project_states(:one)
+      @project = create_project(
+        team: teams(:team_one),
+        project_type: project_types(:application),
+        project_purpose: 'previous state test',
+        assigned_user: users(:application_manager_one)
+      )
     end
 
     test 'should belong to a project' do
@@ -57,6 +63,26 @@ module Workflow
       project.stubs(transitionable_states: current_state.transitionable_states)
       project_state.valid?
       refute_includes project_state.errors.details[:state], error: :invalid
+    end
+
+    test 'closing application updates closure date and reason' do
+      @project.transition_to!(workflow_states(:draft))
+      @project.reload
+      assert_changes -> { @project.closure_date } do
+        @project.transition_to!(workflow_states(:rejected))
+      end
+    end
+
+    test 'reopening application removes closure date and reason' do
+      @project.transition_to!(workflow_states(:draft))
+      @project.transition_to!(workflow_states(:submitted))
+      @project.transition_to!(workflow_states(:rejected))
+      @project.update(closure_date: Date.current, closure_reason_id: Lookups::ClosureReason.first.id)
+      assert_changes -> { @project.closure_date } do
+        assert_changes -> { @project.closure_reason_id } do
+          @project.transition_to!(workflow_states(:submitted))
+        end
+      end
     end
   end
 end

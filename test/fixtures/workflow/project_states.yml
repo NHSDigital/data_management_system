@@ -30,7 +30,7 @@ six:
 
 seven:
   project: rejected_project
-  state_id: REJECTED
+  state_id: DRAFT
   user: odr_user
 
 eight:
@@ -52,3 +52,8 @@ eleven:
   project: test_application
   state_id: DRAFT
   user: standard_user1
+
+twelve:
+  project: rejected_project
+  state_id: REJECTED
+  user: odr_user

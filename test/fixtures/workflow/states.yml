@@ -63,3 +63,9 @@ contract_completed:
 
 amend:
   id: AMEND
+
+data_released:
+  id: DATA_RELEASED
+
+data_destroyed:
+  id: DATA_DESTROYED

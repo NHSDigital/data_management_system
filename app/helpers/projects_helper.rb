@@ -13,7 +13,9 @@ module ProjectsHelper
     'DPIA_REJECTED'      => 'btn-danger',
     'CONTRACT_DRAFT'     => 'btn-success',
     'CONTRACT_REJECTED'  => 'btn-danger',
-    'CONTRACT_COMPLETED' => 'btn-success'
+    'CONTRACT_COMPLETED' => 'btn-success',
+    'DATA_RELEASED' => 'btn-success',
+    'DATA_DESTROYED' => 'btn-danger',
   }.freeze
 
   STATE_TRANSITION_BUTTON_ICONS = {
@@ -36,7 +38,9 @@ module ProjectsHelper
     'AMEND'     => 'label-warning',
     'DPIA_REJECTED'      => 'label-danger',
     'CONTRACT_REJECTED'  => 'label-danger',
-    'CONTRACT_COMPLETED' => 'label-success'
+    'CONTRACT_COMPLETED' => 'label-success',
+    'DATA_RELEASED'  => 'label-success',
+    'DATA_DESTROYED' => 'label-danger'
   }.freeze
 
   def new_project_dropdown_button(team, **html_options)
@@ -98,6 +102,7 @@ module ProjectsHelper
 
     icon = STATE_TRANSITION_BUTTON_ICONS[state.id]
     text = t(i18n_key, scope: i18n_scope, default: i18n_default)
+    text += ' (reinstating previous state)' if project.closed?
     text = bootstrap_icon_tag(icon) + " #{text}" if icon
 
     button_tag(text, button_options)
