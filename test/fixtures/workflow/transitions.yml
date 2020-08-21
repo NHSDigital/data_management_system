@@ -255,3 +255,140 @@ application_submitted_draft:
   project_type: application
   from_state_id: SUBMITTED
   next_state_id: DRAFT
+
+application_contract_completed_data_released:
+  project_type: application
+  from_state_id: CONTRACT_COMPLETED
+  next_state_id: DATA_RELEASED
+
+application_data_released_data_destroyed:
+  project_type: application
+  from_state_id: DATA_RELEASED
+  next_state_id: DATA_DESTROYED
+
+application_data_released_amend:
+  project_type: application
+  from_state_id: DATA_RELEASED
+  next_state_id: AMEND
+
+# application closures
+application_dpia_start_rejected:
+  project_type: application
+  from_state_id: DPIA_START
+  next_state_id: REJECTED
+
+application_dpia_review_rejected:
+  project_type: application
+  from_state_id: DPIA_REVIEW
+  next_state_id: REJECTED
+
+application_dpia_moderation_rejected:
+  project_type: application
+  from_state_id: DPIA_MODERATION
+  next_state_id: REJECTED
+
+application_dpia_rejected_rejected:
+  project_type: application
+  from_state_id: DPIA_REJECTED
+  next_state_id: REJECTED
+
+application_contract_rejected_rejected:
+  project_type: application
+  from_state_id: CONTRACT_REJECTED
+  next_state_id: REJECTED
+
+application_contract_completed_rejected:
+  project_type: application
+  from_state_id: CONTRACT_COMPLETED
+  next_state_id: REJECTED
+
+application_contract_draft_rejected:
+  project_type: application
+  from_state_id: CONTRACT_DRAFT
+  next_state_id: REJECTED
+
+application_submitted_rejected:
+  project_type: application
+  from_state_id: SUBMITTED
+  next_state_id: REJECTED
+
+application_amend_rejected:
+  project_type: application
+  from_state_id: AMEND
+  next_state_id: REJECTED
+
+application_draft_rejected:
+  project_type: application
+  from_state_id: DRAFT
+  next_state_id: REJECTED
+
+application_data_released_rejected:
+  project_type: application
+  from_state_id: DATA_RELEASED
+  next_state_id: REJECTED
+
+application_data_destroyed_rejected:
+  project_type: application
+  from_state_id: DATA_DESTROYED
+  next_state_id: REJECTED
+
+# application reinstating
+application_rejected_dpia_start:
+  project_type: application
+  from_state_id: REJECTED
+  next_state_id: DPIA_START
+
+application_rejected_dpia_review:
+  project_type: application
+  from_state_id: REJECTED
+  next_state_id: DPIA_REVIEW
+
+application_rejected_dpia_moderation:
+  project_type: application
+  from_state_id: REJECTED
+  next_state_id: DPIA_MODERATION
+
+application_rejected_dpia_rejected:
+  project_type: application
+  from_state_id: REJECTED
+  next_state_id: DPIA_REJECTED
+
+application_rejected_contract_rejected:
+  project_type: application
+  from_state_id: REJECTED
+  next_state_id: CONTRACT_REJECTED
+
+application_rejected_contract_completed:
+  project_type: application
+  from_state_id: REJECTED
+  next_state_id: CONTRACT_COMPLETED
+
+application_rejected_contract_draft:
+  project_type: application
+  from_state_id: REJECTED
+  next_state_id: CONTRACT_DRAFT
+
+application_rejected_submitted:
+  project_type: application
+  from_state_id: REJECTED
+  next_state_id: SUBMITTED
+
+application_rejected_amend:
+  project_type: application
+  from_state_id: REJECTED
+  next_state_id: AMEND
+
+application_rejected_draft:
+  project_type: application
+  from_state_id: REJECTED
+  next_state_id: DRAFT
+
+application_rejected_data_released:
+  project_type: application
+  from_state_id: REJECTED
+  next_state_id: DATA_RELEASED
+
+application_rejected_data_destroyed:
+  project_type: application
+  from_state_id: REJECTED
+  next_state_id: DATA_DESTROYED

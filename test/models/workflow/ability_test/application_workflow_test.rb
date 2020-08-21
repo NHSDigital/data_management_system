@@ -1002,5 +1002,19 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
     end
+
+    test 'standard or senior application manager can reopen an application in any state' do
+      standard = users(:application_manager_one)
+      senior   = users(:senior_application_manager_one)
+      next_state = @project.transitionable_states.reject { |state| state.id == 'REJECTED' }.sample
+
+      @project.transition_to!(next_state)
+      @project.reload
+      # close application
+      @project.transition_to!(workflow_states(:rejected))
+      
+      assert standard.can? :create, @project.project_states.build(state: next_state)
+      assert senior.can? :create, @project.project_states.build(state: next_state)
+    end
   end
 end

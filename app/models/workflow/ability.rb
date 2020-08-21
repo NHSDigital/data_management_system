@@ -353,6 +353,40 @@ module Workflow
                                         ]
                                       }
                                    }
+        # plan.io 23971
+        can :create, ProjectState, state: { id: %w[DATA_RELEASED] },
+                                   project: {
+                                     project_type: { name: 'Application' },
+                                     current_state: { id: 'CONTRACT_COMPLETED' }
+                                   }
+        can :create, ProjectState, state: { id: %w[DATA_DESTROYED AMEND] },
+                                   project: {
+                                     project_type: { name: 'Application' },
+                                     current_state: { id: 'DATA_RELEASED' }
+                                   }
+
+        # can reopen to last previous state. permissions for that state should then be restoed
+        # e.g application can reopen to contract_draft but then won't be able to action it
+        can :create, ProjectState, state: { id: %w[
+                                                  DPIA_START
+                                                  DPIA_REVIEW
+                                                  DPIA_MODERATION
+                                                  DPIA_REJECTED
+                                                  CONTRACT_REJECTED
+                                                  CONTRACT_COMPLETED
+                                                  CONTRACT_DRAFT
+                                                  SUBMITTED
+                                                  AMEND
+                                                  DRAFT
+                                                  DATA_RELEASED
+                                                  DATA_DESTROYED
+                                                ] },
+                                   project: {
+                                      project_type: { name: 'Application' },
+                                      current_state: {
+                                        id: %w[REJECTED]
+                                      }
+                                   }
       end
 
       if @user.senior_application_manager?
@@ -368,6 +402,26 @@ module Workflow
                                      project_type: { name: 'Application' },
                                      assigned_user_id: @user.id,
                                      current_state: { id: 'DPIA_MODERATION' }
+                                   }
+        can :create, ProjectState, state: { id: %w[
+                                                  DPIA_START
+                                                  DPIA_REVIEW
+                                                  DPIA_MODERATION
+                                                  DPIA_REJECTED
+                                                  CONTRACT_REJECTED
+                                                  CONTRACT_COMPLETED
+                                                  CONTRACT_DRAFT
+                                                  SUBMITTED
+                                                  AMEND
+                                                  DRAFT
+                                                  DATA_RELEASED
+                                                  DATA_DESTROYED
+                                                ] },
+                                   project: {
+                                      project_type: { name: 'Application' },
+                                      current_state: {
+                                        id: %w[REJECTED]
+                                      }
                                    }
       end
 
