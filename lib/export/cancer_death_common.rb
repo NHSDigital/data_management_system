@@ -49,7 +49,7 @@ module Export
       'sex' => 'creg_sex', 'placeofbirth' => 'pobt',
       'dateofbirth' => 'dob', 'dateofbirth_text' => nil,
       'address' => 'addrdt', 'postcode' => 'pcdr',
-      'occupation' => 'occdt', 'occupation_husband_father' => 'occhft',
+      'occupation' => 'occdt', # 'occupation_husband_father' => 'occhft',
       'occupation_mother' => 'occmt', 'dateofdeath' => 'dod', 'dateofdeath_text' => nil,
       'placeofdeath' => 'podt', 'ons_text1a' => 'codt_codfft_1_255',
       'ons_text1b' => 'codt_codfft_2_255',
