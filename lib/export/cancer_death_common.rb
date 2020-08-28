@@ -112,6 +112,10 @@ module Export
       # (excludes some patients actually in England...)
       # return false unless ppat.death_data.ccg9pod.to_s.start_with?('E')
       ppat.unlock_demographics('', '', '', :export)
+      if %w[cara cara_all].include?(@filter)
+        # CARA wants only people born in / after 2016
+        return false unless death_field(ppat, 'dobyr').to_i >= 2016
+      end
       ppat.demographics['nhsnumber'].present?
     end
 
