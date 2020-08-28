@@ -25,32 +25,6 @@ module Export
       %w[mbisid dor ccg9r ctrypob agec agecunit ctyr ceststay ctryr]).freeze
     # ?? Specification included 'dob: Date of birth of child' which isn't actually death field
 
-    SPECIAL = {
-      # Auto-generated using:
-      # $ cat config/mappings/deaths_mapping.yml |grep -e 'field:'|cut -d: -f2-|tr -d " " | \
-      #   egrep '_'| sed -e 's/_[0-9][0-9]*$//'|uniq -c|sed -Ee 's/ *([0-9]+) (.*)/      \2:'\
-      #   '-> { (1..\1).collect { |i| "\2_#{i}" } },/'
-      cod10r: -> { (1..20).collect { |i| "cod10r_#{i}" } },
-      cod10rf: -> { (1..20).collect { |i| "cod10rf_#{i}" } },
-      codt: -> { (1..5).collect { |i| "codt_#{i}" } },
-      icd: -> { (1..20).collect { |i| "icd_#{i}" } },
-      icdf: -> { (1..20).collect { |i| "icdf_#{i}" } },
-      icdpv: -> { (1..20).collect { |i| "icdpv_#{i}" } },
-      icdpvf: -> { (1..20).collect { |i| "icdpvf_#{i}" } },
-      lineno9: -> { (1..20).collect { |i| "lineno9_#{i}" } },
-      lineno9f: -> { (1..20).collect { |i| "lineno9f_#{i}" } },
-      aksnamd: -> { (1..5).collect { |i| "aksnamd_#{i}" } },
-      akfnamd_1: -> { (1..5).collect { |i| "akfnamd_1_#{i}" } },
-      akfnamd_2: -> { (1..5).collect { |i| "akfnamd_2_#{i}" } },
-      akfnamd_3: -> { (1..5).collect { |i| "akfnamd_3_#{i}" } },
-      akfndi: -> { (1..5).collect { |i| "akfndi_#{i}" } },
-      aliasd: -> { (1..2).collect { |i| "aliasd_#{i}" } },
-      fnamdx: -> { (1..2).collect { |i| "fnamdx_#{i}" } },
-      nhsno: -> { (1..5).collect { |i| "nhsno_#{i}" } },
-      occfft: -> { (1..4).collect { |i| "occfft_#{i}" } },
-      codfft: -> { (1..65).collect { |i| "codfft_#{i}" } }
-    }.freeze
-
     private
 
     def fields
