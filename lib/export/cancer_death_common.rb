@@ -23,15 +23,17 @@ module Export
               670\z|671\z|672\z|673\z|674.*\z|675.*\z|678\z|680\z|6810\z|6821\z|683\z|684\z|
               685\z|7400\z|752\z|753.*\z|760\z|7643\z|765\z|7660\z|7662\z|7671\z|825.*\z|8280\z|
               8281\z|833\z|845\z|846\z|8911\z|899\z|95.*\z).*)\z
-    /x
-    # Rare disease pattern, plan.io task #14947
-    RD_PATTERN = /\A(D180|D55.*|D56[^3]?|D57[^3]?|D58.*|D610|D640|D66.*|
-        D67.*|D680|D681|D682|D691|D692|D70.*|D71.*|D720|D740|D750|D761|
-        D8(?!21\z|93\z).*\z|
-        E7[^3].*|E80[^4]?|E83.*|E84.*|E85.*|E88.*|G12.*|G318|G60.*|G70.*|
-        G71.*|G90.*|I34.*|I420|I421|I422|I423|I424|I425|I45[^9]?|K741|
-        K743|K746|M301|M313|M317|Q103|Q105|Q544|Q684|Q833|Q845|Q846)\z
     /x.freeze
+    # Rare disease pattern, plan.io task #14947
+    RD_PATTERN = /\A(E830|G903)\z
+    /x.freeze
+    # Rare disease extracts must match all ICD codes from RD_PATTERN, and all word fragments in
+    # one of the RD_STRING_PATTERNS arrays of CODT free-text regular expressions
+    RD_STRING_PATTERNS = [[/LSTR/, /SYND/],
+                          [/MENK/],
+                          [/WOLFRAM/],
+                          [/DIDMOAD/],
+                          [/MULTI/, /ATROPHY/]].freeze
     # C / D00-D48, confirmed as sufficient against early 2017 cancer death files
     SURVEILLANCE_CODES = { 'cd' => /^(C|D[0123]|D4[0-8])/, # New cancer deaths (only cancer causes)
                            'new' => /^[A-Z]/, # New coded cancer and non-cancer deaths
@@ -98,8 +100,11 @@ module Export
     def match_row?(ppat, _surveillance_code = nil)
       return true if @filter == 'all' # Return everything, not just new ones, even without NHS nos.
 
-      pattern = SURVEILLANCE_CODES[@filter]
-      return false if @icd_fields_all.none? { |field| ppat.death_data[field] =~ pattern }
+      if %w[rd rd_all].include?(@filter)
+        return false unless match_rare_disease_row?(ppat)
+      else
+        return false unless match_icd_pattern?(ppat)
+      end
       if %w[cara cara_all rd rd_all].include?(@filter) &&
          (ppat.death_data['gorr'] == 'W' || ppat.death_data['gor9r'] == 'W99999999') &&
          !extract_field(ppat, 'patientid')
@@ -117,6 +122,29 @@ module Export
         return false unless death_field(ppat, 'dobyr').to_i >= 2016
       end
       ppat.demographics['nhsnumber'].present?
+    end
+
+    def match_icd_pattern?(ppat)
+      pattern = SURVEILLANCE_CODES[@filter]
+      @icd_fields_all.any? { |field| ppat.death_data[field] =~ pattern }
+    end
+
+    # Rare disease inclusion criteria
+    # Rare disease extracts must match all ICD codes from RD_PATTERN, and all word fragments in
+    # one of the RD_STRING_PATTERNS arrays of CODT free-text regular expressions
+    def match_rare_disease_row?(ppat)
+      return true if match_icd_pattern?(ppat)
+
+      # Match words within each of the CODT fields, or across all CODFFT
+      all_codt = if ppat.death_data.read_attribute('codfft_1').blank?
+                   (1..5).collect { |i| ppat.death_data.read_attribute("codt_#{i}").upcase }.compact
+                 else
+                   [(1..65).collect { |i| ppat.death_data.read_attribute("codfft_#{i}").upcase }.
+                     compact.join("\n")]
+                 end
+      all_codt.any? do |codt|
+        RD_STRING_PATTERNS.any? { |regexs| regexs.all? { |re| re.match?(codt) } }
+      end
     end
 
     # Secondary filter, to allow separate cancer death / non-cancer death files
