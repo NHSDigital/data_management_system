@@ -35,7 +35,7 @@ module Export
             passphrase = Pseudo::KeyBundle.new.extract(:mbis_project_data_passwords_passphrase)
             zip_password = pdp.decrypt_sensitive(passphrase, nil)
             puts "Compressing with zip password #{zip_password.inspect}"
-            system_args0 = %w[7za a -mx=9 -mm=Deflate -mem=AES256 -tzip -sdel]
+            system_args0 = %w[7za a -mx=7 -mm=Deflate -mem=AES256 -tzip -sdel]
             system_args1 = [fn_zip] + fnames
             puts "Running: #{system_args0.join(' ')} -p[SECRET] #{system_args1.join(' ')}"
             # E.g.: 7za a -mx=9 -mm=Deflate -mem=AES256 -tzip -p#
