@@ -46,7 +46,7 @@ gem 'ndr_workflow', '1.1.6'
 gem 'ndr_ui'
 gem 'activemodel-caution', tag: 'rails_6_0_3_2', git: 'https://github.com/PublicHealthEngland/activemodel-caution.git'
 gem 'ndr_pseudonymise', '~> 0.2.6'
-gem 'ndr_authenticate', '0.2.3'
+gem 'ndr_authenticate', '0.2.3.1'
 
 gem 'axlsx'
 gem 'bootstrap-table-rails'
