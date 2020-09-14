@@ -7,36 +7,47 @@ module Import
   module Colorectal
     module Providers
       module RoyalMarsden
+        # Royal Marsden Colorectal Importer
         class RoyalMarsdenHandlerColorectal < Import::Brca::Core::ProviderHandler
           PASS_THROUGH_FIELDS_COLO = %w[age consultantcode servicereportidentifier providercode
                                         authoriseddate requesteddate practitionercode genomicchange
                                         specimentype].freeze
 
-          COLORECTAL_GENES_REGEX = /(?<colorectal> EPCAM|MLH1|MSH2|
-                                                   MSH6|PMS2)/xi .freeze # Added by
+          COLORECTAL_GENES_REGEX = /(?<colorectal>APC|
+                                                BMPR1A|
+                                                EPCAM|
+                                                MLH1|
+                                                MSH2|
+                                                MSH6|
+                                                MUTYH|
+                                                PMS2|
+                                                POLD1|
+                                                POLE|
+                                                PTEN|
+                                                SMAD4|
+                                                STK11|
+                                                NTHL1)/xi . freeze # Added by Francesco
 
           TEST_SCOPE_MAP_COLO_COLO = { 'full gene' => :full_screen,
-                                      'specific mutation' => :targeted_mutation } .freeze
+                                       'specific mutation' => :targeted_mutation } .freeze
 
           VARIANT_PATH_CLASS_COLO = { 'pathogenic mutation' => 5,
-                                     '1A' => 5,
-                                     '1B' => 4,
-                                     'Variant of uncertain significance' => 3,
-                                     'variant requiring evaluation' => 3,
-                                     '2A' => 1,
-                                     '2B' => 2,
-                                     '2C' => 3,
-                                     'variant' => 2,
-                                     '' => nil } .freeze
-                                     
+                                      '1A' => 5,
+                                      '1B' => 4,
+                                      'Variant of uncertain significance' => 3,
+                                      'variant requiring evaluation' => 3,
+                                      '2A' => 1,
+                                      '2B' => 2,
+                                      '2C' => 3,
+                                      'variant' => 2,
+                                      '' => nil } .freeze
+
           TEST_TYPE_MAP_COLO = { 'affected' => :diagnostic,
                                  'unaffected' => :predictive } .freeze
 
           CDNA_REGEX_PROT = /c\.(?<cdna>.+)(?=_p\.(?<impact>.+))/i .freeze
           CDNA_REGEX_NOPROT = /c\.(?<cdna>.+)/i .freeze
-
           DEL_DUP_REGEX = /(?<deldup>(Deletion|Duplication)) exon(s)? (?<exon>[\d]+(-[\d]+)?)/i .freeze
-
 
           def initialize(batch)
             @failed_genocolorectal_counter = 0
@@ -62,7 +73,7 @@ module Import
             process_test_type(genocolorectal, record)
             @persister.integrate_and_store(genocolorectal)
           end
-          
+
           def process_gene(genocolorectal, record)
             genes = record.raw_fields['gene']
             if COLORECTAL_GENES_REGEX.match(genes)
@@ -70,7 +81,7 @@ module Import
               @successful_gene_counter += 1
             end
           end
-          
+
           def process_varpathclass(genocolorectal, record)
             varpathclass = record.raw_fields['variantpathclass'] unless record.raw_fields['variantpathclass'].nil?
             if VARIANT_PATH_CLASS_COLO[varpathclass.strip]
@@ -81,8 +92,8 @@ module Import
           def process_teststatus(genocolorectal, record)
             teststatus = record.raw_fields['teststatus'] unless record.raw_fields['teststatus'].nil?
             if /NO PATHOGENIC (VARIANT|DEL\/DUP) IDENTIFIED/.match(teststatus) ||
-              /non-pathogenic variant detected/.match(teststatus) ||
-              /No mutation detected/.match(teststatus)
+               /non-pathogenic variant detected/.match(teststatus) ||
+               /No mutation detected/.match(teststatus)
               genocolorectal.add_status(1)
             elsif /Fail/i.match(teststatus)
               genocolorectal.add_status(9)
@@ -92,7 +103,7 @@ module Import
                   /Exon*/i.match(teststatus)
                   genocolorectal.add_status(2)
             else
-              @logger.debug "UNABLE TO DETERMINE TESTSTATUS"
+              @logger.debug 'UNABLE TO DETERMINE TESTSTATUS'
             end
           end
 
@@ -107,7 +118,7 @@ module Import
               genocolorectal.add_gene_location($LAST_MATCH_INFO[:cdna])
               @logger.debug "SUCCESSFUL cdna change parse for: #{$LAST_MATCH_INFO[:cdna]}"
             else
-              @logger.debug "NO VARIANT DETECTED"
+              @logger.debug 'NO VARIANT DETECTED'
             end
           end
 
@@ -130,7 +141,6 @@ module Import
               genocolorectal.add_exon_location($LAST_MATCH_INFO[:exon])
             end
           end
-
         end
       end
     end
