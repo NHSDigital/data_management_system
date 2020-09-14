@@ -31,7 +31,7 @@ module Export
 
     # Fields to extract
     def fields
-      %w[ccgpob ctypob ccg9pob ctyrm ctydrm ccgrm ctrypobm ctrypobf ccg9rm]
+      %w[ccgpob ctypob ccg9pob ctyrm ctydrm ccgrm ctrypobm ctrypobf ccg9rm lsoarpob lsoarm]
     end
   end
 end
