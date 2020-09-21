@@ -25,7 +25,7 @@ module Import
           LYNCH = /Trusight Cancer panel\: lynch syndrome|Bowel Cancer|Colorectal Cancer|Lynch Syndrome|Lynch syndrome/i .freeze
           LYNCH_SPECIFIC = /(?<override>for MSH6 testing|loss MLH1 and PMS2|Loss MLH1\- PMS2|Loss of MSH2 and MSH6 on IHC \+ history of endometrial and ovarian cancer|MLH1 and PMS2|MLH1 testing|MSH1\/MSH2\/MSH6 testing|msh2 \& msh6 TESTING|MSH2 and MSH6 \(if req\'d\)|MSH2 exon 5 reanalysis|MSH2 reanalysis requested|MSH6 testing)/i .freeze
           MSH2_6 = /Loss MSH2\/6/i .freeze
-          NON_LYNCH_REGEX = /Familial Adenomatous Polyposis|MAP|MUTYH common testing|MUTYH\-associated Polyposis|Trusight Cancer panel\: APC\, MUTYH|Polyp panel|Polyposis genes|Polyp panel including POLD\/E.|MUTYH-associated Polyposis\, POLD1\/POLE|Pol Proof-reading Polyposis|POLE\/POLD1|pole\/pold1 testing|POLE\/POLD1 testing as well|Peutz Jeghers Syndrome|req\. STK11 testing|stk11 testing|Cowden syndrome|PTEN Harmatoma Tumour Syn\.|For PTEN and renal cancer panel in Birmingham|Juvenile Polyposis Syndrome|SMAD4 testing requested|Hered Mixed Polyposis|GREM1|Full MYH and GREM1|Requeste full MYH and GREM1/i .freeze
+          NON_LYNCH_REGEX = /Familial Adenomatous Polyposis|MAP|MUTYH common testing|MUTYH\-associated Polyposis|Trusight Cancer panel\: APC\, MUTYH|Polyp panel including POLD\/E\.|Polyp panel|Polyposis genes|MUTYH-associated Polyposis\, POLD1\/POLE|Pol Proof-reading Polyposis|POLE\/POLD1|pole\/pold1 testing|POLE\/POLD1 testing as well|Peutz Jeghers Syndrome|req\. STK11 testing|stk11 testing|Cowden syndrome|PTEN Harmatoma Tumour Syn\.|For PTEN and renal cancer panel in Birmingham|Juvenile Polyposis Syndrome|SMAD4 testing requested|Hered Mixed Polyposis|GREM1|Full MYH and GREM1|Requeste full MYH and GREM1/i .freeze
           EXON_REGEX = /ex(?:on) (?<exno>[0-9]{1,2}(-[0-9]{1,2})?).+(?<deldupins>(del|dup|ins))|(?<deldupins>(del|dup|ins)).+ex(?:on(s)?) (?<exno>[0-9]{1,2}(-[0-9]{1,2})?)/i .freeze
           CDNA_REGEX = /c\.(?<dna>[0-9]+([a-z]+|[^[:alnum:]])([0-9]+[a-z]+>[a-z]|[0-9]+[a-z]+|[^[:alnum:]][a-z]+))/i .freeze
           PROTEIN_REGEX_COLO = /p\.(\(|\[)?(?<impact>[a-z]+[0-9]+([a-z]+[^[:alnum:]]|[a-z]+|[^[:alnum:]]))/i .freeze
@@ -113,6 +113,19 @@ module Import
             genotypes
           end
 
+
+          def negativegenes(genocolorectal, negativegenes, genotypes )
+            negativegenes.each do |genes|
+              genocolorectal1 = genocolorectal.dup_colo
+              @logger.debug "SUCCESSFUL gene parse for negative test for: #{genes}"
+              genocolorectal1.add_status(1)
+              genocolorectal1.add_gene_colorectal(genes)
+              genocolorectal1.add_protein_impact(nil)
+              genocolorectal1.add_gene_location(nil)
+              genotypes.append(genocolorectal1)
+            end
+          end
+
           def lynchgenes(raw_genotype, _clinicomm, genocolorectal, genotypes)
             lynchgenes = %w[MLH1 MSH2 MSH6 EPCAM]
             if raw_genotype.scan(COLORECTAL_GENES_REGEX).size > 0
@@ -135,30 +148,14 @@ module Import
                   genotypes.append(mutatedgenotype)
                 end
                 negativegenes = lynchgenes - mutatedgene
-                negativegenes.each do |genes|
-                  genocolorectal1 = genocolorectal.dup_colo
-                  @logger.debug "SUCCESSFUL gene parse for negative test for: #{genes}"
-                  genocolorectal1.add_status(1)
-                  genocolorectal1.add_gene_colorectal(genes)
-                  genocolorectal1.add_protein_impact(nil)
-                  genocolorectal1.add_gene_location(nil)
-                  genotypes.append(genocolorectal1)
-                end
+                negativegenes(genocolorectal, negativegenes, genotypes)
               elsif EXON_REGEX.match(raw_genotype) && raw_genotype !~ CDNA_REGEX
                 @logger.debug "Found LYNCH CHROMOSOME #{EXON_REGEX.match(raw_genotype)[:deldupins]} "\
                 "in #{COLORECTAL_GENES_REGEX.match(raw_genotype)[:colorectal]} LYNCH RELATED GENE at "\
                 "position #{EXON_REGEX.match(raw_genotype)[:exno]}"
                 mutatedgene = raw_genotype.scan(COLORECTAL_GENES_REGEX).flatten
                 negativegenes = lynchgenes - mutatedgene
-                negativegenes.each do |genes|
-                  genocolorectal1 = genocolorectal.dup_colo
-                  @logger.debug "SUCCESSFUL gene parse for negative test for: #{genes}"
-                  genocolorectal1.add_status(1)
-                  genocolorectal1.add_gene_colorectal(genes)
-                  genocolorectal1.add_protein_impact(nil)
-                  genocolorectal1.add_gene_location(nil)
-                  genotypes.append(genocolorectal1)
-                end
+                negativegenes(genocolorectal, negativegenes, genotypes)
                 genocolorectal.add_gene_colorectal(COLORECTAL_GENES_REGEX.match(raw_genotype)[:colorectal])
                 genocolorectal.add_exon_location(EXON_REGEX.match(raw_genotype)[:exno])
                 genocolorectal.add_variant_type(EXON_REGEX.match(raw_genotype)[:deldupins])
@@ -166,15 +163,7 @@ module Import
               elsif EXON_REGEX.match(raw_genotype) && CDNA_REGEX.match(raw_genotype)
                 mutatedgene = raw_genotype.scan(COLORECTAL_GENES_REGEX).flatten
                 negativegenes = lynchgenes - mutatedgene
-                negativegenes.each do |genes|
-                  genocolorectal1 = genocolorectal.dup_colo
-                  @logger.debug "SUCCESSFUL gene parse for negative test for: #{genes}"
-                  genocolorectal1.add_status(1)
-                  genocolorectal1.add_gene_colorectal(genes)
-                  genocolorectal1.add_protein_impact(nil)
-                  genocolorectal1.add_gene_location(nil)
-                  genotypes.append(genocolorectal1)
-                end
+                negativegenes(genocolorectal, negativegenes, genotypes)
                 mutatedexongenotype = genocolorectal.dup_colo
                 mutatedexongenotype.add_gene_colorectal(raw_genotype.scan(COLORECTAL_GENES_REGEX)[0].join)
                 mutatedexongenotype.add_exon_location(EXON_REGEX.match(raw_genotype)[:exno])
@@ -190,15 +179,7 @@ module Import
               elsif raw_genotype == 'MSH2 c.1760-2_1783del p.(Gly587Aspfs*6)'
                 mutatedgene = raw_genotype.scan(COLORECTAL_GENES_REGEX).flatten
                 negativegenes = lynchgenes - mutatedgene
-                negativegenes.each do |genes|
-                  genocolorectal1 = genocolorectal.dup_colo
-                  @logger.debug "SUCCESSFUL gene parse for negative test for: #{genes}"
-                  genocolorectal1.add_status(1)
-                  genocolorectal1.add_gene_colorectal(genes)
-                  genocolorectal1.add_protein_impact(nil)
-                  genocolorectal1.add_gene_location(nil)
-                  genotypes.append(genocolorectal1)
-                end
+                negativegenes(genocolorectal, negativegenes, genotypes)
                 genocolorectal.add_gene_colorectal('MSH2')
                 genocolorectal.add_gene_location('1760-2_1783del')
                 genocolorectal.add_protein_impact('Gly587Aspfs*')
@@ -206,15 +187,7 @@ module Import
               elsif raw_genotype == 'MSH2 del exon11'
                 mutatedgene = raw_genotype.scan(COLORECTAL_GENES_REGEX).flatten
                 negativegenes = lynchgenes - mutatedgene
-                negativegenes.each do |genes|
-                  genocolorectal1 = genocolorectal.dup_colo
-                  @logger.debug "SUCCESSFUL gene parse for negative test for: #{genes}"
-                  genocolorectal1.add_status(1)
-                  genocolorectal1.add_gene_colorectal(genes)
-                  genocolorectal1.add_protein_impact(nil)
-                  genocolorectal1.add_gene_location(nil)
-                  genotypes.append(genocolorectal1)
-                end
+                negativegenes(genocolorectal, negativegenes, genotypes)
                 genocolorectal.add_gene_colorectal('MSH2')
                 genocolorectal.add_exon_location('11')
                 genocolorectal.add_variant_type('del')
@@ -222,15 +195,7 @@ module Import
               elsif raw_genotype == "MSH2 ex1-6 duplication"
                 mutatedgene = raw_genotype.scan(COLORECTAL_GENES_REGEX).flatten
                 negativegenes = lynchgenes - mutatedgene
-                negativegenes.each do |genes|
-                  genocolorectal1 = genocolorectal.dup_colo
-                  @logger.debug "SUCCESSFUL gene parse for negative test for: #{genes}"
-                  genocolorectal1.add_status(1)
-                  genocolorectal1.add_gene_colorectal(genes)
-                  genocolorectal1.add_protein_impact(nil)
-                  genocolorectal1.add_gene_location(nil)
-                  genotypes.append(genocolorectal1)
-                end
+                negativegenes(genocolorectal, negativegenes, genotypes)
                 genocolorectal.add_gene_colorectal('MSH2')
                 genocolorectal.add_exon_location('1-6')
                 genocolorectal.add_variant_type('dup')
@@ -238,15 +203,7 @@ module Import
               elsif raw_genotype == "MSH2 ex11del"
                 mutatedgene = raw_genotype.scan(COLORECTAL_GENES_REGEX).flatten
                 negativegenes = lynchgenes - mutatedgene
-                negativegenes.each do |genes|
-                  genocolorectal1 = genocolorectal.dup_colo
-                  @logger.debug "SUCCESSFUL gene parse for negative test for: #{genes}"
-                  genocolorectal1.add_status(1)
-                  genocolorectal1.add_gene_colorectal(genes)
-                  genocolorectal1.add_protein_impact(nil)
-                  genocolorectal1.add_gene_location(nil)
-                  genotypes.append(genocolorectal1)
-                end
+                negativegenes(genocolorectal, negativegenes, genotypes)
                 genocolorectal.add_gene_colorectal('MSH2')
                 genocolorectal.add_exon_location('11')
                 genocolorectal.add_variant_type('del')
@@ -254,30 +211,14 @@ module Import
               elsif raw_genotype == 'MLH1 c.532delG'
                 mutatedgene = raw_genotype.scan(COLORECTAL_GENES_REGEX).flatten
                 negativegenes = lynchgenes - mutatedgene
-                negativegenes.each do |genes|
-                  genocolorectal1 = genocolorectal.dup_colo
-                  @logger.debug "SUCCESSFUL gene parse for negative test for: #{genes}"
-                  genocolorectal1.add_status(1)
-                  genocolorectal1.add_gene_colorectal(genes)
-                  genocolorectal1.add_protein_impact(nil)
-                  genocolorectal1.add_gene_location(nil)
-                  genotypes.append(genocolorectal1)
-                end
+                negativegenes(genocolorectal, negativegenes, genotypes)
                 genocolorectal.add_gene_colorectal('MLH1')
                 genocolorectal.add_gene_location('532delG')
                 genotypes.append(genocolorectal)
               elsif raw_genotype == 'Deletion including EPCAM ex2-9 and MSH2 ex 1-5'
                 mutatedgene = raw_genotype.scan(COLORECTAL_GENES_REGEX).flatten
                 negativegenes = lynchgenes - mutatedgene
-                negativegenes.each do |genes|
-                  genocolorectal1 = genocolorectal.dup_colo
-                  @logger.debug "SUCCESSFUL gene parse for negative test for: #{genes}"
-                  genocolorectal1.add_status(1)
-                  genocolorectal1.add_gene_colorectal(genes)
-                  genocolorectal1.add_protein_impact(nil)
-                  genocolorectal1.add_gene_location(nil)
-                  genotypes.append(genocolorectal1)
-                end
+                negativegenes(genocolorectal, negativegenes, genotypes)
                 genocolorectal2 = genocolorectal.dup_colo
                 genocolorectal2.add_gene_colorectal(raw_genotype.scan(COLORECTAL_GENES_REGEX).flatten[0])
                 genocolorectal2.add_exon_location('2-9')
@@ -290,27 +231,11 @@ module Import
               elsif raw_genotype == "No mutation detected in MLH1"
                 mutatedgene = raw_genotype.scan(COLORECTAL_GENES_REGEX).flatten
                 negativegenes = lynchgenes - mutatedgene
-                negativegenes.each do |genes|
-                  genocolorectal1 = genocolorectal.dup_colo
-                  @logger.debug "SUCCESSFUL gene parse for negative test for: #{genes}"
-                  genocolorectal1.add_status(1)
-                  genocolorectal1.add_gene_colorectal(genes)
-                  genocolorectal1.add_protein_impact(nil)
-                  genocolorectal1.add_gene_location(nil)
-                  genotypes.append(genocolorectal1)
-                end
+                negativegenes(genocolorectal, negativegenes, genotypes)
               elsif raw_genotype == 'MSH2 ex7del'
                 mutatedgene = raw_genotype.scan(COLORECTAL_GENES_REGEX).flatten
                 negativegenes = lynchgenes - mutatedgene
-                negativegenes.each do |genes|
-                  genocolorectal1 = genocolorectal.dup_colo
-                  @logger.debug "SUCCESSFUL gene parse for negative test for: #{genes}"
-                  genocolorectal1.add_status(1)
-                  genocolorectal1.add_gene_colorectal(genes)
-                  genocolorectal1.add_protein_impact(nil)
-                  genocolorectal1.add_gene_location(nil)
-                  genotypes.append(genocolorectal1)
-                end
+                negativegenes(genocolorectal, negativegenes, genotypes)
                 genocolorectal.add_gene_colorectal('MSH2')
                 genocolorectal.add_exon_location('7')
                 genocolorectal.add_variant_type('del')
@@ -371,15 +296,7 @@ module Import
                 mutatedgene = raw_genotype.scan(COLORECTAL_GENES_REGEX).flatten
                 lynchgenes_spec = clinicomm.scan(COLORECTAL_GENES_REGEX).flatten.map(&:upcase)
                 negativegenes = lynchgenes_spec - mutatedgene
-                negativegenes.each do |genes|
-                  genocolorectal1 = genocolorectal.dup_colo
-                  @logger.debug "SUCCESSFUL gene parse for negative test for: #{genes}"
-                  genocolorectal1.add_status(1)
-                  genocolorectal1.add_gene_colorectal(genes)
-                  genocolorectal1.add_protein_impact(nil)
-                  genocolorectal1.add_gene_location(nil)
-                  genotypes.append(genocolorectal1)
-                end
+                negativegenes(genocolorectal, negativegenes, genotypes)
                 genocolorectal.add_gene_colorectal(COLORECTAL_GENES_REGEX.match(raw_genotype)[:colorectal])
                 genocolorectal.add_exon_location(EXON_REGEX.match(raw_genotype)[:exno])
                 genocolorectal.add_variant_type(EXON_REGEX.match(raw_genotype)[:deldupins])
@@ -395,15 +312,7 @@ module Import
                 mutatedgene = raw_genotype.scan(COLORECTAL_GENES_REGEX).flatten
                 lynchgenes_spec = clinicomm.scan(COLORECTAL_GENES_REGEX).flatten.map(&:upcase)
                 negativegenes = lynchgenes_spec - mutatedgene
-                negativegenes.each do |genes|
-                  genocolorectal1 = genocolorectal.dup_colo
-                  @logger.debug "SUCCESSFUL gene parse for negative test for: #{genes}"
-                  genocolorectal1.add_status(1)
-                  genocolorectal1.add_gene_colorectal(genes)
-                  genocolorectal1.add_protein_impact(nil)
-                  genocolorectal1.add_gene_location(nil)
-                  genotypes.append(genocolorectal1)
-                end
+                negativegenes(genocolorectal, negativegenes, genotypes)
                 mutatedexongenotype = genocolorectal.dup_colo
                 mutatedexongenotype.add_gene_colorectal(raw_genotype.scan(COLORECTAL_GENES_REGEX)[0].join)
                 mutatedexongenotype.add_exon_location(EXON_REGEX.match(raw_genotype)[:exno])
@@ -438,7 +347,7 @@ module Import
                 mutatedcdna = raw_genotype.scan(CDNA_REGEX).flatten
                 mutatedprotein = raw_genotype.scan(PROTEIN_REGEX_COLO).flatten
                 mutations = mutatedgene.zip(mutatedcdna, mutatedprotein)
-                @logger.debug 'Found BROAD LYNCH dna mutation in ' \
+                @logger.debug 'Found SPECIFIC LYNCH dna mutation in ' \
                 "#{raw_genotype.scan(COLORECTAL_GENES_REGEX)} LYNCH SPECIFIC GENE(s) in "\
                 "position #{raw_genotype.scan(CDNA_REGEX)}" \
                 " with impact #{raw_genotype.scan(PROTEIN_REGEX_COLO)}"
@@ -452,15 +361,7 @@ module Import
                   genotypes.append(mutatedgenotype)
                 end
                 negativegenes = %w[MSH2 MSH6] - mutatedgene
-                negativegenes.each do |genes|
-                  genocolorectal1 = genocolorectal.dup_colo
-                  @logger.debug "SUCCESSFUL gene parse for negative test for: #{genes}"
-                  genocolorectal1.add_status(1)
-                  genocolorectal1.add_gene_colorectal(genes)
-                  genocolorectal1.add_protein_impact(nil)
-                  genocolorectal1.add_gene_location(nil)
-                  genotypes.append(genocolorectal1)
-                end
+                negativegenes(genocolorectal, negativegenes, genotypes)
               elsif EXON_REGEX.match(raw_genotype) && raw_genotype !~ CDNA_REGEX
                 @logger.debug 'Found LYNCH CHROMOSOME ' \
                 "#{EXON_REGEX.match(raw_genotype)[:deldupins]} " \
@@ -469,15 +370,7 @@ module Import
                 "position #{EXON_REGEX.match(raw_genotype)[:exno]}"
                 mutatedgene = raw_genotype.scan(COLORECTAL_GENES_REGEX).flatten
                 negativegenes = %w[MSH2 MSH6] - mutatedgene
-                negativegenes.each do |genes|
-                  genocolorectal1 = genocolorectal.dup_colo
-                  @logger.debug "SUCCESSFUL gene parse for negative test for: #{genes}"
-                  genocolorectal1.add_status(1)
-                  genocolorectal1.add_gene_colorectal(genes)
-                  genocolorectal1.add_protein_impact(nil)
-                  genocolorectal1.add_gene_location(nil)
-                  genotypes.append(genocolorectal1)
-                end
+                negativegenes(genocolorectal, negativegenes, genotypes)
                 genocolorectal.add_gene_colorectal(COLORECTAL_GENES_REGEX.match(raw_genotype)[:colorectal])
                 genocolorectal.add_exon_location(EXON_REGEX.match(raw_genotype)[:exno])
                 genocolorectal.add_variant_type(EXON_REGEX.match(raw_genotype)[:deldupins])
@@ -485,15 +378,7 @@ module Import
               elsif EXON_REGEX.match(raw_genotype) && CDNA_REGEX.match(raw_genotype)
                 mutatedgene = raw_genotype.scan(COLORECTAL_GENES_REGEX).flatten
                 negativegenes = %w[MSH2 MSH6] - mutatedgene
-                negativegenes.each do |genes|
-                  genocolorectal1 = genocolorectal.dup_colo
-                  @logger.debug "SUCCESSFUL gene parse for negative test for: #{genes}"
-                  genocolorectal1.add_status(1)
-                  genocolorectal1.add_gene_colorectal(genes)
-                  genocolorectal1.add_protein_impact(nil)
-                  genocolorectal1.add_gene_location(nil)
-                  genotypes.append(genocolorectal1)
-                end
+                negativegenes(genocolorectal, negativegenes, genotypes)
                 mutatedexongenotype = genocolorectal.dup_colo
                 mutatedexongenotype.add_gene_colorectal(raw_genotype.scan(COLORECTAL_GENES_REGEX)[0].join)
                 mutatedexongenotype.add_exon_location(EXON_REGEX.match(raw_genotype)[:exno])
@@ -563,10 +448,10 @@ module Import
                 nonlynchgenes = []
                 clinicomm.scan(NON_LYNCH_REGEX).each \
                 { |x| nonlynchgenes.append(NON_LYNCH_MAP[x]) }
-                negativegenes = nonlynchgenes - mutatedgene
+                negativegenes = nonlynchgenes.flatten.uniq - mutatedgene
                 if negativegenes.any?
                   @logger.debug 'SUCCESSFUL gene parse for NEGATIVE test IN ' \
-                  "NON LYNCH for: #{negativegenes}"
+                  "NON LYNCH for: #{negativegenes.flatten.uniq}"
                   negativegenes.flatten.uniq.each do |genes|
                     genocolorectal1 = genocolorectal.dup_colo
                     @logger.debug 'SUCCESSFUL gene parse for NEGATIVE test IN ' \
