@@ -24,11 +24,12 @@ module Export
               685\z|7400\z|752\z|753.*\z|760\z|7643\z|765\z|7660\z|7662\z|7671\z|825.*\z|8280\z|
               8281\z|833\z|845\z|846\z|8911\z|899\z|95.*\z).*)\z
     /x.freeze
-    # Rare disease pattern, plan.io task #14947
-    RD_PATTERN = /\A(E830|G903)\z
+    # Rare disease pattern, plan.io task #14947, details in #match_rare_disease_row?
+    RD_PATTERN = /\A(D761|D762|D763|E830|M313|M317|M301|M314|I776|I778|M352|M315|M316|M321|
+      M330|M332|M331|M339|M340|M341|M348|M349|M083|M084|M082|M080|M300|M308|J991|N085|N164|
+      M328|M329|M609|G724|M608|M089|G903)\z
     /x.freeze
-    # Rare disease extracts must match all ICD codes from RD_PATTERN, and all word fragments in
-    # one of the RD_STRING_PATTERNS arrays of CODT free-text regular expressions
+    RD_PATTERN_POST_2015 = /\A(Q.*)\z/.freeze
     RD_STRING_PATTERNS = [[/LSTR/, /SYND/],
                           [/MENK/],
                           [/WOLFRAM/],
@@ -126,14 +127,19 @@ module Export
 
     def match_icd_pattern?(ppat)
       pattern = SURVEILLANCE_CODES[@filter]
-      @icd_fields_all.any? { |field| ppat.death_data[field] =~ pattern }
+      @icd_fields_all.any? { |field| pattern.match?(ppat.death_data[field]) }
     end
 
     # Rare disease inclusion criteria
-    # Rare disease extracts must match all ICD codes from RD_PATTERN, and all word fragments in
-    # one of the RD_STRING_PATTERNS arrays of CODT free-text regular expressions
+    # Rare disease extracts must match any ICD codes from RD_PATTERN, or any ICD codes in
+    # RD_PATTERN_POST_2015 for deaths from 2015-01-01 onwards, or any word fragments in
+    # any of the RD_STRING_PATTERNS arrays of CODT free-text regular expressions
     def match_rare_disease_row?(ppat)
       return true if match_icd_pattern?(ppat)
+      if ppat.death_data.dodyr.to_i >= 2015 &&
+         @icd_fields_all.any? { |field| RD_PATTERN_POST_2015.match?(ppat.death_data[field]) }
+        return true
+      end
 
       # Match words within each of the CODT fields, or across all CODFFT
       all_codt = if ppat.death_data.read_attribute('codfft_1').blank?
@@ -172,13 +178,11 @@ module Export
     def extract_field(ppat, field)
       # Special fields not in the original spec
       case field
-      when 'space1'
-        return ' '
       when 'creg_fnamd' # First 3 forenames, space separated at 20 character intervals
         # (The specification says delimiter present at position 21, but this isn't reflected in
         #  the historical cancer deaths files received)
-        # return %w(fnamd1 fnamd2 fnamd3).collect { |f| [super(ppat, f)].pack('A20') }.join(' ')
-        return %w(fnamd1 fnamd2 fnamd3).collect { |f| [super(ppat, f)].pack('A19') }.join(' ').
+        # return %w[fnamd1 fnamd2 fnamd3].collect { |f| [super(ppat, f)].pack('A20') }.join(' ')
+        return %w[fnamd1 fnamd2 fnamd3].collect { |f| [super(ppat, f)].pack('A19') }.join(' ').
                rstrip
       when 'creg_aliasd_all' # Concatenate all aliases
         return [super(ppat, 'aliasd_1'), super(ppat, 'aliasd_2')].compact.join(' ')
