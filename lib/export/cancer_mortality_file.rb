@@ -49,8 +49,6 @@ module Export
         return '   ' # Spaces 2013/2014 onwards instead of OCC90DM and OCC90HF
       when 'space2'
         return '  '
-      when 'space1'
-        return ' '
       when 'blank'
         return '' # TODO: Refactor into DeathFile
       when 'creg_pcdind' # PCDIND not extracted for MBIS
