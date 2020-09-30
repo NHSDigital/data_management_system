@@ -106,10 +106,22 @@ module Export
       else
         return false unless match_icd_pattern?(ppat)
       end
-      if %w[cara cara_all rd rd_all].include?(@filter) &&
+      if %w[cara cara_all].include?(@filter) &&
+         (!%w[921 926 969].include?(ppat.death_data['ctrypob']) ||
+          extract_field(ppat, 'por_in_england').zero?) &&
+         !extract_field(ppat, 'patientid')
+        # For CARA, exclude death matches for patients not born in England or not resident
+        # in England. CARA don't want patients resident overseas who died in England.
+        # Country codes: 921 = ENGLAND, 926 = UNITED KINGDOM NOT OTHERWISE SPECIFIED
+        # 969 seems to be a weird catch-all code not on the official list
+        #     - presumably a generic "unknown"
+        # https://www.ons.gov.uk/methodology/classificationsandstandards/otherclassifications/nationalstatisticscountryclassification
+        return false
+      end
+      if %w[rd rd_all].include?(@filter) &&
          (ppat.death_data['gorr'] == 'W' || ppat.death_data['gor9r'] == 'W99999999') &&
          !extract_field(ppat, 'patientid')
-        # For CARA / RD, exclude death matches for patients in Wales, except when extracting
+        # For RD, exclude death matches for patients in Wales, except when extracting
         # matching death details for known patients.
         return false
       end
