@@ -74,6 +74,8 @@ module Export
 
     def initialize(filename, e_type, ppats, filter = 'cd', ppatid_rowids: nil)
       super
+      raise "Unknown pattern #{filter.inspect}" unless SURVEILLANCE_CODES.key?(filter)
+
       @col_pattern = table_mapping.collect do |col|
         [col['column'] || col['standard_mapping'],
          col['unpack_pattern'].tr('a', 'A')] # Space separate, not null separate
