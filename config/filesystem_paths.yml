@@ -25,10 +25,12 @@
   xml_files:
     root: <%= Rails.root.join('test', 'xml_files') %>
     prms: [r]
+  coverage_test_pseudos:
+    root: <%= Rails.root.join('test', 'dummy_pseudo_files') %>
+    prms: [r]  
   tmp:
     root: <%= Rails.root.join('tmp') %>
     prms: [r]
   db_files:
     root: <%= Rails.root.join('db', 'files') %>
     prms: [r]
-    
