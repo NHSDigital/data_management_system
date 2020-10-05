@@ -56,7 +56,6 @@ module Import
               rawtext = JSON.parse(fields['rawtext_clinical.to_json'])
               grouping << rawtext['servicereportidentifier']
               grouping << rawtext['authoriseddate']
-              binding.pry
               grouping
             end
             cleaned_records = []
