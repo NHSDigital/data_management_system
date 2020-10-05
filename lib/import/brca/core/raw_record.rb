@@ -46,8 +46,8 @@ module Import
         end
 
         def raw_all
-          @raw_fields.merge('encrypted_rawtext_demog' => @raw_text,
-                            'encrypted_demog' => @fields['encrypted_demog'])
+          @raw_fields.collect { |raw_field| raw_field.merge('encrypted_rawtext_demog' => @raw_text,
+                            'encrypted_demog' => @fields['encrypted_demog'])}
         end
 
         def eql?(other)
