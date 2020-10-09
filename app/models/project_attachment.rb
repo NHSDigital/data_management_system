@@ -70,7 +70,8 @@ class ProjectAttachment < ApplicationRecord
           Names::REC_APPROVAL,
           Names::CALDICOTT_LETTER,
           Names::EXEMPTION_251,
-          Names::SLSP
+          Names::SLSP,
+          Names::DATA_END_USERS
         ]
       elsif project.application?
         [
