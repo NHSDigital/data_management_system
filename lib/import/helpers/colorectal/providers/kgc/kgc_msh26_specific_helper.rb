@@ -39,7 +39,7 @@ module Import
               " with impact #{raw_genotype.scan(PROTEIN_REGEX_COLO)}"
               process_mutated_genes(mutations, genocolorectal, genotypes)
               negativegenes = MSH2_MSH6_GENES - mutatedgene
-              add_negative_test_for(negativegenes, genotypes, genocolorectal)
+              add_negative_test_for(negativegenes, genotypes, genocolorectal, NEGATIVE_TEST_LOG)
             end
 
             def process_msh26_specific_specific_exon(raw_genotype, genocolorectal, genotypes)
@@ -50,7 +50,7 @@ module Import
               "position #{EXON_REGEX.match(raw_genotype)[:exno]}"
               mutatedgene   = raw_genotype.scan(COLORECTAL_GENES_REGEX).flatten
               negativegenes = MSH2_MSH6_GENES - mutatedgene
-              add_negative_test_for(negativegenes, genotypes, genocolorectal)
+              add_negative_test_for(negativegenes, genotypes, genocolorectal, NEGATIVE_TEST_LOG)
               result = { gene: coloractal_gene_from(raw_genotype), exon: exon_from(raw_genotype),
                          variant: variant_from(raw_genotype) }
               add_result_to(genocolorectal, genotypes, result)
@@ -60,7 +60,7 @@ module Import
                                                                      genotypes)
               mutatedgene   = raw_genotype.scan(COLORECTAL_GENES_REGEX).flatten
               negativegenes = %w[MSH2 MSH6] - mutatedgene
-              add_negative_test_for(negativegenes, genotypes, genocolorectal)
+              add_negative_test_for(negativegenes, genotypes, genocolorectal, NEGATIVE_TEST_LOG)
               mutatedexongenotype = genocolorectal.dup_colo
               add_mutated_result_to(mutatedexongenotype, raw_genotype, genotypes)
 
