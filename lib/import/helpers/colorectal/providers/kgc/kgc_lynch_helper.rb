@@ -83,7 +83,7 @@ module Import
               mutatedgene   = raw_genotype.scan(COLORECTAL_GENES_REGEX).flatten
               negativegenes = LYNCHGENES - mutatedgene
               add_negative_test_for(negativegenes, genotypes, genocolorectal, NEGATIVE_TEST_LOG)
-              result_details = { gene: 'MSH2', exon: '1760-2_1783del', protein: 'Gly587Aspfs*' }
+              result_details = { gene: 'MSH2', gene_location: '1760-2_1783del', protein: 'Gly587Aspfs*' }
               add_result_to(genocolorectal, genotypes, result_details)
             end
 
@@ -107,7 +107,7 @@ module Import
               mutatedgene   = raw_genotype.scan(COLORECTAL_GENES_REGEX).flatten
               negativegenes = LYNCHGENES - mutatedgene
               add_negative_test_for(negativegenes, genotypes, genocolorectal, NEGATIVE_TEST_LOG)
-              add_result_to(genocolorectal, genotypes, gene: 'MLH1', exon: '532delG')
+              add_result_to(genocolorectal, genotypes, gene: 'MLH1', gene_location: '532delG')
             end
 
             def lynchgene_deletion_epcam(raw_genotype, genocolorectal, genotypes)
