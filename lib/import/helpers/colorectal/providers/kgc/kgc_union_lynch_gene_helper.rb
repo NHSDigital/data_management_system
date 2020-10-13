@@ -136,7 +136,8 @@ module Import
               nonlynchgenes = non_lynch_genes_from(clinicomm)
               uniongenes    = lynchgenes + nonlynchgenes.flatten
               negativegenes = uniongenes.uniq - mutatedgene
-              process_negative_genes(negativegenes, genotypes, genocolorectal, logging)
+              process_negative_genes(negativegenes, genotypes, genocolorectal,
+                                     NEGATIVE_NON_LYNCH_TEST_LOG)
 
               result = { gene: 'MSH6', gene_location: '*24_28del' }
               add_result_to(genocolorectal, genotypes, result)
