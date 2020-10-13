@@ -42,7 +42,7 @@ class ProjectAttachmentsController < ApplicationController
       # send mail
     else
       if @project_attachment.name == 'Data End Users'
-        flash[:error] = 'Invalid file format please check format and re-upload'
+        flash[:error] = @project_attachment.errors.full_messages
         redirect_to project_path(@project, anchor: '!users')
       else
         redirect_to project_path(@project, anchor: '!uploads'),
