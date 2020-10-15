@@ -27,6 +27,16 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
+-- Name: a; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.a (
+    id integer,
+    val text
+);
+
+
+--
 -- Name: addresses; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -134,6 +144,16 @@ CREATE TABLE public.ar_internal_metadata (
     value character varying,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: b; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.b (
+    id integer,
+    val text
 );
 
 
@@ -361,6 +381,32 @@ CREATE SEQUENCE public.closure_reasons_id_seq
 --
 
 ALTER SEQUENCE public.closure_reasons_id_seq OWNED BY public.closure_reasons.id;
+
+
+--
+-- Name: colorectal_tab2_all; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.colorectal_tab2_all (
+    gene text,
+    prov_name text,
+    provider character varying,
+    full_screen_count bigint,
+    full_screen_path_count bigint
+);
+
+
+--
+-- Name: colorectal_tab2_all_no_overlap; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.colorectal_tab2_all_no_overlap (
+    gene text,
+    prov_name text,
+    provider character varying(255),
+    full_screen_count bigint,
+    full_screen_path_count bigint
+);
 
 
 --
@@ -1572,6 +1618,23 @@ CREATE TABLE public.error_logs (
 
 
 --
+-- Name: fs_pathogenic; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.fs_pathogenic (
+    pseudo_id1 text,
+    pseudo_id2 text,
+    codingdnasequencechange text,
+    proteinimpact text,
+    variantpathclass numeric,
+    moleculartestingtype integer,
+    genetictestscope text,
+    teststatus numeric(19,0),
+    gene text
+);
+
+
+--
 -- Name: genetic_sequence_variants; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -2264,6 +2327,29 @@ CREATE SEQUENCE public.outputs_id_seq
 --
 
 ALTER SEQUENCE public.outputs_id_seq OWNED BY public.outputs.id;
+
+
+--
+-- Name: pids; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.pids (
+    id1 text,
+    id2 text
+);
+
+
+--
+-- Name: possibly_nulls; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.possibly_nulls (
+    pseudo_id1 text,
+    pseudo_id2 text,
+    provider character varying,
+    teststatus numeric(19,0),
+    raw_record text
+);
 
 
 --
@@ -3289,6 +3375,28 @@ ALTER SEQUENCE public.releases_id_seq OWNED BY public.releases.id;
 
 
 --
+-- Name: rnz; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.rnz (
+    gene text,
+    count bigint
+);
+
+
+--
+-- Name: rtd_variants; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.rtd_variants (
+    gene text,
+    codingdnasequencechange text,
+    genetictestscope text,
+    count bigint
+);
+
+
+--
 -- Name: schema_migrations; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -3326,6 +3434,17 @@ CREATE SEQUENCE public.security_assurances_id_seq
 --
 
 ALTER SEQUENCE public.security_assurances_id_seq OWNED BY public.security_assurances.id;
+
+
+--
+-- Name: strange_pids_var; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.strange_pids_var (
+    pseudo_id1 text,
+    pseudo_id2 text,
+    provider character varying
+);
 
 
 --
@@ -3657,6 +3776,18 @@ CREATE SEQUENCE public.users_id_seq
 --
 
 ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
+
+
+--
+-- Name: variants_count; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.variants_count (
+    genes text,
+    codingdnasequencechange text,
+    genetictestscope text,
+    count bigint
+);
 
 
 --
@@ -7528,6 +7659,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20200819162818'),
 ('20200820153644'),
 ('20200821134109'),
-('20200821134630');
+('20200821134630'),
+('20201015135259');
 
 
