@@ -3,3 +3,10 @@ ebatch1:
   provider: ABC
   registryid: Y0401
 
+colorectal_batch:
+  provider: RGT
+  registryid: Y0401
+  e_type: PSMOLE
+  date_reference1: '2020.01.01'
+  date_reference2: '2020.01.31'
+  original_filename: 'colorectal/dummy_rgt_pseudo.pseudo'

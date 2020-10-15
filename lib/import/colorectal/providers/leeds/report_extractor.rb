@@ -1,6 +1,6 @@
 require 'import/central_logger'
-require 'core/extraction_utilities'
-require 'pry'
+require 'import/brca/core/extraction_utilities'
+
 module Import
   module Colorectal
     module Providers

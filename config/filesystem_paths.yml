@@ -31,4 +31,7 @@
   db_files:
     root: <%= Rails.root.join('db', 'files') %>
     prms: [r]
+  test_files:
+    root: <%= Rails.root.join('test', 'models', 'test_files') %>
+    prms: [r]
     
