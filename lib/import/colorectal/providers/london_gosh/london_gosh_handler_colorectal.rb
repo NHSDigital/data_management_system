@@ -46,8 +46,8 @@ module Import
           TEST_TYPE_MAP_COLO = { 'affected' => :diagnostic,
                                  'unaffected' => :predictive } .freeze
 
-                                 CDNA_REGEX = /\:c\.(?<cdna>.+)/i .freeze
-                                 PROT_REGEX = /p\.(?<impact>.+)/i .freeze
+          CDNA_REGEX = /\:c\.(?<cdna>.+)/i .freeze
+          PROT_REGEX = /p\.(?<impact>.+)/i .freeze
           DEL_DUP_REGEX = /exon(s)? (?<exon>[\d]+(-[\d]+)?) (?<deldup>(Deletion|Duplication))/i .freeze
 
           def initialize(batch)
@@ -68,9 +68,8 @@ module Import
             genocolorectal.add_test_scope(:full_screen)
             process_varpathclass(genocolorectal, record)
             # process_gene_and_variant(genocolorectal, record)
-            res = process_gene_and_variant(genocolorectal,record)
+            res = process_gene_and_variant(genocolorectal, record)
             res.map { |cur_genotype| @persister.integrate_and_store(cur_genotype) }
-            
             # @persister.integrate_and_store(genocolorectal)
           end
 
@@ -95,7 +94,7 @@ module Import
 
           def negative_genes(genocolorectal, genotypes, all_genes)
             if all_genes.present?
-              @logger.debug("NO MUTATION FOUND")
+              @logger.debug('NO MUTATION FOUND')
               negative_genes = all_genes.split(';')
               process_negative_genes(negative_genes, genocolorectal, all_genes, genotypes)
             end
@@ -108,7 +107,7 @@ module Import
             end
           end
 
-          def process_negative_genes(negative_genes, genocolorectal, all_genes, genotypes)
+          def process_negative_genes(negative_genes, genocolorectal, _all_genes, genotypes)
             @logger.debug("Negative genes are #{negative_genes}")
             negative_genes.each { |neg_gene|
               duplicated_genotype = genocolorectal.dup_colo
@@ -117,7 +116,6 @@ module Import
               genotypes.append(duplicated_genotype)
             }
           end
-          
 
           def coding_variant(genocolorectal, genotypes, mutated_gene, dna_variant, protein_variant, all_genes)
             mut_gene = COLORECTAL_GENES_REGEX.match(mutated_gene)[:colorectal]
@@ -151,10 +149,9 @@ module Import
               genocolorectal.add_variant_class(varpathclass.to_i)
               @logger.debug("Assigned varpathclass = #{varpathclass} to genotype")
             else
-              @logger.debug("Impossible to assign varpathclass to genotype")
+              @logger.debug('Impossible to assign varpathclass to genotype')
             end
           end
-
         end
       end
     end
