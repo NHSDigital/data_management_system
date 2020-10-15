@@ -10,7 +10,8 @@ module Import
         # Royal Marsden Colorectal Importer
         class LondonGoshHandlerColorectal < Import::Brca::Core::ProviderHandler
           PASS_THROUGH_FIELDS_COLO = %w[age consultantcode servicereportidentifier providercode
-                                        authoriseddate requesteddate practitionercode genomicchange
+                                        authoriseddate requesteddate collecteddate
+                                        receiveddate practitionercode genomicchange
                                         specimentype].freeze
 
           COLORECTAL_GENES_REGEX = /(?<colorectal>APC|
@@ -110,10 +111,10 @@ module Import
           def process_negative_genes(negative_genes, genocolorectal, all_genes, genotypes)
             @logger.debug("Negative genes are #{negative_genes}")
             negative_genes.each { |neg_gene|
-              genocolorectal1 = genocolorectal.dup_colo
-              genocolorectal1.add_gene_colorectal(neg_gene)
-              genocolorectal1.add_status(1)
-              genotypes.append(genocolorectal1)
+              duplicated_genotype = genocolorectal.dup_colo
+              duplicated_genotype.add_gene_colorectal(neg_gene)
+              duplicated_genotype.add_status(1)
+              genotypes.append(duplicated_genotype)
             }
           end
           
