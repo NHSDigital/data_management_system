@@ -96,28 +96,27 @@ module Import
             if all_genes.present?
               @logger.debug("NO MUTATION FOUND")
               negative_genes = all_genes.split(';')
-              @logger.debug("Negative genes are #{negative_genes}")
-              negative_genes.each { |neg_gene|
-                genocolorectal1 = genocolorectal.dup_colo
-                genocolorectal1.add_gene_colorectal(neg_gene)
-                genocolorectal1.add_status(1)
-                genotypes.append(genocolorectal1)
-              }
+              process_negative_genes(negative_genes, genocolorectal, all_genes, genotypes)
             end
           end
 
           def negative_mutated_genes(genocolorectal, genotypes, all_genes, mutated_gene)
             if all_genes.present?
               negative_genes = all_genes.split(';') - [mutated_gene] unless all_genes.nil?
-              @logger.debug("Negative genes are #{negative_genes}")
-              negative_genes.each { |neg_gene|
-                genocolorectal1 = genocolorectal.dup_colo
-                genocolorectal1.add_gene_colorectal(neg_gene)
-                genocolorectal1.add_status(1)
-                genotypes.append(genocolorectal1)
-              }
+              process_negative_genes(negative_genes, genocolorectal, all_genes, genotypes)
             end
           end
+
+          def process_negative_genes(negative_genes, genocolorectal, all_genes, genotypes)
+            @logger.debug("Negative genes are #{negative_genes}")
+            negative_genes.each { |neg_gene|
+              genocolorectal1 = genocolorectal.dup_colo
+              genocolorectal1.add_gene_colorectal(neg_gene)
+              genocolorectal1.add_status(1)
+              genotypes.append(genocolorectal1)
+            }
+          end
+          
 
           def coding_variant(genocolorectal, genotypes, mutated_gene, dna_variant, protein_variant, all_genes)
             mut_gene = COLORECTAL_GENES_REGEX.match(mutated_gene)[:colorectal]
