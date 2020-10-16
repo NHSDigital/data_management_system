@@ -8,6 +8,7 @@ require 'providers/cambridge/cambridge_handler_colorectal'
 require 'providers/manchester/manchester_handler_colorectal'
 require 'providers/london_kgc/london_kgc_handler_colorectal'
 require 'providers/royal_marsden/royal_marsden_handler_colorectal'
+require 'providers/london_gosh/london_gosh_handler_colorectal'
 require 'import/central_logger'
 
 module Import
@@ -24,7 +25,8 @@ module Import
           'RGT' => Import::Colorectal::Providers::Cambridge::CambridgeHandlerColorectal,
           'R1K' => Import::Colorectal::Providers::LondonKgc::LondonKgcHandlerColorectal,
           'R0A' => Import::Colorectal::Providers::Manchester::ManchesterHandlerColorectal,
-          'RPY' => Import::Colorectal::Providers::RoyalMarsden::RoyalMarsdenHandlerColorectal
+          'RPY' => Import::Colorectal::Providers::RoyalMarsden::RoyalMarsdenHandlerColorectal,
+          'RP4' => Import::Colorectal::Providers::LondonGosh::LondonGoshHandlerColorectal
         }.freeze
 
         def self.get_handler(provider_code)
