@@ -5,8 +5,8 @@ OIFS="$IFS"
 IFS=$'\n'
 DIRPATH=$1
 echo $DIRPATH
-#Dirpath was ~/work/mbis2_again
-#Filepath was "private/pseudonymised_data/updated_files/"
+#DIRPATH=~/work/data_management_system
+#FILEPATH="private/pseudonymised_data/updated_files/"
 FILEPATH=$2
 echo $FILEPATH
 
@@ -103,4 +103,14 @@ $BRAKE import:colorectal fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.
 done
 }
 
-RR8; RNZ; RTD; RX1; RCU; RGT; R0A; R1K; RPY
+RP4 () {
+PROV='RP4'
+IFS=$'\n'
+for x in $(find  $DIRPATH/$FILEPATH -type f -name "*CRC*.pseudo" -path "*/$PROV/*")
+do
+IFS="$OIFS"
+$BRAKE import:colorectal fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
+done
+}
+
+RR8; RNZ; RTD; RX1; RCU; RGT; R0A; R1K; RPY; RP4
