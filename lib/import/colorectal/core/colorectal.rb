@@ -51,8 +51,8 @@ module Import
           tables.each do |_tablename, table_content|
             mapped_table = table_mapping.transform(table_content)
             # Ignore the first row, it doesn't contain data
-            grouped_records_by_linkage = mapped_table.to_a[1..-1].group_by do |_klass, fields, _index|
-              grouping = fields.values_at *%w[pseudo_id1 pseudo_id2]
+            grouped_records_by_linkage = mapped_table.to_a[1..-1].group_by do |_klass, fields, _i|
+              grouping = fields.values_at('pseudo_id1', 'pseudo_id2')
               rawtext = JSON.parse(fields['rawtext_clinical.to_json'])
               grouping << rawtext['servicereportidentifier']
               grouping << rawtext['authoriseddate']
@@ -60,7 +60,7 @@ module Import
             end
             cleaned_records = []
             # From each set of grouped records, build a normalised record
-            grouped_records_by_linkage.each do |linkage, records|
+            grouped_records_by_linkage.each do |_linkage, records|
               cleaned_records << [records.first.first, grouped_rawtext_record_from(records)]
             end
             cleaned_records.each { |klass, fields| build_and_process_records(klass, fields) }
@@ -69,7 +69,7 @@ module Import
 
         private
 
-        # `records` in an array of many [klass, fields, index]
+        # `records` is an array of many [klass, fields, index]
         def grouped_rawtext_record_from(records)
           # Use the first record's `fields` as a starting point
           fields                 = records.first[1].dup
