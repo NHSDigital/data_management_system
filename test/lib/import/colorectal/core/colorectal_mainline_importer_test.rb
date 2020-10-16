@@ -8,10 +8,12 @@ class ColorectalMainlineImporterTest < ActiveSupport::TestCase
     e_batch  = e_batch(:colorectal_batch)
     filename = SafePath.new('test_files', e_batch.original_filename)
     importer = Import::Colorectal::Core::ColorectalMainlineImporter.new(filename, e_batch)
-    assert_difference('Pseudo::GeneticTestResult.count', + 2) do
-      assert_difference('Pseudo::GeneticSequenceVariant.count', + 1) do
-        @importer_stdout, @importer_stderr = capture_io do
-          importer.load
+    assert_difference('Pseudo::MolecularData.count', + 2) do
+      assert_difference('Pseudo::GeneticTestResult.count', + 2) do
+        assert_difference('Pseudo::GeneticSequenceVariant.count', + 1) do
+          @importer_stdout, @importer_stderr = capture_io do
+            importer.load
+          end
         end
       end
     end
@@ -40,6 +42,16 @@ class ColorectalMainlineImporterTest < ActiveSupport::TestCase
     ]
 
     expected_logs.each { |expected_log| assert_includes(logs, expected_log) }
+
+    molecular_data_record_one = Pseudo::MolecularData.find_by(servicereportidentifier: 'ABC123')
+    assert_equal 'Provider One', molecular_data_record_one.providercode
+    assert_equal 'Consultant One', molecular_data_record_one.practitionercode
+    assert_equal 45, molecular_data_record_one.age
+
+    molecular_data_record_two = Pseudo::MolecularData.find_by(servicereportidentifier: 'XYZ789')
+    assert_equal 'Provider Two', molecular_data_record_two.providercode
+    assert_equal 'Consultant Two', molecular_data_record_two.practitionercode
+    assert_equal 70, molecular_data_record_two.age
 
     negative_test = Pseudo::GeneticTestResult.find_by(teststatus: 1)
     assert_equal '1432', negative_test.gene
