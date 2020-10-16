@@ -2,6 +2,9 @@ require 'test_helper'
 
 class ColorectalMainlineImporterTest < ActiveSupport::TestCase
   test 'ensure load creates expected records and logging' do
+    assert Pseudo::GeneticTestResult.count.zero?
+    assert Pseudo::GeneticSequenceVariant.count.zero?
+
     e_batch  = e_batch(:colorectal_batch)
     filename = SafePath.new('test_files', e_batch.original_filename)
     importer = Import::Colorectal::Core::ColorectalMainlineImporter.new(filename, e_batch)
@@ -38,14 +41,14 @@ class ColorectalMainlineImporterTest < ActiveSupport::TestCase
 
     expected_logs.each { |expected_log| assert_includes(logs, expected_log) }
 
-    positive_test = Pseudo::GeneticTestResult.find_by(teststatus: 1)
-    assert_equal '1432', positive_test.gene
-    assert positive_test.genetic_sequence_variants.count.zero?
+    negative_test = Pseudo::GeneticTestResult.find_by(teststatus: 1)
+    assert_equal '1432', negative_test.gene
+    assert negative_test.genetic_sequence_variants.count.zero?
 
-    negative_test = Pseudo::GeneticTestResult.find_by(teststatus: 2)
-    assert_equal '2744', negative_test.gene
-    assert negative_test.genetic_sequence_variants.one?
-    variant = negative_test.genetic_sequence_variants.first
+    positive_test = Pseudo::GeneticTestResult.find_by(teststatus: 2)
+    assert_equal '2744', positive_test.gene
+    assert positive_test.genetic_sequence_variants.one?
+    variant = positive_test.genetic_sequence_variants.first
     assert_equal 'c.67del', variant.codingdnasequencechange
     assert_equal 'p.Glu23LysfsTer13', variant.proteinimpact
     assert_equal 5, variant.variantpathclass
