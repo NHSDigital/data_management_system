@@ -47,11 +47,13 @@ module Import
 
         def raw_all
           if @raw_fields.is_a?(Array)
-          @raw_fields.collect { |raw_field| raw_field.merge('encrypted_rawtext_demog' => @raw_text,
-                            'encrypted_demog' => @fields['encrypted_demog'])}
+            @raw_fields.collect do |raw_field|
+              raw_field.merge('encrypted_rawtext_demog' => @raw_text,
+                              'encrypted_demog' => @fields['encrypted_demog'])
+            end
           elsif @raw_fields.is_a?(Hash)
             @raw_fields.merge('encrypted_rawtext_demog' => @raw_text,
-                            'encrypted_demog' => @fields['encrypted_demog'])
+                              'encrypted_demog' => @fields['encrypted_demog'])
           end
         end
 
