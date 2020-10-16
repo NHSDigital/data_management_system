@@ -23,13 +23,13 @@ module Import
           @filename = filename
           @batch = batch
           @logger = Log.get_logger(batch.original_filename, batch.provider)
-          @logger.info "Initialized import for #{@filename}"
-          @logger.debug 'Available fields are: '
+          @logger.info "Initialized import for #{@filename}" unless Rails.env.test?
+          @logger.debug 'Available fields are: ' unless Rails.env.test?
           fw = PseudonymisedFileWrapper.new(@filename)
           fw.process
-          fw.available_fields.each do |field|
-            @logger.debug "\t#{field}"
-          end
+          return if Rails.env.test?
+
+          fw.available_fields.each { |field| @logger.debug "\t#{field}" }
         end
 
         def load
