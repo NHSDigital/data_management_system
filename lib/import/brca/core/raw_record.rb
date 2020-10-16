@@ -46,8 +46,13 @@ module Import
         end
 
         def raw_all
-          @raw_fields.merge('encrypted_rawtext_demog' => @raw_text,
+          if @raw_fields.is_a?(Array)
+          @raw_fields.collect { |raw_field| raw_field.merge('encrypted_rawtext_demog' => @raw_text,
+                            'encrypted_demog' => @fields['encrypted_demog'])}
+          elsif @raw_fields.is_a?(Hash)
+            @raw_fields.merge('encrypted_rawtext_demog' => @raw_text,
                             'encrypted_demog' => @fields['encrypted_demog'])
+          end
         end
 
         def eql?(other)
