@@ -23,31 +23,68 @@ module Import
           @filename = filename
           @batch = batch
           @logger = Log.get_logger(batch.original_filename, batch.provider)
-          @logger.info "Initialized import for #{@filename}" unless Rails.env.test?
-          @logger.debug 'Available fields are: ' unless Rails.env.test?
+          @logger.info "Initialized import for #{@filename}"
+          @logger.debug 'Available fields are: '
           fw = PseudonymisedFileWrapper.new(@filename)
           fw.process
-          return if Rails.env.test?
-
-          fw.available_fields.each { |field| @logger.debug "\t#{field}" }
+          fw.available_fields.each do |field|
+            @logger.debug "\t#{field}"
+          end
         end
 
         def load
           # ensure_file_not_already_loaded # TODO: PUT THIS BACK, TESTING ONLY
           tables = NdrImport::File::Registry.tables(@filename, table_mapping.try(:format), {})
 
+          return load_manchester(tables) if 'R0A' == @batch.provider
+
           # Enumerate over the tables
           # Under normal circustances, there will only be one table
           tables.each do |_tablename, table_content|
             table_mapping.transform(table_content).each do |klass, fields, _index|
-              Pseudo::Ppatient.transaction do
-                process_records(klass, fields)
-              end
+              build_and_process_records(klass, fields)
             end
           end
         end
 
+        def load_manchester(tables)
+          tables.each do |_tablename, table_content|
+            mapped_table = table_mapping.transform(table_content)
+            # Ignore the first row, it doesn't contain data
+            grouped_records_by_linkage = mapped_table.to_a[1..-1].group_by do |_klass, fields, _index|
+              grouping = fields.values_at *%w[pseudo_id1 pseudo_id2]
+              rawtext = JSON.parse(fields['rawtext_clinical.to_json'])
+              grouping << rawtext['servicereportidentifier']
+              grouping << rawtext['authoriseddate']
+              grouping
+            end
+            cleaned_records = []
+            # From each set of grouped records, build a normalised record
+            grouped_records_by_linkage.each do |linkage, records|
+              cleaned_records << [records.first.first, grouped_rawtext_record_from(records)]
+            end
+            cleaned_records.each { |klass, fields| build_and_process_records(klass, fields) }
+          end
+        end
+
         private
+
+        # `records` in an array of many [klass, fields, index]
+        def grouped_rawtext_record_from(records)
+          # Use the first record's `fields` as a starting point
+          fields                 = records.first[1].dup
+          raw_records_array      = records.map { |record| record[1] }
+          rawtext_clinical_array = raw_records_array.map do |raw_record|
+            JSON.parse(raw_record['rawtext_clinical.to_json'])
+          end
+          fields['rawtext_clinical.to_json'] = rawtext_clinical_array.to_json
+
+          fields
+        end
+
+        def build_and_process_records(klass, fields)
+          Pseudo::Ppatient.transaction { process_records(klass, fields) }
+        end
 
         def file
           @file ||= SafeFile.exist?(@filename) ? SafeFile.new(@filename, 'r') : nil
