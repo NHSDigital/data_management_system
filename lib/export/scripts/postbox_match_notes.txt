@@ -1,10 +1,21 @@
 # Patient matching notes for POSTBOx files, task #22443, MBIS project 99
 
+scp -p POSTBOX_MBIS_15OCT2020.csv ncr-prescr-app1:~mbis_god_live/mbis_front/current/private/mbis_data/postbox_infile.csv
+# It's OK if the file still has a header at this point
+ssh ncr-prescr-app1
+# Possibly fixup file permissions
+chmod g+rw ~mbis_god_live/mbis_front/current/private/mbis_data/postbox_infile.csv
+sudo -i -u mbis_god_live
+./run_mbis_tasks.sh
+
 # Split input file
+INFILE=private/mbis_data/postbox_infile.csv
 TODAY=`date +%Y%m%d`
 BASENAME=postbox_noheader
+if $(tr -d '"\r' < "$INFILE" | egrep -qv -e '^PATIENTID,NHSNUMBER,BIRTHDATE$' -e '^[^,]*,[0-9]*,[0-9]{4}-[0-9]{2}-[0-9]{2}$'); then echo Error: unexpected format; else echo "$INFILE" format is OK; fi
 
-split -a1 -l 1000000 private/mbis_data/"$BASENAME".csv private/mbis_data/"$BASENAME"_
+tr -d "\r" < "$INFILE" | egrep -ve '^"?PATIENTID"?,"?NHSNUMBER"?,"?BIRTHDATE"?$' | split -a1 -l 1000000 - private/mbis_data/"$BASENAME"_
+# split -a1 -l 1000000 private/mbis_data/"$BASENAME".csv private/mbis_data/"$BASENAME"_
 
 wc -l private/mbis_data/"$BASENAME"_*
 
