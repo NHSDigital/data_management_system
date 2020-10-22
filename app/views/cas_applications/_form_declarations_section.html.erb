@@ -1,0 +1,24 @@
+<fieldset>
+  <legend>Declarations (Please tick “Yes” or “No” after each of the following statements)</legend>
+
+  <%= form.fields_for :declaration do |declaration_field| %>
+    <% Lookups::CasDeclaration.all.each_with_index do |d, i| %>
+      <div class="row">
+        <div class="col-md-1 text-right"><%= i + 1 %>)</div>
+        <div class="col-md-9"><%= content_tag(:p, d.value) %></div>
+        <div class="col-md-2">
+          <%=
+          this_choice = form.object.declaration_choices[d.id.to_s]
+          if form.readonly?
+            this_choice || 'BLANK'
+          else
+            declaration_field.select(nil,
+              options_for_select([['Yes', "#{d.id}Yes"], ['No', "#{d.id}No"]], "#{d.id}#{this_choice}"),
+              { include_blank: true }, id: "cas_application_declaration_#{d.id}")
+          end
+          %>
+        </div>
+      </div>
+    <% end %>
+  <% end %>
+</fieldset>

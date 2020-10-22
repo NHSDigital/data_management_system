@@ -27,16 +27,6 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- Name: a; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.a (
-    id integer,
-    val text
-);
-
-
---
 -- Name: addresses; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -148,16 +138,6 @@ CREATE TABLE public.ar_internal_metadata (
 
 
 --
--- Name: b; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.b (
-    id integer,
-    val text
-);
-
-
---
 -- Name: birth_data; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -253,6 +233,117 @@ CREATE SEQUENCE public.birth_data_birth_dataid_seq
 --
 
 ALTER SEQUENCE public.birth_data_birth_dataid_seq OWNED BY public.birth_data.birth_dataid;
+
+
+--
+-- Name: cas_applications; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.cas_applications (
+    id bigint NOT NULL,
+    status character varying,
+    firstname character varying,
+    surname character varying,
+    jobtitle character varying,
+    phe_email character varying,
+    work_number character varying,
+    organisation character varying,
+    line_manager_name character varying,
+    line_manager_email character varying,
+    line_manager_number character varying,
+    employee_type character varying,
+    contract_startdate date,
+    contract_enddate date,
+    username character varying,
+    address text,
+    n3_ip_address text,
+    reason_justification text,
+    access_level character varying,
+    extra_datasets character varying,
+    extra_datasets_rationale character varying,
+    declaration character varying,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: cas_applications_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.cas_applications_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: cas_applications_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.cas_applications_id_seq OWNED BY public.cas_applications.id;
+
+
+--
+-- Name: cas_datasets; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.cas_datasets (
+    id bigint NOT NULL,
+    value character varying,
+    sort integer
+);
+
+
+--
+-- Name: cas_datasets_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.cas_datasets_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: cas_datasets_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.cas_datasets_id_seq OWNED BY public.cas_datasets.id;
+
+
+--
+-- Name: cas_declarations; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.cas_declarations (
+    id bigint NOT NULL,
+    value text,
+    sort integer
+);
+
+
+--
+-- Name: cas_declarations_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.cas_declarations_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: cas_declarations_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.cas_declarations_id_seq OWNED BY public.cas_declarations.id;
 
 
 --
@@ -381,32 +472,6 @@ CREATE SEQUENCE public.closure_reasons_id_seq
 --
 
 ALTER SEQUENCE public.closure_reasons_id_seq OWNED BY public.closure_reasons.id;
-
-
---
--- Name: colorectal_tab2_all; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.colorectal_tab2_all (
-    gene text,
-    prov_name text,
-    provider character varying,
-    full_screen_count bigint,
-    full_screen_path_count bigint
-);
-
-
---
--- Name: colorectal_tab2_all_no_overlap; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.colorectal_tab2_all_no_overlap (
-    gene text,
-    prov_name text,
-    provider character varying(255),
-    full_screen_count bigint,
-    full_screen_path_count bigint
-);
 
 
 --
@@ -1618,23 +1683,6 @@ CREATE TABLE public.error_logs (
 
 
 --
--- Name: fs_pathogenic; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.fs_pathogenic (
-    pseudo_id1 text,
-    pseudo_id2 text,
-    codingdnasequencechange text,
-    proteinimpact text,
-    variantpathclass numeric,
-    moleculartestingtype integer,
-    genetictestscope text,
-    teststatus numeric(19,0),
-    gene text
-);
-
-
---
 -- Name: genetic_sequence_variants; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -2327,29 +2375,6 @@ CREATE SEQUENCE public.outputs_id_seq
 --
 
 ALTER SEQUENCE public.outputs_id_seq OWNED BY public.outputs.id;
-
-
---
--- Name: pids; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.pids (
-    id1 text,
-    id2 text
-);
-
-
---
--- Name: possibly_nulls; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.possibly_nulls (
-    pseudo_id1 text,
-    pseudo_id2 text,
-    provider character varying,
-    teststatus numeric(19,0),
-    raw_record text
-);
 
 
 --
@@ -3375,28 +3400,6 @@ ALTER SEQUENCE public.releases_id_seq OWNED BY public.releases.id;
 
 
 --
--- Name: rnz; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.rnz (
-    gene text,
-    count bigint
-);
-
-
---
--- Name: rtd_variants; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.rtd_variants (
-    gene text,
-    codingdnasequencechange text,
-    genetictestscope text,
-    count bigint
-);
-
-
---
 -- Name: schema_migrations; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -3434,17 +3437,6 @@ CREATE SEQUENCE public.security_assurances_id_seq
 --
 
 ALTER SEQUENCE public.security_assurances_id_seq OWNED BY public.security_assurances.id;
-
-
---
--- Name: strange_pids_var; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.strange_pids_var (
-    pseudo_id1 text,
-    pseudo_id2 text,
-    provider character varying
-);
 
 
 --
@@ -3776,18 +3768,6 @@ CREATE SEQUENCE public.users_id_seq
 --
 
 ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
-
-
---
--- Name: variants_count; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.variants_count (
-    genes text,
-    codingdnasequencechange text,
-    genetictestscope text,
-    count bigint
-);
 
 
 --
@@ -4260,6 +4240,27 @@ ALTER TABLE ONLY public.amendment_types ALTER COLUMN id SET DEFAULT nextval('pub
 --
 
 ALTER TABLE ONLY public.birth_data ALTER COLUMN birth_dataid SET DEFAULT nextval('public.birth_data_birth_dataid_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.cas_applications ALTER COLUMN id SET DEFAULT nextval('public.cas_applications_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.cas_datasets ALTER COLUMN id SET DEFAULT nextval('public.cas_datasets_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.cas_declarations ALTER COLUMN id SET DEFAULT nextval('public.cas_declarations_id_seq'::regclass);
 
 
 --
@@ -4937,6 +4938,30 @@ ALTER TABLE ONLY public.ar_internal_metadata
 
 ALTER TABLE ONLY public.birth_data
     ADD CONSTRAINT birth_data_pkey PRIMARY KEY (birth_dataid);
+
+
+--
+-- Name: cas_applications_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.cas_applications
+    ADD CONSTRAINT cas_applications_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: cas_datasets_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.cas_datasets
+    ADD CONSTRAINT cas_datasets_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: cas_declarations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.cas_declarations
+    ADD CONSTRAINT cas_declarations_pkey PRIMARY KEY (id);
 
 
 --
@@ -7295,7 +7320,7 @@ ALTER TABLE ONLY public.e_workflow
 -- PostgreSQL database dump complete
 --
 
-SET search_path TO "$user", public;
+SET search_path TO "$user",public;
 
 INSERT INTO "schema_migrations" (version) VALUES
 ('20160115160033'),
@@ -7660,6 +7685,12 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20200820153644'),
 ('20200821134109'),
 ('20200821134630'),
-('20201015135259');
+('20201014120225'),
+('20201014122944'),
+('20201015135259'),
+('20201018132536'),
+('20201018132733'),
+('20201018134038'),
+('20201018134152');
 
 
