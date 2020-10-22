@@ -8,6 +8,7 @@ class ProjectType < ApplicationRecord
   scope :application, -> { where(name: 'Application') }
   scope :eoi,         -> { where(name: 'EOI') }
   scope :project,     -> { where(name: 'Project') }
+  scope :cas,         -> { where(name: 'CAS') }
   scope :odr,         -> { eoi.or(application) }
 
   def available_datasets
@@ -21,7 +22,7 @@ class ProjectType < ApplicationRecord
     project_types = []
 
     project_types << 'Project' if applicant_for_team(user, team, TeamRole.fetch(:mbis_applicant))
-    project_types += %w[EOI Application] if
+    project_types += %w[EOI Application CAS] if
       applicant_for_team(user, team, TeamRole.fetch(:odr_applicant))
 
     where(name: project_types)

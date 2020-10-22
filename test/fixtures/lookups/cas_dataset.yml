@@ -1,0 +1,39 @@
+# Created by `bin/rails lookup:create_fixture[CasDataset]` at 2020-10-20 12:20:12 UTC
+---
+1:
+  id: 1
+  value: "* ONS mortality tables (all available)Schema: ONS2011, 2012, 2013, 2014 etc..."
+  sort: 1
+2:
+  id: 2
+  value: Cancer Waiting Times referrals
+  sort: 2
+3:
+  id: 3
+  value: Cancer Waiting Times Legacy data
+  sort: 3
+4:
+  id: 4
+  value: 'Anonymised Patient Reported Outcomes Measures(bowel, bladder, pilot 2011 and 2012) Schema: PROMS'
+  sort: 4
+5:
+  id: 5
+  value: 'Patient Reported Outcomes Measures (bowel, bladder, pilot 2011, 2012) Schema: PROMS'
+  sort: 5
+6:
+  id: 6
+  value: 'Patient Reported Outcomes Measures (Gynaecological cancers) Schema: PROMS'
+  sort: 6
+7:
+  id: 7
+  value: Biobank indicator
+  sort: 7
+8:
+  id: 8
+  value: 'Prescriptions sample Schema: PRESCRIPTIONSAMPLE, PRESCRIPTION2015'
+  sort: 8
+9:
+  id: 9
+  value: 'Mosaic etc... Schema: Mosaic2017, Mosaic2018 etc...'
+  sort: 9
+

@@ -68,6 +68,8 @@ Rails.application.routes.draw do
     get :dashboard, on: :collection
   end
 
+  resources :cas_applications
+
   resources :terms_and_conditions, only: [:index, :create]
 
   resources :active_team, only: [:index, :update]
