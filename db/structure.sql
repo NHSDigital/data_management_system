@@ -236,6 +236,117 @@ ALTER SEQUENCE public.birth_data_birth_dataid_seq OWNED BY public.birth_data.bir
 
 
 --
+-- Name: cas_applications; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.cas_applications (
+    id bigint NOT NULL,
+    status character varying,
+    firstname character varying,
+    surname character varying,
+    jobtitle character varying,
+    phe_email character varying,
+    work_number character varying,
+    organisation character varying,
+    line_manager_name character varying,
+    line_manager_email character varying,
+    line_manager_number character varying,
+    employee_type character varying,
+    contract_startdate date,
+    contract_enddate date,
+    username character varying,
+    address text,
+    n3_ip_address text,
+    reason_justification text,
+    access_level character varying,
+    extra_datasets character varying,
+    extra_datasets_rationale character varying,
+    declaration character varying,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: cas_applications_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.cas_applications_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: cas_applications_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.cas_applications_id_seq OWNED BY public.cas_applications.id;
+
+
+--
+-- Name: cas_datasets; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.cas_datasets (
+    id bigint NOT NULL,
+    value character varying,
+    sort integer
+);
+
+
+--
+-- Name: cas_datasets_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.cas_datasets_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: cas_datasets_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.cas_datasets_id_seq OWNED BY public.cas_datasets.id;
+
+
+--
+-- Name: cas_declarations; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.cas_declarations (
+    id bigint NOT NULL,
+    value text,
+    sort integer
+);
+
+
+--
+-- Name: cas_declarations_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.cas_declarations_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: cas_declarations_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.cas_declarations_id_seq OWNED BY public.cas_declarations.id;
+
+
+--
 -- Name: categories; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -4171,6 +4282,27 @@ ALTER TABLE ONLY public.birth_data ALTER COLUMN birth_dataid SET DEFAULT nextval
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY public.cas_applications ALTER COLUMN id SET DEFAULT nextval('public.cas_applications_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.cas_datasets ALTER COLUMN id SET DEFAULT nextval('public.cas_datasets_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.cas_declarations ALTER COLUMN id SET DEFAULT nextval('public.cas_declarations_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.categories ALTER COLUMN id SET DEFAULT nextval('public.categories_id_seq'::regclass);
 
 
@@ -4842,6 +4974,30 @@ ALTER TABLE ONLY public.ar_internal_metadata
 
 ALTER TABLE ONLY public.birth_data
     ADD CONSTRAINT birth_data_pkey PRIMARY KEY (birth_dataid);
+
+
+--
+-- Name: cas_applications_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.cas_applications
+    ADD CONSTRAINT cas_applications_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: cas_datasets_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.cas_datasets
+    ADD CONSTRAINT cas_datasets_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: cas_declarations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.cas_declarations
+    ADD CONSTRAINT cas_declarations_pkey PRIMARY KEY (id);
 
 
 --
@@ -7565,7 +7721,13 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20200820153644'),
 ('20200821134109'),
 ('20200821134630'),
+('20201014120225'),
+('20201014122944'),
 ('20201015135259'),
+('20201018132536'),
+('20201018132733'),
+('20201018134038'),
+('20201018134152'),
 ('20201106153234'),
 ('20201106153256'),
 ('20201106153309'),
