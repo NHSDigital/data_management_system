@@ -6,7 +6,7 @@ module OdrDataImporter
       @excel_file.each do |appleman|
         user_attrs = header.zip(appleman).to_h
         # if user exists add application manager role
-        user = User.find_by(email: user_attrs['email']&.downcase)
+        user = User.find_by(email: user_attrs['Applicant_Email']&.downcase)
         if user.nil?
           u = build_user(user_attrs)
           u.grants << Grant.new(roleable: TeamRole.fetch(:read_only),
@@ -29,15 +29,15 @@ module OdrDataImporter
         @excel_file.each do |user|
           user_attrs = header.zip(user).to_h
           # User already exists
-          next unless User.find_by(email: user_attrs['email']&.downcase).nil?
+          next unless User.find_by(email: user_attrs['Applicant_Email']&.downcase).nil?
 
           u = build_user(user_attrs)
           org = Organisation.find_by(name: user_attrs['Organisation'])
-          raise "#{user_attrs['Organisation']} not found for #{user_attrs['email']}" if org.nil?
+          raise "#{user_attrs['Organisation']} not found for #{user_attrs['Applicant_Email']}" if org.nil?
           team = Team.find_by(name: user_attrs['Team'],
                               organisation_id: org.id)
 
-          raise "#{user_attrs['Team']} not found for #{user_attrs['email']}" if team.nil?
+          raise "#{user_attrs['Team']} not found for #{user_attrs['Applicant_Email']}" if team.nil?
           u.grants << Grant.new(team: org.teams.find_by(name: team.name),
                                 roleable: TeamRole.fetch(:odr_applicant))
 
@@ -49,8 +49,8 @@ module OdrDataImporter
     end
 
     def build_user(attrs)
-      user = User.new(email: attrs['email'].downcase)
-      name = attrs['name'].split
+      user = User.new(email: attrs['Applicant_Email'].downcase)
+      name = attrs['Applicant_Name'].split
       user.username = name.map(&:downcase).join('_')
       user.last_name = name.pop
       user.first_name = name.join(' ')
