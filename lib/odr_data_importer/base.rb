@@ -1,13 +1,13 @@
 module OdrDataImporter
   # Use for importing various data supplied by ODR
   # Usage:
-  # a = OdrDataImporter::Base.new('20191115 List of application managers.xlsx')
+  # a = OdrDataImporter::Base.new('file')
   # a.build_application_managers!
-  # a = OdrDataImporter::Base.new('20200130_SampleEOIData_sample_kl.xlsx', 'Address list')
+  # a = OdrDataImporter::Base.new('file')
   # a.import_organisations_and_teams!
-  # b = OdrDataImporter::Base.new('20200130_SampleEOIData_sample_kl.xlsx', 'SeniorUsers')
+  # b = OdrDataImporter::Base.new('file')
   # b.import_users_for_eois!
-  # c = OdrDataImporter::Base.new('20200130_SampleEOIData_sample_kl.xlsx', 'EOI_Detail')
+  # c = OdrDataImporter::Base.new('file')
   # c.import_eois!
   class Base
     require 'ndr_import/helpers/file/excel'
@@ -38,11 +38,11 @@ module OdrDataImporter
       header = @excel_file.shift
       @excel_file.each do |eoi|
         eoi_attrs = header.zip(eoi).to_h
-        new_eoi = build_eoi(eoi_attrs.except('data_asset_required'))
+        new_eoi = build_eoi(eoi_attrs.except('Data_Asset_Required'))
         # This relies on ODR actually mapping their dataset names to NCRAS
-        if eoi_attrs['data_asset_required'].present?
-          eoi_attrs['data_asset_required'].split(';').each do |dataset_name|
-            raise "#{eoi_attrs['project_title']}: No dataset found for #{dataset_name}" if
+        if eoi_attrs['Data_Asset_Required'].present?
+          eoi_attrs['Data_Asset_Required'].split(';').each do |dataset_name|
+            raise "#{eoi_attrs['name']}: No dataset found for #{dataset_name}" if
               Dataset.odr.find_by(name: dataset_name).nil?
             pd = ProjectDataset.new(dataset: Dataset.odr.find_by(name: dataset_name),
                                     terms_accepted: true)
@@ -57,27 +57,31 @@ module OdrDataImporter
 
     def build_eoi(attrs)
       eoi = Project.new(attrs.reject { |k, _| eoi_fields.exclude? k })
-      eoi.name = attrs['project_title']
+      eoi.name = attrs['name']
       eoi.project_type = eoi_project_type
-      eoi.owner = User.find_by(email: attrs['senior_user_email'].downcase)
-      eoi.states << Workflow::State.find_by(id: state_mapping[attrs['EOI_status']])
-      org = Organisation.find_by(name: attrs['organisation'])
-      raise "#{attrs['project_title']}: Couldn't find org: #{attrs['organisation']}" if org.nil?
+      eoi.owner = User.find_by(email: attrs['Applicant_Email'].downcase)
+      eoi.states << Workflow::State.find_by(id: state_mapping[attrs['Current_Status']])
+      org = Organisation.find_by(name: attrs['Organisation_Name'])
+      raise "#{attrs['name']}: Couldn't find org: #{attrs['Organisation_Name']}" if org.nil?
 
-      team = org.teams.find_by(name: attrs['team'])
-      raise "#{attrs['project_title']}: Couldn't find team: #{attrs['team']}" if team.nil?
+      team = org.teams.find_by(name: attrs['organisation_department'])
+      raise "#{attrs['name']}: Couldn't find team: #{attrs['organisation_department']}" if team.nil?
 
       eoi.team = team
-      if attrs['data_end_use'].present?
-        attrs['data_end_use'].split(';').each do |end_use|
+      if attrs['Data_End_Use'].present?
+        attrs['Data_End_Use'].split(';').each do |end_use|
           eoi.end_uses << EndUse.find_by(name: end_use)
         end
       end
 
-      app_man_for_eoi = app_man(attrs['application_manager'])
-      raise "#{attrs['application_manager']} application manager not found" if app_man_for_eoi.nil?
+      app_man_for_eoi = app_man(attrs['Assigned_user_id'])
+      raise "#{attrs['Assigned_user_id']} application manager not found" if app_man_for_eoi.nil?
 
       eoi.assigned_user = app_man_for_eoi
+
+      cr = attrs['Closure_reason_id']
+      eoi.closure_reason = Lookups::ClosureReason.find_by(value: cr) if cr.present?
+
       eoi
     end
 
@@ -89,11 +93,11 @@ module OdrDataImporter
     end
 
     def eoi_fields
-      %w[application_log project_purpose level_of_identifiability]
+      %w[application_log description Level_of_Identifiability]
     end
 
     def eoi_project_fields
-      %w[application_manager EOI_status]
+      %w[Assigned_user_id Current_Status]
     end
 
     def eoi_project_type
