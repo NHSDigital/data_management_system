@@ -39,11 +39,10 @@ module OdrDataImporter
       country_raw = attrs.delete('Country_id').upcase
       country = Lookups::Country.find_by(value: country_raw)
       org_type_raw = attrs.delete('Org_Type_id')
-      org_type_raw = org_type_mapping[org_type_raw] || org_type_raw
+      org_type_raw = org_type_name_mapping[org_type_raw] || org_type_raw
       org_type = Lookups::OrganisationType.find_by(value: org_type_raw)
-      raise "no org type or country found! #{country_raw} | #{org_type_raw}" if org_type.nil? || country.nil?
+      raise "no org type! #{org_type_raw}" if org_type.nil?
 
-      %w[Telephone Team Location].each { |team_field| attrs.delete(team_field) }
       org_attrs = { name: attrs.delete('Organisation_Name') }
       org_attrs[:organisation_type] = org_type
       org_attrs[:organisation_type_other] = 'Unknown' if org_type_raw == 'Other'
@@ -75,9 +74,12 @@ module OdrDataImporter
 
       country_raw = attrs.delete('Country').upcase
       country = Lookups::Country.find_by(value: country_raw)
-      address = attrs.transform_keys! { |key| org_mapping.invert[key] }
+      address_attrs = attrs.select { |k,_| org_mapping.values.include? k }
+      address = address_attrs.transform_keys! { |key| org_mapping.invert[key] }
       address[:country] = country
-      team.addresses.build(address) if ActiveRecord::Base.connection.table_exists?(:addresses)
+      unless address.values.all?(&:blank?)
+        team.addresses.build(address) if ActiveRecord::Base.connection.table_exists?(:addresses)
+      end
       
       # extra guard if details differ i.e ODR already exists
       return if Organisation.find_by(name: org_name).teams.pluck(:name).include? team_attrs[:name]
@@ -86,7 +88,7 @@ module OdrDataImporter
     end
 
     # sigh
-    def org_type_mapping
+    def org_type_name_mapping
       {
         'CQC Registered Health or/and Social Care provider' =>
           'CQC Registered Health and/or Social Care Provider',
@@ -96,17 +98,19 @@ module OdrDataImporter
           'Government Agency (Health and Social Care)',
         'CQC Registered Health or/and Social Care Provider' =>
           'CQC Registered Health and/or Social Care Provider',
-        'commercial' => 'Commercial'
+        'commercial' => 'Commercial',
+        'CQC Registered Health and/or Social Care provider' =>
+          'CQC Registered Health and/or Social Care Provider'
       }
     end
 
     def org_mapping
       {
-        name: 'Organisation name',
-        add1: 'Address line 1',
-        add2: 'Address line 2',
+        # name: 'Organisation_Name',
+        add1: 'add1',
+        add2: 'add2',
         city: 'City',
-        postcode: 'Post code',
+        postcode: 'Postcode',
         telephone: 'Telephone'
       }
     end
