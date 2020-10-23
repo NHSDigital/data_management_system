@@ -36,15 +36,15 @@ module OdrDataImporter
     end
 
     def create_organisation(attrs)
-      country_raw = attrs.delete('Country').upcase
+      country_raw = attrs.delete('Country_id').upcase
       country = Lookups::Country.find_by(value: country_raw)
-      org_type_raw = attrs.delete('Organisation type')
+      org_type_raw = attrs.delete('Org_Type_id')
       org_type_raw = org_type_mapping[org_type_raw] || org_type_raw
       org_type = Lookups::OrganisationType.find_by(value: org_type_raw)
       raise "no org type or country found! #{country_raw} | #{org_type_raw}" if org_type.nil? || country.nil?
 
       %w[Telephone Team Location].each { |team_field| attrs.delete(team_field) }
-      org_attrs = { name: attrs.delete('Organisation name') }
+      org_attrs = { name: attrs.delete('Organisation_Name') }
       org_attrs[:organisation_type] = org_type
       org_attrs[:organisation_type_other] = 'Unknown' if org_type_raw == 'Other'
 
@@ -58,11 +58,11 @@ module OdrDataImporter
     end
 
     def create_team(attrs)
-      org_name = attrs.delete('Organisation name')
-      org_type_raw = attrs.delete('Organisation type')
+      org_name = attrs.delete('Organisation_Name')
+      org_type_raw = attrs.delete('Org_Type_id')
 
       team_attrs = {}
-      team_attrs[:name] = attrs.delete('Team')
+      team_attrs[:name] = attrs.delete('organisation_department')
       team_attrs[:location] = attrs.delete('Location')
       # team_attrs[:postcode] = attrs.delete('Post code')
       # team_attrs[:telephone] = attrs.delete('Telephone')
