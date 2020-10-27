@@ -28,16 +28,17 @@ module OdrDataImporter
       User.transaction do
         @excel_file.each do |user|
           user_attrs = header.zip(user).to_h
+          next if user_attrs['Applicant_Email'].nil?
           # User already exists
           next unless User.find_by(email: user_attrs['Applicant_Email']&.downcase).nil?
 
           u = build_user(user_attrs)
-          org = Organisation.find_by(name: user_attrs['Organisation'])
+          org = Organisation.find_by(name: user_attrs['Organisation_Name'])
           raise "#{user_attrs['Organisation']} not found for #{user_attrs['Applicant_Email']}" if org.nil?
-          team = Team.find_by(name: user_attrs['Team'],
+          team = Team.find_by(name: user_attrs['organisation_department'],
                               organisation_id: org.id)
 
-          raise "#{user_attrs['Team']} not found for #{user_attrs['Applicant_Email']}" if team.nil?
+          raise "#{user_attrs['organisation_department']} not found for #{user_attrs['Applicant_Email']}" if team.nil?
           u.grants << Grant.new(team: org.teams.find_by(name: team.name),
                                 roleable: TeamRole.fetch(:odr_applicant))
 
@@ -50,7 +51,11 @@ module OdrDataImporter
 
     def build_user(attrs)
       user = User.new(email: attrs['Applicant_Email'].downcase)
-      name = attrs['Applicant_Name'].split
+      name = if (attrs['Applicant_Name'] =~ /@/) || attrs['Applicant_Name'].nil?
+        %w[Unknown Unknown]
+      else
+        attrs['Applicant_Name'].split
+      end
       user.username = name.map(&:downcase).join('_')
       user.last_name = name.pop
       user.first_name = name.join(' ')
