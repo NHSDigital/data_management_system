@@ -36,6 +36,8 @@ module OdrDataImporter
     end
 
     def create_organisation(attrs)
+      return if Organisation.find_by(name: attrs['Organisation_Name']).present?
+
       country_raw = attrs.delete('Country_id').upcase
       country = Lookups::Country.find_by(value: country_raw)
       org_type_raw = attrs.delete('Org_Type_id')
@@ -50,10 +52,9 @@ module OdrDataImporter
       # TODO: Can't build addresses for now. multiples - build at team level instead 
       # address = attrs.transform_keys! { |key| org_mapping.invert[key] }
       # address[:country] = country
-      organisation = Organisation.where(org_attrs).first_or_create!
+      Organisation.create!(org_attrs)
       # organisation.addresses.build(address) if
       #   ActiveRecord::Base.connection.table_exists?(:addresses)
-      organisation.save!
     end
 
     def create_team(attrs)
