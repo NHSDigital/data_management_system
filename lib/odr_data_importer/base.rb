@@ -3,7 +3,12 @@ module OdrDataImporter
   # Usage:
   # a = OdrDataImporter::Base.new('file')
   # a.build_application_managers!
-  # a = OdrDataImporter::Base.new('file')
+  # Organisation.where("date_trunc('day', created_at) = current_date").destroy_all
+  # OdrDataImporter::Base.new('EOI_data_for_import_20201023.xlsx').import_organisations_and_teams!
+  # OdrDataImporter::Base.new('EOI_data_for_import_20201023.xlsx').import_users_for_eois!
+  # OdrDataImporter::Base.new('EOI_data_for_import_20201023.xlsx').import_eois!
+  # Project.of_type_eoi.where("date_trunc('day', projects.created_at) = current_date").map(&:application_date).compact.count
+  # a = OdrDataImporter::Base.new('EOI_data_for_import_20201023.xlsx')
   # a.import_organisations_and_teams!
   # b = OdrDataImporter::Base.new('file')
   # b.import_users_for_eois!
@@ -36,46 +41,77 @@ module OdrDataImporter
     def import_eois!
       initial_project_count = Project.count
       header = @excel_file.shift
-      @excel_file.each do |eoi|
-        eoi_attrs = header.zip(eoi).to_h
-        new_eoi = build_eoi(eoi_attrs.except('Data_Asset_Required'))
-        # This relies on ODR actually mapping their dataset names to NCRAS
-        if eoi_attrs['Data_Asset_Required'].present?
-          eoi_attrs['Data_Asset_Required'].split(';').each do |dataset_name|
-            raise "#{eoi_attrs['name']}: No dataset found for #{dataset_name}" if
-              Dataset.odr.find_by(name: dataset_name).nil?
-            pd = ProjectDataset.new(dataset: Dataset.odr.find_by(name: dataset_name),
-                                    terms_accepted: true)
-            new_eoi.project_datasets << pd
+      Project.transaction do
+        counter = 0
+        @excel_file.each do |eoi|
+          counter += 1
+          eoi_attrs = header.zip(eoi).to_h
+          puts "EMAIL => #{eoi_attrs['Applicant_Email']}"
+          # next if eoi_attrs['Applicant_Email'].nil?
+          eoi_attrs['Applicant_Email'] = '' if eoi_attrs['Applicant_Email'].nil?
+          new_eoi = build_eoi(eoi_attrs.except('Data_Asset_Required'))
+
+          # This relies on ODR actually mapping their dataset names to NCRAS
+          if eoi_attrs['Data_Asset_Required'].present?
+            eoi_attrs['Data_Asset_Required'].split(',').each do |dataset_name|
+              raise "#{eoi_attrs['name']}: No dataset found for #{dataset_name}" if
+                Dataset.odr.find_by(name: map_dataset[dataset_name] || dataset_name).nil?
+              pd = ProjectDataset.new(dataset: Dataset.odr.find_by(name: map_dataset[dataset_name] || dataset_name),
+                                      terms_accepted: true)
+              new_eoi.project_datasets << pd
+            end
+          end
+          puts "ABOUT TO SAVE #{counter}"
+          new_eoi.save!
+        rescue StandardError => e
+          puts e.message
+          if e.message == 'Validation failed: Project Title Name already being used by this Team'
+            attempt_unique_name(new_eoi)
+          else
+            binding.pry
+            raise
           end
         end
-        new_eoi.save!
       end
 
       print "Created #{Project.count - initial_project_count} EOIs\n"
     end
 
+    def attempt_unique_name(new_eoi)
+      new_eoi.name = new_eoi.name + ' - ' + new_eoi.application_log
+      new_eoi.save!
+    end
+      
     def build_eoi(attrs)
-      eoi = Project.new(attrs.reject { |k, _| eoi_fields.exclude? k })
+      eoi_attrs = attrs.reject { |k, _| eoi_fields.exclude? k }
+      eoi_attrs.transform_keys! { |k| header_to_field_mapping[k] || k }
+      eoi = Project.new(eoi_attrs)
       eoi.name = attrs['name']
+      eoi.project_purpose = attrs['description']
       eoi.project_type = eoi_project_type
+      binding.pry
+      raise
       eoi.owner = User.find_by(email: attrs['Applicant_Email'].downcase)
-      eoi.states << Workflow::State.find_by(id: state_mapping[attrs['Current_Status']])
+      eoi.states << Workflow::State.find_by(id: state_mapping[attrs['Current_Status']] || attrs['Current_Status'].upcase)
       org = Organisation.find_by(name: attrs['Organisation_Name'])
-      raise "#{attrs['name']}: Couldn't find org: #{attrs['Organisation_Name']}" if org.nil?
+      raise "#{eoi_attrs['name']}: Couldn't find org: #{attrs['Organisation_Name']}" if org.nil?
 
       team = org.teams.find_by(name: attrs['organisation_department'])
-      raise "#{attrs['name']}: Couldn't find team: #{attrs['organisation_department']}" if team.nil?
+      raise "#{eoi_attrs['name']}: Couldn't find team: #{attrs['organisation_department']}" if team.nil?
 
       eoi.team = team
       if attrs['Data_End_Use'].present?
-        attrs['Data_End_Use'].split(';').each do |end_use|
-          eoi.end_uses << EndUse.find_by(name: end_use)
+        attrs['Data_End_Use'].split(',').each do |end_use|
+          if end_use == 'Other'
+            eoi.end_use_other = 'Other'
+          else
+            eoi.end_uses << EndUse.find_by(name: end_use)
+          end
         end
       end
 
       app_man_for_eoi = app_man(attrs['Assigned_user_id'])
-      raise "#{attrs['Assigned_user_id']} application manager not found" if app_man_for_eoi.nil?
+      # raise "#{attrs['Assigned_user_id']} application manager not found" if app_man_for_eoi.nil?
 
       eoi.assigned_user = app_man_for_eoi
 
@@ -83,17 +119,22 @@ module OdrDataImporter
       eoi.closure_reason = Lookups::ClosureReason.find_by(value: cr) if cr.present?
 
       eoi
+    rescue StandardError => e
+      puts e.message
+      puts eoi_attrs
     end
 
-    # TODO: what are the responses in the file?
+    def app_man(email)
+      return if ['sean.mcphail@phe.gov.uk'].include? email
 
-    def app_man(name_string)
-      email = name_string.split.join('.').downcase + '@phe.gov.uk'
       User.find_by(email: email)
-    end
+    rescue StandardError => e
+      puts e.message
+      puts eoi_attrs
+     end
 
     def eoi_fields
-      %w[application_log description Level_of_Identifiability]
+      %w[application_log description Level_of_Identifiability Application_Date]
     end
 
     def eoi_project_fields
@@ -105,7 +146,11 @@ module OdrDataImporter
     end
 
     def state_mapping
-      { 'Pending' => 'SUBMITTED' }
+      { 
+        'Pending' => 'SUBMITTED',
+        'Closed'  => 'REJECTED',
+        'New'     => 'DRAFT'
+      }
     end
 
     private
@@ -132,7 +177,25 @@ module OdrDataImporter
 
     def map_dataset
       {
-        'Cancer registry' => 'Cancer Registry'
+        'Cancer Registry' => 'Cancer registry',
+        'DIDs'            => 'Linked DIDs',
+        # TODO: spelt wrong on system
+        'Congenital anomalies' => 'Congential anomalies',
+        'Linked HES Admitted care (IP)' => 'Linked HES Admitted Care (IP)',
+        ' Linked HES Admitted Care(IP)' => 'Linked HES Admitted Care (IP)',
+        'Screening Programme - Breast ' => 'Screening Programme - Breast',
+        'Cancer Registrys' => 'Cancer registry',
+        'CPES wave 3' => 'CPES Wave 3',
+        'PROMs colorectal - 2013' => 'PROMs - colorectal 2013',
+        ' PROMS colorectal - 2013' => 'PROMs - colorectal 2013',
+        ' PROMS colorectal 2013' => 'PROMs - colorectal 2013',
+        ' PROMS pilot 2011-2012' => 'PROMs pilot 2011-2012',
+        ' PROMs pilot 2011-2012' => 'PROMs pilot 2011-2012',
+        # TODO: spelt wrong on system
+        'Screening Programme - Fetal Anomaly' => 'Screening Programme - Fetal Anonaly',
+        'PHE Screening - Bowel Screening Programme' => 'Screening Programme - Bowel',
+        'PHE Screening - Newborn Hearing Screening Programme' => 'Screening Programme - Newborn Hearing'
+        
       }
     end
 
@@ -149,6 +212,13 @@ module OdrDataImporter
         errors.each { |error| csv_out << Array.wrap(error) }
       end
       print "tmp/#{filename} output file created\n"
+    end
+
+    def header_to_field_mapping
+      {
+        'Level_of_Identifiability' => 'level_of_identifiability',
+        'Application_Date' => 'application_date'
+      }
     end
   end
 end
