@@ -64,6 +64,7 @@ module Import
 
           PROT_REGEX = /p\.(\()?(?<impact>[a-z]+[0-9]+[a-z]+)(\))?/i .freeze
           EXON_REGEX = /(?<insdeldup>ins|del|dup)/i .freeze
+          EXON_LOCATION_REGEX = /ex(?<exon>[\d]+)(.[\d]+)?(\sto\s)?(ex(?<exon2>[\d]+))?/i .freeze
 
           def initialize(batch)
             @failed_genocolorectal_counter = 0
@@ -89,30 +90,50 @@ module Import
             dosage_exon_col = []
           
             record.raw_fields.map {|records|
-                                    if records["genocomm"] !~ /control|ctrl/i .freeze and \
-                                      records["consultantname"] != "Dr Sandi Deans"
-                                      global_genus_col.append(records["genus"])
-                                      global_moltesttype_col.append(records["moleculartestingtype"])
-                                      global_exon_col.append(records["exon"])
-                                      global_genotype_col.append(records["genotype"])
-                                      global_genotype2_col.append(records["genotype2"])
-                                    else
-                                      break
-                                    end }
+              if records["exon"] =~ /mlpa/i and \
+                records["genocomm"] !~ /control|ctrl/i .freeze and\
+                records["consultantname"] != "Dr Sandi Deans"
+                dosage_genus_col.append(records["genus"])
+                dosage_moltesttype_col.append(records["moleculartestingtype"])
+                dosage_exon_col.append(records["exon"])
+                dosage_genotype_col.append(records["genotype"])
+                dosage_genotype2_col.append(records["genotype2"])
+              elsif records["genocomm"] !~ /control|ctrl/i .freeze and \
+                records["consultantname"] != "Dr Sandi Deans"
+                global_genus_col.append(records["genus"])
+                global_moltesttype_col.append(records["moleculartestingtype"])
+                global_exon_col.append(records["exon"])
+                global_genotype_col.append(records["genotype"])
+                global_genotype2_col.append(records["genotype2"])
+              else
+                break
+              end }
 
-            record.raw_fields.map {|records|
-                                    if records["exon"] =~ /mlpa/i and \
-                                      records["genocomm"] !~ /control|ctrl/i .freeze and\
-                                      records["consultantname"] != "Dr Sandi Deans"
-                                      dosage_genus_col.append(records["genus"])
-                                      dosage_moltesttype_col.append(records["moleculartestingtype"])
-                                      dosage_exon_col.append(records["exon"])
-                                      dosage_genotype_col.append(records["genotype"])
-                                      dosage_genotype2_col.append(records["genotype2"])
-                                    else
-                                      break
-                                    end }
-            
+            # record.raw_fields.map {|records|
+            #                         if records["genocomm"] !~ /control|ctrl/i .freeze and \
+            #                           records["consultantname"] != "Dr Sandi Deans"
+            #                           global_genus_col.append(records["genus"])
+            #                           global_moltesttype_col.append(records["moleculartestingtype"])
+            #                           global_exon_col.append(records["exon"])
+            #                           global_genotype_col.append(records["genotype"])
+            #                           global_genotype2_col.append(records["genotype2"])
+            #                         else
+            #                           break
+            #                         end }
+            #
+            # record.raw_fields.map {|records|
+            #                         if records["exon"] =~ /mlpa/i and \
+            #                           records["genocomm"] !~ /control|ctrl/i .freeze and\
+            #                           records["consultantname"] != "Dr Sandi Deans"
+            #                           dosage_genus_col.append(records["genus"])
+            #                           dosage_moltesttype_col.append(records["moleculartestingtype"])
+            #                           dosage_exon_col.append(records["exon"])
+            #                           dosage_genotype_col.append(records["genotype"])
+            #                           dosage_genotype2_col.append(records["genotype2"])
+            #                         else
+            #                           break
+            #                         end }
+
             @global_record_map = { genus: global_genus_col,
                            moleculartestingtype: global_moltesttype_col,
                            exon: global_exon_col,
@@ -133,36 +154,52 @@ module Import
             genocolorectal.add_passthrough_fields(record.mapped_fields,
                                                   record.raw_fields,
                                                   PASS_THROUGH_FIELDS_COLO)
+
+            add_servicereportidentifier(genocolorectal, record)
             testscope_from_rawfields(genocolorectal, record)
-            # @logger.debug("Now analysing #{@global_record_map}")
-            # assign_gene_mutation(genocolorectal, record) # Added by Francesco
             res = assign_gene_mutation(genocolorectal, record) # Added by Francesco
             res.map { |cur_genotype| @persister.integrate_and_store(cur_genotype) }
-            # @persister.integrate_and_store(genocolorectal)
           end
 
+          def add_servicereportidentifier(genocolorectal, record)
+            servicereportidentifier_array = []
+            record.raw_fields.map {|records| servicereportidentifier_array.append(records["servicereportidentifier"])}
+            genocolorectal.attribute_map["servicereportidentifier"] = servicereportidentifier_array.flatten.uniq.join()
+          end
+
+
           def testscope_from_rawfields(genocolorectal, record)
-            if @stringed_moltesttype =~ /predictive|confirm/i
+            moltesttype = []
+            genus = []
+            exon=[]
+            record.raw_fields.map do |records| 
+              moltesttype.append(records["moleculartestingtype"])
+              genus.append(records["genus"])
+              exon.append(records["exon"])
+            end
+            stringed_moltesttype = moltesttype.flatten.join(',')
+            stringed_exon = exon.flatten.join(',')
+            if stringed_moltesttype =~ /predictive|confirm/i
               genocolorectal.add_test_scope(:targeted_mutation)
-            elsif @global_record_map[:genus].include? "G" or @global_record_map[:genus].include? "F"
+            elsif genus.include? "G" or genus.include? "F"
               genocolorectal.add_test_scope(:full_screen)
-            elsif (@stringed_moltesttype =~ /screen/i or \
-            @global_record_map[:moleculartestingtype].include? "MLH1/MSH2/MSH6 GENETIC TESTING REPORT") and
-            @global_record_map[:moleculartestingtype].size >= 12
+            elsif (stringed_moltesttype =~ /screen/i or \
+            moltesttype.include? "MLH1/MSH2/MSH6 GENETIC TESTING REPORT") and
+            moltesttype.size >= 12
               genocolorectal.add_test_scope(:full_screen)
-            elsif (@stringed_moltesttype =~ /screen/i or \
-            @global_record_map[:moleculartestingtype].include? "MLH1/MSH2/MSH6 GENETIC TESTING REPORT") and
-            @global_record_map[:moleculartestingtype].size <= 12 and @stringed_exon =~ /ngs/i
+            elsif (stringed_moltesttype =~ /screen/i or \
+            moltesttype.include? "MLH1/MSH2/MSH6 GENETIC TESTING REPORT") and
+            moltesttype.size <= 12 and stringed_exon =~ /ngs/i
               genocolorectal.add_test_scope(:full_screen)
-            elsif (@stringed_moltesttype =~ /screen/i or \
-            @global_record_map[:moleculartestingtype].include? "MLH1/MSH2/MSH6 GENETIC TESTING REPORT") and
-            @global_record_map[:moleculartestingtype].size <= 12 and @stringed_exon !~ /ngs/i 
+            elsif (stringed_moltesttype =~ /screen/i or \
+            moltesttype.include? "MLH1/MSH2/MSH6 GENETIC TESTING REPORT") and
+            moltesttype.size <= 12 and stringed_exon !~ /ngs/i 
               genocolorectal.add_test_scope(:targeted_mutation)
-            elsif @global_record_map[:moleculartestingtype].include? "VARIANT TESTING REPORT" 
+            elsif moltesttype.include? "VARIANT TESTING REPORT" 
               genocolorectal.add_test_scope(:targeted_mutation)
-            elsif @stringed_moltesttype =~ /dosage/i
+            elsif stringed_moltesttype =~ /dosage/i
               genocolorectal.add_test_scope(:full_screen)
-            elsif @global_record_map[:moleculartestingtype].include? "HNPCC MSH2 c.942+3A>T MUTATION TESTING REPORT"
+            elsif moltesttype.include? "HNPCC MSH2 c.942+3A>T MUTATION TESTING REPORT"
               genocolorectal.add_test_scope(:full_screen)
             end
           end
@@ -177,24 +214,15 @@ module Import
                 else
                   genes.append("No Gene")
                 end }
-            # if (MOLTEST_MAP.keys & @global_record_map[:moleculartestingtype].uniq).size == 1
-            #   @global_record_map[:exon].map {|exons|
-            #     if exons.scan(COLORECTAL_GENES_REGEX)
-            #       exons.scan(COLORECTAL_GENES_REGEX).each {|gene|
-            #       genes.append(COLORECTAL_GENES_REGEX.match(exons)[:colorectal])}
-            #     else
-            #       genes.append("No Gene")
-            #     end }
               tests = genes.zip(@global_record_map[:genotype],
-                                @global_record_map[:genotype2],
-                                @global_record_map[:moleculartestingtype]).uniq unless genes.nil?
+                                @global_record_map[:genotype2]).uniq unless genes.nil?
 
               grouped_tests = tests.group_by {|test| test.shift}.transform_values do |values| 
                 values.flatten.uniq
               end
               selected_genes = (@global_record_map[:moleculartestingtype].uniq & MOLTEST_MAP.keys).join()
 
-              grouped_tests.select {
+              grouped_tests.each {
                 |gene,genetic_info| 
                 if selected_genes == ""
                   @logger.debug("Nothing to do")
@@ -202,16 +230,33 @@ module Import
                 elsif MOLTEST_MAP[selected_genes].include? gene
                   genocolorectal1 = genocolorectal.dup_colo
                   if CDNA_REGEX.match(genetic_info.join(','))
-                    @logger.debug("IDENTIFIED #{gene}, #{CDNA_REGEX.match(genetic_info.join(','))[:cdna]} from #{genetic_info}")
-                    genocolorectal1.add_gene_location(CDNA_REGEX.match(genetic_info.join(','))[:cdna])
-                    if PROT_REGEX.match(genetic_info.join(','))
-                      @logger.debug("IDENTIFIED #{PROT_REGEX.match(genetic_info.join(','))[:impact]} from #{genetic_info}")
-                      genocolorectal1.add_protein_impact(PROT_REGEX.match(genetic_info.join(','))[:impact])
+                    if COLORECTAL_GENES_REGEX.match(genetic_info.join(','))
+                      if COLORECTAL_GENES_REGEX.match(genetic_info.join(','))[:colorectal] != gene
+                        @logger.debug("IDENTIFIED FALSE POSITIVE FOR #{gene}, #{COLORECTAL_GENES_REGEX.match(genetic_info.join(','))[:colorectal]}, #{CDNA_REGEX.match(genetic_info.join(','))[:cdna]} from #{genetic_info}")
+                      elsif COLORECTAL_GENES_REGEX.match(genetic_info.join(','))[:colorectal] == gene
+                        @logger.debug("IDENTIFIED TRUE POSITIVE FOR #{gene}, #{CDNA_REGEX.match(genetic_info.join(','))[:cdna]} from #{genetic_info}")
+                        genocolorectal1.add_gene_location(CDNA_REGEX.match(genetic_info.join(','))[:cdna])
+                        if PROT_REGEX.match(genetic_info.join(','))
+                          @logger.debug("IDENTIFIED #{PROT_REGEX.match(genetic_info.join(','))[:impact]} from #{genetic_info}")
+                          genocolorectal1.add_protein_impact(PROT_REGEX.match(genetic_info.join(','))[:impact])
+                        end
+                        genocolorectal1.add_gene_colorectal(gene)
+                        @logger.debug("IDENTIFIED #{gene}, POSITIVE TEST from #{genetic_info}")
+                        genocolorectal1.add_status(2)
+                        genotypes.append(genocolorectal1)
+                      end
+                    else
+                      @logger.debug("IDENTIFIED #{gene}, #{CDNA_REGEX.match(genetic_info.join(','))[:cdna]} from #{genetic_info}")
+                      genocolorectal1.add_gene_location(CDNA_REGEX.match(genetic_info.join(','))[:cdna])
+                      if PROT_REGEX.match(genetic_info.join(','))
+                        @logger.debug("IDENTIFIED #{PROT_REGEX.match(genetic_info.join(','))[:impact]} from #{genetic_info}")
+                        genocolorectal1.add_protein_impact(PROT_REGEX.match(genetic_info.join(','))[:impact])
+                      end
+                      genocolorectal1.add_gene_colorectal(gene)
+                      @logger.debug("IDENTIFIED #{gene}, POSITIVE TEST from #{genetic_info}")
+                      genocolorectal1.add_status(2)
+                      genotypes.append(genocolorectal1)
                     end
-                  genocolorectal1.add_gene_colorectal(gene)
-                  @logger.debug("IDENTIFIED #{gene}, POSITIVE TEST from #{genetic_info}")
-                  genocolorectal1.add_status(2)
-                  genotypes.append(genocolorectal1)
                   elsif genetic_info.join(',') !~ CDNA_REGEX and genetic_info.join(',') =~ /normal/i
                     genocolorectal1 = genocolorectal.dup_colo
                     @logger.debug("IDENTIFIED #{gene}, NORMAL TEST from #{genetic_info}")
@@ -251,19 +296,29 @@ module Import
                     genocolorectal1 = genocolorectal.dup_colo
                     genocolorectal1.add_gene_colorectal(gene)
                     genocolorectal1.add_status(1)
+                    genotypes.append(genocolorectal1)
                     @logger.debug("IDENTIFIED #{gene} from #{MOLTEST_MAP_DOSAGE[selected_genes]}, NORMAL TEST from #{genetic_info}")
                   elsif genetic_info.join(',') =~ COLORECTAL_GENES_REGEX and \
                     genetic_info.join(',') !~ EXON_REGEX
                     genocolorectal1 = genocolorectal.dup_colo
                     genocolorectal1.add_gene_colorectal(gene)
                     genocolorectal1.add_status(1)
+                    genotypes.append(genocolorectal1)
                     @logger.debug("IDENTIFIED #{gene} from #{MOLTEST_MAP_DOSAGE[selected_genes]}, NORMAL TEST from #{genetic_info}")
                   elsif genetic_info.join(',') =~ COLORECTAL_GENES_REGEX and \
                     genetic_info.join(',') =~ EXON_REGEX
                     genocolorectal1 = genocolorectal.dup_colo
                     genocolorectal1.add_gene_colorectal(COLORECTAL_GENES_REGEX.match(genetic_info.join(','))[:colorectal])
                     genocolorectal1.add_variant_type(EXON_REGEX.match(genetic_info.join(','))[:insdeldup])
+                    if EXON_LOCATION_REGEX.match(genetic_info.join(','))
+                      if genetic_info.join(',').scan(EXON_LOCATION_REGEX).size == 1
+                        genocolorectal1.add_exon_location(genetic_info.join(',').scan(EXON_LOCATION_REGEX).flatten[0])
+                      elsif genetic_info.join(',').scan(EXON_LOCATION_REGEX).size == 2
+                        genocolorectal1.add_exon_location(genetic_info.join(',').scan(EXON_LOCATION_REGEX).flatten.compact.join('-'))
+                      end
+                    end
                     genocolorectal1.add_status(2)
+                    genotypes.append(genocolorectal1)
                   end
                 else 
                   @logger.debug("Nothing to be done for #{gene} as it is not in #{selected_genes}")
