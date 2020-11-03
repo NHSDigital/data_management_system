@@ -65,7 +65,10 @@ class OxfordHandlerTest < ActiveSupport::TestCase
   end
 
 
-
+  test 'assign_servicereportidentifier' do
+    @handler.assign_servicereportidentifier(@genotype, @record)
+    assert_equal '123456', @genotype.attribute_map['servicereportidentifier']
+  end
 
   private
 
@@ -104,7 +107,7 @@ class OxfordHandlerTest < ActiveSupport::TestCase
     { sex: 'Female',
       providercode: 'Provider Code',
       consultantname: 'Consultant Name',
-      investigationid: 'Investigation ID',
+      investigationid: '123456',
       service_level: 'routine',
       collceteddate: 'N/A',
       requesteddate: '2017-08-17 00: 00: 00',
