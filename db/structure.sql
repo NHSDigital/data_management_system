@@ -27,16 +27,6 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- Name: a; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.a (
-    id integer,
-    val text
-);
-
-
---
 -- Name: addresses; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -144,16 +134,6 @@ CREATE TABLE public.ar_internal_metadata (
     value character varying,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL
-);
-
-
---
--- Name: b; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.b (
-    id integer,
-    val text
 );
 
 
@@ -384,32 +364,6 @@ ALTER SEQUENCE public.closure_reasons_id_seq OWNED BY public.closure_reasons.id;
 
 
 --
--- Name: colorectal_tab2_all; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.colorectal_tab2_all (
-    gene text,
-    prov_name text,
-    provider character varying,
-    full_screen_count bigint,
-    full_screen_path_count bigint
-);
-
-
---
--- Name: colorectal_tab2_all_no_overlap; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.colorectal_tab2_all_no_overlap (
-    gene text,
-    prov_name text,
-    provider character varying(255),
-    full_screen_count bigint,
-    full_screen_path_count bigint
-);
-
-
---
 -- Name: common_law_exemptions; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -491,7 +445,8 @@ CREATE TABLE public.contracts (
     contract_returned_date timestamp without time zone,
     contract_executed_date timestamp without time zone,
     advisory_letter_date timestamp without time zone,
-    destruction_form_received_date timestamp without time zone
+    destruction_form_received_date timestamp without time zone,
+    reference character varying
 );
 
 
@@ -688,7 +643,8 @@ CREATE TABLE public.data_privacy_impact_assessments (
     review_meeting_date timestamp without time zone,
     dpia_decision_date timestamp without time zone,
     created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
+    updated_at timestamp(6) without time zone NOT NULL,
+    reference character varying
 );
 
 
@@ -1618,23 +1574,6 @@ CREATE TABLE public.error_logs (
 
 
 --
--- Name: fs_pathogenic; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.fs_pathogenic (
-    pseudo_id1 text,
-    pseudo_id2 text,
-    codingdnasequencechange text,
-    proteinimpact text,
-    variantpathclass numeric,
-    moleculartestingtype integer,
-    genetictestscope text,
-    teststatus numeric(19,0),
-    gene text
-);
-
-
---
 -- Name: genetic_sequence_variants; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -2327,29 +2266,6 @@ CREATE SEQUENCE public.outputs_id_seq
 --
 
 ALTER SEQUENCE public.outputs_id_seq OWNED BY public.outputs.id;
-
-
---
--- Name: pids; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.pids (
-    id1 text,
-    id2 text
-);
-
-
---
--- Name: possibly_nulls; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.possibly_nulls (
-    pseudo_id1 text,
-    pseudo_id2 text,
-    provider character varying,
-    teststatus numeric(19,0),
-    raw_record text
-);
 
 
 --
@@ -3351,7 +3267,8 @@ CREATE TABLE public.releases (
     individual_to_release character varying,
     release_date timestamp without time zone,
     created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
+    updated_at timestamp(6) without time zone NOT NULL,
+    reference character varying
 );
 
 
@@ -3372,28 +3289,6 @@ CREATE SEQUENCE public.releases_id_seq
 --
 
 ALTER SEQUENCE public.releases_id_seq OWNED BY public.releases.id;
-
-
---
--- Name: rnz; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.rnz (
-    gene text,
-    count bigint
-);
-
-
---
--- Name: rtd_variants; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.rtd_variants (
-    gene text,
-    codingdnasequencechange text,
-    genetictestscope text,
-    count bigint
-);
 
 
 --
@@ -3437,13 +3332,34 @@ ALTER SEQUENCE public.security_assurances_id_seq OWNED BY public.security_assura
 
 
 --
--- Name: strange_pids_var; Type: TABLE; Schema: public; Owner: -
+-- Name: snomedct; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.strange_pids_var (
-    pseudo_id1 text,
-    pseudo_id2 text,
-    provider character varying
+CREATE TABLE public.snomedct (
+    providercode character varying(200),
+    providername character varying(200),
+    e_batchid bigint,
+    e_base_recordid bigint,
+    diagnosisdate character varying(12),
+    klass character varying(50),
+    field character varying(50),
+    val character varying(200)
+);
+
+
+--
+-- Name: snomedct_path; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.snomedct_path (
+    providercode character varying(200),
+    providername character varying(200),
+    e_batchid bigint,
+    e_base_recordid bigint,
+    diagnosisdate character varying(12),
+    klass character varying(50),
+    field character varying(50),
+    val character varying(200)
 );
 
 
@@ -3776,18 +3692,6 @@ CREATE SEQUENCE public.users_id_seq
 --
 
 ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
-
-
---
--- Name: variants_count; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.variants_count (
-    genes text,
-    codingdnasequencechange text,
-    genetictestscope text,
-    count bigint
-);
 
 
 --
@@ -7660,6 +7564,9 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20200820153644'),
 ('20200821134109'),
 ('20200821134630'),
-('20201015135259');
+('20201015135259'),
+('20201106153234'),
+('20201106153256'),
+('20201106153309');
 
 
