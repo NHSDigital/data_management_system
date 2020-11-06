@@ -17,7 +17,7 @@ module OdrDataImporter
       # should all be PHE staff
       counter = 0
       app_mans.each do |email|
-        user = User.find_or_initialize_by(email: email)
+        user = User.find_or_initialize_by(email: email.downcase)
         next if user.persisted?
 
         user.first_name = email.gsub('@phe.gov.uk','').split('.').first
@@ -46,10 +46,15 @@ module OdrDataImporter
       log_to_process_count(@excel_file.count)
       # let's build these now as some as missing.
       import_application_managers(header)
-
+      @org_created_counter = 0
+      @team_created_counter = 0
+      @user_created_counter = 0
       Project.transaction do
         @excel_file.each do |application|
           attrs = header.zip(application).to_h
+          build_organisation_for_application(attrs)
+          build_team_for_application(attrs)
+          build_user_for_application(attrs)
           unused_columns = header - Project.new.attributes.keys
 
           # Make a new project
@@ -62,7 +67,7 @@ module OdrDataImporter
           # assigned_to - I've changed this to an email in the spreadsheet
           if attrs['assigned_to'].present?
             user_assigned_to = attrs['assigned_to']
-            app_man = User.find_by(email: user_assigned_to)
+            app_man = User.find_by(email: user_assigned_to.downcase)
             raise "no application manager found for #{attrs['assigned_to']}" if app_man.nil?
 
             application.assigned_to = app_man
@@ -84,16 +89,23 @@ module OdrDataImporter
             else
               application.team = team
 
-              application.owner = User.find_by(email: attrs['applicant_email'].downcase)
-              # raise "no user/owner found for #{attrs['applicant_email']}" if application.owner.nil?
+              application.owner = User.find_by(email: attrs['applicant_email']&.downcase)
+
               missing_owners.push attrs['applicant_email'] if application.owner.nil?
               application.valid? ? would_be_valid += 1 : would_be_invalid +=1
               build_rest_of_application(application, attrs)
 
-              # binding.pry unless application.valid?
               missing_dataset << application.application_log if 
                 application.project_datasets.empty? && attrs['data_asset_required'].present?
-              application.save! unless @test_mode
+              app_valid = application.valid?
+              if app_valid
+                application.save! unless @test_mode
+              elsif application.errors.size == 1 && application.errors.messages[:owner_grant].present?
+                application.save(validate: false)
+              else
+                binding.pry
+                raise "#{attrs['application_log']} is invalid"
+              end
               print "#{counter += 1}\r"
             end
           end
@@ -104,12 +116,87 @@ module OdrDataImporter
         print "#{would_be_valid} valid\n"
         print "#{would_be_invalid} invalid\n"
         print "#{missing_dataset.count} missing a dataset\n"
+        print "#{@org_created_counter}  Organisations created\n"
+        print "#{@team_created_counter} Teams created\n"
+        print "#{@user_created_counter} Users created\n"
+        
         errors_to_file(missing_owners, 'missing_owners')
         errors_to_file(missing_dataset, 'applications_missing_dataset')
         errors_to_file(@missing_dataset_names, 'missing_dataset_names')
       end
     end
 
+    def build_organisation_for_application(attrs)
+      org_name = attrs['organisation_name']
+      org = Organisation.find_by(name: org_name)
+      return unless org.nil?
+      puts "ORGANISATION creating #{org_name}" 
+      Organisation.new(name: org_name.strip).tap do |o|
+        o.organisation_type = Lookups::OrganisationType.find_by(value: attrs['organisation_type'])
+        o.save!
+      end
+      @org_created_counter += 1
+    rescue StandardError => e
+      require 'pry' ; binding.pry
+      raise
+    end
+
+    def build_team_for_application(attrs)
+      team_name = attrs['team_name']
+      team = Team.find_by(name: team_name)
+      return if team
+
+      Team.new(name: team_name.strip).tap do |t|
+        t.organisation = Organisation.find_by(name: attrs['organisation_name'])
+        t.z_team_status = ZTeamStatus.find_by(name: 'Active')
+        t.save!
+      end
+      @team_created_counter += 1
+    rescue StandardError => e
+      require 'pry' ; binding.pry
+      raise
+    end
+
+    def build_user_for_application(attrs)
+      email = attrs['applicant_email']&.downcase
+      return if email.nil? # there's an application with no user
+
+      user = User.find_by(email: email)
+      if user.nil?
+        org = Organisation.find_by(name: attrs['organisation_name'])
+        team = org.teams.find_by(name: attrs['team_name'])
+        user = User.new(email: email, first_name: attrs['first_name'],
+                 last_name: attrs['last_name'], username: attrs['username']).tap do |u|
+          u.grants.build(team: team, roleable: TeamRole.fetch(:odr_applicant))
+        end
+        user_valid = user.valid?
+        if user_valid
+          user.save!
+        elsif user.errors.size == 1 && user.errors.messages[:username].present?
+          user.save(validate: false)
+        else
+          require 'pry' ; binding.pry
+          raise
+        end
+        @user_created_counter += 1
+      else # potentially add another team grant
+        user.grants.find_or_initialize_by(team: team, roleable: TeamRole.fetch(:odr_applicant))
+        user_valid = user.valid?
+        if user_valid
+          user.save!
+        elsif user.errors.size == 1 && user.errors.messages[:username].present?
+          user.save(validate: false)
+        else
+          require 'pry' ; binding.pry
+          raise
+        end
+      end
+    rescue StandardError => e
+      require 'pry' ; binding.pry
+      raise
+    end
+
+    
     def build_rest_of_application(application, attrs)
       # article 6 & article 9 - Legal Basis
       lawful_bases = []
@@ -178,6 +265,8 @@ module OdrDataImporter
 # TODO: ID's dont make sense.
       # Lookups::CommonLawExemption.pluck(:id, :value)
       # => [[1, "Informed Consent"], [2, "Direct Care Relationship"], [3, "S251 Regulation 2"], [4, "S251 Regulation 3"], [5, "S251 Regulation 5"], [6, "Other"]]
+      s251_value = s251_mapping[attrs['section_251_exempt']]
+      application.s251_exemption_id = Lookups::CommonLawExemption.find_by(value: s251_value).id
 
       # data_linkage
       application.data_linkage = attrs['data_linkage']
@@ -200,11 +289,25 @@ module OdrDataImporter
 
       # We can't have the same application name per team
       application.name = application.name + " #{attrs['application_log']}"
+
+      # closure reason
+      if attrs['closure_reason'].present?
+        closure = Lookups::ClosureReason.find_by(value: attrs['closure_reason'])
+        binding.pry if closure.nil?
+        application.closure_reason = closure
+      end
       application
     end
 
     def application_project_type
       ProjectType.find_by(name: 'Application')
+    end
+
+    def s251_mapping
+      {
+        'Consent' => "Informed Consent",
+        'Direct Care' => "Direct Care Relationship"
+      }
     end
   end
 end
