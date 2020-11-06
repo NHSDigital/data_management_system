@@ -8,6 +8,7 @@
   <table class="table table-condensed" id="releasesTable">
     <thead>
       <tr>
+        <th><%= Release.human_attribute_name(:reference) %></th>
         <th><%= Release.human_attribute_name(:phe_invoice_number) %></th>
         <th><%= Release.human_attribute_name(:po_number) %></th>
         <th><%= Release.human_attribute_name(:individual_to_release) %></th>
@@ -24,6 +25,7 @@
     <tbody>
       <% project.releases.accessible_by(current_ability).find_each do |release| %>
         <%= content_tag(:tr, id: dom_id(release)) do %>
+          <td><%= release.reference %></td>
           <td><%= release.phe_invoice_number %></td>
           <td><%= release.po_number %></td>
           <td><%= release.individual_to_release %></td>
