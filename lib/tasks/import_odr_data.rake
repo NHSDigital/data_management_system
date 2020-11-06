@@ -1,6 +1,6 @@
 namespace :odr do
   task import_spreadsheet: %i[clean_existing_organisations update_organisations
-                              create_new_organisations import_teams import_users
+                              create_new_organisations import_teams
                               import_applications import_amendments import_dpias import_releases]
 
   # Live seems to be in odd state for some orgs
@@ -38,19 +38,6 @@ namespace :odr do
     import_orgs =
       OdrDataImporter::Base.new(ENV['application_fname'], 'Orgs - New', ENV['test_mode'])
     import_orgs.import_organisations
-  end
-
-  # We'll import this from the applications tab
-  task import_teams: :environment do
-    import_teams = 
-      OdrDataImporter::Base.new(ENV['application_fname'], 'Applications', ENV['test_mode'])
-    import_teams.import_teams
-  end
-
-  task import_users: :environment do
-    import_users = 
-      OdrDataImporter::Base.new(ENV['application_fname'], 'Users', ENV['test_mode'])
-    import_users.import_users
   end
 
   task import_applications: :environment do
