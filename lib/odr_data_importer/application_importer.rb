@@ -265,6 +265,8 @@ module OdrDataImporter
 # TODO: ID's dont make sense.
       # Lookups::CommonLawExemption.pluck(:id, :value)
       # => [[1, "Informed Consent"], [2, "Direct Care Relationship"], [3, "S251 Regulation 2"], [4, "S251 Regulation 3"], [5, "S251 Regulation 5"], [6, "Other"]]
+      s251_value = s251_mapping[attrs['section_251_exempt']]
+      application.s251_exemption_id = Lookups::CommonLawExemption.find_by(value: s251_value).id
 
       # data_linkage
       application.data_linkage = attrs['data_linkage']
@@ -299,6 +301,13 @@ module OdrDataImporter
 
     def application_project_type
       ProjectType.find_by(name: 'Application')
+    end
+
+    def s251_mapping
+      {
+        'Consent' => "Informed Consent",
+        'Direct Care' => "Direct Care Relationship"
+      }
     end
   end
 end
