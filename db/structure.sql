@@ -556,7 +556,8 @@ CREATE TABLE public.contracts (
     contract_returned_date timestamp without time zone,
     contract_executed_date timestamp without time zone,
     advisory_letter_date timestamp without time zone,
-    destruction_form_received_date timestamp without time zone
+    destruction_form_received_date timestamp without time zone,
+    reference character varying
 );
 
 
@@ -753,7 +754,8 @@ CREATE TABLE public.data_privacy_impact_assessments (
     review_meeting_date timestamp without time zone,
     dpia_decision_date timestamp without time zone,
     created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
+    updated_at timestamp(6) without time zone NOT NULL,
+    reference character varying
 );
 
 
@@ -3376,7 +3378,8 @@ CREATE TABLE public.releases (
     individual_to_release character varying,
     release_date timestamp without time zone,
     created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
+    updated_at timestamp(6) without time zone NOT NULL,
+    reference character varying
 );
 
 
@@ -3440,6 +3443,41 @@ ALTER SEQUENCE public.security_assurances_id_seq OWNED BY public.security_assura
 
 
 --
+<<<<<<< HEAD
+=======
+-- Name: snomedct; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.snomedct (
+    providercode character varying(200),
+    providername character varying(200),
+    e_batchid bigint,
+    e_base_recordid bigint,
+    diagnosisdate character varying(12),
+    klass character varying(50),
+    field character varying(50),
+    val character varying(200)
+);
+
+
+--
+-- Name: snomedct_path; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.snomedct_path (
+    providercode character varying(200),
+    providername character varying(200),
+    e_batchid bigint,
+    e_base_recordid bigint,
+    diagnosisdate character varying(12),
+    klass character varying(50),
+    field character varying(50),
+    val character varying(200)
+);
+
+
+--
+>>>>>>> a987339... # Add reference column to sub entities of ODR applications #[25081]
 -- Name: system_roles; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -7685,6 +7723,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20200820153644'),
 ('20200821134109'),
 ('20200821134630'),
+<<<<<<< HEAD
 ('20201014120225'),
 ('20201014122944'),
 ('20201015135259'),
@@ -7692,5 +7731,11 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20201018132733'),
 ('20201018134038'),
 ('20201018134152');
+=======
+('20201015135259'),
+('20201106153234'),
+('20201106153256'),
+('20201106153309');
+>>>>>>> a987339... # Add reference column to sub entities of ODR applications #[25081]
 
 
