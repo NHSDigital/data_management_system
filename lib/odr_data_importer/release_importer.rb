@@ -2,6 +2,7 @@ module OdrDataImporter
   module ReleaseImporter
     def create_release(application, attrs)
       application.releases.create!(
+        reference: attrs['release_ref'],
         invoice_requested_date: attrs['invoice_requested_date'],
         invoice_sent_date: attrs['invoice_sent_date'],
         phe_invoice_number: attrs['phe_invoice_number'],

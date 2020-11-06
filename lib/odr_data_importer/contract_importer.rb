@@ -9,6 +9,7 @@ module OdrDataImporter
       # contract_status: nil,
 
       application.contracts.create!(
+        reference: attrs['contract_ref'],
         contract_sent_date: attrs['contract_sent_date'],
         contract_version: attrs['contract_version'],
         contract_start_date: attrs['contract_start_date'],
