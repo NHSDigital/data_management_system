@@ -61,6 +61,7 @@ module Import
 
             PROT_REGEX = /p\.(\()?(?<impact>[a-z]+[0-9]+[a-z]+)(\))?/i .freeze
             EXON_REGEX = /(?<insdeldup>ins|del|dup)/i .freeze
+            EXON_LOCATION_REGEX = /ex(?<exon>[\d]+)(.[\d]+)?(\sto\s)?(ex(?<exon2>[\d]+))?/i .freeze
           end
         end
       end
