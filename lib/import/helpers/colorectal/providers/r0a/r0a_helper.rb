@@ -57,13 +57,13 @@ module Import
                 genocolorectal.add_test_scope(:targeted_mutation)
               elsif genera.include?('G') || genera.include?('F')
                 genocolorectal.add_test_scope(:full_screen)
-              elsif screen_and_mlh1_msh2_6_test?(moltesttypes) &&
+              elsif (screen?(stringed_moltesttypes) || mlh1_msh2_6_test?(moltesttypes)) &&
                 twelve_tests_or_more?(moltesttypes)
                 genocolorectal.add_test_scope(:full_screen)
-              elsif screen_and_mlh1_msh2_6_test?(moltesttypes) &&
+              elsif (screen?(stringed_moltesttypes) || mlh1_msh2_6_test?(moltesttypes)) &&
                 !twelve_tests_or_more?(moltesttypes) && ngs?(stringed_exons)
                 genocolorectal.add_test_scope(:full_screen)
-              elsif screen_and_mlh1_msh2_6_test?(moltesttypes) &&
+              elsif (screen?(stringed_moltesttypes) || mlh1_msh2_6_test?(moltesttypes)) &&
                 !twelve_tests_or_more?(moltesttypes) && !ngs?(stringed_exons)
                 genocolorectal.add_test_scope(:targeted_mutation)
               elsif moltesttypes.include?('VARIANT TESTING REPORT')
@@ -124,7 +124,7 @@ module Import
 
             # TODO: Boyscout
             def process_grouped_dosage_tests(grouped_tests, genocolorectal, genotypes)
-              selected_genes = (@non_dosage_record_map[:moleculartestingtype].uniq & MOLTEST_MAP_DOSAGE.keys).join()
+              selected_genes = (@dosage_record_map[:moleculartestingtype].uniq & MOLTEST_MAP_DOSAGE.keys).join()
               if selected_genes.to_s.blank?
                 @logger.debug('Nothing to do')
                 return
@@ -220,28 +220,23 @@ module Import
             end
 
             def relevant_consultant?(raw_record)
-              raw_record['consultantcode'].to_s.upcase != "DR SANDI DEANS"
+              raw_record['consultantname'].to_s.upcase != "DR SANDI DEANS"
             end
 
             def mlh1_msh2_6_test?(moltesttypes)
               moltesttypes.include?('MLH1/MSH2/MSH6 GENETIC TESTING REPORT')
             end
 
-            def ngs?(stringed_exons)
-              stringed_exon =~ /ngs/i.freeze
+            def ngs?(exons)
+              exons =~ /ngs/i.freeze
             end
 
-            def screen?(stringed_moltesttypes)
-              stringed_moltesttypes =~ /screen/i.freeze
+            def screen?(moltesttypes)
+              moltesttypes =~ /screen/i.freeze
             end
 
             def control_sample?(raw_record)
               raw_record["genocomm"] =~ /control|ctrl/i
-            end
-
-            def screen_and_mlh1_msh2_6_test?(moltesttypes)
-              stringed_moltesttypes = moltesttypes.flatten.join(',')
-              screen?(stringed_moltesttypes) && mlh1_msh2_6_test?(moltesttypes)
             end
 
             def twelve_tests_or_more?(moltesttypes)
