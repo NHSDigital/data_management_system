@@ -188,16 +188,15 @@ module Import
               return if genes.nil?
 
               genes.zip(@non_dosage_record_map[:genotype],
-                        @non_dosage_record_map[:genotype2],
-                        @non_dosage_record_map[:moleculartestingtype]).uniq
+                        @non_dosage_record_map[:genotype2]).uniq
             end
 
             def tests_from_dosage_record(genes)
               return if genes.nil?
 
-              tests = genes.zip(@dosage_record_map[:genotype],
-                                @dosage_record_map[:genotype2],
-                                @dosage_record_map[:moleculartestingtype]).uniq
+              genes.zip(@dosage_record_map[:genotype],
+                        @dosage_record_map[:genotype2],
+                        @dosage_record_map[:moleculartestingtype]).uniq
             end
 
             def process_non_dosage_test_exons(genes)
