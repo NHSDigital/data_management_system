@@ -97,7 +97,8 @@ module Import
               genocolorectal_dup = genocolorectal.dup_colo
               colorectal_genes   = colorectal_genes_from(genetic_info)
               if colorectal_genes
-                process_colorectal_genes(genocolorectal_dup, gene, genetic_info, genotypes)
+                process_colorectal_genes(colorectal_genes, genocolorectal_dup, gene, genetic_info,
+                                         genotypes)
               else
                 process_non_colorectal_genes(genocolorectal_dup, gene, genetic_info, genotypes)
               end
@@ -121,7 +122,8 @@ module Import
                             "from #{genetic_info}")
             end
 
-            def process_colorectal_genes(genocolorectal_dup, gene, genetic_info, genotypes)
+            def process_colorectal_genes(colorectal_genes, genocolorectal_dup, gene, genetic_info,
+                                         genotypes)
               if colorectal_genes[:colorectal] != gene
                 process_false_positive(colorectal_genes, gene, genetic_info)
               elsif colorectal_genes[:colorectal] == gene
@@ -157,14 +159,14 @@ module Import
               grouped_tests.compact.select do |gene, genetic_info|
                 dosage_genes = MOLTEST_MAP_DOSAGE[selected_genes]
                 if dosage_genes.include? gene
-                  process_dosage_gene(gene, genetic_info, genocolorectal, genotypes)
+                  process_dosage_gene(gene, genetic_info, genocolorectal, genotypes, dosage_genes)
                 else
                   @logger.debug("Nothing to be done for #{gene} as it is not in #{selected_genes}")
                 end
               end
             end
 
-            def process_dosage_gene(gene, genetic_info, genocolorectal, genotypes)
+            def process_dosage_gene(gene, genetic_info, genocolorectal, genotypes, dosage_genes)
               if !colorectal_gene_match?(genetic_info)
                 genocolorectal_dup = genocolorectal.dup_colo
                 add_gene_and_status_to(genocolorectal_dup, gene, 1, genotypes)
