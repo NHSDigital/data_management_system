@@ -57,13 +57,14 @@ module Import
                 genocolorectal.add_test_scope(:targeted_mutation)
               elsif genera.include?('G') || genera.include?('F')
                 genocolorectal.add_test_scope(:full_screen)
-              elsif screen_and_mlh1_msh2_6_test? && twelve_tests_or_more?(moltesttypes)
+              elsif screen_and_mlh1_msh2_6_test?(moltesttypes) &&
+                twelve_tests_or_more?(moltesttypes)
                 genocolorectal.add_test_scope(:full_screen)
-              elsif screen_and_mlh1_msh2_6_test? && !twelve_tests_or_more?(moltesttypes) &&
-                ngs?(stringed_exons)
+              elsif screen_and_mlh1_msh2_6_test?(moltesttypes) &&
+                !twelve_tests_or_more?(moltesttypes) && ngs?(stringed_exons)
                 genocolorectal.add_test_scope(:full_screen)
-              elsif screen_and_mlh1_msh2_6_test && !twelve_tests_or_more?(moltesttypes) &&
-                !ngs?(stringed_exons)
+              elsif screen_and_mlh1_msh2_6_test?(moltesttypes) &&
+                !twelve_tests_or_more?(moltesttypes) && !ngs?(stringed_exons)
                 genocolorectal.add_test_scope(:targeted_mutation)
               elsif moltesttypes.include?('VARIANT TESTING REPORT')
                 genocolorectal.add_test_scope(:targeted_mutation)
@@ -223,8 +224,8 @@ module Import
               raw_record['consultantcode'].to_s.upcase != "DR SANDI DEANS"
             end
 
-            def mlh1_msh2_6_test?(moltesttype)
-              moltesttype.include?('MLH1/MSH2/MSH6 GENETIC TESTING REPORT')
+            def mlh1_msh2_6_test?(moltesttypes)
+              moltesttypes.include?('MLH1/MSH2/MSH6 GENETIC TESTING REPORT')
             end
 
             def ngs?(stringed_exons)
@@ -239,8 +240,9 @@ module Import
               raw_record["genocomm"] =~ /control|ctrl/i
             end
 
-            def screen_and_mlh1_msh2_6_test?
-              screen? && mlh1_msh2_6_test?
+            def screen_and_mlh1_msh2_6_test?(moltesttypes)
+              stringed_moltesttypes = moltesttypes.flatten.join(',')
+              screen?(stringed_moltesttypes) && mlh1_msh2_6_test?(moltesttypes)
             end
 
             def twelve_tests_or_more?(moltesttypes)
