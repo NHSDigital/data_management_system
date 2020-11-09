@@ -20,7 +20,7 @@ module Import
 
             def assign_gene_mutation(genocolorectal, _record)
               genotypes = []
-              genes = []
+              genes     = []
               if non_dosage_test?
                 process_non_dosage_test_exons(genes)
                 tests = tests_from_non_dosage_record(genes)
@@ -58,13 +58,13 @@ module Import
               elsif genera.include?('G') || genera.include?('F')
                 genocolorectal.add_test_scope(:full_screen)
               elsif (screen?(stringed_moltesttypes) || mlh1_msh2_6_test?(moltesttypes)) &&
-                twelve_tests_or_more?(moltesttypes)
+                    twelve_tests_or_more?(moltesttypes)
                 genocolorectal.add_test_scope(:full_screen)
               elsif (screen?(stringed_moltesttypes) || mlh1_msh2_6_test?(moltesttypes)) &&
-                !twelve_tests_or_more?(moltesttypes) && ngs?(stringed_exons)
+                    !twelve_tests_or_more?(moltesttypes) && ngs?(stringed_exons)
                 genocolorectal.add_test_scope(:full_screen)
               elsif (screen?(stringed_moltesttypes) || mlh1_msh2_6_test?(moltesttypes)) &&
-                !twelve_tests_or_more?(moltesttypes) && !ngs?(stringed_exons)
+                    !twelve_tests_or_more?(moltesttypes) && !ngs?(stringed_exons)
                 genocolorectal.add_test_scope(:targeted_mutation)
               elsif moltesttypes.include?('VARIANT TESTING REPORT')
                 genocolorectal.add_test_scope(:targeted_mutation)
@@ -75,88 +75,126 @@ module Import
               end
             end
 
-            # TODO: Boyscout
             def process_grouped_non_dosage_tests(grouped_tests, genocolorectal, genotypes)
-              selected_genes = (@non_dosage_record_map[:moleculartestingtype].uniq & MOLTEST_MAP.keys).join()
-              if selected_genes.to_s.blank?
-                @logger.debug('Nothing to do')
-                return
-              end
+              selected_genes = (@non_dosage_record_map[:moleculartestingtype].uniq &
+                                MOLTEST_MAP.keys).join
+              return @logger.debug('Nothing to do') if selected_genes.to_s.blank?
+
               grouped_tests.each do |gene, genetic_info|
-                if MOLTEST_MAP[selected_genes].include? gene
-                  genocolorectal_dup = genocolorectal.dup_colo
-                  if CDNA_REGEX.match(genetic_info.join(','))
-                    if COLORECTAL_GENES_REGEX.match(genetic_info.join(','))
-                      if COLORECTAL_GENES_REGEX.match(genetic_info.join(','))[:colorectal] != gene
-                        @logger.debug("IDENTIFIED FALSE POSITIVE FOR #{gene}, #{COLORECTAL_GENES_REGEX.match(genetic_info.join(','))[:colorectal]}, #{CDNA_REGEX.match(genetic_info.join(','))[:cdna]} from #{genetic_info}")
-                      elsif COLORECTAL_GENES_REGEX.match(genetic_info.join(','))[:colorectal] == gene
-                        @logger.debug("IDENTIFIED TRUE POSITIVE FOR #{gene}, #{CDNA_REGEX.match(genetic_info.join(','))[:cdna]} from #{genetic_info}")
-                        genocolorectal_dup.add_gene_location(CDNA_REGEX.match(genetic_info.join(','))[:cdna])
-                        if PROT_REGEX.match(genetic_info.join(','))
-                          @logger.debug("IDENTIFIED #{PROT_REGEX.match(genetic_info.join(','))[:impact]} from #{genetic_info}")
-                          genocolorectal_dup.add_protein_impact(PROT_REGEX.match(genetic_info.join(','))[:impact])
-                        end
-                        add_gene_and_status_to(genocolorectal_dup, gene, 2, genotypes)
-                        @logger.debug("IDENTIFIED #{gene}, POSITIVE TEST from #{genetic_info}")
-                      end
-                    else
-                      @logger.debug("IDENTIFIED #{gene}, #{CDNA_REGEX.match(genetic_info.join(','))[:cdna]} from #{genetic_info}")
-                      genocolorectal_dup.add_gene_location(CDNA_REGEX.match(genetic_info.join(','))[:cdna])
-                      if PROT_REGEX.match(genetic_info.join(','))
-                        @logger.debug("IDENTIFIED #{PROT_REGEX.match(genetic_info.join(','))[:impact]} from #{genetic_info}")
-                        genocolorectal_dup.add_protein_impact(PROT_REGEX.match(genetic_info.join(','))[:impact])
-                      end
-                      add_gene_and_status_to(genocolorectal_dup, gene, 2, genotypes)
-                      @logger.debug("IDENTIFIED #{gene}, POSITIVE TEST from #{genetic_info}")
-                    end
-                  elsif genetic_info.join(',') !~ CDNA_REGEX && normal?(genetic_info)
-                    genocolorectal_dup = genocolorectal.dup_colo
-                    @logger.debug("IDENTIFIED #{gene}, NORMAL TEST from #{genetic_info}")
-                    add_gene_and_status_to(genocolorectal_dup, gene, 1, genotypes)
-                  elsif genetic_info.join(',') !~ CDNA_REGEX && !normal?(genetic_info) && fail?(genetic_info)
-                    genocolorectal_dup = genocolorectal.dup_colo
-                    add_gene_and_status_to(genocolorectal_dup, gene, 9, genotypes)
-                    @logger.debug("Adding #{gene} to FAIL STATUS for #{genetic_info}")
-                  end
+                next unless MOLTEST_MAP[selected_genes].include? gene
+
+                if cdna_match?(genetic_info)
+                  process_non_dosage_cdna(gene, genetic_info, genocolorectal, genotypes)
+                elsif !cdna_match?(genetic_info) && normal?(genetic_info)
+                  process_non_cdna_normal(gene, genetic_info, genocolorectal, genotypes)
+                elsif !cdna_match?(genetic_info) && !normal?(genetic_info) && fail?(genetic_info)
+                  process_non_cdna_fail(gene, genetic_info, genocolorectal, genotypes)
                 end
               end
             end
 
+            def process_non_dosage_cdna(gene, genetic_info, genocolorectal, genotypes)
+              genocolorectal_dup = genocolorectal.dup_colo
+              colorectal_genes   = colorectal_genes_from(genetic_info)
+              if colorectal_genes
+                process_colorectal_genes(genocolorectal_dup, gene, genetic_info, genotypes)
+              else
+                process_non_colorectal_genes(genocolorectal_dup, gene, genetic_info, genotypes)
+              end
+            end
+
+            def process_non_cdna_normal(gene, genetic_info, genocolorectal, genotypes)
+              genocolorectal_dup = genocolorectal.dup_colo
+              @logger.debug("IDENTIFIED #{gene}, NORMAL TEST from #{genetic_info}")
+              add_gene_and_status_to(genocolorectal_dup, gene, 1, genotypes)
+            end
+
+            def process_non_cdna_fail(gene, genetic_info, genocolorectal, genotypes)
+              genocolorectal_dup = genocolorectal.dup_colo
+              add_gene_and_status_to(genocolorectal_dup, gene, 9, genotypes)
+              @logger.debug("Adding #{gene} to FAIL STATUS for #{genetic_info}")
+            end
+
+            def process_false_positive(colorectal_genes, gene, genetic_info)
+              @logger.debug("IDENTIFIED FALSE POSITIVE FOR #{gene}, " \
+                            "#{colorectal_genes[:colorectal]}, #{cdna_from(genetic_info)} " \
+                            "from #{genetic_info}")
+            end
+
+            def process_colorectal_genes(genocolorectal_dup, gene, genetic_info, genotypes)
+              if colorectal_genes[:colorectal] != gene
+                process_false_positive(colorectal_genes, gene, genetic_info)
+              elsif colorectal_genes[:colorectal] == gene
+                @logger.debug("IDENTIFIED TRUE POSITIVE FOR #{gene}, " \
+                              "#{cdna_from(genetic_info)} from #{genetic_info}")
+                genocolorectal_dup.add_gene_location(cdna_from(genetic_info))
+                if PROT_REGEX.match(genetic_info.join(','))
+                  @logger.debug("IDENTIFIED #{protien_from(genetic_info)} from #{genetic_info}")
+                  genocolorectal_dup.add_protein_impact(protien_from(genetic_info))
+                end
+                add_gene_and_status_to(genocolorectal_dup, gene, 2, genotypes)
+                @logger.debug("IDENTIFIED #{gene}, POSITIVE TEST from #{genetic_info}")
+              end
+            end
+
+            def process_non_colorectal_genes(genocolorectal_dup, gene, genetic_info, genotypes)
+              @logger.debug("IDENTIFIED #{gene}, #{cdna_from(genetic_info)} from #{genetic_info}")
+              genocolorectal_dup.add_gene_location(cdna_from(genetic_info))
+              if PROT_REGEX.match(genetic_info.join(','))
+                @logger.debug("IDENTIFIED #{protien_from(genetic_info)} from #{genetic_info}")
+                genocolorectal_dup.add_protein_impact(protien_from(genetic_info))
+              end
+              add_gene_and_status_to(genocolorectal_dup, gene, 2, genotypes)
+              @logger.debug("IDENTIFIED #{gene}, POSITIVE TEST from #{genetic_info}")
+            end
+
             # TODO: Boyscout
             def process_grouped_dosage_tests(grouped_tests, genocolorectal, genotypes)
-              selected_genes = (@dosage_record_map[:moleculartestingtype].uniq & MOLTEST_MAP_DOSAGE.keys).join()
-              if selected_genes.to_s.blank?
-                @logger.debug('Nothing to do')
-                return
-              end
+              selected_genes = (@dosage_record_map[:moleculartestingtype].uniq &
+                                MOLTEST_MAP_DOSAGE.keys).join
+              return @logger.debug('Nothing to do') if selected_genes.to_s.blank?
+
               grouped_tests.compact.select do |gene, genetic_info|
-                if MOLTEST_MAP_DOSAGE[selected_genes].include? gene
-                  if genetic_info.join(',') !~ COLORECTAL_GENES_REGEX
-                    genocolorectal_dup = genocolorectal.dup_colo
-                    add_gene_and_status_to(genocolorectal_dup, gene, 1, genotypes)
-                    @logger.debug("IDENTIFIED #{gene} from #{MOLTEST_MAP_DOSAGE[selected_genes]}, NORMAL TEST from #{genetic_info}")
-                  elsif genetic_info.join(',') =~ COLORECTAL_GENES_REGEX && genetic_info.join(',') !~ EXON_REGEX
-                    genocolorectal_dup = genocolorectal.dup_colo
-                    add_gene_and_status_to(genocolorectal_dup, gene, 1, genotypes)
-                    @logger.debug("IDENTIFIED #{gene} from #{MOLTEST_MAP_DOSAGE[selected_genes]}, NORMAL TEST from #{genetic_info}")
-                  elsif genetic_info.join(',') =~ COLORECTAL_GENES_REGEX && genetic_info.join(',') =~ EXON_REGEX
-                    genocolorectal_dup = genocolorectal.dup_colo
-                    genocolorectal_dup.add_gene_colorectal(COLORECTAL_GENES_REGEX.match(genetic_info.join(','))[:colorectal])
-                    genocolorectal_dup.add_variant_type(EXON_REGEX.match(genetic_info.join(','))[:insdeldup])
-                    if EXON_LOCATION_REGEX.match(genetic_info.join(','))
-                      if genetic_info.join(',').scan(EXON_LOCATION_REGEX).size == 1
-                        genocolorectal_dup.add_exon_location(genetic_info.join(',').scan(EXON_LOCATION_REGEX).flatten[0])
-                      elsif genetic_info.join(',').scan(EXON_LOCATION_REGEX).size == 2
-                        genocolorectal_dup.add_exon_location(genetic_info.join(',').scan(EXON_LOCATION_REGEX).flatten.compact.join('-'))
-                      end
-                    end
-                    genocolorectal_dup.add_status(2)
-                    genotypes.append(genocolorectal_dup)
-                  end
+                dosage_genes = MOLTEST_MAP_DOSAGE[selected_genes]
+                if dosage_genes.include? gene
+                  process_dosage_gene(gene, genetic_info, genocolorectal, genotypes)
                 else
                   @logger.debug("Nothing to be done for #{gene} as it is not in #{selected_genes}")
                 end
               end
+            end
+
+            def process_dosage_gene(gene, genetic_info, genocolorectal, genotypes)
+              if !colorectal_gene_match?(genetic_info)
+                genocolorectal_dup = genocolorectal.dup_colo
+                add_gene_and_status_to(genocolorectal_dup, gene, 1, genotypes)
+                @logger.debug("IDENTIFIED #{gene} from #{dosage_genes}, " \
+                              "NORMAL TEST from #{genetic_info}")
+              elsif colorectal_gene_match?(genetic_info) && !exon_match?(genetic_info)
+                genocolorectal_dup = genocolorectal.dup_colo
+                add_gene_and_status_to(genocolorectal_dup, gene, 1, genotypes)
+                @logger.debug("IDENTIFIED #{gene} from #{dosage_genes}, " \
+                              "NORMAL TEST from #{genetic_info}")
+              elsif colorectal_gene_match?(genetic_info) && exon_match?(genetic_info)
+                process_colorectal_gene_and_exon_match(genocolorectal, genetic_info, genotypes)
+              end
+            end
+
+            def process_colorectal_gene_and_exon_match(genocolorectal, genetic_info, genotypes)
+              genocolorectal_dup = genocolorectal.dup_colo
+              colorectal_gene    = colorectal_genes_from(genetic_info)[:colorectal]
+              genocolorectal_dup.add_gene_colorectal(colorectal_gene)
+              genocolorectal_dup.add_variant_type(exon_from(genetic_info))
+              if EXON_LOCATION_REGEX.match(genetic_info.join(','))
+                exon_locations = exon_locations_from(genetic_info)
+                if exon_locations.one?
+                  genocolorectal_dup.add_exon_location(exon_locations.flatten.first)
+                elsif exon_locations.size == 2
+                  genocolorectal_dup.add_exon_location(exon_locations.flatten.compact.join('-'))
+                end
+              end
+              genocolorectal_dup.add_status(2)
+              genotypes.append(genocolorectal_dup)
             end
 
             def add_servicereportidentifier(genocolorectal, record)
@@ -164,7 +202,7 @@ module Import
               record.raw_fields.each do |records|
                 servicereportidentifiers << records['servicereportidentifier']
               end
-              servicereportidentifier = servicereportidentifiers.flatten.uniq.join()
+              servicereportidentifier = servicereportidentifiers.flatten.uniq.join
               genocolorectal.attribute_map['servicereportidentifier'] = servicereportidentifier
             end
 
@@ -220,7 +258,7 @@ module Import
             end
 
             def relevant_consultant?(raw_record)
-              raw_record['consultantname'].to_s.upcase != "DR SANDI DEANS"
+              raw_record['consultantname'].to_s.upcase != 'DR SANDI DEANS'
             end
 
             def mlh1_msh2_6_test?(moltesttypes)
@@ -236,19 +274,11 @@ module Import
             end
 
             def control_sample?(raw_record)
-              raw_record["genocomm"] =~ /control|ctrl/i
+              raw_record['genocomm'] =~ /control|ctrl/i
             end
 
             def twelve_tests_or_more?(moltesttypes)
               moltesttypes.size >= 12
-            end
-
-            def cdna_from(genetic_info)
-              CDNA_REGEX.match(genetic_info.join(','))[:cdna]
-            end
-
-            def protein_from(genetic_info)
-              PROT_REGEX.match(genetic_info.join(','))[:impact]
             end
 
             def non_dosage_test?
@@ -274,13 +304,33 @@ module Import
             def normal?(genetic_info)
               genetic_info.join(',') =~ /normal/i
             end
- 
+
             def fail?(genetic_info)
               genetic_info.join(',') =~ /fail/i
             end
 
-            def  mlpa?(exon)
+            def mlpa?(exon)
               exon =~ /mlpa/i
+            end
+
+            def cdna_from(genetic_info)
+              CDNA_REGEX.match(genetic_info.join(','))[:cdna]
+            end
+
+            def exon_from(genetic_info)
+              EXON_REGEX.match(genetic_info.join(','))[:insdeldup]
+            end
+
+            def exon_locations_from(genetic_info)
+              genetic_info.join(',').scan(EXON_LOCATION_REGEX)
+            end
+
+            def protien_from(genetic_info)
+              PROT_REGEX.match(genetic_info.join(','))[:impact]
+            end
+
+            def colorectal_genes_from(genetic_info)
+              COLORECTAL_GENES_REGEX.match(genetic_info.join(','))
             end
 
             def process_genocolorectal(genocolorectal_dup, gene, status, logging, genotypes)
