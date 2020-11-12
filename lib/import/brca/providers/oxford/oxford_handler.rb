@@ -74,8 +74,11 @@ module Import
           end
 
           def assign_servicereportidentifier(genotype, record)
-            servicereportidentifier = record.raw_fields['investigationid'] unless record.raw_fields['investigationid'].nil?
-            genotype.attribute_map['servicereportidentifier'] = servicereportidentifier
+            if record.raw_fields['investigationid']
+              genotype.attribute_map['servicereportidentifier'] = record.raw_fields['investigationid']
+            else
+              @logger.debug 'Servicereportidentifier missing for this record'
+            end
           end
 
           def assign_test_scope(genotype, record)
@@ -124,7 +127,7 @@ module Import
           def process_gene(genotype, record)
             gene = record.mapped_fields['gene'].to_i
             case gene
-            when Integer then
+            when Integer
               if (7..8).cover? gene
                 genotype.add_gene(record.mapped_fields['gene'].to_i)
                 # @successful_gene_counter += 1
