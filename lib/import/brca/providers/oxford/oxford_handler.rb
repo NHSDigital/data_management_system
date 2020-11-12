@@ -36,7 +36,6 @@ module Import
             genotype.add_passthrough_fields(record.mapped_fields,
                                             record.raw_fields,
                                             PASS_THROUGH_FIELDS)
-            # ********************** Assign gene ************************
             assign_method(genotype, record)
             assign_test_scope(genotype, record)
             assign_test_type(genotype, record)
@@ -46,6 +45,7 @@ module Import
             process_protein_impact(genotype, record)
             # assign_protein_change(genotype, record)
             assign_genomic_change(genotype, record)
+            assign_servicereportidentifier(genotype, record)
             @persister.integrate_and_store(genotype)
           end
 
@@ -70,6 +70,14 @@ module Import
               end
               # TODO: check that 'diagnostic' is exactly how it comes through
               genotype.add_molecular_testing_type_strict(ttype)
+            end
+          end
+
+          def assign_servicereportidentifier(genotype, record)
+            if record.raw_fields['investigationid']
+              genotype.attribute_map['servicereportidentifier'] = record.raw_fields['investigationid']
+            else
+              @logger.debug 'Servicereportidentifier missing for this record'
             end
           end
 
@@ -119,7 +127,7 @@ module Import
           def process_gene(genotype, record)
             gene = record.mapped_fields['gene'].to_i
             case gene
-            when Integer then
+            when Integer
               if (7..8).cover? gene
                 genotype.add_gene(record.mapped_fields['gene'].to_i)
                 # @successful_gene_counter += 1
@@ -165,4 +173,3 @@ module Import
     end
   end
 end
-
