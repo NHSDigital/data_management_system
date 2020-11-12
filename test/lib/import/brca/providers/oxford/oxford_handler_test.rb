@@ -64,7 +64,6 @@ class OxfordHandlerTest < ActiveSupport::TestCase
     @handler.assign_genomic_change(@genotype, broken_record)
   end
 
-
   test 'assign_servicereportidentifier' do
     @handler.assign_servicereportidentifier(@genotype, @record)
     assert_equal '123456', @genotype.attribute_map['servicereportidentifier']
