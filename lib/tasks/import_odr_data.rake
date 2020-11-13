@@ -48,7 +48,7 @@ namespace :odr do
 
   task import_amendments: :environment do
     importer = OdrDataImporter::Base.new(ENV['amendments_fname'], nil, ENV['test_mode'])
-    importer.import_application_sub_class(:create_amendment)
+    importer.import_amendments
   end
 
   task import_dpias: :environment do
