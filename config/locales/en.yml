@@ -73,6 +73,39 @@ en:
     contract_completed: Contract Completed
     data_released: Data Released
     data_destroyed: Data Destroyed
+  cas_applications:
+    form_permissions_section:
+      level1_heading: 'Access level 1: Highly sensitive data (includes all identifiers and names and addresses)'
+      level1_1: Encore application schema incl. name and addresses
+      level1_2: Plus all datasets listed in access level 2
+      level2_heading: 'Access level 2: Identifiable data (includes NHS numbers, postcodes and date of birth but excludes names and addresses)'
+      level2_1: 'Cancer registration tables (at_tumour etc) monthly snapshots & casref01 schema: ANALYSISNCR, AV2013 etc...'
+      level2_2: Encore application schema e.g. z-lookups, electronic record tables
+      level2_3: 'Cancer registration tables: Wales, N Ireland, Scotland Schema: UK2013 etc... (see declaration 4)'
+      level2_4: 'National Cancer Repository Dataset 2010 schema: NCDR2010'
+      level2_5: 'Hospital Episode Statistics Admitted Patient Care, A&E and Outpatients schema: HES2015, HES2016'
+      level2_6: 'Chemotherapy (SACT) schema: SACT2014, etc'
+      level2_7: 'Radiotherapy (RTDS) schema: RTDS2013 etc...'
+      level2_8: 'Diagnostic Imaging Dataset (DIDs) schema: DIDS'
+      level2_9: 'CWT treatment schema: CWTPROC'
+      level2_10: 'Cancer Patient Experience Survey (CPES) schema: CPES'
+      level2_11: 'Screening data - bowel, cervical, breast'
+      level2_12: 'BCCOM - Breast Cancer Clinical Outcomes Measures'
+      level2_13: 'National Prostate Cancer Audit'
+      level2_14: 'BAUS - urological cancer audit'
+      level2_15: 'GP Audit 2009'
+      level2_16: 'DAHNO - head and neck audit schema: DAHNO_CAP_8AR'
+      level2_17: 'NBOCAP - bowel cancer audit schema: NBOCAP'
+      level2_18: 'LUCADA / NLCA - lung cancer audit schema: LUCADA2012 etc...'
+      level3_heading: 'Access level 3: Potentially identifiable data (record level data excluding specific identifiers such as NHS number, date of birth, names, addresses and postcodes)'
+      level3_1: 'Anonymised cancer registration tables (an_tumour etc) monthly snapshots & casref01 schema: ANALYSISNCR, AV2013 etc...'
+      level3_2: 'Anonymised cancer registration tables: Wales, N Ireland, Scotland schema: UK2013 etc... (see declaration 4'
+      level3_3: 'Anonymised National Cancer Repository Dataset 2010 schema: NCDR2010'
+      level3_4: 'Anonymised radiotherapy (RTDS) schema: RTDS2013 etc...'
+      level3_5: 'Anonymised DAHNO - head and neck audit schema: DAHNO_CAP_8AR'
+      level3_6: 'Simulacrum Schema: simulacrum_1_2'
+      level_access_note: "Please note: All levels of access will include lookup, populations and derived tables.\n\ne.g. the ethnicity and comorbidity derived fields, routes to diagnosis, emergency admissions, geographical lookup tables, Indices of Multiple Deprivation (IMD), the Mosaic group lookup table."
+      extra_datasets_note: "* ONS datasets - You must make sure that you have permission from ONS to access their incidence data and have completed the Data Access Agreement form returning them to the ONS dataset lead. If you have not done this, please discuss with your line manager prior to submitting this form.\n\nONS incidence tables (all available)Schema: ONS1971_1994, 1989, 2010, 2011, 2012, 2013, 2014 ONS short declaration form completed."
   projects:
     application:
       form:
@@ -162,6 +195,7 @@ en:
     project: MBIS Application
     eoi: ODR EOI
     application: ODR Application
+    cas: CAS Application
   dataset_type:
     xml:
       name: XML
@@ -225,6 +259,26 @@ en:
         one: DPIA
         other: DPIAs
     attributes:
+      cas_application:
+        firstname: First name
+        surname: Surname
+        jobtitle: Job title
+        phe_email: PHE email address
+        work_number: Work phone number/Skype/Mobile
+        organisation: Organisation employing user to do CAS work
+        line_manager_name: Name of line manager
+        line_manager_email: Email of line manager
+        line_manager_number: Line manager telephone/mobile
+        employee_type: Employee type
+        contract_startdate: Contract start date
+        contract_enddate: Contract end date
+        username: Preferred username
+        address: Full physical addresses & postcodes CAS will be accessed from
+        n3_ip_address: N3 IP address CAS will be accessed from
+        reason_justification: Reason and justification for the level of access selected. If you require access to level 1 data or 'datasets requiring special permission' please provide a comprehensive and detailed explanation. Include your intentions for the data, length of time needed, justification for the desired level of access.
+        access_level: Please select level of access using the table below as a guide (select one only)
+        extra_datasets: Datasets requiring special permission Please select those that you require access to and provide extra details as to why you need them below. When requesting these datasets (except the ONS datasets) please reference an agreed project proposal.
+        extra_datasets_rationale: Please state rationale for the selected datasets
       project:
         name: Project Title
       data_privacy_impact_assessment:
