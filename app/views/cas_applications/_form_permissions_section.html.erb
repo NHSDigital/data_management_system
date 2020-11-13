@@ -1,0 +1,75 @@
+<fieldset>
+  <legend>Permissions</legend>
+
+  <%= form.label :reason_justification %>
+  <%= form.text_area :reason_justification, rows: 8 %>
+
+  <p>&nbsp;</p>
+  <div class="row">
+    <div class="col-md-10"><%= form.label :access_level %></div>
+    <div class="col-md-2">
+      <%= form.select(:access_level, ['Level 1', 'Level 2', 'Level 3'], include_blank: true ) %>
+    </div>
+  </div>
+  
+  <%= bootstrap_accordion_tag :level1 do |level1| %>
+    <%= level1.bootstrap_accordion_group t('.level1_heading'), open: true do %>
+      <ul>
+        <%= content_tag :li, t('.level1_1') %>
+        <%= content_tag :li, t('.level1_2') %>
+      </ul>
+    <% end %>
+  <% end %>
+
+  <%= bootstrap_accordion_tag :level2 do |level2| %>
+    <%= level2.bootstrap_accordion_group t('.level2_heading') do %>
+      <ul>
+        <% (1..18).each do |i| %>
+          <%= content_tag :li, t(".level2_#{i}") %>
+        <% end %>
+      </ul>
+    <% end %>
+  <% end %>
+
+  <%= bootstrap_accordion_tag :level3 do |level3| %>
+    <%= level3.bootstrap_accordion_group t('.level3_heading') do %>
+      <ul>
+        <% (1..6).each do |i| %>
+          <%= content_tag :li, t(".level2_#{i}") %>
+        <% end %>
+      </ul>
+    <% end %>
+  <% end %>
+
+  <p><em><%= t('.level_access_note') %></em></p>
+  <p>&nbsp;</p>
+
+  <%= form.fields_for :extra_datasets do |datasets| %>
+    <%= form.label :extra_datasets %>
+    <%= content_tag :p, t('.extra_datasets_note') %>
+    <% Lookups::CasDataset.all.each_with_index do |d, i| %>
+      <div class="row">
+        <div class="col-md-1 text-right">
+          <%=
+          this_checked = form.object.extra_datasets.include?(d.id.to_s)
+          if form.readonly?
+            check_box_tag(nil, nil, this_checked, disabled: true)
+          else
+            datasets.check_box(nil,
+              { id: "cas_application_datasets_#{d.id}", checked: this_checked },
+              d.id, nil)
+          end
+          %>
+        </div>
+        <div class="col-md-10"><%= content_tag(:p, d.value) %></div>
+      </div>
+    <% end %>
+  <% end %>
+
+  <div class="row">
+    <div class="col-md-10 col-md-offset-1">
+      <%= form.label :extra_datasets_rationale %>
+      <%= form.text_area :extra_datasets_rationale, rows: 4 %>
+    </div>
+  </div>
+</fieldset>

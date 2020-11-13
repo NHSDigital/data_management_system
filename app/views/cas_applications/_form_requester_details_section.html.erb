@@ -1,0 +1,40 @@
+<fieldset>
+  <legend>Requester Details</legend>
+
+  <%= form.control_group :firstname do %>
+    <%= form.text_field(:firstname) %>
+  <% end %>
+  <%= form.control_group :surname do %>
+    <%= form.text_field :surname %>
+  <% end %>
+  <%= form.control_group :jobtitle do %>
+    <%= form.text_field :jobtitle %>
+  <% end %>
+  <%= form.control_group :phe_email do %>
+    <%= form.text_field :phe_email %>
+  <% end %>
+  <%= form.control_group :work_number do %>
+    <%= form.text_field :work_number %>
+  <% end %>
+  <%= form.control_group :organisation do %>
+    <%= form.text_field :organisation %>
+  <% end %>
+  <%= form.control_group :line_manager_name do %>
+    <%= form.text_field :line_manager_name %>
+  <% end %>
+  <%= form.control_group :line_manager_email do %>
+    <%= form.text_field :line_manager_email %>
+  <% end %>
+  <%= form.control_group :line_manager_number do %>
+    <%= form.text_field :line_manager_number %>
+  <% end %>
+  <%= form.control_group :employee_type do %>
+    <%= form.text_field :employee_type %>
+  <% end %>
+  <%= form.control_group :contract_startdate do %>
+    <%= form.datepicker_field :contract_startdate %>
+  <% end %>
+  <%= form.control_group :contract_enddate do %>
+    <%= form.datepicker_field :contract_enddate %>
+  <% end %>
+</fieldset>
