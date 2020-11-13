@@ -2431,7 +2431,8 @@ CREATE TABLE public.project_amendments (
     labels character varying[] DEFAULT '{}'::character varying[],
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL,
-    project_state_id bigint
+    project_state_id bigint,
+    reference character varying
 );
 
 
@@ -7567,6 +7568,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20201015135259'),
 ('20201106153234'),
 ('20201106153256'),
-('20201106153309');
+('20201106153309'),
+('20201113112942');
 
 
