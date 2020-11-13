@@ -3444,8 +3444,6 @@ ALTER SEQUENCE public.security_assurances_id_seq OWNED BY public.security_assura
 
 
 --
-<<<<<<< HEAD
-=======
 -- Name: snomedct; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -3478,7 +3476,6 @@ CREATE TABLE public.snomedct_path (
 
 
 --
->>>>>>> a987339... # Add reference column to sub entities of ODR applications #[25081]
 -- Name: system_roles; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -7359,7 +7356,7 @@ ALTER TABLE ONLY public.e_workflow
 -- PostgreSQL database dump complete
 --
 
-SET search_path TO "$user",public;
+SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
 ('20160115160033'),
@@ -7724,24 +7721,16 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20200820153644'),
 ('20200821134109'),
 ('20200821134630'),
-<<<<<<< HEAD
 ('20201014120225'),
 ('20201014122944'),
 ('20201015135259'),
 ('20201018132536'),
 ('20201018132733'),
 ('20201018134038'),
-('20201018134152');
-=======
-('20201015135259'),
+('20201018134152'),
 ('20201106153234'),
 ('20201106153256'),
-<<<<<<< HEAD
-('20201106153309');
->>>>>>> a987339... # Add reference column to sub entities of ODR applications #[25081]
-=======
 ('20201106153309'),
 ('20201113112942');
->>>>>>> 503fb2e... # Add reference to ProjectAmendment [#25081]
 
 
