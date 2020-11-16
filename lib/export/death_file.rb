@@ -32,6 +32,7 @@ module Export
     NODE_TO_FIELD_MAP = {
       # DatasetVersion.find(4).nodes.sort_by(&:id).collect { |node| [node.name, node.description] }
       # TODO: Add compound fields from MBIS dataset description
+      # TODO: Support DatasetVersion.find(79)
       'MBISID' => 'mbisid', # Special, combines mbism204id / ledrid
       'LEDRID' => 'ledrid',
       'CESTRSSR' => 'cestrssr',
