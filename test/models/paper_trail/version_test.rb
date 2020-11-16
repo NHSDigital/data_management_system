@@ -39,14 +39,27 @@ class VersionControllerTest < ActionDispatch::IntegrationTest
       application.end_uses << end_uses(:one)
     end
 
-    project_end_use_audit =
-      PaperTrail::Version.where(item_type: 'ProjectEndUse',
-                                item_id: application.project_end_uses.first.id)
-    assert_equal 1, project_end_use_audit.size
-    assert_includes(find_all_versions(application), project_end_use_audit.first)
+    assert_association_tracked(application, 'ProjectEndUse',
+                               application.project_end_uses.first.id)
+  end
+
+  test 'project classification returned on as part of paper trail on a application' do
+    application = projects(:test_application)
+    assert_difference 'PaperTrail::Version.count', 1 do
+      application.classifications << classifications(:one)
+    end
+
+    assert_association_tracked(application, 'ProjectClassification',
+                               application.project_classifications.first.id)
   end
 
   private
+
+  def assert_association_tracked(application, item_type, item_id)
+    audits = PaperTrail::Version.where(item_type: item_type, item_id: item_id)
+    assert_equal 1, audits.size
+    assert_includes(find_all_versions(application), audits.first)
+  end
 
   def find_all_versions(resource)
     item_type = resource.class.name
