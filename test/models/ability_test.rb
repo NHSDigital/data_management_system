@@ -434,6 +434,18 @@ class AbilityTest < ActiveSupport::TestCase
     end
   end
 
+  test 'project classification' do
+    @project.classifications << classifications(:one)
+    ProjectEndUse.where(project: @project).each do |project_classification|
+      assert @senior_team_member_ability.can?     :read, project_classification
+      assert @contributor.can?                    :read, project_classification
+      assert users(:delegate_user1).can?          :read, project_classification
+      assert users(:application_manager_one).can? :read, project_classification
+      assert users(:odr_user).can?                :read, project_classification
+      assert users(:admin_user).can?              :read, project_classification
+    end
+  end
+
   test 'dataset' do
     assert @senior_team_member_ability.can? :read, Dataset
     assert @senior_team_member_ability.can? :read, DatasetVersion
