@@ -55,6 +55,10 @@ module Export
           val = "#{val[6..9]}-#{val[3..4]}-#{val[0..1]}"
         end
         return val
+      when 'por_in_england' # 1 if the place of residence is in England, 0 otherwise or if unknown
+        por_in_england = %w[A B C D E F G H J K].include?(ppat.birth_data['gorrm']) ||
+                         ppat.birth_data['lsoarm']&.starts_with?('E')
+        return por_in_england ? 1 : 0
       when 'sex_statistical' # If SEX=3 (indeterminate), set to 1.
         val = birth_field(ppat, 'sex')
         return val == '3' ? '1' : val
