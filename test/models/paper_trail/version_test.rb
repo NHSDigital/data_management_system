@@ -53,6 +53,16 @@ class VersionControllerTest < ActionDispatch::IntegrationTest
                                application.project_classifications.first.id)
   end
 
+  test 'project lawful basis returned on as part of paper trail on a application' do
+    application = projects(:test_application)
+    assert_difference 'PaperTrail::Version.count', 1 do
+      application.lawful_bases << Lookups::LawfulBasis.first
+    end
+
+    assert_association_tracked(application, 'ProjectLawfulBasis',
+                               application.project_lawful_bases.first.id)
+  end
+
   private
 
   def assert_association_tracked(application, item_type, item_id)
