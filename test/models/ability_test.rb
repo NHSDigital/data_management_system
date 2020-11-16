@@ -422,6 +422,18 @@ class AbilityTest < ActiveSupport::TestCase
     end
   end
 
+  test 'project end use' do
+    @project.end_uses << end_uses(:one)
+    ProjectEndUse.where(project: @project).each do |project_end_use|
+      assert @senior_team_member_ability.can?     :read, project_end_use
+      assert @contributor.can?                    :read, project_end_use
+      assert users(:delegate_user1).can?          :read, project_end_use
+      assert users(:application_manager_one).can? :read, project_end_use
+      assert users(:odr_user).can?                :read, project_end_use
+      assert users(:admin_user).can?              :read, project_end_use
+    end
+  end
+
   test 'dataset' do
     assert @senior_team_member_ability.can? :read, Dataset
     assert @senior_team_member_ability.can? :read, DatasetVersion
