@@ -77,7 +77,8 @@ class Ability
                            roleable: ProjectRole.can_edit },
                  current_state: { id: 'DRAFT' }
 
-    can %i[read], [ProjectDataset, ProjectComment, ProjectNode],
+    can %i[read], [ProjectDataset, ProjectComment, ProjectNode,
+                   ProjectEndUse, ProjectClassification, ProjectLawfulBasis],
         project: { grants: { user_id: user.id, project_id: can_edit_project_ids,
                              roleable: ProjectRole.can_edit } }
 
@@ -165,7 +166,8 @@ class Ability
     can %i[read create update], Team
     can(:destroy, Team) { |team| team.z_team_status.name != 'Deleted' }
 
-    can :read, [Project, ProjectDataset, ProjectComment, ProjectNode, ProjectAmendment]
+    can :read, [Project, ProjectDataset, ProjectComment, ProjectNode, ProjectAmendment,
+                ProjectEndUse, ProjectClassification, ProjectLawfulBasis]
 
     # Manage allows :edit_grants
     can :manage, [User, Dataset, Category, Node, EraFields,
@@ -184,7 +186,8 @@ class Ability
 
     can :read, [
       Organisation, Team, User, Project, ProjectComment, ProjectAttachment, ProjectDataset,
-      ProjectNode, ProjectAmendment, DataPrivacyImpactAssessment, Contract, Release
+      ProjectNode, ProjectAmendment, DataPrivacyImpactAssessment, Contract, Release, ProjectEndUse,
+      ProjectClassification, ProjectLawfulBasis
     ]
 
     can %i[assign import], Project
@@ -217,9 +220,9 @@ class Ability
 
     can :read, Team, grants: { user_id: user.id }
     can %i[read], Project, team: { grants: { user_id: user.id } }
-    can :read, [ProjectDataset, ProjectComment, ProjectNode], project: {
-      team: { grants: { user_id: user.id } }
-    }
+    can :read, [ProjectDataset, ProjectComment, ProjectNode, ProjectEndUse, ProjectClassification,
+                ProjectLawfulBasis],
+               project: { team: { grants: { user_id: user.id } } }
     can :create, ProjectComment
   end
 
@@ -256,6 +259,8 @@ class Ability
     }
 
     can %i[create read update destroy], Release
+
+    can :read, [ProjectEndUse, ProjectClassification, ProjectLawfulBasis]
   end
 
   def dataset_manager_grants(user)

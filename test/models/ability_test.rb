@@ -422,6 +422,42 @@ class AbilityTest < ActiveSupport::TestCase
     end
   end
 
+  test 'project end use' do
+    @project.end_uses << end_uses(:one)
+    ProjectEndUse.where(project: @project).each do |project_end_use|
+      assert @senior_team_member_ability.can?     :read, project_end_use
+      assert @contributor.can?                    :read, project_end_use
+      assert users(:delegate_user1).can?          :read, project_end_use
+      assert users(:application_manager_one).can? :read, project_end_use
+      assert users(:odr_user).can?                :read, project_end_use
+      assert users(:admin_user).can?              :read, project_end_use
+    end
+  end
+
+  test 'project classification' do
+    @project.classifications << classifications(:one)
+    ProjectEndUse.where(project: @project).each do |project_classification|
+      assert @senior_team_member_ability.can?     :read, project_classification
+      assert @contributor.can?                    :read, project_classification
+      assert users(:delegate_user1).can?          :read, project_classification
+      assert users(:application_manager_one).can? :read, project_classification
+      assert users(:odr_user).can?                :read, project_classification
+      assert users(:admin_user).can?              :read, project_classification
+    end
+  end
+
+  test 'project lawful basis' do
+    @project.lawful_bases << Lookups::LawfulBasis.first
+    ProjectEndUse.where(project: @project).each do |project_lawful_basis|
+      assert @senior_team_member_ability.can?     :read, project_lawful_basis
+      assert @contributor.can?                    :read, project_lawful_basis
+      assert users(:delegate_user1).can?          :read, project_lawful_basis
+      assert users(:application_manager_one).can? :read, project_lawful_basis
+      assert users(:odr_user).can?                :read, project_lawful_basis
+      assert users(:admin_user).can?              :read, project_lawful_basis
+    end
+  end
+
   test 'dataset' do
     assert @senior_team_member_ability.can? :read, Dataset
     assert @senior_team_member_ability.can? :read, DatasetVersion

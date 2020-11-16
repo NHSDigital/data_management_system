@@ -3,4 +3,6 @@
 class ProjectLawfulBasis < ApplicationRecord
   belongs_to :project
   belongs_to :lawful_basis, class_name: 'Lookups::LawfulBasis'
+
+  has_paper_trail
 end
