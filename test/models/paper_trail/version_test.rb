@@ -31,4 +31,58 @@ class VersionControllerTest < ActionDispatch::IntegrationTest
     expected_change = ['NCRS', 'NCRS - Updated Project Name']
     assert_equal expected_change, project.versions.last.changeset['name']
   end
+
+  # 'application' => Project
+  test 'project end use returned on as part of paper trail on a application' do
+    application = projects(:test_application)
+    assert_difference 'PaperTrail::Version.count', 1 do
+      application.end_uses << end_uses(:one)
+    end
+
+    assert_association_tracked(application, 'ProjectEndUse',
+                               application.project_end_uses.first.id)
+  end
+
+  test 'project classification returned on as part of paper trail on a application' do
+    application = projects(:test_application)
+    assert_difference 'PaperTrail::Version.count', 1 do
+      application.classifications << classifications(:one)
+    end
+
+    assert_association_tracked(application, 'ProjectClassification',
+                               application.project_classifications.first.id)
+  end
+
+  test 'project lawful basis returned on as part of paper trail on a application' do
+    application = projects(:test_application)
+    assert_difference 'PaperTrail::Version.count', 1 do
+      application.lawful_bases << Lookups::LawfulBasis.first
+    end
+
+    assert_association_tracked(application, 'ProjectLawfulBasis',
+                               application.project_lawful_bases.first.id)
+  end
+
+  private
+
+  def assert_association_tracked(application, item_type, item_id)
+    audits = PaperTrail::Version.where(item_type: item_type, item_id: item_id)
+    assert_equal 1, audits.size
+    assert_includes(find_all_versions(application), audits.first)
+  end
+
+  def find_all_versions(resource)
+    item_type = resource.class.name
+    item_id   = resource.id
+    item_fk   = item_type.foreign_key
+
+    PaperTrail::Version.where(<<~SQL, item_type: item_type, item_id: item_id, item_fk: item_fk)
+      (item_type = :item_type and item_id = :item_id)
+        or id in
+          (select distinct version_id
+           from version_associations
+           where foreign_key_name = :item_fk and
+           foreign_key_id = :item_id)
+    SQL
+  end
 end
