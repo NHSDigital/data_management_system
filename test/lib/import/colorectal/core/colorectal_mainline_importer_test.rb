@@ -6,7 +6,7 @@ class ColorectalMainlineImporterTest < ActiveSupport::TestCase
     assert Pseudo::GeneticSequenceVariant.count.zero?
 
     e_batch  = e_batch(:colorectal_batch)
-    filename = SafePath.new('test_files', e_batch.original_filename)
+    filename = safe_path_for(e_batch.original_filename)
     importer = Import::Colorectal::Core::ColorectalMainlineImporter.new(filename, e_batch)
     assert_difference('Pseudo::MolecularData.count', + 2) do
       assert_difference('Pseudo::GeneticTestResult.count', + 2) do
@@ -53,11 +53,13 @@ class ColorectalMainlineImporterTest < ActiveSupport::TestCase
     assert_equal 'Consultant Two', molecular_data_record_two.practitionercode
     assert_equal 70, molecular_data_record_two.age
 
-    negative_test = Pseudo::GeneticTestResult.find_by(teststatus: 1)
+    assert Pseudo::GeneticTestResult.negative.one?
+    negative_test = Pseudo::GeneticTestResult.negative.first
     assert_equal '1432', negative_test.gene
     assert negative_test.genetic_sequence_variants.count.zero?
 
-    positive_test = Pseudo::GeneticTestResult.find_by(teststatus: 2)
+    assert Pseudo::GeneticTestResult.positive.one?
+    positive_test = Pseudo::GeneticTestResult.positive.first
     assert_equal '2744', positive_test.gene
     assert positive_test.genetic_sequence_variants.one?
     variant = positive_test.genetic_sequence_variants.first
@@ -65,5 +67,78 @@ class ColorectalMainlineImporterTest < ActiveSupport::TestCase
     assert_equal 'p.Glu23LysfsTer13', variant.proteinimpact
     assert_equal 5, variant.variantpathclass
     assert_equal 3, variant.sequencevarianttype
+  end
+
+  test 'ensure manchester data is grouped and loaded correctly' do
+    assert Pseudo::GeneticTestResult.count.zero?
+    assert Pseudo::GeneticSequenceVariant.count.zero?
+
+    e_batch  = e_batch(:r0a_colorectal_batch)
+    filename = safe_path_for(e_batch.original_filename)
+    importer = Import::Colorectal::Core::ColorectalMainlineImporter.new(filename, e_batch)
+    assert_difference('Pseudo::MolecularData.count', + 3) do
+      assert_difference('Pseudo::GeneticTestResult.count', + 5) do
+        assert_difference('Pseudo::GeneticSequenceVariant.count', + 2) do
+          @importer_stdout, @importer_stderr = capture_io do
+            importer.load
+          end
+        end
+      end
+    end
+
+    assert @importer_stderr.blank?
+    logs = @importer_stdout.split("\n")
+
+    expected_logs = [
+      '(INFO) Filter rejected 0 of6 genotypes seen',
+      '(INFO)  *************** Duplicate status report *************** ',
+      '(INFO) [1, 2]',
+      '(INFO) [3, 1]',
+      '(INFO) ***************** Storage Report *******************',
+      '(INFO) Num patients: 3',
+      '(INFO) Num genetic tests: 3',
+      '(INFO) Num test results: 5',
+      '(INFO) Num sequence variants: 5',
+      '(INFO) Num true variants: 2',
+      '(INFO) Num duplicates encountered: ',
+      '(INFO) Finished saving records to db'
+    ]
+
+    expected_logs.each { |expected_log| assert_includes(logs, expected_log) }
+
+    assert_equal 3, Pseudo::GeneticTestResult.negative.count
+    assert_equal 2, Pseudo::GeneticTestResult.positive.count
+    positive_test = Pseudo::GeneticTestResult.positive.where('raw_record like ?', '%c\.81C>G%').first
+    assert_equal 6, positive_test.geneticaberrationtype
+    assert_equal '2808', positive_test.gene
+    assert_nil positive_test.age
+
+    expected_authorised_dates         = ['2012-11-12 00:00:00']
+    expected_servicereportidentifiers = ['000000']
+
+    raw_records = JSON.parse(positive_test.raw_record)
+    # Testing that all rows of data relating the the same test are considered
+    assert_equal 59, raw_records.count
+    assert_equal expected_authorised_dates, raw_records.map { |raw| raw['authoriseddate'] }.uniq
+    assert_equal expected_servicereportidentifiers,
+                 raw_records.map { |raw| raw['servicereportidentifier'] }.uniq
+
+    assert positive_test.genetic_sequence_variants.one?
+    variant = positive_test.genetic_sequence_variants.first
+    assert_equal 'c.81C>G', variant.codingdnasequencechange
+    assert_equal 'p.Ala27Ala', variant.proteinimpact
+    assert_equal 1, variant.sequencevarianttype
+    variant_raw_records = JSON.parse(variant.raw_record)
+    assert_equal expected_authorised_dates,
+                 variant_raw_records.map { |raw| raw['authoriseddate'] }.uniq
+
+    assert_equal expected_servicereportidentifiers,
+                 raw_records.map { |raw| raw['servicereportidentifier'] }.uniq
+  end
+
+  private
+
+  def safe_path_for(filename)
+    SafePath.new('test_files', filename)
   end
 end

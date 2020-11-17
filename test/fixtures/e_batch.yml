@@ -10,3 +10,11 @@ colorectal_batch:
   date_reference1: '2020.01.01'
   date_reference2: '2020.01.31'
   original_filename: 'colorectal/dummy_rgt_pseudo.pseudo'
+
+r0a_colorectal_batch:
+  provider: R0A
+  registryid: Y0401
+  e_type: PSMOLE
+  date_reference1: '2020.01.01'
+  date_reference2: '2020.01.31'
+  original_filename: 'colorectal/dummy_r0a_pseudo.pseudo'
