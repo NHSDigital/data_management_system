@@ -18,9 +18,12 @@ class ManchesterHandlerColorectalTest < ActiveSupport::TestCase
   test 'Targeted positive non dosage record' do
     @importer_stdout, @importer_stderr = capture_io do
       genotypes_exon_molttype_groups = [
-        ['Normal', 'c.81C>T', 'MSH6 Ex10', 'MSH6 PREDICTIVE TESTING REPORT'], ['c.628-55C\\u003eT poly het', 'Fail', 'MSH2 Ex4a', 'MSH6 PREDICTIVE TESTING REPORT'],
-        ['Normal', 'Normal', 'MSH6 Ex4c', 'MSH6 PREDICTIVE TESTING REPORT'], ['Fail', 'Fail', 'MSH6 Ex2', 'MSH6 PREDICTIVE TESTING REPORT'],
-        ['c.2633T\\u003eA p.V878A', 'Normal', 'MLH1 Ex4d', 'MSH6 PREDICTIVE TESTING REPORT'], ['Normal', 'Normal', 'MLH1 Ex5', 'MSH6 PREDICTIVE TESTING REPORT']
+        ['Normal', 'c.81C>T', 'MSH6 Ex10', 'MSH6 PREDICTIVE TESTING REPORT'],
+        ['c.628-55C\\u003eT poly het', 'Fail', 'MSH2 Ex4a', 'MSH6 PREDICTIVE TESTING REPORT'],
+        ['Normal', 'Normal', 'MSH6 Ex4c', 'MSH6 PREDICTIVE TESTING REPORT'],
+        ['Fail', 'Fail', 'MSH6 Ex2', 'MSH6 PREDICTIVE TESTING REPORT'],
+        ['c.2633T\\u003eA p.V878A', 'Normal', 'MLH1 Ex4d', 'MSH6 PREDICTIVE TESTING REPORT'],
+        ['Normal', 'Normal', 'MLH1 Ex5', 'MSH6 PREDICTIVE TESTING REPORT']
       ]
 
       record = build_raw_record(genotypes_exon_molttype_groups, 'pseudo_id1' => 'bob')
@@ -40,9 +43,12 @@ class ManchesterHandlerColorectalTest < ActiveSupport::TestCase
   test 'Targeted negative non dosage record' do
     @importer_stdout, @importer_stderr = capture_io do
       genotypes_exon_molttype_groups = [
-        ['Normal', 'Normal', 'MSH6 Ex10', 'MSH6 PREDICTIVE TESTING REPORT'], ['Normal', 'Fail', 'MSH2 Ex4a', 'MSH6 PREDICTIVE TESTING REPORT'],
-        ['Normal', 'Normal', 'MSH6 Ex4c', 'MSH6 PREDICTIVE TESTING REPORT'], ['Fail', 'Fail', 'MSH6 Ex2', 'MSH6 PREDICTIVE TESTING REPORT'],
-        ['normal', 'Normal', 'MLH1 Ex4d', 'MSH6 PREDICTIVE TESTING REPORT'], ['Normal', 'Normal', 'MLH1 Ex5', 'MSH6 PREDICTIVE TESTING REPORT']
+        ['Normal', 'Normal', 'MSH6 Ex10', 'MSH6 PREDICTIVE TESTING REPORT'],
+        ['Normal', 'Fail', 'MSH2 Ex4a', 'MSH6 PREDICTIVE TESTING REPORT'],
+        ['Normal', 'Normal', 'MSH6 Ex4c', 'MSH6 PREDICTIVE TESTING REPORT'],
+        ['Fail', 'Fail', 'MSH6 Ex2', 'MSH6 PREDICTIVE TESTING REPORT'],
+        ['normal', 'Normal', 'MLH1 Ex4d', 'MSH6 PREDICTIVE TESTING REPORT'],
+        ['Normal', 'Normal', 'MLH1 Ex5', 'MSH6 PREDICTIVE TESTING REPORT']
       ]
 
       record = build_raw_record(genotypes_exon_molttype_groups, 'pseudo_id1' => 'bob')
@@ -63,9 +69,12 @@ class ManchesterHandlerColorectalTest < ActiveSupport::TestCase
   test 'Targeted failed non dosage record' do
     @importer_stdout, @importer_stderr = capture_io do
       genotypes_exon_molttype_groups = [
-        ['Fail', 'Fail', 'MSH6 Ex10', 'MSH6 PREDICTIVE TESTING REPORT'], ['Fail', 'Fail', 'MSH2 Ex4a', 'MSH6 PREDICTIVE TESTING REPORT'],
-        ['Fail', 'Fail', 'MSH6 Ex4c', 'MSH6 PREDICTIVE TESTING REPORT'], ['Fail', 'Fail', 'MSH6 Ex2', 'MSH6 PREDICTIVE TESTING REPORT'],
-        ['Fail', 'Fail', 'MLH1 Ex4d', 'MSH6 PREDICTIVE TESTING REPORT'], ['Fail', 'Fail', 'MLH1 Ex5', 'MSH6 PREDICTIVE TESTING REPORT']
+        ['Fail', 'Fail', 'MSH6 Ex10', 'MSH6 PREDICTIVE TESTING REPORT'],
+        ['Fail', 'Fail', 'MSH2 Ex4a', 'MSH6 PREDICTIVE TESTING REPORT'],
+        ['Fail', 'Fail', 'MSH6 Ex4c', 'MSH6 PREDICTIVE TESTING REPORT'],
+        ['Fail', 'Fail', 'MSH6 Ex2', 'MSH6 PREDICTIVE TESTING REPORT'],
+        ['Fail', 'Fail', 'MLH1 Ex4d', 'MSH6 PREDICTIVE TESTING REPORT'],
+        ['Fail', 'Fail', 'MLH1 Ex5', 'MSH6 PREDICTIVE TESTING REPORT']
       ]
 
       record = build_raw_record(genotypes_exon_molttype_groups, 'pseudo_id1' => 'bob')
@@ -86,9 +95,12 @@ class ManchesterHandlerColorectalTest < ActiveSupport::TestCase
   test 'Targeted mixed genes all positive non dosage record' do
     @importer_stdout, @importer_stderr = capture_io do
       genotypes_exon_molttype_groups = [
-        ['Normal', 'c.81C>T', 'MSH6 Ex10', 'HNPCC PREDICTIVE TESTING REPORT'], ['c.628-55C>T poly het', 'Fail', 'MSH2 Ex4a', 'HNPCC PREDICTIVE TESTING REPORT'],
-        ['Normal', 'Normal', 'MSH6 Ex4c', 'HNPCC PREDICTIVE TESTING REPORT'], ['Fail', 'Fail', 'MSH6 Ex2', 'HNPCC PREDICTIVE TESTING REPORT'],
-        ['c.2633T>A p.V878A', 'Normal', 'MLH1 Ex4d', 'HNPCC PREDICTIVE TESTING REPORT'], ['Normal', 'Normal', 'MLH1 Ex5', 'HNPCC PREDICTIVE TESTING REPORT']
+        ['Normal', 'c.81C>T', 'MSH6 Ex10', 'HNPCC PREDICTIVE TESTING REPORT'],
+        ['c.628-55C>T poly het', 'Fail', 'MSH2 Ex4a', 'HNPCC PREDICTIVE TESTING REPORT'],
+        ['Normal', 'Normal', 'MSH6 Ex4c', 'HNPCC PREDICTIVE TESTING REPORT'],
+        ['Fail', 'Fail', 'MSH6 Ex2', 'HNPCC PREDICTIVE TESTING REPORT'],
+        ['c.2633T>A p.V878A', 'Normal', 'MLH1 Ex4d', 'HNPCC PREDICTIVE TESTING REPORT'],
+        ['Normal', 'Normal', 'MLH1 Ex5', 'HNPCC PREDICTIVE TESTING REPORT']
       ]
 
       record = build_raw_record(genotypes_exon_molttype_groups, 'pseudo_id1' => 'bob')
@@ -110,9 +122,12 @@ class ManchesterHandlerColorectalTest < ActiveSupport::TestCase
   test 'Targeted MSH6 false positive non dosage record' do
     @importer_stdout, @importer_stderr = capture_io do
       genotypes_exon_molttype_groups = [
-        ['Normal', 'c.81C>T', 'MSH6 Ex10', 'HNPCC PREDICTIVE TESTING REPORT'], ['c.628-55C>T poly het', 'Fail', 'MSH2 Ex4a', 'HNPCC PREDICTIVE TESTING REPORT'],
-        ['Normal', 'Normal', 'MSH6 Ex4c', 'HNPCC PREDICTIVE TESTING REPORT'], ['Fail', 'Fail', 'MSH6 Ex2', 'HNPCC PREDICTIVE TESTING REPORT'],
-        ['c.2633T>A p.V878A', 'Normal', 'MLH1 Ex4d', 'HNPCC PREDICTIVE TESTING REPORT'], ['Normal', 'Normal', 'MLH1 Ex5', 'HNPCC PREDICTIVE TESTING REPORT'],
+        ['Normal', 'c.81C>T', 'MSH6 Ex10', 'HNPCC PREDICTIVE TESTING REPORT'],
+        ['c.628-55C>T poly het', 'Fail', 'MSH2 Ex4a', 'HNPCC PREDICTIVE TESTING REPORT'],
+        ['Normal', 'Normal', 'MSH6 Ex4c', 'HNPCC PREDICTIVE TESTING REPORT'],
+        ['Fail', 'Fail', 'MSH6 Ex2', 'HNPCC PREDICTIVE TESTING REPORT'],
+        ['c.2633T>A p.V878A', 'Normal', 'MLH1 Ex4d', 'HNPCC PREDICTIVE TESTING REPORT'],
+        ['Normal', 'Normal', 'MLH1 Ex5', 'HNPCC PREDICTIVE TESTING REPORT'],
         ['Normal', 'MLH1 c.81C>T', 'MSH6 Ex10', 'HNPCC PREDICTIVE TESTING REPORT']
       ]
 
@@ -134,9 +149,12 @@ class ManchesterHandlerColorectalTest < ActiveSupport::TestCase
   test 'Full Screen MSH6 positive MSH2 fail MLH1 normal tests non dosage record' do
     @importer_stdout, @importer_stderr = capture_io do
       genotypes_exon_molttype_groups = [
-        ['Normal', 'c.81C>T', 'MSH6 Ex10 NGS', 'LYNCH SYNDROME MUTATION SCREENING REPORT'], ['Fail', 'Fail', 'MSH2 Ex4a', 'LYNCH SYNDROME MUTATION SCREENING REPORT'],
-        ['Normal', 'Normal', 'MSH6 Ex4c', 'LYNCH SYNDROME MUTATION SCREENING REPORT'], ['Fail', 'Fail', 'MSH6 Ex2', 'LYNCH SYNDROME MUTATION SCREENING REPORT'],
-        ['Normal', 'Normal', 'MLH1 Ex4d', 'LYNCH SYNDROME MUTATION SCREENING REPORT'], ['Normal', 'Normal', 'MLH1 Ex5', 'LYNCH SYNDROME MUTATION SCREENING REPORT']
+        ['Normal', 'c.81C>T', 'MSH6 Ex10 NGS', 'LYNCH SYNDROME MUTATION SCREENING REPORT'],
+        ['Fail', 'Fail', 'MSH2 Ex4a', 'LYNCH SYNDROME MUTATION SCREENING REPORT'],
+        ['Normal', 'Normal', 'MSH6 Ex4c', 'LYNCH SYNDROME MUTATION SCREENING REPORT'],
+        ['Fail', 'Fail', 'MSH6 Ex2', 'LYNCH SYNDROME MUTATION SCREENING REPORT'],
+        ['Normal', 'Normal', 'MLH1 Ex4d', 'LYNCH SYNDROME MUTATION SCREENING REPORT'],
+        ['Normal', 'Normal', 'MLH1 Ex5', 'LYNCH SYNDROME MUTATION SCREENING REPORT']
       ]
 
       record = build_raw_record(genotypes_exon_molttype_groups, 'pseudo_id1' => 'bob')
@@ -158,9 +176,12 @@ class ManchesterHandlerColorectalTest < ActiveSupport::TestCase
   test 'Full Screen MSH6 positive MSH2 false positive for MLH1 Tests non dosage record' do
     @importer_stdout, @importer_stderr = capture_io do
       genotypes_exon_molttype_groups = [
-        ['Normal', 'c.81C>T', 'MSH6 Ex10 NGS', 'HNPCC MUTATION SCREENING REPORT'], ['Normal', 'Fail', 'MSH2 Ex4a', 'HNPCC MUTATION SCREENING REPORT'],
-        ['Normal', 'Normal', 'MSH6 Ex4c', 'HNPCC MUTATION SCREENING REPORT'], ['Fail', 'Fail', 'MSH6 Ex2', 'HNPCC MUTATION SCREENING REPORT'],
-        ['Normal', 'Normal', 'MLH1 Ex4d', 'HNPCC MUTATION SCREENING REPORT'], ['MLH1 c.2633T>A p.V878A', 'Normal', 'MSH2 Ex5', 'HNPCC MUTATION SCREENING REPORT']
+        ['Normal', 'c.81C>T', 'MSH6 Ex10 NGS', 'HNPCC MUTATION SCREENING REPORT'],
+        ['Normal', 'Fail', 'MSH2 Ex4a', 'HNPCC MUTATION SCREENING REPORT'],
+        ['Normal', 'Normal', 'MSH6 Ex4c', 'HNPCC MUTATION SCREENING REPORT'],
+        ['Fail', 'Fail', 'MSH6 Ex2', 'HNPCC MUTATION SCREENING REPORT'],
+        ['Normal', 'Normal', 'MLH1 Ex4d', 'HNPCC MUTATION SCREENING REPORT'],
+        ['MLH1 c.2633T>A p.V878A', 'Normal', 'MSH2 Ex5', 'HNPCC MUTATION SCREENING REPORT']
       ]
 
       record = build_raw_record(genotypes_exon_molttype_groups, 'pseudo_id1' => 'bob')
@@ -184,7 +205,8 @@ class ManchesterHandlerColorectalTest < ActiveSupport::TestCase
     @importer_stdout, @importer_stderr = capture_io do
       genotypes_exon_molttype_groups = [
         ['MSH2ex8dup', '', 'MSH2 MLPA', 'HNPCC DOSAGE ANALYSIS REPORT'],
-        ['Normal', 'Normal', 'MSH6 Ex4c', 'HNPCC DOSAGE ANALYSIS REPORT'], ['Normal', 'Normal', 'MLH1 Ex5 mlpa', 'HNPCC DOSAGE ANALYSIS REPORT']
+        ['Normal', 'Normal', 'MSH6 Ex4c', 'HNPCC DOSAGE ANALYSIS REPORT'],
+        ['Normal', 'Normal', 'MLH1 Ex5 mlpa', 'HNPCC DOSAGE ANALYSIS REPORT']
       ]
       record = build_raw_record(genotypes_exon_molttype_groups, 'pseudo_id1' => 'bob')
       genocolorectal = Import::Colorectal::Core::Genocolorectal.new(record)
@@ -206,9 +228,12 @@ class ManchesterHandlerColorectalTest < ActiveSupport::TestCase
     # Might think about a DEBUG logger message about it.
     @importer_stdout, @importer_stderr = capture_io do
       genotypes_exon_molttype_groups = [
-        ['c.2633T>A p.V878A', 'Normal', 'MSH6 Ex10MLPA', 'LYNCH SYNDROME (MSH6) DOSAGE ANALYSIS REPORT'], ['c.628-55C\\u003eT poly het', 'Fail', 'MSH2 Ex4a', 'LYNCH SYNDROME (MSH6) DOSAGE ANALYSIS REPORT'],
-        ['Normal', 'Normal', 'MSH6 Ex4c', 'LYNCH SYNDROME (MSH6) DOSAGE ANALYSIS REPORT'], ['Fail', 'Fail', 'MSH6 Ex2 MLPA', 'LYNCH SYNDROME (MSH6) DOSAGE ANALYSIS REPORT'],
-        ['c.2633T\\u003eA p.V878A', 'Normal', 'MLH1 Ex4d', 'LYNCH SYNDROME (MSH6) DOSAGE ANALYSIS REPORT'], ['Normal', 'Normal', 'MLH1 Ex5', 'LYNCH SYNDROME (MSH6) DOSAGE ANALYSIS REPORT']
+        ['c.2633T>A p.V878A', 'Normal', 'MSH6 Ex10MLPA', 'LYNCH SYNDROME (MSH6) DOSAGE ANALYSIS REPORT'],
+        ['c.628-55C\\u003eT poly het', 'Fail', 'MSH2 Ex4a', 'LYNCH SYNDROME (MSH6) DOSAGE ANALYSIS REPORT'],
+        ['Normal', 'Normal', 'MSH6 Ex4c', 'LYNCH SYNDROME (MSH6) DOSAGE ANALYSIS REPORT'],
+        ['Fail', 'Fail', 'MSH6 Ex2 MLPA', 'LYNCH SYNDROME (MSH6) DOSAGE ANALYSIS REPORT'],
+        ['c.2633T\\u003eA p.V878A', 'Normal', 'MLH1 Ex4d', 'LYNCH SYNDROME (MSH6) DOSAGE ANALYSIS REPORT'],
+        ['Normal', 'Normal', 'MLH1 Ex5', 'LYNCH SYNDROME (MSH6) DOSAGE ANALYSIS REPORT']
       ]
       record = build_raw_record(genotypes_exon_molttype_groups, 'pseudo_id1' => 'bob')
       genocolorectal = Import::Colorectal::Core::Genocolorectal.new(record)
