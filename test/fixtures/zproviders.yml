@@ -1,6 +1,8 @@
-zprovider1:
+zprovider_abc:
   zproviderid: ABC
-zprovider2:
+zprovider_y0401:
   zproviderid: Y0401
-zprovider3:
+zprovider_rgt:
   zproviderid: RGT
+zprovider_r0a:
+  zproviderid: R0A
