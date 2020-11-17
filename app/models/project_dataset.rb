@@ -18,5 +18,15 @@ class ProjectDataset < ApplicationRecord
   validates :dataset_id, uniqueness: { scope: [:project_id],
                                        message: 'Project already has access ' \
                                                 'to this dataset' }
-  validates :terms_accepted, presence: true
+
+  validate :terms_accepted_for_dataset
+
+  # TODO: TEST
+  def terms_accepted_for_dataset
+    return if dataset.nil?
+    return if dataset.dataset_type_name == 'cas'
+    return if terms_accepted
+
+    errors.add(:project_dataset, "Terms accepted can't be blank")
+  end
 end

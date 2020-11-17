@@ -236,11 +236,12 @@ ALTER SEQUENCE public.birth_data_birth_dataid_seq OWNED BY public.birth_data.bir
 
 
 --
--- Name: cas_applications; Type: TABLE; Schema: public; Owner: -
+-- Name: cas_application_fields; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.cas_applications (
+CREATE TABLE public.cas_application_fields (
     id bigint NOT NULL,
+    project_id bigint,
     status character varying,
     firstname character varying,
     surname character varying,
@@ -268,10 +269,10 @@ CREATE TABLE public.cas_applications (
 
 
 --
--- Name: cas_applications_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: cas_application_fields_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.cas_applications_id_seq
+CREATE SEQUENCE public.cas_application_fields_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -280,40 +281,10 @@ CREATE SEQUENCE public.cas_applications_id_seq
 
 
 --
--- Name: cas_applications_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+-- Name: cas_application_fields_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE public.cas_applications_id_seq OWNED BY public.cas_applications.id;
-
-
---
--- Name: cas_datasets; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.cas_datasets (
-    id bigint NOT NULL,
-    value character varying,
-    sort integer
-);
-
-
---
--- Name: cas_datasets_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.cas_datasets_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: cas_datasets_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.cas_datasets_id_seq OWNED BY public.cas_datasets.id;
+ALTER SEQUENCE public.cas_application_fields_id_seq OWNED BY public.cas_application_fields.id;
 
 
 --
@@ -4282,14 +4253,7 @@ ALTER TABLE ONLY public.birth_data ALTER COLUMN birth_dataid SET DEFAULT nextval
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.cas_applications ALTER COLUMN id SET DEFAULT nextval('public.cas_applications_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.cas_datasets ALTER COLUMN id SET DEFAULT nextval('public.cas_datasets_id_seq'::regclass);
+ALTER TABLE ONLY public.cas_application_fields ALTER COLUMN id SET DEFAULT nextval('public.cas_application_fields_id_seq'::regclass);
 
 
 --
@@ -4977,19 +4941,11 @@ ALTER TABLE ONLY public.birth_data
 
 
 --
--- Name: cas_applications_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: cas_application_fields_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.cas_applications
-    ADD CONSTRAINT cas_applications_pkey PRIMARY KEY (id);
-
-
---
--- Name: cas_datasets_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.cas_datasets
-    ADD CONSTRAINT cas_datasets_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.cas_application_fields
+    ADD CONSTRAINT cas_application_fields_pkey PRIMARY KEY (id);
 
 
 --
@@ -5842,6 +5798,13 @@ CREATE INDEX index_addresses_on_country_id ON public.addresses USING btree (coun
 --
 
 CREATE INDEX index_birth_data_on_ppatient_id ON public.birth_data USING btree (ppatient_id);
+
+
+--
+-- Name: index_cas_application_fields_on_project_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_cas_application_fields_on_project_id ON public.cas_application_fields USING btree (project_id);
 
 
 --
@@ -7723,14 +7686,19 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20200821134630'),
 ('20201014120225'),
 ('20201014122944'),
+('20201015135259'),
 ('20201018132536'),
 ('20201018132733'),
 ('20201018134038'),
 ('20201018134152'),
-('20201015135259'),
 ('20201106153234'),
 ('20201106153256'),
 ('20201106153309'),
-('20201113112942');
+('20201113112942'),
+('20201117110141'),
+('20201117113702'),
+('20201117113815'),
+('20201118105849'),
+('20201118133709');
 
 

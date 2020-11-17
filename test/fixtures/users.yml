@@ -370,3 +370,13 @@ team_dataset_manager:
   username: dm
   directorate_id: 1
   division_id: 1
+
+no_roles:
+  email: no_roles@phe.gov.uk
+  first_name: non
+  last_name: roles
+  z_user_status: active_user_status
+  location: phe
+  username: nr
+  directorate_id: 1
+  division_id: 1

@@ -122,3 +122,13 @@
     time: *17
   dataset_type_id: 1
   team: mbis
+83:
+  id: 83
+  name: 'Extra CAS Dataset One'
+  dataset_type_id: 5
+  team: cas_application_team
+84:
+  id: 84
+  name: 'Extra CAS Dataset Two'
+  dataset_type_id: 5
+  team: cas_application_team

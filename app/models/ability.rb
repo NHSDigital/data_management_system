@@ -13,6 +13,10 @@ class Ability
     can :read, User, id: user.id
     can :read, Grant, user_id: user.id
     can :read, [Category, Node]
+    # TODO: test
+    can :create, Project, project_type_id: ProjectType.cas.pluck(:id)
+    can %i[read update destroy], Project, project_type_id: ProjectType.cas.pluck(:id),
+                                          grants: { user_id: user.id, roleable: ProjectRole.owner }
 
     team_grants(user)
     organisation_grants(user)

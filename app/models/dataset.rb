@@ -21,6 +21,10 @@ class Dataset < ApplicationRecord
     joins(:dataset_type).merge(DatasetType.where(name: 'odr'))
   }
 
+  scope :cas, lambda {
+    joins(:dataset_type).merge(DatasetType.where(name: 'cas'))
+  }
+
   def to_xsd(version)
     dataset_versions.find_by(semver_version: version).to_xsd
   end

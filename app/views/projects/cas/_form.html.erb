@@ -1,0 +1,39 @@
+<%
+  readonly ||= false
+  remote   ||= false
+%>
+<div class="row">
+  <div class='col-sm-10 col-sm-offset-1'>
+    <%= bootstrap_form_for @project, horizontal: true, remote: remote, readonly: readonly do |form| %>
+      <%= form.error_and_warning_alert_boxes %>
+      <%= form.hidden_field(:project_type_id) %>
+
+      <%= form.fields_for :owner_grant, @project.owner_grant || Grant.new do |builder| %>
+        <%= builder.hidden_field :user_id, value: current_user.id %>
+        <%= builder.hidden_field :roleable_id, value: ProjectRole.fetch(:owner).id %>
+        <%= builder.hidden_field :roleable_type, value: 'ProjectRole' %>
+      <% end %>
+
+      <%= form.fields_for :cas_application_fields do |cas| %>
+        <%= render partial: 'projects/cas/form_requester_details_section', locals: { form: cas } %>
+        <%= render partial: 'projects/cas/form_account_details_section',   locals: { form: cas } %>
+        <%= render partial: 'projects/cas/form_permissions_section',       locals: { form: cas } %>
+      <% end %>
+
+      <%= render partial: 'projects/cas/form_extra_datasets', locals: { form: form } %>
+
+      <%= form.fields_for :cas_application_fields do |cas| %>
+        <%= render partial: 'projects/cas/form_declarations_section',      locals: { form: cas } %>
+      <% end %>
+
+      <% unless readonly %>
+        <%= form.control_group nil do %>
+          <div class="pull-right">
+            <%= link_to 'Cancel', @project, class: 'btn btn-default' %>
+            <%= form.submit (@project.persisted? ? 'Update Application' : 'Create Application'), class: 'btn btn-primary' %>
+          </div>
+        <% end %>
+      <% end %>
+    <% end %>
+  </div>
+</div>
