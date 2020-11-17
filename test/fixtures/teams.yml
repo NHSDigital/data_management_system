@@ -179,3 +179,13 @@ org_two_team:
   notes: Nightmare
   z_team_status_id: 1
   organisation: test_organisation_two
+
+cas_application_team:
+  name: CAS Team
+  location: England
+  telephone: 00
+  notes: CAS
+  z_team_status_id: 1
+  organisation: test_organisation_one
+
+    

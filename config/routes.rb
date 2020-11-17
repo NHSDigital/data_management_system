@@ -68,8 +68,6 @@ Rails.application.routes.draw do
     get :dashboard, on: :collection
   end
 
-  resources :cas_applications
-
   resources :terms_and_conditions, only: [:index, :create]
 
   resources :active_team, only: [:index, :update]
@@ -129,6 +127,8 @@ Rails.application.routes.draw do
   resources :organisations, shallow: true do
     resources :teams
   end
+
+  resources :projects
 
   resources :teams, shallow: true, except: %i[new create] do
     resources :datasets

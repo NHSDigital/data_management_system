@@ -82,18 +82,25 @@ class ProjectsController < ApplicationController
   end
 
   def new
-    @project.project_type ||= ProjectType.find_by(name: 'Project')
+    @project.project_type ||= ProjectType.find_by(name: 'CAS')
+    # @project.project_datasets.build
+    # TODO: move to model?
+    @project.build_cas_application_fields if @project.project_type_name == 'CAS'
     @project.add_default_dataset
     @full_form = true
   end
 
   # POST /projects
   def create
-    @team = @project.team
-    @project = @team.projects.build(project_params)
-    @project.send(:add_current_user_as_contributor, current_user)
-    @project.initialize_workflow(current_user)
+    # TODO: can we do this elsewhere
+    unless @project.project_type_name == 'CAS'
+      @team = @project.team
+      @project = @team.projects.build(project_params)
+      @project.send(:add_current_user_as_contributor, current_user)
+    end
 
+    @project.initialize_workflow(current_user)
+    # binding.pry
     if @project.save
       respond_to do |format|
         format.html { redirect_to @project, notice: "#{@project.project_type_name} was successfully created." }
@@ -293,11 +300,25 @@ class ProjectsController < ApplicationController
                                     classification_ids: [],
                                     end_use_ids: [],
                                     lawful_basis_ids: [],
+                                    dataset_ids: [],
                                     owner_grant_attributes: %i[id user_id project_id
                                                                roleable_id roleable_type],
                                     project_datasets_attributes: %i[id project_id dataset_id
                                                                     terms_accepted _destroy],
-                                    project_attachments_attributes: [:name, :attachment])
+                                    project_attachments_attributes: [:name, :attachment],
+                                    # CAS
+                                    cas_application_fields_attributes: cas_fields
+                                    )
+  end
+
+  def cas_fields
+    [
+      :firstname, :surname, :jobtitle, :phe_email, :work_number, :organisation,
+      :line_manager_name, :line_manager_email, :line_manager_number, :employee_type,
+      :contract_startdate, :contract_enddate, :username, :address, :n3_ip_address,
+      :reason_justification, :access_level, :extra_datasets_rationale,
+      declaration: []
+    ]
   end
 
   def approval_params

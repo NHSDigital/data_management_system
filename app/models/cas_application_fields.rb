@@ -1,15 +1,6 @@
-class CasApplication < ApplicationRecord
+class CasApplicationFields < ApplicationRecord
+  belongs_to :project
   has_paper_trail
-
-  def extra_datasets
-    # retrieve as an array
-    read_attribute(:extra_datasets).to_s.split(',')
-  end
-
-  def extra_datasets=(value)
-    # store as a string seperated by comma
-    write_attribute(:extra_datasets, [value].join(','))
-  end
 
   def declaration=(value)
     # store as a string seperated by comma

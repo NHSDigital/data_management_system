@@ -1,0 +1,24 @@
+<ul id="tabs" class="nav nav-tabs" data-tabs='tabs'>
+  <li class='active'>
+    <a href="#details" data-toggle='tab'>Project Details</a>
+  </li>
+  <li>
+    <a href="#datasets" data-toggle="tab">Datasets</a>
+  </li>
+  <%= tab_to ProjectAmendment.model_name.human.pluralize, '#amendments', count: @project.project_amendments.count, data: { toggle: :tab } %>
+  <% if can?(:read, DataPrivacyImpactAssessment) %>
+    <%= tab_to DataPrivacyImpactAssessment.model_name.human(count: 2), '#dpias', count: @project.dpias.count, data: { toggle: :tab } %>
+  <% end %>
+  <% if can?(:read, Contract) %>
+    <%= tab_to Contract.model_name.human.pluralize, '#contracts', count: @project.contracts.count, data: { toggle: :tab } %>
+  <% end %>
+
+  <li>
+    <a href="#comments" data-toggle='tab'>
+      Comments
+    </a>
+  </li>
+  <li>
+    <a href="#timeline" data-toggle="tab">Timeline</a>
+  </li>
+</ul>
