@@ -378,14 +378,20 @@ class ProjectTest < ActiveSupport::TestCase
   end
 
   test 'CAS application does not require team' do
-    application = Project.new(project_type: ProjectType.find_by(name: 'CAS'))
-    application.valid?
+    application = Project.new(project_type: ProjectType.find_by(name: 'CAS')).tap(&:valid?)
     refute_includes(application.errors.keys, :project)
   end
 
   test 'MBIS application requires team' do
-    application = Project.new(project_type: ProjectType.find_by(name: 'Project'))
-    application.valid?
+    application = Project.new(project_type: ProjectType.find_by(name: 'Project')).tap(&:valid?)
     assert_includes(application.errors.keys, :project)
+  end
+
+  test 'CAS application does not require name' do
+    application = Project.new(project_type: ProjectType.find_by(name: 'EOI')).tap(&:valid?)
+    assert_includes(application.errors.keys, :project)
+
+    application = Project.new(project_type: ProjectType.find_by(name: 'CAS')).tap(&:valid?)
+    refute_includes(application.errors.keys, :project)
   end
 end
