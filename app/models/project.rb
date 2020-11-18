@@ -91,7 +91,6 @@ class Project < ApplicationRecord
     attrs.fetch(:comment, nil).blank? || attrs.values_at(:user, :user_id).reject(&:blank?).none?
   }
 
-  # TODO: update or add test
   validates :name, presence: true, uniqueness: {
     scope:   %i[team_id project_type_id],
     message: 'Name already being used by this Team'
