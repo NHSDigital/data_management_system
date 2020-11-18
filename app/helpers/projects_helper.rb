@@ -276,4 +276,8 @@ module ProjectsHelper
   def friendly_type_name(type)
     I18n.t(:project_types)[type.downcase.to_sym].presence || type
   end
+
+  def new_application_text(project)
+    "New #{I18n.t(:project_types)[project.project_type_name.downcase.to_sym]}"
+  end
 end
