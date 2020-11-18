@@ -5,7 +5,7 @@ class AddCommentsToRejectedProjectTest < ActionDispatch::IntegrationTest
   test 'normal user can not edit when project in approved state' do
     login_and_accept_terms(users(:rejected_standard_user))
     visit project_path(projects(:rejected_project))
-    click_link('Project Details')
+    click_link('Details')
     # page.find('#project_summary_data_information').click_on('1 Comment')
     page.find('#project_summary_data_information').find_link('1 Comment').click
     find('#project_summary_data_information').find_link('Add comment').click
@@ -34,7 +34,7 @@ class AddCommentsToRejectedProjectTest < ActionDispatch::IntegrationTest
     assert has_no_selector?('#modal', visible: true)
     assert_equal 6, ProjectComment.all.count
 
-    click_link('Project Details')
+    click_link('Details')
     # page.find('#project_summary_data_information').click_on('2 Comments')
     page.find('#project_summary_data_information').find_link('2 Comments').click
     assert page.has_content?('I think they are all good')

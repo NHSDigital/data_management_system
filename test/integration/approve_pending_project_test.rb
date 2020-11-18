@@ -6,7 +6,7 @@ class ApprovePendingProjectTest < ActionDispatch::IntegrationTest
     @project = projects(:pending_project)
     visit project_path(@project)
 
-    click_link('Project Details')
+    click_link('Details')
     find('#approve_details_status').find_link('Approve').click
     click_link('Data Items')
     assert page.has_content? 'Approve All'
@@ -50,7 +50,7 @@ class ApprovePendingProjectTest < ActionDispatch::IntegrationTest
 
     visit project_path(project)
 
-    click_link('Project Details')
+    click_link('Details')
 
     find('#approve_details_status').find_link('Decline').click
     within_modal do

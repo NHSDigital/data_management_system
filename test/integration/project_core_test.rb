@@ -45,7 +45,7 @@ class ProjectCoreTest < ActionDispatch::IntegrationTest
     visit terms_and_conditions_path
     click_on 'Accept'
     visit project_path(projects(:pending_project))
-    click_link('Project Details')
+    click_link('Details')
     find('#approve_details_status').find_link('Approve').click
     assert find('#approve_details_status').has_no_link?('Approve')
     assert Project.find_by(name: 'pending_project').details_approved?
