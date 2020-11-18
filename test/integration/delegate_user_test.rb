@@ -46,7 +46,7 @@ class DelegateUserTest < ActionDispatch::IntegrationTest
     login_and_accept_terms(users(:delegate_user2))
     @project = projects(:new_delegate_project)
     visit project_path(@project)
-    click_on 'Project Details'
+    click_on 'Details'
     assert page.has_no_content?('Edit')
   end
 end

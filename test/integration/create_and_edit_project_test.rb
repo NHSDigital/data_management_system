@@ -65,7 +65,7 @@ class CreateAndEditProjectTest < ActionDispatch::IntegrationTest
     assert page.has_no_content?('Informed Patient Consent (Mortality)')
     find_link('Legal / Ethical').click
     assert page.has_content?('Informed Patient Consent (Mortality)')
-    find_link('Project Details').click
+    find_link('Details').click
     find_link('Edit').click
 
     # accept_prompt do
@@ -100,7 +100,7 @@ class CreateAndEditProjectTest < ActionDispatch::IntegrationTest
     assert page.has_content? 'Download Terms & Conditions'
 
     # Edit the project details:
-    click_on 'Project Details'
+    click_on 'Details'
     click_on 'Edit'
 
     fill_in 'project_how_data_will_be_used', with: 'This has been changed'
@@ -311,7 +311,7 @@ class CreateAndEditProjectTest < ActionDispatch::IntegrationTest
     login_and_accept_terms(users(:standard_user2))
 
     visit project_path(project)
-    find_link('Project Details').click
+    find_link('Details').click
     find_link('Edit').click
     select 'Another User', from: 'project_owner_grant_attributes_user_id'
     assert_difference('Grant.count', 0) do
