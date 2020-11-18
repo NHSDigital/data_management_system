@@ -376,4 +376,16 @@ class ProjectTest < ActiveSupport::TestCase
     assert_equal 2, project.nodes.count
     assert_equal 3, project.all_data_items.count
   end
+
+  test 'CAS application does not require team' do
+    application = Project.new(project_type: ProjectType.find_by(name: 'CAS'))
+    application.valid?
+    refute_includes(application.errors.keys, :project)
+  end
+
+  test 'MBIS application requires team' do
+    application = Project.new(project_type: ProjectType.find_by(name: 'Project'))
+    application.valid?
+    assert_includes(application.errors.keys, :project)
+  end
 end

@@ -59,7 +59,6 @@ class Project < ApplicationRecord
     belongs_to :processing_territory_outsourced
   end
 
-  # TODO: add validation to check projects which are not CAS have a team
   belongs_to :team, optional: true
   belongs_to :closure_reason, class_name: 'Lookups::ClosureReason', optional: true
 
@@ -76,8 +75,7 @@ class Project < ApplicationRecord
   delegate :organisation, to: :team
 
   delegate :name,      to: :project_type, prefix: true, allow_nil: true
-  # TODO: no longer works for cas applications which won't have  team
-  delegate :name,      to: :team,         prefix: true # team_name
+  delegate :name,      to: :team,         prefix: true, allow_nil: true # team_name
   delegate :full_name, to: :owner,        prefix: true, allow_nil: true
 
   delegate :project?, :eoi?, :application?, :cas?, to: :project_type_inquirer
@@ -101,6 +99,7 @@ class Project < ApplicationRecord
 
   validate :ensure_owner_grant_presence
   validate :ensure_appropriate_assigned_user
+  validate :project_should_belong_to_team
 
   with_options if: -> { project? } do
     validates :data_source_terms_accepted, acceptance: true
@@ -551,6 +550,13 @@ class Project < ApplicationRecord
     source_names.each do |attribute|
       send("#{attribute}=", nil) if send(attribute).blank?
     end
+  end
+
+  def project_should_belong_to_team
+    return if cas?
+    return if team
+
+    errors.add(:project, 'Must belong to a Team!')
   end
 
   class << self
