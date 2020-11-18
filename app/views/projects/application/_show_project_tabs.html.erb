@@ -1,7 +1,5 @@
 <ul id="tabs" class="nav nav-tabs" data-tabs='tabs'>
-  <li class='active'>
-    <a href="#details" data-toggle='tab'>Project Details</a>
-  </li>
+  <%= tab_to 'Details', '#details', class: 'active', data: { toggle: :tab } %>
   <li>
     <a href="#datasets" data-toggle="tab">Datasets</a>
   </li>

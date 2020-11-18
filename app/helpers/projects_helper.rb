@@ -279,6 +279,14 @@ module ProjectsHelper
   end
 
   def new_application_text(project)
-    "New #{I18n.t(:project_types)[project.project_type_name.downcase.to_sym]}"
+    "New #{friendly_project_types(project)}"
+  end
+
+  def application_details_text(project)
+    "#{friendly_project_types(project)} Details"
+  end
+
+  def friendly_project_types(project)
+    I18n.t(:project_types)[project.project_type_name.downcase.to_sym]
   end
 end
