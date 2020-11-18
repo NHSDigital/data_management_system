@@ -82,9 +82,7 @@ class ProjectsController < ApplicationController
   end
 
   def new
-    @project.project_type ||= ProjectType.find_by(name: 'CAS')
-    # @project.project_datasets.build
-    # TODO: move to model?
+    @project.project_type ||= ProjectType.find_by(name: 'Project')
     @project.build_cas_application_fields if @project.project_type_name == 'CAS'
     @project.add_default_dataset
     @full_form = true
@@ -98,9 +96,8 @@ class ProjectsController < ApplicationController
       @project = @team.projects.build(project_params)
       @project.send(:add_current_user_as_contributor, current_user)
     end
-
     @project.initialize_workflow(current_user)
-    # binding.pry
+
     if @project.save
       respond_to do |format|
         format.html { redirect_to @project, notice: "#{@project.project_type_name} was successfully created." }
