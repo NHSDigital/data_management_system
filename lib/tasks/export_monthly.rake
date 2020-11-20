@@ -54,9 +54,23 @@ namespace :export do
       data_root      = SafePath.new('mbis_data')
       project_name   = ENV.delete('project_name')
       team_name      = ENV.delete('team_name')
-      klass          = ENV.delete('klass')
+      klass          = ENV.delete('klass')&.constantize
+      filter         = ENV.delete('filter')
+      # TODO: Accept month parameter, e.g. 2020-10, to run non-interactively
+      if project_name.blank? || team_name.blank? || klass.blank?
+        puts <<~USAGE
+          Error: Missing required parameter.
+          Syntax: rake export:monthly:death project_name='...' team_name='...' klass=... [filter=...]
+        USAGE
+        exit 1
+      end
       extract_passwd = encryptor.find_project_data_password(project_name, team_name)
-      fname_patterns = %w[MTH%mD_MBIS.TXT MTH%mP_MBIS.TXT MTH%m_temp_%s.TXT MTH%Y-%m_MBIS.zip]
+      fname_patterns = if klass.respond_to?(:fname_patterns)
+                         patterns = klass.fname_patterns(filter, :monthly)
+                         patterns[0..1] + ['MTH%m_temp_%s.TXT', patterns[2]]
+                       else
+                         %w[MTH%mD_MBIS.TXT MTH%mP_MBIS.TXT MTH%m_temp_%s.TXT MTH%Y-%m_MBIS.zip]
+                       end
       fname_team     = team_name.parameterize(separator: '_')
       fname_project  = project_name.parameterize(separator: '_')
       extract_path   = "extracts/#{fname_team}/#{fname_project}"
@@ -81,7 +95,7 @@ namespace :export do
         # Extract subsequent batches to a temporary file, then concatenate to the first file
         target_file = index.zero? ? fname : fname_tmp
 
-        extractor.extract_mbis_weekly_death_file(ebatch, target_file, klass)
+        extractor.extract_mbis_weekly_death_file(ebatch, target_file, klass, filter)
 
         # FIXME: Assumes extracted file has 1 header line and 0 footer lines (as per `SimpleCsv`),
         # but extract classes are free to define header/footer enumerables of any length...
@@ -96,7 +110,7 @@ namespace :export do
       end
 
       # Generate summary report file
-      count = File.readlines(fname_full).size
+      count = CSV.read(fname_full).size - 1
 
       File.open(data_root.join(fname_summary), 'w+') do |f|
         lines = [' ', "#{team_name.upcase} MONTHLY #{project_name.upcase} REPORT",
@@ -108,6 +122,7 @@ namespace :export do
       encryptor.compress_and_encrypt_zip(extract_passwd, extract_path, fname_zip, fname, fname_summary)
 
       puts "Created extract file #{fname_zip}"
+      # TODO: Try to copy extract to smb destination
     end
   end
 end
