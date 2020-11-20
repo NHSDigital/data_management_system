@@ -5,21 +5,29 @@ module Export
       # Helpers to extract death records
       module DeathExtractor
         # Interactively pick a weekly batch of death data
-        def self.pick_mbis_weekly_death_batch(desc, fname_patterns)
+        def self.pick_mbis_weekly_death_batch(desc, fname_patterns, weeks_ago: 4)
           weekly_death_re = /MBIS(WEEKLY_Deaths_D|_20)([0-9]{6}).txt/ # TODO: Refactor
           dated_batches = EBatch.imported.where(e_type: 'PSDEATH').collect do |eb|
             next unless weekly_death_re =~ eb.original_filename
+
             date = Date.strptime(Regexp.last_match(2), '%y%m%d')
             [date, fname_patterns.collect { |s| date.strftime(s) }, eb]
           end.compact.sort
           puts "e_batchid: original MBIS filename -> #{desc} files"
           dated_batches.each do |date, fnames, eb|
-            next unless date >= 1.month.ago
+            next unless date >= weeks_ago.weeks.ago
+
             puts format('%-9d: %s -> %s', eb.id, Pathname.new(eb.original_filename).basename.to_s,
                         fnames[0..1].collect { |s| File.basename(s) }.join(', '))
           end
-          print 'Choose e_batchid to export: '
-          e_batchid = STDIN.readline.chomp.to_i
+          print 'Choose e_batchid to export, or enter "older" to show older batches: '
+          answer = STDIN.readline.chomp
+          if answer == 'older'
+            return pick_mbis_weekly_death_batch(desc, fname_patterns,
+                                                weeks_ago: weeks_ago + 4)
+          end
+
+          e_batchid = answer.to_i
           date, fnames, eb = dated_batches.find { |_, _, eb2| eb2.id == e_batchid }
           fnames&.each do |fname|
             raise "Not overwriting existing #{fname}" if File.exist?(SafePath.new('mbis_data').
@@ -76,13 +84,13 @@ module Export
         end
 
         # Interactively pick month's data, after the final MBIS weekly batch of each month
-        def self.pick_mbis_monthly_death_batches(desc, fname_patterns)
+        def self.pick_mbis_monthly_death_batches(desc, fname_patterns, months_ago: 2)
           weekly_death_re = /MBIS(WEEKLY_Deaths_D|_20)([0-9]{6}).txt/ # TODO: Refactor
           batch_scope = EBatch.imported.where(e_type: 'PSDEATH')
           # Second batches would usually be those received 8th-14th of each month
           # and would be those from the previous month with a day-of-month of 15-31
           # for the previous month and 1-14 for the current month.
-          monthly_batches = (0..2).collect do |n|
+          monthly_batches = (0..months_ago).collect do |n|
             pattern, final_batch_re = monthly_batch_patterns(n.month.ago)
             batches = batch_scope.all.select { |eb| eb.original_filename =~ pattern }
             # Ignore unless this contains a record from the final week of the month
@@ -94,8 +102,10 @@ module Export
           end.compact
           dated_batches = monthly_batches.collect do |batches|
             next if batches.empty?
+
             eb = batches.last
             next unless weekly_death_re =~ eb.original_filename
+
             date = Date.strptime(Regexp.last_match(2), '%y%m%d')
             [date, fname_patterns.collect { |s| date.strftime(s) }, eb, batches]
           end.compact.sort
@@ -108,8 +118,14 @@ module Export
               puts "           (+ #{Pathname.new(eb2.original_filename).basename})"
             end
           end
-          print 'Choose e_batchid to export: '
-          e_batchid = STDIN.readline.chomp.to_i
+          print 'Choose e_batchid to export, or enter "older" to show older batches: '
+          answer = STDIN.readline.chomp
+          if answer == 'older'
+            return pick_mbis_monthly_death_batches(desc, fname_patterns,
+                                                   months_ago: months_ago + 3)
+          end
+
+          e_batchid = answer.to_i
           date, fnames, _eb, batches = dated_batches.find { |_, _, eb2, _| eb2.id == e_batchid }
           fnames&.each do |fname|
             raise "Not overwriting existing #{fname}" if File.exist?(SafePath.new('mbis_data').
