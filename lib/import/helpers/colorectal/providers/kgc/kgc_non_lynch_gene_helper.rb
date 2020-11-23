@@ -55,7 +55,7 @@ module Import
                                               genotypes)
               mutatedcdna    = raw_genotype.scan(CDNA_REGEX).flatten
               mutatedprotein = raw_genotype.scan(PROTEIN_REGEX_COLO).flatten
-              if raw_genotype.scan(CDNA_REGEX).count > 1 and mutatedgene.flatten.count == 1
+              if raw_genotype.scan(CDNA_REGEX).count > 1 && mutatedgene.flatten.one?
                 mutatedgene = mutatedgene.map { |mutatedgene| [mutatedgene] * 2 }
               end
               mutations      = mutatedgene.flatten.zip(mutatedcdna, mutatedprotein)
