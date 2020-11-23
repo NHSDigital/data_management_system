@@ -84,7 +84,16 @@ module Export
         end
 
         # Interactively pick month's data, after the final MBIS weekly batch of each month
-        def self.pick_mbis_monthly_death_batches(desc, fname_patterns, months_ago: 2)
+        # If optional month parameter is supplied (in YYYY-MM format), then this runs in
+        # batch mode, and returns the latest data for that month, or raises an exception if no
+        # batch for that month is available.
+        def self.pick_mbis_monthly_death_batches(desc, fname_patterns, months_ago: 2,
+                                                                       month: nil)
+          month = ENV['month']
+          if month
+            year0, month0 = /^([0-9]{4})-([0-9]{2})$/.match(month)[1..2].collect(&:to_i)
+            months_ago = (Time.current.year - year0) * 12 + (Time.current.month - month0)
+          end
           weekly_death_re = /MBIS(WEEKLY_Deaths_D|_20)([0-9]{6}).txt/ # TODO: Refactor
           batch_scope = EBatch.imported.where(e_type: 'PSDEATH')
           # Second batches would usually be those received 8th-14th of each month
@@ -109,24 +118,33 @@ module Export
             date = Date.strptime(Regexp.last_match(2), '%y%m%d')
             [date, fname_patterns.collect { |s| date.strftime(s) }, eb, batches]
           end.compact.sort
-          puts "e_batchid: original MBIS filename -> #{desc} files"
-          dated_batches.each do |_date, fnames, eb, batches|
-            # next unless date >= 1.month.ago
-            puts format('%-9d: %s -> %s', eb.id, Pathname.new(eb.original_filename).basename.to_s,
-                        fnames[0..1].join(', '))
-            (batches - [eb]).each do |eb2|
-              puts "           (+ #{Pathname.new(eb2.original_filename).basename})"
+          if month
+            date, fnames, _eb, batches = dated_batches.reverse.find do |date, _, _, _|
+              date.strftime('%Y-%m') == month
             end
-          end
-          print 'Choose e_batchid to export, or enter "older" to show older batches: '
-          answer = STDIN.readline.chomp
-          if answer == 'older'
-            return pick_mbis_monthly_death_batches(desc, fname_patterns,
-                                                   months_ago: months_ago + 3)
-          end
+            raise "No batch found for month #{month}" unless date
 
-          e_batchid = answer.to_i
-          date, fnames, _eb, batches = dated_batches.find { |_, _, eb2, _| eb2.id == e_batchid }
+            puts "Extracting month #{month} with e_batchids #{batches.collect(&:id)}"
+          else
+            puts "e_batchid: original MBIS filename -> #{desc} files"
+            dated_batches.each do |_date, fnames, eb, batches|
+              # next unless date >= 1.month.ago
+              puts format('%-9d: %s -> %s', eb.id, Pathname.new(eb.original_filename).basename,
+                          fnames[0..1].join(', '))
+              (batches - [eb]).each do |eb2|
+                puts "           (+ #{Pathname.new(eb2.original_filename).basename})"
+              end
+            end
+            print 'Choose e_batchid to export, or enter "older" to show older batches: '
+            answer = STDIN.readline.chomp
+            if answer == 'older'
+              return pick_mbis_monthly_death_batches(desc, fname_patterns,
+                                                     months_ago: months_ago + 3)
+            end
+
+            e_batchid = answer.to_i
+            date, fnames, _eb, batches = dated_batches.find { |_, _, eb2, _| eb2.id == e_batchid }
+          end
           fnames&.each do |fname|
             raise "Not overwriting existing #{fname}" if File.exist?(SafePath.new('mbis_data').
                                                                       join(fname))
