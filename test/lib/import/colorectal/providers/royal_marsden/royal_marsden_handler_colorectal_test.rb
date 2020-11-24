@@ -57,7 +57,6 @@ class RoyalMarsdenHandlerColorectalTest < ActiveSupport::TestCase
   test 'process_test_scope' do
     @handler.process_test_scope(@genotype, @record)
     assert_equal 'Targeted Colorectal mutation test', @genotype.attribute_map['genetictestscope']
-    broken_record = build_raw_record('pseudo_id1' => 'bob')
   end
 
   test 'process_large_deldup' do
@@ -96,7 +95,6 @@ class RoyalMarsdenHandlerColorectalTest < ActiveSupport::TestCase
       variantpathclass: 'Pathogenic mutation',
       age: '999' }.to_json
   end
-
 
   def rawtext_clinical_json
     { sid: '123456',

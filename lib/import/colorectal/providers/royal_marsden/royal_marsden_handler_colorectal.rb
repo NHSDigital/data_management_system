@@ -85,9 +85,9 @@ module Import
             varpathclass = record.raw_fields['variantpathclass'].downcase.strip unless record.raw_fields['variantpathclass'].nil?
 
             if !varpathclass.nil? && !varpathclass.empty? && VARIANT_PATH_CLASS_COLO[varpathclass]
-            genocolorectal.add_variant_class(VARIANT_PATH_CLASS_COLO[varpathclass.downcase]) 
+              genocolorectal.add_variant_class(VARIANT_PATH_CLASS_COLO[varpathclass.downcase])
             else
-            @logger.debug 'NO VARIANTPATHCLASS DETECTED'
+              @logger.debug 'NO VARIANTPATHCLASS DETECTED'
             end
           end
 
