@@ -46,7 +46,7 @@ module Import
 
           CDNA_REGEX_PROT = /c\.(?<cdna>.+)(?=_p\.(?<impact>.+))/i .freeze
           CDNA_REGEX_NOPROT = /c\.(?<cdna>.+)/i .freeze
-          DEL_DUP_REGEX = /(?<deldup>(Deletion|Duplication)) exon(s)? (?<exon>[\d]+(-[\d]+)?)/i .freeze
+          DEL_DUP_REGEX = /(?<deldup>(Deletion|Duplication)) exon(s)? (?<exon>[\d]+(-[\d]+)?)|exon(s)? (?<exon>[\d]+(-[\d]+)?) (?<deldup>(Deletion|Duplication))/i .freeze
 
           def initialize(batch)
             @failed_genocolorectal_counter = 0
@@ -137,7 +137,7 @@ module Import
           end
 
           def process_large_deldup(genocolorectal, record)
-            deldup = record.raw_fields['teststatus'].downcase unless record.raw_fields['teststatus'].nil?
+            deldup = record.raw_fields['teststatus'] unless record.raw_fields['teststatus'].nil?
             if DEL_DUP_REGEX.match(deldup)
               genocolorectal.add_variant_type($LAST_MATCH_INFO[:deldup])
               genocolorectal.add_exon_location($LAST_MATCH_INFO[:exon])
