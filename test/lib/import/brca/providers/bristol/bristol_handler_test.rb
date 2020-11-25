@@ -25,6 +25,15 @@ class BristolHandlerTest < ActiveSupport::TestCase
     assert_equal 'c.8167G>C', @genotype.attribute_map['codingdnasequencechange']
   end
 
+  test 'process_genomic_change' do
+    @handler.process_genomic_change(@genotype, @record)
+    assert_equal '13:32937506', @genotype.attribute_map['genomicchange']
+    broken_record = build_raw_record('pseudo_id1' => 'bob')
+    broken_record.raw_fields['genomicchange'] = '13: 32937506'
+    @logger.expects(:warn).with('Could not process genomic change, adding raw: 13: 32937506')
+    @handler.process_genomic_change(@genotype, broken_record)
+  end
+
   private
 
   def build_raw_record(options = {})
@@ -48,7 +57,7 @@ class BristolHandlerTest < ActiveSupport::TestCase
       authoriseddate: '2015-07-01T00: 00: 00.000+01: 00',
       servicereportidentifier: 'Service Report Identifier',
       requesteddate: '2015-05-07',
-      genomicchange: '13: 32937506',
+      genomicchange: '13:32937506',
       gene: '8',
       referencetranscriptid: 'NM_000059.3',
       codingdnasequencechange: 'c.8167G>C',
@@ -65,7 +74,7 @@ class BristolHandlerTest < ActiveSupport::TestCase
       requesteddate: '2015-05-07 00: 00: 00',
       authoriseddate: '2015-07-01 00: 00: 00',
       servicereportidentifier: 'Service Report Identifier',
-      genomicchange: '13: 32937506',
+      genomicchange: '13:32937506',
       gene: 'BRCA2',
       referencetranscriptid: 'NM_000059.3',
       codingdnasequencechange: 'c.8167G>C',
