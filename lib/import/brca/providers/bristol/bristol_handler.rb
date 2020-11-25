@@ -32,7 +32,7 @@ module Import
                                             record.raw_fields,
                                             PASS_THROUGH_FIELDS)
             # extractGeneAndLocation(record.raw_fields['chrpos'], genotype)
-            genotype.add_gene(record.mapped_fields['gene'].to_i) 
+            genotype.add_gene(record.mapped_fields['gene'].to_i)
             genotype.add_gene_location(record.mapped_fields['codingdnasequencechange'])
             genotype.add_protein_impact(record.mapped_fields['proteinimpact'])
             genotype.add_variant_class(record.mapped_fields['variantpathclass'])
