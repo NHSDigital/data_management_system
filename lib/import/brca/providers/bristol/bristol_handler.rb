@@ -48,7 +48,7 @@ module Import
               genotype.add_gene_location($LAST_MATCH_INFO[:cdna])
               @logger.debug "SUCCESSFUL cdna change parse for: #{$LAST_MATCH_INFO[:cdna]}"
             else
-              @logger.debug "UNSUCCESSFUL cdna change parse for: #{$LAST_MATCH_INFO[:cdna]}"
+              @logger.debug 'UNSUCCESSFUL cdna change parse'
             end
           end
 
