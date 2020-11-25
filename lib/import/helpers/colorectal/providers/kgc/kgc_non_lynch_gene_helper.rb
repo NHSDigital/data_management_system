@@ -55,13 +55,16 @@ module Import
                                               genotypes)
               mutatedcdna    = raw_genotype.scan(CDNA_REGEX).flatten
               mutatedprotein = raw_genotype.scan(PROTEIN_REGEX_COLO).flatten
-              mutations      = mutatedgene.zip(mutatedcdna, mutatedprotein)
+              if raw_genotype.scan(CDNA_REGEX).count > 1 && mutatedgene.flatten.one?
+                mutatedgene = mutatedgene.map { |mutatedgene| [mutatedgene] * 2 }
+              end
+              mutations      = mutatedgene.flatten.zip(mutatedcdna, mutatedprotein)
               @logger.debug "Found NON-LYNCH dna mutation in #{mutatedgene} LYNCH RELATED " \
                             "GENE(s) in position #{raw_genotype.scan(CDNA_REGEX)} with impact " \
                             "#{raw_genotype.scan(PROTEIN_REGEX_COLO)}"
               process_mutated_genes(mutations, genocolorectal, genotypes)
               nonlynchgenes = non_lynch_genes_from(clinicomm)
-              negativegenes = nonlynchgenes.flatten.uniq - mutatedgene
+              negativegenes = nonlynchgenes.flatten.uniq - mutatedgene.flatten
               process_negative_genes(negativegenes, genotypes, genocolorectal,
                                      NEGATIVE_NON_LYNCH_TEST_LOG)
             end
