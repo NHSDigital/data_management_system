@@ -16,3 +16,9 @@ dataset_viewer:
 dataset_viewer_analyst:
   name: Dataset Viewer Analyst
   sort: 6
+cas_access_approver:
+  name: CAS Access Approver
+  sort: 8
+cas_manager:
+  name: CAS Manager
+  sort: 9
