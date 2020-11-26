@@ -15,6 +15,7 @@ module Workflow
     validate :ensure_state_is_transitionable, on: :create
     after_save :update_project_closure_date
     after_save :remove_project_closure_date
+    after_save :auto_transition_to_awaiting_account_approval
 
     private
 
@@ -36,6 +37,17 @@ module Workflow
       return unless project.previous_state_id == 'REJECTED'
 
       project.update(closure_date: nil, closure_reason_id: nil)
+    end
+
+    def auto_transition_to_awaiting_account_approval
+      return unless project.cas?
+      return unless state_id == 'SUBMITTED'
+      # Will also skip straight through submitted status if no project_datasets exist to approve
+      return if project.project_datasets.any? {|pd| pd.approved.nil? }
+
+      self.project_id = project_id
+      self.state_id = 'AWAITING_ACCOUNT_APPROVAL'
+      save!
     end
   end
 end
