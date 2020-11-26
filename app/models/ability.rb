@@ -37,6 +37,8 @@ class Ability
     dataset_viewer_grants(user)
     dataset_viewer_analyst_grants(user)
 
+    cas_access_approver_grants(user)
+    cas_manager_grants(user)
     merge(Workflow::Ability.new(user))
   end
 
@@ -329,6 +331,13 @@ class Ability
     can :read, EraFields
   end
 
+  def cas_access_approver_grants(user)
+    return unless user.role?(SystemRole.fetch(:cas_access_approver))
+  end
+
+  def cas_manager_grants(user)
+    return unless user.role?(SystemRole.fetch(:cas_manager))
+  end
   private
 
   # where the user is an owner of active projects

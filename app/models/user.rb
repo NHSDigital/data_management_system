@@ -200,6 +200,13 @@ class User < ActiveRecord::Base
   #                      administrator?, odr?, id)
   # end
 
+  def cas_access_approver?
+    return true if role?(SystemRole.fetch(:cas_access_approver))
+  end
+
+  def cas_manager?
+    return true if role?(SystemRole.fetch(:cas_manager))
+  end
   def new_user_notification
     Notification.create!(title: 'New user added',
                          body: CONTENT_TEMPLATES['email_new_user']['body'] %
