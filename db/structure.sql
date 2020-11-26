@@ -2758,6 +2758,8 @@ CREATE TABLE public.project_datasets (
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL,
     terms_accepted boolean
+    terms_accepted boolean,
+    approved boolean
 );
 
 
@@ -7700,7 +7702,9 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20201117113815'),
 ('20201118105849'),
 ('20201118133709');
+('20201118133709'),
 ('20201119113713'),
+('20201119132335'),
 ('20201120112450'),
 ('20201125113756');
 
