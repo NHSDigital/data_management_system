@@ -69,3 +69,9 @@ data_released:
 
 data_destroyed:
   id: DATA_DESTROYED
+
+awaiting_account_approval:
+  id: AWAITING_ACCOUNT_APPROVAL
+
+access_granted:
+  id: ACCESS_GRANTED
