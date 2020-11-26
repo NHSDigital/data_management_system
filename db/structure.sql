@@ -819,6 +819,40 @@ ALTER SEQUENCE public.data_sources_id_seq OWNED BY public.data_sources.id;
 
 
 --
+-- Name: dataset_roles; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.dataset_roles (
+    id bigint NOT NULL,
+    name character varying,
+    startdate timestamp without time zone,
+    enddate timestamp without time zone,
+    sort integer,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: dataset_roles_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.dataset_roles_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: dataset_roles_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.dataset_roles_id_seq OWNED BY public.dataset_roles.id;
+
+
+--
 -- Name: dataset_types; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1794,7 +1828,8 @@ CREATE TABLE public.grants (
     team_id integer,
     project_id integer,
     created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
+    updated_at timestamp(6) without time zone NOT NULL,
+    dataset_id integer
 );
 
 
@@ -2757,7 +2792,6 @@ CREATE TABLE public.project_datasets (
     dataset_id bigint,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL,
-    terms_accepted boolean
     terms_accepted boolean,
     approved boolean
 );
@@ -3414,38 +3448,6 @@ CREATE SEQUENCE public.security_assurances_id_seq
 --
 
 ALTER SEQUENCE public.security_assurances_id_seq OWNED BY public.security_assurances.id;
-
-
---
--- Name: snomedct; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.snomedct (
-    providercode character varying(200),
-    providername character varying(200),
-    e_batchid bigint,
-    e_base_recordid bigint,
-    diagnosisdate character varying(12),
-    klass character varying(50),
-    field character varying(50),
-    val character varying(200)
-);
-
-
---
--- Name: snomedct_path; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.snomedct_path (
-    providercode character varying(200),
-    providername character varying(200),
-    e_batchid bigint,
-    e_base_recordid bigint,
-    diagnosisdate character varying(12),
-    klass character varying(50),
-    field character varying(50),
-    val character varying(200)
-);
 
 
 --
@@ -4367,6 +4369,13 @@ ALTER TABLE ONLY public.data_sources ALTER COLUMN id SET DEFAULT nextval('public
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY public.dataset_roles ALTER COLUMN id SET DEFAULT nextval('public.dataset_roles_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.dataset_types ALTER COLUMN id SET DEFAULT nextval('public.dataset_types_id_seq'::regclass);
 
 
@@ -5076,6 +5085,14 @@ ALTER TABLE ONLY public.data_source_items
 
 ALTER TABLE ONLY public.data_sources
     ADD CONSTRAINT data_sources_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: dataset_roles_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dataset_roles
+    ADD CONSTRAINT dataset_roles_pkey PRIMARY KEY (id);
 
 
 --
@@ -7701,11 +7718,14 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20201117113702'),
 ('20201117113815'),
 ('20201118105849'),
-('20201118133709');
 ('20201118133709'),
+('20201118154616'),
 ('20201119113713'),
 ('20201119132335'),
 ('20201120112450'),
-('20201125113756');
+('20201125113756'),
+('20201126114719'),
+('20201126114922'),
+('20201126115056');
 
 

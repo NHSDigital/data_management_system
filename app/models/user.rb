@@ -23,9 +23,11 @@ class User < ActiveRecord::Base
   has_many :grants, dependent: :destroy
   has_many :teams, -> { distinct.extending GrantedBy }, through: :grants
   has_many :projects, -> { distinct.extending GrantedBy }, through: :grants
+  has_many :datasets, -> { distinct.extending GrantedBy }, through: :grants
   has_many :system_roles, through: :grants, source: :roleable, source_type: 'SystemRole'
   has_many :team_roles, through: :grants, source: :roleable, source_type: 'TeamRole'
   has_many :project_roles, through: :grants, source: :roleable, source_type: 'ProjectRole'
+  has_many :dataset_roles, through: :grants, source: :roleable, source_type: 'DatasetRole'
 
   accepts_nested_attributes_for :teams
   attr_accessor :login
