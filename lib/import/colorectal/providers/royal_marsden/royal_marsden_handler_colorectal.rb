@@ -32,22 +32,21 @@ module Import
                                        'specific mutation' => :targeted_mutation } .freeze
 
           VARIANT_PATH_CLASS_COLO = { 'pathogenic mutation' => 5,
-                                      '1A' => 5,
-                                      '1B' => 4,
-                                      'Variant of uncertain significance' => 3,
+                                      '1a' => 5,
+                                      '1b' => 4,
+                                      'variant of uncertain significance' => 3,
                                       'variant requiring evaluation' => 3,
-                                      '2A' => 1,
-                                      '2B' => 2,
-                                      '2C' => 3,
-                                      'variant' => 2,
-                                      '' => nil } .freeze
+                                      '2a' => 1,
+                                      '2b' => 2,
+                                      '2c' => 3,
+                                      'variant' => 2 } .freeze
 
           TEST_TYPE_MAP_COLO = { 'affected' => :diagnostic,
                                  'unaffected' => :predictive } .freeze
 
           CDNA_REGEX_PROT = /c\.(?<cdna>.+)(?=_p\.(?<impact>.+))/i .freeze
           CDNA_REGEX_NOPROT = /c\.(?<cdna>.+)/i .freeze
-          DEL_DUP_REGEX = /(?<deldup>(Deletion|Duplication)) exon(s)? (?<exon>[\d]+(-[\d]+)?)/i .freeze
+          DEL_DUP_REGEX = /(?<deldup>(Deletion|Duplication)) exon(s)? (?<exon>[\d]+(-[\d]+)?)|exon(s)? (?<exon>[\d]+(-[\d]+)?) (?<deldup>(Deletion|Duplication))/i .freeze
 
           def initialize(batch)
             @failed_genocolorectal_counter = 0
@@ -83,9 +82,12 @@ module Import
           end
 
           def process_varpathclass(genocolorectal, record)
-            varpathclass = record.raw_fields['variantpathclass'] unless record.raw_fields['variantpathclass'].nil?
-            if VARIANT_PATH_CLASS_COLO[varpathclass.strip]
-              genocolorectal.add_variant_class(VARIANT_PATH_CLASS_COLO[varpathclass.strip])
+            varpathclass = record.raw_fields['variantpathclass'].downcase.strip unless record.raw_fields['variantpathclass'].nil?
+
+            if !varpathclass.nil? && !varpathclass.empty? && VARIANT_PATH_CLASS_COLO[varpathclass]
+              genocolorectal.add_variant_class(VARIANT_PATH_CLASS_COLO[varpathclass.downcase])
+            else
+              @logger.debug 'NO VARIANTPATHCLASS DETECTED'
             end
           end
 
@@ -135,7 +137,7 @@ module Import
           end
 
           def process_large_deldup(genocolorectal, record)
-            deldup = record.raw_fields['teststatus'].downcase unless record.raw_fields['teststatus'].nil?
+            deldup = record.raw_fields['teststatus'] unless record.raw_fields['teststatus'].nil?
             if DEL_DUP_REGEX.match(deldup)
               genocolorectal.add_variant_type($LAST_MATCH_INFO[:deldup])
               genocolorectal.add_exon_location($LAST_MATCH_INFO[:exon])
