@@ -4,6 +4,14 @@ class Dataset < ApplicationRecord
   belongs_to :dataset_type, inverse_of: :datasets
   has_many :dataset_versions, dependent: :destroy
   has_many :project_datasets
+  has_many :grants, foreign_key: :dataset_id, dependent: :destroy
+  has_many :users, -> { extending(GrantedBy).distinct }, through: :grants
+
+  has_many :approver_grants, lambda {
+    where grants: { roleable_type: 'DatasetRole', roleable_id: DatasetRole.fetch(:approver).id }
+  }, class_name: 'Grant'
+  has_many :approvers, through: :approver_grants, class_name: 'User', source: :user
+  
 
   delegate :name, to: :dataset_type, prefix: true, allow_nil: true
 
