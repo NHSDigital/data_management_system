@@ -5,9 +5,11 @@ class Grant < ApplicationRecord
 
   belongs_to :team, foreign_key: :team_id, optional: true
   belongs_to :project, foreign_key: :project_id, optional: true
-  
+  belongs_to :dataset, foreign_key: :dataset_id, optional: true
+
   scope :teams, -> { where.not(team_id: nil) }
   scope :projects, -> { where.not(project_id: nil) }
+  scope :datasets, -> { where.not(dataset_id: nil) }
   scope :without_project_owner, -> { projects.where.not(roleable: ProjectRole.owner) }
   scope :contributors, -> { projects.where(roleable: ProjectRole.fetch(:contributor))}
   # TODO: robust enough?
@@ -19,6 +21,9 @@ class Grant < ApplicationRecord
 
   validates :team_id, uniqueness: { scope: %i[user_id roleable_id],
                                     message: 'already has this team grant!' }, allow_nil: true
+
+  validates :dataset_id, uniqueness: { scope: %i[user_id roleable_id],
+                                       message: 'already has this dataset grant!' }, allow_nil: true
 
   delegate :full_name, to: :user, prefix: false, allow_nil: true
 
