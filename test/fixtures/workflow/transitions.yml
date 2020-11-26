@@ -392,3 +392,48 @@ application_rejected_data_destroyed:
   project_type: application
   from_state_id: REJECTED
   next_state_id: DATA_DESTROYED
+
+draft_submitted:
+  project_type: cas
+  from_state_id: DRAFT
+  next_state_id: SUBMITTED
+
+draft_deleted:
+  project_type: cas
+  from_state_id: DRAFT
+  next_state_id: DELETED
+
+submitted_awaiting_account_approval:
+  project_type: cas
+  from_state_id: SUBMITTED
+  next_state_id: AWAITING_ACCOUNT_APPROVAL
+
+awaiting_account_approval_approved:
+  project_type: cas
+  from_state_id: AWAITING_ACCOUNT_APPROVAL
+  next_state_id: APPROVED
+
+awaiting_account_approval_rejected:
+  project_type: cas
+  from_state_id: AWAITING_ACCOUNT_APPROVAL
+  next_state_id: REJECTED
+
+approved_access_granted:
+  project_type: cas
+  from_state_id: APPROVED
+  next_state_id: ACCESS_GRANTED
+
+rejected_draft:
+  project_type: cas
+  from_state_id: REJECTED
+  next_state_id: DRAFT
+
+approved_rejected:
+  project_type: cas
+  from_state_id: APPROVED
+  next_state_id: REJECTED
+
+rejected_approved:
+  project_type: cas
+  from_state_id: REJECTED
+  next_state_id: APPROVED
