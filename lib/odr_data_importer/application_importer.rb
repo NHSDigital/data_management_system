@@ -7,28 +7,27 @@ module OdrDataImporter
       'DPIA_PEER_REVIEW' => 'DPIA_REVIEW'
     }
 
-    def import_application_managers(header)
+    def import_application_managers
+      header = @excel_file.shift
       app_mans = []
       @excel_file.each do |application|
         attrs = header.zip(application).to_h
         app_mans << attrs['assigned_to']
-      end.uniq
+      end
 
       # should all be PHE staff
       counter = 0
-      app_mans.each do |email|
+      app_mans.uniq.each do |email|
         user = User.find_or_initialize_by(email: email.downcase)
         next if user.persisted?
 
         user.first_name = email.gsub('@phe.gov.uk','').split('.').first
         user.last_name  = email.gsub('@phe.gov.uk','').split('.').last
-        # !!! ODR have application managers who aren't actually part of ODR or application managers.
-        # try taking off the role
-        unless email.in?(ENV['not_real_managers'].split.map { |name| "#{name}@phe.gov.uk" })
-          user.grants.build(roleable: SystemRole.fetch(:application_manager))
-        end
+        user.grants << Grant.new(roleable: SystemRole.fetch(:application_manager))
         user.save! unless @test_mode
         counter += 1
+      rescue StandardError => e
+        binding.pry
       end
       print "#{counter} application managers created\n"
     end
@@ -37,20 +36,18 @@ module OdrDataImporter
       missing_org      = []
       missing_team     = []
       counter          = 0
-      would_be_valid   = 0
-      would_be_invalid = 0
       missing_owners   = []
       missing_dataset  = []
       @missing_dataset_names = []
       header = @excel_file.shift.map(&:downcase)
       log_to_process_count(@excel_file.count)
-      # let's build these now as some as missing.
-      import_application_managers(header)
       @org_created_counter = 0
       @team_created_counter = 0
       @user_created_counter = 0
+
       Project.transaction do
-        @excel_file.each do |application|
+        @excel_file.each_with_index do |application, i|
+          # next if i > 4
           attrs = header.zip(application).to_h
           build_organisation_for_application(attrs)
           build_team_for_application(attrs)
@@ -65,13 +62,7 @@ module OdrDataImporter
 
           # Set the correct attributes like a user being an instance of User
           # assigned_to - I've changed this to an email in the spreadsheet
-          if attrs['assigned_to'].present?
-            user_assigned_to = attrs['assigned_to']
-            app_man = User.find_by(email: user_assigned_to.downcase)
-            raise "no application manager found for #{attrs['assigned_to']}" if app_man.nil?
-
-            application.assigned_to = app_man
-          end
+          add_assigned_user(application, attrs)
 
           application.receiptsentby = attrs['receiptsentby'] if attrs['receiptsentby'].present?
 
@@ -92,7 +83,7 @@ module OdrDataImporter
               application.owner = User.find_by(email: attrs['applicant_email']&.downcase)
 
               missing_owners.push attrs['applicant_email'] if application.owner.nil?
-              application.valid? ? would_be_valid += 1 : would_be_invalid +=1
+
               build_rest_of_application(application, attrs)
 
               missing_dataset << application.application_log if 
@@ -113,8 +104,6 @@ module OdrDataImporter
         print "#{missing_org.count} missing organisations\n"
         print "#{missing_team.count} missing teams\n"
         print "#{counter} applications created\n"
-        print "#{would_be_valid} valid\n"
-        print "#{would_be_invalid} invalid\n"
         print "#{missing_dataset.count} missing a dataset\n"
         print "#{@org_created_counter}  Organisations created\n"
         print "#{@team_created_counter} Teams created\n"
@@ -126,13 +115,26 @@ module OdrDataImporter
       end
     end
 
+    def add_assigned_user(application, attrs)
+      return unless attrs['assigned_to'].present?
+
+      user_assigned_to = attrs['assigned_to']
+      app_man = User.find_by(email: user_assigned_to.downcase)
+      raise "no application manager found for #{attrs['assigned_to']}" if app_man.nil?
+
+      application.assigned_user_id = app_man.id
+      attrs.delete('assigned_to')
+    end
+
     def build_organisation_for_application(attrs)
       org_name = attrs['organisation_name']
       org = Organisation.find_by(name: org_name)
       return unless org.nil?
       puts "ORGANISATION creating #{org_name}" 
       Organisation.new(name: org_name.strip).tap do |o|
-        o.organisation_type = Lookups::OrganisationType.find_by(value: attrs['organisation_type'])
+        org_type = attrs['organisation_type']
+        o.organisation_type = Lookups::OrganisationType.find_by(value: org_type)
+        o.organisation_type_other = 'Unknown' if org_type == 'Other'
         o.save!
       end
       @org_created_counter += 1
@@ -210,10 +212,14 @@ module OdrDataImporter
         lawful_bases << article9s
       end
 
-      lawful_bases.each do |lawful_basis|
-        lawful_base = Lookups::LawfulBasis.where('value ILIKE ?', lawful_basis)
+      if lawful_bases.present?
+        application.lawful_bases.delete_all # so we can reuse for amendments
 
-        application.lawful_bases << lawful_base
+        lawful_bases.each do |lawful_basis|
+          lawful_base = Lookups::LawfulBasis.where('value ILIKE ?', lawful_basis)
+
+          application.lawful_bases << lawful_base
+        end
       end
 
       # data_to_contact_others
@@ -224,22 +230,22 @@ module OdrDataImporter
       end
 
       # App_status
-      state = attrs['app_status'].upcase
-      state = STATUS_MAPPING[state] || state
-      project_state = Workflow::State.find(state)
-      state_missing_msg = "missing status #{attrs['app_status']} for #{attrs['application_log']}"
+      if attrs['app_status'].present?
+        state = attrs['app_status'].upcase
+        state = STATUS_MAPPING[state] || state
+        project_state = Workflow::State.find(state)
+        state_missing_msg = "missing status #{attrs['app_status']} for #{attrs['application_log']}"
 
-      raise state_missing_msg if project_state.nil?
+        raise state_missing_msg if project_state.nil?
 
-      application.states << project_state
+        application.states << project_state
+      end
 
-      application.description = attrs['description']
+      application.description = attrs['description'] if attrs['description']
 
       # level_of_identifiability
-      if attrs['level_of_identifiability'].present?
-        application.level_of_identifiability = Lookups::IdentifiabilityLevel.where(
-          'value ILIKE ?', attrs['level_of_identifiability']).first
-      end
+      add_lookup_field(application, attrs['level_of_identifiability'],
+                       Lookups::IdentifiabilityLevel, :level_of_identifiability, true)
 
       # data_end_use
       if attrs['data_end_use'].present?
@@ -255,6 +261,7 @@ module OdrDataImporter
           if dataset.nil?
             @missing_dataset_names << dataset_name
           else
+            application.project_datasets.delete_all
             application.project_datasets << ProjectDataset.new(dataset: dataset,
                                                                terms_accepted: true)
           end
@@ -262,33 +269,31 @@ module OdrDataImporter
       end
 
       # section_251_exempt
-# TODO: ID's dont make sense.
       # Lookups::CommonLawExemption.pluck(:id, :value)
       # => [[1, "Informed Consent"], [2, "Direct Care Relationship"], [3, "S251 Regulation 2"], [4, "S251 Regulation 3"], [5, "S251 Regulation 5"], [6, "Other"]]
-      s251_value = s251_mapping[attrs['section_251_exempt']]
-      application.s251_exemption_id = Lookups::CommonLawExemption.find_by(value: s251_value).id
-
-      # data_linkage
-      application.data_linkage = attrs['data_linkage']
-
-      # data_already_held_for_project
-      application.data_already_held_detail = attrs['data_already_held_for_project']
-
-      # processing_territory_id
-      if attrs['processing_territory_id'].present?
-        application.processing_territory = Lookups::ProcessingTerritory.where(
-          'value ILIKE ?', attrs['processing_territory_id']).first
+      if attrs['section_251_exempt'].present?
+        s251_value = s251_mapping[attrs['section_251_exempt']] || attrs['section_251_exempt']
+        s251_value = 'Other' if s251_value == 'No legal gateway required'
+        application.s251_exemption_id = Lookups::CommonLawExemption.find_by(value: s251_value).id
       end
 
-# TODO: security_assurance_id
-      application.security_assurance_id =
-        Lookups::SecurityAssurance.where('value ILIKE ?', attrs['security_assurance_id']).first
-      # security_assurance_id doesn’t match values I have in Lookups::SecurityAssurance 
-      # or the mappings in fetch_security_assurance is that correct? 
-      # I cannot find IG Toolkit Level 2 anywhere actually…
+      # data_linkage
+      application.data_linkage = attrs['data_linkage'] if attrs['data_linkage']
+
+      # data_already_held_for_project
+      application.data_already_held_detail = attrs['data_already_held_for_project'] if attrs['data_already_held_for_project']
+
+      # processing_territory_id
+      add_lookup_field(application, attrs['processing_territory_id'],
+                       Lookups::ProcessingTerritory, :processing_territory)
+      add_lookup_field(application, attrs['security_assurance_id'],
+                       Lookups::SecurityAssurance, :security_assurance)
 
       # We can't have the same application name per team
-      application.name = application.name + " #{attrs['application_log']}"
+      if attrs['application_log'].present?
+        application.name = application.name + " #{attrs['application_log']}" if
+          Project.of_type_application.where(name: application.name).count.positive?
+      end
 
       # closure reason
       if attrs['closure_reason'].present?
@@ -296,7 +301,18 @@ module OdrDataImporter
         binding.pry if closure.nil?
         application.closure_reason = closure
       end
+      remove_processed_attrs(attrs)
       application
+    rescue StandardError => e
+      binding.pry
+    end
+
+    def remove_processed_attrs(attrs)
+      processed = %w[article6 article9 data_to_contact_others app_status description
+                     level_of_identifiability data_end_use data_asset_required section_251_exempt
+                     data_linkage data_already_held_for_project processing_territory_id
+                     security_assurance_id closure_reason]
+      attrs.delete_if { |k, v| k.in? processed }
     end
 
     def application_project_type
@@ -308,6 +324,15 @@ module OdrDataImporter
         'Consent' => "Informed Consent",
         'Direct Care' => "Direct Care Relationship"
       }
+    end
+
+    def add_lookup_field(application, val, lookup_class, field, use_value = false)
+      return if val.blank?
+
+      lookup = lookup_class.where('value ILIKE ?', val).first
+      raise "#{val} not found in #{lookup_class}" if lookup.nil?
+
+      application.send("#{field}=", use_value ? lookup.value : lookup)
     end
   end
 end

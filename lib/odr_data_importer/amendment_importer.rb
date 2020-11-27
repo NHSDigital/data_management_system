@@ -3,6 +3,7 @@ module OdrDataImporter
     # We need to import in order so we can try and maintain sequential updates to an application
     def import_amendments
       @no_application_ids = []
+      @missing_dataset_names = []
       @amendments_created_count = 0
       header = @excel_file.shift.map(&:downcase)
       log_to_process_count(@excel_file.count)
@@ -63,33 +64,108 @@ module OdrDataImporter
 
       # amendment is not valid without an attachment
       application.project_amendments.each { |pa| pa.save!(validate: false) } unless @test_mode
+      application_attrs = clean(amendment_attrs)
 
-      # update the application
-      update_application(application, amendment_attrs) unless @test_mode
+      build_rest_of_application(application, application_attrs)
+      # TODO: these don't work yet
+      # build_user_for_application(amendment_attrs)
+      add_assigned_user(application, amendment_attrs)
+      # remaining attributes should be string fields
+      application.name = application_attrs.delete('project_title') if application_attrs['project_title'].present?
+      application_attrs.each do |field, value|
+        application.send("#{field}=", value)
+      end
+
+      can_save = application.valid?
+
+      if can_save
+        application.save!
+      elsif application.errors.keys == %i[assigned_user]
+        application.save(validate: false)
+      end
+
       print "AMENDMENTS CREATED\r#{@amendments_created_count += 1}"
     end
 
+    def clean(amendment_attrs)
+      amendment_attrs.compact.each_with_object({}) do |(field, value), hash|
+        next unless application_update_fields[field]
+        next if value.blank?
+
+        hash[field] = value
+      end
+    end
+
+    def add_other_attributes(attrs)
+    end
+
+    def needs_lookup
+      %w[level_of_identifiability section_251_exempt processing_territory_id security_assurance_id]
+    end
+
+    def application_update_fields
+      {
+        'Amendment_ref'                 => false,
+        'Application_log'               => false,
+        'Order'                         => false,
+        'Amendment_date'                => false,
+        'Amendment_type: Data Flows; Data Items; Data Sources; Processing Purpose; Data Processor; Duration; other' => false,
+        'assigned_to'                   => false,
+        'project_type'                  => false,
+        'funder_name'                   => true,
+        'why_data_required'             => true,
+        'how_data_will_be_used'         => true,
+        'public_benefit'                => true,
+        'article6'                      => true,
+        'article9'                      => true,
+        'data_to_contact_others'        => true,
+        'closure_date'                  => true,
+        'applicant_email'               => false,
+        'Organisation_name'             => false,
+        'team_name'                     => false,
+        'sponsor_name'                  => true,
+        'project_title'                 => true,
+        'description'                   => true,
+        'level_of_identifiability'      => true,
+        'data_end_use'                  => true,
+        'data_asset_required'           => true,
+        'section_251_exempt'            => true,
+        'data_linkage'                  => true,
+        'data_already_held_for_project' => true,
+        'data_already_held_detail'      => true,
+        'data_processor_name'           => true,
+        'processing_territory_id'       => true,
+        'data_processor_add1'           => true,
+        'processing_territory_other'    => true,
+        'acg_who'                       => true,
+        'cag_ref'                       => true,
+        'ethics_approval_nrec_name'     => true,
+        'date_of_renewal'               => true,
+        'ethics_approval_nrec_ref'      => true,
+        'dpa_org_code'                  => true,
+        'DPAOrgName'                    => false,
+        'dpa_org_name'                  => true,
+        'dpa_registration_end_date'     => true,
+        'security_assurance_id'         => true,
+        'ig_code'                       => true,
+        'scrn_id'                       => true,
+        'programme_support'             => true
+      }
+    end
+
     def update_application(application, attrs)
+      binding.pry
+      raise
       attrs.each do |attr|
         next if attr[1].blank?
 
-        ignored_fields = [
-          'amendment_ref',
-          'application_log',
-          'amendment_date',
-          'amendment_type: data flows; data items; data sources; processing purpose; data processor; duration; other',
-          'assigned_to',
-          'project_type',
-          'project_title',
-          'team_name',
-          'order'
-        ]
         field = field_mapping[attr[0]] || attr[0]
         next if field.downcase.in? ignored_fields
 
         field = field.to_sym
         new_data = attr[1]
         if field_requires_lookup?(field) && new_data.present?
+          add_lookup_field(application, val, lookup_class, field, use_value = false)
           send("amend_#{field}", application, field, attr)
         else
           application[field] = new_data
@@ -98,6 +174,20 @@ module OdrDataImporter
 
       print "Updating #{application.application_log}\n" if application.changed?
       application.save! unless @test_mode
+    end
+
+    def ignored_fields
+      [
+        'amendment_ref',
+        'application_log',
+        'amendment_date',
+        'amendment_type: data flows; data items; data sources; processing purpose; data processor; duration; other',
+        'assigned_to',
+        'project_type',
+        'project_title',
+        'team_name',
+        'order'
+      ]
     end
 
     def field_mapping
