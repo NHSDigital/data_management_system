@@ -4,12 +4,13 @@ class ProjectType < ApplicationRecord
   has_many :project_type_datasets, inverse_of: :project_type, dependent: :destroy
   has_many :datasets, through: :project_type_datasets, dependent: :destroy
 
-  scope :available,   -> { where.not(name: 'Application') }
-  scope :application, -> { where(name: 'Application') }
-  scope :eoi,         -> { where(name: 'EOI') }
-  scope :project,     -> { where(name: 'Project') }
-  scope :cas,         -> { where(name: 'CAS') }
-  scope :odr,         -> { eoi.or(application) }
+  scope :available,     -> { where.not(name: 'Application') }
+  scope :application,   -> { where(name: 'Application') }
+  scope :eoi,           -> { where(name: 'EOI') }
+  scope :project,       -> { where(name: 'Project') }
+  scope :cas,           -> { where(name: 'CAS') }
+  scope :odr,           -> { eoi.or(application) }
+  scope :bound_to_team, -> { where.not(name: 'CAS') }
 
   def available_datasets
     datasets.empty? ? published_datasets : datasets

@@ -1,0 +1,6 @@
+approver:
+  name: Approver
+  sort: 1
+not_approver:
+  name: Not Approver
+  sort: 2

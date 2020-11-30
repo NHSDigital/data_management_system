@@ -1,0 +1,17 @@
+<div id="tab-content" class='tab-content clearfix'>
+  <div class="tab-pane  active in" id="awaiting_approval" >
+    <div class="panel panel-default" style="border-top: 0px;">
+      <div class="panel-heading">
+        <span style="font-size: 1.5em;">Applications Awaiting Approval - TODO Update me</span>
+      </div>
+    </div>
+    <%= render 'cas_projects_table', projects: @projects %>
+  </div>
+
+  <div class="tab-pane" id="awaiting_account_approval">
+    <div class="panel-heading">
+      <span style="font-size: 1.5em;">BLAH</span>
+    </div>
+    <%= render 'cas_projects_table', projects: @projects %>
+  </div>
+</div>

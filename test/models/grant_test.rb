@@ -86,6 +86,34 @@ class GrantTest < ActiveSupport::TestCase
     assert project.valid?
   end
 
+  test 'should only allow unique dataset grants' do
+    build_dataset_grant(roleable: DatasetRole.fetch(:approver)).tap(&:save)
+
+    duplicate_grant = build_dataset_grant(roleable: DatasetRole.fetch(:approver)).tap(&:save)
+    refute duplicate_grant.valid?
+
+    error_msg = 'Dataset already has this dataset grant!'
+
+    assert duplicate_grant.errors[:dataset_id].any?
+    assert_equal 1, duplicate_grant.errors.count
+    assert duplicate_grant.errors.full_messages.include?(error_msg)
+
+    duplicate_grant.user_id = users(:contributor).id
+
+    assert duplicate_grant.valid?
+  end
+
+  test 'should return list of datasets for a user with dataset grants' do
+    dataset = Dataset.find_by(name: 'COSD')
+
+    build_dataset_grant(roleable: DatasetRole.fetch(:approver)).tap(&:save)
+    cosd_grant = build_dataset_grant(roleable: DatasetRole.fetch(:approver), dataset: dataset).tap(&:save)
+
+    assert_equal 2,users(:standard_user_one_team).datasets.count
+    cosd_grant.destroy
+    assert_equal 1,users(:standard_user_one_team).datasets.count
+  end
+
   private
 
   def build_project_grant(options = {})
@@ -99,6 +127,14 @@ class GrantTest < ActiveSupport::TestCase
   def build_team_grant(options = {})
     default_options = {
       team: teams(:team_one),
+      user: users(:standard_user_one_team)
+    }
+    Grant.new(default_options.merge(options))
+  end
+
+  def build_dataset_grant(options = {})
+    default_options = {
+      dataset: Dataset.find_by(name: 'SACT'),
       user: users(:standard_user_one_team)
     }
     Grant.new(default_options.merge(options))

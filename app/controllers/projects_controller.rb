@@ -1,9 +1,9 @@
 # This controller RESTfully manages proje &&cts
 class ProjectsController < ApplicationController
   load_and_authorize_resource :team
-  load_and_authorize_resource :project, through: :team, shallow: true, except: :dashboard, new: %i[import]
+  load_and_authorize_resource :project, through: :team, shallow: true, except: %i[dashboard dataset_approvals], new: %i[import]
 
-  before_action -> { authorize! :read, Project }, only: :dashboard
+  before_action -> { authorize! :read, Project }, only: %i[dashboard dataset_approvals]
 
   # include late to ensure correct callback order
   include Workflow::Controller
@@ -64,6 +64,15 @@ class ProjectsController < ApplicationController
       end
   end
 
+  def dataset_approvals
+    @projects = Project.outstanding_dataset_approval(current_user).order(updated_at: :desc)
+    @projects = @projects.my_projects_search(search_params).order(updated_at: :desc)
+    @projects = @projects.paginate(
+      page: params[:assigned_projects_page],
+      per_page: 10
+    )
+  end
+
   def approve_members
     @project.update(approval_params)
   end
@@ -83,15 +92,19 @@ class ProjectsController < ApplicationController
 
   def new
     @project.project_type ||= ProjectType.find_by(name: 'Project')
+    @project.build_cas_application_fields if @project.project_type_name == 'CAS'
     @project.add_default_dataset
     @full_form = true
   end
 
   # POST /projects
   def create
-    @team = @project.team
-    @project = @team.projects.build(project_params)
-    @project.send(:add_current_user_as_contributor, current_user)
+    # TODO: can we do this elsewhere
+    unless @project.project_type_name == 'CAS'
+      @team = @project.team
+      @project = @team.projects.build(project_params)
+      @project.send(:add_current_user_as_contributor, current_user)
+    end
     @project.initialize_workflow(current_user)
 
     if @project.save
@@ -293,11 +306,25 @@ class ProjectsController < ApplicationController
                                     classification_ids: [],
                                     end_use_ids: [],
                                     lawful_basis_ids: [],
+                                    dataset_ids: [],
                                     owner_grant_attributes: %i[id user_id project_id
                                                                roleable_id roleable_type],
                                     project_datasets_attributes: %i[id project_id dataset_id
                                                                     terms_accepted _destroy],
-                                    project_attachments_attributes: [:name, :attachment])
+                                    project_attachments_attributes: [:name, :attachment],
+                                    # CAS
+                                    cas_application_fields_attributes: cas_fields
+                                    )
+  end
+
+  def cas_fields
+    [
+      :firstname, :surname, :jobtitle, :phe_email, :work_number, :organisation,
+      :line_manager_name, :line_manager_email, :line_manager_number, :employee_type,
+      :contract_startdate, :contract_enddate, :username, :address, :n3_ip_address,
+      :reason_justification, :access_level, :extra_datasets_rationale,
+      declaration: []
+    ]
   end
 
   def approval_params

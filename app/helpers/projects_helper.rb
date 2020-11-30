@@ -51,7 +51,8 @@ module ProjectsHelper
 
     menu = capture do
       content_tag(:ul, class: 'dropdown-menu') do
-        ProjectType.by_team_and_user_role(team, current_user).find_each do |project_type|
+        scope = ProjectType.bound_to_team.by_team_and_user_role(team, current_user)
+        scope.find_each do |project_type|
           link = link_to(
             project_type.name,
             new_team_project_path(team, project: { project_type_id: project_type.id })
@@ -275,5 +276,9 @@ module ProjectsHelper
 
   def friendly_type_name(type)
     I18n.t(:project_types)[type.downcase.to_sym].presence || type
+  end
+
+  def new_application_text(project)
+    "New #{I18n.t(:project_types)[project.project_type_name.downcase.to_sym]}"
   end
 end

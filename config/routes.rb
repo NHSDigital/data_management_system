@@ -66,9 +66,16 @@ Rails.application.routes.draw do
 
   resources :projects do
     get :dashboard, on: :collection
+    get :dataset_approvals, on: :collection
   end
 
-  resources :cas_applications
+  resources :projects, shallow: true do
+    resources :project_datasets do
+      collection do
+        patch :update
+      end
+    end
+  end
 
   resources :terms_and_conditions, only: [:index, :create]
 

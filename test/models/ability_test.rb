@@ -42,6 +42,9 @@ class AbilityTest < ActiveSupport::TestCase
 
     @application_manager_ability = Ability.new(users(:application_manager_one))
     dataset_manager_setup
+
+    @no_roles = users(:no_roles)
+    @no_roles_ability = Ability.new(@no_roles)
   end
 
   test 'team grants' do
@@ -895,6 +898,22 @@ class AbilityTest < ActiveSupport::TestCase
       @project.stubs current_state: workflow_states(state)
       refute user.can? :create, @project.project_nodes.build
     end
+  end
+
+  test 'can create CAS application with no roles' do
+    mbis_application    = Project.new(project_type: ProjectType.find_by(name: 'Project'))
+    odr_eoi_application = Project.new(project_type: ProjectType.find_by(name: 'EOI'))
+    odr_application     = Project.new(project_type: ProjectType.find_by(name: 'Application'))
+    cas_application     = Project.new(project_type: ProjectType.find_by(name: 'CAS'))
+    assert @no_roles_ability.cannot? :create, mbis_application
+    assert @no_roles_ability.cannot? :create, odr_eoi_application
+    assert @no_roles_ability.cannot? :create, odr_application
+    assert @no_roles_ability.can?    :create, cas_application
+  end
+
+  test 'a user with roles can create CAS application' do
+    cas_application = Project.new(project_type: ProjectType.find_by(name: 'CAS'))
+    assert @application_manager_ability.can?    :create, cas_application
   end
 
   private

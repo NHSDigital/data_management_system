@@ -367,7 +367,7 @@ class ProjectTest < ActiveSupport::TestCase
     version_entity.child_nodes << item_three
     version_entity.save!
     
-    project = Project.new(name: 'TEST')
+    project = Project.new(name: 'TEST', project_type: project_types(:project))
     project.nodes << item_group
     project.nodes << item_two
     project.datasets << dataset
@@ -375,5 +375,48 @@ class ProjectTest < ActiveSupport::TestCase
 
     assert_equal 2, project.nodes.count
     assert_equal 3, project.all_data_items.count
+  end
+
+  test 'CAS application does not require team' do
+    application = Project.new(project_type: ProjectType.find_by(name: 'CAS')).tap(&:valid?)
+    refute_includes(application.errors.keys, :project)
+  end
+
+  test 'MBIS application requires team' do
+    application = Project.new(project_type: ProjectType.find_by(name: 'Project')).tap(&:valid?)
+    assert_includes(application.errors.keys, :project)
+  end
+
+  test 'CAS application does not require name' do
+    application = Project.new(project_type: ProjectType.find_by(name: 'EOI')).tap(&:valid?)
+    assert_includes(application.errors.keys, :project)
+
+    application = Project.new(project_type: ProjectType.find_by(name: 'CAS')).tap(&:valid?)
+    refute_includes(application.errors.keys, :project)
+  end
+
+  test 'outstanding_dataset_approval scope should only return projects that the user is allowed to approve' do
+    user = users(:standard_user2)
+    dataset = Dataset.find_by(name: 'Extra CAS Dataset One')
+    # grant user approver role for our dataset
+    grant = Grant.create(roleable: DatasetRole.fetch(:approver), dataset: dataset, user: user)
+
+    cas_project = Project.create(project_type: ProjectType.find_by(name: 'CAS'), owner: users(:standard_user1)).tap(&:valid?)
+
+    project_dataset = ProjectDataset.new(dataset: dataset, terms_accepted: true, approved: nil)
+    cas_project.project_datasets << project_dataset
+
+    assert_equal 1, Project.outstanding_dataset_approval(user).count
+
+    project_dataset.approved = true
+    project_dataset.save!(validate: false)
+
+    assert_equal 0, Project.outstanding_dataset_approval(user).count
+
+    new_project = Project.create(project_type: ProjectType.find_by(name: 'CAS'), owner: users(:standard_user1)).tap(&:valid?)
+    new_project_dataset = ProjectDataset.new(dataset: Dataset.find_by(name: 'SACT'), terms_accepted: true, approved: nil)
+    new_project.project_datasets << project_dataset
+
+    assert_equal 0, Project.outstanding_dataset_approval(user).count
   end
 end

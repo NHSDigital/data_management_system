@@ -27,6 +27,9 @@ class Project < ApplicationRecord
   has_many :project_lawful_bases, dependent: :destroy
   has_many :lawful_bases, through: :project_lawful_bases
 
+  has_one :cas_application_fields, dependent: :destroy
+  accepts_nested_attributes_for :cas_application_fields, allow_destroy: true
+
   belongs_to :project_type
 
   # roleable doesn't work here?
@@ -36,7 +39,7 @@ class Project < ApplicationRecord
 
   has_one :owner, through: :owner_grant, class_name: 'User', source: :user
 
-  has_many :project_datasets, dependent: :destroy
+  has_many :project_datasets, dependent: :destroy, inverse_of: :project
   has_many :datasets, through: :project_datasets
   validates_associated :project_datasets
   # validates_associated failing with non persisted children?
@@ -56,7 +59,7 @@ class Project < ApplicationRecord
     belongs_to :processing_territory_outsourced
   end
 
-  belongs_to :team
+  belongs_to :team, optional: true
   belongs_to :closure_reason, class_name: 'Lookups::ClosureReason', optional: true
 
   belongs_to :parent,   class_name: 'Project', foreign_key: :clone_of, optional: true
@@ -72,10 +75,10 @@ class Project < ApplicationRecord
   delegate :organisation, to: :team
 
   delegate :name,      to: :project_type, prefix: true, allow_nil: true
-  delegate :name,      to: :team,         prefix: true # team_name
+  delegate :name,      to: :team,         prefix: true, allow_nil: true # team_name
   delegate :full_name, to: :owner,        prefix: true, allow_nil: true
 
-  delegate :project?, :eoi?, :application?, to: :project_type_inquirer
+  delegate :project?, :eoi?, :application?, :cas?, to: :project_type_inquirer
 
   with_options reject_if: :all_blank, allow_destroy: true do
     accepts_nested_attributes_for :project_attachments
@@ -91,10 +94,11 @@ class Project < ApplicationRecord
   validates :name, presence: true, uniqueness: {
     scope:   %i[team_id project_type_id],
     message: 'Name already being used by this Team'
-  }
+  }, if: -> { project_type_name.in? %w[Project EOI Application] }
 
   validate :ensure_owner_grant_presence
   validate :ensure_appropriate_assigned_user
+  validate :project_should_belong_to_team
 
   with_options if: -> { project? } do
     validates :data_source_terms_accepted, acceptance: true
@@ -132,6 +136,11 @@ class Project < ApplicationRecord
                               grants: { roleable: ProjectRole.owner, user_id: user.id }) }
   scope :contributors, ->(user) { joins(:grants).where(
                                   grants: { roleable: ProjectRole.can_edit, user_id: user.id }) }
+
+  scope :outstanding_dataset_approval, lambda { |user|
+    where(id: ProjectDataset.outstanding_approval(user).pluck(:project_id))
+  }
+
   accepts_nested_attributes_for :project_attachments
 
   after_transition_to :status_change_notifier
@@ -408,6 +417,10 @@ class Project < ApplicationRecord
     current_state&.id == 'REJECTED'
   end
 
+  def dataset_names
+    datasets.map(&:name)
+  end
+
   private
 
   def project_type_inquirer
@@ -541,6 +554,13 @@ class Project < ApplicationRecord
     source_names.each do |attribute|
       send("#{attribute}=", nil) if send(attribute).blank?
     end
+  end
+
+  def project_should_belong_to_team
+    return if cas?
+    return if team
+
+    errors.add(:project, 'Must belong to a Team!')
   end
 
   class << self

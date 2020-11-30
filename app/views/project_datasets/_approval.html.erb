@@ -1,0 +1,11 @@
+<td><%= project_dataset.dataset_name %></td>
+<td><%= project_dataset.dataset_full_name %></td>
+<td>
+  <% if project_dataset.approved.nil? %>
+    <%= link_to bootstrap_icon_tag('ok'), project_dataset_path(id: project_dataset.id, "project_dataset[approved]" => 'true'), :method => :patch, remote: true, class: 'btn btn-success btn-sm  rce_item' %>
+    <%= link_to bootstrap_icon_tag('remove'), project_dataset_path(id: project_dataset.id, "project_dataset[approved]" => 'false'), :method => :patch, remote: true, class: 'btn btn-danger btn-sm reject_data_source_item' %>
+  <% else %>
+    <%= link_to 'X', project_dataset_path(:id => project_dataset.id, "project_dataset[approved]" => ''), method: :patch, remote: true, class: 'btn btn-default btn-xs', title: 'Undo', rel: 'tooltip', "data-placement" => "left" %>
+    <span id="dataset_status" class="label label-<%= approval_button_style(project_dataset.approved) %>"><%= approval_button_message(project_dataset.approved) %></span>
+  <% end %>
+</td>
