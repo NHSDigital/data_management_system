@@ -367,3 +367,9 @@ cas_manager:
   user: cas_manager
   roleable: cas_manager
   roleable_type: SystemRole
+
+cas_dataset_approver:
+  user: cas_dataset_approver
+  roleable: approver
+  roleable_type: DatasetRole
+  dataset_id: 83
