@@ -44,4 +44,12 @@ class ProjectControllerTest < ActionDispatch::IntegrationTest
     end
     assert_redirected_to team_url(@team)
   end
+
+  test 'should show dataset approvals' do
+    @user = users(:cas_dataset_approver)
+    sign_in(@user)
+
+    get dataset_approvals_projects_url(@project)
+    assert_response :success
+  end
 end
