@@ -202,6 +202,10 @@ class User < ActiveRecord::Base
   #                      administrator?, odr?, id)
   # end
 
+  def cas_dataset_approver?
+    return true if role?(DatasetRole.fetch(:approver))
+  end
+
   def cas_access_approver?
     return true if role?(SystemRole.fetch(:cas_access_approver))
   end

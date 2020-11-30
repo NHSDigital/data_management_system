@@ -2,11 +2,12 @@
   <div class=" col-md-12">
     <div class="panel panel-default">
       <div class="panel-body">
-        <div style="font-size:1.5em">
+        <div id="" style="font-size:1.5em">
           <span id="display_project_name"><%= project.name %></span>
           <%= project_type_label(project) %>
-          <%= project_status_label(project, id: :project_status) %>
-
+          <span id="status_label">
+          <%= render 'projects/status_label', project: project %>
+          </span>
           <div class="pull-right">
             <span id="transition_controls">
               <%= render 'projects/transition_controls', project: project %>

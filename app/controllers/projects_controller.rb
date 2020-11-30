@@ -1,9 +1,9 @@
 # This controller RESTfully manages proje &&cts
 class ProjectsController < ApplicationController
   load_and_authorize_resource :team
-  load_and_authorize_resource :project, through: :team, shallow: true, except: :dashboard, new: %i[import]
+  load_and_authorize_resource :project, through: :team, shallow: true, except: %i[dashboard dataset_approvals], new: %i[import]
 
-  before_action -> { authorize! :read, Project }, only: :dashboard
+  before_action -> { authorize! :read, Project }, only: %i[dashboard dataset_approvals]
 
   # include late to ensure correct callback order
   include Workflow::Controller
@@ -62,6 +62,15 @@ class ProjectsController < ApplicationController
       else
         @project.datasets
       end
+  end
+
+  def dataset_approvals
+    @projects = Project.outstanding_dataset_approval(current_user).order(updated_at: :desc)
+    @projects = @projects.my_projects_search(search_params).order(updated_at: :desc)
+    @projects = @projects.paginate(
+      page: params[:assigned_projects_page],
+      per_page: 10
+    )
   end
 
   def approve_members
