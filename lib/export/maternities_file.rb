@@ -130,9 +130,6 @@ module Export
         return @phls_lookup[super(ppat, 'ctrypobm')]
       when 'ctrypobf_phls'
         return @phls_lookup[super(ppat, 'ctrypobf')]
-      when 'dob_yyyyq'
-        dob = super(ppat, 'dob')
-        return "#{dob[0..3]}#{(dob[4..5].to_i + 2) / 3}"
       when 'space1'
         return ' '
       end
