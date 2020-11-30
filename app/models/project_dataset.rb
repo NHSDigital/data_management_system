@@ -52,7 +52,7 @@ class ProjectDataset < ApplicationRecord
   # TODO test this!
   def auto_transition_application
     return unless project.cas?
-    return unless project.current_state.id == 'SUBMITTED'
+    return unless project.current_state&.id == 'SUBMITTED'
     return if project.project_datasets.any? { |project_dataset| project_dataset.approved.nil? }
 
     project.transition_to!(Workflow::State.find('AWAITING_ACCOUNT_APPROVAL'))
