@@ -55,6 +55,9 @@ module Export
           val = "#{val[6..9]}-#{val[3..4]}-#{val[0..1]}"
         end
         return val
+      when 'dob_yyyyq'
+        dob = birth_field(ppat, 'dob')
+        return "#{dob[0..3]}#{(dob[4..5].to_i + 2) / 3}"
       when 'por_in_england' # 1 if the place of residence is in England, 0 otherwise or if unknown
         por_in_england = %w[A B C D E F G H J K].include?(ppat.birth_data['gorrm']) ||
                          ppat.birth_data['lsoarm']&.starts_with?('E')

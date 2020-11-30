@@ -4,8 +4,15 @@ module Export
   # For sample file, extract only 2017Q1 births
   class HcaiBirthsFile < BirthFileSimple
     def match_row?(ppat, _surveillance_code = nil)
-      ppat.unlock_demographics('', '', '', :export)
-      return false unless '20171' == extract_field(ppat, 'dob_yyyyq') # 2017Q1 births only
+      # Optional filter_quarter environment variable can provide a list of quarters to extract
+      # e.g. 1 for Q1, 123 for Q1+Q2+Q3
+      # Note however that this may not work as expected, as e.g. 2019 birth registrations will
+      # include some births from 2018Q4, and include a few much older ones too.
+      if ENV['filter_quarter']
+        filter = ENV['filter_quarter']
+        ppat.unlock_demographics('', '', '', :match)
+        return false unless filter.include?(extract_field(ppat, 'dob_yyyyq')[-1])
+      end
 
       super
     end
@@ -25,17 +32,6 @@ module Export
         (1..5).collect { |i| "codfft_#{i}" } +
         (1..20).collect { |i| "cod10r_#{i}" } +
         %w[gestatn sbind multtype multbth dor birthwgt mbisid]
-    end
-
-    # Emit the value for a particular field, including extract-specific tweaks
-    # TODO: Refactor into BirthFile (with MaternitiesFile)
-    def extract_field(ppat, field)
-      case field
-      when 'dob_yyyyq'
-        dob = super(ppat, 'dob')
-        return "#{dob[0..3]}#{(dob[4..5].to_i + 2) / 3}"
-      end
-      super
     end
   end
 end
