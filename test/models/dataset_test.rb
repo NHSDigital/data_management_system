@@ -41,4 +41,14 @@ class DatasetTest < ActiveSupport::TestCase
     system("rm #{created_zip}")
     refute File.exist?(created_zip)
   end
+
+  test 'returns approvers for dataset if present' do
+    dataset = Dataset.find_by(name: 'COSD')
+    user = users(:standard_user_one_team)
+    Grant.create(dataset: dataset, roleable: DatasetRole.fetch(:approver), user: user).tap(&:save)
+    Grant.create(dataset: dataset, roleable: DatasetRole.find_by(name: 'Not Approver'), user: users(:standard_user2)).tap(&:save)
+
+    assert_equal 1, dataset.approvers.count
+    assert_equal user, dataset.approvers.first
+  end
 end

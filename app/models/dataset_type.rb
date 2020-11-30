@@ -9,7 +9,9 @@ class DatasetType < ApplicationRecord
     @dataset_types ||= {
       xml:        unscoped.where(name: 'xml').first!,
       non_xml:    unscoped.where(name: 'non_xml').first!,
-      table_spec: unscoped.where(name: 'table_specification').first!
+      table_spec: unscoped.where(name: 'table_specification').first!,
+      odr: unscoped.where(name: 'odr').first!,
+      cas: unscoped.where(name: 'cas').first!
     }
 
     @dataset_types.fetch(key)

@@ -84,5 +84,31 @@ module Workflow
         end
       end
     end
+
+    test 'should auto-transition cas application if there are no project datasets to approve' do
+      application = Project.new(project_type: ProjectType.find_by(name: 'CAS')).tap do |a|
+        a.owner = users(:no_roles)
+        a.save!
+      end
+
+      application.transition_to!(workflow_states(:submitted))
+
+      assert_equal application.current_state, workflow_states(:awaiting_account_approval)
+    end
+
+    test 'should not auto-transition cas application if there are unresolved dataset decisions' do
+      application = Project.new(project_type: ProjectType.find_by(name: 'CAS')).tap do |a|
+        a.owner = users(:no_roles)
+        a.project_datasets << ProjectDataset.new(dataset: dataset(83), terms_accepted: true,
+                                                 approved: nil)
+        a.project_datasets << ProjectDataset.new(dataset: dataset(84), terms_accepted: true,
+                                                 approved: nil)
+        a.save!
+      end
+
+      application.transition_to!(workflow_states(:submitted))
+
+      refute_equal application.current_state, workflow_states(:awaiting_account_approval)
+    end
   end
 end

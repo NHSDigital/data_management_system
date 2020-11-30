@@ -9,3 +9,6 @@ eoi:
 
 application:
   name: Application
+
+cas:
+  name: CAS

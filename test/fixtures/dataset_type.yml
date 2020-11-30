@@ -14,3 +14,7 @@ table_spec:
 odr:
   id: 4
   name: odr
+
+cas:
+  id: 5
+  name: cas

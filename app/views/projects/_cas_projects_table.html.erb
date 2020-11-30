@@ -1,0 +1,24 @@
+<table data-toggle="table" class="table table-hover" id="projects-table">
+  <thead>
+    <tr>
+      <th>DMS ID</th>
+      <th>Applicant</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% projects.each do |project| %>
+      <tr>
+        <td><%= project.id %></td>
+        <td><%= project.owner_full_name %></td>
+        <td>
+          <div class="pull-right">
+            <%= button_group do %>
+              <%= details_link project %>
+            <% end %>
+          </div>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

@@ -13,6 +13,10 @@ class Ability
     can :read, User, id: user.id
     can :read, Grant, user_id: user.id
     can :read, [Category, Node]
+    # TODO: test
+    can :create, Project, project_type_id: ProjectType.cas.pluck(:id)
+    can %i[read update destroy], Project, project_type_id: ProjectType.cas.pluck(:id),
+                                          grants: { user_id: user.id, roleable: ProjectRole.owner }
 
     team_grants(user)
     organisation_grants(user)
@@ -33,6 +37,9 @@ class Ability
     dataset_viewer_grants(user)
     dataset_viewer_analyst_grants(user)
 
+    cas_dataset_approver_grants(user)
+    cas_access_approver_grants(user)
+    cas_manager_grants(user)
     merge(Workflow::Ability.new(user))
   end
 
@@ -325,6 +332,21 @@ class Ability
     can :read, EraFields
   end
 
+  def cas_dataset_approver_grants(user)
+    return unless user.role?(DatasetRole.fetch(:approver))
+
+    can %i[read], Project, project_type_id: ProjectType.cas.pluck(:id)
+    can %i[update], ProjectDataset, dataset_id: user.datasets.pluck(:id)
+  end
+
+
+  def cas_access_approver_grants(user)
+    return unless user.role?(SystemRole.fetch(:cas_access_approver))
+  end
+
+  def cas_manager_grants(user)
+    return unless user.role?(SystemRole.fetch(:cas_manager))
+  end
   private
 
   # where the user is an owner of active projects

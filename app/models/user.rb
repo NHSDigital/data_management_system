@@ -23,9 +23,11 @@ class User < ActiveRecord::Base
   has_many :grants, dependent: :destroy
   has_many :teams, -> { distinct.extending GrantedBy }, through: :grants
   has_many :projects, -> { distinct.extending GrantedBy }, through: :grants
+  has_many :datasets, -> { distinct.extending GrantedBy }, through: :grants
   has_many :system_roles, through: :grants, source: :roleable, source_type: 'SystemRole'
   has_many :team_roles, through: :grants, source: :roleable, source_type: 'TeamRole'
   has_many :project_roles, through: :grants, source: :roleable, source_type: 'ProjectRole'
+  has_many :dataset_roles, through: :grants, source: :roleable, source_type: 'DatasetRole'
 
   accepts_nested_attributes_for :teams
   attr_accessor :login
@@ -200,6 +202,17 @@ class User < ActiveRecord::Base
   #                      administrator?, odr?, id)
   # end
 
+  def cas_dataset_approver?
+    return true if role?(DatasetRole.fetch(:approver))
+  end
+
+  def cas_access_approver?
+    return true if role?(SystemRole.fetch(:cas_access_approver))
+  end
+
+  def cas_manager?
+    return true if role?(SystemRole.fetch(:cas_manager))
+  end
   def new_user_notification
     Notification.create!(title: 'New user added',
                          body: CONTENT_TEMPLATES['email_new_user']['body'] %

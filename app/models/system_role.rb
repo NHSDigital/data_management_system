@@ -13,7 +13,9 @@ class SystemRole < ApplicationRecord
       senior_application_manager: unscoped.where(name: 'ODR Senior Application Manager').first!,
       developer:                  unscoped.where(name: 'Developer').first!,
       dataset_viewer:             unscoped.where(name: 'Dataset Viewer').first!,
-      dataset_viewer_analyst:     unscoped.where(name: 'Dataset Viewer Analyst').first!
+      dataset_viewer_analyst:     unscoped.where(name: 'Dataset Viewer Analyst').first!,
+      cas_access_approver:        unscoped.where(name: 'CAS Access Approver').first!,
+      cas_manager:                unscoped.where(name: 'CAS Manager').first!
     }
 
     @system_roles.fetch(key)

@@ -19,6 +19,7 @@
         <% @user.projects.each do |project| %>
           <%= content_tag(:tr, 'data-project-name' => project.try(:name)) do %>
             <td><%= link_to(project.name, project) if project %></td>
+             <!-- TODO cas projects won't have a team -->
             <td><%= link_to(project.team.name, project.team) if project %></td>
             <% ProjectRole.all.each do |role| %>
             <% already_granted = @user.role?(role, at: project) %>
