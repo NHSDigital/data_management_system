@@ -380,3 +380,23 @@ no_roles:
   username: nr
   directorate_id: 1
   division_id: 1
+
+cas_access_approver:
+  email: cas_access_approver@phe.gov.uk
+  first_name: Cas
+  last_name: Access-Approver
+  z_user_status: active_user_status
+  location: phe
+  username: caa
+  directorate_id: 1
+  division_id: 1
+
+cas_manager:
+  email: cas_manager@phe.gov.uk
+  first_name: Cas
+  last_name: Manager
+  z_user_status: active_user_status
+  location: phe
+  username: cm
+  directorate_id: 1
+  division_id: 1

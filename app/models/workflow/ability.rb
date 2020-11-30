@@ -460,6 +460,9 @@ module Workflow
     private
 
     def as_basic_user
+      # Added to stop cas_manager inheriting roles as 'basic_user'
+      return if @user.cas_manager?
+
       role = Array.wrap(ProjectRole.fetch(:owner))
       roleable_type = 'ProjectRole'
       project_ids =
@@ -468,49 +471,43 @@ module Workflow
       # TODO test the two states SUBMITTED REJECTED
       # Do we want the basic user to be able to go back from these states? I don't think so
       can :create, ProjectState, state: { id: 'DRAFT' },
+                                 project: { current_state: { id: %w[SUBMITTED REJECTED] },
+                                            project_type: { name: 'CAS' } }
+      can :create, ProjectState, state: { id: 'SUBMITTED' },
+                                 project: { current_state: { id: 'DRAFT' },
+                                            project_type: { name: 'CAS' } }
+      # Do we want the user to be able to delete the project at this stage? / any stage?
+      can :create, ProjectState, state: { id: 'DELETED' },
+                                 project: { current_state: { id: 'DRAFT' },
+                                            project_type: { name: 'CAS' } }
+      can :transition, Project, project_type: { name: 'CAS' }
+    end
+
+    def as_account_approver
+      return unless @user.cas_access_approver?
+
+      can :create, ProjectState, state: { id: 'DRAFT' },
                                  project: { current_state: { id: %w[SUBMITTED REJECTED] } }
       can :create, ProjectState, state: { id: 'SUBMITTED' },
                                  project: { current_state: { id: 'DRAFT' } }
       # Do we want the user to be able to delete the project at this stage? / any stage?
       can :create, ProjectState, state: { id: 'DELETED' },
                                  project: { current_state: { id: 'DRAFT' } }
+      can :create, ProjectState, state: { id: 'APPROVED' },
+                                 project: { current_state: { id: 'AWAITING_ACCOUNT_APPROVAL' } }
+      can :create, ProjectState, state: { id: 'REJECTED' },
+                                 project: { current_state: { id: 'AWAITING_ACCOUNT_APPROVAL' } }
+      can :create, ProjectState, state: { id: 'REJECTED' },
+                                 project: { current_state: { id: 'APPROVED' } }
+      can :create, ProjectState, state: { id: 'APPROVED' },
+                                 project: { current_state: { id: 'REJECTED' } }
       can :transition, Project, project_type: { name: 'CAS' }
-    end
-
-    def as_account_approver
-      if @user.cas_access_approver?
-        # Should these first 2 just be their own that they can access? The first one needed for this one for definite because needs REJECTED for everyone so can push back to DRAFT for users.
-        can :create, ProjectState, state: { id: 'DRAFT' },
-                                   project: { current_state: { id: %w[SUBMITTED REJECTED] } }
-        can :create, ProjectState, state: { id: 'SUBMITTED' },
-                                   project: { current_state: { id: 'DRAFT' } }
-        # Do we want the user to be able to delete the project at this stage? / any stage?
-        can :create, ProjectState, state: { id: 'DELETED' },
-                                   project: { current_state: { id: 'DRAFT' } }
-        can :create, ProjectState, state: { id: 'APPROVED' },
-                                   project: { current_state: { id: 'AWAITING_ACCOUNT_APPROVAL' } }
-        can :create, ProjectState, state: { id: 'REJECTED' },
-                                   project: { current_state: { id: 'AWAITING_ACCOUNT_APPROVAL' } }
-        can :create, ProjectState, state: { id: 'REJECTED' },
-                                   project: { current_state: { id: 'APPROVED' } }
-        can :create, ProjectState, state: { id: 'APPROVED' },
-                                   project: { current_state: { id: 'REJECTED' } }
-        can :transition, Project, project_type: { name: 'CAS' }
-      end
     end
 
     # Ticket suggests they shouldn't have any additional transition abilities over basic_user
     def as_cas_manager
-      if @user.cas_manager?
-        can :create, ProjectState, state: { id: 'DRAFT' },
-                                   project: { current_state: { id: %w[SUBMITTED REJECTED] } }
-        can :create, ProjectState, state: { id: 'SUBMITTED' },
-                                   project: { current_state: { id: 'DRAFT' } }
-        # Do we want the user to be able to delete the project at this stage? / any stage?
-        can :create, ProjectState, state: { id: 'DELETED' },
-                                   project: { current_state: { id: 'DRAFT' } }
-        can :transition, Project, project_type: { name: 'CAS' }
-      end
+      return unless @user.cas_manager?
+      # TODO placeholder for ticket 22893
     end
 
     def as_administrator

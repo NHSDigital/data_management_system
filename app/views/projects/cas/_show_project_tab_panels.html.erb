@@ -11,7 +11,7 @@
     <%= render "projects/#{@project.project_type_name.downcase}/form", readonly: true %>
   </div>
 
-  <%= render 'project_datasets', project: @project %>
+  <%= render 'project_datasets_cas', project: @project %>
 
   <div class="tab-pane" id="data_items">
     <%= render 'project_data_items' %>

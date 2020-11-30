@@ -357,3 +357,13 @@ dataset_manager_non_dataset_manager_for_another_team:
   roleable: mbis_applicant
   roleable_type: TeamRole
   team: ncras
+
+cas_access_approver:
+  user: cas_access_approver
+  roleable: cas_access_approver
+  roleable_type: SystemRole
+
+cas_manager:
+  user: cas_manager
+  roleable: cas_manager
+  roleable_type: SystemRole

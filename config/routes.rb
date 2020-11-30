@@ -67,6 +67,15 @@ Rails.application.routes.draw do
   resources :projects do
     get :dashboard, on: :collection
   end
+  
+  resources :projects, shallow: true do
+    get :dataset_approvals, on: :collection
+    resources :project_datasets do
+      collection do
+        patch :update
+      end
+    end
+  end
 
   resources :terms_and_conditions, only: [:index, :create]
 
@@ -127,8 +136,6 @@ Rails.application.routes.draw do
   resources :organisations, shallow: true do
     resources :teams
   end
-
-  resources :projects
 
   resources :teams, shallow: true, except: %i[new create] do
     resources :datasets

@@ -70,8 +70,7 @@ module Workflow
     end
 
     test 'project workflow as account approver' do
-      # TODO Change this when have new user roles
-      user = users(:no_roles)
+      user = users(:cas_access_approver)
 
       @project.stubs current_state: workflow_states(:draft)
       assert user.can? :create, @project.project_states.build(state: workflow_states(:deleted))
@@ -84,7 +83,7 @@ module Workflow
       @project.stubs current_state: workflow_states(:submitted)
       assert user.can? :create, @project.project_states.build(state: workflow_states(:draft))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:deleted))
-      assert user.can? :create, @project.project_states.build(state: workflow_states(:awaiting_account_approval))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:awaiting_account_approval))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:approved))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_granted))
@@ -131,21 +130,20 @@ module Workflow
     end
 
     test 'project workflow as cas manager' do
-      # TODO Change this when have new user roles
-      user = users(:no_roles)
+      user = users(:cas_manager)
 
       @project.stubs current_state: workflow_states(:draft)
-      assert user.can? :create, @project.project_states.build(state: workflow_states(:deleted))
-      assert user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:deleted))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:awaiting_account_approval))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:approved))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_granted))
 
       @project.stubs current_state: workflow_states(:submitted)
-      assert user.can? :create, @project.project_states.build(state: workflow_states(:draft))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:draft))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:deleted))
-      assert user.can? :create, @project.project_states.build(state: workflow_states(:awaiting_account_approval))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:awaiting_account_approval))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:approved))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_granted))

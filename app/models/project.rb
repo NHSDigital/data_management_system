@@ -136,6 +136,11 @@ class Project < ApplicationRecord
                               grants: { roleable: ProjectRole.owner, user_id: user.id }) }
   scope :contributors, ->(user) { joins(:grants).where(
                                   grants: { roleable: ProjectRole.can_edit, user_id: user.id }) }
+
+  scope :outstanding_dataset_approval, lambda { |user|
+    where(id: ProjectDataset.outstanding_approval(user).pluck(:project_id))
+  }
+
   accepts_nested_attributes_for :project_attachments
 
   after_transition_to :status_change_notifier
