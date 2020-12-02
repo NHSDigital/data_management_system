@@ -37,20 +37,24 @@ class GrantMatrix
 
     hash
   end
-  
+
   def clean_system_role_params(hash)
     hash.transform_keys! { |_| {} }
   end
-  
+
   def clean_team_role_params(hash)
     hash.transform_keys! { |key| { team_id: Team.find(key).id } }
   end
-  
+
   def clean_project_role_params(hash)
     hash.transform_keys! { |key| { project_id: Project.find(key).id } }
   end
-  
+
   def clean_roles_and_grants!(hash)
     hash.transform_values! { |value| value.present? }
+  end
+
+  def clean_dataset_role_params(hash)
+    hash.transform_keys! { |key| { dataset_id: Dataset.find(key).id } }
   end
 end
