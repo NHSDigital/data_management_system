@@ -16,7 +16,7 @@
           <%= content_tag(:tr, 'data-dataset-name' => dataset.try(:name)) do %>
             <td><%= dataset&.name %></td>
             <% DatasetRole.all.each do |role| %>
-            <% already_granted = @user.role?(role) %>
+            <% already_granted = @user.role?(role, at: dataset) %>
               <td>
                 <%= hidden_field_tag "grants[DatasetRole][[#{dataset.id}][#{role.id}]", nil %>
                 <%= check_box_tag    "grants[DatasetRole][#{dataset.id}][#{role.id}]", 1, already_granted %>
