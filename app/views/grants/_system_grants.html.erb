@@ -8,7 +8,7 @@
             <th><%= role.name %></th>
           <% end %>
           <th>
-            <% if can?(:edit_system_grants, @user) %>
+            <% if can?(:edit_system_grants, @user) || current_user.administrator? %>
               <%= edit_link edit_system_user_grants_path(@user), class: 'btn btn-default btn-xs pull-right', text: 'true', skip_authorization: true  %>
             <% end %>
           </th>
