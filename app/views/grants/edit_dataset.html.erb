@@ -1,0 +1,39 @@
+<%= render layout: @user.to_partial_path do %>
+  <% url = user_grants_url(@user) %>
+  <%= form_tag(url, method: :patch) %>
+    <h4>System Roles</h4>
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>Dataset</th>
+          <% DatasetRole.all.each do |role| %>
+            <th><%= role.name %></th>
+          <% end %>
+        </tr>
+      </thead>
+      <tbody>
+        <% Dataset.cas.each do |dataset| %>
+          <%= content_tag(:tr, 'data-dataset-name' => dataset.try(:name)) do %>
+            <td><%= dataset&.name %></td>
+            <% DatasetRole.all.each do |role| %>
+            <% already_granted = @user.role?(role) %>
+              <td>
+                <%= hidden_field_tag "grants[DatasetRole][[#{dataset.id}][#{role.id}]", nil %>
+                <%= check_box_tag    "grants[DatasetRole][#{dataset.id}][#{role.id}]", 1, already_granted %>
+              </td>
+            <% end %>
+          <% end %>
+        <% end %>
+      </tbody>
+    </table>
+
+    <div class="row">
+      <div class="col-md-2 col-md-offset-4">
+        <%= link_to 'Cancel', url, class: 'btn btn-default btn-block' %>
+      </div>
+      <div class="col-md-2">
+        <%= submit_tag 'Update Roles', class: 'btn btn-primary btn-block' %>
+      </div>
+    </div>
+  </form>
+<% end %>

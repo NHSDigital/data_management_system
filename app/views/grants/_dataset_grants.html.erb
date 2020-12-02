@@ -1,0 +1,41 @@
+<div class="panel panel-default" id="user-dataset-grants">
+  <div class="panel-heading">Dataset Roles</div>
+  <% if @grants.datasets.length.positive? %>
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>Dataset</th>
+          <% DatasetRole.all.each do |role| %>
+            <th><%= role.name %></th>
+          <% end %>
+          <th>
+            <% if can?(:edit_dataset_grants, @user) || current_user.administrator? %>
+              <%= edit_link edit_dataset_user_grants_path(@user), class: 'btn btn-default btn-xs pull-right', text: 'true', skip_authorization: true  %>
+            <% end %>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <% datasets = @grants.datasets.map(&:dataset).uniq.sort_by { |t| t.try(:name).to_s } %>
+        <% datasets.each do |dataset| %>
+          <tr>
+            <td><%= dataset&.name %></td>
+            <% DatasetRole.all.each do |role| %>
+              <td>
+                <%= @user.role?(role, at: dataset) && bootstrap_icon_tag(:ok) %>
+              </td>
+            <% end %>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <% if can?(:edit_dataset_grants, @user) || current_user.administrator? %>
+      <div class="clearfix">
+        <%= edit_link edit_dataset_user_grants_path(@user), class: 'btn btn-default btn-xs pull-right', text: true, skip_authorization: true %>
+      </div>
+    <% end %>
+
+    <p class="lead text-center">This user currently has no dataset granted roles</p>
+  <% end %>
+</div>
