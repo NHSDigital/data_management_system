@@ -57,6 +57,7 @@ Rails.application.routes.draw do
         get :edit_team
         get :edit_system
         get :edit_project
+        get :edit_dataset
         patch :update
       end
     end

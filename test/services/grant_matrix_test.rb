@@ -57,4 +57,24 @@ class GrantMatrixTest < ActiveSupport::TestCase
     assert_equal transformed_keys, %i[roleable_id roleable_type]
     assert_equal clean_params.values, [true, true, false]
   end
+
+  test 'dataset params correctly cleaned' do
+    cas_dataset_one = Dataset.find_by(name: 'Extra CAS Dataset One')
+    cas_dataset_two = Dataset.find_by(name: 'Extra CAS Dataset Two')
+    test_params = { 'DatasetRole' =>
+                    { cas_dataset_one.id => { dataset_roles(:approver).id => '1',
+                                              dataset_roles(:not_approver).id => '1' },
+                      cas_dataset_two.id => { dataset_roles(:approver).id => '',
+                                              dataset_roles(:not_approver).id => '1' } } }
+
+    matrix = GrantMatrix.new({})
+    matrix.send(:clean_up!, test_params)
+    clean_params = matrix.grant_hash(test_params)
+
+    assert clean_params.is_a? Hash
+    assert_equal 4, clean_params.length, 'unexpected number of parameters for project grant params'
+    transformed_keys = clean_params.keys.flat_map(&:keys).uniq.sort
+    assert_equal transformed_keys, %i[dataset_id roleable_id roleable_type]
+    assert_equal clean_params.values, [true, true, false, true]
+  end
 end

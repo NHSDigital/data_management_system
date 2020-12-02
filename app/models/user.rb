@@ -279,7 +279,7 @@ class User < ActiveRecord::Base
 
   def role?(role, at: nil)
     grants.detect do |grant|
-      grant.roleable == role && (grant.team == at || grant.project == at)
+      grant.roleable == role && (grant.team == at || grant.project == at || grant.dataset == at)
     end
   end
 
