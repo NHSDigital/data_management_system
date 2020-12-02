@@ -42,7 +42,8 @@ class GrantsController < ApplicationController
   end
 
   def perform_authorized_grant_updates!(clean_hash)
-    number_of_grants = nil
+    current_grants = @user.grants.pluck(:id).sort
+    updated_grants = nil
     @user.transaction do
       clean_hash.each do |roleable_type, granted|
         grant = @user.grants.find_or_initialize_by(roleable_type)
@@ -56,11 +57,10 @@ class GrantsController < ApplicationController
       end
 
       @user.reload
-      number_of_grants = @user.grants.count
-
-      raise ActiveRecord::Rollback if number_of_grants.zero?
+      updated_grants = @user.grants.pluck(:id).sort
+      raise ActiveRecord::Rollback if current_grants == updated_grants
     end
 
-    number_of_grants.positive?
+    current_grants != updated_grants
   end
 end
