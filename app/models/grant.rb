@@ -13,7 +13,7 @@ class Grant < ApplicationRecord
   scope :without_project_owner, -> { projects.where.not(roleable: ProjectRole.owner) }
   scope :contributors, -> { projects.where(roleable: ProjectRole.fetch(:contributor))}
   # TODO: robust enough?
-  scope :systems, -> { where(team_id: nil).where(project_id: nil) }
+  scope :systems, -> { where(team_id: nil, project_id: nil, dataset_id: nil) }
   scope :odr, -> { where(roleable: SystemRole.find_by(name: 'ODR')) }
 
   validates :project_id, uniqueness: { scope: %i[user_id roleable_id],
