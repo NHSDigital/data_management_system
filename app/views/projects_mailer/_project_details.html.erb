@@ -13,11 +13,11 @@
   </tr>
   <tr>
     <td><strong style="margin-right: 5px;">Team:</strong></td>
-    <td><%= project.team.name %></td>
+    <td><%= project.team.try(:name) %></td>
   </tr>
   <tr>
     <td><strong style="margin-right: 5px;">Organisation:</strong></td>
-    <td><%= project.organisation.name %></td>
+    <td><%= project.team.try(:organisation).try(:name) %></td>
   </tr>
   <tr>
     <td><strong style="margin-right: 5px;">Link:</strong></td>
