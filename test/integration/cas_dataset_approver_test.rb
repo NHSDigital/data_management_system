@@ -35,7 +35,7 @@ class CasDatasetApproverTest < ActionDispatch::IntegrationTest
         find('.btn-success').click
         assert has_content?('APPROVED')
       end
-      assert has_content?('AWAITING_ACCOUNT_APPROVAL')
+      assert_equal find('#project_status').text, 'AWAITING_ACCOUNT_APPROVAL'
     end
 
     click_link('X')
