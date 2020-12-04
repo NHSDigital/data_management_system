@@ -15,9 +15,8 @@ class ProjectDataset < ApplicationRecord
 
   # TODO approved only applies to CAS so far
 
-  scope :outstanding_approval, lambda { |user|
-    joins(dataset: :grants).where(
-      approved: nil,
+  scope :dataset_approval, lambda { |user, approved_values = [nil, true, false]|
+    joins(dataset: :grants).where(approved: approved_values).where(
       grants: { user_id: user.id,
                 roleable_type: 'DatasetRole',
                 roleable_id: DatasetRole.fetch(:approver).id }
