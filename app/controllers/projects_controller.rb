@@ -67,10 +67,7 @@ class ProjectsController < ApplicationController
   def dataset_approvals
     @projects = Project.dataset_approval(current_user, nil).order(updated_at: :desc)
     @projects = @projects.my_projects_search(search_params).order(updated_at: :desc)
-    @projects = @projects.paginate(
-      page: params[:assigned_projects_page],
-      per_page: 10
-    )
+    @projects = @projects.paginate(page: params[:page], per_page: 10)
   end
 
   def approve_members
