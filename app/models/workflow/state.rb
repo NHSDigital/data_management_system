@@ -12,12 +12,13 @@ module Workflow
     scope :terminal,     -> { left_joins(:transitions).where(workflow_transitions: { id: nil }) }
     scope :non_terminal, -> { joins(:transitions).distinct }
 
-    scope :not_deleted,       -> { where.not(id: 'DELETED') }
-    scope :active,            -> { where.not(id: INACTIVE) }
-    scope :inactive,          -> { where(id: INACTIVE) }
-    scope :awaiting_sign_off, -> { where(id: %w[DRAFT REVIEW SUBMITTED]) }
-    scope :submitted_for_sign_off, -> { where(id: %w[REVIEW SUBMITTED]) }
-    scope :not_submitted_for_sign_off, -> { where.not(id: %w[REVIEW SUBMITTED]) }
+    scope :not_deleted,                 -> { where.not(id: 'DELETED') }
+    scope :dataset_approval_states, -> { where.not(id: %w[DRAFT DELETED ACCESS_GRANTED]) }
+    scope :active,                      -> { where.not(id: INACTIVE) }
+    scope :inactive,                    -> { where(id: INACTIVE) }
+    scope :awaiting_sign_off,           -> { where(id: %w[DRAFT REVIEW SUBMITTED]) }
+    scope :submitted_for_sign_off,      -> { where(id: %w[REVIEW SUBMITTED]) }
+    scope :not_submitted_for_sign_off,  -> { where.not(id: %w[REVIEW SUBMITTED]) }
 
     # Get a humanised name from localisation files:
     def name

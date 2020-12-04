@@ -335,18 +335,24 @@ class Ability
   def cas_dataset_approver_grants(user)
     return unless user.role?(DatasetRole.fetch(:approver))
 
-    can %i[read], Project, project_type_id: ProjectType.cas.pluck(:id)
-    can %i[update], ProjectDataset, dataset_id: user.datasets.pluck(:id)
+    can %i[read], Project, { project_type_id: ProjectType.cas.pluck(:id),
+                             id: Project.dataset_approval(user).map(&:id) }
+    can %i[update], ProjectDataset, { dataset_id: user.datasets.pluck(:id),
+                                      project: { id: Project.dataset_approval(user).map(&:id) } }
   end
-
 
   def cas_access_approver_grants(user)
     return unless user.role?(SystemRole.fetch(:cas_access_approver))
+
+    can %i[read], Project, project_type_id: ProjectType.cas.pluck(:id)
   end
 
   def cas_manager_grants(user)
     return unless user.role?(SystemRole.fetch(:cas_manager))
+
+    can %i[read], Project, project_type_id: ProjectType.cas.pluck(:id)
   end
+
   private
 
   # where the user is an owner of active projects

@@ -96,6 +96,17 @@ module Workflow
       assert_equal application.current_state, workflow_states(:awaiting_account_approval)
     end
 
+    test 'should not auto-transition cas application if not at submitted state' do
+      application = Project.new(project_type: ProjectType.find_by(name: 'CAS')).tap do |a|
+        a.owner = users(:no_roles)
+        a.save!
+      end
+
+      application.save!
+
+      refute_equal application.current_state, workflow_states(:awaiting_account_approval)
+    end
+
     test 'should not auto-transition cas application if there are unresolved dataset decisions' do
       application = Project.new(project_type: ProjectType.find_by(name: 'CAS')).tap do |a|
         a.owner = users(:no_roles)
