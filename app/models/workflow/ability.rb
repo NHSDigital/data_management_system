@@ -472,35 +472,37 @@ module Workflow
       # Do we want the basic user to be able to go back from these states? I don't think so
       can :create, ProjectState, state: { id: 'DRAFT' },
                                  project: { current_state: { id: %w[SUBMITTED REJECTED] },
-                                            project_type: { name: 'CAS' } }
+                                            project_type: { name: 'CAS' },
+                                            id: project_ids }
       can :create, ProjectState, state: { id: 'SUBMITTED' },
                                  project: { current_state: { id: 'DRAFT' },
-                                            project_type: { name: 'CAS' } }
+                                            project_type: { name: 'CAS' },
+                                            id: project_ids }
       # Do we want the user to be able to delete the project at this stage? / any stage?
       can :create, ProjectState, state: { id: 'DELETED' },
                                  project: { current_state: { id: 'DRAFT' },
-                                            project_type: { name: 'CAS' } }
-      can :transition, Project, project_type: { name: 'CAS' }
+                                            project_type: { name: 'CAS' },
+                                            id: project_ids }
+      can :transition, Project, { id: project_ids, project_type: { name: 'CAS' } }
     end
 
     def as_account_approver
       return unless @user.cas_access_approver?
-
       can :create, ProjectState, state: { id: 'DRAFT' },
-                                 project: { current_state: { id: %w[SUBMITTED REJECTED] } }
-      can :create, ProjectState, state: { id: 'SUBMITTED' },
-                                 project: { current_state: { id: 'DRAFT' } }
-      # Do we want the user to be able to delete the project at this stage? / any stage?
-      can :create, ProjectState, state: { id: 'DELETED' },
-                                 project: { current_state: { id: 'DRAFT' } }
+                                 project: { current_state: { id: 'REJECTED' },
+                                            project_type: { name: 'CAS' } }
       can :create, ProjectState, state: { id: 'APPROVED' },
-                                 project: { current_state: { id: 'AWAITING_ACCOUNT_APPROVAL' } }
+                                 project: { current_state: { id: 'AWAITING_ACCOUNT_APPROVAL' },
+                                            project_type: { name: 'CAS' } }
       can :create, ProjectState, state: { id: 'REJECTED' },
-                                 project: { current_state: { id: 'AWAITING_ACCOUNT_APPROVAL' } }
+                                 project: { current_state: { id: 'AWAITING_ACCOUNT_APPROVAL' },
+                                            project_type: { name: 'CAS' } }
       can :create, ProjectState, state: { id: 'REJECTED' },
-                                 project: { current_state: { id: 'APPROVED' } }
+                                 project: { current_state: { id: 'APPROVED' },
+                                            project_type: { name: 'CAS' } }
       can :create, ProjectState, state: { id: 'APPROVED' },
-                                 project: { current_state: { id: 'REJECTED' } }
+                                 project: { current_state: { id: 'REJECTED' },
+                                            project_type: { name: 'CAS' } }
       can :transition, Project, project_type: { name: 'CAS' }
     end
 

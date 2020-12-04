@@ -343,11 +343,16 @@ class Ability
 
   def cas_access_approver_grants(user)
     return unless user.role?(SystemRole.fetch(:cas_access_approver))
+
+    can %i[read], Project, project_type_id: ProjectType.cas.pluck(:id)
   end
 
   def cas_manager_grants(user)
     return unless user.role?(SystemRole.fetch(:cas_manager))
+
+    can %i[read], Project, project_type_id: ProjectType.cas.pluck(:id)
   end
+
   private
 
   # where the user is an owner of active projects
