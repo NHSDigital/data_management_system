@@ -8,17 +8,27 @@ class AbilityCasApplicationTest < ActiveSupport::TestCase
     not_owner_project = create_project(project_type: project_types(:cas),
                                        owner: users(:standard_user))
     owner_project = create_project(project_type: project_types(:cas), owner: applicant)
+    owner_project.reload.current_state
 
     applicant_ablity = Ability.new(applicant)
 
     assert applicant_ablity.can? :create, Project.new(project_type: project_types(:cas))
-    assert applicant_ablity.can? :update, owner_project
+    # Should be able to read, update and destroy but only at DRAFT state
+    assert applicant_ablity.can? :read, owner_project
     assert applicant_ablity.can? :update, owner_project
     assert applicant_ablity.can? :destroy, owner_project
     # Can't do any crud on other users projects
     refute applicant_ablity.can? :destroy, not_owner_project
     refute applicant_ablity.can? :read, not_owner_project
     refute applicant_ablity.can? :update, not_owner_project
+
+    owner_project.transition_to!(workflow_states(:submitted))
+    owner_project.reload.current_state
+
+    # Should only be able to read own project after DRAFT
+    assert applicant_ablity.can? :read, owner_project
+    refute applicant_ablity.can? :update, owner_project
+    refute applicant_ablity.can? :destroy, owner_project
   end
 
   test 'cas_dataset_approver ability' do
@@ -28,6 +38,7 @@ class AbilityCasApplicationTest < ActiveSupport::TestCase
     matched_dataset_project = create_project(project_type: project_types(:cas),
                                              owner: users(:standard_user))
     owner_project = create_project(project_type: project_types(:cas), owner: applicant)
+    owner_project.reload.current_state
     non_matched_dataset_project = create_project(project_type: project_types(:cas),
                                   owner: users(:standard_user))
     non_cas_project = create_project(project_type: project_types(:eoi), project_purpose: 'test',
@@ -85,6 +96,7 @@ class AbilityCasApplicationTest < ActiveSupport::TestCase
 
     not_owner_project = create_project(project_type: project_types(:cas), owner: users(:standard_user))
     owner_project = create_project(project_type: project_types(:cas), owner: applicant)
+    owner_project.reload.current_state
     non_cas_project = create_project(project_type: project_types(:eoi), project_purpose: 'test',
                                      owner: users(:standard_user))
 
@@ -113,6 +125,7 @@ class AbilityCasApplicationTest < ActiveSupport::TestCase
 
     not_owner_project = create_project(project_type: project_types(:cas), owner: users(:standard_user))
     owner_project = create_project(project_type: project_types(:cas), owner: applicant)
+    owner_project.reload.current_state
     non_cas_project = create_project(project_type: project_types(:eoi), project_purpose: 'test',
                                owner: users(:standard_user))
 
