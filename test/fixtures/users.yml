@@ -401,6 +401,16 @@ cas_manager:
   directorate_id: 1
   division_id: 1
 
+cas_manager_2:
+  email: cas_manager2@phe.gov.uk
+  first_name: Cas
+  last_name: Manager2
+  z_user_status: active_user_status
+  location: phe
+  username: cm2
+  directorate_id: 1
+  division_id: 1
+
 cas_dataset_approver:
   email: cas_dataset_approver@phe.gov.uk
   first_name: Cas

@@ -16,6 +16,9 @@ module Workflow
     after_save :update_project_closure_date
     after_save :remove_project_closure_date
     after_save :auto_transition_to_awaiting_account_approval
+    after_save :notify_cas_manager_approver_application_approved_rejected
+    after_save :notify_user_cas_application_approved
+    after_save :notify_cas_access_granted
 
     private
 
@@ -48,6 +51,36 @@ module Workflow
       self.project_id = project_id
       self.state_id = 'AWAITING_ACCOUNT_APPROVAL'
       save!
+    end
+
+    def notify_cas_manager_approver_application_approved_rejected
+      return unless project.cas?
+      return unless %w[APPROVED REJECTED].include? state_id
+
+      SystemRole.cas_manager_and_access_approvers.map(&:users).flatten.each do |user|
+        CasNotifier.access_approval_status_updated(project, user.id)
+      end
+      CasMailer.with(project: project).send(:access_approval_status_updated).deliver_now
+    end
+
+    def notify_user_cas_application_approved
+      return unless project.cas?
+      return unless state_id == 'APPROVED'
+
+      CasNotifier.account_approved_to_user(project)
+      CasMailer.with(project: project).send(:account_approved_to_user).deliver_now
+    end
+
+    def notify_cas_access_granted
+      return unless project.cas?
+      return unless state_id == 'ACCESS_GRANTED'
+
+      SystemRole.fetch(:cas_manager).users.each do |user|
+        CasNotifier.account_access_granted(project, user.id)
+      end
+
+      CasNotifier.account_access_granted_to_user(project)
+      CasMailer.with(project: project).send(:account_access_granted_to_user).deliver_now
     end
   end
 end
