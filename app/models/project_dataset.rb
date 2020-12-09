@@ -38,6 +38,7 @@ class ProjectDataset < ApplicationRecord
   validate :terms_accepted_for_dataset
 
   after_update :auto_transition_application
+  after_update :notify_cas_approved_change
 
   # TODO: TEST
   def terms_accepted_for_dataset
@@ -55,5 +56,24 @@ class ProjectDataset < ApplicationRecord
     return if project.project_datasets.any? { |project_dataset| project_dataset.approved.nil? }
 
     project.transition_to!(Workflow::State.find('AWAITING_ACCOUNT_APPROVAL'))
+  end
+
+  def notify_cas_approved_change
+    return unless project.cas?
+    # Avoid terms terms_accepted update from triggering notification
+    return if project.current_state&.id == 'DRAFT'
+
+    SystemRole.cas_manager_and_access_approvers.map(&:users).flatten.each do |user|
+      CasNotifier.dataset_approved_status_updated(project, self, user.id)
+    end
+    CasMailer.with(project: project, project_dataset: self).send(:dataset_approved_status_updated).deliver_now
+    CasNotifier.dataset_approved_status_updated_to_user(project, self)
+    CasMailer.with(project: project, project_dataset: self).send(:dataset_approved_status_updated_to_user).deliver_now
+  end
+
+  def readable_approved_status
+    return 'Undecided' if approved.nil?
+
+    approved ? 'Approved' : 'Rejected'
   end
 end

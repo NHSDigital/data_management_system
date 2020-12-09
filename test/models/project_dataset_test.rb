@@ -100,4 +100,89 @@ class ProjectDatasetTest < ActiveSupport::TestCase
 
     refute_equal application.current_state, workflow_states(:awaiting_account_approval)
   end
+
+  test 'should notify cas manager and access approvers on approved update' do
+    project = create_project(project_type: project_types(:cas), project_purpose: 'test')
+    dataset = Dataset.find_by(name: 'Extra CAS Dataset One')
+    project_dataset = ProjectDataset.new(dataset: dataset, terms_accepted: nil, approved: nil)
+    project.project_datasets << project_dataset
+    project.reload_current_state
+
+    notifications = Notification.where(title: 'Dataset Approval Status Change')
+
+    # Should not send out notifications for changes when at Draft
+    assert_no_difference 'notifications.count' do
+      project_dataset.update(terms_accepted: true)
+    end
+
+    project.transition_to!(workflow_states(:submitted))
+    project.reload_current_state
+
+    assert_difference 'notifications.count', 3 do
+      project_dataset.update(approved: true)
+    end
+
+    assert_equal notifications.last.body, "CAS project #{project.id} - Dataset 'Extra CAS " \
+                                          "Dataset One' has been updated to Approval status of " \
+                                          "'Approved'.\n\n"
+
+    assert_difference 'notifications.count', 3 do
+      project_dataset.update(approved: false)
+    end
+
+    assert_equal notifications.last.body, "CAS project #{project.id} - Dataset 'Extra CAS " \
+                                          "Dataset One' has been updated to Approval status of " \
+                                          "'Rejected'.\n\n"
+
+    assert_difference 'notifications.count', 3 do
+      project_dataset.update(approved: nil)
+    end
+
+    assert_equal notifications.last.body, "CAS project #{project.id} - Dataset 'Extra CAS " \
+                                          "Dataset One' has been updated to Approval status of " \
+                                          "'Undecided'.\n\n"
+  end
+
+  test 'should notify user on approved update' do
+    project = create_project(project_type: project_types(:cas), project_purpose: 'test',
+                             owner: users(:no_roles))
+    dataset = Dataset.find_by(name: 'Extra CAS Dataset One')
+    project_dataset = ProjectDataset.new(dataset: dataset, terms_accepted: nil, approved: nil)
+    project.project_datasets << project_dataset
+    project.reload_current_state
+
+    notifications = Notification.where(title: 'Dataset Approval Updated')
+
+    # Should not send out notifications for changes when at Draft
+    assert_no_difference 'notifications.count' do
+      project_dataset.update(terms_accepted: true)
+    end
+
+    project.transition_to!(workflow_states(:submitted))
+    project.reload_current_state
+
+    assert_difference 'notifications.count', 1 do
+      project_dataset.update(approved: true)
+    end
+
+    assert_equal notifications.last.body, "Your CAS dataset access request for 'Extra CAS " \
+                                          "Dataset One' has been updated to Approval status of " \
+                                          "'Approved'.\n\n"
+
+    assert_difference 'notifications.count', 1 do
+      project_dataset.update(approved: false)
+    end
+
+    assert_equal notifications.last.body, "Your CAS dataset access request for 'Extra CAS " \
+                                          "Dataset One' has been updated to Approval status of " \
+                                          "'Rejected'.\n\n"
+
+    assert_difference 'notifications.count', 1 do
+      project_dataset.update(approved: nil)
+    end
+
+    assert_equal notifications.last.body, "Your CAS dataset access request for 'Extra CAS " \
+                                          "Dataset One' has been updated to Approval status of " \
+                                          "'Undecided'.\n\n"
+  end
 end

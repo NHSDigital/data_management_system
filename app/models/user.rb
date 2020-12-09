@@ -69,6 +69,11 @@ class User < ActiveRecord::Base
     where(id: joins(:grants).joins(:team_roles).merge(TeamRole.applicants))
   }
 
+  scope :cas_managers, lambda {
+    where(id: joins(:grants).joins(:system_roles).
+              merge(SystemRole.where(name: 'CAS Manager')))
+  }
+
   validates :username,      uniqueness: { conditions: -> { where.not(username: nil) } }
   validates :first_name,    presence: true
   validates :last_name,     presence: true

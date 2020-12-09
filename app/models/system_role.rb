@@ -1,9 +1,10 @@
 class SystemRole < ApplicationRecord
   has_many :grants, as: :roleable
   has_many :users, -> { distinct }, through: :grants
-  
+
   scope :project_based, -> { where.not(name: 'Dataset Viewer') }
-  
+  scope :cas_manager_and_access_approvers, -> { where(name: ['CAS Manager', 'CAS Access Approver']) }
+
   def self.fetch(key)
     return key if key.is_a?(self)
 

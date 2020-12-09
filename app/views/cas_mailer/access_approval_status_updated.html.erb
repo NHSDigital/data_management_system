@@ -1,0 +1,14 @@
+<h1>Access Approval Status Updated</h1>
+<hr />
+
+<p>
+  CAS application <%= @project.id %> - Access approval status has been
+  updated to '<%= @project.project_states.last.state_id.titlecase %>'
+</p>
+
+<%= render 'projects_mailer/project_details', project: @project %>
+
+<p>
+  Please <%= link_to 'log in', root_url %> and use the link above to view the
+  CAS application.
+</p>

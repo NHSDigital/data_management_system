@@ -121,5 +121,94 @@ module Workflow
 
       refute_equal application.current_state, workflow_states(:awaiting_account_approval)
     end
+
+    test 'should notify cas manager and access approvers on update to approved or rejected' do
+      project = create_project(project_type: project_types(:cas), project_purpose: 'test')
+      project.reload_current_state
+
+      notifications = Notification.where(title: 'Access Approval Status Updated')
+      # Should not send out notifications for changes when not approved or rejected
+      assert_no_difference 'notifications.count' do
+        project.transition_to!(workflow_states(:submitted))
+        project.transition_to!(workflow_states(:awaiting_account_approval))
+      end
+
+      assert_difference 'notifications.count', 3 do
+        project.transition_to!(workflow_states(:approved))
+      end
+
+      assert_equal notifications.last.body, "CAS project #{project.id} - Access approval status " \
+                                            "has been updated to 'Approved'.\n\n"
+
+      assert_difference 'notifications.count', 3 do
+        project.transition_to!(workflow_states(:rejected))
+      end
+
+      assert_equal notifications.last.body, "CAS project #{project.id} - Access approval status " \
+                                            "has been updated to 'Rejected'.\n\n"
+    end
+
+    test 'should notify user on update to approved' do
+      project = create_project(project_type: project_types(:cas), project_purpose: 'test',
+                               owner: users(:no_roles))
+      project.reload_current_state
+
+      notifications = Notification.where(title: 'CAS Access Approved')
+      # Should not send out notifications for changes when not approved
+      assert_no_difference 'notifications.count' do
+        project.transition_to!(workflow_states(:submitted))
+        project.transition_to!(workflow_states(:awaiting_account_approval))
+      end
+
+      assert_difference 'notifications.count', 1 do
+        project.transition_to!(workflow_states(:approved))
+      end
+
+      assert_equal notifications.last.body, "Your CAS access has been approved for application " \
+                                            "#{project.id}. You will receive a further " \
+                                            "notification once your account has been updated"
+    end
+
+    test 'should notify user on update to access granted' do
+      project = create_project(project_type: project_types(:cas), project_purpose: 'test',
+                               owner: users(:no_roles))
+      project.reload_current_state
+
+      notifications = Notification.where(title: 'CAS Access Granted')
+      # Should not send out notifications for changes when not access_granted
+      assert_no_difference 'notifications.count' do
+        project.transition_to!(workflow_states(:submitted))
+        project.transition_to!(workflow_states(:awaiting_account_approval))
+        project.transition_to!(workflow_states(:approved))
+      end
+
+      assert_difference 'notifications.count', 1 do
+        project.transition_to!(workflow_states(:access_granted))
+      end
+
+      assert_equal notifications.last.body, "CAS access has been granted for your account based " \
+                                            "on application #{project.id}."
+    end
+
+    test 'should notify cas manager on update to access granted' do
+      project = create_project(project_type: project_types(:cas), project_purpose: 'test')
+      project.reload_current_state
+
+      notifications = Notification.where(title: 'CAS Access Status Updated')
+      # Should not send out notifications for changes when not access_granted
+      assert_no_difference 'notifications.count' do
+        project.transition_to!(workflow_states(:submitted))
+        project.transition_to!(workflow_states(:awaiting_account_approval))
+        project.transition_to!(workflow_states(:approved))
+      end
+
+      assert_difference 'notifications.count', 2 do
+        project.transition_to!(workflow_states(:access_granted))
+      end
+
+      assert_equal notifications.last.body, "CAS project #{project.id} - Access has been granted " \
+                                            "by the helpdesk and the applicant now has CAS " \
+                                            "access.\n\n"
+    end
   end
 end
