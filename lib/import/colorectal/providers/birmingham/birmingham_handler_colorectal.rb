@@ -22,6 +22,17 @@ module Import
             super
           end
 
+          TEST_SCOPE_MAP_COLO_COLO = { '100kgp confirmation'  => :full_screen,
+                                       'carrier testing'      => :targeted_mutation,
+                                       'confirmation'         => :targeted_mutation,
+                                       'diagnosis'            => :full_screen,
+                                       'family studies'       => :targeted_mutation,
+                                       'follow-up'            => :targeted_mutation,
+                                       'indirect testing'     => :full_screen,
+                                       'pold1/ pole analysis' => :full_screen,
+                                       'prenatal diagnosis'   => :targeted_mutation,
+                                       'presymptomatic'       => :targeted_mutation }.freeze
+                                       
           COLORECTAL_GENES_REGEX = /(?<colorectal>APC|
                                                 BMPR1A|
                                                 EPCAM|
@@ -46,7 +57,18 @@ module Import
             genocolorectal.add_passthrough_fields(record.mapped_fields,
                                                   record.raw_fields,
                                                   PASS_THROUGH_FIELDS_COLO)
+            process_genetictestscope(genocolorectal, record)
             @persister.integrate_and_store(genocolorectal)
+          end
+
+          def process_genetictestscope(genocolorectal, record)
+            if record.raw_fields['moleculartestingtype']
+              tscope = record.raw_fields['moleculartestingtype']
+              genocolorectal.add_test_scope(TEST_SCOPE_MAP_COLO_COLO[tscope.downcase.strip])
+              @logger.debug 'Processed genetictestscope'\
+                            "#{TEST_SCOPE_MAP_COLO_COLO[tscope.downcase.strip]} for #{tscope}"
+            else @logger.debug 'UNABLE to process genetictestscope'
+            end
           end
 
           def summarize
