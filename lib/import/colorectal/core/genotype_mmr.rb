@@ -21,6 +21,7 @@ module Colorectal
       COLORECTAL_MAP = { 'APC' => 358,
                          'BMPR1A' => 577,
                          'EPCAM' => 1432,
+                         'TACSTD1' => 1432, #This is an old nomenclature for EPCAM, but still used
                          'MLH1' => 2744,
                          'MSH2' => 2804,
                          'MSH6' => 2808,
