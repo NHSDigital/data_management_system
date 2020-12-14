@@ -26,7 +26,8 @@ module Import
           'R1K' => Import::Colorectal::Providers::LondonKgc::LondonKgcHandlerColorectal,
           'R0A' => Import::Colorectal::Providers::Manchester::ManchesterHandlerColorectal,
           'RPY' => Import::Colorectal::Providers::RoyalMarsden::RoyalMarsdenHandlerColorectal,
-          'RP4' => Import::Colorectal::Providers::LondonGosh::LondonGoshHandlerColorectal
+          'RP4' => Import::Colorectal::Providers::LondonGosh::LondonGoshHandlerColorectal,
+          'RQ3' => Import::Colorectal::Providers::Birmingham::BirminghamHandlerColorectal
         }.freeze
 
         def self.get_handler(provider_code)
