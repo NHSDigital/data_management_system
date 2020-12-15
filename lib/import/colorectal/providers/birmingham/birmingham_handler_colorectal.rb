@@ -43,11 +43,20 @@ module Import
           end
 
           def teststatus_report_inconsistency(genocolorectal, record)
-            if COLORECTAL_GENES_MAP[record.raw_fields['indication']] &&
-              record.raw_fields['teststatus'].scan(COLORECTAL_GENES_REGEX).size > 0 && 
-              record.raw_fields['report'].scan(COLORECTAL_GENES_REGEX).size > 0 &&
-               record.raw_fields['teststatus'].scan(COLORECTAL_GENES_REGEX).uniq.size != record.raw_fields['report'].scan(COLORECTAL_GENES_REGEX).uniq.size
-              binding.pry
+            genotypes = []
+            posnegtest = record.raw_fields['overall2']
+            testresult = record.raw_fields['teststatus']
+            testreport = record.raw_fields['report']
+
+            if COLORECTAL_GENES_MAP[record.raw_fields['indication']]
+              if posnegtest == 'P'
+                if testresult.match(CDNA_REGEX)
+                  if testresult.scan(COLORECTAL_GENES_REGEX).size > 0 &&
+                    testreport.scan(COLORECTAL_GENES_REGEX).size > 0 &&
+                    testresult.scan(COLORECTAL_GENES_REGEX).uniq.size != testreport.scan(COLORECTAL_GENES_REGEX).uniq.size
+                  end
+                end
+              end
             end
           end
 
