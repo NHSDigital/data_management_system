@@ -19,6 +19,17 @@ module Import
                                          'prenatal diagnosis'   => :targeted_mutation,
                                          'presymptomatic'       => :targeted_mutation }.freeze
 
+            COLORECTAL_GENES_MAP = { 'PJS' =>        'STK11',
+                                     'PHTS' =>       'PTEN',
+                                     'MAP' =>        'MUTYH',
+                                     'FAP' =>        'APC',
+                                     'PPAP' =>       %w[POLE POLD1],
+                                     'COCA' =>       %w[MLH1 MSH2],
+                                     'POLY' =>       %w[APC MUTYH],
+                                     'NGS_COLON' =>  %w[MLH1 MSH2 MSH6 APC MUTYH],
+                                     'COLON' =>      %w[MLH1 MSH2 MSH6 PMS2 APC MUTYH PTEN SMAD4 BMPR1A STK11],
+                                     'HNPCC'  =>     %w[MLH1 MSH2 MSH6 PMS2 EPCAM] } .freeze
+
             COLORECTAL_GENES_REGEX = /(?<colorectal>APC|
                                                   BMPR1A|
                                                   EPCAM|
@@ -33,19 +44,17 @@ module Import
                                                   SMAD4|
                                                   STK11)/xi .freeze
 
-            COLORECTAL_GENES_MAP = { 'PJS' =>        'STK11',
-                                     'PHTS' =>       'PTEN',
-                                     'MAP' =>        'MUTYH',
-                                     'FAP' =>        'APC',
-                                     'PPAP' =>       %w[POLE POLD1],
-                                     'COCA' =>       %w[MLH1 MSH2],
-                                     'POLY' =>       %w[APC MUTYH],
-                                     'NGS_COLON' =>  %w[MLH1 MSH2 MSH6 APC MUTYH],
-                                     'COLON' =>      %w[MLH1 MSH2 MSH6 PMS2 APC MUTYH PTEN SMAD4 BMPR1A STK11],
-                                     'HNPCC'  =>     %w[MLH1 MSH2 MSH6 PMS2 EPCAM] } .freeze
+            CDNA_REGEX = /c\.(?<cdna>([0-9]+[^[:alnum:]][0-9][^[:alnum:]][0-9]+[^[:alnum:]][0-9][a-z]+)|
+                          ([0-9]+[a-z]+[^[:alnum:]][a-z])|
+                          ([0-9]+[^[:alnum:]][0-9]+[a-z]+[^[:alnum:]][a-z])|
+                          ([0-9]+[a-z]+)|
+                          ([0-9]+[^[:alnum:]][0-9]+[a-z]+)|
+                          ([0-9]+[^[:alnum:]][0-9]+[^[:alnum:]][0-9]+[0-9]+[a-z]+))/ix
 
-            CDNA_REGEX_COLO = /c\.(?<cdna>.*)/i.freeze
-            PROTEIN_REGEX_COLO = /p.(?:\((?<impact>.*)\))/.freeze
+
+            PROTEIN_REGEX = /p\.(\()?((?<impact>.([a-z]+[0-9]+[a-z]+([^[:alnum:]][0-9]+)?)|
+                             ([a-z]+[0-9]+[^[:alnum:]])))/ix
+
             EXON_LOCATION_REGEX_COLO = /exons? (\d+[a-z]*(?: ?- ?\d+[a-z]*)?)/i.freeze
 
           end
