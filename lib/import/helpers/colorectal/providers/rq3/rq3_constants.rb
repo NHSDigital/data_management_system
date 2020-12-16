@@ -55,6 +55,18 @@ module Import
             PROTEIN_REGEX = /p\.(\()?((?<impact>.([a-z]+[0-9]+[a-z]+([^[:alnum:]][0-9]+)?)|
                              ([a-z]+[0-9]+[^[:alnum:]])))/ix
 
+            CHR_VARIANTS_REGEX = /frameshift|
+                                  truncation|
+                                  insertion|
+                                  deletion|
+                                  duplication|
+                                  missense|
+                                  splice site|
+                                  splice\-site|
+                                  substitution|
+                                  Splice site mutation|
+                                  Nonsense/ix 
+
             EXON_LOCATION_REGEX_COLO = /exons? (\d+[a-z]*(?: ?- ?\d+[a-z]*)?)/i.freeze
 
           end
