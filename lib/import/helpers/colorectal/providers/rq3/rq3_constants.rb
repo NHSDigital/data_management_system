@@ -19,10 +19,10 @@ module Import
                                          'prenatal diagnosis'   => :targeted_mutation,
                                          'presymptomatic'       => :targeted_mutation }.freeze
 
-            COLORECTAL_GENES_MAP = { 'PJS' =>        'STK11',
-                                     'PHTS' =>       'PTEN',
-                                     'MAP' =>        'MUTYH',
-                                     'FAP' =>        'APC',
+            COLORECTAL_GENES_MAP = { 'PJS' =>        %w[STK11],
+                                     'PHTS' =>       %w[PTEN],
+                                     'MAP' =>        %w[MUTYH],
+                                     'FAP' =>        %w[APC],
                                      'PPAP' =>       %w[POLE POLD1],
                                      'COCA' =>       %w[MLH1 MSH2],
                                      'POLY' =>       %w[APC MUTYH],
