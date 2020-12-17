@@ -117,9 +117,16 @@ module Import
                       end
                       genotypes
                     end
-                    # negativegenes = genelist - testresult.scan(COLORECTAL_GENES_REGEX).flatten
-                    # process_negative_genes(negativegenes, genotypes, genocolorectal, record)
+                  elsif testresult.match(CHR_VARIANTS_REGEX)
+                    testresult.scan(COLORECTAL_GENES_REGEX).uniq.size == 1 
+                    negativegenes = genelist - testresult.scan(COLORECTAL_GENES_REGEX).flatten
+                    process_negative_genes(negativegenes, genotypes, genocolorectal, record)
+                    genocolorectal.add_gene_colorectal(testresult.scan(COLORECTAL_GENES_REGEX).join())
+                    genocolorectal.add_variant_type(testresult.scan(CHR_VARIANTS_REGEX).join())
+                    genocolorectal.add_status(2)
+                    genotypes.append(genocolorectal)
                   end
+                  genotypes
                 elsif testresult.nil? || testresult.scan(COLORECTAL_GENES_REGEX).empty?
                   if testreport.scan(CDNA_REGEX).size > 0
                     if testreport.scan(CDNA_REGEX).size == 1
@@ -178,20 +185,18 @@ module Import
                         end
                       end
                       genotypes
-                    
-                    
                     end
+                  elsif testreport.match(CHR_VARIANTS_REGEX)
+                    testreport.scan(COLORECTAL_GENES_REGEX).uniq.size == 1 
+                    negativegenes = genelist - testreport.scan(COLORECTAL_GENES_REGEX).flatten
+                    process_negative_genes(negativegenes, genotypes, genocolorectal, record)
+                    genocolorectal.add_gene_colorectal(testreport.scan(COLORECTAL_GENES_REGEX).join())
+                    genocolorectal.add_variant_type(testreport.scan(CHR_VARIANTS_REGEX).join())
+                    genocolorectal.add_status(2)
+                    genotypes.append(genocolorectal)
                   end
+                  genotypes
                 end
-                  
-                # @logger.debug 'ABNORMAL TEST FOUND'
-                # if testresult.match(CDNA_REGEX)
-                #   @logger.debug 'Found CDNA variant'
-                #   if testresult.nil? || testresult.scan(COLORECTAL_GENES_REGEX).empty?
-                #     @logger.debug 'TEST RESULTS EMPTY'
-                #   elsif testreport.nil? || testreport.scan(COLORECTAL_GENES_REGEX).empty?
-                #     @logger.debug 'TEST REPORT EMPTY'
-                #   elsif !testresult.scan(COLORECTAL_GENES_REGEX).empty? && !testreport.scan(COLORECTAL_GENES_REGEX).empty? &&
                 #     testresult.scan(COLORECTAL_GENES_REGEX).uniq.size != testreport.scan(COLORECTAL_GENES_REGEX).uniq.size
                 #       @logger.debug 'INCONSISTENCY OF DECLARED GENES IN TESTRESULT AND TESTREPORT'
                 #   elsif !testresult.scan(COLORECTAL_GENES_REGEX).empty? && !testreport.scan(COLORECTAL_GENES_REGEX).empty? &&
