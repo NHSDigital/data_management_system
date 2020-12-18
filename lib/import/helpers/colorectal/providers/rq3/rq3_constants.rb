@@ -42,7 +42,8 @@ module Import
                                                   POLE|
                                                   PTEN|
                                                   SMAD4|
-                                                  STK11)/xi .freeze
+                                                  STK11|
+                                                  TACSTD1)/xi .freeze
 
             CDNA_REGEX = /c\.(?<cdna>([0-9]+[^[:alnum:]][0-9][^[:alnum:]][0-9]+[^[:alnum:]][0-9][a-z]+)|
                           ([0-9]+[a-z]+[^[:alnum:]][a-z])|

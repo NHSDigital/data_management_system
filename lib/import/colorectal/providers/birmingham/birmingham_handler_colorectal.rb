@@ -37,9 +37,9 @@ module Import
             Maybe(record.raw_fields['moleculartestingtype']).each do |tscope|
               if TEST_SCOPE_MAP_COLO_COLO[tscope.downcase.strip]
                 genocolorectal.add_test_scope(TEST_SCOPE_MAP_COLO_COLO[tscope.downcase.strip])
-                @logger.debug 'Processed genetictestscope '\
-                              "#{TEST_SCOPE_MAP_COLO_COLO[tscope.downcase.strip]} for #{tscope}"
-              else @logger.debug 'UNABLE to process genetictestscope'
+                # @logger.debug 'Processed genetictestscope '\
+                              # "#{TEST_SCOPE_MAP_COLO_COLO[tscope.downcase.strip]} for #{tscope}"
+               else #@logger.debug 'UNABLE to process genetictestscope'
               end
             end
           end
@@ -55,95 +55,52 @@ module Import
               genelist = COLORECTAL_GENES_MAP[record.raw_fields['indication']]
               if posnegtest.upcase == 'P' # if there is an abnormal test
                 @logger.debug 'ABNORMAL TEST'
-                if testreport.nil? || testreport.scan(COLORECTAL_GENES_REGEX).empty?
+                if testresult.scan(/MYH/).size > 0
                   if testresult.scan(CDNA_REGEX).size > 0
                     if testresult.scan(CDNA_REGEX).size == 1
-                      if testresult.scan(COLORECTAL_GENES_REGEX).uniq.size == 1
-                        negativegenes = genelist - testresult.scan(COLORECTAL_GENES_REGEX).flatten
-                        process_negative_genes(negativegenes, genotypes, genocolorectal, record)
-                        genocolorectal.add_gene_colorectal(testresult.scan(COLORECTAL_GENES_REGEX).join())
-                        genocolorectal.add_gene_location(testresult.scan(CDNA_REGEX).join())
-                        genocolorectal.add_status(2)
-                        if testresult.scan(PROTEIN_REGEX).size > 0
-                          genocolorectal.add_protein_impact(testresult.scan(PROTEIN_REGEX).join())
-                        end
-                        genotypes.append(genocolorectal)
-                      elsif testresult.scan('MYH').size > 0
-                        negativegenes = genelist - ['MUTYH']
-                        process_negative_genes(negativegenes, genotypes, genocolorectal, record)
-                        genocolorectal.add_gene_colorectal('MUTYH')
-                        genocolorectal.add_gene_location(testresult.scan(CDNA_REGEX).join())
-                        genocolorectal.add_status(2)
-                        if testresult.scan(PROTEIN_REGEX).size > 0
-                          genocolorectal.add_protein_impact(testresult.scan(PROTEIN_REGEX).join())
-                        end
-                        genotypes.append(genocolorectal)
+                      negativegenes = genelist - ['MUTYH']
+                      process_negative_genes(negativegenes, genotypes, genocolorectal, record)
+                      genocolorectal.add_gene_colorectal('MUTYH')
+                      genocolorectal.add_gene_location(testresult.scan(CDNA_REGEX).join())
+                      genocolorectal.add_status(2)
+                      if testresult.scan(PROTEIN_REGEX).size > 0
+                        genocolorectal.add_protein_impact(testresult.scan(PROTEIN_REGEX).join())
                       end
-                      genotypes
-                      #Continue with LARGE CHROM VARIANTS
-                    # elsif testresult.scan(COLORECTAL_GENES_REGEX).size == 2
-                    #   binding.pry
+                      genotypes.append(genocolorectal)
                     elsif testresult.scan(CDNA_REGEX).size == 2
-                      if testresult.scan(COLORECTAL_GENES_REGEX).uniq.size == 2
-                        negativegenes = genelist - testresult.scan(COLORECTAL_GENES_REGEX).flatten
-                        process_negative_genes(negativegenes, genotypes, genocolorectal, record)
-                        genes = testresult.scan(COLORECTAL_GENES_REGEX).flatten
-                        cdnas = testresult.scan(CDNA_REGEX).flatten
-                        proteins = testresult.scan(PROTEIN_REGEX).flatten
-                        positive_results = genes.zip(cdnas,proteins)
-                        positive_results.each do |gene,cdna,protein|
-                          abnormal_genocolorectal = genocolorectal.dup_colo
-                          abnormal_genocolorectal.add_gene_colorectal(gene)
-                          abnormal_genocolorectal.add_gene_location(cdna)
-                          abnormal_genocolorectal.add_protein_impact(protein)
-                          abnormal_genocolorectal.add_status(2)
-                          genotypes.append(abnormal_genocolorectal)
-                        end
-                      elsif testresult.scan('MYH').size > 0
-                        negativegenes = genelist - ['MUTYH']
-                        process_negative_genes(negativegenes, genotypes, genocolorectal, record)
-                        genes = testresult.scan('MUTYH') * testresult.scan(CDNA_REGEX).size
-                        cdnas = testresult.scan(CDNA_REGEX).flatten
-                        proteins = testresult.scan(PROTEIN_REGEX).flatten
-                        positive_results = genes.zip(cdnas,proteins)
-                        positive_results.each do |gene,cdna,protein|
-                          abnormal_genocolorectal = genocolorectal.dup_colo
-                          abnormal_genocolorectal.add_gene_colorectal(gene)
-                          abnormal_genocolorectal.add_gene_location(cdna)
-                          abnormal_genocolorectal.add_protein_impact(protein)
-                          abnormal_genocolorectal.add_status(2)
-                          genotypes.append(abnormal_genocolorectal)
-                        end
+                      negativegenes = genelist - ['MUTYH']
+                      process_negative_genes(negativegenes, genotypes, genocolorectal, record)
+                      genes = ['MUTYH'] * testresult.scan(CDNA_REGEX).size
+                      cdnas = testresult.scan(CDNA_REGEX).flatten
+                      proteins = testresult.scan(PROTEIN_REGEX).flatten
+                      positive_results = genes.zip(cdnas,proteins)
+                      positive_results.each do |gene,cdna,protein|
+                        abnormal_genocolorectal = genocolorectal.dup_colo
+                        abnormal_genocolorectal.add_gene_colorectal(gene)
+                        abnormal_genocolorectal.add_gene_location(cdna)
+                        abnormal_genocolorectal.add_protein_impact(protein)
+                        abnormal_genocolorectal.add_status(2)
+                        genotypes.append(abnormal_genocolorectal)
                       end
                       genotypes
                     end
-                  elsif testresult.match(CHR_VARIANTS_REGEX)
-                    testresult.scan(COLORECTAL_GENES_REGEX).uniq.size == 1 
-                    negativegenes = genelist - testresult.scan(COLORECTAL_GENES_REGEX).flatten
+                    genotypes
+                  else
+                    negativegenes = genelist - ['MUTYH']
                     process_negative_genes(negativegenes, genotypes, genocolorectal, record)
-                    genocolorectal.add_gene_colorectal(testresult.scan(COLORECTAL_GENES_REGEX).join())
-                    genocolorectal.add_variant_type(testresult.scan(CHR_VARIANTS_REGEX).join())
+                    genocolorectal.add_gene_colorectal('MUTYH')
+                    genocolorectal.add_gene_location('')
                     genocolorectal.add_status(2)
                     genotypes.append(genocolorectal)
                   end
                   genotypes
-                elsif testresult.nil? || testresult.scan(COLORECTAL_GENES_REGEX).empty?
+                elsif testresult.scan(COLORECTAL_GENES_REGEX).empty?
                   if testreport.scan(CDNA_REGEX).size > 0
                     if testreport.scan(CDNA_REGEX).size == 1
                       if testreport.scan(COLORECTAL_GENES_REGEX).uniq.size == 1
                         negativegenes = genelist - testreport.scan(COLORECTAL_GENES_REGEX).flatten
                         process_negative_genes(negativegenes, genotypes, genocolorectal, record)
                         genocolorectal.add_gene_colorectal(testreport.scan(COLORECTAL_GENES_REGEX).join())
-                        genocolorectal.add_gene_location(testreport.scan(CDNA_REGEX).join())
-                        genocolorectal.add_status(2)
-                        if testreport.scan(PROTEIN_REGEX).size > 0
-                          genocolorectal.add_protein_impact(testreport.scan(PROTEIN_REGEX).join())
-                        end
-                        genotypes.append(genocolorectal)
-                      elsif testreport.scan('MYH').size > 0
-                        negativegenes = genelist - ['MUTYH']
-                        process_negative_genes(negativegenes, genotypes, genocolorectal, record)
-                        genocolorectal.add_gene_colorectal('MUTYH')
                         genocolorectal.add_gene_location(testreport.scan(CDNA_REGEX).join())
                         genocolorectal.add_status(2)
                         if testreport.scan(PROTEIN_REGEX).size > 0
@@ -168,12 +125,61 @@ module Import
                           abnormal_genocolorectal.add_status(2)
                           genotypes.append(abnormal_genocolorectal)
                         end
-                      elsif testreport.scan('MYH').size > 0
-                        negativegenes = genelist - ['MUTYH']
+                      end
+                      genotypes
+                    end
+                  elsif testreport.scan(CHR_VARIANTS_REGEX).size > 1
+                    #binding.pry
+                    if testreport.scan(COLORECTAL_GENES_REGEX).uniq.size == 1 
+                      negativegenes = genelist - testreport.scan(COLORECTAL_GENES_REGEX).flatten
+                      process_negative_genes(negativegenes, genotypes, genocolorectal, record)
+                      genocolorectal.add_gene_colorectal(testreport.scan(COLORECTAL_GENES_REGEX).join())
+                      genocolorectal.add_variant_type(testreport.scan(CHR_VARIANTS_REGEX).join())
+                      genocolorectal.add_status(2)
+                      genotypes.append(genocolorectal)
+                    else #binding.pry
+                    end
+                  elsif (testresult =~ /FAP/ && testreport.scan(/APC/).size > 0) ||
+                    (testresult =~ /High risk haplotype identified in this patient/ && testreport.scan(/APC/).size > 0)
+                    negativegenes = genelist - ['APC']
+                    process_negative_genes(negativegenes, genotypes, genocolorectal, record)
+                    genocolorectal.add_gene_colorectal('APC')
+                    genocolorectal.add_gene_location('.')
+                    genocolorectal.add_status(2)
+                    genotypes.append(genocolorectal)
+                  elsif testreport.match(COLORECTAL_GENES_REGEX)
+                    gene = testreport.match(COLORECTAL_GENES_REGEX)[0]
+                    negativegenes = genelist - [gene]
+                    process_negative_genes(negativegenes, genotypes, genocolorectal, record)
+                    genocolorectal.add_gene_colorectal(gene)
+                    genocolorectal.add_gene_location('.')
+                    genocolorectal.add_status(2)
+                    genotypes.append(genocolorectal)
+                  end
+                  genotypes
+                else
+                  if testresult.scan(CDNA_REGEX).size > 0
+                    if testresult.scan(CDNA_REGEX).size == 1
+                      if testresult.scan(COLORECTAL_GENES_REGEX).uniq.size == 1
+                        negativegenes = genelist - testresult.scan(COLORECTAL_GENES_REGEX).flatten
                         process_negative_genes(negativegenes, genotypes, genocolorectal, record)
-                        genes = testreport.scan('MUTYH') * testreport.scan(CDNA_REGEX).size
-                        cdnas = testreport.scan(CDNA_REGEX).flatten
-                        proteins = testreport.scan(PROTEIN_REGEX).flatten
+                        genocolorectal.add_gene_colorectal(testresult.scan(COLORECTAL_GENES_REGEX).join())
+                        genocolorectal.add_gene_location(testresult.scan(CDNA_REGEX).join())
+                        genocolorectal.add_status(2)
+                        if testresult.scan(PROTEIN_REGEX).size > 0
+                          genocolorectal.add_protein_impact(testresult.scan(PROTEIN_REGEX).join())
+                        end
+                        genotypes.append(genocolorectal)
+                      else #binding.pry
+                      end
+                      genotypes
+                    elsif testresult.scan(CDNA_REGEX).size == 2
+                      if testresult.scan(COLORECTAL_GENES_REGEX).uniq.size == 2
+                        negativegenes = genelist - testresult.scan(COLORECTAL_GENES_REGEX).flatten
+                        process_negative_genes(negativegenes, genotypes, genocolorectal, record)
+                        genes = testresult.scan(COLORECTAL_GENES_REGEX).flatten
+                        cdnas = testresult.scan(CDNA_REGEX).flatten
+                        proteins = testresult.scan(PROTEIN_REGEX).flatten
                         positive_results = genes.zip(cdnas,proteins)
                         positive_results.each do |gene,cdna,protein|
                           abnormal_genocolorectal = genocolorectal.dup_colo
@@ -183,36 +189,58 @@ module Import
                           abnormal_genocolorectal.add_status(2)
                           genotypes.append(abnormal_genocolorectal)
                         end
+                      elsif testresult.scan(COLORECTAL_GENES_REGEX).uniq.size == 1
+                          negativegenes = genelist - testresult.scan(COLORECTAL_GENES_REGEX).flatten
+                          process_negative_genes(negativegenes, genotypes, genocolorectal, record)
+                          genes = testresult.scan(COLORECTAL_GENES_REGEX).flatten * 2
+                          cdnas = testresult.scan(CDNA_REGEX).flatten
+                          proteins = testresult.scan(PROTEIN_REGEX).flatten
+                          positive_results = genes.zip(cdnas,proteins)
+                          positive_results.each do |gene,cdna,protein|
+                            abnormal_genocolorectal = genocolorectal.dup_colo
+                            abnormal_genocolorectal.add_gene_colorectal(gene)
+                            abnormal_genocolorectal.add_gene_location(cdna)
+                            abnormal_genocolorectal.add_protein_impact(protein)
+                            abnormal_genocolorectal.add_status(2)
+                            genotypes.append(abnormal_genocolorectal)
+                          end
+                      else #binding.pry
                       end
                       genotypes
                     end
-                  elsif testreport.match(CHR_VARIANTS_REGEX)
-                    testreport.scan(COLORECTAL_GENES_REGEX).uniq.size == 1 
-                    negativegenes = genelist - testreport.scan(COLORECTAL_GENES_REGEX).flatten
-                    process_negative_genes(negativegenes, genotypes, genocolorectal, record)
-                    genocolorectal.add_gene_colorectal(testreport.scan(COLORECTAL_GENES_REGEX).join())
-                    genocolorectal.add_variant_type(testreport.scan(CHR_VARIANTS_REGEX).join())
-                    genocolorectal.add_status(2)
-                    genotypes.append(genocolorectal)
+                  elsif testresult.scan(CHR_VARIANTS_REGEX).size > 0
+                      if testresult.scan(CHR_VARIANTS_REGEX).size == 1
+                        if testresult.scan(COLORECTAL_GENES_REGEX).uniq.size == 1 
+                          negativegenes = genelist - testresult.scan(COLORECTAL_GENES_REGEX).flatten
+                          process_negative_genes(negativegenes, genotypes, genocolorectal, record)
+                          genocolorectal.add_gene_colorectal(testresult.scan(COLORECTAL_GENES_REGEX).join())
+                          genocolorectal.add_variant_type(testresult.scan(CHR_VARIANTS_REGEX).join())
+                          genocolorectal.add_status(2)
+                          genotypes.append(genocolorectal)
+                        else 
+                          genes = testresult.scan(COLORECTAL_GENES_REGEX).flatten
+                          chromosomalvariants = testresult.scan(CHR_VARIANTS_REGEX).flatten * genes.size
+                          positive_results = genes.zip(chromosomalvariants)
+                          positive_results.each do |gene,chromosomalvariant|
+                            abnormal_genocolorectal = genocolorectal.dup_colo
+                            abnormal_genocolorectal.add_gene_colorectal(gene)
+                            abnormal_genocolorectal.add_variant_type(chromosomalvariant)
+                            abnormal_genocolorectal.add_status(2)
+                            genotypes.append(abnormal_genocolorectal)
+                          end
+                          genotypes
+                        end
+                      else #binding.pry
+                      end
                   end
                   genotypes
                 end
-                #     testresult.scan(COLORECTAL_GENES_REGEX).uniq.size != testreport.scan(COLORECTAL_GENES_REGEX).uniq.size
-                #       @logger.debug 'INCONSISTENCY OF DECLARED GENES IN TESTRESULT AND TESTREPORT'
-                #   elsif !testresult.scan(COLORECTAL_GENES_REGEX).empty? && !testreport.scan(COLORECTAL_GENES_REGEX).empty? &&
-                #     testresult.scan(COLORECTAL_GENES_REGEX).uniq.size == testreport.scan(COLORECTAL_GENES_REGEX).uniq.size
-                #     @logger.debug 'SAME NUMBER OF DECLARED GENES IN TESTRESULT AND TESTREPORT'
-                #   end
-                # elsif testresult.match(CHR_VARIANTS_REGEX)
-                #   @logger.debug 'LARGE CHROMOSOMAL ABERRATION FOUND'
-                # elsif testresult.match(CHR_VARIANTS_REGEX) && testresult.match(CDNA_REGEX)
-                # else @logger.debug 'FOUND BOTH LARGE CHROMOSOMAL ABERRATION AND CDNA VARIANT'
-                # end
               elsif posnegtest.upcase == 'N'
                 @logger.debug 'NORMAL TEST FOUND'
-                negativegenes = genelist
+                negativegenes = genelist # + all the genes listed in the teststatus column
                 process_negative_genes(negativegenes, genotypes, genocolorectal, record)
               end
+            # else @logger.debug "UNRECOGNISED TAG FOR #{record.raw_fields[indication]}"
             end
             genotypes
           end
