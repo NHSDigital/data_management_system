@@ -137,7 +137,6 @@ module Import
                       genocolorectal.add_variant_type(testreport.scan(CHR_VARIANTS_REGEX).join())
                       genocolorectal.add_status(2)
                       genotypes.append(genocolorectal)
-                    else binding.pry
                     end
                   elsif (testresult =~ /FAP/ && testreport.scan(/APC/).size > 0) ||
                     (testresult =~ /High risk haplotype identified in this patient/ && testreport.scan(/APC/).size > 0)
@@ -216,7 +215,6 @@ module Import
                           end
                       end
                       genotypes
-                    else binding.pry
                     end
                   elsif testresult.scan(CHR_VARIANTS_REGEX).size > 0
                     if testresult.scan(CHR_VARIANTS_REGEX).size == 1
