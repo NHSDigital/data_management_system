@@ -74,14 +74,15 @@ module Import
                       cdnas = testresult.scan(CDNA_REGEX).flatten
                       proteins = testresult.scan(PROTEIN_REGEX).flatten
                       positive_results = genes.zip(cdnas,proteins)
-                      positive_results.each do |gene,cdna,protein|
-                        abnormal_genocolorectal = genocolorectal.dup_colo
-                        abnormal_genocolorectal.add_gene_colorectal(gene)
-                        abnormal_genocolorectal.add_gene_location(cdna)
-                        abnormal_genocolorectal.add_protein_impact(protein)
-                        abnormal_genocolorectal.add_status(2)
-                        genotypes.append(abnormal_genocolorectal)
-                      end
+                      positive_multiple_cdna_variants(positive_results, genotypes, genocolorectal)
+                      # positive_results.each do |gene,cdna,protein|
+                      #   abnormal_genocolorectal = genocolorectal.dup_colo
+                      #   abnormal_genocolorectal.add_gene_colorectal(gene)
+                      #   abnormal_genocolorectal.add_gene_location(cdna)
+                      #   abnormal_genocolorectal.add_protein_impact(protein)
+                      #   abnormal_genocolorectal.add_status(2)
+                      #   genotypes.append(abnormal_genocolorectal)
+                      # end
                       genotypes
                     end
                     genotypes
@@ -118,14 +119,15 @@ module Import
                         cdnas = testreport.scan(CDNA_REGEX).flatten
                         proteins = testreport.scan(PROTEIN_REGEX).flatten
                         positive_results = genes.zip(cdnas,proteins)
-                        positive_results.each do |gene,cdna,protein|
-                          abnormal_genocolorectal = genocolorectal.dup_colo
-                          abnormal_genocolorectal.add_gene_colorectal(gene)
-                          abnormal_genocolorectal.add_gene_location(cdna)
-                          abnormal_genocolorectal.add_protein_impact(protein)
-                          abnormal_genocolorectal.add_status(2)
-                          genotypes.append(abnormal_genocolorectal)
-                        end
+                        positive_multiple_cdna_variants(positive_results, genotypes, genocolorectal)
+                        # positive_results.each do |gene,cdna,protein|
+                        #   abnormal_genocolorectal = genocolorectal.dup_colo
+                        #   abnormal_genocolorectal.add_gene_colorectal(gene)
+                        #   abnormal_genocolorectal.add_gene_location(cdna)
+                        #   abnormal_genocolorectal.add_protein_impact(protein)
+                        #   abnormal_genocolorectal.add_status(2)
+                        #   genotypes.append(abnormal_genocolorectal)
+                        # end
                       end
                       genotypes
                     end
@@ -190,14 +192,15 @@ module Import
                         cdnas = testresult.scan(CDNA_REGEX).flatten
                         proteins = testresult.scan(PROTEIN_REGEX).flatten
                         positive_results = genes.zip(cdnas,proteins)
-                        positive_results.each do |gene,cdna,protein|
-                          abnormal_genocolorectal = genocolorectal.dup_colo
-                          abnormal_genocolorectal.add_gene_colorectal(gene)
-                          abnormal_genocolorectal.add_gene_location(cdna)
-                          abnormal_genocolorectal.add_protein_impact(protein)
-                          abnormal_genocolorectal.add_status(2)
-                          genotypes.append(abnormal_genocolorectal)
-                        end
+                        positive_multiple_cdna_variants(positive_results, genotypes, genocolorectal)
+                        # positive_results.each do |gene,cdna,protein|
+                        #   abnormal_genocolorectal = genocolorectal.dup_colo
+                        #   abnormal_genocolorectal.add_gene_colorectal(gene)
+                        #   abnormal_genocolorectal.add_gene_location(cdna)
+                        #   abnormal_genocolorectal.add_protein_impact(protein)
+                        #   abnormal_genocolorectal.add_status(2)
+                        #   genotypes.append(abnormal_genocolorectal)
+                        # end
                       elsif testresult.scan(COLORECTAL_GENES_REGEX).uniq.size == 1
                           negativegenes = genelist - testresult.scan(COLORECTAL_GENES_REGEX).flatten
                           process_negative_genes(negativegenes, genotypes, genocolorectal, record)
@@ -205,14 +208,15 @@ module Import
                           cdnas = testresult.scan(CDNA_REGEX).flatten
                           proteins = testresult.scan(PROTEIN_REGEX).flatten
                           positive_results = genes.zip(cdnas,proteins)
-                          positive_results.each do |gene,cdna,protein|
-                            abnormal_genocolorectal = genocolorectal.dup_colo
-                            abnormal_genocolorectal.add_gene_colorectal(gene)
-                            abnormal_genocolorectal.add_gene_location(cdna)
-                            abnormal_genocolorectal.add_protein_impact(protein)
-                            abnormal_genocolorectal.add_status(2)
-                            genotypes.append(abnormal_genocolorectal)
-                          end
+                          positive_multiple_cdna_variants(positive_results, genotypes, genocolorectal)
+                          # positive_results.each do |gene,cdna,protein|
+                          #   abnormal_genocolorectal = genocolorectal.dup_colo
+                          #   abnormal_genocolorectal.add_gene_colorectal(gene)
+                          #   abnormal_genocolorectal.add_gene_location(cdna)
+                          #   abnormal_genocolorectal.add_protein_impact(protein)
+                          #   abnormal_genocolorectal.add_status(2)
+                          #   genotypes.append(abnormal_genocolorectal)
+                          # end
                       end
                       genotypes
                     end
@@ -229,13 +233,14 @@ module Import
                         genes = testresult.scan(COLORECTAL_GENES_REGEX).flatten
                         chromosomalvariants = testresult.scan(CHR_VARIANTS_REGEX).flatten * genes.size
                         positive_results = genes.zip(chromosomalvariants)
-                        positive_results.each do |gene,chromosomalvariant|
-                          abnormal_genocolorectal = genocolorectal.dup_colo
-                          abnormal_genocolorectal.add_gene_colorectal(gene)
-                          abnormal_genocolorectal.add_variant_type(chromosomalvariant)
-                          abnormal_genocolorectal.add_status(2)
-                          genotypes.append(abnormal_genocolorectal)
-                        end
+                        positive_multiple_chromosomal_variants(positive_results, genotypes, genocolorectal)
+                        # positive_results.each do |gene,chromosomalvariant|
+                        #   abnormal_genocolorectal = genocolorectal.dup_colo
+                        #   abnormal_genocolorectal.add_gene_colorectal(gene)
+                        #   abnormal_genocolorectal.add_variant_type(chromosomalvariant)
+                        #   abnormal_genocolorectal.add_status(2)
+                        #   genotypes.append(abnormal_genocolorectal)
+                        # end
                         genotypes
                       end
                     elsif testresult.scan(COLORECTAL_GENES_REGEX).uniq.size == 1 
@@ -251,12 +256,13 @@ module Import
                       genes = testresult.scan(COLORECTAL_GENES_REGEX).flatten
                       chromosomalvariants = testresult.scan(CHR_VARIANTS_REGEX).flatten
                       positive_results = genes.zip(chromosomalvariants)
-                      positive_results.each do |gene,chromosomalvariant|
-                        abnormal_genocolorectal = genocolorectal.dup_colo
-                        abnormal_genocolorectal.add_gene_colorectal(gene)
-                        abnormal_genocolorectal.add_variant_type(chromosomalvariant)
-                        genotypes.append(abnormal_genocolorectal)
-                      end
+                      positive_multiple_chromosomal_variants(positive_results, genotypes, genocolorectal)
+                      # positive_results.each do |gene,chromosomalvariant|
+                      #   abnormal_genocolorectal = genocolorectal.dup_colo
+                      #   abnormal_genocolorectal.add_gene_colorectal(gene)
+                      #   abnormal_genocolorectal.add_variant_type(chromosomalvariant)
+                      #   genotypes.append(abnormal_genocolorectal)
+                      # end
                     end
                     genotypes
                   elsif testresult.match(/No known pathogenic/i)
@@ -293,7 +299,28 @@ module Import
               genotypes.append(dup_genocolorectal)
             end
           end
-          
+
+          def positive_multiple_chromosomal_variants(positive_results, genotypes, genocolorectal)
+            positive_results.each do |gene,chromosomalvariant|
+              abnormal_genocolorectal = genocolorectal.dup_colo
+              abnormal_genocolorectal.add_gene_colorectal(gene)
+              abnormal_genocolorectal.add_variant_type(chromosomalvariant)
+              genotypes.append(abnormal_genocolorectal)
+            end
+            
+          end
+
+          def positive_multiple_cdna_variants(positive_results, genotypes, genocolorectal)
+            positive_results.each do |gene,cdna,protein|
+              abnormal_genocolorectal = genocolorectal.dup_colo
+              abnormal_genocolorectal.add_gene_colorectal(gene)
+              abnormal_genocolorectal.add_gene_location(cdna)
+              abnormal_genocolorectal.add_protein_impact(protein)
+              abnormal_genocolorectal.add_status(2)
+              genotypes.append(abnormal_genocolorectal)
+            end
+            
+          end
           
           def summarize
             @logger.info '***************** Handler Report *******************'
