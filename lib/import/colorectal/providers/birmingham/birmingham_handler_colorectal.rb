@@ -56,46 +56,7 @@ module Import
               if posnegtest.upcase == 'P' # if there is an abnormal test
                 @logger.debug 'ABNORMAL TEST'
                 if testresult.scan(/MYH/).size > 0
-                  if testresult.scan(CDNA_REGEX).size > 0
-                    if testresult.scan(CDNA_REGEX).size == 1
-                      negativegenes = genelist - ['MUTYH']
-                      process_negative_genes(negativegenes, genotypes, genocolorectal, record)
-                      genocolorectal.add_gene_colorectal('MUTYH')
-                      genocolorectal.add_gene_location(testresult.scan(CDNA_REGEX).join())
-                      genocolorectal.add_status(2)
-                      if testresult.scan(PROTEIN_REGEX).size > 0
-                        genocolorectal.add_protein_impact(testresult.scan(PROTEIN_REGEX).join())
-                      end
-                      genotypes.append(genocolorectal)
-                    elsif testresult.scan(CDNA_REGEX).size == 2
-                      negativegenes = genelist - ['MUTYH']
-                      process_negative_genes(negativegenes, genotypes, genocolorectal, record)
-                      genes = ['MUTYH'] * testresult.scan(CDNA_REGEX).size
-                      cdnas = testresult.scan(CDNA_REGEX).flatten
-                      proteins = testresult.scan(PROTEIN_REGEX).flatten
-                      positive_results = genes.zip(cdnas,proteins)
-                      positive_multiple_cdna_variants(positive_results, genotypes, genocolorectal)
-                      # positive_results.each do |gene,cdna,protein|
-                      #   abnormal_genocolorectal = genocolorectal.dup_colo
-                      #   abnormal_genocolorectal.add_gene_colorectal(gene)
-                      #   abnormal_genocolorectal.add_gene_location(cdna)
-                      #   abnormal_genocolorectal.add_protein_impact(protein)
-                      #   abnormal_genocolorectal.add_status(2)
-                      #   genotypes.append(abnormal_genocolorectal)
-                      # end
-                      genotypes
-                    end
-                    genotypes
-                  else
-                    negativegenes = genelist - ['MUTYH']
-                    process_negative_genes(negativegenes, genotypes, genocolorectal, record)
-                    genocolorectal.add_gene_colorectal('MUTYH')
-                    genocolorectal.add_gene_location('')
-                    genocolorectal.add_status(2)
-                    genotypes.append(genocolorectal)
-                  end
-                  genotypes
-                  #Da qui prendo in considerazione i record se TESTRESULT e' VUOTA
+                  process_mutyh_specific_variants(testresult, genelist, genotypes, genocolorectal, record)
                 elsif testresult.scan(COLORECTAL_GENES_REGEX).empty?
                   if testreport.scan(CDNA_REGEX).size > 0
                     if testreport.scan(CDNA_REGEX).size == 1
@@ -120,14 +81,6 @@ module Import
                         proteins = testreport.scan(PROTEIN_REGEX).flatten
                         positive_results = genes.zip(cdnas,proteins)
                         positive_multiple_cdna_variants(positive_results, genotypes, genocolorectal)
-                        # positive_results.each do |gene,cdna,protein|
-                        #   abnormal_genocolorectal = genocolorectal.dup_colo
-                        #   abnormal_genocolorectal.add_gene_colorectal(gene)
-                        #   abnormal_genocolorectal.add_gene_location(cdna)
-                        #   abnormal_genocolorectal.add_protein_impact(protein)
-                        #   abnormal_genocolorectal.add_status(2)
-                        #   genotypes.append(abnormal_genocolorectal)
-                        # end
                       end
                       genotypes
                     end
@@ -319,9 +272,46 @@ module Import
               abnormal_genocolorectal.add_status(2)
               genotypes.append(abnormal_genocolorectal)
             end
-            
           end
-          
+
+          def process_mutyh_single_cdna_variants(genocolorectal, record, testresult, genotypes)
+            genocolorectal.add_gene_colorectal('MUTYH')
+            genocolorectal.add_gene_location(testresult.scan(CDNA_REGEX).join())
+            genocolorectal.add_status(2)
+            if testresult.scan(PROTEIN_REGEX).size > 0
+              genocolorectal.add_protein_impact(testresult.scan(PROTEIN_REGEX).join())
+            end
+            genotypes.append(genocolorectal)
+          end
+
+          def process_mutyh_specific_variants(testresult, genelist, genotypes, genocolorectal, record)
+            if testresult.scan(CDNA_REGEX).size > 0
+              if testresult.scan(CDNA_REGEX).size == 1
+                negativegenes = genelist - ['MUTYH']
+                process_negative_genes(negativegenes, genotypes, genocolorectal, record)
+                process_mutyh_single_cdna_variants(genocolorectal, record, testresult, genotypes)
+              elsif testresult.scan(CDNA_REGEX).size == 2
+                negativegenes = genelist - ['MUTYH']
+                process_negative_genes(negativegenes, genotypes, genocolorectal, record)
+                genes = ['MUTYH'] * testresult.scan(CDNA_REGEX).size
+                cdnas = testresult.scan(CDNA_REGEX).flatten
+                proteins = testresult.scan(PROTEIN_REGEX).flatten
+                positive_results = genes.zip(cdnas,proteins)
+                positive_multiple_cdna_variants(positive_results, genotypes, genocolorectal)
+              end
+              genotypes
+            else
+              negativegenes = genelist - ['MUTYH']
+              process_negative_genes(negativegenes, genotypes, genocolorectal, record)
+              genocolorectal.add_gene_colorectal('MUTYH')
+              genocolorectal.add_gene_location('')
+              genocolorectal.add_status(2)
+              genotypes.append(genocolorectal)
+            end
+            genotypes
+          end
+
+
           def summarize
             @logger.info '***************** Handler Report *******************'
             @logger.info "Num genes failed to parse: #{@failed_gene_counter} of "\
