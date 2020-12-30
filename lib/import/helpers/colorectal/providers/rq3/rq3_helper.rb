@@ -71,7 +71,7 @@ module Import
                     process_negative_genes(negativegenes, genotypes, genocolorectal, record)
                   end
                 end
-                genotypes
+                #genotypes
               else
                 genocolorectal.add_gene_colorectal('MUTYH')
                 genocolorectal.add_gene_location('')
@@ -82,7 +82,7 @@ module Import
                   process_negative_genes(negativegenes, genotypes, genocolorectal, record)
                 end
               end
-              genotypes
+              #genotypes
             end
 
             def process_testreport_cdna_variants(testreport, genelist, genotypes, genocolorectal, record)
@@ -100,7 +100,7 @@ module Import
                   end
                   genotypes.append(genocolorectal)
                 end
-                genotypes
+                #genotypes
               elsif testreport.scan(CDNA_REGEX).size == 2
                 if testreport.scan(COLORECTAL_GENES_REGEX).uniq.size == 2
                   if full_screen?(record)
@@ -113,8 +113,9 @@ module Import
                   positive_results = genes.zip(cdnas,proteins)
                   positive_multiple_cdna_variants(positive_results, genotypes, genocolorectal)
                 end
-                genotypes
+                #genotypes
               end
+              #genotypes
             end
 
             def process_testreport_chromosome_variants(testreport, genelist, genotypes, genocolorectal, record)
@@ -128,6 +129,7 @@ module Import
                   process_negative_genes(negativegenes, genotypes, genocolorectal, record)
                 end
               end
+              #genotypes
             end
 
             def process_malformed_variants(testresult, testreport, genelist, genotypes, genocolorectal, record)
@@ -181,7 +183,7 @@ module Import
                     process_negative_genes(negativegenes, genotypes, genocolorectal, record)
                   end
                 end
-                genotypes
+                #genotypes
               elsif testresult.scan(CDNA_REGEX).size == 2
                 if testresult.scan(COLORECTAL_GENES_REGEX).uniq.size == 2
                   genes = testresult.scan(COLORECTAL_GENES_REGEX).flatten
@@ -204,7 +206,7 @@ module Import
                     process_negative_genes(negativegenes, genotypes, genocolorectal, record)
                   end
                 end
-                genotypes
+                #genotypes
               end
             end
 
@@ -248,7 +250,7 @@ module Import
                   process_negative_genes(negativegenes, genotypes, genocolorectal, record)
                 end
               end
-              genotypes
+              #genotypes
             end
 
           end

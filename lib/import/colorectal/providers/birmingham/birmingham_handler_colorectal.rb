@@ -64,7 +64,7 @@ module Import
                   else
                     process_malformed_variants(testresult, testreport, genelist, genotypes, genocolorectal, record)
                   end
-                  genotypes
+                  #genotypes
                 else
                   if testresult.scan(CDNA_REGEX).size > 0
                     process_testresult_cdna_variants(testresult, genelist, genotypes, record, genocolorectal)
@@ -81,7 +81,7 @@ module Import
                     genocolorectal.add_status(2)
                     genotypes.append(genocolorectal)
                   end
-                  genotypes
+                  #genotypes
                 end
               elsif posnegtest.upcase == 'N'
                 @logger.debug 'NORMAL TEST FOUND'
