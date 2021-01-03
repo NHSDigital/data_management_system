@@ -272,7 +272,7 @@ GEM
       spreadsheet (= 1.0.3)
     ndr_pseudonymise (0.2.6)
       activesupport
-    ndr_support (5.6.1)
+    ndr_support (5.7.1)
       activerecord (>= 5.2.0, < 7)
       activesupport (>= 5.2.0, < 7)
     ndr_ui (3.0.0)
@@ -513,7 +513,7 @@ DEPENDENCIES
   ndr_error (~> 2.0)
   ndr_import
   ndr_pseudonymise (~> 0.2.6)
-  ndr_support (~> 5.3)
+  ndr_support (~> 5.7.1)
   ndr_ui
   ndr_workflow (= 1.1.6)
   nokogiri (= 1.10.8)
