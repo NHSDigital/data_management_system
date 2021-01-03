@@ -113,9 +113,7 @@ module Import
                   positive_results = genes.zip(cdnas,proteins)
                   positive_multiple_cdna_variants(positive_results, genotypes, genocolorectal)
                 end
-                #genotypes
               end
-              #genotypes
             end
 
             def process_testreport_chromosome_variants(testreport, genelist, genotypes, genocolorectal, record)
@@ -129,7 +127,6 @@ module Import
                   process_negative_genes(negativegenes, genotypes, genocolorectal, record)
                 end
               end
-              #genotypes
             end
 
             def process_malformed_variants(testresult, testreport, genelist, genotypes, genocolorectal, record)
@@ -183,7 +180,6 @@ module Import
                     process_negative_genes(negativegenes, genotypes, genocolorectal, record)
                   end
                 end
-                #genotypes
               elsif testresult.scan(CDNA_REGEX).size == 2
                 if testresult.scan(COLORECTAL_GENES_REGEX).uniq.size == 2
                   genes = testresult.scan(COLORECTAL_GENES_REGEX).flatten
@@ -196,7 +192,7 @@ module Import
                     process_negative_genes(negativegenes, genotypes, genocolorectal, record)
                   end
                 elsif testresult.scan(COLORECTAL_GENES_REGEX).uniq.size == 1
-                  genes = testresult.scan(COLORECTAL_GENES_REGEX).flatten * 2
+                  genes = testresult.scan(COLORECTAL_GENES_REGEX).flatten.uniq * 2
                   cdnas = testresult.scan(CDNA_REGEX).flatten
                   proteins = testresult.scan(PROTEIN_REGEX).flatten
                   positive_results = genes.zip(cdnas,proteins)
@@ -221,7 +217,7 @@ module Import
                     negativegenes = genelist - testresult.scan(COLORECTAL_GENES_REGEX).flatten
                     process_negative_genes(negativegenes, genotypes, genocolorectal, record)
                   end
-                else 
+                else
                   genes = testresult.scan(COLORECTAL_GENES_REGEX).flatten
                   chromosomalvariants = testresult.scan(CHR_VARIANTS_REGEX).flatten * genes.size
                   positive_results = genes.zip(chromosomalvariants)
