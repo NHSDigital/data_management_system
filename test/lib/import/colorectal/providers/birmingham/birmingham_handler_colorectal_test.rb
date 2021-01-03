@@ -117,6 +117,16 @@ class BirminghamHandlerColorectalTest < ActiveSupport::TestCase
     assert_equal 6, @handler.process_variants_from_report(@genotype, multiple_cdna_record).size
   end
 
+  test 'process_chromosomic_variant_empty_teststatus' do
+    empty_teststatus_chromovariant_record = build_raw_record('pseudo_id1' => 'bob')
+    empty_teststatus_chromovariant_record.raw_fields['teststatus'] = 'Cabbage'
+    empty_teststatus_chromovariant_record.raw_fields['report'] = 'The protein truncation test (PTT) detects the presence of chain-terminating mutations in the APC gene. A truncation has previously been identified in this patient family in the region of exon 15E to 15J.'
+    empty_teststatus_chromovariant_record.raw_fields['indication'] = 'FAP'
+    @logger.expects(:debug).with('ABNORMAL TEST')
+    @logger.expects(:debug).with('SUCCESSFUL gene parse for APC')
+    assert_equal 1, @handler.process_variants_from_report(@genotype, empty_teststatus_chromovariant_record).size
+  end
+
   private
 
   def build_raw_record(options = {})
