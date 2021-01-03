@@ -27,7 +27,7 @@ class CreateMbisProjectTest < ActionDispatch::IntegrationTest
     fill_in 'project_start_data_date', with: '11/12/2019'
     click_button 'commit'
     assert has_no_content? "Start data date can't be blank"
-    fill_in 'project_end_data_date', with: '11/12/2020'
+    fill_in 'project_end_data_date', with: (Date.current + 1.year).strftime('%d/%m/%Y)')
     click_button 'commit'
     assert has_no_content? "End data date can't be blank"
     select_and_accept_new_dataset('Births Gold Standard')
