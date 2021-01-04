@@ -69,8 +69,10 @@ module Import
                     negativegenes = genelist
                     process_negative_genes(negativegenes, genotypes, genocolorectal, record)
                   else
-                    negativegenes = genelist - testresult.scan(COLORECTAL_GENES_REGEX).flatten
-                    process_negative_genes(negativegenes, genotypes, genocolorectal, record)
+                    if full_screen?(record)
+                      negativegenes = genelist - testresult.scan(COLORECTAL_GENES_REGEX).flatten
+                      process_negative_genes(negativegenes, genotypes, genocolorectal, record)
+                    end
                     genocolorectal.add_gene_colorectal(testresult.scan(COLORECTAL_GENES_REGEX).join)
                     genocolorectal.add_gene_location('.')
                     genocolorectal.add_status(2)
