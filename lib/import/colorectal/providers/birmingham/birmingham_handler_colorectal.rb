@@ -82,7 +82,7 @@ module Import
               elsif posnegtest.upcase == 'N'
                 @logger.debug 'NORMAL TEST FOUND'
                 if full_screen?(record)
-                  negativegenes = genelist + testresult.scan(COLORECTAL_GENES_REGEX).flatten.uniq
+                  negativegenes = [genelist + testresult.scan(COLORECTAL_GENES_REGEX)].flatten.uniq
                   process_negative_genes(negativegenes, genotypes, genocolorectal, record)
                 else
                   negativegenes = testresult.scan(COLORECTAL_GENES_REGEX).flatten.uniq
