@@ -31,16 +31,12 @@ module Import
             process_genetictestscope(genocolorectal, record)
             res = process_variants_from_report(genocolorectal, record)
             res.each { |cur_genotype| @persister.integrate_and_store(cur_genotype) }
-            # @persister.integrate_and_store(genocolorectal)
           end
 
           def process_genetictestscope(genocolorectal, record)
             Maybe(record.raw_fields['moleculartestingtype']).each do |tscope|
               if TEST_SCOPE_MAP_COLO_COLO[tscope.downcase.strip]
                 genocolorectal.add_test_scope(TEST_SCOPE_MAP_COLO_COLO[tscope.downcase.strip])
-                # @logger.debug 'Processed genetictestscope '\
-                              # "#{TEST_SCOPE_MAP_COLO_COLO[tscope.downcase.strip]} for #{tscope}"
-               else #@logger.debug 'UNABLE to process genetictestscope'
               end
             end
           end
@@ -54,21 +50,20 @@ module Import
               genelist = COLORECTAL_GENES_MAP[record.raw_fields['indication']]
               if posnegtest.upcase == 'P'
                 @logger.debug 'ABNORMAL TEST'
-                if testresult.scan(/MYH/).size > 0
+                if testresult.scan(/MYH/).size.positive?
                   process_mutyh_specific_variants(testresult, genelist, genotypes, genocolorectal, record)
                 elsif testresult.scan(COLORECTAL_GENES_REGEX).empty?
-                  if testreport.scan(CDNA_REGEX).size > 0
+                  if testreport.scan(CDNA_REGEX).size.positive?
                     process_testreport_cdna_variants(testreport, genelist, genotypes, genocolorectal, record)
-                  elsif testreport.scan(CHR_VARIANTS_REGEX).size > 1
+                  elsif testreport.scan(CHR_VARIANTS_REGEX).size.positive?
                     process_testreport_chromosome_variants(testreport, genelist, genotypes, genocolorectal, record)
                   else
                     process_malformed_variants(testresult, testreport, genelist, genotypes, genocolorectal, record)
                   end
-                  #genotypes
                 else
-                  if testresult.scan(CDNA_REGEX).size > 0
+                  if testresult.scan(CDNA_REGEX).size.positive?
                     process_testresult_cdna_variants(testresult, genelist, genotypes, record, genocolorectal)
-                  elsif testresult.scan(CHR_VARIANTS_REGEX).size > 0
+                  elsif testresult.scan(CHR_VARIANTS_REGEX).size.positive?
                     process_testresult_chromosomal_variants(testresult, genelist, genotypes, record, genocolorectal)
                   elsif testresult.match(/No known pathogenic/i)
                     negativegenes = genelist
@@ -76,19 +71,23 @@ module Import
                   else
                     negativegenes = genelist - testresult.scan(COLORECTAL_GENES_REGEX).flatten
                     process_negative_genes(negativegenes, genotypes, genocolorectal, record)
-                    genocolorectal.add_gene_colorectal(testresult.scan(COLORECTAL_GENES_REGEX).join())
+                    genocolorectal.add_gene_colorectal(testresult.scan(COLORECTAL_GENES_REGEX).join)
                     genocolorectal.add_gene_location('.')
                     genocolorectal.add_status(2)
                     genotypes.append(genocolorectal)
                   end
-                  #genotypes
                 end
               elsif posnegtest.upcase == 'N'
                 @logger.debug 'NORMAL TEST FOUND'
-                negativegenes = genelist # + all the genes listed in the teststatus column
-                process_negative_genes(negativegenes, genotypes, genocolorectal, record)
+                if full_screen?(record)
+                  negativegenes = genelist + testresult.scan(COLORECTAL_GENES_REGEX).flatten.uniq
+                  process_negative_genes(negativegenes, genotypes, genocolorectal, record)
+                else
+                  negativegenes = testresult.scan(COLORECTAL_GENES_REGEX).flatten.uniq
+                  process_negative_genes(negativegenes, genotypes, genocolorectal, record)
+                end
+                # else @logger.debug "UNRECOGNISED TAG FOR #{record.raw_fields[indication]}"
               end
-            # else @logger.debug "UNRECOGNISED TAG FOR #{record.raw_fields[indication]}"
             end
             genotypes
           end
