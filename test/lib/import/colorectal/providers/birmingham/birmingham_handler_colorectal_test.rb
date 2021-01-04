@@ -32,7 +32,6 @@ class BirminghamHandlerColorectalTest < ActiveSupport::TestCase
     @logger.expects(:debug).with('SUCCESSFUL gene parse for EPCAM')
     @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH6')
     assert_equal 5, @handler.process_variants_from_report(@genotype, @record).size
-    #assert_equal 'p.Lys145Asn', @handler.process_variants_from_report(@genotype, @record)[4].attribute_map['proteinimpact']
   end
 
   test 'process_mutation_from_fullscreen' do
@@ -141,7 +140,7 @@ class BirminghamHandlerColorectalTest < ActiveSupport::TestCase
   end
 
   def clinical_json
-    { sex:'1',
+    { sex: '1',
       consultantcode: 'Consultant Code',
       providercode: 'Provider Code',
       receiveddate: '2019-10-17T00:00:00.000+01:00',
@@ -151,13 +150,12 @@ class BirminghamHandlerColorectalTest < ActiveSupport::TestCase
       moleculartestingtype: '1',
       specimentype: '12',
       report: 'Next Generation Sequencing of coding regions in MSH2 (NM_000251.2) and MSH6 (NM_000179.2) (Illumina TruSight Hereditary Cancer Panel). WMRGL universal bioinformatics pipeline v0.5.2 (minimum sequencing depth 20x within exons and +/-5bp, calls with an allele frequency below 15% filtered out). Sanger sequencing as required. MLPA analysis of all MSH2 and MSH6 exons to detect whole exon deletions/duplications. MRC-Holland kits P003-D1 and P072-D1. MLPA also detects a recurrent 10MB inversion in MSH2 and 3’ deletions of EPCAM (NM_002354.3). These testing methods may not detect mosaic variants. Sequence nomenclature using HGVS guidelines. Variants classified according to ACGS Best Practice Guidelines 2020. DNA has been stored.',
-      age: '999'}.to_json
+      age: '999' }.to_json
   end
-
 
   def rawtext_clinical_json
     { 'patient id' => 'Patient ID',
-      sex:  'M',
+      sex: 'M',
       servicereportidentifier: 'Service Report Identifier',
       reason: 'Diagnosis (2)',
       moleculartestingtype: 'Diagnosis',
@@ -185,6 +183,6 @@ class BirminghamHandlerColorectalTest < ActiveSupport::TestCase
       'clinician first name' => 'Clinician name',
       'clinician role' => 'Clinician Role',
       specialty: 'Genetics',
-      department: 'CLINICAL GENETICS'}.to_json
+      department: 'CLINICAL GENETICS' }.to_json
   end
 end
