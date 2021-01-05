@@ -50,5 +50,9 @@ Rails.application.configure do
 
   # Raises error for missing translations
   # config.action_view.raise_on_missing_translations = true
-  # PaperTrail.enabled = false
+
+  config.after_initialize do
+    # Speed up tests by disabling audit by default
+    PaperTrail.enabled = false
+  end
 end
