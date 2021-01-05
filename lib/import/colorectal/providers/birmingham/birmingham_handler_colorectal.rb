@@ -67,11 +67,11 @@ module Import
                     process_testresult_chromosomal_variants(testresult, genelist, genotypes, record, genocolorectal)
                   elsif testresult.match(/No known pathogenic/i)
                     negativegenes = genelist
-                    process_negative_genes(negativegenes, genotypes, genocolorectal, record)
+                    process_negative_genes(negativegenes, genotypes, genocolorectal)
                   else
                     if full_screen?(record)
                       negativegenes = genelist - testresult.scan(COLORECTAL_GENES_REGEX).flatten
-                      process_negative_genes(negativegenes, genotypes, genocolorectal, record)
+                      process_negative_genes(negativegenes, genotypes, genocolorectal)
                     end
                     genocolorectal.add_gene_colorectal(testresult.scan(COLORECTAL_GENES_REGEX).join)
                     genocolorectal.add_gene_location('.')
@@ -80,15 +80,8 @@ module Import
                   end
                 end
               elsif posnegtest.upcase == 'N'
-                @logger.debug 'NORMAL TEST FOUND'
-                if full_screen?(record)
-                  negativegenes = [genelist + testresult.scan(COLORECTAL_GENES_REGEX)].flatten.uniq
-                  process_negative_genes(negativegenes, genotypes, genocolorectal, record)
-                else
-                  negativegenes = testresult.scan(COLORECTAL_GENES_REGEX).flatten.uniq
-                  process_negative_genes(negativegenes, genotypes, genocolorectal, record)
-                end
-                # else @logger.debug "UNRECOGNISED TAG FOR #{record.raw_fields[indication]}"
+                process_negative_records(genelist, genotypes, testresult, testreport, record, genocolorectal)
+              else @logger.debug "UNRECOGNISED TAG FOR #{record.raw_fields[indication]}"
               end
             end
             genotypes
