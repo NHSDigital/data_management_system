@@ -14,13 +14,13 @@ class DataPrivacyImpactAssessmentsTest < ActionDispatch::IntegrationTest
 
     dom_id = "\#data_privacy_impact_assessment_#{dpia.id}"
 
-    refute has_link?(href: new_project_data_privacy_impact_assessment_path(project))
+    assert has_no_link?(href: new_project_data_privacy_impact_assessment_path(project))
     assert has_selector?(dom_id)
 
     within(dom_id) do
-      assert has_link?(href: data_privacy_impact_assessment_path(dpia),      title: 'Details')
-      refute has_link?(href: edit_data_privacy_impact_assessment_path(dpia), title: 'Edit')
-      refute has_link?(href: data_privacy_impact_assessment_path(dpia),      title: 'Delete')
+      assert has_link?(href: data_privacy_impact_assessment_path(dpia),         title: 'Details')
+      assert has_no_link?(href: edit_data_privacy_impact_assessment_path(dpia), title: 'Edit')
+      assert has_no_link?(href: data_privacy_impact_assessment_path(dpia),      title: 'Delete')
     end
   end
 

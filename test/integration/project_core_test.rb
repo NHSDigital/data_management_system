@@ -170,8 +170,8 @@ class ProjectCoreTest < ActionDispatch::IntegrationTest
     visit team_path(teams(:team_two))
 
     assert_equal team_path(teams(:team_two)), current_path
-    refute has_button? 'Import'
-    refute has_field? 'file'
+    assert has_no_button? 'Import'
+    assert has_no_field? 'file'
   end
 
   test 'should be able to import application PDF forms as an :application_manager role' do

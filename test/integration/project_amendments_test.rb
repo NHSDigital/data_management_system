@@ -15,14 +15,14 @@ class ProjectAmendmentsTest < ActionDispatch::IntegrationTest
     within('#projectAmendments') do
       dom_id = "\#project_amendment_#{amendment.id}"
 
-      refute has_link?(href: new_project_project_amendment_path(project))
+      assert has_no_link?(href: new_project_project_amendment_path(project))
       assert has_selector?(dom_id)
 
       within(dom_id) do
         assert has_text?(amendment.requested_at.to_s(:ui))
-        assert has_link?(href: project_amendment_path(amendment),      title: 'Details')
-        refute has_link?(href: edit_project_amendment_path(amendment), title: 'Edit')
-        refute has_link?(href: project_amendment_path(amendment),      title: 'Delete')
+        assert has_link?(href: project_amendment_path(amendment),         title: 'Details')
+        assert has_no_link?(href: edit_project_amendment_path(amendment), title: 'Edit')
+        assert has_no_link?(href: project_amendment_path(amendment),      title: 'Delete')
       end
     end
   end

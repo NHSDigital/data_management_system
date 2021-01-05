@@ -115,7 +115,7 @@ class OrganisationsFlowsTest < ActionDispatch::IntegrationTest
 
     within('table') do
       assert has_text?('Test Organisation One')
-      refute has_text?('Test Organisation Two')
+      assert has_no_text?('Test Organisation Two')
     end
   end
 end

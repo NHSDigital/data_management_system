@@ -20,7 +20,7 @@ class ContractsTest < ActionDispatch::IntegrationTest
     within(dom_id) do
       assert has_link?(href: contract_path(contract),      title: 'Details')
       assert has_link?(href: edit_contract_path(contract), title: 'Edit')
-      refute has_link?(href: contract_path(contract),      title: 'Delete')
+      assert has_no_link?(href: contract_path(contract),   title: 'Delete')
     end
   end
 
