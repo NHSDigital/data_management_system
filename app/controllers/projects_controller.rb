@@ -1,7 +1,8 @@
 # This controller RESTfully manages proje &&cts
 class ProjectsController < ApplicationController
   load_and_authorize_resource :team
-  load_and_authorize_resource :project, through: :team, shallow: true, except: %i[dashboard dataset_approvals], new: %i[import]
+  load_and_authorize_resource :project, through: :team, shallow: true,
+                                        except: %i[dashboard dataset_approvals], new: %i[import]
 
   before_action -> { authorize! :read, Project }, only: %i[dashboard dataset_approvals]
 
@@ -310,8 +311,7 @@ class ProjectsController < ApplicationController
                                                                     terms_accepted _destroy],
                                     project_attachments_attributes: [:name, :attachment],
                                     # CAS
-                                    cas_application_fields_attributes: cas_fields
-                                    )
+                                    cas_application_fields_attributes: cas_fields)
   end
 
   def cas_fields

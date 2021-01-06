@@ -3,7 +3,9 @@ class SystemRole < ApplicationRecord
   has_many :users, -> { distinct }, through: :grants
 
   scope :project_based, -> { where.not(name: 'Dataset Viewer') }
-  scope :cas_manager_and_access_approvers, -> { where(name: ['CAS Manager', 'CAS Access Approver']) }
+  scope :cas_manager_and_access_approvers, lambda {
+    where(name: ['CAS Manager', 'CAS Access Approver'])
+  }
   scope :cas_access_approvers, -> { where(name: 'CAS Access Approver') }
 
   def self.fetch(key)

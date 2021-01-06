@@ -9,7 +9,7 @@ class CasDatasetApproverTest < ActionDispatch::IntegrationTest
     sign_in @user
 
     project = Project.create(project_type: project_types(:cas),
-        owner: users(:standard_user2))
+                             owner: users(:standard_user2))
     dataset = Dataset.find_by(name: 'Extra CAS Dataset One')
     project.project_datasets << ProjectDataset.new(dataset: dataset, terms_accepted: true)
 
@@ -17,11 +17,11 @@ class CasDatasetApproverTest < ActionDispatch::IntegrationTest
     visit dataset_approvals_projects_path
 
     within '#awaiting_approval' do
-      assert has_content?("#{project.id}")
+      assert has_content?(project.id.to_s)
       click_link(href: "/projects/#{project.id}", title: 'Details')
     end
 
-    click_link(href: "#datasets")
+    click_link(href: '#datasets')
     assert has_content?('Extra CAS Dataset One')
 
     assert_nil project.project_datasets.first.approved

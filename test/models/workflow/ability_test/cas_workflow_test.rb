@@ -4,9 +4,7 @@ module Workflow
   # Tests grants relating to the CAS workflow.
   class CasWorkflowTest < ActiveSupport::TestCase
     def setup
-      @project = create_project(
-        project_type: project_types(:cas),
-        project_purpose: 'test')
+      @project = create_project(project_type: project_types(:cas), project_purpose: 'test')
     end
 
     test 'project workflow as basic user on project they do not own' do
@@ -429,10 +427,6 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejection_reviewed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:renewal))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_granted))
-    end
-
-    test 'project workflow as administrator' do
-      user = users(:admin_user)
     end
   end
 end

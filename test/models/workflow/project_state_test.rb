@@ -136,9 +136,9 @@ module Workflow
         project.transition_to!(workflow_states(:access_approver_approved))
       end
 
-      assert_equal notifications.last.body, "Your CAS access has been approved for application " \
+      assert_equal notifications.last.body, 'Your CAS access has been approved for application ' \
                                             "#{project.id}. You will receive a further " \
-                                            "notification once your account has been updated"
+                                            'notification once your account has been updated'
     end
 
     test 'should notify user on update to access granted' do
@@ -157,7 +157,7 @@ module Workflow
         project.transition_to!(workflow_states(:access_granted))
       end
 
-      assert_equal notifications.last.body, "CAS access has been granted for your account based " \
+      assert_equal notifications.last.body, 'CAS access has been granted for your account based ' \
                                             "on application #{project.id}."
     end
 
@@ -177,8 +177,8 @@ module Workflow
       end
 
       assert_equal notifications.last.body, "CAS project #{project.id} - Access has been granted " \
-                                            "by the helpdesk and the applicant now has CAS " \
-                                            "access.\n\n"
+                                            'by the helpdesk and the applicant now has CAS ' \
+                                            'access.\n\n'
     end
   end
 end
