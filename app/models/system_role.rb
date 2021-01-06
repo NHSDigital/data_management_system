@@ -4,6 +4,7 @@ class SystemRole < ApplicationRecord
 
   scope :project_based, -> { where.not(name: 'Dataset Viewer') }
   scope :cas_manager_and_access_approvers, -> { where(name: ['CAS Manager', 'CAS Access Approver']) }
+  scope :cas_access_approvers, -> { where(name: 'CAS Access Approver') }
 
   def self.fetch(key)
     return key if key.is_a?(self)

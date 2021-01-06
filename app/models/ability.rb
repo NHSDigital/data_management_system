@@ -13,10 +13,10 @@ class Ability
     can :read, User, id: user.id
     can :read, Grant, user_id: user.id
     can :read, [Category, Node]
-    # TODO: test
     can :create, Project, project_type_id: ProjectType.cas.pluck(:id)
     can :read, Project, project_type_id: ProjectType.cas.pluck(:id),
-                                          grants: { user_id: user.id, roleable: ProjectRole.owner }
+                        grants: { user_id: user.id, roleable: ProjectRole.owner }
+    # TODO: do we still want them to be able to destroy?
     can %i[update destroy], Project, project_type_id: ProjectType.cas.pluck(:id),
                                      grants: { user_id: user.id, roleable: ProjectRole.owner },
                                      current_state: { id: 'DRAFT' }
@@ -347,7 +347,8 @@ class Ability
   def cas_access_approver_grants(user)
     return unless user.role?(SystemRole.fetch(:cas_access_approver))
 
-    can %i[read], Project, project_type_id: ProjectType.cas.pluck(:id)
+    can %i[read], Project, project_type_id: ProjectType.cas.pluck(:id),
+                           current_state: { id: Workflow::State.access_approval_states.map(&:id) }
   end
 
   def cas_manager_grants(user)

@@ -468,10 +468,8 @@ module Workflow
       project_ids =
         @user.projects.active.through_grant_of(role, roleable_type).pluck('grants.project_id')
       can :read, ProjectState, project_id: project_ids
-      # TODO test the two states SUBMITTED REJECTED
-      # Do we want the basic user to be able to go back from these states? I don't think so
       can :create, ProjectState, state: { id: 'DRAFT' },
-                                 project: { current_state: { id: %w[SUBMITTED REJECTED] },
+                                 project: { current_state: { id: 'SUBMITTED' },
                                             project_type: { name: 'CAS' },
                                             id: project_ids }
       can :create, ProjectState, state: { id: 'SUBMITTED' },
@@ -483,33 +481,54 @@ module Workflow
                                  project: { current_state: { id: 'DRAFT' },
                                             project_type: { name: 'CAS' },
                                             id: project_ids }
-      can :transition, Project, { id: project_ids, project_type: { name: 'CAS' } }
+      can :create, ProjectState, state: { id: 'ACCESS_GRANTED' },
+                                 project: { current_state: { id: 'RENEWAL' },
+                                            project_type: { name: 'CAS' },
+                                            id: project_ids }
+      can :create, ProjectState, state: { id: %w[ACCOUNT_CLOSED DRAFT] },
+                                 project: { current_state: { id: 'ACCESS_GRANTED' },
+                                            project_type: { name: 'CAS' },
+                                            id: project_ids }
+      can :create, ProjectState, state: { id: 'DRAFT' },
+                                 project: { current_state: { id: 'REJECTION_REVIEWED' },
+                                            project_type: { name: 'CAS' },
+                                            id: project_ids }
+      can :transition, Project, id: project_ids, project_type: { name: 'CAS' }
     end
 
     def as_account_approver
       return unless @user.cas_access_approver?
-      can :create, ProjectState, state: { id: 'DRAFT' },
-                                 project: { current_state: { id: 'REJECTED' },
+
+      role = Array.wrap(ProjectRole.fetch(:owner))
+      roleable_type = 'ProjectRole'
+      project_ids =
+        @user.projects.active.through_grant_of(role, roleable_type).pluck('grants.project_id')
+      can :create, ProjectState, state: { id: %w[ACCESS_APPROVER_APPROVED
+                                                 ACCESS_APPROVER_REJECTED] },
+                                 project: { current_state: { id: 'SUBMITTED' },
                                             project_type: { name: 'CAS' } }
-      can :create, ProjectState, state: { id: 'APPROVED' },
-                                 project: { current_state: { id: 'AWAITING_ACCOUNT_APPROVAL' },
-                                            project_type: { name: 'CAS' } }
-      can :create, ProjectState, state: { id: 'REJECTED' },
-                                 project: { current_state: { id: 'AWAITING_ACCOUNT_APPROVAL' },
-                                            project_type: { name: 'CAS' } }
-      can :create, ProjectState, state: { id: 'REJECTED' },
-                                 project: { current_state: { id: 'APPROVED' },
-                                            project_type: { name: 'CAS' } }
-      can :create, ProjectState, state: { id: 'APPROVED' },
-                                 project: { current_state: { id: 'REJECTED' },
-                                            project_type: { name: 'CAS' } }
+      cannot :create, ProjectState, state: { id: %w[ACCESS_APPROVER_APPROVED
+                                                    ACCESS_APPROVER_REJECTED] },
+                                    project: { current_state: { id: 'SUBMITTED' },
+                                               project_type: { name: 'CAS' },
+                                               id: project_ids }
       can :transition, Project, project_type: { name: 'CAS' }
     end
 
     # Ticket suggests they shouldn't have any additional transition abilities over basic_user
     def as_cas_manager
       return unless @user.cas_manager?
-      # TODO placeholder for ticket 22893
+
+      can :create, ProjectState, state: { id: 'SUBMITTED' },
+                                 project: { current_state: { id: 'ACCESS_APPROVER_REJECTED' },
+                                            project_type: { name: 'CAS' } }
+      can :create, ProjectState, state: { id: 'REJECTION_REVIEWED' },
+                                 project: { current_state: { id: 'ACCESS_APPROVER_REJECTED' },
+                                            project_type: { name: 'CAS' } }
+      can :create, ProjectState, state: { id: 'DRAFT' },
+                                 project: { current_state: { id: 'ACCOUNT_CLOSED' },
+                                            project_type: { name: 'CAS' } }
+      can :transition, Project, project_type: { name: 'CAS' }
     end
 
     def as_administrator
