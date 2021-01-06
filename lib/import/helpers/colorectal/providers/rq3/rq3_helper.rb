@@ -117,7 +117,7 @@ module Import
             def process_testreport_chromosome_variants(testreport, genelist, genotypes, genocolorectal, record)
               if testreport.scan(COLORECTAL_GENES_REGEX).uniq.size == 1
                 if testreport.scan(CHR_VARIANTS_REGEX).uniq.size == 1
-                  genocolorectal.add_gene_colorectal(testreport.scan(COLORECTAL_GENES_REGEX).join)
+                  genocolorectal.add_gene_colorectal(testreport.scan(COLORECTAL_GENES_REGEX).uniq.join)
                   genocolorectal.add_variant_type(testreport.scan(CHR_VARIANTS_REGEX).join)
                   genocolorectal.add_status(2)
                   genotypes.append(genocolorectal)
@@ -173,7 +173,7 @@ module Import
             def process_testresult_chromosomal_variants(testresult, genelist, genotypes, record, genocolorectal)
               if testresult.scan(CHR_VARIANTS_REGEX).size == 1
                 if testresult.scan(COLORECTAL_GENES_REGEX).uniq.size == 1
-                  genocolorectal.add_gene_colorectal(testresult.scan(COLORECTAL_GENES_REGEX).join)
+                  genocolorectal.add_gene_colorectal(testresult.scan(COLORECTAL_GENES_REGEX).uniq.join)
                   genocolorectal.add_variant_type(testresult.scan(CHR_VARIANTS_REGEX).join)
                   genocolorectal.add_status(2)
                   genotypes.append(genocolorectal)
@@ -193,7 +193,7 @@ module Import
                 end
               else
                 if testresult.scan(COLORECTAL_GENES_REGEX).uniq.size == 1
-                  genocolorectal.add_gene_colorectal(testresult.scan(COLORECTAL_GENES_REGEX).join)
+                  genocolorectal.add_gene_colorectal(testresult.scan(COLORECTAL_GENES_REGEX).uniq.join)
                   genocolorectal.add_variant_type(testresult.scan(CHR_VARIANTS_REGEX)[1])
                   genocolorectal.add_status(2)
                   genotypes.append(genocolorectal)
