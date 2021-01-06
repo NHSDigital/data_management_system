@@ -37,7 +37,6 @@ class ProjectDataset < ApplicationRecord
 
   validate :terms_accepted_for_dataset
 
-  after_update :auto_transition_application
   after_update :notify_cas_approved_change
 
   # TODO: TEST
@@ -47,15 +46,6 @@ class ProjectDataset < ApplicationRecord
     return if terms_accepted
 
     errors.add(:project_dataset, "Terms accepted can't be blank")
-  end
-
-  # TODO test this!
-  def auto_transition_application
-    return unless project.cas?
-    return unless project.current_state&.id == 'SUBMITTED'
-    return if project.project_datasets.any? { |project_dataset| project_dataset.approved.nil? }
-
-    project.transition_to!(Workflow::State.find('AWAITING_ACCOUNT_APPROVAL'))
   end
 
   def notify_cas_approved_change
