@@ -6,6 +6,7 @@ class CasDatasetApproverTest < ActionDispatch::IntegrationTest
   end
 
   test 'should be able to view list of projects that user has access to approve' do
+    ProjectDatasetsController.any_instance.expects(:valid_otp?).twice.returns(false).then.returns(true)
     sign_in @user
 
     project = Project.create(project_type: project_types(:cas),
@@ -29,7 +30,13 @@ class CasDatasetApproverTest < ActionDispatch::IntegrationTest
     project_dataset = project.project_datasets.first
 
     assert_changes -> { project_dataset.reload.approved }, from: nil, to: true do
-      find('.btn-success').click
+      within('#approvals') do
+        find("#approval_project_dataset_#{project_dataset.id}").click
+      end
+      within_modal(selector: '#yubikey-challenge') do
+        fill_in 'ndr_authenticate[otp]', with: 'defo a yubikey'
+        click_button 'Submit'
+      end
       assert has_content?('APPROVED')
     end
 

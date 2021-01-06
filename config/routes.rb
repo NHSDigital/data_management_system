@@ -75,6 +75,10 @@ Rails.application.routes.draw do
       collection do
         patch :update
       end
+      member do
+        patch :approve
+        put :approve
+      end
     end
   end
 
