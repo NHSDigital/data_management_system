@@ -56,7 +56,9 @@ module Import
                   if testreport.scan(CDNA_REGEX).size.positive?
                     process_testreport_cdna_variants(testreport, genelist, genotypes, genocolorectal, record)
                   elsif testreport.scan(CHR_VARIANTS_REGEX).size.positive?
-                    process_testreport_chromosome_variants(testreport, genelist, genotypes, genocolorectal, record)
+                    testcolumn = testreport
+                    process_chromosomal_variant(testcolumn, genelist, genotypes, record, genocolorectal)
+                    # process_testreport_chromosome_variants(testreport, genelist, genotypes, genocolorectal, record)
                   else
                     process_malformed_variants(testresult, testreport, genelist, genotypes, genocolorectal, record)
                   end
@@ -64,7 +66,9 @@ module Import
                   if testresult.scan(CDNA_REGEX).size.positive?
                     process_testresult_cdna_variants(testresult, genelist, genotypes, record, genocolorectal)
                   elsif testresult.scan(CHR_VARIANTS_REGEX).size.positive?
-                    process_testresult_chromosomal_variants(testresult, genelist, genotypes, record, genocolorectal)
+                    testcolumn = testresult
+                    process_chromosomal_variant(testcolumn, genelist, genotypes, record, genocolorectal)
+                    # process_testresult_chromosomal_variants(testresult, genelist, genotypes, record, genocolorectal)
                   elsif testresult.match(/No known pathogenic/i)
                     negativegenes = genelist
                     process_negative_genes(negativegenes, genotypes, genocolorectal)
