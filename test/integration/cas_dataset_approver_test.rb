@@ -26,17 +26,14 @@ class CasDatasetApproverTest < ActionDispatch::IntegrationTest
 
     assert_nil project.project_datasets.first.approved
 
-    project_changes = { from: 'SUBMITTED', to: 'AWAITING_ACCOUNT_APPROVAL' }
-
     project_dataset = project.project_datasets.first
 
-    assert_changes -> { project.reload.current_state.id }, project_changes do
-      assert_changes -> { project_dataset.reload.approved }, from: nil, to: true do
-        find('.btn-success').click
-        assert has_content?('APPROVED')
-      end
-      assert_equal find('#project_status').text, 'AWAITING_ACCOUNT_APPROVAL'
+    assert_changes -> { project_dataset.reload.approved }, from: nil, to: true do
+      find('.btn-success').click
+      assert has_content?('APPROVED')
     end
+
+    assert_equal find('#project_status').text, 'Pending'
 
     click_link('X')
 
@@ -44,11 +41,11 @@ class CasDatasetApproverTest < ActionDispatch::IntegrationTest
     assert find('.btn-success')
     assert_nil project_dataset.reload.approved
 
-    assert_no_changes -> { project.reload.current_state.id } do
-      assert_changes -> { project_dataset.reload.approved }, from: nil, to: false do
-        find('.btn-danger').click
-        assert has_content?('DECLINED')
-      end
+    assert_changes -> { project_dataset.reload.approved }, from: nil, to: false do
+      find('.btn-danger').click
+      assert has_content?('DECLINED')
     end
+
+    assert_equal find('#project_status').text, 'Pending'
   end
 end
