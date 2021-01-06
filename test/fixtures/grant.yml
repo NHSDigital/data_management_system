@@ -378,3 +378,9 @@ cas_dataset_approver:
   roleable: approver
   roleable_type: DatasetRole
   dataset_id: 83
+
+cas_dataset_approver_2:
+  user: cas_dataset_approver_2
+  roleable: approver
+  roleable_type: DatasetRole
+  dataset_id: 84

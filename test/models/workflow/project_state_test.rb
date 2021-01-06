@@ -138,7 +138,27 @@ module Workflow
 
       assert_equal notifications.last.body, 'Your CAS access has been approved for application ' \
                                             "#{project.id}. You will receive a further " \
-                                            'notification once your account has been updated'
+                                            "notification once your account has been updated.\n\n"
+    end
+
+    test 'should notify user on update to rejected' do
+      project = create_project(project_type: project_types(:cas), project_purpose: 'test',
+                               owner: users(:no_roles))
+      project.reload_current_state
+
+      notifications = Notification.where(title: 'CAS Access Rejected')
+      # Should not send out notifications for changes when not approved
+      assert_no_difference 'notifications.count' do
+        project.transition_to!(workflow_states(:submitted))
+        project.transition_to!(workflow_states(:access_approver_rejected))
+      end
+
+      assert_difference 'notifications.count', 1 do
+        project.transition_to!(workflow_states(:rejection_reviewed))
+      end
+
+      assert_equal notifications.last.body, 'Your CAS access has been rejected for ' \
+                                            "application #{project.id}.\n\n"
     end
 
     test 'should notify user on update to access granted' do
@@ -158,7 +178,7 @@ module Workflow
       end
 
       assert_equal notifications.last.body, 'CAS access has been granted for your account based ' \
-                                            "on application #{project.id}."
+                                            "on application #{project.id}.\n\n"
     end
 
     test 'should notify cas manager on update to access granted' do
@@ -179,6 +199,79 @@ module Workflow
       assert_equal notifications.last.body, "CAS project #{project.id} - Access has been granted " \
                                             'by the helpdesk and the applicant now has CAS ' \
                                             "access.\n\n"
+    end
+
+    test 'should notify cas access approver on update to submitted' do
+      project = create_project(project_type: project_types(:cas), project_purpose: 'test')
+      project.reload_current_state
+
+      notifications = Notification.where(title: 'CAS Application Requires Access Approval')
+      # Should not send out notifications for changes when not awaiting_account_approval
+
+      assert_difference 'notifications.count', 1 do
+        project.transition_to!(workflow_states(:submitted))
+      end
+
+      assert_equal notifications.last.body, "CAS project #{project.id} - Access approval is " \
+                                            "required.\n\n"
+
+      assert_no_difference 'notifications.count' do
+        project.transition_to!(workflow_states(:access_approver_approved))
+      end
+    end
+
+    test 'should notify cas dataset approver at submitted for project with their dataset' do
+      one_dataset_project = Project.new(project_type: ProjectType.find_by(name: 'CAS')).tap do |a|
+        a.owner = users(:no_roles)
+        a.project_datasets << ProjectDataset.new(dataset: dataset(83), terms_accepted: true,
+                                                 approved: nil)
+        a.save!
+      end
+      one_dataset_project.reload_current_state
+
+      notifications = Notification.where(title: 'CAS Application Requires Dataset Approval')
+
+      # should only send to the 1 dataset approver with grant for this dataset
+      assert_difference 'notifications.count', 1 do
+        one_dataset_project.transition_to!(workflow_states(:submitted))
+      end
+
+      assert_equal notifications.last.body, "CAS project #{one_dataset_project.id} - Dataset " \
+                                            "approval is required.\n\n"
+
+      # Should not send out notifications for changes when not submitted
+      assert_no_difference 'notifications.count' do
+        one_dataset_project.transition_to!(workflow_states(:access_approver_approved))
+      end
+
+      two_dataset_project = Project.new(project_type: ProjectType.find_by(name: 'CAS')).tap do |a|
+        a.owner = users(:no_roles)
+        a.project_datasets << ProjectDataset.new(dataset: dataset(83), terms_accepted: true,
+                                                 approved: nil)
+        a.project_datasets << ProjectDataset.new(dataset: dataset(84), terms_accepted: true,
+                                                 approved: nil)
+        a.save!
+      end
+      two_dataset_project.reload_current_state
+
+      # should only send to dataset approvers with grant for either of these 2 datasets
+      assert_difference 'notifications.count', 2 do
+        two_dataset_project.transition_to!(workflow_states(:submitted))
+      end
+
+      assert_equal notifications.last.body, "CAS project #{two_dataset_project.id} - Dataset " \
+                                            "approval is required.\n\n"
+
+      no_dataset_project = create_project(project_type: project_types(:cas), owner: users(:no_roles))
+      no_dataset_project.reload_current_state
+
+      # should not send to dataset approvers if there are no datasets
+      assert_no_difference 'notifications.count' do
+        no_dataset_project.transition_to!(workflow_states(:submitted))
+      end
+
+      refute_equal notifications.last.body, "CAS project #{no_dataset_project.id} - Dataset " \
+                                            "approval is required.\n\n"
     end
   end
 end

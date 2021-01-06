@@ -4,6 +4,12 @@ class CasMailer < ApplicationMailer
   before_action :load_project_dataset, only: [:dataset_approved_status_updated,
                                               :dataset_approved_status_updated_to_user]
 
+  def requires_dataset_approval
+    recipient = Array.wrap(params[:user].email)
+
+    mail(to: recipient, subject: 'CAS Application Requires Dataset Approval') if recipient.any?
+  end
+
   def dataset_approved_status_updated
     recipients = SystemRole.cas_manager_and_access_approvers.map(&:users).flatten.pluck(:email)
 
@@ -16,6 +22,12 @@ class CasMailer < ApplicationMailer
     mail(to: recipient, subject: 'Dataset Approval Updated') if recipient.any?
   end
 
+  def requires_account_approval
+    recipients = SystemRole.fetch(:cas_access_approver).users.pluck(:email)
+
+    mail(to: recipients, subject: 'CAS Application Requires Access Approval') if recipients.any?
+  end
+
   def access_approval_status_updated
     recipients = SystemRole.cas_manager_and_access_approvers.map(&:users).flatten.pluck(:email)
 
@@ -26,6 +38,12 @@ class CasMailer < ApplicationMailer
     recipient = Array.wrap(@project.owner.email)
 
     mail(to: recipient, subject: 'CAS Access Approved') if recipient.any?
+  end
+
+  def account_rejected_to_user
+    recipient = Array.wrap(@project.owner.email)
+
+    mail(to: recipient, subject: 'CAS Access Rejected') if recipient.any?
   end
 
   def account_access_granted_to_user
