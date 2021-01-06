@@ -157,7 +157,7 @@ module Import
                     negativegenes = genelist - testcolumn.scan(COLORECTAL_GENES_REGEX).flatten
                     process_negative_genes(negativegenes, genotypes, genocolorectal)
                   end
-                else 
+                else
                   genocolorectal.add_gene_colorectal(testcolumn.scan(COLORECTAL_GENES_REGEX).uniq.join)
                   genocolorectal.add_variant_type(testcolumn.scan(CHR_VARIANTS_REGEX)[1])
                   genocolorectal.add_status(2)
