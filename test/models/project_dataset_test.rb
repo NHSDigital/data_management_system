@@ -92,13 +92,9 @@ class ProjectDatasetTest < ActiveSupport::TestCase
                                           "Dataset One' has been updated to Approval status of " \
                                           "'Rejected'.\n\n"
 
-    assert_difference 'notifications.count', 3 do
+    assert_no_difference 'notifications.count' do
       project_dataset.update(approved: nil)
     end
-
-    assert_equal notifications.last.body, "CAS project #{project.id} - Dataset 'Extra CAS " \
-                                          "Dataset One' has been updated to Approval status of " \
-                                          "'Undecided'.\n\n"
   end
 
   test 'should notify user on approved update' do
@@ -135,12 +131,8 @@ class ProjectDatasetTest < ActiveSupport::TestCase
                                           "Dataset One' has been updated to Approval status of " \
                                           "'Rejected'.\n\n"
 
-    assert_difference 'notifications.count', 1 do
+    assert_no_difference 'notifications.count' do
       project_dataset.update(approved: nil)
     end
-
-    assert_equal notifications.last.body, "Your CAS dataset access request for 'Extra CAS " \
-                                          "Dataset One' has been updated to Approval status of " \
-                                          "'Undecided'.\n\n"
   end
 end

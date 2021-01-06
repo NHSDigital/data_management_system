@@ -178,7 +178,7 @@ module Workflow
 
       assert_equal notifications.last.body, "CAS project #{project.id} - Access has been granted " \
                                             'by the helpdesk and the applicant now has CAS ' \
-                                            'access.\n\n'
+                                            "access.\n\n"
     end
   end
 end

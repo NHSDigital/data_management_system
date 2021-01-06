@@ -53,6 +53,7 @@ class ProjectDataset < ApplicationRecord
     return unless project.cas?
     # Avoid terms terms_accepted update from triggering notification
     return if project.current_state&.id == 'DRAFT'
+    return if approved.nil?
 
     SystemRole.cas_manager_and_access_approvers.map(&:users).flatten.each do |user|
       CasNotifier.dataset_approved_status_updated(project, self, user.id)
