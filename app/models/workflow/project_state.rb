@@ -43,7 +43,7 @@ module Workflow
 
     def notify_cas_manager_approver_application_approved_rejected
       return unless project.cas?
-      return unless %w[APPROVED REJECTED].include? state_id
+      return unless %w[ACCESS_APPROVER_APPROVED ACCESS_APPROVER_REJECTED].include? state_id
 
       SystemRole.cas_manager_and_access_approvers.map(&:users).flatten.each do |user|
         CasNotifier.access_approval_status_updated(project, user.id)
@@ -53,7 +53,7 @@ module Workflow
 
     def notify_user_cas_application_approved
       return unless project.cas?
-      return unless state_id == 'APPROVED'
+      return unless state_id == 'ACCESS_APPROVER_APPROVED'
 
       CasNotifier.account_approved_to_user(project)
       CasMailer.with(project: project).send(:account_approved_to_user).deliver_now

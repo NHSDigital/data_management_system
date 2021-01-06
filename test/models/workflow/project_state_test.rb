@@ -85,44 +85,7 @@ module Workflow
       end
     end
 
-    test 'should auto-transition cas application if there are no project datasets to approve' do
-      application = Project.new(project_type: ProjectType.find_by(name: 'CAS')).tap do |a|
-        a.owner = users(:no_roles)
-        a.save!
-      end
-
-      application.transition_to!(workflow_states(:submitted))
-
-      assert_equal application.current_state, workflow_states(:awaiting_account_approval)
-    end
-
-    test 'should not auto-transition cas application if not at submitted state' do
-      application = Project.new(project_type: ProjectType.find_by(name: 'CAS')).tap do |a|
-        a.owner = users(:no_roles)
-        a.save!
-      end
-
-      application.save!
-
-      refute_equal application.current_state, workflow_states(:awaiting_account_approval)
-    end
-
-    test 'should not auto-transition cas application if there are unresolved dataset decisions' do
-      application = Project.new(project_type: ProjectType.find_by(name: 'CAS')).tap do |a|
-        a.owner = users(:no_roles)
-        a.project_datasets << ProjectDataset.new(dataset: dataset(83), terms_accepted: true,
-                                                 approved: nil)
-        a.project_datasets << ProjectDataset.new(dataset: dataset(84), terms_accepted: true,
-                                                 approved: nil)
-        a.save!
-      end
-
-      application.transition_to!(workflow_states(:submitted))
-
-      refute_equal application.current_state, workflow_states(:awaiting_account_approval)
-    end
-
-    test 'should notify cas manager and access approvers on update to approved or rejected' do
+    test 'should notify cas manager and access approvers on update to approved' do
       project = create_project(project_type: project_types(:cas), project_purpose: 'test')
       project.reload_current_state
 
@@ -130,22 +93,32 @@ module Workflow
       # Should not send out notifications for changes when not approved or rejected
       assert_no_difference 'notifications.count' do
         project.transition_to!(workflow_states(:submitted))
-        project.transition_to!(workflow_states(:awaiting_account_approval))
       end
 
       assert_difference 'notifications.count', 3 do
-        project.transition_to!(workflow_states(:approved))
+        project.transition_to!(workflow_states(:access_approver_approved))
       end
 
       assert_equal notifications.last.body, "CAS project #{project.id} - Access approval status " \
-                                            "has been updated to 'Approved'.\n\n"
+                                            "has been updated to 'Access Approver Approved'.\n\n"
+    end
+
+    test 'should notify cas manager and access approvers on update to rejected' do
+      project = create_project(project_type: project_types(:cas), project_purpose: 'test')
+      project.reload_current_state
+
+      notifications = Notification.where(title: 'Access Approval Status Updated')
+      # Should not send out notifications for changes when not approved or rejected
+      assert_no_difference 'notifications.count' do
+        project.transition_to!(workflow_states(:submitted))
+      end
 
       assert_difference 'notifications.count', 3 do
-        project.transition_to!(workflow_states(:rejected))
+        project.transition_to!(workflow_states(:access_approver_rejected))
       end
 
       assert_equal notifications.last.body, "CAS project #{project.id} - Access approval status " \
-                                            "has been updated to 'Rejected'.\n\n"
+                                            "has been updated to 'Access Approver Rejected'.\n\n"
     end
 
     test 'should notify user on update to approved' do
@@ -157,11 +130,10 @@ module Workflow
       # Should not send out notifications for changes when not approved
       assert_no_difference 'notifications.count' do
         project.transition_to!(workflow_states(:submitted))
-        project.transition_to!(workflow_states(:awaiting_account_approval))
       end
 
       assert_difference 'notifications.count', 1 do
-        project.transition_to!(workflow_states(:approved))
+        project.transition_to!(workflow_states(:access_approver_approved))
       end
 
       assert_equal notifications.last.body, "Your CAS access has been approved for application " \
@@ -178,8 +150,7 @@ module Workflow
       # Should not send out notifications for changes when not access_granted
       assert_no_difference 'notifications.count' do
         project.transition_to!(workflow_states(:submitted))
-        project.transition_to!(workflow_states(:awaiting_account_approval))
-        project.transition_to!(workflow_states(:approved))
+        project.transition_to!(workflow_states(:access_approver_approved))
       end
 
       assert_difference 'notifications.count', 1 do
@@ -198,8 +169,7 @@ module Workflow
       # Should not send out notifications for changes when not access_granted
       assert_no_difference 'notifications.count' do
         project.transition_to!(workflow_states(:submitted))
-        project.transition_to!(workflow_states(:awaiting_account_approval))
-        project.transition_to!(workflow_states(:approved))
+        project.transition_to!(workflow_states(:access_approver_approved))
       end
 
       assert_difference 'notifications.count', 2 do

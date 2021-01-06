@@ -39,9 +39,9 @@ class ProjectsMailerTest < ActionMailer::TestCase
 
   test 'access approval status updated' do
     project = create_project(project_type: project_types(:cas), project_purpose: 'test')
-    project.transition_to!(workflow_states(:awaiting_account_approval))
+    project.transition_to!(workflow_states(:submitted))
 
-    project.transition_to!(workflow_states(:approved))
+    project.transition_to!(workflow_states(:access_approver_approved))
 
     email = CasMailer.with(project: project).access_approval_status_updated
 
@@ -58,9 +58,9 @@ class ProjectsMailerTest < ActionMailer::TestCase
   test 'account approved to user' do
     project = create_project(project_type: project_types(:cas), project_purpose: 'test',
                              owner: users(:no_roles))
-    project.transition_to!(workflow_states(:awaiting_account_approval))
+    project.transition_to!(workflow_states(:submitted))
 
-    project.transition_to!(workflow_states(:approved))
+    project.transition_to!(workflow_states(:access_approver_approved))
 
     email = CasMailer.with(project: project).account_approved_to_user
 
@@ -76,7 +76,7 @@ class ProjectsMailerTest < ActionMailer::TestCase
   test 'account access granted to user' do
     project = create_project(project_type: project_types(:cas), project_purpose: 'test',
                              owner: users(:no_roles))
-    project.transition_to!(workflow_states(:approved))
+    project.transition_to!(workflow_states(:access_approver_approved))
 
     project.transition_to!(workflow_states(:access_granted))
 

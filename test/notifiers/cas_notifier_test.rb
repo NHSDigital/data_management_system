@@ -43,9 +43,9 @@ class CasNotifierTest < ActiveSupport::TestCase
 
   test 'should generate access_approval_status_updated Notifications' do
     project = create_project(project_type: project_types(:cas), project_purpose: 'test')
-    project.transition_to!(workflow_states(:awaiting_account_approval))
+    project.transition_to!(workflow_states(:submitted))
 
-    project.transition_to!(workflow_states(:approved))
+    project.transition_to!(workflow_states(:access_approver_approved))
     recipients = SystemRole.cas_manager_and_access_approvers.map(&:users).flatten
     notification = Notification.where(title: 'Access Approval Status Updated')
 
@@ -58,7 +58,7 @@ class CasNotifierTest < ActiveSupport::TestCase
     # TODO Should it be creating UserNotifications?
 
     assert_equal notification.last.body, "CAS project #{project.id} - Access approval status has " \
-                                         "been updated to 'Approved'.\n\n"
+                                         "been updated to 'Access Approver Approved'.\n\n"
   end
 
   test 'should generate account_approved_to_user Notifications' do
