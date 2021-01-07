@@ -1,0 +1,168 @@
+require 'possibly'
+require 'import/genotype'
+require 'import/storage_manager/persister'
+require 'core/provider_handler'
+require 'core/extraction_utilities'
+require 'pry'
+
+module Import
+  module Colorectal
+    module Providers
+      module Oxford
+        # Process Oxford-specific record details into generalized internal genotype format
+        class OxfordHandlerColorectal < Import::Brca::Core::ProviderHandler
+          TEST_SCOPE_MAP = { 'brca_multiplicom'           => :full_screen,
+                             'breast-tp53 panel'          => :full_screen,
+                             'breast-uterine-ovary panel' => :full_screen,
+                             'targeted'                   => :targeted_mutation } .freeze
+
+          TEST_METHOD_MAP = { 'Sequencing, Next Generation Panel (NGS)' => :ngs,
+                              'Sequencing, Dideoxy / Sanger'            => :sanger } .freeze
+
+          PASS_THROUGH_FIELDS = %w[age consultantcode
+                                   servicereportidentifier
+                                   providercode
+                                   authoriseddate
+                                   requesteddate
+                                   variantpathclass
+                                   sampletype
+                                   referencetranscriptid] .freeze
+          # TODO: transcript id may still need form normalization
+          COLORECTAL_GENES_REGEX = /(?<colorectal>APC|
+                                                BMPR1A|
+                                                EPCAM|
+                                                MLH1|
+                                                MSH2|
+                                                MSH6|
+                                                MUTYH|
+                                                PMS2|
+                                                POLD1|
+                                                POLE|
+                                                PTEN|
+                                                SMAD4|
+                                                STK11|
+                                                NTHL1)/xi . freeze # Added by Francesco
+
+          PROTEIN_REGEX = /p\.\[(?<impact>(.*?))\]|p\..+/i.freeze
+          CDNA_REGEX = /c\.\[?(?<cdna>[0-9]+.+[a-z])\]?/i.freeze
+          GENOMICCHANGE_REGEX = /Chr(?<chromosome>\d+)\.hg(?<genome_build>\d+):g\.(?<effect>.+)/i .freeze
+          def process_fields(record)
+            genotype = Import::Brca::Core::GenotypeBrca.new(record)
+            genotype.add_passthrough_fields(record.mapped_fields,
+                                            record.raw_fields,
+                                            PASS_THROUGH_FIELDS)
+            assign_method(genotype, record)
+            assign_test_scope(genotype, record)
+            assign_test_type(genotype, record)
+            process_cdna_change(genotype, record)
+            # assign_cdna_change(genotype, record)
+            process_protein_impact(genotype, record)
+            # assign_protein_change(genotype, record)
+            assign_genomic_change(genotype, record)
+            assign_servicereportidentifier(genotype, record)
+            # process_gene(genotype, record)
+            # @persister.integrate_and_store(genotype)
+            res = process_gene(genotype, record)
+            res.each { |cur_genotype| @persister.integrate_and_store(cur_genotype)} unless res.nil?
+          end
+
+          def assign_method(genotype, record)
+            # ******************* Assign testing method ************************
+            Maybe(record.raw_fields['karyotypingmethod']).each do |raw_method|
+              method = TEST_METHOD_MAP[raw_method]
+              if method
+                genotype.add_method(method)
+              else
+                @logger.warn "Unknown method: #{raw_method}; possibly need to update map"
+              end
+            end
+          end
+
+          def assign_test_type(genotype, record)
+            # ******************* Assign testing type  ************************
+            Maybe(record.raw_fields['moleculartestingtype']).each do |ttype|
+              if ttype.downcase != 'diagnostic'
+                @logger.warn "Oxford provided test type: #{ttype}; expected" \
+                             'diagnostic only'
+              end
+              # TODO: check that 'diagnostic' is exactly how it comes through
+              genotype.add_molecular_testing_type_strict(ttype)
+            end
+          end
+
+          def assign_servicereportidentifier(genotype, record)
+            if record.raw_fields['investigationid']
+              genotype.attribute_map['servicereportidentifier'] = record.raw_fields['investigationid']
+            else
+              @logger.debug 'Servicereportidentifier missing for this record'
+            end
+          end
+
+          def assign_test_scope(genotype, record)
+            # ******************* Assign test scope ************************
+            Maybe(record.raw_fields['scope / limitations of test']).each do |ttype|
+              scope = TEST_SCOPE_MAP[ttype.downcase.strip]
+              genotype.add_test_scope(scope) if scope
+            end
+          end
+
+          def process_cdna_change(genotype, record)
+            case record.mapped_fields['codingdnasequencechange']
+            when CDNA_REGEX
+              genotype.add_gene_location($LAST_MATCH_INFO[:cdna])
+              @logger.debug "SUCCESSFUL cdna change parse for: #{$LAST_MATCH_INFO[:cdna]}"
+            else
+              @logger.debug 'FAILED cdna change parse'
+            end
+          end
+
+          def process_protein_impact(genotype, record)
+            case record.raw_fields['proteinimpact']
+            when PROTEIN_REGEX
+              genotype.add_protein_impact($LAST_MATCH_INFO[:impact])
+              @logger.debug "SUCCESSFUL protein change parse for: #{$LAST_MATCH_INFO[:impact]}"
+            else
+              @logger.debug 'FAILED protein change parse'
+            end
+          end
+
+          def process_gene(genotype, record)
+            genotypes = []
+            gene = record.raw_fields['gene'] unless record.raw_fields['gene']
+            synonym = record.raw_fields['sinonym'] unless record.raw_fields['sinonym'].nil?
+            if gene
+              genotype.add_gene(gene)
+              # genotypes << genotype
+              # @successful_gene_counter += 1
+              @logger.debug 'SUCCESSFUL gene parse for:' \
+                             "#{record.mapped_fields['gene'].to_i}"
+                             genotypes << genotype
+            elsif BRCA_REGEX.match(synonym)
+              @logger.debug "SUCCESSFUL gene parse from #{synonym}"
+              genotype.add_gene($LAST_MATCH_INFO[:brca])
+              genotypes << genotype
+            else
+              @logger.debug 'FAILED gene parse'
+            end
+            genotypes
+          end
+
+          def assign_genomic_change(genotype, record)
+            # ******************* Assign genomic change ************************
+            Maybe(record.raw_fields['genomicchange']).each do |raw_change|
+              if GENOMICCHANGE_REGEX.match(raw_change)
+                genotype.add_genome_build($LAST_MATCH_INFO[:genome_build].to_i)
+                genotype.add_parsed_genomic_change($LAST_MATCH_INFO[:chromosome],
+                                                   $LAST_MATCH_INFO[:effect])
+              elsif /Normal/i.match(raw_change)
+                genotype.add_status(1)
+              else
+                @logger.warn "Could not process, so adding raw genomic change: #{raw_change}"
+              end
+            end
+          end
+        end
+      end
+    end
+  end
+end
