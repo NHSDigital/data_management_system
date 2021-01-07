@@ -93,7 +93,7 @@ class ApplicationProjectTest < ActionDispatch::IntegrationTest
     sign_in @odr
     visit project_path(@project)
 
-    refute has_content? 'no contract document(s) attached'
+    assert has_no_content? 'no contract document(s) attached'
     assert has_button?  'Reject Contract'
     assert has_button?  'Mark Contract as Completed'
 
@@ -164,11 +164,11 @@ class ApplicationProjectTest < ActionDispatch::IntegrationTest
 
   test 'reset approvals should only show if user can reset approvals' do
     visit project_path(@project)
-    refute has_content? 'Reset Approvals'
+    assert has_no_content? 'Reset Approvals'
 
     @project.transition_to!(workflow_states(:submitted))
     visit project_path(@project)
-    refute has_content? 'Reset Approvals'
+    assert has_no_content? 'Reset Approvals'
 
     sign_in @odr
     visit project_path(@project)
@@ -183,7 +183,7 @@ class ApplicationProjectTest < ActionDispatch::IntegrationTest
     @project.transition_to!(workflow_states(:submitted))
     visit project_path(@project)
     click_on 'Users'
-    refute has_content? 'Edit'
+    assert has_no_content? 'Edit'
   end
 
   test 'should not be able to add or remove data items if the project is submitted' do
@@ -194,7 +194,7 @@ class ApplicationProjectTest < ActionDispatch::IntegrationTest
     @project.transition_to!(workflow_states(:submitted))
     visit project_path(@project)
     click_on 'Data Items'
-    refute has_content? 'Add / Remove data items'
+    assert has_no_content? 'Add / Remove data items'
   end
 
   test 'should only approve legal / ethical when project is submitted' do
@@ -203,7 +203,7 @@ class ApplicationProjectTest < ActionDispatch::IntegrationTest
     visit project_path(project)
     click_on 'Legal / Ethical'
     assert has_content? 'Edit'
-    refute has_content? 'Approve'
+    assert has_no_content? 'Approve'
 
     project.transition_to!(workflow_states(:review))
     project.transition_to!(workflow_states(:submitted))
@@ -211,7 +211,7 @@ class ApplicationProjectTest < ActionDispatch::IntegrationTest
     sign_in @odr
     visit project_path(project)
     click_on 'Legal / Ethical'
-    refute has_content? 'Edit'
+    assert has_no_content? 'Edit'
     assert has_content? 'Approve'
   end
 
