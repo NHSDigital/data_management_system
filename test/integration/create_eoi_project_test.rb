@@ -8,7 +8,7 @@ class CreateEoiProjectTest < ActionDispatch::IntegrationTest
     login_and_accept_terms(@user)
   end
 
-  test 'create eoi' do
+  flakey_test 'create eoi' do
     visit team_path(@team)
     click_button 'New'
     click_link 'EOI'

@@ -8,7 +8,7 @@ class CreateMbisProjectTest < ActionDispatch::IntegrationTest
     login_and_accept_terms(@user)
   end
 
-  test 'create project test' do
+  flakey_test 'create project test' do
     visit team_path(@team)
     click_button 'New'
     click_link 'Project'
