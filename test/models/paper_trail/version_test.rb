@@ -1,66 +1,78 @@
 require 'test_helper'
 
-class VersionControllerTest < ActionDispatch::IntegrationTest
+class VersionTest < ActiveSupport::TestCase
   test 'versions of team are created when created or updated' do
-    team = create_team
-    assert_equal 1, team.versions.count
+    with_versioning do
+      team = create_team
+      assert_equal 1, team.versions.count
 
-    team.update(notes: 'These team notes have changed')
-    assert_equal 2, team.versions.count
-    expected_change = ['Test Team', 'These team notes have changed']
-    assert_equal expected_change, team.versions.last.changeset['notes']
+      team.update(notes: 'These team notes have changed')
+      assert_equal 2, team.versions.count
+      expected_change = ['Test Team', 'These team notes have changed']
+      assert_equal expected_change, team.versions.last.changeset['notes']
+    end
   end
 
   test 'versions of user are created when created or updated' do
-    user = create_user
-    assert_equal 1, user.versions.count
+    with_versioning do
+      user = create_user
+      assert_equal 1, user.versions.count
 
-    user.update(notes: 'These User notes have changed')
-    assert_equal 2, user.versions.count
-    expected_change = ['This is a test user', 'These User notes have changed']
-    assert_equal expected_change, user.versions.last.changeset['notes']
+      user.update(notes: 'These User notes have changed')
+      assert_equal 2, user.versions.count
+      expected_change = ['This is a test user', 'These User notes have changed']
+      assert_equal expected_change, user.versions.last.changeset['notes']
+    end
   end
 
   test 'versions of project are created when created or updated' do
-    project = create_project
-    # a second version is created when an association is added (team_data_source)
-    assert_equal 1, project.versions.count
+    with_versioning do
+      project = create_project
+      # a second version is created when an association is added (team_data_source)
+      assert_equal 1, project.versions.count
 
-    project.update(name: 'NCRS - Updated Project Name')
-    assert_equal 2, project.versions.count
-    expected_change = ['NCRS', 'NCRS - Updated Project Name']
-    assert_equal expected_change, project.versions.last.changeset['name']
+      project.update(name: 'NCRS - Updated Project Name')
+      assert_equal 2, project.versions.count
+      expected_change = ['NCRS', 'NCRS - Updated Project Name']
+      assert_equal expected_change, project.versions.last.changeset['name']
+    end
   end
 
   # 'application' => Project
   test 'project end use returned on as part of paper trail on a application' do
-    application = projects(:test_application)
-    assert_difference 'PaperTrail::Version.count', 1 do
-      application.end_uses << end_uses(:one)
-    end
+    with_versioning do
+      application = projects(:test_application)
+      assert_difference 'PaperTrail::Version.count', 1 do
+        application.end_uses << end_uses(:one)
+      end
 
-    assert_association_tracked(application, 'ProjectEndUse',
-                               application.project_end_uses.first.id)
+      assert_association_tracked(application, 'ProjectEndUse',
+                                 application.project_end_uses.first.id)
+    end
   end
 
   test 'project classification returned on as part of paper trail on a application' do
-    application = projects(:test_application)
-    assert_difference 'PaperTrail::Version.count', 1 do
-      application.classifications << classifications(:one)
-    end
+    with_versioning do
+      application = projects(:test_application)
+      assert_difference 'PaperTrail::Version.count', 1 do
+        application.classifications << classifications(:one)
+      end
 
-    assert_association_tracked(application, 'ProjectClassification',
-                               application.project_classifications.first.id)
+      assert_association_tracked(application, 'ProjectClassification',
+                                 application.project_classifications.first.id)
+    end
   end
 
   test 'project lawful basis returned on as part of paper trail on a application' do
-    application = projects(:test_application)
-    assert_difference 'PaperTrail::Version.count', 1 do
-      application.lawful_bases << Lookups::LawfulBasis.first
-    end
+    with_versioning do
+      application = projects(:test_application)
+      assert_difference 'PaperTrail::Version.count', 1 do
+        application.lawful_bases << Lookups::LawfulBasis.first
+      end
 
-    assert_association_tracked(application, 'ProjectLawfulBasis',
-                               application.project_lawful_bases.first.id)
+      assert_association_tracked(application, 'ProjectLawfulBasis',
+                                 application.project_lawful_bases.first.id)
+    end
   end
 
   private
