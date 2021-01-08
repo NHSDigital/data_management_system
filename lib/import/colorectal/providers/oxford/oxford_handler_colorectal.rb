@@ -63,11 +63,11 @@ module Import
             assign_method(genocolorectal, record)
             assign_test_scope(genocolorectal, record)
             assign_test_type(genocolorectal, record)
-            process_cdna_change(genocolorectal, record)
-            process_protein_impact(genocolorectal, record)
+            # process_cdna_change(genocolorectal, record)
+            # process_protein_impact(genocolorectal, record)
             assign_genomic_change(genocolorectal, record)
             assign_servicereportidentifier(genocolorectal, record)
-            res = process_gene(genocolorectal, record)
+            res = process_records(genocolorectal,record)
             res.each { |cur_genotype| @persister.integrate_and_store(cur_genotype)} unless res.nil?
           end
 
@@ -128,43 +128,48 @@ module Import
             FULL_SCREEN_REGEX.match(scopecolumn)
           end
 
-          def process_cdna_change(genocolorectal, record)
-            case record.mapped_fields['codingdnasequencechange']
-            when CDNA_REGEX
+          def process_cdna_change(record,genocolorectal,genotypes)
+            cdna = record.raw_fields['codingdnasequencechange'] unless record.raw_fields['codingdnasequencechange'].nil?
+            if CDNA_REGEX.match(cdna)
               genocolorectal.add_gene_location($LAST_MATCH_INFO[:cdna])
+              genotypes.append(genocolorectal)
               @logger.debug "SUCCESSFUL cdna change parse for: #{$LAST_MATCH_INFO[:cdna]}"
             else
               @logger.debug 'FAILED cdna change parse'
             end
           end
 
-          def process_protein_impact(genocolorectal, record)
-            case record.raw_fields['proteinimpact']
-            when PROTEIN_REGEX
+          def process_protein_impact(record,genocolorectal,genotypes)
+            protein = record.raw_fields['proteinimpact'] unless record.raw_fields['proteinimpact'].nil?
+            if PROTEIN_REGEX.match(protein)
               genocolorectal.add_protein_impact($LAST_MATCH_INFO[:impact])
+              genotypes.append(genocolorectal)
               @logger.debug "SUCCESSFUL protein change parse for: #{$LAST_MATCH_INFO[:impact]}"
             else
               @logger.debug 'FAILED protein change parse'
             end
           end
 
-          def process_gene(genocolorectal, record)
-            genotypes = []
-            gene = record.raw_fields['gene'] unless record.raw_fields['gene']
-            synonym = record.raw_fields['sinonym'] unless record.raw_fields['sinonym'].nil?
+          def process_gene(record,genocolorectal,genotypes)
+            gene = record.raw_fields['gene'] unless record.raw_fields['gene'].nil?
             if COLORECTAL_GENES_REGEX.match(gene)
-              genocolorectal.add_gene(gene)
-              # genotypes << genotype
-              # @successful_gene_counter += 1
-              @logger.debug 'SUCCESSFUL gene parse for:' \
-                             "#{record.mapped_fields['gene'].to_i}"
-                             genotypes << genotype
+              genocolorectal.add_gene_colorectal($LAST_MATCH_INFO[:colorectal])
+              genotypes.append(genocolorectal)
+              @logger.debug "SUCCESSFUL gene parse for: #{gene}"
             else
-              @logger.debug 'FAILED gene parse'
+              @logger.debug "Failed gene parse"
             end
+          end
+
+          def process_records(genocolorectal,record)
+            genotypes = []
+            process_gene(record,genocolorectal,genotypes)
+            process_cdna_change(record,genocolorectal,genotypes)
+            process_protein_impact(record,genocolorectal,genotypes)
             genotypes
           end
 
+          
           def assign_genomic_change(genocolorectal, record)
             # ******************* Assign genomic change ************************
             Maybe(record.raw_fields['genomicchange']).each do |raw_change|
