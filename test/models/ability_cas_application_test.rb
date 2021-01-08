@@ -10,6 +10,13 @@ class AbilityCasApplicationTest < ActiveSupport::TestCase
     owner_project = create_project(project_type: project_types(:cas), owner: applicant)
     owner_project.reload.current_state
 
+    dataset = Dataset.find_by(name: 'Extra CAS Dataset One')
+    project_dataset1 = ProjectDataset.new(dataset: dataset, terms_accepted: true, approved: false)
+    project_dataset2 = ProjectDataset.new(dataset: dataset, terms_accepted: true, approved: false)
+
+    not_owner_project.project_datasets << project_dataset1
+    owner_project.project_datasets << project_dataset2
+
     applicant_ablity = Ability.new(applicant)
 
     assert applicant_ablity.can? :create, Project.new(project_type: project_types(:cas))
@@ -17,18 +24,21 @@ class AbilityCasApplicationTest < ActiveSupport::TestCase
     assert applicant_ablity.can? :read, owner_project
     assert applicant_ablity.can? :update, owner_project
     assert applicant_ablity.can? :destroy, owner_project
+    assert applicant_ablity.can? :reapply, owner_project.project_datasets.last
     # Can't do any crud on other users projects
     refute applicant_ablity.can? :destroy, not_owner_project
     refute applicant_ablity.can? :read, not_owner_project
     refute applicant_ablity.can? :update, not_owner_project
+    refute applicant_ablity.can? :reapply, not_owner_project.project_datasets.last
 
     owner_project.transition_to!(workflow_states(:submitted))
     owner_project.reload.current_state
 
-    # Should only be able to read own project after DRAFT
+    # Should only be able to read own project and reapply for dataset after DRAFT
     assert applicant_ablity.can? :read, owner_project
     refute applicant_ablity.can? :update, owner_project
     refute applicant_ablity.can? :destroy, owner_project
+    assert applicant_ablity.can? :reapply, owner_project.project_datasets.last
   end
 
   test 'cas_dataset_approver ability' do

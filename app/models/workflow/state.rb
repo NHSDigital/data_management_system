@@ -16,6 +16,9 @@ module Workflow
     scope :dataset_approval_states, lambda {
       where(id: %w[SUBMITTED ACCESS_APPROVER_APPROVED ACCESS_APPROVER_REJECTED ACCESS_GRANTED])
     }
+    scope :reapply_dataset_states, lambda {
+      where(id: %w[DRAFT SUBMITTED ACCESS_APPROVER_APPROVED ACCESS_APPROVER_REJECTED ACCESS_GRANTED])
+    }
     scope :access_approval_states, lambda {
       where(id: %w[SUBMITTED ACCESS_APPROVER_APPROVED ACCESS_APPROVER_REJECTED])
     }

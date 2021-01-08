@@ -155,6 +155,7 @@ class CasNotifierTest < ActiveSupport::TestCase
                                                approved: nil)
       a.save!
     end
+    project.reload_current_state
 
     recipients = DatasetRole.fetch(:approver).users
     notification = Notification.where(title: 'CAS Application Requires Dataset Approval')
