@@ -152,7 +152,7 @@ module Import
 
           def process_gene(record,genocolorectal,genotypes)
             gene = record.raw_fields['gene'] unless record.raw_fields['gene'].nil?
-            if COLORECTAL_GENES_REGEX.match(gene)
+            if COLORECTAL_GENES_REGEX.match(gene.upcase)
               genocolorectal.add_gene_colorectal($LAST_MATCH_INFO[:colorectal])
               genotypes.append(genocolorectal)
               @logger.debug "SUCCESSFUL gene parse for: #{gene}"
@@ -163,9 +163,11 @@ module Import
 
           def process_records(genocolorectal,record)
             genotypes = []
-            process_gene(record,genocolorectal,genotypes)
-            process_cdna_change(record,genocolorectal,genotypes)
-            process_protein_impact(record,genocolorectal,genotypes)
+            if COLORECTAL_GENES_REGEX.match(record.raw_fields['gene'].upcase)
+              process_gene(record,genocolorectal,genotypes)
+              process_cdna_change(record,genocolorectal,genotypes)
+              process_protein_impact(record,genocolorectal,genotypes)
+            end
             genotypes
           end
 
