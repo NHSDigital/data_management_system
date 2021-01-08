@@ -20,7 +20,6 @@ module Import
                                    providercode
                                    authoriseddate
                                    requesteddate
-                                   variantpathclass
                                    sampletype
                                    referencetranscriptid] .freeze
           # TODO: transcript id may still need form normalization
@@ -52,9 +51,9 @@ module Import
           PROTEIN_REGEX = /p\.\[(?<impact>(.*?))\]|p\..+/i.freeze
           CDNA_REGEX = /c\.\[?(?<cdna>[0-9]+.+[a-z])\]?/i.freeze
           GENOMICCHANGE_REGEX = /Chr(?<chromosome>\d+)\.hg(?<genome_build>\d+):g\.(?<effect>.+)/i .freeze
-          
-          
-          
+          VARPATHCLASS_REGEX = /[1-5]/i .freeze
+          CHROMOSOME_VARIANT_REGEX = /(?<chromvar>del|ins|dup)/i .freeze
+
           def process_fields(record)
             genocolorectal = Import::Colorectal::Core::Genocolorectal.new(record)
             genocolorectal.add_passthrough_fields(record.mapped_fields,
@@ -67,6 +66,7 @@ module Import
             # process_protein_impact(genocolorectal, record)
             assign_genomic_change(genocolorectal, record)
             assign_servicereportidentifier(genocolorectal, record)
+            assign_variantpathclass(genocolorectal,record)
             res = process_records(genocolorectal,record)
             res.each { |cur_genotype| @persister.integrate_and_store(cur_genotype)} unless res.nil?
           end
@@ -86,12 +86,20 @@ module Import
           def assign_test_type(genocolorectal, record)
             # ******************* Assign testing type  ************************
             Maybe(record.raw_fields['moleculartestingtype']).each do |ttype|
-              if ttype.downcase != 'diagnostic'
+              if ttype.downcase != 'diagnostic' || ttype.downcase != 'confirmatory'
                 @logger.warn "Oxford provided test type: #{ttype}; expected" \
                              'diagnostic only'
               end
               # TODO: check that 'diagnostic' is exactly how it comes through
               genocolorectal.add_molecular_testing_type_strict(ttype)
+            end
+          end
+
+          def assign_variantpathclass(genocolorectal,record)
+            Maybe(record.mapped_fields['variantpathclass']).each do |varpathclass|
+              if (1..5).cover? varpathclass.scan(VARPATHCLASS_REGEX).join.to_i
+                genocolorectal.add_variant_class(varpathclass.scan(VARPATHCLASS_REGEX).join.to_i)
+              end
             end
           end
 
@@ -132,9 +140,15 @@ module Import
             cdna = record.raw_fields['codingdnasequencechange'] unless record.raw_fields['codingdnasequencechange'].nil?
             if CDNA_REGEX.match(cdna)
               genocolorectal.add_gene_location($LAST_MATCH_INFO[:cdna])
+              genocolorectal.add_status(2)
               genotypes.append(genocolorectal)
               @logger.debug "SUCCESSFUL cdna change parse for: #{$LAST_MATCH_INFO[:cdna]}"
+            elsif CHROMOSOME_VARIANT_REGEX.match(cdna)
+              genocolorectal.add_variant_type($LAST_MATCH_INFO[:chromvar])
+              genocolorectal.add_status(2)
             else
+              genocolorectal.add_status(1)
+              genotypes.append(genocolorectal)
               @logger.debug 'FAILED cdna change parse'
             end
           end
