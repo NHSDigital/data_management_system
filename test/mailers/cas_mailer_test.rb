@@ -95,9 +95,8 @@ class ProjectsMailerTest < ActionMailer::TestCase
   test 'account access granted to user' do
     project = create_project(project_type: project_types(:cas), project_purpose: 'test',
                              owner: users(:no_roles))
+    # Auto-transitions to Access Granted
     project.transition_to!(workflow_states(:access_approver_approved))
-
-    project.transition_to!(workflow_states(:access_granted))
 
     email = CasMailer.with(project: project).account_access_granted_to_user
 

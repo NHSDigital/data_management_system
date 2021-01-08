@@ -23,6 +23,7 @@ module Workflow
     after_save :notify_user_cas_application_approved
     after_save :notify_user_cas_application_rejected
     after_save :notify_cas_access_granted
+    after_save :auto_transition_access_approver_approved_to_access_granted
 
     private
 
@@ -68,7 +69,7 @@ module Workflow
       return unless %w[ACCESS_APPROVER_APPROVED ACCESS_APPROVER_REJECTED].include? state_id
 
       SystemRole.cas_manager_and_access_approvers.map(&:users).flatten.each do |user|
-        CasNotifier.access_approval_status_updated(project, user.id)
+        CasNotifier.access_approval_status_updated(project, user.id, state_id)
       end
       CasMailer.with(project: project).send(:access_approval_status_updated).deliver_now
     end
@@ -99,6 +100,16 @@ module Workflow
 
       CasNotifier.account_access_granted_to_user(project)
       CasMailer.with(project: project).send(:account_access_granted_to_user).deliver_now
+    end
+
+    def auto_transition_access_approver_approved_to_access_granted
+      return unless project.cas?
+      return unless state_id == 'ACCESS_APPROVER_APPROVED'
+      # TODO: this is a stopgap and will need script to generate access adding here
+
+      self.project_id = project_id
+      self.state_id = 'ACCESS_GRANTED'
+      save!
     end
   end
 end

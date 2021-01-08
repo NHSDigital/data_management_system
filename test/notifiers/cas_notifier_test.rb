@@ -43,15 +43,16 @@ class CasNotifierTest < ActiveSupport::TestCase
 
   test 'should generate access_approval_status_updated Notifications' do
     project = create_project(project_type: project_types(:cas), project_purpose: 'test')
-    project.transition_to!(workflow_states(:submitted))
 
-    project.transition_to!(workflow_states(:access_approver_approved))
     recipients = SystemRole.cas_manager_and_access_approvers.map(&:users).flatten
     notification = Notification.where(title: 'Access Approval Status Updated')
 
+    # Auto-transition to Access granted makes this a bit tricky to test state_id here
+    # although it is covered in project_state test
     assert_difference -> { notification.count }, 3 do
       recipients.each do |user|
-        CasNotifier.access_approval_status_updated(project, user.id)
+        CasNotifier.access_approval_status_updated(project, user.id,
+                                                   workflow_states(:access_approver_approved).id)
       end
     end
 
