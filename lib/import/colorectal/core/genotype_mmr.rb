@@ -108,11 +108,11 @@ module Colorectal
         when :full_screen
           @attribute_map['genetictestscope'] = 'Full screen Colorectal Lynch or MMR'
         when :targeted_mutation
-          @attribute_map['genetictestscope'] = 'Targeted Colorectal mutation test'
+          @attribute_map['genetictestscope'] = 'Targeted Colorectal Lynch or MMR'
         when :aj_screen
-          @attribute_map['genetictestscope'] = 'AJ screen'
+          @attribute_map['genetictestscope'] = 'AJ Colorectal Lynch or MMR'
         when :polish_screen
-          @attribute_map['genetictestscope'] = 'Polish screen'
+          @attribute_map['genetictestscope'] = 'Polish Colorectal Lynch or MMR'
         else
           @logger.warn "Bad key given to addTestScope: #{scope}"
         end
