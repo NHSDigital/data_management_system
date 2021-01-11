@@ -25,6 +25,8 @@ class ProjectsHelperTest < ActionView::TestCase
     assert requires_modal_comments_for_transition_to?(workflow_states(:rejected))
     assert requires_modal_comments_for_transition_to?(workflow_states(:dpia_rejected))
     assert requires_modal_comments_for_transition_to?(workflow_states(:contract_rejected))
+    assert requires_modal_comments_for_transition_to?(workflow_states(:access_approver_approved))
+    assert requires_modal_comments_for_transition_to?(workflow_states(:access_approver_rejected))
     refute requires_modal_comments_for_transition_to?(workflow_states(:submitted))
   end
 

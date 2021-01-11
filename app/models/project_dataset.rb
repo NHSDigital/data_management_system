@@ -6,14 +6,15 @@ class ProjectDataset < ApplicationRecord
   belongs_to :dataset
 
   has_many :approver_grants, lambda {
-    joins(:datasets).where grants: { roleable_type: 'DatasetRole', roleable_id: DatasetRole.fetch(:approver).id }
+    joins(:datasets).where grants: { roleable_type: 'DatasetRole',
+                                     roleable_id: DatasetRole.fetch(:approver).id }
   }, class_name: 'Grant'
   has_many :approvers, through: :approver_grants, class_name: 'User', source: :user
 
   # Allow for auditing/version tracking of TeamDataSource
   has_paper_trail
 
-  # TODO approved only applies to CAS so far
+  # TODO: approved only applies to CAS so far
 
   scope :dataset_approval, lambda { |user, approved_values = [nil, true, false]|
     joins(dataset: :grants).where(approved: approved_values).where(
@@ -37,7 +38,6 @@ class ProjectDataset < ApplicationRecord
 
   validate :terms_accepted_for_dataset
 
-  after_update :auto_transition_application
   after_update :notify_cas_approved_change
 
   # TODO: TEST
@@ -49,26 +49,22 @@ class ProjectDataset < ApplicationRecord
     errors.add(:project_dataset, "Terms accepted can't be blank")
   end
 
-  # TODO test this!
-  def auto_transition_application
-    return unless project.cas?
-    return unless project.current_state&.id == 'SUBMITTED'
-    return if project.project_datasets.any? { |project_dataset| project_dataset.approved.nil? }
-
-    project.transition_to!(Workflow::State.find('AWAITING_ACCOUNT_APPROVAL'))
-  end
-
   def notify_cas_approved_change
     return unless project.cas?
     # Avoid terms terms_accepted update from triggering notification
     return if project.current_state&.id == 'DRAFT'
+    return if approved.nil?
 
     SystemRole.cas_manager_and_access_approvers.map(&:users).flatten.each do |user|
       CasNotifier.dataset_approved_status_updated(project, self, user.id)
     end
-    CasMailer.with(project: project, project_dataset: self).send(:dataset_approved_status_updated).deliver_now
+    CasMailer.with(project: project, project_dataset: self).send(
+      :dataset_approved_status_updated
+    ).deliver_now
     CasNotifier.dataset_approved_status_updated_to_user(project, self)
-    CasMailer.with(project: project, project_dataset: self).send(:dataset_approved_status_updated_to_user).deliver_now
+    CasMailer.with(project: project, project_dataset: self).send(
+      :dataset_approved_status_updated_to_user
+    ).deliver_now
   end
 
   def readable_approved_status

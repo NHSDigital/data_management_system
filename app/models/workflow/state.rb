@@ -13,7 +13,12 @@ module Workflow
     scope :non_terminal, -> { joins(:transitions).distinct }
 
     scope :not_deleted,                 -> { where.not(id: 'DELETED') }
-    scope :dataset_approval_states, -> { where.not(id: %w[DRAFT DELETED ACCESS_GRANTED]) }
+    scope :dataset_approval_states, lambda {
+      where(id: %w[SUBMITTED ACCESS_APPROVER_APPROVED ACCESS_APPROVER_REJECTED ACCESS_GRANTED])
+    }
+    scope :access_approval_states, lambda {
+      where(id: %w[SUBMITTED ACCESS_APPROVER_APPROVED ACCESS_APPROVER_REJECTED])
+    }
     scope :active,                      -> { where.not(id: INACTIVE) }
     scope :inactive,                    -> { where(id: INACTIVE) }
     scope :awaiting_sign_off,           -> { where(id: %w[DRAFT REVIEW SUBMITTED]) }

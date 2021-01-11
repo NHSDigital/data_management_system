@@ -54,4 +54,53 @@ class CasApplicationFormTest < ActionDispatch::IntegrationTest
 
     assert has_button?('Update Application')
   end
+
+  test 'some fields should only be viewable to application owner' do
+    sign_in users(:no_roles)
+
+    visit new_project_path(project: { project_type_id: project_types(:cas).id })
+
+    assert has_content?('Contract start date')
+    assert has_content?('Contract end date')
+    assert has_content?('Preferred username')
+    assert has_content?('Full physical addresses & postcodes CAS will be accessed from')
+    assert has_content?('N3 IP address CAS will be accessed from')
+    assert has_content?('I have completed the relevant data access forms for the ONS incidence ' \
+                        'dataset')
+
+    application = Project.new.tap do |app|
+      app.owner = users(:no_roles)
+      app.project_type = project_types(:cas)
+      app.build_cas_application_fields(firstname: 'John', surname: 'Smith',
+                                       declaration: %w[1Yes 2No 4Yes])
+      app.dataset_ids = Dataset.cas.pluck(:id)
+      app.save!
+    end
+
+    visit project_path(application)
+
+    assert has_content?('Contract start date')
+    assert has_content?('Contract end date')
+    assert has_content?('Preferred username')
+    assert has_content?('Full physical addresses & postcodes CAS will be accessed from')
+    assert has_content?('N3 IP address CAS will be accessed from')
+    assert has_content?('I have completed the relevant data access forms for the ONS incidence ' \
+                        'dataset')
+
+    sign_out users(:no_roles)
+
+    sign_in users(:cas_dataset_approver)
+
+    application.transition_to!(workflow_states(:submitted))
+
+    visit project_path(application)
+
+    assert_not has_content?('Contract start date')
+    assert_not has_content?('Contract end date')
+    assert_not has_content?('Preferred username')
+    assert_not has_content?('Full physical addresses & postcodes CAS will be accessed from')
+    assert_not has_content?('N3 IP address CAS will be accessed from')
+    assert_not has_content?('I have completed the relevant data access forms for the ONS ' \
+                            'incidence dataset')
+  end
 end

@@ -109,9 +109,9 @@ class GrantTest < ActiveSupport::TestCase
     build_dataset_grant(roleable: DatasetRole.fetch(:approver)).tap(&:save)
     cosd_grant = build_dataset_grant(roleable: DatasetRole.fetch(:approver), dataset: dataset).tap(&:save)
 
-    assert_equal 2,users(:standard_user_one_team).datasets.count
+    assert_equal 2, users(:standard_user_one_team).datasets.count
     cosd_grant.destroy
-    assert_equal 1,users(:standard_user_one_team).datasets.count
+    assert_equal 1, users(:standard_user_one_team).datasets.count
   end
 
   private
