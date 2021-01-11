@@ -151,7 +151,7 @@ module Import
               genocolorectal.add_variant_type($LAST_MATCH_INFO[:chromvar])
               genocolorectal.add_status(2)
               genotypes.append(genocolorectal)
-              @logger.debug 'SUCCESSFUL chromosomal variant parse for:' \
+              @logger.debug 'SUCCESSFUL chromosomal variant parse for: ' \
                             "#{$LAST_MATCH_INFO[:chromvar]}"
             else
               genocolorectal.add_status(1)
