@@ -39,9 +39,9 @@ class ProjectsMailerTest < ActionMailer::TestCase
 
   test 'access approval status updated' do
     project = create_project(project_type: project_types(:cas), project_purpose: 'test')
-    project.transition_to!(workflow_states(:awaiting_account_approval))
+    project.transition_to!(workflow_states(:submitted))
 
-    project.transition_to!(workflow_states(:approved))
+    project.transition_to!(workflow_states(:access_approver_approved))
 
     email = CasMailer.with(project: project).access_approval_status_updated
 
@@ -58,9 +58,9 @@ class ProjectsMailerTest < ActionMailer::TestCase
   test 'account approved to user' do
     project = create_project(project_type: project_types(:cas), project_purpose: 'test',
                              owner: users(:no_roles))
-    project.transition_to!(workflow_states(:awaiting_account_approval))
+    project.transition_to!(workflow_states(:submitted))
 
-    project.transition_to!(workflow_states(:approved))
+    project.transition_to!(workflow_states(:access_approver_approved))
 
     email = CasMailer.with(project: project).account_approved_to_user
 
@@ -73,10 +73,29 @@ class ProjectsMailerTest < ActionMailer::TestCase
     assert_match %r{http://[^/]+/projects/#{project.id}}, email.text_part.body.to_s
   end
 
+  test 'account rejected to user' do
+    project = create_project(project_type: project_types(:cas), project_purpose: 'test',
+                             owner: users(:no_roles))
+    project.transition_to!(workflow_states(:submitted))
+    project.transition_to!(workflow_states(:access_approver_rejected))
+
+    project.transition_to!(workflow_states(:rejection_reviewed))
+
+    email = CasMailer.with(project: project).account_rejected_to_user
+
+    assert_emails 1 do
+      email.deliver_now
+    end
+
+    assert_equal Array.wrap(project.owner.email), email.to
+    assert_equal 'CAS Access Rejected', email.subject
+    assert_match %r{http://[^/]+/projects/#{project.id}}, email.text_part.body.to_s
+  end
+
   test 'account access granted to user' do
     project = create_project(project_type: project_types(:cas), project_purpose: 'test',
                              owner: users(:no_roles))
-    project.transition_to!(workflow_states(:approved))
+    project.transition_to!(workflow_states(:access_approver_approved))
 
     project.transition_to!(workflow_states(:access_granted))
 
@@ -88,6 +107,41 @@ class ProjectsMailerTest < ActionMailer::TestCase
 
     assert_equal Array.wrap(project.owner.email), email.to
     assert_equal 'CAS Access Granted', email.subject
+    assert_match %r{http://[^/]+/projects/#{project.id}}, email.text_part.body.to_s
+  end
+
+  test 'requires account approval' do
+    project = create_project(project_type: project_types(:cas), project_purpose: 'test',
+                             owner: users(:no_roles))
+    project.transition_to!(workflow_states(:submitted))
+
+    email = CasMailer.with(project: project).requires_account_approval
+
+    assert_emails 1 do
+      email.deliver_now
+    end
+
+    assert_equal SystemRole.fetch(:cas_access_approver).users.pluck(:email), email.to
+    assert_equal 'CAS Application Requires Access Approval', email.subject
+    assert_match %r{http://[^/]+/projects/#{project.id}}, email.text_part.body.to_s
+  end
+
+  test 'requires dataset approval' do
+    project = create_project(project_type: project_types(:cas), project_purpose: 'test',
+                             owner: users(:no_roles))
+    dataset = Dataset.find_by(name: 'Extra CAS Dataset One')
+    project_dataset = ProjectDataset.new(dataset: dataset, terms_accepted: true, approved: nil)
+    project.project_datasets << project_dataset
+    project.transition_to!(workflow_states(:submitted))
+
+    email = CasMailer.with(project: project, user: DatasetRole.fetch(:approver).users.first).requires_dataset_approval
+
+    assert_emails 1 do
+      email.deliver_now
+    end
+
+    assert_equal Array.wrap(DatasetRole.fetch(:approver).users.first.email), email.to
+    assert_equal 'CAS Application Requires Dataset Approval', email.subject
     assert_match %r{http://[^/]+/projects/#{project.id}}, email.text_part.body.to_s
   end
 end

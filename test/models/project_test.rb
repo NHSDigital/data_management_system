@@ -399,9 +399,10 @@ class ProjectTest < ActiveSupport::TestCase
     user = users(:standard_user2)
     dataset = Dataset.find_by(name: 'Extra CAS Dataset One')
     # grant user approver role for our dataset
-    grant = Grant.create(roleable: DatasetRole.fetch(:approver), dataset: dataset, user: user)
+    Grant.create(roleable: DatasetRole.fetch(:approver), dataset: dataset, user: user)
 
-    cas_project = Project.create(project_type: ProjectType.find_by(name: 'CAS'), owner: users(:standard_user1)).tap(&:valid?)
+    cas_project = Project.create(project_type: ProjectType.find_by(name: 'CAS'),
+                                 owner: users(:standard_user1)).tap(&:valid?)
 
     project_dataset = ProjectDataset.new(dataset: dataset, terms_accepted: true, approved: nil)
     cas_project.project_datasets << project_dataset
@@ -420,9 +421,13 @@ class ProjectTest < ActiveSupport::TestCase
     assert_equal 0, Project.dataset_approval(user, nil).count
     assert_equal 1, Project.dataset_approval(user).count
 
-    new_project = Project.create(project_type: ProjectType.find_by(name: 'CAS'), owner: users(:standard_user1)).tap(&:valid?)
-    new_project_dataset = ProjectDataset.new(dataset: Dataset.find_by(name: 'SACT'), terms_accepted: true, approved: nil)
-    new_project.project_datasets << project_dataset
+    new_project = Project.create(project_type: ProjectType.find_by(name: 'CAS'),
+                                 owner: users(:standard_user1)).tap(&:valid?)
+    new_project_dataset = ProjectDataset.new(dataset: Dataset.find_by(name: 'SACT'),
+                                             terms_accepted: true, approved: nil)
+    new_project.project_datasets << new_project_dataset
+
+    new_project.transition_to!(workflow_states(:submitted))
 
     assert_equal 0, Project.dataset_approval(user, nil).count
   end

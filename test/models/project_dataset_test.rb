@@ -59,48 +59,6 @@ class ProjectDatasetTest < ActiveSupport::TestCase
     assert_equal 0, ProjectDataset.dataset_approval(users(:cas_dataset_approver), nil).count
   end
 
-  test 'should only auto-transition cas application if there are no unresolved dataset decisions' do
-    application = Project.new(project_type: ProjectType.find_by(name: 'CAS')).tap do |a|
-      a.owner = users(:no_roles)
-      a.project_datasets << ProjectDataset.new(dataset: dataset(83), terms_accepted: true,
-                                               approved: nil)
-      a.project_datasets << ProjectDataset.new(dataset: dataset(84), terms_accepted: true,
-                                               approved: nil)
-      a.transition_to!(workflow_states(:submitted))
-      a.save!
-    end
-
-    refute_equal application.current_state, workflow_states(:awaiting_account_approval)
-
-    application.project_datasets.first.update(approved: true)
-
-    refute_equal application.current_state, workflow_states(:awaiting_account_approval)
-
-    application.project_datasets.last.update(approved: false)
-
-    assert_equal application.current_state, workflow_states(:awaiting_account_approval)
-
-    application.project_datasets.last.update(approved: true)
-
-    assert_equal 1, application.states.where(id: "AWAITING_ACCOUNT_APPROVAL").count
-  end
-
-  test 'should not auto-transition cas application if not at submitted state' do
-    application = Project.new(project_type: ProjectType.find_by(name: 'CAS')).tap do |a|
-      a.owner = users(:no_roles)
-      a.project_datasets << ProjectDataset.new(dataset: dataset(83), terms_accepted: true,
-                                               approved: nil)
-      a.project_datasets << ProjectDataset.new(dataset: dataset(84), terms_accepted: true,
-                                               approved: nil)
-      a.save!
-    end
-
-    application.project_datasets.first.update(approved: true)
-    application.project_datasets.last.update(approved: false)
-
-    refute_equal application.current_state, workflow_states(:awaiting_account_approval)
-  end
-
   test 'should notify cas manager and access approvers on approved update' do
     project = create_project(project_type: project_types(:cas), project_purpose: 'test')
     dataset = Dataset.find_by(name: 'Extra CAS Dataset One')
@@ -134,13 +92,9 @@ class ProjectDatasetTest < ActiveSupport::TestCase
                                           "Dataset One' has been updated to Approval status of " \
                                           "'Rejected'.\n\n"
 
-    assert_difference 'notifications.count', 3 do
+    assert_no_difference 'notifications.count' do
       project_dataset.update(approved: nil)
     end
-
-    assert_equal notifications.last.body, "CAS project #{project.id} - Dataset 'Extra CAS " \
-                                          "Dataset One' has been updated to Approval status of " \
-                                          "'Undecided'.\n\n"
   end
 
   test 'should notify user on approved update' do
@@ -177,12 +131,8 @@ class ProjectDatasetTest < ActiveSupport::TestCase
                                           "Dataset One' has been updated to Approval status of " \
                                           "'Rejected'.\n\n"
 
-    assert_difference 'notifications.count', 1 do
+    assert_no_difference 'notifications.count' do
       project_dataset.update(approved: nil)
     end
-
-    assert_equal notifications.last.body, "Your CAS dataset access request for 'Extra CAS " \
-                                          "Dataset One' has been updated to Approval status of " \
-                                          "'Undecided'.\n\n"
   end
 end

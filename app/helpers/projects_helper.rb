@@ -267,7 +267,8 @@ module ProjectsHelper
   end
 
   def requires_modal_comments_for_transition_to?(state)
-    %w[REJECTED DPIA_REVIEW DPIA_MODERATION DPIA_REJECTED CONTRACT_REJECTED].include?(state.id)
+    %w[REJECTED DPIA_REVIEW DPIA_MODERATION DPIA_REJECTED CONTRACT_REJECTED ACCESS_APPROVER_APPROVED
+       ACCESS_APPROVER_REJECTED].include?(state.id)
   end
 
   def application_manager_project_type?(project)
