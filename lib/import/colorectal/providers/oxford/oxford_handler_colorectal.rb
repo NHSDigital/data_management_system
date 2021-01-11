@@ -86,7 +86,7 @@ module Import
           def assign_test_type(genocolorectal, record)
             # ******************* Assign testing type  ************************
             Maybe(record.raw_fields['moleculartestingtype']).each do |ttype|
-              if ttype.downcase != 'diagnostic' || ttype.downcase != 'confirmatory'
+              if ttype.downcase != 'diagnostic' && ttype.downcase != 'confirmatory'
                 @logger.warn "Oxford provided test type: #{ttype}; expected" \
                              'diagnostic only'
               end
@@ -116,16 +116,23 @@ module Import
             Maybe(record.raw_fields['scope / limitations of test']).each do |ttype|
               if ashkenazi?(ttype)
                 genocolorectal.add_test_scope(:aj_screen)
+              elsif polish?(ttype)
+                genocolorectal.add_test_scope(:polish_screen)
               elsif targeted?(ttype)
                 genocolorectal.add_test_scope(:targeted_mutation)
               elsif full_screen?(ttype)
                 genocolorectal.add_test_scope(:full_screen)
+              else @logger.debug 'Unable to parse genetic test scope'
               end
             end
           end
 
           def ashkenazi?(scopecolumn)
-              scopecolumn.match(/ashkenazi|polish/i)
+              scopecolumn.match(/ashkenazi/i)
+          end
+
+          def polish?(scopecolumn)
+              scopecolumn.match(/polish/i)
           end
 
           def targeted?(scopecolumn)
@@ -146,6 +153,8 @@ module Import
             elsif CHROMOSOME_VARIANT_REGEX.match(cdna)
               genocolorectal.add_variant_type($LAST_MATCH_INFO[:chromvar])
               genocolorectal.add_status(2)
+              genotypes.append(genocolorectal)
+              @logger.debug "SUCCESSFUL chromosomal variant parse for: #{$LAST_MATCH_INFO[:chromvar]}"
             else
               genocolorectal.add_status(1)
               genotypes.append(genocolorectal)
