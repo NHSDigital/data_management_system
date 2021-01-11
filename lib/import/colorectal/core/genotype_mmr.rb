@@ -50,13 +50,14 @@ module Import
                             (?<grem>GREM1) |
                             (?<nthl>NTHL1)/ix .freeze # Added by Francesco
 
-          # ------------------------ Interogators ------------------------------
+        # ------------------------ Interogators ------------------------------
 
-          # this is present in Newcastle storage manager
+        # this is present in Newcastle storage manager
         def full_screen?
           scope = @attribute_map['genetictestscope']
 
           return nil unless scope
+
           scope == 'Full screen Colorectal Lynch or MMR'
         end
 
