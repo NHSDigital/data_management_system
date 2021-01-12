@@ -30,7 +30,6 @@ $BRAKE import:colorectal fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.
 done
 }
 
-
 RNZ () {
 PROV='RNZ'
 IFS=$'\n'
@@ -113,4 +112,15 @@ $BRAKE import:colorectal fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.
 done
 }
 
-RR8; RNZ; RTD; RX1; RCU; RGT; R0A; R1K; RPY; RP4
+RTH () {
+PROV='RTH'
+IFS=$'\n'
+for x in $(find  $DIRPATH/$FILEPATH -type f -name "*.pseudo" -path "*/$PROV/*")
+do
+IFS="$OIFS"
+$BRAKE import:colorectal fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
+done
+}
+
+
+RR8; RNZ; RTD; RX1; RCU; RGT; R0A; R1K; RPY; RP4; RTH

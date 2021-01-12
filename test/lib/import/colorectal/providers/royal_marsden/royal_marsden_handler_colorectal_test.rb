@@ -55,7 +55,7 @@ class RoyalMarsdenHandlerColorectalTest < ActiveSupport::TestCase
 
   test 'process_test_scope' do
     @handler.process_test_scope(@genotype, @record)
-    assert_equal 'Targeted Colorectal mutation test', @genotype.attribute_map['genetictestscope']
+    assert_equal 'Targeted Colorectal Lynch or MMR', @genotype.attribute_map['genetictestscope']
   end
 
   test 'process_large_deldup' do
