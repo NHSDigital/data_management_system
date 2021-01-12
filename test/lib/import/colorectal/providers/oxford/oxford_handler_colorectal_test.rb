@@ -8,7 +8,6 @@ class OxfordHandlerColorectalTest < ActiveSupport::TestCase
   def setup
     @record   = build_raw_record('pseudo_id1' => 'bob')
     @genotype = Import::Colorectal::Core::Genocolorectal.new(@record)
-    # TODO: Fully qualify CambridgeHandler in cambridge_handler.rb
     @importer_stdout, @importer_stderr = capture_io do
       @handler = Import::Colorectal::Providers::Oxford::OxfordHandlerColorectal.new(EBatch.new)
     end
