@@ -112,6 +112,15 @@ class OxfordHandlerColorectalTest < ActiveSupport::TestCase
     @handler.process_cdna_change(chromosome_record, @genotype, chromosome_genotypes)
   end
 
+  test 'assign_genomic_change' do
+    @handler.assign_genomic_change(@genotype, @record)
+    assert_equal '11:108202614_108202622', @genotype.attribute_map['genomicchange']
+    broken_record = build_raw_record('pseudo_id1' => 'bob')
+    broken_record.raw_fields['genomicchange'] = 'Cabbage'
+    @logger.expects(:warn).with('Could not process, so adding raw genomic change: Cabbage')
+    @handler.assign_genomic_change(@genotype, broken_record)
+  end
+
   private
 
   def build_raw_record(options = {})
