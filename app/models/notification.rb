@@ -7,7 +7,7 @@ class Notification < ActiveRecord::Base
   scope :admin_users, -> { where admin_users: true }
   scope :odr_users, -> { where odr_users: true }
   scope :senior_users, -> { where senior_users: true }
-
+  scope :by_title, ->(title) { where title: title }
   # scope :active, -> { where.not(status: 'deleted') }
   # scope :deleted, -> { where(status: 'deleted') }
 
