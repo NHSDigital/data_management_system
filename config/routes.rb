@@ -20,7 +20,7 @@ Rails.application.routes.draw do
     get :download, on: :member
   end
 
-  root 'datasets#index'
+  root 'home#index'
 
   get 'notifications/index'
   get '/reports/report1', to: 'reports#report1', as: 'report1'
