@@ -1,10 +1,3 @@
-require 'possibly'
-require 'import/genotype'
-require 'import/storage_manager/persister'
-require 'core/provider_handler'
-require 'core/extraction_utilities'
-require 'pry'
-
 module Import
   module Colorectal
     module Providers
@@ -12,7 +5,7 @@ module Import
         # Process Oxford-specific record details into generalized internal genotype format
         class OxfordHandlerColorectal < Import::Brca::Core::ProviderHandler
           TEST_METHOD_MAP = { 'Sequencing, Next Generation Panel (NGS)' => :ngs,
-                              'Sequencing, Dideoxy / Sanger'            => :sanger } .freeze
+                              'Sequencing, Dideoxy / Sanger'            => :sanger }.freeze
 
           PASS_THROUGH_FIELDS = %w[age consultantcode
                                    servicereportidentifier
@@ -20,7 +13,7 @@ module Import
                                    authoriseddate
                                    requesteddate
                                    sampletype
-                                   referencetranscriptid] .freeze
+                                   referencetranscriptid].freeze
           # TODO: transcript id may still need form normalization
           COLORECTAL_GENES_REGEX = /(?<colorectal>APC|
                                                 BMPR1A|
@@ -35,7 +28,7 @@ module Import
                                                 PTEN|
                                                 SMAD4|
                                                 STK11|
-                                                NTHL1)/xi . freeze # Added by Francesco
+                                                NTHL1)/xi.freeze # Added by Francesco
 
           FULL_SCREEN_REGEX = /(?<fullscreen>Panel|
           full\sgene\sscreen|
@@ -47,11 +40,12 @@ module Import
           BRCA1|
           BRCA2)/xi .freeze
 
-          PROTEIN_REGEX = /p\.\[(?<impact>(.*?))\]|p\..+/i.freeze
-          CDNA_REGEX = /c\.\[?(?<cdna>[0-9]+.+[a-z])\]?/i.freeze
-          GENOMICCHANGE_REGEX = /Chr(?<chromosome>\d+)\.hg(?<genome_build>\d+):g\.(?<effect>.+)/i .freeze
-          VARPATHCLASS_REGEX = /[1-5]/i .freeze
-          CHROMOSOME_VARIANT_REGEX = /(?<chromvar>del|ins|dup)/i .freeze
+          PROTEIN_REGEX            = /p\.\[(?<impact>(.*?))\]|p\..+/i.freeze
+          CDNA_REGEX               = /c\.\[?(?<cdna>[0-9]+.+[a-z])\]?/i.freeze
+          GENOMICCHANGE_REGEX      = /Chr(?<chromosome>\d+)\.hg(?<genome_build>\d+)
+                                     :g\.(?<effect>.+)/xi.freeze
+          VARPATHCLASS_REGEX       = /[1-5]/i.freeze
+          CHROMOSOME_VARIANT_REGEX = /(?<chromvar>del|ins|dup)/i.freeze
 
           def process_fields(record)
             genocolorectal = Import::Colorectal::Core::Genocolorectal.new(record)
@@ -67,7 +61,7 @@ module Import
             assign_servicereportidentifier(genocolorectal, record)
             assign_variantpathclass(genocolorectal, record)
             res = process_records(genocolorectal, record)
-            res.each { |cur_genotype| @persister.integrate_and_store(cur_genotype) } unless res.nil?
+            res.each { |cur_genotype| @persister.integrate_and_store(cur_genotype) }
           end
 
           def assign_method(genocolorectal, record)
@@ -102,7 +96,8 @@ module Import
 
           def assign_servicereportidentifier(genocolorectal, record)
             if record.raw_fields['investigationid']
-              genocolorectal.attribute_map['servicereportidentifier'] = record.raw_fields['investigationid']
+              genocolorectal.attribute_map['servicereportidentifier'] =
+                record.raw_fields['investigationid']
             else
               @logger.debug 'Servicereportidentifier missing for this record'
             end
@@ -141,18 +136,13 @@ module Import
           end
 
           def process_cdna_change(record, genocolorectal, genotypes)
-            cdna = record.raw_fields['codingdnasequencechange'] unless record.raw_fields['codingdnasequencechange'].nil?
-            if CDNA_REGEX.match(cdna)
-              genocolorectal.add_gene_location($LAST_MATCH_INFO[:cdna])
-              genocolorectal.add_status(2)
-              genotypes.append(genocolorectal)
-              @logger.debug "SUCCESSFUL cdna change parse for: #{$LAST_MATCH_INFO[:cdna]}"
-            elsif CHROMOSOME_VARIANT_REGEX.match(cdna)
-              genocolorectal.add_variant_type($LAST_MATCH_INFO[:chromvar])
-              genocolorectal.add_status(2)
-              genotypes.append(genocolorectal)
-              @logger.debug 'SUCCESSFUL chromosomal variant parse for: ' \
-                            "#{$LAST_MATCH_INFO[:chromvar]}"
+            cdna             = record.raw_fields['codingdnasequencechange']
+            cdna_match       = CDNA_REGEX.match(cdna)
+            chromosome_match = CHROMOSOME_VARIANT_REGEX.match(cdna)
+            if cdna_match
+              process_cdna_match(genocolorectal, genotypes, cdna_match)
+            elsif chromosome_match
+              process_chromosome_variant(genocolorectal, genotypes, chromosome_match)
             else
               genocolorectal.add_status(1)
               genotypes.append(genocolorectal)
@@ -160,8 +150,23 @@ module Import
             end
           end
 
+          def process_cdna_match(genocolorectal, genotypes, cdna_match)
+            genocolorectal.add_gene_location(cdna_match[:cdna])
+            genocolorectal.add_status(2)
+            genotypes.append(genocolorectal)
+            @logger.debug "SUCCESSFUL cdna change parse for: #{cdna_match[:cdna]}"
+          end
+
+          def process_chromosome_variant(genocolorectal, genotypes, chromosome_match)
+            genocolorectal.add_variant_type(chromosome_match[:chromvar])
+            genocolorectal.add_status(2)
+            genotypes.append(genocolorectal)
+            @logger.debug 'SUCCESSFUL chromosomal variant parse for: ' \
+                          "#{chromosome_match[:chromvar]}"
+          end
+
           def process_protein_impact(record, genocolorectal, genotypes)
-            protein = record.raw_fields['proteinimpact'] unless record.raw_fields['proteinimpact'].nil?
+            protein = record.raw_fields['proteinimpact']
             if PROTEIN_REGEX.match(protein)
               genocolorectal.add_protein_impact($LAST_MATCH_INFO[:impact])
               genotypes.append(genocolorectal)

@@ -31,10 +31,12 @@
   <%= form.control_group :employee_type do %>
     <%= form.text_field :employee_type %>
   <% end %>
-  <%= form.control_group :contract_startdate do %>
-    <%= form.datepicker_field :contract_startdate %>
-  <% end %>
-  <%= form.control_group :contract_enddate do %>
-    <%= form.datepicker_field :contract_enddate %>
+  <% if !@project.persisted? || @project.owner == current_user %>
+    <%= form.control_group :contract_startdate do %>
+      <%= form.datepicker_field :contract_startdate %>
+    <% end %>
+    <%= form.control_group :contract_enddate do %>
+      <%= form.datepicker_field :contract_enddate %>
+    <% end %>
   <% end %>
 </fieldset>

@@ -1,0 +1,13 @@
+<h1>CAS Application Requires Dataset Approval</h1>
+<hr />
+
+<p>
+  <%= @project.project_type.name %> project <%= @project.id %> - Dataset approval is required.
+</p>
+
+<%= render 'projects_mailer/project_details', project: @project %>
+
+<p>
+  Please <%= link_to 'log in', root_url %> and use the link above to view the
+  CAS application.
+</p>

@@ -52,10 +52,11 @@ class AbilityCasApplicationTest < ActiveSupport::TestCase
     applicant_ablity = Ability.new(applicant)
 
     assert applicant_ablity.can? :create, Project.new(project_type: project_types(:cas))
-    assert applicant_ablity.can? :update, owner_project
+    assert applicant_ablity.can? :read, owner_project
     assert applicant_ablity.can? :update, owner_project
     assert applicant_ablity.can? :destroy, owner_project
 
+    # Cannot do when at DRAFT state
     refute applicant_ablity.can? :destroy, matched_dataset_project
     refute applicant_ablity.can? :read, matched_dataset_project
     refute applicant_ablity.can? :update, matched_dataset_project
@@ -71,6 +72,7 @@ class AbilityCasApplicationTest < ActiveSupport::TestCase
     assert applicant_ablity.can? :update, project_dataset
 
     project_dataset.update(approved: true)
+    matched_dataset_project.transition_to(Workflow::State.find('ACCESS_APPROVER_APPROVED'))
     applicant_ablity = Ability.new(applicant)
 
     # Check still able to read project and edit projectdataset after approved is no longer nil
@@ -106,17 +108,25 @@ class AbilityCasApplicationTest < ActiveSupport::TestCase
 
     # Should be able to crud their own created batch
     assert applicant_ablity.can? :create, Project.new(project_type: project_types(:cas))
-    assert applicant_ablity.can? :update, owner_project
+    assert applicant_ablity.can? :read, owner_project
     assert applicant_ablity.can? :update, owner_project
     assert applicant_ablity.can? :destroy, owner_project
-    # Should only be able to read cas projects
+    # Should only be able to read cas projects at Submitted state
     refute applicant_ablity.can? :destroy, not_owner_project
-    assert applicant_ablity.can? :read, not_owner_project
+    refute applicant_ablity.can? :read, not_owner_project
     refute applicant_ablity.can? :update, not_owner_project
     # Should not be do any crud on non-cas projects
     refute applicant_ablity.can? :destroy, non_cas_project
     refute applicant_ablity.can? :read, non_cas_project
     refute applicant_ablity.can? :update, non_cas_project
+
+    not_owner_project.transition_to(Workflow::State.find('SUBMITTED'))
+    applicant_ablity = Ability.new(applicant)
+
+    # Should be able to read cas projects at Submitted state
+    refute applicant_ablity.can? :destroy, not_owner_project
+    assert applicant_ablity.can? :read, not_owner_project
+    refute applicant_ablity.can? :update, not_owner_project
   end
 
   test 'cas_manager ability' do
@@ -129,13 +139,13 @@ class AbilityCasApplicationTest < ActiveSupport::TestCase
     non_cas_project = create_project(project_type: project_types(:eoi), project_purpose: 'test',
                                owner: users(:standard_user))
 
-    Grant.create(roleable: SystemRole.fetch(:cas_access_approver), user: applicant).tap(&:save)
+    Grant.create(roleable: SystemRole.fetch(:cas_manager), user: applicant).tap(&:save)
 
     applicant_ablity = Ability.new(applicant)
 
     # Should be able to crud their own created batch
     assert applicant_ablity.can? :create, Project.new(project_type: project_types(:cas))
-    assert applicant_ablity.can? :update, owner_project
+    assert applicant_ablity.can? :read, owner_project
     assert applicant_ablity.can? :update, owner_project
     assert applicant_ablity.can? :destroy, owner_project
     # Should only be able to read cas projects

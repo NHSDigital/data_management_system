@@ -43,9 +43,9 @@ class CasNotifierTest < ActiveSupport::TestCase
 
   test 'should generate access_approval_status_updated Notifications' do
     project = create_project(project_type: project_types(:cas), project_purpose: 'test')
-    project.transition_to!(workflow_states(:awaiting_account_approval))
+    project.transition_to!(workflow_states(:submitted))
 
-    project.transition_to!(workflow_states(:approved))
+    project.transition_to!(workflow_states(:access_approver_approved))
     recipients = SystemRole.cas_manager_and_access_approvers.map(&:users).flatten
     notification = Notification.where(title: 'Access Approval Status Updated')
 
@@ -58,7 +58,7 @@ class CasNotifierTest < ActiveSupport::TestCase
     # TODO Should it be creating UserNotifications?
 
     assert_equal notification.last.body, "CAS project #{project.id} - Access approval status has " \
-                                         "been updated to 'Approved'.\n\n"
+                                         "been updated to 'Access Approver Approved'.\n\n"
   end
 
   test 'should generate account_approved_to_user Notifications' do
@@ -75,7 +75,23 @@ class CasNotifierTest < ActiveSupport::TestCase
 
     assert_equal notification.last.body, "Your CAS access has been approved for application " \
                                          "#{project.id}. You will receive a further notification " \
-                                         "once your account has been updated"
+                                         "once your account has been updated.\n\n"
+  end
+
+  test 'should generate account_rejected_to_user Notifications' do
+    user = users(:no_roles)
+    project = create_project(project_type: project_types(:cas), project_purpose: 'test',
+                             owner: user)
+    notification = Notification.where(title: 'CAS Access Rejected')
+
+    assert_difference -> { notification.count }, 1 do
+      CasNotifier.account_rejected_to_user(project)
+    end
+
+    # TODO: Should it be creating UserNotifications?
+
+    assert_equal notification.last.body, 'Your CAS access has been rejected for application ' \
+                                         "#{project.id}.\n\n"
   end
 
   test 'should generate account_access_granted Notifications' do
@@ -109,6 +125,49 @@ class CasNotifierTest < ActiveSupport::TestCase
     # TODO Should it be creating UserNotifications?
 
     assert_equal notification.last.body, "CAS access has been granted for your account based on " \
-                                         "application #{project.id}."
+                                         "application #{project.id}.\n\n"
+  end
+
+  test 'should generate requires_account_approval Notifications' do
+    project = create_project(project_type: project_types(:cas), project_purpose: 'test')
+
+    recipients = SystemRole.fetch(:cas_access_approver).users
+    notification = Notification.where(title: 'CAS Application Requires Access Approval')
+
+    assert_difference -> { notification.count }, 1 do
+      recipients.each do |user|
+        CasNotifier.requires_account_approval(project, user.id)
+      end
+    end
+
+    # TODO: Should it be creating UserNotifications?
+
+    assert_equal notification.last.body, "CAS project #{project.id} - Access approval is " \
+                                         "required.\n\n"
+  end
+
+  test 'should generate requires_dataset_approval Notifications' do
+    project = Project.new(project_type: ProjectType.find_by(name: 'CAS')).tap do |a|
+      a.owner = users(:no_roles)
+      a.project_datasets << ProjectDataset.new(dataset: dataset(83), terms_accepted: true,
+                                               approved: nil)
+      a.project_datasets << ProjectDataset.new(dataset: dataset(84), terms_accepted: true,
+                                               approved: nil)
+      a.save!
+    end
+
+    recipients = DatasetRole.fetch(:approver).users
+    notification = Notification.where(title: 'CAS Application Requires Dataset Approval')
+
+    assert_difference -> { notification.count }, 2 do
+      recipients.each do |user|
+        CasNotifier.requires_dataset_approval(project, user.id)
+      end
+    end
+
+    # TODO: Should it be creating UserNotifications?
+
+    assert_equal notification.last.body, "CAS project #{project.id} - Dataset approval is " \
+                                         "required.\n\n"
   end
 end

@@ -70,8 +70,20 @@ data_released:
 data_destroyed:
   id: DATA_DESTROYED
 
-awaiting_account_approval:
-  id: AWAITING_ACCOUNT_APPROVAL
-
 access_granted:
   id: ACCESS_GRANTED
+
+access_approver_approved:
+  id: ACCESS_APPROVER_APPROVED
+
+access_approver_rejected:
+  id: ACCESS_APPROVER_REJECTED
+
+renewal:
+  id: RENEWAL
+
+account_closed:
+  id: ACCOUNT_CLOSED
+
+rejection_reviewed:
+  id: REJECTION_REVIEWED

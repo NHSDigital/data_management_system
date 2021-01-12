@@ -6,10 +6,11 @@ class CasDatasetApproverTest < ActionDispatch::IntegrationTest
   end
 
   test 'should be able to view list of projects that user has access to approve' do
+    ProjectDatasetsController.any_instance.expects(:valid_otp?).twice.returns(false).then.returns(true)
     sign_in @user
 
     project = Project.create(project_type: project_types(:cas),
-        owner: users(:standard_user2))
+                             owner: users(:standard_user2))
     dataset = Dataset.find_by(name: 'Extra CAS Dataset One')
     project.project_datasets << ProjectDataset.new(dataset: dataset, terms_accepted: true)
 
@@ -17,26 +18,29 @@ class CasDatasetApproverTest < ActionDispatch::IntegrationTest
     visit dataset_approvals_projects_path
 
     within '#awaiting_approval' do
-      assert has_content?("#{project.id}")
+      assert has_content?(project.id.to_s)
       click_link(href: "/projects/#{project.id}", title: 'Details')
     end
 
-    click_link(href: "#datasets")
+    click_link(href: '#datasets')
     assert has_content?('Extra CAS Dataset One')
 
     assert_nil project.project_datasets.first.approved
 
-    project_changes = { from: 'SUBMITTED', to: 'AWAITING_ACCOUNT_APPROVAL' }
-
     project_dataset = project.project_datasets.first
 
-    assert_changes -> { project.reload.current_state.id }, project_changes do
-      assert_changes -> { project_dataset.reload.approved }, from: nil, to: true do
-        find('.btn-success').click
-        assert has_content?('APPROVED')
+    assert_changes -> { project_dataset.reload.approved }, from: nil, to: true do
+      within('#approvals') do
+        find("#approval_project_dataset_#{project_dataset.id}").click
       end
-      assert_equal find('#project_status').text, 'AWAITING_ACCOUNT_APPROVAL'
+      within_modal(selector: '#yubikey-challenge') do
+        fill_in 'ndr_authenticate[otp]', with: 'defo a yubikey'
+        click_button 'Submit'
+      end
+      assert has_content?('APPROVED')
     end
+
+    assert_equal find('#project_status').text, 'Pending'
 
     click_link('X')
 
@@ -44,11 +48,11 @@ class CasDatasetApproverTest < ActionDispatch::IntegrationTest
     assert find('.btn-success')
     assert_nil project_dataset.reload.approved
 
-    assert_no_changes -> { project.reload.current_state.id } do
-      assert_changes -> { project_dataset.reload.approved }, from: nil, to: false do
-        find('.btn-danger').click
-        assert has_content?('DECLINED')
-      end
+    assert_changes -> { project_dataset.reload.approved }, from: nil, to: false do
+      find('.btn-danger').click
+      assert has_content?('DECLINED')
     end
+
+    assert_equal find('#project_status').text, 'Pending'
   end
 end
