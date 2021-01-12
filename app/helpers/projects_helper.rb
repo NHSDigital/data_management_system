@@ -16,6 +16,11 @@ module ProjectsHelper
     'CONTRACT_COMPLETED' => 'btn-success',
     'DATA_RELEASED' => 'btn-success',
     'DATA_DESTROYED' => 'btn-danger',
+    'ACCESS_APPROVER_APPROVED' => 'btn-success',
+    'ACCESS_APPROVER_REJECTED' => 'btn-danger',
+    'REJECTION_REVIEWED' => 'btn-danger',
+    'ACCOUNT_CLOSED' => 'btn-danger',
+    'ACCESS_GRANTED' => 'btn-success'
   }.freeze
 
   STATE_TRANSITION_BUTTON_ICONS = {
@@ -26,7 +31,10 @@ module ProjectsHelper
     'COMPLETED' => 'thumbs-up',
     'DPIA_REJECTED'      => 'thumbs-down',
     'CONTRACT_REJECTED'  => 'thumbs-down',
-    'CONTRACT_COMPLETED' => 'thumbs-up'
+    'CONTRACT_COMPLETED' => 'thumbs-up',
+    'ACCESS_APPROVER_APPROVED' => 'thumbs-up',
+    'ACCESS_APPROVER_REJECTED' => 'thumbs-down',
+    'REJECTION_REVIEWED' => 'thumbs-down'
   }.freeze
 
   STATE_LABEL_CLASSES = {
@@ -40,7 +48,13 @@ module ProjectsHelper
     'CONTRACT_REJECTED'  => 'label-danger',
     'CONTRACT_COMPLETED' => 'label-success',
     'DATA_RELEASED'  => 'label-success',
-    'DATA_DESTROYED' => 'label-danger'
+    'DATA_DESTROYED' => 'label-danger',
+    'ACCESS_APPROVER_APPROVED' => 'label-success',
+    'ACCESS_APPROVER_REJECTED' => 'label-danger',
+    'REJECTION_REVIEWED' => 'label-danger',
+    'ACCESS_GRANTED' => 'label-success',
+    'ACCOUNT_CLOSED' => 'label-danger',
+    'RENEWAL' => 'label-warning'
   }.freeze
 
   def new_project_dropdown_button(team, **html_options)
