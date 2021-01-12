@@ -14,7 +14,7 @@ module Import
                                    requesteddate
                                    sampletype
                                    referencetranscriptid].freeze
-          # TODO: transcript id may still need form normalization
+
           COLORECTAL_GENES_REGEX = /(?<colorectal>APC|
                                                 BMPR1A|
                                                 EPCAM|
@@ -28,7 +28,7 @@ module Import
                                                 PTEN|
                                                 SMAD4|
                                                 STK11|
-                                                NTHL1)/xi.freeze # Added by Francesco
+                                                NTHL1)/xi.freeze
 
           FULL_SCREEN_REGEX = /(?<fullscreen>Panel|
           full\sgene\sscreen|
@@ -55,8 +55,6 @@ module Import
             assign_method(genocolorectal, record)
             assign_test_scope(genocolorectal, record)
             assign_test_type(genocolorectal, record)
-            # process_cdna_change(genocolorectal, record)
-            # process_protein_impact(genocolorectal, record)
             assign_genomic_change(genocolorectal, record)
             assign_servicereportidentifier(genocolorectal, record)
             assign_variantpathclass(genocolorectal, record)
@@ -65,7 +63,6 @@ module Import
           end
 
           def assign_method(genocolorectal, record)
-            # ******************* Assign testing method ************************
             Maybe(record.raw_fields['karyotypingmethod']).each do |raw_method|
               method = TEST_METHOD_MAP[raw_method]
               if method
@@ -104,7 +101,6 @@ module Import
           end
 
           def assign_test_scope(genocolorectal, record)
-            # ******************* Assign test scope ************************
             Maybe(record.raw_fields['scope / limitations of test']).each do |ttype|
               if ashkenazi?(ttype)
                 genocolorectal.add_test_scope(:aj_screen)
@@ -198,7 +194,6 @@ module Import
           end
 
           def assign_genomic_change(genocolorectal, record)
-            # ******************* Assign genomic change ************************
             Maybe(record.raw_fields['genomicchange']).each do |raw_change|
               if GENOMICCHANGE_REGEX.match(raw_change)
                 genocolorectal.add_genome_build($LAST_MATCH_INFO[:genome_build].to_i)
