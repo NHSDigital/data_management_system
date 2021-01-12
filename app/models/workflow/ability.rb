@@ -476,11 +476,6 @@ module Workflow
                                  project: { current_state: { id: 'DRAFT' },
                                             project_type: { name: 'CAS' },
                                             id: project_ids }
-      # Do we want the user to be able to delete the project at this stage? / any stage?
-      can :create, ProjectState, state: { id: 'DELETED' },
-                                 project: { current_state: { id: 'DRAFT' },
-                                            project_type: { name: 'CAS' },
-                                            id: project_ids }
       can :create, ProjectState, state: { id: 'ACCESS_GRANTED' },
                                  project: { current_state: { id: 'RENEWAL' },
                                             project_type: { name: 'CAS' },
