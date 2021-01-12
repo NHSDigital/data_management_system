@@ -20,8 +20,6 @@ Rails.application.routes.draw do
     get :download, on: :member
   end
 
-  root 'home#index'
-
   get 'notifications/index'
   get '/reports/report1', to: 'reports#report1', as: 'report1'
   get '/reports/report2', to: 'reports#report2', as: 'report2'
@@ -81,6 +79,10 @@ Rails.application.routes.draw do
       end
     end
   end
+
+  resources :home, only: [:index]
+
+  root 'home#index'
 
   resources :terms_and_conditions, only: [:index, :create]
 
