@@ -22,6 +22,12 @@ class CasMailer < ApplicationMailer
     mail(to: recipient, subject: 'Dataset Approval Updated') if recipient.any?
   end
 
+  def application_submitted
+    recipients = SystemRole.fetch(:cas_manager).users.pluck(:email)
+
+    mail(to: recipients, subject: 'CAS Application Submitted') if recipients.any?
+  end
+
   def requires_account_approval
     recipients = SystemRole.fetch(:cas_access_approver).users.pluck(:email)
 

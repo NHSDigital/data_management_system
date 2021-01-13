@@ -170,4 +170,21 @@ class CasNotifierTest < ActiveSupport::TestCase
     assert_equal notification.last.body, "CAS project #{project.id} - Dataset approval is " \
                                          "required.\n\n"
   end
+
+  test 'should generate application_submitted Notifications' do
+    project = create_project(project_type: project_types(:cas), project_purpose: 'test')
+
+    recipients = SystemRole.fetch(:cas_manager).users
+    notification = Notification.where(title: 'CAS Application Submitted')
+
+    assert_difference -> { notification.count }, 2 do
+      recipients.each do |user|
+        CasNotifier.application_submitted(project, user.id)
+      end
+    end
+
+    # TODO: Should it be creating UserNotifications?
+
+    assert_equal notification.last.body, "CAS project #{project.id} has been submitted.\n\n"
+  end
 end

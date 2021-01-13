@@ -144,4 +144,20 @@ class ProjectsMailerTest < ActionMailer::TestCase
     assert_equal 'CAS Application Requires Dataset Approval', email.subject
     assert_match %r{http://[^/]+/projects/#{project.id}}, email.text_part.body.to_s
   end
+
+  test 'application submitted' do
+    project = create_project(project_type: project_types(:cas), project_purpose: 'test',
+                             owner: users(:no_roles))
+    project.transition_to!(workflow_states(:submitted))
+
+    email = CasMailer.with(project: project).application_submitted
+
+    assert_emails 1 do
+      email.deliver_now
+    end
+
+    assert_equal SystemRole.fetch(:cas_manager).users.pluck(:email), email.to
+    assert_equal 'CAS Application Submitted', email.subject
+    assert_match %r{http://[^/]+/projects/#{project.id}}, email.text_part.body.to_s
+  end
 end

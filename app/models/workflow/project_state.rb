@@ -15,8 +15,7 @@ module Workflow
     validate :ensure_state_is_transitionable, on: :create
     after_save :update_project_closure_date
     after_save :remove_project_closure_date
-    after_save :notify_requires_dataset_approval
-    after_save :notify_requires_account_approval
+    after_save :submitted_state_notifiers
     after_save :notify_cas_manager_approver_application_approved_rejected
     after_save :notify_user_cas_application_approved
     after_save :notify_user_cas_application_rejected
@@ -44,7 +43,7 @@ module Workflow
       project.update(closure_date: nil, closure_reason_id: nil)
     end
 
-    def notify_requires_dataset_approval
+    def submitted_state_notifiers
       return unless project.cas?
       return unless state_id == 'SUBMITTED'
 
@@ -57,16 +56,16 @@ module Workflow
         CasNotifier.requires_dataset_approval(project, user.id)
         CasMailer.with(project: project, user: user).send(:requires_dataset_approval).deliver_now
       end
-    end
-
-    def notify_requires_account_approval
-      return unless project.cas?
-      return unless state_id == 'SUBMITTED'
 
       SystemRole.fetch(:cas_access_approver).users.each do |user|
         CasNotifier.requires_account_approval(project, user.id)
       end
       CasMailer.with(project: project).send(:requires_account_approval).deliver_now
+
+      SystemRole.fetch(:cas_manager).users.each do |user|
+        CasNotifier.application_submitted(project, user.id)
+      end
+      CasMailer.with(project: project).send(:application_submitted).deliver_now
     end
 
     def notify_cas_manager_approver_application_approved_rejected

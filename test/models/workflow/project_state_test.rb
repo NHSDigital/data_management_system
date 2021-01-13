@@ -206,7 +206,6 @@ module Workflow
       project.reload_current_state
 
       notifications = Notification.where(title: 'CAS Application Requires Access Approval')
-      # Should not send out notifications for changes when not awaiting_account_approval
 
       assert_difference 'notifications.count', 1 do
         project.transition_to!(workflow_states(:submitted))
@@ -272,6 +271,23 @@ module Workflow
 
       refute_equal notifications.last.body, "CAS project #{no_dataset_project.id} - Dataset " \
                                             "approval is required.\n\n"
+    end
+
+    test 'should notify cas manager when project reaches submitted' do
+      project = create_project(project_type: project_types(:cas), project_purpose: 'test')
+      project.reload_current_state
+
+      notifications = Notification.where(title: 'CAS Application Submitted')
+
+      assert_difference 'notifications.count', 2 do
+        project.transition_to!(workflow_states(:submitted))
+      end
+
+      assert_equal notifications.last.body, "CAS project #{project.id} has been submitted.\n\n"
+
+      assert_no_difference 'notifications.count' do
+        project.transition_to!(workflow_states(:access_approver_approved))
+      end
     end
   end
 end

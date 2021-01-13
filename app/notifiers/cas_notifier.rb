@@ -20,6 +20,15 @@ class CasNotifier
       )
     end
 
+    def application_submitted(project, user_id)
+      create_notification(
+        user_id: user_id,
+        title: 'CAS Application Submitted',
+        body: "#{project.project_type.name} project #{project.id} has been submitted." \
+              "\n\n"
+      )
+    end
+
     def dataset_approved_status_updated_to_user(project, project_dataset)
       create_notification(
         user_id: project.owner.id,
