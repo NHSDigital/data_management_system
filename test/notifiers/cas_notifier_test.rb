@@ -170,4 +170,19 @@ class CasNotifierTest < ActiveSupport::TestCase
 
     assert_equal Notification.last.body, "CAS project #{project.id} has been submitted.\n\n"
   end
+
+  test 'should generate requires_renewal_to_user Notifications' do
+    user = users(:no_roles)
+    project = create_project(project_type: project_types(:cas), project_purpose: 'test',
+                             owner: user)
+
+    assert_difference -> { Notification.by_title('CAS Access Requires Renewal').count }, 1 do
+      CasNotifier.requires_renewal_to_user(project)
+    end
+
+    # TODO Should it be creating UserNotifications?
+
+    assert_equal Notification.last.body, 'Your CAS account requires renewal, please click the ' \
+                                         "renew button on your application.\n\n"
+  end
 end

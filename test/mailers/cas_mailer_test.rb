@@ -160,4 +160,19 @@ class ProjectsMailerTest < ActionMailer::TestCase
     assert_equal 'CAS Application Submitted', email.subject
     assert_match %r{http://[^/]+/projects/#{project.id}}, email.text_part.body.to_s
   end
+
+  test 'requires renewal to user' do
+    project = create_project(project_type: project_types(:cas), project_purpose: 'test',
+                             owner: users(:no_roles))
+
+    email = CasMailer.with(project: project).requires_renewal_to_user
+
+    assert_emails 1 do
+      email.deliver_now
+    end
+
+    assert_equal Array.wrap(project.owner.email), email.to
+    assert_equal 'CAS Access Requires Renewal', email.subject
+    assert_match %r{http://[^/]+/projects/#{project.id}}, email.text_part.body.to_s
+  end
 end

@@ -289,5 +289,27 @@ module Workflow
         project.transition_to!(workflow_states(:access_approver_approved))
       end
     end
+
+    test 'should notify user on update to renewal' do
+      project = create_project(project_type: project_types(:cas), project_purpose: 'test',
+                               owner: users(:no_roles))
+      project.reload_current_state
+
+      notifications = Notification.where(title: 'CAS Access Requires Renewal')
+      # Should not send out notifications for changes when not RENEWAL
+      assert_no_difference 'notifications.count' do
+        project.transition_to!(workflow_states(:submitted))
+        project.transition_to!(workflow_states(:access_approver_approved))
+        # This will need removing to account for auto_transition
+        project.transition_to!(workflow_states(:access_granted))
+      end
+
+      assert_difference 'notifications.count', 1 do
+        project.transition_to!(workflow_states(:renewal))
+      end
+
+      assert_equal notifications.last.body, 'Your CAS account requires renewal, please click the ' \
+                                            "renew button on your application.\n\n"
+    end
   end
 end

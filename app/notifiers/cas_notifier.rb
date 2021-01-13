@@ -92,6 +92,15 @@ class CasNotifier
       )
     end
 
+    def requires_renewal_to_user(project)
+      create_notification(
+        user_id: project.owner,
+        title: 'CAS Access Requires Renewal',
+        body: 'Your CAS account requires renewal, please click the renew button on your ' \
+              "application.\n\n"
+      )
+    end
+
     private
 
     def create_notification(**attributes)

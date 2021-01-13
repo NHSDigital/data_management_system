@@ -20,6 +20,7 @@ module Workflow
     after_save :notify_user_cas_application_approved
     after_save :notify_user_cas_application_rejected
     after_save :notify_cas_access_granted
+    after_save :notify_requires_renewal
 
     private
 
@@ -104,6 +105,14 @@ module Workflow
 
       CasNotifier.account_access_granted_to_user(project)
       CasMailer.with(project: project).send(:account_access_granted_to_user).deliver_now
+    end
+
+    def notify_requires_renewal
+      return unless project.cas?
+      return unless state_id == 'RENEWAL'
+
+      CasNotifier.requires_renewal_to_user(project)
+      CasMailer.with(project: project).send(:requires_renewal_to_user).deliver_now
     end
   end
 end
