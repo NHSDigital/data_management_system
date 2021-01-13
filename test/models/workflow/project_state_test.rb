@@ -311,5 +311,33 @@ module Workflow
       assert_equal notifications.last.body, 'Your CAS account requires renewal, please click the ' \
                                             "renew button on your application.\n\n"
     end
+
+    test 'should notify user on account closure' do
+      project = create_project(project_type: project_types(:cas), project_purpose: 'test',
+                               owner: users(:no_roles))
+      project.reload_current_state
+
+      notifications = Notification.where(title: 'CAS Account Closed')
+      # Should not send out notifications for changes when not RENEWAL
+      assert_no_difference 'notifications.count' do
+        project.transition_to!(workflow_states(:submitted))
+        project.transition_to!(workflow_states(:access_approver_approved))
+        # This will need removing to account for auto_transition
+        project.transition_to!(workflow_states(:access_granted))
+      end
+
+      assert_difference 'notifications.count', 1 do
+        project.transition_to!(workflow_states(:account_closed))
+      end
+
+      assert_no_difference 'notifications.count' do
+        project.transition_to!(workflow_states(:draft))
+      end
+
+      assert_equal notifications.last.body, 'Your CAS account has been closed. If you still ' \
+                                            'require access please re-apply using your existing ' \
+                                            "application by clicking the 'return to draft' " \
+                                            "button.\n\n"
+    end
   end
 end

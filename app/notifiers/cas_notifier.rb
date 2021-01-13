@@ -101,6 +101,15 @@ class CasNotifier
       )
     end
 
+    def account_closed_to_user(project)
+      create_notification(
+        user_id: project.owner,
+        title: 'CAS Account Closed',
+        body: 'Your CAS account has been closed. If you still require access please re-apply ' \
+              "using your existing application by clicking the 'return to draft' button.\n\n"
+      )
+    end
+
     private
 
     def create_notification(**attributes)

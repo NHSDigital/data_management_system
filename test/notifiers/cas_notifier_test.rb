@@ -185,4 +185,21 @@ class CasNotifierTest < ActiveSupport::TestCase
     assert_equal Notification.last.body, 'Your CAS account requires renewal, please click the ' \
                                          "renew button on your application.\n\n"
   end
+
+  test 'should generate account_closed_to_user Notifications' do
+    user = users(:no_roles)
+    project = create_project(project_type: project_types(:cas), project_purpose: 'test',
+                             owner: user)
+
+    assert_difference -> { Notification.by_title('CAS Account Closed').count }, 1 do
+      CasNotifier.account_closed_to_user(project)
+    end
+
+    # TODO Should it be creating UserNotifications?
+
+    assert_equal Notification.last.body, 'Your CAS account has been closed. If you still ' \
+                                         'require access please re-apply using your existing ' \
+                                         "application by clicking the 'return to draft' " \
+                                         "button.\n\n"
+  end
 end

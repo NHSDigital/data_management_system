@@ -64,6 +64,12 @@ class CasMailer < ApplicationMailer
     mail(to: recipient, subject: 'CAS Access Requires Renewal') if recipient.any?
   end
 
+  def account_closed_to_user
+    recipient = Array.wrap(@project.owner.email)
+
+    mail(to: recipient, subject: 'CAS Account Closed') if recipient.any?
+  end
+
   private
 
   def load_project
