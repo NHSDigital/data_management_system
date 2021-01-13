@@ -99,7 +99,7 @@ module Workflow
         project.transition_to!(workflow_states(:access_approver_approved))
       end
 
-      assert_equal notifications.last.body, "CAS project #{project.id} - Access approval status " \
+      assert_equal notifications.last.body, "CAS application #{project.id} - Access approval status " \
                                             "has been updated to 'Access Approver Approved'.\n\n"
     end
 
@@ -117,7 +117,7 @@ module Workflow
         project.transition_to!(workflow_states(:access_approver_rejected))
       end
 
-      assert_equal notifications.last.body, "CAS project #{project.id} - Access approval status " \
+      assert_equal notifications.last.body, "CAS application #{project.id} - Access approval status " \
                                             "has been updated to 'Access Approver Rejected'.\n\n"
     end
 
@@ -196,7 +196,7 @@ module Workflow
         project.transition_to!(workflow_states(:access_granted))
       end
 
-      assert_equal notifications.last.body, "CAS project #{project.id} - Access has been granted " \
+      assert_equal notifications.last.body, "CAS application #{project.id} - Access has been granted " \
                                             'by the helpdesk and the applicant now has CAS ' \
                                             "access.\n\n"
     end
@@ -211,7 +211,7 @@ module Workflow
         project.transition_to!(workflow_states(:submitted))
       end
 
-      assert_equal notifications.last.body, "CAS project #{project.id} - Access approval is " \
+      assert_equal notifications.last.body, "CAS application #{project.id} - Access approval is " \
                                             "required.\n\n"
 
       assert_no_difference 'notifications.count' do
@@ -235,7 +235,7 @@ module Workflow
         one_dataset_project.transition_to!(workflow_states(:submitted))
       end
 
-      assert_equal notifications.last.body, "CAS project #{one_dataset_project.id} - Dataset " \
+      assert_equal notifications.last.body, "CAS application #{one_dataset_project.id} - Dataset " \
                                             "approval is required.\n\n"
 
       # Should not send out notifications for changes when not submitted
@@ -258,7 +258,7 @@ module Workflow
         two_dataset_project.transition_to!(workflow_states(:submitted))
       end
 
-      assert_equal notifications.last.body, "CAS project #{two_dataset_project.id} - Dataset " \
+      assert_equal notifications.last.body, "CAS application #{two_dataset_project.id} - Dataset " \
                                             "approval is required.\n\n"
 
       no_dataset_project = create_project(project_type: project_types(:cas), owner: users(:no_roles))
@@ -269,7 +269,7 @@ module Workflow
         no_dataset_project.transition_to!(workflow_states(:submitted))
       end
 
-      refute_equal notifications.last.body, "CAS project #{no_dataset_project.id} - Dataset " \
+      refute_equal notifications.last.body, "CAS application #{no_dataset_project.id} - Dataset " \
                                             "approval is required.\n\n"
     end
 

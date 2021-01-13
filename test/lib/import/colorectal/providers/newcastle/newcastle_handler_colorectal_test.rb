@@ -54,7 +54,7 @@ class NewcastleHandlerColorectalTest < ActiveSupport::TestCase
     targeted_record.raw_fields['moleculartestingtype'] = 'carrier'
     @logger.expects(:debug).with('ADDED SCOPE FROM TYPE')
     @handler.process_investigation_code(@genotype, targeted_record)
-    assert_equal 'Targeted Colorectal mutation test', @genotype.attribute_map['genetictestscope']
+    assert_equal 'Targeted Colorectal Lynch or MMR', @genotype.attribute_map['genetictestscope']
   end
 
   def clinical_json
