@@ -38,6 +38,7 @@ module Import
         COLORECTAL_REGEX = /(?<apc>APC)|
                             (?<bmpr>BMPR1A)|
                             (?<epcam>EPCAM)|
+                            (?<tacstd1>TACSTD1)|
                             (?<mlh1>MLH1)|
                             (?<msh2>MSH2)|
                             (?<msh6>MSH6)|
