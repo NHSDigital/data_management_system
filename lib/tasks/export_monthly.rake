@@ -47,7 +47,10 @@ namespace :export do
   end
 
   namespace :monthly do
-    desc 'Export monthly MBIS Death data'
+    desc <<~USAGE
+      Export monthly MBIS Death data
+      Syntax: rake export:monthly:death project_name='...' team_name='...' klass=... [filter=...] [month=YYYY-MM]
+    USAGE
     task death: :'pseudo:keys:load' do
       extractor      = Export::Helpers::RakeHelper::DeathExtractor
       encryptor      = Export::Helpers::RakeHelper::EncryptOutput
@@ -56,11 +59,11 @@ namespace :export do
       team_name      = ENV.delete('team_name')
       klass          = ENV.delete('klass')&.constantize
       filter         = ENV.delete('filter')
-      # TODO: Accept month parameter, e.g. 2020-10, to run non-interactively
+      # Accepts month parameter, e.g. 2020-10, to run non-interactively
       if project_name.blank? || team_name.blank? || klass.blank?
         puts <<~USAGE
           Error: Missing required parameter.
-          Syntax: rake export:monthly:death project_name='...' team_name='...' klass=... [filter=...]
+          Syntax: rake export:monthly:death project_name='...' team_name='...' klass=... [filter=...] [month=YYYY-MM]
         USAGE
         exit 1
       end
@@ -69,7 +72,8 @@ namespace :export do
                          patterns = klass.fname_patterns(filter, :monthly)
                          patterns[0..1] + ['MTH%m_temp_%s.TXT', patterns[2]]
                        else
-                         %w[MTH%mD_MBIS.TXT MTH%mP_MBIS.TXT MTH%m_temp_%s.TXT MTH%Y-%m_MBIS.zip]
+                         %w[MTH%Y-%mD_MBIS.TXT MTH%Y-%mP_MBIS.TXT MTH%Y-%m_temp_%s.TXT
+                            MTH%Y-%m_MBIS.zip]
                        end
       fname_team     = team_name.parameterize(separator: '_')
       fname_project  = project_name.parameterize(separator: '_')
