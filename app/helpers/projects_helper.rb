@@ -105,22 +105,30 @@ module ProjectsHelper
     i18n_scope   = %i[helpers submit workflow/project_state]
     i18n_key     = state.id.downcase.to_sym
     i18n_default = state.id
-
     button_options = {
       class: ['btn', STATE_TRANSITION_BUTTON_CLASSES.fetch(state.id, 'btn-default')]
     }.merge(options)
-
     unless project.can_transition_to?(state)
       title = project.textual_reasons_not_to_transition_to(state)
       button_options.merge!(disabled: 'disabled', title: title)
     end
-
     icon = STATE_TRANSITION_BUTTON_ICONS[state.id]
-    text = t(i18n_key, scope: i18n_scope, default: i18n_default)
-    text += ' (reinstating previous state)' if project.closed?
-    text = bootstrap_icon_tag(icon) + " #{text}" if icon
-
+    text = cas_form_text(project.current_state, state) if project.cas?
+    if text.nil?
+      text = t(i18n_key, scope: i18n_scope, default: i18n_default)
+      text += ' (reinstating previous state)' if project.closed?
+      text = bootstrap_icon_tag(icon) + " #{text}" if icon
+    end
     button_tag(text, button_options)
+  end
+
+  # CAS workflow has numerous return to DRAFT transitions where we want to display different text
+  # TODO: eventually this should be rewritten so all project types can use this logic.
+  def cas_form_text(from_state, next_state)
+    transition = Workflow::Transition.find_by(project_type_id: ProjectType.cas.first.id,
+                                              from_state_id: from_state.id,
+                                              next_state_id: next_state.id)
+    CasFormTransition.new(transition: transition).text
   end
 
   def approval_button_message(status)
