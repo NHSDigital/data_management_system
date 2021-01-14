@@ -103,6 +103,7 @@ module Workflow
       SystemRole.fetch(:cas_manager).users.each do |user|
         CasNotifier.account_access_granted(project, user.id)
       end
+      CasMailer.with(project: project).send(:account_access_granted).deliver_now
 
       CasNotifier.account_access_granted_to_user(project)
       CasMailer.with(project: project).send(:account_access_granted_to_user).deliver_now

@@ -52,6 +52,12 @@ class CasMailer < ApplicationMailer
     mail(to: recipient, subject: 'CAS Access Rejected') if recipient.any?
   end
 
+  def account_access_granted
+    recipients = SystemRole.fetch(:cas_manager).users.pluck(:email)
+
+    mail(to: recipients, subject: 'CAS Access Status Updated') if recipients.any?
+  end
+
   def account_access_granted_to_user
     recipient = Array.wrap(@project.owner.email)
 
