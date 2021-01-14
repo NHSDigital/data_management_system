@@ -70,6 +70,12 @@ class CasMailer < ApplicationMailer
     mail(to: recipient, subject: 'CAS Account Closed') if recipient.any?
   end
 
+  def new_cas_project_saved
+    recipients = SystemRole.fetch(:cas_manager).users.pluck(:email)
+
+    mail(to: recipients, subject: 'New CAS Application Created') if recipients.any?
+  end
+
   private
 
   def load_project

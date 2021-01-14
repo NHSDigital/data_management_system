@@ -202,4 +202,21 @@ class CasNotifierTest < ActiveSupport::TestCase
                                          "application by clicking the 'return to draft' " \
                                          "button.\n\n"
   end
+
+  test 'should generate new_cas_project_saved Notifications' do
+    project = create_project(project_type: project_types(:cas), project_purpose: 'test')
+
+    recipients = SystemRole.fetch(:cas_manager).users
+    title = 'New CAS Application Created'
+
+    assert_difference -> { Notification.by_title(title).count }, 2 do
+      recipients.each do |user|
+        CasNotifier.new_cas_project_saved(project, user.id)
+      end
+    end
+
+    # TODO: Should it be creating UserNotifications?
+
+    assert_equal Notification.last.body, "CAS application #{project.id} has been created.\n\n"
+  end
 end

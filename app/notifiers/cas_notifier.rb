@@ -110,6 +110,14 @@ class CasNotifier
       )
     end
 
+    def new_cas_project_saved(project, user_id)
+      create_notification(
+        user_id: user_id,
+        title: 'New CAS Application Created',
+        body: "#{project.project_type.name} application #{project.id} has been created.\n\n"
+      )
+    end
+
     private
 
     def create_notification(**attributes)

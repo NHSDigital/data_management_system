@@ -1,0 +1,12 @@
+##### New CAS Application Created #####
+
+CAS application <%= @project.id %> has been created.
+
+Title: <%= @project.name %>
+Type: <%= @project.project_type %>
+Raised by: <%= @project.owner_full_name %>
+Team: <%= @project.team.try(:name) %>
+Organisation: <%= @project.team.try(:organisation).try(:name) %>
+Link: <%= project_url(@project) %>
+
+Please log in and copy/paste the above link into your web browser to view the project.

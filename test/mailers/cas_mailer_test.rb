@@ -190,4 +190,19 @@ class ProjectsMailerTest < ActionMailer::TestCase
     assert_equal 'CAS Account Closed', email.subject
     assert_match %r{http://[^/]+/projects/#{project.id}}, email.text_part.body.to_s
   end
+
+  test 'new cas project saved' do
+    project = create_project(project_type: project_types(:cas), project_purpose: 'test',
+                             owner: users(:no_roles))
+
+    email = CasMailer.with(project: project).new_cas_project_saved
+
+    assert_emails 1 do
+      email.deliver_now
+    end
+
+    assert_equal SystemRole.fetch(:cas_manager).users.pluck(:email), email.to
+    assert_equal 'New CAS Application Created', email.subject
+    assert_match %r{http://[^/]+/projects/#{project.id}}, email.text_part.body.to_s
+  end
 end
