@@ -14,7 +14,8 @@ class CasAccessApproverTest < ActionDispatch::IntegrationTest
 
     visit project_path(project)
 
-    project_changes = { from: 'SUBMITTED', to: 'ACCESS_APPROVER_APPROVED' }
+    # Auto-transitions through to ACCESS_GRANTED
+    project_changes = { from: 'SUBMITTED', to: 'ACCESS_GRANTED' }
     assert_changes -> { project.reload.current_state.id }, project_changes do
       click_button('Approve Access')
       assert_difference('project.project_comments.count', 1) do

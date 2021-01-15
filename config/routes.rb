@@ -82,6 +82,8 @@ Rails.application.routes.draw do
       member do
         patch :approve
         put :approve
+        patch :reapply
+        put :reapply
       end
     end
   end

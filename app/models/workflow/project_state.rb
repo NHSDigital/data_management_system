@@ -4,6 +4,8 @@ module Workflow
   class ProjectState < ApplicationRecord
     self.table_name_prefix = 'workflow_'
 
+    include SharedMailersNotifications
+
     belongs_to :project
     belongs_to :state
 
@@ -22,6 +24,7 @@ module Workflow
     after_save :notify_cas_access_granted
     after_save :notify_requires_renewal
     after_save :notify_account_closed
+    after_save :auto_transition_access_approver_approved_to_access_granted
 
     private
 
@@ -49,15 +52,7 @@ module Workflow
       return unless project.cas?
       return unless state_id == 'SUBMITTED'
 
-      DatasetRole.fetch(:approver).users.each do |user|
-        matching_datasets = project.project_datasets.any? do |pd|
-          ProjectDataset.dataset_approval(user, nil).include? pd
-        end
-        next unless matching_datasets
-
-        CasNotifier.requires_dataset_approval(project, user.id)
-        CasMailer.with(project: project, user: user).send(:requires_dataset_approval).deliver_now
-      end
+      nofity_and_mail_requires_dataset_approval(project)
 
       SystemRole.fetch(:cas_access_approver).users.each do |user|
         CasNotifier.requires_account_approval(project, user.id)
@@ -75,7 +70,7 @@ module Workflow
       return unless %w[ACCESS_APPROVER_APPROVED ACCESS_APPROVER_REJECTED].include? state_id
 
       SystemRole.cas_manager_and_access_approvers.map(&:users).flatten.each do |user|
-        CasNotifier.access_approval_status_updated(project, user.id)
+        CasNotifier.access_approval_status_updated(project, user.id, state_id)
       end
       CasMailer.with(project: project).send(:access_approval_status_updated).deliver_now
     end
@@ -123,6 +118,17 @@ module Workflow
 
       CasNotifier.account_closed_to_user(project)
       CasMailer.with(project: project).send(:account_closed_to_user).deliver_now
+    end
+
+    def auto_transition_access_approver_approved_to_access_granted
+      return unless project.cas?
+      return unless state_id == 'ACCESS_APPROVER_APPROVED'
+
+      # TODO: this is a stopgap and will need script to generate access adding here
+
+      self.project_id = project_id
+      self.state_id = 'ACCESS_GRANTED'
+      save!
     end
   end
 end
