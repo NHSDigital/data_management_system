@@ -300,8 +300,6 @@ module Workflow
       assert_no_difference 'notifications.count' do
         project.transition_to!(workflow_states(:submitted))
         project.transition_to!(workflow_states(:access_approver_approved))
-        # This will need removing to account for auto_transition
-        project.transition_to!(workflow_states(:access_granted))
       end
 
       assert_difference 'notifications.count', 1 do
@@ -322,8 +320,6 @@ module Workflow
       assert_no_difference 'notifications.count' do
         project.transition_to!(workflow_states(:submitted))
         project.transition_to!(workflow_states(:access_approver_approved))
-        # This will need removing to account for auto_transition
-        project.transition_to!(workflow_states(:access_granted))
       end
 
       assert_difference 'notifications.count', 1 do

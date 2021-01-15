@@ -30,9 +30,6 @@ class CasAccessApproverTest < ActionDispatch::IntegrationTest
           click_button 'Submit'
         end
       end
-      within '#project_status' do
-        assert page.has_text? 'Access Approved'
-      end
     end
   end
 

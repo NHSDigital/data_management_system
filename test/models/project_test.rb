@@ -437,7 +437,7 @@ class ProjectTest < ActiveSupport::TestCase
 
     assert_difference 'notifications.count', 2 do
       create_project(project_type: project_types(:cas), project_purpose: 'notify new project',
-                               owner: users(:no_roles))
+                     owner: users(:no_roles))
     end
 
     project = Project.where(project_purpose: 'notify new project').last

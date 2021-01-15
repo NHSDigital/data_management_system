@@ -5,7 +5,7 @@ class HomePageTest < ActionDispatch::IntegrationTest
     sign_in users(:application_manager_three)
 
     visit root_path
-    assert has_content? ('Projects Dashboard')
+    assert has_content?('Projects Dashboard')
 
     within '.navbar' do
       click_link('Data Management System')
@@ -17,7 +17,7 @@ class HomePageTest < ActionDispatch::IntegrationTest
     sign_in users(:cas_manager)
 
     visit root_path
-    assert has_content? ('Listing Projects')
+    assert has_content?('Listing Projects')
 
     within '.navbar' do
       click_link('Data Management System')
@@ -29,7 +29,7 @@ class HomePageTest < ActionDispatch::IntegrationTest
     sign_in users(:no_roles)
 
     visit root_path
-    assert has_content? ('Welcome to Data Management System')
+    assert has_content?('Welcome to Data Management System')
 
     within '.navbar' do
       click_link('Data Management System')

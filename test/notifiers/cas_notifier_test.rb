@@ -184,7 +184,7 @@ class CasNotifierTest < ActiveSupport::TestCase
       CasNotifier.requires_renewal_to_user(project)
     end
 
-    # TODO Should it be creating UserNotifications?
+    # TODO: Should it be creating UserNotifications?
 
     assert_equal Notification.last.body, 'Your CAS account requires renewal, please click the ' \
                                          "renew button on your application.\n\n"
@@ -199,7 +199,7 @@ class CasNotifierTest < ActiveSupport::TestCase
       CasNotifier.account_closed_to_user(project)
     end
 
-    # TODO Should it be creating UserNotifications?
+    # TODO: Should it be creating UserNotifications?
 
     assert_equal Notification.last.body, 'Your CAS account has been closed. If you still ' \
                                          'require access please re-apply using your existing ' \

@@ -105,13 +105,16 @@ module ProjectsHelper
     i18n_scope   = %i[helpers submit workflow/project_state]
     i18n_key     = state.id.downcase.to_sym
     i18n_default = state.id
+
     button_options = {
       class: ['btn', STATE_TRANSITION_BUTTON_CLASSES.fetch(state.id, 'btn-default')]
     }.merge(options)
+
     unless project.can_transition_to?(state)
       title = project.textual_reasons_not_to_transition_to(state)
       button_options.merge!(disabled: 'disabled', title: title)
     end
+
     icon = STATE_TRANSITION_BUTTON_ICONS[state.id]
     text = cas_form_text(project.current_state, state) if project.cas?
     if text.nil?

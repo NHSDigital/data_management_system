@@ -208,7 +208,7 @@ class User < ActiveRecord::Base
     !administrator? && !odr? && !application_manager? && !senior_application_manager?
   end
 
-  def has_cas_role?
+  def cas_role?
     cas_dataset_approver? || cas_access_approver? || cas_manager?
   end
 
