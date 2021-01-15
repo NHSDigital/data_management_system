@@ -416,7 +416,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejection_reviewed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:renewal))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:account_closed))
+      assert user.can? :create, @project.project_states.build(state: workflow_states(:account_closed))
 
       @project.stubs current_state: workflow_states(:account_closed)
       assert user.can? :create, @project.project_states.build(state: workflow_states(:draft))

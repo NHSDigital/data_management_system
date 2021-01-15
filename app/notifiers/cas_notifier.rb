@@ -1,12 +1,13 @@
 # Generates `Notification`s relating to Cas projects.
+# TODO: text here and in other notifications as a whole should move to translation file
 class CasNotifier
   class << self
     def requires_dataset_approval(project, user_id)
       create_notification(
         user_id: user_id,
         title: 'CAS Application Requires Dataset Approval',
-        body: "#{project.project_type.name} project #{project.id} - Dataset approval is required." \
-              "\n\n"
+        body: "#{project.project_type.name} application #{project.id} - " \
+              "Dataset approval is required.\n\n"
       )
     end
 
@@ -14,7 +15,7 @@ class CasNotifier
       create_notification(
         user_id: user_id,
         title: 'Dataset Approval Status Change',
-        body: "#{project.project_type.name} project #{project.id} - Dataset " \
+        body: "#{project.project_type.name} application #{project.id} - Dataset " \
               "'#{project_dataset.dataset_name}' has been updated to Approval status of " \
               "'#{project_dataset.readable_approved_status}'.\n\n"
       )
@@ -33,7 +34,7 @@ class CasNotifier
       create_notification(
         user_id: user_id,
         title: 'CAS Application Requires Access Approval',
-        body: "#{project.project_type.name} project #{project.id} - Access approval is required." \
+        body: "#{project.project_type.name} application #{project.id} - Access approval is required." \
               "\n\n"
       )
     end
@@ -68,7 +69,7 @@ class CasNotifier
       create_notification(
         user_id: user_id,
         title: 'CAS Access Status Updated',
-        body: "#{project.project_type.name} project #{project.id} - Access has been granted by " \
+        body: "#{project.project_type.name} application #{project.id} - Access has been granted by " \
         "the helpdesk and the applicant now has CAS access.\n\n"
       )
     end

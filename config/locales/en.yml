@@ -69,7 +69,7 @@ en:
     dpia_moderation: DPIA Moderation
     dpia_rejected: DPIA Rejected
     contract_draft: Contract Draft
-    contract_rejected: Contracted Rejected
+    contract_rejected: Contract Rejected
     contract_completed: Contract Completed
     data_released: Data Released
     data_destroyed: Data Destroyed

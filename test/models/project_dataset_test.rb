@@ -80,7 +80,7 @@ class ProjectDatasetTest < ActiveSupport::TestCase
       project_dataset.update(approved: true)
     end
 
-    assert_equal notifications.last.body, "CAS project #{project.id} - Dataset 'Extra CAS " \
+    assert_equal notifications.last.body, "CAS application #{project.id} - Dataset 'Extra CAS " \
                                           "Dataset One' has been updated to Approval status of " \
                                           "'Approved'.\n\n"
 
@@ -88,7 +88,7 @@ class ProjectDatasetTest < ActiveSupport::TestCase
       project_dataset.update(approved: false)
     end
 
-    assert_equal notifications.last.body, "CAS project #{project.id} - Dataset 'Extra CAS " \
+    assert_equal notifications.last.body, "CAS application #{project.id} - Dataset 'Extra CAS " \
                                           "Dataset One' has been updated to Approval status of " \
                                           "'Rejected'.\n\n"
 
