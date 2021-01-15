@@ -12,7 +12,7 @@ module Workflow
     scope :terminal,     -> { left_joins(:transitions).where(workflow_transitions: { id: nil }) }
     scope :non_terminal, -> { joins(:transitions).distinct }
 
-    scope :not_deleted,                 -> { where.not(id: 'DELETED') }
+    scope :not_deleted, -> { where.not(id: 'DELETED') }
     scope :dataset_approval_states, lambda {
       where(id: %w[SUBMITTED ACCESS_APPROVER_APPROVED ACCESS_APPROVER_REJECTED ACCESS_GRANTED])
     }

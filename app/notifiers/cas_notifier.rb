@@ -43,7 +43,7 @@ class CasNotifier
       create_notification(
         user_id: user_id,
         title: 'Access Approval Status Updated',
-        body: "#{project.project_type.name} project #{project.id} - Access approval status has " \
+        body: "#{project.project_type.name} application #{project.id} - Access approval status has " \
               "been updated to '#{state_id.titlecase}'.\n\n"
       )
     end

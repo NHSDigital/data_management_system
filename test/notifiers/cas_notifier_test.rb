@@ -14,7 +14,7 @@ class CasNotifierTest < ActiveSupport::TestCase
       end
     end
 
-    # TODO Should it be creating UserNotifications?
+    # TODO: Should it be creating UserNotifications?
 
     assert_equal Notification.last.body, "CAS application #{project.id} - Dataset 'Extra CAS " \
                                          "Dataset One' has been updated to Approval status of " \
@@ -31,7 +31,7 @@ class CasNotifierTest < ActiveSupport::TestCase
       CasNotifier.dataset_approved_status_updated_to_user(project, project_dataset)
     end
 
-    # TODO Should it be creating UserNotifications?
+    # TODO: Should it be creating UserNotifications?
 
     assert_equal Notification.last.body, "Your CAS dataset access request for 'Extra CAS " \
                                          "Dataset One' has been updated to Approval status of " \
@@ -42,7 +42,6 @@ class CasNotifierTest < ActiveSupport::TestCase
     project = create_project(project_type: project_types(:cas), project_purpose: 'test')
 
     recipients = SystemRole.cas_manager_and_access_approvers.map(&:users).flatten
-    notification = Notification.where(title: 'Access Approval Status Updated')
 
     # Auto-transition to Access granted makes this a bit tricky to test state_id here
     # although it is covered in project_state test
@@ -54,7 +53,7 @@ class CasNotifierTest < ActiveSupport::TestCase
       end
     end
 
-    # TODO Should it be creating UserNotifications?
+    # TODO: Should it be creating UserNotifications?
 
     assert_equal Notification.last.body, "CAS application #{project.id} - Access approval status has " \
                                          "been updated to 'Access Approver Approved'.\n\n"
@@ -68,9 +67,9 @@ class CasNotifierTest < ActiveSupport::TestCase
       CasNotifier.account_approved_to_user(project)
     end
 
-    # TODO Should it be creating UserNotifications?
+    # TODO: Should it be creating UserNotifications?
 
-    assert_equal Notification.last.body, "Your CAS access has been approved for application " \
+    assert_equal Notification.last.body, 'Your CAS access has been approved for application ' \
                                          "#{project.id}. You will receive a further notification " \
                                          "once your account has been updated.\n\n"
   end
@@ -101,7 +100,7 @@ class CasNotifierTest < ActiveSupport::TestCase
       end
     end
 
-    # TODO Should it be creating UserNotifications?
+    # TODO: Should it be creating UserNotifications?
     expected = "CAS application #{project.id} - Access has been granted " \
                "by the helpdesk and the applicant now has CAS access.\n\n"
     assert_equal Notification.last.body, expected
@@ -116,9 +115,9 @@ class CasNotifierTest < ActiveSupport::TestCase
       CasNotifier.account_access_granted_to_user(project)
     end
 
-    # TODO Should it be creating UserNotifications?
+    # TODO: Should it be creating UserNotifications?
 
-    assert_equal Notification.last.body, "CAS access has been granted for your account based on " \
+    assert_equal Notification.last.body, 'CAS access has been granted for your account based on ' \
                                          "application #{project.id}.\n\n"
   end
 

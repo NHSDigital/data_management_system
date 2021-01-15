@@ -161,7 +161,7 @@ class ProjectDatasetTest < ActiveSupport::TestCase
       project_dataset.update(approved: nil)
     end
 
-    assert_equal notifications.last.body, "CAS project #{project.id} - Dataset " \
+    assert_equal notifications.last.body, "CAS application #{project.id} - Dataset " \
                                           "approval is required.\n\n"
 
     # should not send notification if set to true or false

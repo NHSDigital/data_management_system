@@ -50,7 +50,7 @@ class AbilityCasApplicationTest < ActiveSupport::TestCase
     owner_project = create_project(project_type: project_types(:cas), owner: applicant)
     owner_project.reload.current_state
     non_matched_dataset_project = create_project(project_type: project_types(:cas),
-                                  owner: users(:standard_user))
+                                                 owner: users(:standard_user))
     non_cas_project = create_project(project_type: project_types(:eoi), project_purpose: 'test',
                                      owner: users(:standard_user))
 
@@ -147,7 +147,7 @@ class AbilityCasApplicationTest < ActiveSupport::TestCase
     owner_project = create_project(project_type: project_types(:cas), owner: applicant)
     owner_project.reload.current_state
     non_cas_project = create_project(project_type: project_types(:eoi), project_purpose: 'test',
-                               owner: users(:standard_user))
+                                     owner: users(:standard_user))
 
     Grant.create(roleable: SystemRole.fetch(:cas_manager), user: applicant).tap(&:save)
 

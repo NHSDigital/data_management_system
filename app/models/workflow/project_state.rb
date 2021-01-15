@@ -105,6 +105,7 @@ module Workflow
     def auto_transition_access_approver_approved_to_access_granted
       return unless project.cas?
       return unless state_id == 'ACCESS_APPROVER_APPROVED'
+
       # TODO: this is a stopgap and will need script to generate access adding here
 
       self.project_id = project_id

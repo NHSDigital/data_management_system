@@ -1,7 +1,6 @@
 require 'test_helper'
 
 class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
-
   test 'should be able to view list of projects that user has access to approve' do
     @user = users(:cas_dataset_approver)
     ProjectDatasetsController.any_instance.expects(:valid_otp?).twice.returns(false).then.returns(true)
@@ -61,7 +60,7 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
     project = Project.create(project_type: project_types(:cas),
                              owner: users(:no_roles))
     project_dataset = ProjectDataset.new(dataset: Dataset.find_by(name: 'Extra CAS Dataset One'),
-                       terms_accepted: true)
+                                         terms_accepted: true)
     project.project_datasets << project_dataset
 
     project.transition_to!(workflow_states(:submitted))
