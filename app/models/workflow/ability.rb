@@ -489,6 +489,10 @@ module Workflow
                                  project: { current_state: { id: 'ACCESS_GRANTED' },
                                             project_type: { name: 'CAS' },
                                             id: project_ids }
+      can :create, ProjectState, state: { id: 'DRAFT' },
+                                 project: { current_state: { id: 'REJECTION_REVIEWED' },
+                                            project_type: { name: 'CAS' },
+                                            id: project_ids }
       can :transition, Project, id: project_ids, project_type: { name: 'CAS' }
     end
 
@@ -523,9 +527,6 @@ module Workflow
                                             project_type: { name: 'CAS' } }
       can :create, ProjectState, state: { id: 'DRAFT' },
                                  project: { current_state: { id: 'ACCOUNT_CLOSED' },
-                                            project_type: { name: 'CAS' } }
-      can :create, ProjectState, state: { id: 'DRAFT' },
-                                 project: { current_state: { id: 'REJECTION_REVIEWED' },
                                             project_type: { name: 'CAS' } }
       can :create, ProjectState, state: { id: 'ACCOUNT_CLOSED' },
                                  project: { current_state: { id: 'ACCESS_GRANTED' },
