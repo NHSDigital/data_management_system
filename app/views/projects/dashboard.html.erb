@@ -1,6 +1,6 @@
 <h3 class="center-block text-center">Projects Dashboard</h3>
 <hr />
-<%= render 'search' %>
+<%= render 'projects/search', url: dashboard_projects_path %>
 
 <% if @my_projects.any? %>
   <%= bootstrap_panel_tag 'My Projects' do %>
