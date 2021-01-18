@@ -136,6 +136,7 @@ module Export
         # CARA wants only people born in / after 2016
         return false unless death_field(ppat, 'dobyr').to_i >= 2016
       end
+      return false if ExcludedMbisid.excluded_mbisid?(extract_field(ppat, 'mbisid'))
       ppat.demographics['nhsnumber'].present?
     end
 
