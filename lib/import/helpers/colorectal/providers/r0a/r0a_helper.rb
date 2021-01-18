@@ -7,6 +7,74 @@ module Import
           module R0aHelper
             include Import::Helpers::Colorectal::Providers::R0a::R0aConstants
 
+            def split_nondosage_ngspool_fields(non_dosage_map)
+              # @non_dosage_record_map[:exon].join.scan(/MLH1_MSH2_MSH6_NGS-POOL/).size.positive? &&
+              #               @non_dosage_record_map[:genotype].join.scan(/MLH1 Normal, MSH2 Normal, MSH6 Normal/).size.positive? &&
+              #               @non_dosage_record_map[:genotype2].join.scan(/100% coverage at 100X/i).size.positive?
+              @non_dosage_record_map[:exon] = @non_dosage_record_map[:exon].flatten.map do |exon|
+                if exon == 'MLH1_MSH2_MSH6_NGS-POOL'
+                  exon = ['MLH1 Normal','MSH2 Normal','MSH6 Normal']
+                  exon.flatten
+                else exon = exon
+                end
+              end
+              @non_dosage_record_map[:exon] = @non_dosage_record_map[:exon].flatten
+
+              @non_dosage_record_map[:genotype] = @non_dosage_record_map[:genotype].flatten.map do |genotype|
+                if genotype == 'MLH1 Normal, MSH2 Normal, MSH6 Normal'
+                  genotype = [['Normal'].cycle(3).to_a.join(',').split(',')]
+                  genotype.flatten
+                elsif genotype.scan(/Normal, /i).size.positive?
+                  genotype = genotype.split(',').map do |genotypes| genotypes.gsub(/.+Normal/,"Normal") end
+                else genotype = genotype
+                end
+              end
+              @non_dosage_record_map[:genotype] = @non_dosage_record_map[:genotype].flatten
+
+              @non_dosage_record_map[:genotype2] = @non_dosage_record_map[:genotype2].flatten.map do |genotype2|
+                if !genotype2.nil? && genotype2.scan(/100% coverage at 100X/).size.positive?
+                  genotype2 = [['Normal'].cycle(3).to_a.join(',').split(',')]
+                else genotype2 = genotype2
+                end
+              end
+              @non_dosage_record_map[:genotype2] = @non_dosage_record_map[:genotype2].flatten
+            end
+
+
+            def split_nondosage_mlh1msh2mlpa_fields(non_dosage_map)
+              @non_dosage_record_map[:exon].join.scan(/MLH1\/MSH2 MLPA/).size.positive? ||
+                            @non_dosage_record_map[:exon].join.scan(/MLH1_MSH2 MLPA/).size.positive?
+              @non_dosage_record_map[:exon] = @non_dosage_record_map[:exon].flatten.map do |exon|
+                if exon == 'MLH1_MSH2 MLPA' # || exon == 'MLH1/MSH2 MLPA'
+                  exon = ['MLH1_MLPA','MSH2_MLPA']
+                  exon.flatten
+                else exon = exon
+                end
+              end
+              @non_dosage_record_map[:exon] = @non_dosage_record_map[:exon].flatten
+
+              @non_dosage_record_map[:genotype] = @non_dosage_record_map[:genotype].flatten.map do |genotype|
+                if genotype == 'Normal'
+                  genotype = ['Normal'].cycle(2).to_a.join(',').split(',')
+                  genotype.flatten
+                else genotype = genotype
+                end
+              end
+              @non_dosage_record_map[:genotype] = @non_dosage_record_map[:genotype].flatten
+
+              @non_dosage_record_map[:genotype2] = @non_dosage_record_map[:genotype2].flatten.map do |genotype2|
+                if !genotype2.nil? && genotype2.empty? 
+                  genotype2 = ['MLPA Normal'].cycle(2).to_a.join(',').split(',')
+                # elsif genotype2.nil?
+                #   genotype2 = ['Normal'].cycle(2).to_a.join(',').split(',')
+                else genotype2 = genotype2
+                end
+              end
+              @non_dosage_record_map[:genotype2] = @non_dosage_record_map[:genotype2].flatten
+            end
+
+
+
             def assign_and_populate_results_for(record)
               genocolorectal = Import::Colorectal::Core::Genocolorectal.new(record)
               genocolorectal.add_passthrough_fields(record.mapped_fields,
