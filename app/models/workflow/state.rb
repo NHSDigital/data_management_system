@@ -27,6 +27,8 @@ module Workflow
     scope :awaiting_sign_off,           -> { where(id: %w[DRAFT REVIEW SUBMITTED]) }
     scope :submitted_for_sign_off,      -> { where(id: %w[REVIEW SUBMITTED]) }
     scope :not_submitted_for_sign_off,  -> { where.not(id: %w[REVIEW SUBMITTED]) }
+    scope :access_granted,              -> { where(id: 'ACCESS_GRANTED') }
+    scope :renewal,                     -> { where(id: 'RENEWAL') }
 
     # Get a humanised name from localisation files:
     def name
