@@ -46,3 +46,4 @@ yarn-debug.log*
 # Encrypted application credentials are in a separate repository
 /config/credentials.yml.enc
 /config/master.key
+/config/excluded_mbisids.yml.enc
