@@ -14,7 +14,7 @@ class ProjectsMailerTest < ActionMailer::TestCase
       email.deliver_now
     end
 
-    assert_equal SystemRole.cas_manager_and_access_approvers.map(&:users).flatten.map(&:email), email.to
+    assert_equal User.cas_manager_and_access_approvers.map(&:email), email.to
     assert_equal 'Dataset Approval Status Change', email.subject
     assert_match %r{a href="http://[^/]+/projects/#{project.id}"}, email.html_part.body.to_s
     assert_match %r{http://[^/]+/projects/#{project.id}}, email.text_part.body.to_s
@@ -49,7 +49,7 @@ class ProjectsMailerTest < ActionMailer::TestCase
       email.deliver_now
     end
 
-    assert_equal SystemRole.cas_manager_and_access_approvers.map(&:users).flatten.map(&:email), email.to
+    assert_equal User.cas_manager_and_access_approvers.map(&:email), email.to
     assert_equal 'Access Approval Status Updated', email.subject
     assert_match %r{a href="http://[^/]+/projects/#{project.id}"}, email.html_part.body.to_s
     assert_match %r{http://[^/]+/projects/#{project.id}}, email.text_part.body.to_s
@@ -138,7 +138,7 @@ class ProjectsMailerTest < ActionMailer::TestCase
       email.deliver_now
     end
 
-    assert_equal SystemRole.fetch(:cas_access_approver).users.pluck(:email), email.to
+    assert_equal User.cas_access_approvers.pluck(:email), email.to
     assert_equal 'CAS Application Requires Access Approval', email.subject
     assert_match %r{http://[^/]+/projects/#{project.id}}, email.text_part.body.to_s
   end
