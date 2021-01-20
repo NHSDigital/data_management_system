@@ -23,7 +23,7 @@ class Ability
     can %i[reapply], ProjectDataset, approved: false,
                                      project: { project_type_id: ProjectType.cas.pluck(:id),
                                                 current_state: {
-                                                  id: Workflow::State.reapply_dataset_states.map(&:id)
+                                                  id: Workflow::State.reapply_dataset_states.pluck(:id)
                                                 },
                                                 grants: { user_id: user.id,
                                                           roleable: ProjectRole.owner } }

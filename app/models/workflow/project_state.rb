@@ -51,14 +51,14 @@ module Workflow
       return unless project.cas?
       return unless state_id == 'SUBMITTED'
 
-      nofity_and_mail_requires_dataset_approval(project)
+      notify_and_mail_requires_dataset_approval(project)
     end
 
     def notify_requires_account_approval
       return unless project.cas?
       return unless state_id == 'SUBMITTED'
 
-      SystemRole.fetch(:cas_access_approver).users.each do |user|
+      User.cas_access_approvers.each do |user|
         CasNotifier.requires_account_approval(project, user.id)
       end
       CasMailer.with(project: project).send(:requires_account_approval).deliver_now
@@ -68,7 +68,7 @@ module Workflow
       return unless project.cas?
       return unless %w[ACCESS_APPROVER_APPROVED ACCESS_APPROVER_REJECTED].include? state_id
 
-      SystemRole.cas_manager_and_access_approvers.map(&:users).flatten.each do |user|
+      User.cas_manager_and_access_approvers.each do |user|
         CasNotifier.access_approval_status_updated(project, user.id, state_id)
       end
       CasMailer.with(project: project).send(:access_approval_status_updated).deliver_now
@@ -94,7 +94,7 @@ module Workflow
       return unless project.cas?
       return unless state_id == 'ACCESS_GRANTED'
 
-      SystemRole.fetch(:cas_manager).users.each do |user|
+      User.cas_managers.each do |user|
         CasNotifier.account_access_granted(project, user.id)
       end
 

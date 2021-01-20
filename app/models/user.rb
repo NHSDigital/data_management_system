@@ -84,6 +84,11 @@ class User < ActiveRecord::Base
               merge(DatasetRole.where(name: 'Approver')))
   }
 
+  scope :cas_manager_and_access_approvers, lambda {
+    where(id: joins(:grants).joins(:system_roles).
+              merge(SystemRole.cas_manager_and_access_approvers))
+  }
+
   validates :username,      uniqueness: { conditions: -> { where.not(username: nil) } }
   validates :first_name,    presence: true
   validates :last_name,     presence: true

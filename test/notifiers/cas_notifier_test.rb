@@ -91,7 +91,7 @@ class CasNotifierTest < ActiveSupport::TestCase
   test 'should generate account_access_granted Notifications' do
     project = create_project(project_type: project_types(:cas), project_purpose: 'test')
 
-    recipients = SystemRole.fetch(:cas_manager).users
+    recipients = User.cas_managers
 
     title = 'CAS Access Status Updated'
     assert_difference -> { Notification.by_title(title).count }, 2 do
