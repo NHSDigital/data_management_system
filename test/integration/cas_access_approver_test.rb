@@ -14,7 +14,8 @@ class CasAccessApproverTest < ActionDispatch::IntegrationTest
 
     visit project_path(project)
 
-    project_changes = { from: 'SUBMITTED', to: 'ACCESS_APPROVER_APPROVED' }
+    # Auto-transitions through to ACCESS_GRANTED
+    project_changes = { from: 'SUBMITTED', to: 'ACCESS_GRANTED' }
     assert_changes -> { project.reload.current_state.id }, project_changes do
       click_button('ACCESS_APPROVER_APPROVED')
       assert_difference('project.project_comments.count', 1) do
@@ -28,9 +29,6 @@ class CasAccessApproverTest < ActionDispatch::IntegrationTest
           fill_in 'ndr_authenticate[otp]', with: 'defo a yubikey'
           click_button 'Submit'
         end
-      end
-      within '#project_status' do
-        assert page.has_text? 'ACCESS_APPROVER_APPROVED'
       end
     end
   end

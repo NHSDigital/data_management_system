@@ -14,7 +14,7 @@ class ProjectsMailerTest < ActionMailer::TestCase
       email.deliver_now
     end
 
-    assert_equal SystemRole.cas_manager_and_access_approvers.map(&:users).flatten.map(&:email), email.to
+    assert_equal User.cas_manager_and_access_approvers.map(&:email), email.to
     assert_equal 'Dataset Approval Status Change', email.subject
     assert_match %r{a href="http://[^/]+/projects/#{project.id}"}, email.html_part.body.to_s
     assert_match %r{http://[^/]+/projects/#{project.id}}, email.text_part.body.to_s
@@ -49,7 +49,7 @@ class ProjectsMailerTest < ActionMailer::TestCase
       email.deliver_now
     end
 
-    assert_equal SystemRole.cas_manager_and_access_approvers.map(&:users).flatten.map(&:email), email.to
+    assert_equal User.cas_manager_and_access_approvers.map(&:email), email.to
     assert_equal 'Access Approval Status Updated', email.subject
     assert_match %r{a href="http://[^/]+/projects/#{project.id}"}, email.html_part.body.to_s
     assert_match %r{http://[^/]+/projects/#{project.id}}, email.text_part.body.to_s
@@ -95,9 +95,8 @@ class ProjectsMailerTest < ActionMailer::TestCase
   test 'account access granted to user' do
     project = create_project(project_type: project_types(:cas), project_purpose: 'test',
                              owner: users(:no_roles))
+    # Auto-transitions to Access Granted
     project.transition_to!(workflow_states(:access_approver_approved))
-
-    project.transition_to!(workflow_states(:access_granted))
 
     email = CasMailer.with(project: project).account_access_granted_to_user
 
@@ -121,7 +120,7 @@ class ProjectsMailerTest < ActionMailer::TestCase
       email.deliver_now
     end
 
-    assert_equal SystemRole.fetch(:cas_access_approver).users.pluck(:email), email.to
+    assert_equal User.cas_access_approvers.pluck(:email), email.to
     assert_equal 'CAS Application Requires Access Approval', email.subject
     assert_match %r{http://[^/]+/projects/#{project.id}}, email.text_part.body.to_s
   end

@@ -15,6 +15,10 @@ class ProjectDatasetsController < ApplicationController
     @project_dataset.update(project_dataset_params)
   end
 
+  def reapply
+    @project_dataset.update(project_dataset_params)
+  end
+
   private
 
   def project_dataset_params

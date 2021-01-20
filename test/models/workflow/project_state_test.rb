@@ -170,11 +170,11 @@ module Workflow
       # Should not send out notifications for changes when not access_granted
       assert_no_difference 'notifications.count' do
         project.transition_to!(workflow_states(:submitted))
-        project.transition_to!(workflow_states(:access_approver_approved))
       end
 
       assert_difference 'notifications.count', 1 do
-        project.transition_to!(workflow_states(:access_granted))
+        # This will auto-transition to access granted
+        project.transition_to!(workflow_states(:access_approver_approved))
       end
 
       assert_equal notifications.last.body, 'CAS access has been granted for your account based ' \
@@ -189,11 +189,11 @@ module Workflow
       # Should not send out notifications for changes when not access_granted
       assert_no_difference 'notifications.count' do
         project.transition_to!(workflow_states(:submitted))
-        project.transition_to!(workflow_states(:access_approver_approved))
       end
 
       assert_difference 'notifications.count', 2 do
-        project.transition_to!(workflow_states(:access_granted))
+        # This will auto-transition to access granted
+        project.transition_to!(workflow_states(:access_approver_approved))
       end
 
       assert_equal notifications.last.body, "CAS application #{project.id} - Access has been granted " \
@@ -272,6 +272,19 @@ module Workflow
 
       refute_equal notifications.last.body, "CAS application #{no_dataset_project.id} - Dataset " \
                                             "approval is required.\n\n"
+    end
+
+    test 'should auto-transition cas application from ACCESS_APPROVER_APPROVED to ACCESS_GRANTED' do
+      # TODO: will need updating when script to generate access is added
+      application = Project.new(project_type: ProjectType.find_by(name: 'CAS')).tap do |a|
+        a.owner = users(:no_roles)
+        a.save!
+      end
+
+      application.transition_to!(workflow_states(:submitted))
+      application.transition_to!(workflow_states(:access_approver_approved))
+
+      assert_equal application.current_state, workflow_states(:access_granted)
     end
   end
 end
