@@ -213,6 +213,10 @@ class User < ActiveRecord::Base
     !administrator? && !odr? && !application_manager? && !senior_application_manager?
   end
 
+  def cas_role?
+    cas_dataset_approver? || cas_access_approver? || cas_manager?
+  end
+
   def applicant?
     return true if role?(TeamRole.fetch(:mbis_applicant))
     return true if role?(TeamRole.fetch(:odr_applicant))

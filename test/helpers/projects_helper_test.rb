@@ -19,6 +19,39 @@ class ProjectsHelperTest < ActionView::TestCase
                '<span class="glyphicon glyphicon-trash"></span> Delete</button>'
 
     assert_dom_equal expected, transition_button(@project, state)
+
+    # Check non-cas transition buttons still working as expected
+    @project.transition_to!(workflow_states(:review))
+
+    state = @project.transitionable_states.find('DRAFT')
+
+    expected = '<button name="button" type="submit" class="btn btn-default">' \
+               'Return to draft</button>'
+
+    assert_dom_equal expected, transition_button(@project, state)
+  end
+
+  test 'cas transition buttons' do
+    project = create_project(project_type: project_types(:cas), project_purpose: 'test')
+
+    project.transition_to!(workflow_states(:submitted))
+    project.transition_to!(workflow_states(:access_approver_rejected))
+
+    # Check cas transition buttons normally get text from translation file.
+    state = project.transitionable_states.find('REJECTION_REVIEWED')
+
+    expected = '<button name="button" type="submit" class="btn btn-danger">' \
+               '<span class="glyphicon glyphicon-thumbs-down"></span> Rejection Confirmed</button>'
+
+    assert_dom_equal expected, transition_button(project, state)
+
+    # Check some cas transition buttons get text from cas_form_transition.rb
+    state = project.transitionable_states.find('SUBMITTED')
+
+    expected = '<button name="button" type="submit" class="btn btn-success">' \
+               'Return to Access Approval</button>'
+
+    assert_dom_equal expected, transition_button(project, state)
   end
 
   test 'requires_modal_comments_for_transition_to?' do

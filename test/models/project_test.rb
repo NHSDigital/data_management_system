@@ -431,4 +431,22 @@ class ProjectTest < ActiveSupport::TestCase
 
     assert_equal 0, Project.dataset_approval(user, nil).count
   end
+
+  test 'should notify cas_manager on new project creation' do
+    notifications = Notification.where(title: 'New CAS Application Created')
+
+    assert_difference 'notifications.count', 2 do
+      create_project(project_type: project_types(:cas), project_purpose: 'notify new project',
+                     owner: users(:no_roles))
+    end
+
+    project = Project.where(project_purpose: 'notify new project').last
+
+    assert_equal notifications.last.body, "CAS application #{project.id} has been created.\n\n"
+
+    assert_no_difference 'notifications.count' do
+      project.save!
+      project.update(project_purpose: 'test updating does not trigger')
+    end
+  end
 end

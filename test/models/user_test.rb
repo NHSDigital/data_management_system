@@ -117,6 +117,22 @@ class UserTest < ActiveSupport::TestCase
     refute user.standard?
   end
 
+  test 'should flag as has_cas_roles' do
+    user = users(:standard_user)
+    refute user.cas_role?
+
+    user.stubs(cas_dataset_approver?: true)
+    assert user.cas_role?
+
+    user.unstub(:cas_dataset_approver?)
+    user.stubs(cas_access_approver?: true)
+    assert user.cas_role?
+
+    user.unstub(:cas_access_approver?)
+    user.stubs(cas_manager?: true)
+    assert user.cas_role?
+  end
+
   test 'user has teams' do
     user = users(:standard_user2)
     assert user.teams?

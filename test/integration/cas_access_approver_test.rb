@@ -17,7 +17,7 @@ class CasAccessApproverTest < ActionDispatch::IntegrationTest
     # Auto-transitions through to ACCESS_GRANTED
     project_changes = { from: 'SUBMITTED', to: 'ACCESS_GRANTED' }
     assert_changes -> { project.reload.current_state.id }, project_changes do
-      click_button('ACCESS_APPROVER_APPROVED')
+      click_button('Approve Access')
       assert_difference('project.project_comments.count', 1) do
         within('.modal') do
           fill_in('Comment', with: 'Test')
@@ -44,13 +44,13 @@ class CasAccessApproverTest < ActionDispatch::IntegrationTest
 
     project_changes = { from: 'SUBMITTED', to: 'ACCESS_APPROVER_REJECTED' }
     assert_changes -> { project.reload.current_state.id }, project_changes do
-      click_button('ACCESS_APPROVER_REJECTED')
+      click_button('Reject Access')
       within('.modal') do
         fill_in('Comment', with: 'Test')
         click_button('Save')
       end
       within '#project_status' do
-        assert page.has_text? 'ACCESS_APPROVER_REJECTED'
+        assert page.has_text? 'Access Rejected'
       end
     end
   end

@@ -6,7 +6,7 @@ class CasNotifier
       create_notification(
         user_id: user_id,
         title: 'CAS Application Requires Dataset Approval',
-        body: "#{project.project_type.name} application #{project.id} - " \
+        body: "#{project.project_type_name} application #{project.id} - " \
               "Dataset approval is required.\n\n"
       )
     end
@@ -15,9 +15,18 @@ class CasNotifier
       create_notification(
         user_id: user_id,
         title: 'Dataset Approval Status Change',
-        body: "#{project.project_type.name} application #{project.id} - Dataset " \
+        body: "#{project.project_type_name} application #{project.id} - Dataset " \
               "'#{project_dataset.dataset_name}' has been updated to Approval status of " \
               "'#{project_dataset.readable_approved_status}'.\n\n"
+      )
+    end
+
+    def application_submitted(project, user_id)
+      create_notification(
+        user_id: user_id,
+        title: 'CAS Application Submitted',
+        body: "#{project.project_type_name} project #{project.id} has been submitted." \
+              "\n\n"
       )
     end
 
@@ -34,7 +43,7 @@ class CasNotifier
       create_notification(
         user_id: user_id,
         title: 'CAS Application Requires Access Approval',
-        body: "#{project.project_type.name} application #{project.id} - Access approval is required." \
+        body: "#{project.project_type_name} application #{project.id} - Access approval is required." \
               "\n\n"
       )
     end
@@ -43,7 +52,7 @@ class CasNotifier
       create_notification(
         user_id: user_id,
         title: 'Access Approval Status Updated',
-        body: "#{project.project_type.name} application #{project.id} - Access approval status has " \
+        body: "#{project.project_type_name} application #{project.id} - Access approval status has " \
               "been updated to '#{state_id.titlecase}'.\n\n"
       )
     end
@@ -69,7 +78,7 @@ class CasNotifier
       create_notification(
         user_id: user_id,
         title: 'CAS Access Status Updated',
-        body: "#{project.project_type.name} application #{project.id} - Access has been granted by " \
+        body: "#{project.project_type_name} application #{project.id} - Access has been granted by " \
         "the helpdesk and the applicant now has CAS access.\n\n"
       )
     end
@@ -80,6 +89,32 @@ class CasNotifier
         title: 'CAS Access Granted',
         body: 'CAS access has been granted for your account based on application ' \
               "#{project.id}.\n\n"
+      )
+    end
+
+    def requires_renewal_to_user(project)
+      create_notification(
+        user_id: project.owner,
+        title: 'CAS Access Requires Renewal',
+        body: 'Your CAS account requires renewal, please click the renew button on your ' \
+              "application.\n\n"
+      )
+    end
+
+    def account_closed_to_user(project)
+      create_notification(
+        user_id: project.owner,
+        title: 'CAS Account Closed',
+        body: 'Your CAS account has been closed. If you still require access please re-apply ' \
+              "using your existing application by clicking the 'return to draft' button.\n\n"
+      )
+    end
+
+    def new_cas_project_saved(project, user_id)
+      create_notification(
+        user_id: user_id,
+        title: 'New CAS Application Created',
+        body: "#{project.project_type_name} application #{project.id} has been created.\n\n"
       )
     end
 

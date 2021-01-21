@@ -206,7 +206,6 @@ module Workflow
       project.reload_current_state
 
       notifications = Notification.where(title: 'CAS Application Requires Access Approval')
-      # Should not send out notifications for changes when not awaiting_account_approval
 
       assert_difference 'notifications.count', 1 do
         project.transition_to!(workflow_states(:submitted))
@@ -272,6 +271,69 @@ module Workflow
 
       refute_equal notifications.last.body, "CAS application #{no_dataset_project.id} - Dataset " \
                                             "approval is required.\n\n"
+    end
+
+    test 'should notify cas manager when project reaches submitted' do
+      project = create_project(project_type: project_types(:cas), project_purpose: 'test')
+      project.reload_current_state
+
+      notifications = Notification.where(title: 'CAS Application Submitted')
+
+      assert_difference 'notifications.count', 2 do
+        project.transition_to!(workflow_states(:submitted))
+      end
+
+      assert_equal notifications.last.body, "CAS project #{project.id} has been submitted.\n\n"
+
+      assert_no_difference 'notifications.count' do
+        project.transition_to!(workflow_states(:access_approver_approved))
+      end
+    end
+
+    test 'should notify user on update to renewal' do
+      project = create_project(project_type: project_types(:cas), project_purpose: 'test',
+                               owner: users(:no_roles))
+      project.reload_current_state
+
+      notifications = Notification.where(title: 'CAS Access Requires Renewal')
+      # Should not send out notifications for changes when not RENEWAL
+      assert_no_difference 'notifications.count' do
+        project.transition_to!(workflow_states(:submitted))
+        project.transition_to!(workflow_states(:access_approver_approved))
+      end
+
+      assert_difference 'notifications.count', 1 do
+        project.transition_to!(workflow_states(:renewal))
+      end
+
+      assert_equal notifications.last.body, 'Your CAS account requires renewal, please click the ' \
+                                            "renew button on your application.\n\n"
+    end
+
+    test 'should notify user on account closure' do
+      project = create_project(project_type: project_types(:cas), project_purpose: 'test',
+                               owner: users(:no_roles))
+      project.reload_current_state
+
+      notifications = Notification.where(title: 'CAS Account Closed')
+      # Should not send out notifications for changes when not RENEWAL
+      assert_no_difference 'notifications.count' do
+        project.transition_to!(workflow_states(:submitted))
+        project.transition_to!(workflow_states(:access_approver_approved))
+      end
+
+      assert_difference 'notifications.count', 1 do
+        project.transition_to!(workflow_states(:account_closed))
+      end
+
+      assert_no_difference 'notifications.count' do
+        project.transition_to!(workflow_states(:draft))
+      end
+
+      assert_equal notifications.last.body, 'Your CAS account has been closed. If you still ' \
+                                            'require access please re-apply using your existing ' \
+                                            "application by clicking the 'return to draft' " \
+                                            "button.\n\n"
     end
 
     test 'should auto-transition cas application from ACCESS_APPROVER_APPROVED to ACCESS_GRANTED' do

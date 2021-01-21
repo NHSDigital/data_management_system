@@ -157,4 +157,70 @@ class CasNotifierTest < ActiveSupport::TestCase
     assert_equal Notification.last.body, "CAS application #{project.id} - Dataset approval is " \
                                          "required.\n\n"
   end
+
+  test 'should generate application_submitted Notifications' do
+    project = create_project(project_type: project_types(:cas), project_purpose: 'test')
+
+    recipients = User.cas_managers
+    title = 'CAS Application Submitted'
+
+    assert_difference -> { Notification.by_title(title).count }, 2 do
+      recipients.each do |user|
+        CasNotifier.application_submitted(project, user.id)
+      end
+    end
+
+    # TODO: Should it be creating UserNotifications?
+
+    assert_equal Notification.last.body, "CAS project #{project.id} has been submitted.\n\n"
+  end
+
+  test 'should generate requires_renewal_to_user Notifications' do
+    user = users(:no_roles)
+    project = create_project(project_type: project_types(:cas), project_purpose: 'test',
+                             owner: user)
+
+    assert_difference -> { Notification.by_title('CAS Access Requires Renewal').count }, 1 do
+      CasNotifier.requires_renewal_to_user(project)
+    end
+
+    # TODO: Should it be creating UserNotifications?
+
+    assert_equal Notification.last.body, 'Your CAS account requires renewal, please click the ' \
+                                         "renew button on your application.\n\n"
+  end
+
+  test 'should generate account_closed_to_user Notifications' do
+    user = users(:no_roles)
+    project = create_project(project_type: project_types(:cas), project_purpose: 'test',
+                             owner: user)
+
+    assert_difference -> { Notification.by_title('CAS Account Closed').count }, 1 do
+      CasNotifier.account_closed_to_user(project)
+    end
+
+    # TODO: Should it be creating UserNotifications?
+
+    assert_equal Notification.last.body, 'Your CAS account has been closed. If you still ' \
+                                         'require access please re-apply using your existing ' \
+                                         "application by clicking the 'return to draft' " \
+                                         "button.\n\n"
+  end
+
+  test 'should generate new_cas_project_saved Notifications' do
+    project = create_project(project_type: project_types(:cas), project_purpose: 'test')
+
+    recipients = User.cas_managers
+    title = 'New CAS Application Created'
+
+    assert_difference -> { Notification.by_title(title).count }, 2 do
+      recipients.each do |user|
+        CasNotifier.new_cas_project_saved(project, user.id)
+      end
+    end
+
+    # TODO: Should it be creating UserNotifications?
+
+    assert_equal Notification.last.body, "CAS application #{project.id} has been created.\n\n"
+  end
 end

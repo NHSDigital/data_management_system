@@ -1,6 +1,6 @@
 <td><%= project_dataset.dataset_name %></td>
 <td><%= project_dataset.dataset_full_name %></td>
-<% unless %w[DRAFT DELETED].include?(project_dataset.project.current_state.id) %>
+<% unless %w[DRAFT ACCESS_GRANTED].include?(project_dataset.project.current_state.id) %>
   <td id='approvals'>
     <% if project_dataset.approved.nil? %>
       <%= link_to bootstrap_icon_tag('ok'), approve_project_dataset_path(id: project_dataset.id, "project_dataset[approved]" => 'true'), :method => :patch, remote: true, id: "approval_#{dom_id(project_dataset)}", class: 'btn btn-success btn-sm  rce_item' %>

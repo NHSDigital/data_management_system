@@ -1,8 +1,9 @@
-<h1>CAS Application Requires Access Approval</h1>
+<h1>CAS Access Status Updated</h1>
 <hr />
 
 <p>
-  <%= @project.project_type_name %> project <%= @project.id %> - Access approval is required.
+  CAS application <%= @project.id %> - Access has been granted by
+  the helpdesk and the applicant now has CAS access
 </p>
 
 <%= render 'projects_mailer/project_details', project: @project %>
