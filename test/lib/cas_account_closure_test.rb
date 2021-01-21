@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class CasAutomaticAccountClosureTest < ActiveSupport::TestCase
+class CasAccountClosureTest < ActiveSupport::TestCase
   test 'CAS application moves to account closed after 1 month' do
     project = Project.create(project_type: project_types(:cas), owner: users(:standard_user2))
 
@@ -13,7 +13,7 @@ class CasAutomaticAccountClosureTest < ActiveSupport::TestCase
 
     travel_to 10.days.from_now
 
-    klass = CasAutomaticAccountClosure.new
+    klass = CasAccountClosure.new
     klass.account_closures
 
     project.reload.current_state
@@ -21,7 +21,7 @@ class CasAutomaticAccountClosureTest < ActiveSupport::TestCase
 
     travel_to 1.month.from_now
 
-    klass = CasAutomaticAccountClosure.new
+    klass = CasAccountClosure.new
     klass.account_closures
 
     project.reload.current_state

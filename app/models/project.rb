@@ -143,16 +143,6 @@ class Project < ApplicationRecord
       joins(:current_state).merge(Workflow::State.dataset_approval_states)
   }
 
-  scope :cas_access_granted, lambda {
-    joins(:project_type).merge(ProjectType.cas).
-      joins(:current_state).merge(Workflow::State.where(id: 'ACCESS_GRANTED'))
-  }
-
-  scope :cas_renewal, lambda {
-    joins(:project_type).merge(ProjectType.cas).
-      joins(:current_state).merge(Workflow::State.where(id: 'RENEWAL'))
-  }
-
   accepts_nested_attributes_for :project_attachments
 
   after_transition_to :status_change_notifier
