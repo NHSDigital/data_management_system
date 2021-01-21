@@ -455,7 +455,7 @@ class Project < ApplicationRecord
   def notify_cas_manager_new_cas_project_saved
     return unless cas?
 
-    SystemRole.fetch(:cas_manager).users.each do |user|
+    User.cas_managers.each do |user|
       CasNotifier.new_cas_project_saved(self, user.id)
     end
 

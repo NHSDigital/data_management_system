@@ -59,7 +59,7 @@ module Workflow
       end
       CasMailer.with(project: project).send(:requires_account_approval).deliver_now
 
-      SystemRole.fetch(:cas_manager).users.each do |user|
+      User.cas_managers.each do |user|
         CasNotifier.application_submitted(project, user.id)
       end
       CasMailer.with(project: project).send(:application_submitted).deliver_now

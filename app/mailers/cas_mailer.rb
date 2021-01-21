@@ -23,7 +23,7 @@ class CasMailer < ApplicationMailer
   end
 
   def application_submitted
-    recipients = SystemRole.fetch(:cas_manager).users.pluck(:email)
+    recipients = User.cas_managers.pluck(:email)
 
     mail(to: recipients, subject: 'CAS Application Submitted') if recipients.any?
   end
@@ -53,7 +53,7 @@ class CasMailer < ApplicationMailer
   end
 
   def account_access_granted
-    recipients = SystemRole.fetch(:cas_manager).users.pluck(:email)
+    recipients = User.cas_managers.pluck(:email)
 
     mail(to: recipients, subject: 'CAS Access Status Updated') if recipients.any?
   end
@@ -77,7 +77,7 @@ class CasMailer < ApplicationMailer
   end
 
   def new_cas_project_saved
-    recipients = SystemRole.fetch(:cas_manager).users.pluck(:email)
+    recipients = User.cas_managers.pluck(:email)
 
     mail(to: recipients, subject: 'New CAS Application Created') if recipients.any?
   end
