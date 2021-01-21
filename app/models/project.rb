@@ -145,12 +145,12 @@ class Project < ApplicationRecord
 
   scope :cas_access_granted, lambda {
     joins(:project_type).merge(ProjectType.cas).
-      joins(:current_state).merge(Workflow::State.access_granted)
+      joins(:current_state).merge(Workflow::State.where(id: 'ACCESS_GRANTED'))
   }
 
   scope :cas_renewal, lambda {
     joins(:project_type).merge(ProjectType.cas).
-      joins(:current_state).merge(Workflow::State.renewal)
+      joins(:current_state).merge(Workflow::State.where(id: 'RENEWAL'))
   }
 
   accepts_nested_attributes_for :project_attachments
