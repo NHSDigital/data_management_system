@@ -161,7 +161,7 @@ class CasNotifierTest < ActiveSupport::TestCase
   test 'should generate application_submitted Notifications' do
     project = create_project(project_type: project_types(:cas), project_purpose: 'test')
 
-    recipients = SystemRole.fetch(:cas_manager).users
+    recipients = User.cas_managers
     title = 'CAS Application Submitted'
 
     assert_difference -> { Notification.by_title(title).count }, 2 do
@@ -210,7 +210,7 @@ class CasNotifierTest < ActiveSupport::TestCase
   test 'should generate new_cas_project_saved Notifications' do
     project = create_project(project_type: project_types(:cas), project_purpose: 'test')
 
-    recipients = SystemRole.fetch(:cas_manager).users
+    recipients = User.cas_managers
     title = 'New CAS Application Created'
 
     assert_difference -> { Notification.by_title(title).count }, 2 do

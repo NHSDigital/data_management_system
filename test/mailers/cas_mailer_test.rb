@@ -122,7 +122,7 @@ class ProjectsMailerTest < ActionMailer::TestCase
       email.deliver_now
     end
 
-    assert_equal SystemRole.fetch(:cas_manager).users.pluck(:email), email.to
+    assert_equal User.cas_managers.pluck(:email), email.to
     assert_equal 'CAS Access Status Updated', email.subject
     assert_match %r{http://[^/]+/projects/#{project.id}}, email.text_part.body.to_s
   end
@@ -173,7 +173,7 @@ class ProjectsMailerTest < ActionMailer::TestCase
       email.deliver_now
     end
 
-    assert_equal SystemRole.fetch(:cas_manager).users.pluck(:email), email.to
+    assert_equal User.cas_managers.pluck(:email), email.to
     assert_equal 'CAS Application Submitted', email.subject
     assert_match %r{http://[^/]+/projects/#{project.id}}, email.text_part.body.to_s
   end
@@ -218,7 +218,7 @@ class ProjectsMailerTest < ActionMailer::TestCase
       email.deliver_now
     end
 
-    assert_equal SystemRole.fetch(:cas_manager).users.pluck(:email), email.to
+    assert_equal User.cas_managers.pluck(:email), email.to
     assert_equal 'New CAS Application Created', email.subject
     assert_match %r{http://[^/]+/projects/#{project.id}}, email.text_part.body.to_s
   end

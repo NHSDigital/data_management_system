@@ -128,7 +128,7 @@ module ProjectsHelper
   # CAS workflow has numerous return to DRAFT transitions where we want to display different text
   # TODO: eventually this should be rewritten so all project types can use this logic.
   def cas_form_text(from_state, next_state)
-    transition = Workflow::Transition.find_by(project_type_id: ProjectType.cas.first.id,
+    transition = Workflow::Transition.find_by(project_type_id: ProjectType.find_by(name: 'CAS').id,
                                               from_state_id: from_state.id,
                                               next_state_id: next_state.id)
     CasFormTransition.new(transition: transition).text
