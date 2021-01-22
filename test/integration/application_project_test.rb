@@ -215,6 +215,35 @@ class ApplicationProjectTest < ActionDispatch::IntegrationTest
     assert has_content? 'Approve'
   end
 
+  test 'should show blank instead of unknown if there are no tick boxes filled in' do
+    project = Project.create(project_type: project_types(:application), owner: @user,
+                             name: 'Test tick boxes', team: teams(:team_one),
+                             onwardly_share: true, data_already_held_for_project: false)
+
+    visit project_path(project)
+
+    within('#project_lawful_bases') do
+      assert_not has_content? 'Unknown'
+    end
+
+    within('#project_end_uses') do
+      assert_not has_content? 'Unknown'
+    end
+
+    visit edit_project_path(project)
+
+    within('#project_end_uses') do
+      page.check('Research')
+    end
+
+    click_button('Update Application')
+
+    # Check tick boxes ticked still display text
+    within('#project_end_uses') do
+      assert has_content? 'Research'
+    end
+  end
+
   private
 
   def reassign_for_moderation_to(user)
