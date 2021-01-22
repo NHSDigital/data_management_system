@@ -231,8 +231,8 @@ class ApplicationProjectTest < ActionDispatch::IntegrationTest
     end
 
     within('#data_to_contact_others') do
-      assert_not has_content? 'Yes'
-      assert_not has_content? 'No'
+      assert has_no_content? 'Yes'
+      assert has_no_content? 'No'
     end
   end
 
