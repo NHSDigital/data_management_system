@@ -62,7 +62,11 @@ module Import
                          c\.(?<cdna>[0-9]+_[0-9]+[a-z]+)|
                          c\.(?<cdna>[0-9]+[a-z]+)|
                          c\.(?<cdna>.+\s[a-z]>[a-z])|
-                         c\.(?<cdna>[0-9]+_[0-9]+\+[0-9]+[a-z]+)/ix .freeze
+                         c\.(?<cdna>[0-9]+_[0-9]+\+[0-9]+[a-z]+)|
+                         c\.(?<cdna>[0-9]+-[0-9]+_[0-9]+[a-z]+)|
+                         c\.(?<cdna>[0-9]+\+[0-9]+_[0-9]+\+[0-9]+[a-z]+)|
+                         c\.(?<cdna>\-[0-9]+[a-z]+\>[a-z]+)|
+                         c\.(?<cdna>[0-9]+\-[0-9]+_[0-9]+\-[0-9]+[a-z]+)/ix .freeze
 
             PROT_REGEX = /p\.(\()?(?<impact>[a-z]+[0-9]+[a-z]+)(\))?/i .freeze
             EXON_REGEX = /(?<insdeldup>ins|del|dup)/i .freeze
