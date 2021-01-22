@@ -307,4 +307,10 @@ module ProjectsHelper
   def new_application_text(project)
     "New #{I18n.t(:project_types)[project.project_type_name.downcase.to_sym]}"
   end
+
+  def boolean_text_conversion(field)
+    return if field.nil?
+
+    field ? 'Yes' : 'No'
+  end
 end
