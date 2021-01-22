@@ -141,8 +141,9 @@ class ManchesterHandlerColorectalTest < ActiveSupport::TestCase
       mutations = @handler.assign_gene_mutation(genocolorectal, record)
       assert_equal 'Targeted Colorectal Lynch or MMR', genocolorectal.attribute_map['genetictestscope']
       assert_not mutations.one?
-      assert_equal 2, mutations[0].attribute_map['teststatus']
+      assert_equal 1, mutations[0].attribute_map['teststatus']
       assert_equal 2, mutations[1].attribute_map['teststatus']
+      assert_equal 2, mutations[2].attribute_map['teststatus']
     end
   end
 
@@ -189,17 +190,61 @@ class ManchesterHandlerColorectalTest < ActiveSupport::TestCase
       genocolorectal.add_passthrough_fields(record.mapped_fields,
                                             record.raw_fields,
                                             Import::Helpers::Colorectal::Providers::R0a::R0aConstants::PASS_THROUGH_FIELDS_COLO)
+      @logger.expects(:debug).with('STARTING PARSING')
       @logger.expects(:debug).with('IDENTIFIED FALSE POSITIVE FOR MSH2, MLH1, 2633T>A from ["Normal", "Fail", "MLH1 c.2633T>A p.V878A"]')
+      @logger.expects(:debug).with('IDENTIFIED MSH2, NORMAL TEST from ["Normal", "Fail", "MLH1 c.2633T>A p.V878A"]')
+      @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH2')
       @logger.expects(:debug).with('IDENTIFIED MLH1, NORMAL TEST from ["Normal"]')
       @logger.expects(:debug).with('SUCCESSFUL gene parse for MLH1')
+      @logger.expects(:debug).with('DONE TEST')
       @handler.process_fields(record)
       @logger.expects(:debug).with('IDENTIFIED FALSE POSITIVE FOR MSH2, MLH1, 2633T>A from ["Normal", "Fail", "MLH1 c.2633T>A p.V878A"]')
+      @logger.expects(:debug).with('IDENTIFIED MSH2, NORMAL TEST from ["Normal", "Fail", "MLH1 c.2633T>A p.V878A"]')
+      @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH2')
       @logger.expects(:debug).with('IDENTIFIED MLH1, NORMAL TEST from ["Normal"]')
       @logger.expects(:debug).with('SUCCESSFUL gene parse for MLH1')
       @handler.assign_gene_mutation(genocolorectal, record)
       assert @importer_stderr.blank?
     end
   end
+
+  test 'Full Screen MLH1_MSH2_MSH6_NGS_POOL non dosage record' do
+    @importer_stdout, @importer_stderr = capture_io do
+      genotypes_exon_molttype_groups = [
+        ['MSH2 c.762T>C p.(Asn254Asn) HET, MLH1 Normal, MSH6 Normal', 'Seq MSH2 Ex14 FAIL, MLH1 and MSH6 100% coverage at 100X', 'MLH1_MSH2_MSH6_NGS-POOL', 'LYNCH SYNDROME GENE SCREENING REPORT'],
+        ['Normal', 'Fail', 'MSH2 Ex4a', 'LYNCH SYNDROME GENE SCREENING REPORT'],
+        ['Normal', 'Normal', 'MSH6 Ex4c', 'LYNCH SYNDROME GENE SCREENING REPORT'],
+        ['Fail', 'Fail', 'MSH6 Ex2', 'LYNCH SYNDROME GENE SCREENING REPORT'],
+        ['Normal', 'Normal', 'MLH1 Ex4d', 'LYNCH SYNDROME GENE SCREENING REPORT']
+      ]
+
+      record = build_raw_record(genotypes_exon_molttype_groups, 'pseudo_id1' => 'bob')
+      genocolorectal = Import::Colorectal::Core::Genocolorectal.new(record)
+      genocolorectal.add_passthrough_fields(record.mapped_fields,
+                                            record.raw_fields,
+                                            Import::Helpers::Colorectal::Providers::R0a::R0aConstants::PASS_THROUGH_FIELDS_COLO)
+      @logger.expects(:debug).with('STARTING PARSING')
+      @logger.expects(:debug).with('IDENTIFIED FALSE POSITIVE FOR MLH1, MSH2, 762T>C from ["MSH2 c.762T>C p.(Asn254Asn) HET", "NGS Normal", "Normal"]')
+      @logger.expects(:debug).with('IDENTIFIED MLH1, NORMAL TEST from ["MSH2 c.762T>C p.(Asn254Asn) HET", "NGS Normal", "Normal"]')
+      @logger.expects(:debug).with('SUCCESSFUL gene parse for MLH1')
+      @logger.expects(:debug).with('IDENTIFIED MSH2, NORMAL TEST from ["Normal", "NGS Normal", "Fail"]')
+      @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH2')
+      @logger.expects(:debug).with('IDENTIFIED MSH6, NORMAL TEST from ["Normal", "NGS Normal", "Fail"]')
+      @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH6')
+      @logger.expects(:debug).with('DONE TEST')
+      @handler.process_fields(record)
+      @logger.expects(:debug).with('IDENTIFIED FALSE POSITIVE FOR MLH1, MSH2, 762T>C from ["MSH2 c.762T>C p.(Asn254Asn) HET", "NGS Normal", "Normal"]')
+      @logger.expects(:debug).with('IDENTIFIED MLH1, NORMAL TEST from ["MSH2 c.762T>C p.(Asn254Asn) HET", "NGS Normal", "Normal"]')
+      @logger.expects(:debug).with('SUCCESSFUL gene parse for MLH1')
+      @logger.expects(:debug).with('IDENTIFIED MSH2, NORMAL TEST from ["Normal", "NGS Normal", "Fail"]')
+      @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH2')
+      @logger.expects(:debug).with('IDENTIFIED MSH6, NORMAL TEST from ["Normal", "NGS Normal", "Fail"]')
+      @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH6')
+      @handler.assign_gene_mutation(genocolorectal, record)
+      assert @importer_stderr.blank?
+    end
+  end
+
 
   test 'Dosage record positive result' do
     @importer_stdout, @importer_stderr = capture_io do
