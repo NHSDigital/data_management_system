@@ -24,4 +24,14 @@ class ProjectsNotifierTest < ActiveSupport::TestCase
       end
     end
   end
+
+  test 'should not generate project awaiting assignment Notifications when not odr or mbis' do
+    project = build_project(project_type: project_types(:cas), assigned_user: nil)
+
+    assert_no_difference -> { Notification.where(title: 'Project Awaiting Assignment').count } do
+      assert_no_difference -> { UserNotification.count } do
+        ProjectsNotifier.project_awaiting_assignment(project: project)
+      end
+    end
+  end
 end
