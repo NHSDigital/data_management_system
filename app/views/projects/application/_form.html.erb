@@ -111,22 +111,22 @@
       <% form.text_area :data_linkage, rows: 5 %>  
     <% end %>
 
-    <%= form.control_group(:onwardly_share, t('.onwardly_share'), {}, class: 'col-md-2') do %>
-      <%= form.select :onwardly_share, { 'Yes' => true, 'No' => false }, include_blank: true, required: true %>
+    <%= form.control_group(:onwardly_share, t('.onwardly_share'), {}, class: 'col-md-2', id: 'onwardly_share') do %>
+      <%= form.select :onwardly_share, { 'Yes' => true, 'No' => false }, include_blank: true, required: true, readonly_value: boolean_text_conversion(@project.onwardly_share) %>
     <% end %>
     <%= form.control_group(:onwardly_share_detail, t('.onwardly_share_detail')) do %>
       <%= form.text_area :onwardly_share_detail, rows: 5 %>
     <% end %>
 
-    <%= form.control_group(:data_already_held_for_project, t('.data_already_held_for_project'), {}, class: 'col-md-2') do %>
-      <%= form.select :data_already_held_for_project, { 'Yes' => true, 'No' => false }, include_blank: true %>
+    <%= form.control_group(:data_already_held_for_project, t('.data_already_held_for_project'), {}, class: 'col-md-2', id: 'data_already_held_for_project') do %>
+      <%= form.select :data_already_held_for_project, { 'Yes' => true, 'No' => false }, include_blank: true, readonly_value: boolean_text_conversion(@project.data_already_held_for_project) %>
     <% end %>
     <%= form.control_group(:data_already_held_detail, t('.data_already_held_detail')) do %> 
       <% form.text_area :data_already_held_detail, rows: 5 %>
     <% end %>
 
-    <%= form.control_group(:data_to_contact_others, t('.data_to_contact_others'), {}, class: 'col-md-2') do %>
-      <%= form.select :data_to_contact_others, { 'Yes' => true, 'No' => false }, include_blank: true %>
+    <%= form.control_group(:data_to_contact_others, t('.data_to_contact_others'), {}, class: 'col-md-2', id: 'data_to_contact_others') do %>
+      <%= form.select :data_to_contact_others, { 'Yes' => true, 'No' => false }, include_blank: true, readonly_value: boolean_text_conversion(@project.data_to_contact_others) %>
     <% end %>
     <%= form.control_group(:data_to_contact_others_desc, t('.data_to_contact_others_desc')) do %> 
       <% form.text_area :data_to_contact_others_desc, rows: 5 %>
@@ -136,7 +136,7 @@
   <fieldset style="margin-bottom: 20px;">
     <legend>Programme Support</legend>
     <%= form.control_group(:programme_support, t('.programme_support'), {}, class: 'col-md-2') do %>
-      <%= form.select :programme_support, { 'Yes' => true, 'No' => false }, include_blank: true %>
+      <%= form.select :programme_support, { 'Yes' => true, 'No' => false }, include_blank: true, readonly_value: boolean_text_conversion(@project.programme_support) %>
     <% end %>
     <%= form.control_group(:programme_support_detail, t('.programme_support_detail')) do %>
       <%= form.text_area :programme_support_detail, rows: 5 %>

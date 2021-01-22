@@ -215,6 +215,27 @@ class ApplicationProjectTest < ActionDispatch::IntegrationTest
     assert has_content? 'Approve'
   end
 
+  test 'should show boolean dropdown options as Yes/No in show screen' do
+    project = Project.create(project_type: project_types(:application), owner: @user,
+                             name: 'Test yes/no', team: teams(:team_one),
+                             onwardly_share: true, data_already_held_for_project: false)
+
+    visit project_path(project)
+
+    within('#onwardly_share') do
+      assert has_content? 'Yes'
+    end
+
+    within('#data_already_held_for_project') do
+      assert has_content? 'No'
+    end
+
+    within('#data_to_contact_others') do
+      assert_not has_content? 'Yes'
+      assert_not has_content? 'No'
+    end
+  end
+
   private
 
   def reassign_for_moderation_to(user)
