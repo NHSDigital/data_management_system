@@ -223,11 +223,11 @@ class ApplicationProjectTest < ActionDispatch::IntegrationTest
     visit project_path(project)
 
     within('#project_lawful_bases') do
-      assert_not has_content? 'Unknown'
+      assert has_no_content? 'Unknown'
     end
 
     within('#project_end_uses') do
-      assert_not has_content? 'Unknown'
+      assert has_no_content? 'Unknown'
     end
 
     visit edit_project_path(project)
