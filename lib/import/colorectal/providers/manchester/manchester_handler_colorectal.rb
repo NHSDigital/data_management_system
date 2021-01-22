@@ -53,9 +53,6 @@ module Import
                 non_dosage_genotype_col.append(raw_record['genotype'])
                 non_dosage_genotype2_col.append(raw_record['genotype2'])
               end
-              # else
-              #   break
-              # end
             end
             @non_dosage_record_map = { genus: non_dosage_genus_col,
                                        moleculartestingtype: non_dosage_moltesttype_col,
@@ -63,34 +60,7 @@ module Import
                                        genotype: non_dosage_genotype_col,
                                        genotype2: non_dosage_genotype2_col }
 
-                                       @non_dosage_record_map[:exon].each.with_index do |exon,index|
-                                         if exon.scan(COLORECTAL_GENES_REGEX).size > 1
-                                           @non_dosage_record_map[:exon][index] = @non_dosage_record_map[:exon][index].scan(COLORECTAL_GENES_REGEX)
-                                           @non_dosage_record_map[:genotype][index] = 
-                                           if @non_dosage_record_map[:genotype][index] == 'MLH1 Normal, MSH2 Normal, MSH6 Normal'
-                                             @non_dosage_record_map[:genotype][index] = ['NGS Normal'] * 3
-                                             @non_dosage_record_map[:genotype][index] = @non_dosage_record_map[:genotype][index].flatten
-                                           elsif @non_dosage_record_map[:genotype][index].scan(/Normal, /i).size.positive?
-                                             @non_dosage_record_map[:genotype][index] = @non_dosage_record_map[:genotype][index].split(',').map do |genotypes| genotypes.gsub(/.+Normal/,"Normal") end
-                                             @non_dosage_record_map[:genotype][index] = @non_dosage_record_map[:genotype][index].flatten
-                                           elsif @non_dosage_record_map[:genotype][index] == 'Normal'
-                                             @non_dosage_record_map[:genotype][index] = ['Normal'] * exon.scan(COLORECTAL_GENES_REGEX).size
-                                             @non_dosage_record_map[:genotype][index] = @non_dosage_record_map[:genotype][index].flatten
-                                           else @non_dosage_record_map[:genotype][index] = @non_dosage_record_map[:genotype][index]
-                                           end
-                                         @non_dosage_record_map[:genotype2][index] = 
-                                           if !@non_dosage_record_map[:genotype2][index].nil? && @non_dosage_record_map[:genotype2][index].scan(/100% coverage at 100X/).size.positive?
-                                             @non_dosage_record_map[:genotype2][index] = ['NGS Normal'] * 3
-                                             @non_dosage_record_map[:genotype2][index] = @non_dosage_record_map[:genotype2][index].flatten
-                                           elsif ! @non_dosage_record_map[:genotype2][index].nil? &&  @non_dosage_record_map[:genotype2][index].empty? 
-                                               @non_dosage_record_map[:genotype2][index] = ['MLPA Normal'] * 2
-                                               @non_dosage_record_map[:genotype2][index] = @non_dosage_record_map[:genotype2][index].flatten
-                                           end
-                                         end
-                                       end
-                                       @non_dosage_record_map[:exon]= @non_dosage_record_map[:exon].flatten
-                                       @non_dosage_record_map[:genotype]= @non_dosage_record_map[:genotype].flatten
-                                       @non_dosage_record_map[:genotype2]= @non_dosage_record_map[:genotype2].flatten
+            split_multiplegenes_nondosage_map(@non_dosage_record_map)
 
             @dosage_record_map = { genus: dosage_genus_col,
                                    moleculartestingtype: dosage_moltesttype_col,
@@ -98,11 +68,6 @@ module Import
                                    genotype: dosage_genotype_col,
                                    genotype2: dosage_genotype2_col }
 
-            #                        @dosage_record_map[:exon].each.with_index do |exon,index|
-            #                          if exon.scan(COLORECTAL_GENES_REGEX).size > 1
-            #                            puts "DAMMIT!"
-            #                          end
-            #                        end
             @lines_processed += 1 # TODO: factor this out to be automatic across handlers
             assign_and_populate_results_for(record)
              @logger.debug('DONE TEST')
