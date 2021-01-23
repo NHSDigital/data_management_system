@@ -6,7 +6,7 @@ module Pseudo
   class PrescriptionTest < ActiveSupport::TestCase
     setup do
       @nhsnumber = '9999999468'
-      @birthdate = '1925-01-27'
+      @birthdate = '1925-01-27' # More than 14 years from @birthdate2, i.e. :veryfuzzy match
       @demographics = { 'nhsnumber' => @nhsnumber, 'birthdate' => @birthdate }
       @key = 'unittest_pseudo_prescr'
       ENV['MBIS_KEK'] = 'test'
@@ -16,6 +16,7 @@ module Pseudo
       @nhsnumber2 = '9999999476'
       @birthdate2 = '1964-02-29'
       @demographics2 = { 'nhsnumber' => @nhsnumber2, 'birthdate' => @birthdate2 }
+      @birthdate3 = '1963-01-01' # Less than 14 years from @birthdate2, i.e. :fuzzy match
     end
 
     test 'create_from_demographics without rawtext' do
@@ -66,7 +67,8 @@ module Pseudo
                               e_batch: @e_batch)
       ppat.save!
       assert_equal(:new, ppat.match_demographics(@nhsnumber, '', @birthdate))
-      assert_equal(:fuzzy, ppat.match_demographics(@nhsnumber2, '', @birthdate))
+      assert_equal(:veryfuzzy, ppat.match_demographics(@nhsnumber2, '', @birthdate))
+      assert_equal(:fuzzy, ppat.match_demographics(@nhsnumber2, '', @birthdate3))
       assert_equal(:perfect, ppat.match_demographics(@nhsnumber2, '', @birthdate2))
       assert_not(ppat.unlock_demographics(@nhsnumber, '', @birthdate, :match))
       assert(ppat.unlock_demographics(@nhsnumber2, '', @birthdate2, :match))

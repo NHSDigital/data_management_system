@@ -117,14 +117,23 @@ module Pseudo
 
       # Unpack the demographics for this patient, and confirm the match
       # :perfect if exact match on NHS number and date of birth
-      # :fuzzy if exact on NHS number only
+      # :fuzzy if exact on NHS number only, and years of birth are within 14 years of each other
+      # :veryfuzzy if exact on NHS number only
       # :new otherwise
       def match_demographics(nhsnumber, postcode, birthdate)
         unlock_demographics(nhsnumber, postcode, birthdate, :match) unless @demographics
         return :new unless @demographics && nhsnumber.present? &&
                            nhsnumber == @demographics['nhsnumber']
-        return :perfect if birthdate.present? && birthdate == @demographics['birthdate']
-        :fuzzy
+
+        if birthdate.present?
+          return :perfect if birthdate == @demographics['birthdate']
+          if (year1 = birthdate.to_s[0..3]).match?(/\A[0-9]{4}\z/) &&
+             (year2 = @demographics['birthdate'].to_s[0..3]).match?(/\A[0-9]{4}\z/) &&
+             (year2.to_i - year1.to_i).abs <= 14
+            return :fuzzy
+          end
+        end
+        :veryfuzzy
       end
     end
   end
