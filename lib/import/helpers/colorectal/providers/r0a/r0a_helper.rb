@@ -340,7 +340,7 @@ module Import
             end
 
             def normal?(genetic_info)
-              genetic_info.join(',') =~ /normal|wild type|No pathogenic variant identified/i
+              genetic_info.join(',') =~ /normal|wild type|No pathogenic variant identified| No evidence/i
             end
 
             def fail?(genetic_info)
