@@ -31,6 +31,22 @@ module Import
 
           PROTEIN_REGEX = /p\.\[(?<impact>(.*?))\]|p\..+/i.freeze
           CDNA_REGEX = /c\.\[?(?<cdna>[0-9]+.+[a-z])\]?/i.freeze
+          GENOMICCHANGE_REGEX = /Chr(?<chromosome>\d+)\.hg(?<genome_build>\d+):g\.(?<effect>.+)/i .freeze
+          COLORECTAL_GENES_REGEX = /(?<colorectal>APC|
+                                                BMPR1A|
+                                                EPCAM|
+                                                MLH1|
+                                                MSH2|
+                                                MSH6|
+                                                MUTYH|
+                                                PMS2|
+                                                POLD1|
+                                                POLE|
+                                                PTEN|
+                                                SMAD4|
+                                                STK11)/xi .freeze # Added by
+          BRCA_REGEX = /brca(1|2)/i.freeze
+                                                # 
           def process_fields(record)
             genotype = Import::Brca::Core::GenotypeBrca.new(record)
             genotype.add_passthrough_fields(record.mapped_fields,
@@ -125,19 +141,22 @@ module Import
           end
 
           def process_gene(genotype, record)
-            gene = record.mapped_fields['gene'].to_i
-            case gene
-            when Integer
-              if (7..8).cover? gene
-                genotype.add_gene(record.mapped_fields['gene'].to_i)
-                # @successful_gene_counter += 1
-                @logger.debug 'SUCCESSFUL gene parse for:' \
-                               "#{record.mapped_fields['gene'].to_i}"
-              else
-                @logger.debug 'FAILED gene parse for: ' \
-                               "#{record.mapped_fields['gene'].to_i}"
-                # @failed_gene_counter += 1
-              end
+            genotypes = []
+            gene = record.mapped_fields['gene'].to_i unless record.mapped_fields['gene'].nil?
+            synonym = record.raw_fields['sinonym'] unless record.raw_fields['sinonym'].nil?
+            if (7..8).cover? gene
+              genotype.add_gene(gene)
+              # genotypes << genotype
+              # @successful_gene_counter += 1
+              @logger.debug 'SUCCESSFUL gene parse for:' \
+                             "#{record.mapped_fields['gene'].to_i}"
+                             genotypes << genotype
+            elsif BRCA_REGEX.match(synonym)
+              @logger.debug "SUCCESSFUL gene parse from #{synonym}"
+              genotype.add_gene($LAST_MATCH_INFO[:brca])
+              genotypes << genotype
+            else
+              @logger.debug 'FAILED gene parse'
             end
           end
 
