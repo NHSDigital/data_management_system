@@ -136,7 +136,7 @@ class ProjectDatasetTest < ActiveSupport::TestCase
     end
   end
 
-  test 'should notify dataset approver on dataset approved update to nil' do
+  test 'should not notify dataset approver on dataset approved update to nil' do
     project_dataset = ProjectDataset.new(dataset: dataset(83), terms_accepted: true,
                                          approved: true)
     project = Project.new(project_type: ProjectType.find_by(name: 'CAS')).tap do |a|
@@ -148,26 +148,10 @@ class ProjectDatasetTest < ActiveSupport::TestCase
 
     notifications = Notification.where(title: 'CAS Application Requires Dataset Approval')
 
-    # should not send notification if set to nil at DRAFT
-    assert_no_difference 'notifications.count' do
-      project_dataset.update(approved: nil)
-    end
-
-    project_dataset.update(approved: true)
     project.transition_to!(workflow_states(:submitted))
 
-    # should only send to the 1 dataset approver with grant for this dataset
-    assert_difference 'notifications.count', 1 do
-      project_dataset.update(approved: nil)
-    end
-
-    assert_equal notifications.last.body, "CAS application #{project.id} - Dataset " \
-                                          "approval is required.\n\n"
-
-    # should not send notification if set to true or false
     assert_no_difference 'notifications.count' do
-      project_dataset.update(approved: true)
-      project_dataset.update(approved: false)
+      project_dataset.update(approved: nil)
     end
   end
 end
