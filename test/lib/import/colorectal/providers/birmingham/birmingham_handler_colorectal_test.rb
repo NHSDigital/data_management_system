@@ -22,47 +22,35 @@ class BirminghamHandlerColorectalTest < ActiveSupport::TestCase
 
   test 'process_multiple_tests_from_fullscreen' do
     @logger.expects(:debug).with('ABNORMAL TEST')
-    @logger.expects(:debug).with('Found MLH1 for list ["MLH1", "MSH2", "PMS2", "EPCAM"]')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for MLH1')
-    @logger.expects(:debug).with('Found MSH2 for list ["MLH1", "MSH2", "PMS2", "EPCAM"]')
+    @logger.expects(:debug).with('Found MSH2 for list ["MSH2", "EPCAM"]')
     @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH2')
-    @logger.expects(:debug).with('Found PMS2 for list ["MLH1", "MSH2", "PMS2", "EPCAM"]')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for PMS2')
-    @logger.expects(:debug).with('Found EPCAM for list ["MLH1", "MSH2", "PMS2", "EPCAM"]')
+    @logger.expects(:debug).with('Found EPCAM for list ["MSH2", "EPCAM"]')
     @logger.expects(:debug).with('SUCCESSFUL gene parse for EPCAM')
     @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH6')
-    assert_equal 5, @handler.process_variants_from_report(@genotype, @record).size
+    assert_equal 3, @handler.process_variants_from_report(@genotype, @record).size
   end
 
   test 'process_mutation_from_fullscreen' do
     @logger.expects(:debug).with('ABNORMAL TEST')
-    @logger.expects(:debug).with('Found MLH1 for list ["MLH1", "MSH2", "PMS2", "EPCAM"]')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for MLH1')
-    @logger.expects(:debug).with('Found MSH2 for list ["MLH1", "MSH2", "PMS2", "EPCAM"]')
+    @logger.expects(:debug).with('Found MSH2 for list ["MSH2", "EPCAM"]')
     @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH2')
-    @logger.expects(:debug).with('Found PMS2 for list ["MLH1", "MSH2", "PMS2", "EPCAM"]')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for PMS2')
-    @logger.expects(:debug).with('Found EPCAM for list ["MLH1", "MSH2", "PMS2", "EPCAM"]')
+    @logger.expects(:debug).with('Found EPCAM for list ["MSH2", "EPCAM"]')
     @logger.expects(:debug).with('SUCCESSFUL gene parse for EPCAM')
     @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH6')
-    assert_equal 'p.Lys145Asn', @handler.process_variants_from_report(@genotype, @record)[4].attribute_map['proteinimpact']
+    assert_equal 'p.Lys145Asn', @handler.process_variants_from_report(@genotype, @record)[2].attribute_map['proteinimpact']
   end
 
   test 'negative_tests_from_fullscreen' do
     negative_record = build_raw_record('pseudo_id1' => 'bob')
     negative_record.raw_fields['overall2'] = 'N'
     @logger.expects(:debug).with('NORMAL TEST FOUND')
-    @logger.expects(:debug).with('Found MLH1 for list ["MLH1", "MSH2", "MSH6", "PMS2", "EPCAM"]')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for MLH1')
-    @logger.expects(:debug).with('Found MSH2 for list ["MLH1", "MSH2", "MSH6", "PMS2", "EPCAM"]')
+    @logger.expects(:debug).with('Found MSH2 for list ["MSH2", "MSH6", "EPCAM"]')
     @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH2')
-    @logger.expects(:debug).with('Found MSH6 for list ["MLH1", "MSH2", "MSH6", "PMS2", "EPCAM"]')
+    @logger.expects(:debug).with('Found MSH6 for list ["MSH2", "MSH6", "EPCAM"]')
     @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH6')
-    @logger.expects(:debug).with('Found PMS2 for list ["MLH1", "MSH2", "MSH6", "PMS2", "EPCAM"]')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for PMS2')
-    @logger.expects(:debug).with('Found EPCAM for list ["MLH1", "MSH2", "MSH6", "PMS2", "EPCAM"]')
+    @logger.expects(:debug).with('Found EPCAM for list ["MSH2", "MSH6", "EPCAM"]')
     @logger.expects(:debug).with('SUCCESSFUL gene parse for EPCAM')
-    assert_equal 5, @handler.process_variants_from_report(@genotype, negative_record).size
+    assert_equal 3, @handler.process_variants_from_report(@genotype, negative_record).size
   end
 
   test 'process_tests_from_empty_teststatus' do
@@ -79,15 +67,13 @@ class BirminghamHandlerColorectalTest < ActiveSupport::TestCase
     chromovariants_record = build_raw_record('pseudo_id1' => 'bob')
     chromovariants_record.raw_fields['teststatus'] = 'Frameshift mutation in exon 15 of hMSH2 plus missense mutation in exon 1 of hMLH1 identified'
     @logger.expects(:debug).with('ABNORMAL TEST')
+    @logger.expects(:debug).with('Found MSH6 for list ["MSH6", "EPCAM"]')
+    @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH6')
+    @logger.expects(:debug).with('Found EPCAM for list ["MSH6", "EPCAM"]')
+    @logger.expects(:debug).with('SUCCESSFUL gene parse for EPCAM')
     @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH2')
     @logger.expects(:debug).with('SUCCESSFUL gene parse for MLH1')
-    @logger.expects(:debug).with('Found MSH6 for list ["MSH6", "PMS2", "EPCAM"]')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH6')
-    @logger.expects(:debug).with('Found PMS2 for list ["MSH6", "PMS2", "EPCAM"]')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for PMS2')
-    @logger.expects(:debug).with('Found EPCAM for list ["MSH6", "PMS2", "EPCAM"]')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for EPCAM')
-    assert_equal 5, @handler.process_variants_from_report(@genotype, chromovariants_record).size
+    assert_equal 4, @handler.process_variants_from_report(@genotype, chromovariants_record).size
   end
 
   test 'process_mutyh_specific_single_cdna_variants' do
@@ -103,17 +89,15 @@ class BirminghamHandlerColorectalTest < ActiveSupport::TestCase
     multiple_cdna_record = build_raw_record('pseudo_id1' => 'bob')
     multiple_cdna_record.raw_fields['teststatus'] = 'Heterozygous missense variant (c.1688G>T; p.Arg563Leu) identified in exon 11 of the PMS2 gene and a heterozygous intronic variant (c.251-20T>G) in intron 4 of the PMS2 gene.'
     @logger.expects(:debug).with('ABNORMAL TEST')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for PMS2')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for PMS2')
-    @logger.expects(:debug).with('Found MLH1 for list ["MLH1", "MSH2", "MSH6", "EPCAM"]')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for MLH1')
-    @logger.expects(:debug).with('Found MSH2 for list ["MLH1", "MSH2", "MSH6", "EPCAM"]')
+    @logger.expects(:debug).with('Found MSH2 for list ["MSH2", "MSH6", "EPCAM"]')
     @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH2')
-    @logger.expects(:debug).with('Found MSH6 for list ["MLH1", "MSH2", "MSH6", "EPCAM"]')
+    @logger.expects(:debug).with('Found MSH6 for list ["MSH2", "MSH6", "EPCAM"]')
     @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH6')
-    @logger.expects(:debug).with('Found EPCAM for list ["MLH1", "MSH2", "MSH6", "EPCAM"]')
+    @logger.expects(:debug).with('Found EPCAM for list ["MSH2", "MSH6", "EPCAM"]')
     @logger.expects(:debug).with('SUCCESSFUL gene parse for EPCAM')
-    assert_equal 6, @handler.process_variants_from_report(@genotype, multiple_cdna_record).size
+    @logger.expects(:debug).with('SUCCESSFUL gene parse for PMS2')
+    @logger.expects(:debug).with('SUCCESSFUL gene parse for PMS2')
+    assert_equal 5, @handler.process_variants_from_report(@genotype, multiple_cdna_record).size
   end
 
   test 'process_chromosomic_variant_empty_teststatus' do
