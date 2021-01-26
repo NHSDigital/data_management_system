@@ -72,7 +72,7 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
 
     click_link(href: '#datasets')
     assert has_content?('Extra CAS Dataset One')
-
+    assert_equal find('#dataset_status').text, 'APPROVED'
     assert_not has_content?('Reapply')
 
     project_dataset.approved = false
@@ -82,19 +82,92 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
     click_link(href: '#datasets')
     assert has_content?('Extra CAS Dataset One')
 
-    assert has_content?('DECLINED')
+    assert_equal find('#dataset_status').text, 'DECLINED'
     click_link('Reapply')
 
-    assert find('.btn-danger')
-    assert find('.btn-success')
+    assert has_content?('PENDING')
+    assert_not page.has_css?('.btn-danger')
+    assert_not page.has_css?('.btn-success')
     assert_nil project_dataset.reload.approved
+  end
 
-    within('#approvals') do
-      find("#approval_project_dataset_#{project_dataset.id}").click
+  test 'should show applicant correct pending dataset status' do
+    # Other statuses are covered in the test above
+    @user = users(:no_roles)
+    sign_in @user
+
+    project = Project.create(project_type: project_types(:cas),
+                             owner: users(:no_roles))
+    project_dataset = ProjectDataset.new(dataset: Dataset.find_by(name: 'Extra CAS Dataset One'),
+                                         terms_accepted: nil)
+    project.project_datasets << project_dataset
+
+    project.transition_to!(workflow_states(:submitted))
+
+    visit project_path(project)
+
+    click_link(href: '#datasets')
+    assert has_content?('Extra CAS Dataset One')
+    assert_equal find('#dataset_status').text, 'PENDING'
+  end
+
+  test 'should show cas_dataset approver correct dataset statuses' do
+    @user = users(:cas_dataset_approver)
+    sign_in @user
+
+    project = Project.create(project_type: project_types(:cas),
+                             owner: users(:standard_user2))
+    grant_dataset = ProjectDataset.new(dataset: Dataset.find_by(name: 'Extra CAS Dataset One'),
+                                       terms_accepted: true)
+    non_grant_dataset = ProjectDataset.new(dataset: Dataset.find_by(name: 'Extra CAS Dataset Two'),
+                                           terms_accepted: true)
+    project.project_datasets << grant_dataset
+    project.project_datasets << non_grant_dataset
+
+    project.transition_to!(workflow_states(:submitted))
+
+    visit project_path(project)
+
+    click_link(href: '#datasets')
+    assert has_content?('Extra CAS Dataset One')
+    assert has_content?('Extra CAS Dataset Two')
+
+    within("#project_dataset_#{grant_dataset.id}") do
+      assert has_css?('.btn-danger')
+      assert has_css?('.btn-success')
+      assert_not has_content?('PENDING')
     end
 
-    assert page.has_content? <<~FLASH
-      You are not authorized to access this page.
-    FLASH
+    within("#project_dataset_#{non_grant_dataset.id}") do
+      assert_not has_css?('.btn-danger')
+      assert_not has_css?('.btn-success')
+      assert_equal find('#dataset_status').text, 'PENDING'
+    end
+
+    non_grant_dataset.approved = true
+    non_grant_dataset.save!(validate: false)
+
+    visit project_path(project)
+
+    click_link(href: '#datasets')
+
+    within("#project_dataset_#{non_grant_dataset.id}") do
+      assert_not has_css?('.btn-danger')
+      assert_not has_css?('.btn-success')
+      assert_equal find('#dataset_status').text, 'APPROVED'
+    end
+
+    non_grant_dataset.approved = false
+    non_grant_dataset.save!(validate: false)
+
+    visit project_path(project)
+
+    click_link(href: '#datasets')
+
+    within("#project_dataset_#{non_grant_dataset.id}") do
+      assert_not has_css?('.btn-danger')
+      assert_not has_css?('.btn-success')
+      assert_equal find('#dataset_status').text, 'DECLINED'
+    end
   end
 end

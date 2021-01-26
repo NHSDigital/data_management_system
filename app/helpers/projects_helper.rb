@@ -136,7 +136,7 @@ module ProjectsHelper
 
   def approval_button_message(status)
     if status.nil?
-      'INCOMPLETE'
+      'PENDING'
     else
       status ? 'APPROVED' : 'DECLINED'
     end
