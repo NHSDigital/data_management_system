@@ -27,26 +27,11 @@ module Import
                                    variantpathclass
                                    sampletype
                                    referencetranscriptid] .freeze
-          # TODO: transcript id may still need form normalization
 
+          BRCA_REGEX = /(?<brca>BRCA(1|2))/i
           PROTEIN_REGEX = /p\.\[(?<impact>(.*?))\]|p\..+/i.freeze
           CDNA_REGEX = /c\.\[?(?<cdna>[0-9]+.+[a-z])\]?/i.freeze
           GENOMICCHANGE_REGEX = /Chr(?<chromosome>\d+)\.hg(?<genome_build>\d+):g\.(?<effect>.+)/i .freeze
-          COLORECTAL_GENES_REGEX = /(?<colorectal>APC|
-                                                BMPR1A|
-                                                EPCAM|
-                                                MLH1|
-                                                MSH2|
-                                                MSH6|
-                                                MUTYH|
-                                                PMS2|
-                                                POLD1|
-                                                POLE|
-                                                PTEN|
-                                                SMAD4|
-                                                STK11)/xi .freeze # Added by
-          BRCA_REGEX = /brca(1|2)/i.freeze
-                                                # 
           def process_fields(record)
             genotype = Import::Brca::Core::GenotypeBrca.new(record)
             genotype.add_passthrough_fields(record.mapped_fields,
@@ -55,14 +40,12 @@ module Import
             assign_method(genotype, record)
             assign_test_scope(genotype, record)
             assign_test_type(genotype, record)
-            process_gene(genotype, record)
             process_cdna_change(genotype, record)
-            # assign_cdna_change(genotype, record)
             process_protein_impact(genotype, record)
-            # assign_protein_change(genotype, record)
             assign_genomic_change(genotype, record)
             assign_servicereportidentifier(genotype, record)
-            @persister.integrate_and_store(genotype)
+            res = process_gene(genotype, record)
+            res.each { |cur_genotype| @persister.integrate_and_store(cur_genotype)} unless res.nil?
           end
 
           def assign_method(genotype, record)
@@ -98,34 +81,20 @@ module Import
           end
 
           def assign_test_scope(genotype, record)
-            # ******************* Assign test scope ************************
-            Maybe(record.raw_fields['scope / limitations of test']).each do |ttype|
+              Maybe(record.raw_fields['scope / limitations of test']).each do |ttype|
               scope = TEST_SCOPE_MAP[ttype.downcase.strip]
               genotype.add_test_scope(scope) if scope
             end
           end
 
-          # def assign_cdna_change(genotype, record)
-          #   # ******************* Assign c. change ************************
-          #   Maybe(record.mapped_fields['codingdnasequencechange']).each do |dna|
-          #     change = case dna
-          #              when /c\.\[(?<change>[.+])\]\+[=]/
-          #                "c.#{$LAST_MATCH_INFO[:change]}"
-          #              else
-          #                @logger.warn "Could not extract Oxford sequence: #{dna}"
-          #              end
-          #     genotype.add_gene_location(change)
-          #   end
-          # end
-
           def process_cdna_change(genotype, record)
-            case record.mapped_fields['codingdnasequencechange']
-            when CDNA_REGEX
+            if CDNA_REGEX.match(record.mapped_fields['codingdnasequencechange'])
               genotype.add_gene_location($LAST_MATCH_INFO[:cdna])
               @logger.debug "SUCCESSFUL cdna change parse for: #{$LAST_MATCH_INFO[:cdna]}"
+            elsif /Normal/i.match(record.raw_fields['codingdnasequencechange'])
+              genotype.add_status(1)
             else
-              @logger.debug 'FAILED cdna change parse for: ' \
-                            "#{record.raw_fields['codingdnasequencechange']}"
+              @logger.debug 'FAILED cdna change parse'
             end
           end
 
@@ -135,8 +104,7 @@ module Import
               genotype.add_protein_impact($LAST_MATCH_INFO[:impact])
               @logger.debug "SUCCESSFUL protein change parse for: #{$LAST_MATCH_INFO[:impact]}"
             else
-              @logger.debug 'FAILED protein change parse for: ' \
-                            "#{record.raw_fields['proteinimpact']}"
+              @logger.debug 'FAILED protein change parse'
             end
           end
 
@@ -158,31 +126,19 @@ module Import
             else
               @logger.debug 'FAILED gene parse'
             end
+            genotypes
           end
-
-          # def assign_protein_change(genotype, record)
-          #   # ******************* Assign p. change ************************
-          #   Maybe(record.mapped_fields['proteinimpact']).each do |protein|
-          #     change = case protein
-          #              when /p\.(?:\(|\[)(?<change>[.+])(?:\)|\])\+[=]/
-          #                "p.#{$LAST_MATCH_INFO[:change]}"
-          #              else
-          #                @logger.warn "Could not extract Oxford impact: #{protein}"
-          #              end
-          #     genotype.add_protein_impact(change)
-          #   end
-          # end
 
           def assign_genomic_change(genotype, record)
             # ******************* Assign genomic change ************************
             Maybe(record.raw_fields['genomicchange']).each do |raw_change|
-              case raw_change
-              when /Chr(?<chromosome>\d+)\.hg(?<genome_build>\d+):g\.(?<effect>.+)/i
+              if GENOMICCHANGE_REGEX.match(raw_change)
                 genotype.add_genome_build($LAST_MATCH_INFO[:genome_build].to_i)
                 genotype.add_parsed_genomic_change($LAST_MATCH_INFO[:chromosome],
                                                    $LAST_MATCH_INFO[:effect])
+              elsif /Normal/i.match(raw_change)
+                genotype.add_status(1)
               else
-                genotype.add_raw_genomic_change(raw_change)
                 @logger.warn "Could not process, so adding raw genomic change: #{raw_change}"
               end
             end
