@@ -306,8 +306,11 @@ module Workflow
         project.transition_to!(workflow_states(:renewal))
       end
 
-      assert_equal notifications.last.body, 'Your CAS account requires renewal, please click the ' \
-                                            "renew button on your application.\n\n"
+      assert_equal notifications.last.body, 'Your access to CAS needs to be renewed, please ' \
+                                            'visit your application to confirm renewal. If you ' \
+                                            'have not renewed within 30 days your access will be ' \
+                                            'removed and you will need to contact Beatrice Coker ' \
+                                            "to reapply\n\n"
     end
 
     test 'should notify user on account closure' do

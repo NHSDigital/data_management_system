@@ -10,7 +10,7 @@ class CasApplicationRenewalTest < ActiveSupport::TestCase
 
     assert_equal 'ACCESS_GRANTED', project.current_state.id
 
-    travel_to 1.month.from_now
+    travel_to 1.day.from_now
 
     klass = CasApplicationRenewal.new
     klass.renewals

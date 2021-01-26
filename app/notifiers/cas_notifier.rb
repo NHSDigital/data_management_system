@@ -96,8 +96,19 @@ class CasNotifier
       create_notification(
         user_id: project.owner,
         title: 'CAS Access Requires Renewal',
-        body: 'Your CAS account requires renewal, please click the renew button on your ' \
-              "application.\n\n"
+        body: 'Your access to CAS needs to be renewed, please visit your application to confirm ' \
+              'renewal. If you have not renewed within 30 days your access will be removed and ' \
+              "you will need to contact Beatrice Coker to reapply\n\n"
+      )
+    end
+
+    def requires_renewal_midpoint_to_user(project)
+      create_notification(
+        user_id: project.owner,
+        title: 'CAS Access Urgently Requires Renewal',
+        body: 'Your access to CAS needs to be renewed, please visit your application to confirm ' \
+              'renewal. If you have not renewed within 15 days your access will be removed and ' \
+              "you will need to contact Beatrice Coker to reapply\n\n"
       )
     end
 
