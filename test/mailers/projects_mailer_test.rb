@@ -35,4 +35,30 @@ class ProjectsMailerTest < ActionMailer::TestCase
     assert_match %r{a href="http://[^/]+/projects/#{project.id}"}, email.html_part.body.to_s
     assert_match %r{http://[^/]+/projects/#{project.id}}, email.text_part.body.to_s
   end
+
+  test 'should not send project assignment email when not odr or mbis' do
+    assigned_user = users(:application_manager_one)
+    project       = build_project(project_type: project_types(:cas), assigned_user: assigned_user)
+
+    project.save(validate: false)
+
+    email = ProjectsMailer.with(project: project).project_assignment
+
+    assert_emails 0 do
+      email.deliver_now
+    end
+  end
+
+  test 'should not send project awaiting assignment email when not odr or mbis' do
+    assigned_user = users(:application_manager_one)
+    project       = build_project(project_type: project_types(:cas), assigned_user: assigned_user)
+
+    project.save(validate: false)
+
+    email = ProjectsMailer.with(project: project).project_awaiting_assignment
+
+    assert_emails 0 do
+      email.deliver_now
+    end
+  end
 end
