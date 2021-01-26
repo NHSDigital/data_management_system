@@ -16,10 +16,9 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
 
     within '#awaiting_approval' do
       assert has_content?(project.id.to_s)
-      click_link(href: "/projects/#{project.id}", title: 'Details')
+      click_link(href: "/projects/#{project.id}#!datasets", title: 'Details')
     end
 
-    click_link(href: '#datasets')
     assert has_content?('Extra CAS Dataset One')
 
     assert_nil project.project_datasets.first.approved

@@ -1,3 +1,7 @@
+<%
+# set default local variable(s)
+dataset_link = false if local_assigns[:dataset_link].nil? 
+%>
 <table data-toggle="table" class="table table-hover" id="projects-table">
   <thead>
     <tr>
@@ -14,7 +18,11 @@
         <td>
           <div class="pull-right">
             <%= button_group do %>
-              <%= details_link project %>
+              <% if dataset_link %>
+                <%= details_link(project_path(project, anchor: "!datasets")) %>
+              <% else %>
+                <%= details_link project %>
+              <% end %>
             <% end %>
           </div>
         </td>
