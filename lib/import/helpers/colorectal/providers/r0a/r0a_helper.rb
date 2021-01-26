@@ -21,14 +21,25 @@ module Import
                   elsif @non_dosage_record_map[:genotype][index] == 'Normal'
                     @non_dosage_record_map[:genotype][index] = ['Normal'] * exon.scan(COLORECTAL_GENES_REGEX).size
                     @non_dosage_record_map[:genotype][index] = @non_dosage_record_map[:genotype][index].flatten
+                  elsif @non_dosage_record_map[:genotype][index].scan(/MSH2/) && @non_dosage_record_map[:genotype][index].scan(/MLH1/).empty?  && @non_dosage_record_map[:genotype][index].scan(/MSH6/).empty?
+                    @non_dosage_record_map[:genotype][index] = [@non_dosage_record_map[:genotype][index]].unshift(['Normal'])
+                    @non_dosage_record_map[:genotype][index] = @non_dosage_record_map[:genotype][index].flatten
+                  elsif @non_dosage_record_map[:genotype][index].scan(/MLH1/) && @non_dosage_record_map[:genotype][index].scan(/MSH2/).empty?  && @non_dosage_record_map[:genotype][index].scan(/MSH6/).empty?
+                    @non_dosage_record_map[:genotype][index] = [@non_dosage_record_map[:genotype][index]].push(['Normal'])
+                    @non_dosage_record_map[:genotype][index] = @non_dosage_record_map[:genotype][index].flatten
+                  elsif @non_dosage_record_map[:genotype][index].scan(/MSH2/) && @non_dosage_record_map[:genotype][index].scan(/MLH1/) && @non_dosage_record_map[:genotype][index].scan(/MSH6/).empty?
+                     @non_dosage_record_map[:genotype][index] = @non_dosage_record_map[:genotype][index].split(',').map(&:lstrip)
                   else @non_dosage_record_map[:genotype][index] = @non_dosage_record_map[:genotype][index]
                   end
                 @non_dosage_record_map[:genotype2][index] = 
                   if !@non_dosage_record_map[:genotype2][index].nil? && @non_dosage_record_map[:genotype2][index].scan(/100% coverage at 100X/).size.positive?
                     @non_dosage_record_map[:genotype2][index] = ['NGS Normal'] * 3
                     @non_dosage_record_map[:genotype2][index] = @non_dosage_record_map[:genotype2][index].flatten
-                  elsif ! @non_dosage_record_map[:genotype2][index].nil? &&  @non_dosage_record_map[:genotype2][index].empty? 
+                  elsif !@non_dosage_record_map[:genotype2][index].nil? && @non_dosage_record_map[:genotype2][index].empty? 
                       @non_dosage_record_map[:genotype2][index] = ['MLPA Normal'] * 2
+                      @non_dosage_record_map[:genotype2][index] = @non_dosage_record_map[:genotype2][index].flatten
+                    elsif @non_dosage_record_map[:genotype2][index].nil? && @non_dosage_record_map[:genotype][index].is_a?(String) && @non_dosage_record_map[:genotype][index].scan(/MSH2/).size.positive?
+                      @non_dosage_record_map[:genotype2][index] = [''] * exon.scan(COLORECTAL_GENES_REGEX).size
                       @non_dosage_record_map[:genotype2][index] = @non_dosage_record_map[:genotype2][index].flatten
                   end
                 end
@@ -36,6 +47,36 @@ module Import
               @non_dosage_record_map[:exon]= @non_dosage_record_map[:exon].flatten
               @non_dosage_record_map[:genotype]= @non_dosage_record_map[:genotype].flatten
               @non_dosage_record_map[:genotype2]= @non_dosage_record_map[:genotype2].flatten
+            end
+
+            def split_multiplegenes_dosage_map(dosage_map)
+              @dosage_record_map[:exon].each.with_index do |exon,index|
+                if exon.scan(COLORECTAL_GENES_REGEX).size > 1
+                  @dosage_record_map[:exon][index] = @dosage_record_map[:exon][index].scan(COLORECTAL_GENES_REGEX).flatten.each do |gene| gene = gene.concat('_MLPA') end
+                  @dosage_record_map[:genotype][index] =
+                  if @dosage_record_map[:genotype][index] == 'Normal'
+                    @dosage_record_map[:genotype][index] = ['Normal'] * exon.scan(COLORECTAL_GENES_REGEX).size
+                    @dosage_record_map[:genotype][index] = @dosage_record_map[:genotype][index].flatten
+                  elsif @dosage_record_map[:genotype][index].scan(/MSH2/) && @dosage_record_map[:genotype][index].scan(/MLH1/).empty?
+                    @dosage_record_map[:genotype][index] = [@dosage_record_map[:genotype][index]].unshift(['Normal'])
+                    @dosage_record_map[:genotype][index] = @dosage_record_map[:genotype][index].flatten
+                  elsif @dosage_record_map[:genotype][index].scan(/MLH1/) && @dosage_record_map[:genotype][index].scan(/MSH2/).empty?
+                    @dosage_record_map[:genotype][index] = [@dosage_record_map[:genotype][index]].push(['Normal'])
+                    @dosage_record_map[:genotype][index] = @dosage_record_map[:genotype][index].flatten
+                  elsif @dosage_record_map[:genotype][index] == 'MLH1 Normal, MSH2 Normal, MSH6 Normal'
+                      @dosage_record_map[:genotype][index] = ['NGS Normal'] * 3
+                      @dosage_record_map[:genotype][index] = @dosage_record_map[:genotype][index].flatten
+                  end
+                  @dosage_record_map[:genotype2][index] =
+                    if !@dosage_record_map[:genotype2][index].nil? &&  @dosage_record_map[:genotype2][index].empty?
+                      @dosage_record_map[:genotype2][index] = ['MLPA Normal'] * 2
+                      @dosage_record_map[:genotype2][index] = @dosage_record_map[:genotype2][index].flatten
+                    elsif !@dosage_record_map[:genotype2][index].nil? && @dosage_record_map[:genotype2][index].scan(/100% coverage at 100X/).size.positive?
+                      @dosage_record_map[:genotype2][index] = ['NGS Normal'] * 3
+                      @dosage_record_map[:genotype2][index] = @dosage_record_map[:genotype2][index].flatten
+                    end
+                end
+              end
             end
 
             def assign_and_populate_results_for(record)
