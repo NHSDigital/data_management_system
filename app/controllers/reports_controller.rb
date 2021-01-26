@@ -16,8 +16,8 @@ class ReportsController < ApplicationController
     Project.of_type_project.order('team_id, name').find_each do |project|
       @projects << {
         team: project.team.name,
-        division: project.team.division.name,
-        head_of_profession: project.team.division.head_of_profession,
+        division: project.team&.division&.name,
+        head_of_profession: project.team&.division&.head_of_profession,
         delegate_approver: project.team.delegate_users.collect(&:full_name),
         title: project.name,
         summary: project.description,
@@ -31,7 +31,7 @@ class ReportsController < ApplicationController
         end_uses: all_end_uses(project),
         # TODO: prettify me. although apparently these reports have not been requested for a while
         # 2019/11/08
-        dataset: project.datasets(&:name),
+        dataset: project.datasets.collect(&:name),
         data_items: project.data_items.collect(&:name)
       }
     end
