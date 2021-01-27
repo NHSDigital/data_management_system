@@ -98,6 +98,16 @@ class BirminghamHandlerColorectalTest < ActiveSupport::TestCase
     @logger.expects(:debug).with('SUCCESSFUL gene parse for PMS2')
     @logger.expects(:debug).with('SUCCESSFUL gene parse for PMS2')
     assert_equal 5, @handler.process_variants_from_report(@genotype, multiple_cdna_record).size
+    multiple_cdna_multiple_genes_record = build_raw_record('pseudo_id1' => 'bob')
+    multiple_cdna_multiple_genes_record.raw_fields['teststatus'] = 'Heterozygous missense variant (c.1688G>T; p.Arg563Leu) identified in exon 11 of the PMS2 gene and a heterozygous intronic variant (c.251-20T>G) in intron 4 of the MSH2 gene.'
+    @logger.expects(:debug).with('ABNORMAL TEST')
+    @logger.expects(:debug).with('Found MSH6 for list ["MSH6", "EPCAM"]')
+    @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH6')
+    @logger.expects(:debug).with('Found EPCAM for list ["MSH6", "EPCAM"]')
+    @logger.expects(:debug).with('SUCCESSFUL gene parse for EPCAM')
+    @logger.expects(:debug).with('SUCCESSFUL gene parse for PMS2')
+    @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH2')
+    assert_equal 4, @handler.process_variants_from_report(@genotype, multiple_cdna_multiple_genes_record).size
   end
 
   test 'process_chromosomic_variant_empty_teststatus' do
