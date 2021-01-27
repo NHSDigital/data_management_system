@@ -69,10 +69,6 @@ module Import
                                    genotype2: dosage_genotype2_col }
             split_multiplegenes_dosage_map(@dosage_map)
 
-            @dosage_record_map[:exon] = @dosage_record_map[:exon].flatten
-            @dosage_record_map[:genotype] = @dosage_record_map[:genotype].flatten
-            @dosage_record_map[:genotype2] = @dosage_record_map[:genotype2].flatten
-
             @lines_processed += 1 # TODO: factor this out to be automatic across handlers
             assign_and_populate_results_for(record)
              @logger.debug('DONE TEST')

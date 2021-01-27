@@ -77,6 +77,9 @@ module Import
                     end
                 end
               end
+              @dosage_record_map[:exon] = @dosage_record_map[:exon].flatten
+              @dosage_record_map[:genotype] = @dosage_record_map[:genotype].flatten
+              @dosage_record_map[:genotype2] = @dosage_record_map[:genotype2].flatten
             end
 
             def assign_and_populate_results_for(record)
