@@ -14,10 +14,10 @@ module Import
           TEST_SCOPE_MAP = { 'brca_multiplicom'           => :full_screen,
                              'breast-tp53 panel'          => :full_screen,
                              'breast-uterine-ovary panel' => :full_screen,
-                             'targeted'                   => :targeted_mutation } .freeze
+                             'targeted'                   => :targeted_mutation }.freeze
 
           TEST_METHOD_MAP = { 'Sequencing, Next Generation Panel (NGS)' => :ngs,
-                              'Sequencing, Dideoxy / Sanger'            => :sanger } .freeze
+                              'Sequencing, Dideoxy / Sanger'            => :sanger }.freeze
 
           PASS_THROUGH_FIELDS = %w[age consultantcode
                                    servicereportidentifier
@@ -26,12 +26,13 @@ module Import
                                    requesteddate
                                    variantpathclass
                                    sampletype
-                                   referencetranscriptid] .freeze
+                                   referencetranscriptid].freeze
 
           BRCA_REGEX = /(?<brca>BRCA(1|2))/i.freeze
           PROTEIN_REGEX = /p\.\[(?<impact>(.*?))\]|p\..+/i.freeze
           CDNA_REGEX = /c\.\[?(?<cdna>[0-9]+.+[a-z])\]?/i.freeze
-          GENOMICCHANGE_REGEX = /Chr(?<chromosome>\d+)\.hg(?<genome_build>\d+):g\.(?<effect>.+)/i .freeze
+          GENOMICCHANGE_REGEX = /Chr(?<chromosome>\d+)\.hg
+                                 (?<genome_build>\d+):g\.(?<effect>.+)/ix.freeze
           def process_fields(record)
             genotype = Import::Brca::Core::GenotypeBrca.new(record)
             genotype.add_passthrough_fields(record.mapped_fields,
@@ -49,7 +50,6 @@ module Import
           end
 
           def assign_method(genotype, record)
-            # ******************* Assign testing method ************************
             Maybe(record.raw_fields['karyotypingmethod']).each do |raw_method|
               method = TEST_METHOD_MAP[raw_method]
               if method
@@ -61,7 +61,6 @@ module Import
           end
 
           def assign_test_type(genotype, record)
-            # ******************* Assign testing type  ************************
             Maybe(record.raw_fields['moleculartestingtype']).each do |ttype|
               if ttype.downcase != 'diagnostic'
                 @logger.warn "Oxford provided test type: #{ttype}; expected" \
@@ -110,14 +109,11 @@ module Import
 
           def process_gene(genotype, record)
             genotypes = []
-            gene = record.mapped_fields['gene'].to_i unless record.mapped_fields['gene'].nil?
-            synonym = record.raw_fields['sinonym'] unless record.raw_fields['sinonym'].nil?
+            gene      = record.mapped_fields['gene'].to_i
+            synonym   = record.raw_fields['sinonym'].to_s
             if (7..8).cover? gene
               genotype.add_gene(gene)
-              # genotypes << genotype
-              # @successful_gene_counter += 1
-              @logger.debug 'SUCCESSFUL gene parse for:' \
-                            "#{record.mapped_fields['gene'].to_i}"
+              @logger.debug "SUCCESSFUL gene parse for:#{record.mapped_fields['gene'].to_i}"
               genotypes << genotype
             elsif BRCA_REGEX.match(synonym)
               @logger.debug "SUCCESSFUL gene parse from #{synonym}"
@@ -130,7 +126,6 @@ module Import
           end
 
           def assign_genomic_change(genotype, record)
-            # ******************* Assign genomic change ************************
             Maybe(record.raw_fields['genomicchange']).each do |raw_change|
               if GENOMICCHANGE_REGEX.match(raw_change)
                 genotype.add_genome_build($LAST_MATCH_INFO[:genome_build].to_i)
