@@ -28,7 +28,7 @@ module Import
                                    sampletype
                                    referencetranscriptid] .freeze
 
-          BRCA_REGEX = /(?<brca>BRCA(1|2))/i
+          BRCA_REGEX = /(?<brca>BRCA(1|2))/i.freeze
           PROTEIN_REGEX = /p\.\[(?<impact>(.*?))\]|p\..+/i.freeze
           CDNA_REGEX = /c\.\[?(?<cdna>[0-9]+.+[a-z])\]?/i.freeze
           GENOMICCHANGE_REGEX = /Chr(?<chromosome>\d+)\.hg(?<genome_build>\d+):g\.(?<effect>.+)/i .freeze
@@ -45,7 +45,7 @@ module Import
             assign_genomic_change(genotype, record)
             assign_servicereportidentifier(genotype, record)
             res = process_gene(genotype, record)
-            res.each { |cur_genotype| @persister.integrate_and_store(cur_genotype)} unless res.nil?
+            res&.each { |cur_genotype| @persister.integrate_and_store(cur_genotype) }
           end
 
           def assign_method(genotype, record)
@@ -81,7 +81,7 @@ module Import
           end
 
           def assign_test_scope(genotype, record)
-              Maybe(record.raw_fields['scope / limitations of test']).each do |ttype|
+            Maybe(record.raw_fields['scope / limitations of test']).each do |ttype|
               scope = TEST_SCOPE_MAP[ttype.downcase.strip]
               genotype.add_test_scope(scope) if scope
             end
@@ -117,8 +117,8 @@ module Import
               # genotypes << genotype
               # @successful_gene_counter += 1
               @logger.debug 'SUCCESSFUL gene parse for:' \
-                             "#{record.mapped_fields['gene'].to_i}"
-                             genotypes << genotype
+                            "#{record.mapped_fields['gene'].to_i}"
+              genotypes << genotype
             elsif BRCA_REGEX.match(synonym)
               @logger.debug "SUCCESSFUL gene parse from #{synonym}"
               genotype.add_gene($LAST_MATCH_INFO[:brca])

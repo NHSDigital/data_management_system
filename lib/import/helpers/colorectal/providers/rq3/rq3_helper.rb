@@ -229,9 +229,9 @@ module Import
 
             def sometimes_tested?(record)
               record.raw_fields['indication'] == 'HNPCC' ||
-              record.raw_fields['indication'] == 'COLON' ||
-              record.raw_fields['indication'] == 'NGS_COLON' ||
-              record.raw_fields['indication'] == 'POLY'
+                record.raw_fields['indication'] == 'COLON' ||
+                record.raw_fields['indication'] == 'NGS_COLON' ||
+                record.raw_fields['indication'] == 'POLY'
             end
 
             def process_testresult_multiple_cdnavariant(testresult, testreport, record, genelist, genotypes, genocolorectal)

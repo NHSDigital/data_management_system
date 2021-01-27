@@ -57,9 +57,8 @@ module Import
         # this is present in Newcastle storage manager
         def full_screen?
           scope = @attribute_map['genetictestscope']
-          
           return nil unless scope
-          
+
           scope == 'Full screen Colorectal Lynch or MMR'
         end
 
