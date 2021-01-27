@@ -8,7 +8,8 @@ module Import
             include Import::Helpers::Colorectal::Providers::Rq3::Rq3Constants
 
             def full_screen?(record)
-              testscope = TEST_SCOPE_MAP_COLO_COLO[record.raw_fields['moleculartestingtype'].downcase.strip]
+              moleculartestingtype = record.raw_fields['moleculartestingtype'].downcase.strip
+              testscope = TEST_SCOPE_MAP_COLO_COLO[moleculartestingtype]
               testscope == :full_screen
             end
 
@@ -84,10 +85,10 @@ module Import
               end
             end
 
-            def process_testreport_cdna_variants(testreport, genelist, genotypes, genocolorectal, record)
+            def process_testreport_cdna_variants(testreport, genotypes, genocolorectal)
               if testreport.scan(CDNA_REGEX).size == 1
                 if testreport.scan(COLORECTAL_GENES_REGEX).uniq.size == 1
-                  genocolorectal.add_gene_colorectal(testreport.scan(COLORECTAL_GENES_REGEX).flatten.uniq.join)
+                  genocolorectal.add_gene_colorectal(unique_colorectal_genes_from(testreport).join)
                   genocolorectal.add_gene_location(testreport.scan(CDNA_REGEX).join)
                   genocolorectal.add_status(2)
                   if testreport.scan(PROTEIN_REGEX).size.positive?
@@ -97,7 +98,7 @@ module Import
                 end
               elsif testreport.scan(CDNA_REGEX).size == 2
                 if testreport.scan(COLORECTAL_GENES_REGEX).uniq.size == 2
-                  genes = testreport.scan(COLORECTAL_GENES_REGEX).flatten
+                  genes = colorectal_genes_from(testreport)
                   cdnas = testreport.scan(CDNA_REGEX).flatten
                   proteins = testreport.scan(PROTEIN_REGEX).flatten
                   positive_results = genes.zip(cdnas, proteins)
@@ -141,11 +142,11 @@ module Import
             def process_chr_variants(record, testresult, testreport, genotypes, genocolorectal)
               if full_screen?(record)
                 if sometimes_tested?(record)
-                  genelist = testreport.scan(COLORECTAL_GENES_REGEX).flatten.uniq
-                  negativegenes = genelist - testresult.scan(COLORECTAL_GENES_REGEX).flatten.uniq
+                  genelist = unique_colorectal_genes_from(testreport)
+                  negativegenes = genelist - unique_colorectal_genes_from(testresult)
                   process_negative_genes(negativegenes, genotypes, genocolorectal)
                 else
-                  negativegenes = genelist - testresult.scan(COLORECTAL_GENES_REGEX).flatten.uniq
+                  negativegenes = genelist - unique_colorectal_genes_from(testresult)
                   process_negative_genes(negativegenes, genotypes, genocolorectal)
                 end
               end
@@ -155,36 +156,37 @@ module Import
 
             def process_full_screen(record, testreport, genotypes, genocolorectal)
               if sometimes_tested?(record)
-                genelist = testreport.scan(COLORECTAL_GENES_REGEX).flatten.uniq
-                negativegenes = genelist - testresult.scan(COLORECTAL_GENES_REGEX).flatten.uniq
+                genelist = unique_colorectal_genes_from(testreport)
+                negativegenes = genelist - unique_colorectal_genes_from(testresult)
                 process_negative_genes(negativegenes, genotypes, genocolorectal)
               else
-                negativegenes = genelist - testresult.scan(COLORECTAL_GENES_REGEX).flatten.uniq
+                negativegenes = genelist - unique_colorectal_genes_from(testresult)
                 process_negative_genes(negativegenes, genotypes, genocolorectal)
               end
             end
 
             def process_chromosomal_variant(testcolumn, genelist, genotypes, record, genocolorectal)
-              if testcolumn.scan(COLORECTAL_GENES_REGEX).uniq.size == 1
+              colorectal_genes = unique_colorectal_genes_from(testcolumn)
+              if colorectal_genes.one?
                 if testcolumn.scan(CHR_VARIANTS_REGEX).size == 1
-                  genocolorectal.add_gene_colorectal(testcolumn.scan(COLORECTAL_GENES_REGEX).uniq.join)
+                  genocolorectal.add_gene_colorectal(colorectal_genes.join)
                   genocolorectal.add_variant_type(testcolumn.scan(CHR_VARIANTS_REGEX).join)
                   genocolorectal.add_status(2)
                   genotypes.append(genocolorectal)
                 else
-                  genocolorectal.add_gene_colorectal(testcolumn.scan(COLORECTAL_GENES_REGEX).uniq.join)
+                  genocolorectal.add_gene_colorectal(colorectal_genes.join)
                   genocolorectal.add_variant_type(testcolumn.scan(CHR_VARIANTS_REGEX)[1])
                   genocolorectal.add_status(2)
                   genotypes.append(genocolorectal)
                 end
-              elsif testcolumn.scan(COLORECTAL_GENES_REGEX).uniq.size > 1
+              elsif colorectal_genes.size > 1
                 if testcolumn.scan(CHR_VARIANTS_REGEX).size == 1
-                  genes = testcolumn.scan(COLORECTAL_GENES_REGEX).flatten
+                  genes = colorectal_genes_from(testcolumn)
                   chromosomalvariants = testcolumn.scan(CHR_VARIANTS_REGEX).flatten * genes.size
                   positive_results = genes.zip(chromosomalvariants)
                   positive_multiple_chromosomal_variants(positive_results, genotypes, genocolorectal)
                 else
-                  genes = testcolumn.scan(COLORECTAL_GENES_REGEX).flatten
+                  genes = colorectal_genes_from(testcolumn)
                   chromosomalvariants = testcolumn.scan(CHR_VARIANTS_REGEX).flatten
                   positive_results = genes.zip(chromosomalvariants)
                   positive_multiple_chromosomal_variants(positive_results, genotypes, genocolorectal)
@@ -197,37 +199,34 @@ module Import
               @logger.debug 'NORMAL TEST FOUND'
               if full_screen?(record)
                 if sometimes_tested?(record)
-                  negativegenes = testreport.scan(COLORECTAL_GENES_REGEX).flatten.uniq
-                  process_negative_genes(negativegenes, genotypes, genocolorectal)
+                  negativegenes = unique_colorectal_genes_from(testreport)
                 else
                   negativegenes = genelist
-                  process_negative_genes(negativegenes, genotypes, genocolorectal)
                 end
               elsif !full_screen?(record) && testreport.match(/MYH/i)
                 negativegenes = ['MUTYH']
-                process_negative_genes(negativegenes, genotypes, genocolorectal)
               else
-                testresultgenes = testresult.scan(COLORECTAL_GENES_REGEX).flatten.uniq
-                testreportgenes = testreport.scan(COLORECTAL_GENES_REGEX).flatten.uniq
+                testresultgenes = unique_colorectal_genes_from(testresult)
+                testreportgenes = unique_colorectal_genes_from(testreport)
                 negativegenes = testreportgenes.flatten.uniq
-                process_negative_genes(negativegenes, genotypes, genocolorectal)
               end
+              process_negative_genes(negativegenes, genotypes, genocolorectal)
             end
 
             def process_testresult_single_cdnavariant(testresult, testreport, record,
                                                       genelist, genotypes, genocolorectal)
-              if testresult.scan(COLORECTAL_GENES_REGEX).uniq.size == 1
+              if unique_colorectal_genes_from(testresult).one?
                 if full_screen?(record)
                   if sometimes_tested?(record)
-                    genelist = testreport.scan(COLORECTAL_GENES_REGEX).flatten.uniq
-                    negativegenes = genelist - testresult.scan(COLORECTAL_GENES_REGEX).flatten.uniq
+                    genelist = unique_colorectal_genes_from(testreport)
+                    negativegenes = genelist - unique_colorectal_genes_from(testresult)
                     process_negative_genes(negativegenes, genotypes, genocolorectal)
                   else
-                    negativegenes = genelist - testresult.scan(COLORECTAL_GENES_REGEX).flatten.uniq
+                    negativegenes = genelist - unique_colorectal_genes_from(testresult)
                     process_negative_genes(negativegenes, genotypes, genocolorectal)
                   end
                 end
-                genocolorectal.add_gene_colorectal(testresult.scan(COLORECTAL_GENES_REGEX).flatten.uniq.join)
+                genocolorectal.add_gene_colorectal(unique_colorectal_genes_from(testresult).join)
                 genocolorectal.add_gene_location(testresult.scan(CDNA_REGEX).join)
                 genocolorectal.add_status(2)
                 if testresult.scan(PROTEIN_REGEX).size.positive?
@@ -237,15 +236,15 @@ module Import
               else
                 if full_screen?(record)
                   if sometimes_tested?(record)
-                    genelist = testreport.scan(COLORECTAL_GENES_REGEX).flatten.uniq
-                    negativegenes = genelist - testresult.scan(COLORECTAL_GENES_REGEX).flatten.uniq
+                    genelist = unique_colorectal_genes_from(testreport)
+                    negativegenes = genelist - unique_colorectal_genes_from(testresult)
                     process_negative_genes(negativegenes, genotypes, genocolorectal)
                   else
-                    negativegenes = genelist - [testresult.scan(COLORECTAL_GENES_REGEX).flatten.uniq[0]]
+                    negativegenes = genelist - [unique_colorectal_genes_from(testresult)[0]]
                     process_negative_genes(negativegenes, genotypes, genocolorectal)
                   end
                 end
-                genocolorectal.add_gene_colorectal(testresult.scan(COLORECTAL_GENES_REGEX).flatten.uniq[0])
+                genocolorectal.add_gene_colorectal(unique_colorectal_genes_from(testresult)[0])
                 genocolorectal.add_gene_location(testresult.scan(CDNA_REGEX).join)
                 genocolorectal.add_status(2)
                 if testresult.scan(PROTEIN_REGEX).size.positive?
@@ -267,36 +266,44 @@ module Import
               if testresult.scan(COLORECTAL_GENES_REGEX).uniq.size == 2
                 if full_screen?(record)
                   if sometimes_tested?(record)
-                    genelist = testreport.scan(COLORECTAL_GENES_REGEX).flatten.uniq
-                    negativegenes = genelist - testresult.scan(COLORECTAL_GENES_REGEX).flatten.uniq
+                    genelist = unique_colorectal_genes_from(testreport)
+                    negativegenes = genelist - unique_colorectal_genes_from(testresult)
                     process_negative_genes(negativegenes, genotypes, genocolorectal)
                   else
-                    negativegenes = genelist - testresult.scan(COLORECTAL_GENES_REGEX).flatten.uniq
+                    negativegenes = genelist - unique_colorectal_genes_from(testresult)
                     process_negative_genes(negativegenes, genotypes, genocolorectal)
                   end
                 end
-                genes = testresult.scan(COLORECTAL_GENES_REGEX).flatten
+                genes = colorectal_genes_from(testresult)
                 cdnas = testresult.scan(CDNA_REGEX).flatten
                 proteins = testresult.scan(PROTEIN_REGEX).flatten
                 positive_results = genes.zip(cdnas, proteins)
                 positive_multiple_cdna_variants(positive_results, genotypes, genocolorectal)
-              elsif testresult.scan(COLORECTAL_GENES_REGEX).uniq.size == 1
+              elsif unique_colorectal_genes_from(testresult).one?
                 if full_screen?(record)
                   if sometimes_tested?(record)
-                    genelist = testreport.scan(COLORECTAL_GENES_REGEX).flatten.uniq
-                    negativegenes = genelist - testresult.scan(COLORECTAL_GENES_REGEX).flatten.uniq
+                    genelist = unique_colorectal_genes_from(testreport)
+                    negativegenes = genelist - unique_colorectal_genes_from(testresult)
                     process_negative_genes(negativegenes, genotypes, genocolorectal)
                   else
-                    negativegenes = genelist - testresult.scan(COLORECTAL_GENES_REGEX).flatten.uniq
+                    negativegenes = genelist - unique_colorectal_genes_from(testresult)
                     process_negative_genes(negativegenes, genotypes, genocolorectal)
                   end
                 end
-                genes = testresult.scan(COLORECTAL_GENES_REGEX).flatten.uniq * 2
+                genes = unique_colorectal_genes_from(testresult) * 2
                 cdnas = testresult.scan(CDNA_REGEX).flatten
                 proteins = testresult.scan(PROTEIN_REGEX).flatten
                 positive_results = genes.zip(cdnas, proteins)
                 positive_multiple_cdna_variants(positive_results, genotypes, genocolorectal)
               end
+            end
+
+            def colorectal_genes_from(string)
+              string.scan(COLORECTAL_GENES_REGEX).flatten
+            end
+
+            def unique_colorectal_genes_from(string)
+              colorectal_genes_from(string).uniq
             end
           end
         end

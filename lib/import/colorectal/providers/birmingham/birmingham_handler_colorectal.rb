@@ -52,8 +52,7 @@ module Import
                                                 genocolorectal, record)
               elsif testresult.scan(COLORECTAL_GENES_REGEX).empty?
                 if testreport.scan(CDNA_REGEX).size.positive?
-                  process_testreport_cdna_variants(testreport, genelist, genotypes,
-                                                   genocolorectal, record)
+                  process_testreport_cdna_variants(testreport, genotypes, genocolorectal)
                 elsif testreport.scan(CHR_VARIANTS_REGEX).size.positive?
                   process_chromosomal_variant(testreport, genelist, genotypes,
                                               record, genocolorectal)
