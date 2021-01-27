@@ -138,7 +138,7 @@ module Import
               end
             end
 
-            def process_chr_variants(record, testreport, genotypes, genocolorectal)
+            def process_chr_variants(record, testresult, testreport, genotypes, genocolorectal)
               if full_screen?(record)
                 if sometimes_tested?(record)
                   genelist = testreport.scan(COLORECTAL_GENES_REGEX).flatten.uniq

@@ -65,7 +65,7 @@ module Import
                 process_testresult_cdna_variants(testresult, testreport, genelist,
                                                  genotypes, record, genocolorectal)
               elsif testresult.scan(CHR_VARIANTS_REGEX).size.positive?
-                process_chr_variants(record, testreport, genotypes, genocolorectal)
+                process_chr_variants(record, testresult, testreport, genotypes, genocolorectal)
               elsif testresult.match(/No known pathogenic/i)
                 negativegenes = genelist
                 process_negative_genes(negativegenes, genotypes, genocolorectal)
