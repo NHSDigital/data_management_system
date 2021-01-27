@@ -13,14 +13,20 @@ class Ability
     can :read, User, id: user.id
     can :read, Grant, user_id: user.id
     can :read, [Category, Node]
-    # TODO: test
     can :create, Project, project_type_id: ProjectType.cas.pluck(:id)
     can :read, Project, project_type_id: ProjectType.cas.pluck(:id),
-                                          grants: { user_id: user.id, roleable: ProjectRole.owner }
+                        grants: { user_id: user.id, roleable: ProjectRole.owner }
+    # TODO: do we still want them to be able to destroy?
     can %i[update destroy], Project, project_type_id: ProjectType.cas.pluck(:id),
                                      grants: { user_id: user.id, roleable: ProjectRole.owner },
                                      current_state: { id: 'DRAFT' }
-
+    can %i[reapply], ProjectDataset, approved: false,
+                                     project: { project_type_id: ProjectType.cas.pluck(:id),
+                                                current_state: {
+                                                  id: Workflow::State.reapply_dataset_states.pluck(:id)
+                                                },
+                                                grants: { user_id: user.id,
+                                                          roleable: ProjectRole.owner } }
     team_grants(user)
     organisation_grants(user)
 
@@ -338,16 +344,19 @@ class Ability
   def cas_dataset_approver_grants(user)
     return unless user.role?(DatasetRole.fetch(:approver))
 
-    can %i[read], Project, { project_type_id: ProjectType.cas.pluck(:id),
-                             id: Project.dataset_approval(user).map(&:id) }
-    can %i[update], ProjectDataset, { dataset_id: user.datasets.pluck(:id),
-                                      project: { id: Project.dataset_approval(user).map(&:id) } }
+    can %i[read], Project, project_type_id: ProjectType.cas.pluck(:id),
+                           id: Project.dataset_approval(user).map(&:id)
+    can %i[update approve], ProjectDataset, dataset_id: user.datasets.pluck(:id),
+                                            project: {
+                                              id: Project.dataset_approval(user).map(&:id)
+                                            }
   end
 
   def cas_access_approver_grants(user)
     return unless user.role?(SystemRole.fetch(:cas_access_approver))
 
-    can %i[read], Project, project_type_id: ProjectType.cas.pluck(:id)
+    can %i[read], Project, project_type_id: ProjectType.cas.pluck(:id),
+                           current_state: { id: Workflow::State.access_approval_states.map(&:id) }
   end
 
   def cas_manager_grants(user)

@@ -4,6 +4,7 @@ class ProjectsMailer < ApplicationMailer
 
   def project_assignment
     return unless @project.assigned_user
+    return unless @project.odr? || @project.project?
 
     @assigned_by = params[:assigned_by]
 
@@ -15,6 +16,8 @@ class ProjectsMailer < ApplicationMailer
   end
 
   def project_awaiting_assignment
+    return unless @project.odr? || @project.project?
+
     recipients   = User.odr_users.pluck(:email)
     @assigned_by = params[:assigned_by]
 

@@ -1,0 +1,27 @@
+<div class='container'>
+  <div class="lead">
+    <h1 class="text-center" style="color: #4dac8d;">
+      Welcome to <%= t 'system.name' %>
+      <br/>
+  </div>
+</div>
+
+<div class="text-center">
+  <div class="btn-group" role="group" aria-label="Basic example">
+    <%= link_to 'CAS Application Form', new_project_path(project: { project_type_id: ProjectType.find_by(name: 'CAS').id }), { :style=>'color:#FFFFFF;', :class => "btn btn-primary btn-lg" } %>
+    <%= link_to 'My CAS Projects', projects_path, { :style=>'color:#FFFFFF;', :class => "btn btn-primary btn-lg" } %>
+    <%= link_to 'ODR Datasets', datasets_path, { :style=>'color:#FFFFFF;', :class => "btn btn-primary btn-lg" } %>
+  </div>
+</div>
+
+  <br />
+
+  <div>
+    <h1 class="text-center" style="color: #4dac8d;">Requesting ODR Data</h1>
+    <br/>
+    <p style="text-align: center; font-size: 14pt;">
+      To request ODR data please visit the
+      <%= link_to("Office of Data Release website,", 'https://www.gov.uk/government/publications/accessing-public-health-england-data/about-the-phe-odr-and-accessing-data') %>
+      or contact the ODR team on odr@phe.gov.uk.
+    </p>
+  </div>

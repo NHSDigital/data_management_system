@@ -398,42 +398,68 @@ draft_submitted:
   from_state_id: DRAFT
   next_state_id: SUBMITTED
 
-draft_deleted:
-  project_type: cas
-  from_state_id: DRAFT
-  next_state_id: DELETED
-
-submitted_awaiting_account_approval:
+submitted_draft:
   project_type: cas
   from_state_id: SUBMITTED
-  next_state_id: AWAITING_ACCOUNT_APPROVAL
-
-awaiting_account_approval_approved:
-  project_type: cas
-  from_state_id: AWAITING_ACCOUNT_APPROVAL
-  next_state_id: APPROVED
-
-awaiting_account_approval_rejected:
-  project_type: cas
-  from_state_id: AWAITING_ACCOUNT_APPROVAL
-  next_state_id: REJECTED
-
-approved_access_granted:
-  project_type: cas
-  from_state_id: APPROVED
-  next_state_id: ACCESS_GRANTED
-
-rejected_draft:
-  project_type: cas
-  from_state_id: REJECTED
   next_state_id: DRAFT
 
-approved_rejected:
+submitted_access_approver_approved:
   project_type: cas
-  from_state_id: APPROVED
-  next_state_id: REJECTED
+  from_state_id: SUBMITTED
+  next_state_id: ACCESS_APPROVER_APPROVED
+  requires_yubikey: true
 
-rejected_approved:
+submitted_access_approver_rejected:
   project_type: cas
-  from_state_id: REJECTED
-  next_state_id: APPROVED
+  from_state_id: SUBMITTED
+  next_state_id: ACCESS_APPROVER_REJECTED
+
+access_approver_approved_access_granted:
+  project_type: cas
+  from_state_id: ACCESS_APPROVER_APPROVED
+  next_state_id: ACCESS_GRANTED
+
+access_granted_renewal:
+  project_type: cas
+  from_state_id: ACCESS_GRANTED
+  next_state_id: RENEWAL
+
+renewal_access_granted:
+  project_type: cas
+  from_state_id: RENEWAL
+  next_state_id: ACCESS_GRANTED
+
+renewal_account_closed:
+  project_type: cas
+  from_state_id: RENEWAL
+  next_state_id: ACCOUNT_CLOSED
+
+access_granted_account_closed:
+  project_type: cas
+  from_state_id: ACCESS_GRANTED
+  next_state_id: ACCOUNT_CLOSED
+
+access_granted_draft:
+  project_type: cas
+  from_state_id: ACCESS_GRANTED
+  next_state_id: DRAFT
+
+access_approver_rejected_rejection_reviewed:
+  project_type: cas
+  from_state_id: ACCESS_APPROVER_REJECTED
+  next_state_id: REJECTION_REVIEWED
+
+access_approver_rejected_submitted:
+  project_type: cas
+  from_state_id: ACCESS_APPROVER_REJECTED
+  next_state_id: SUBMITTED
+
+rejection_reviewed_draft:
+  project_type: cas
+  from_state_id: REJECTION_REVIEWED
+  next_state_id: DRAFT
+
+account_closed_draft:
+  project_type: cas
+  from_state_id: ACCOUNT_CLOSED
+  next_state_id: DRAFT

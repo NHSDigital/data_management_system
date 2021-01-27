@@ -12,15 +12,19 @@ Rails.application.routes.draw do
     root 'projects#dashboard', as: :non_standard_authenticated_root
   end
 
-  authenticated :user, ->(user) { user.applicant? } do
-    root 'projects#index', as: :applicant_authenticated_root
+  authenticated :user, ->(user) { user.cas_role? } do
+    root 'projects#index', as: :cas_role_authenticated_root
   end
+
+  authenticated :user, ->(user) { user.standard? && !user.cas_role? } do
+    root 'home#index', as: :applicant_authenticated_root
+  end
+
+  root 'home#index'
 
   concern :downloadable do
     get :download, on: :member
   end
-
-  root 'datasets#index'
 
   get 'notifications/index'
   get '/reports/report1', to: 'reports#report1', as: 'report1'
@@ -75,8 +79,16 @@ Rails.application.routes.draw do
       collection do
         patch :update
       end
+      member do
+        patch :approve
+        put :approve
+        patch :reapply
+        put :reapply
+      end
     end
   end
+
+  resources :home, only: [:index]
 
   resources :terms_and_conditions, only: [:index, :create]
 

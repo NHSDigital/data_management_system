@@ -34,7 +34,7 @@ class ManchesterHandlerColorectalTest < ActiveSupport::TestCase
       @handler.process_fields(record)
       @handler.testscope_from_rawfields(genocolorectal, record)
       mutations = @handler.assign_gene_mutation(genocolorectal, record)
-      assert_equal 'Targeted Colorectal mutation test', genocolorectal.attribute_map['genetictestscope']
+      assert_equal 'Targeted Colorectal Lynch or MMR', genocolorectal.attribute_map['genetictestscope']
       assert mutations.one?
       assert_equal 'c.81C>T', mutations[0].attribute_map['codingdnasequencechange']
     end
@@ -58,9 +58,9 @@ class ManchesterHandlerColorectalTest < ActiveSupport::TestCase
                                             Import::Helpers::Colorectal::Providers::R0a::R0aConstants::PASS_THROUGH_FIELDS_COLO)
       @handler.process_fields(record)
       testscope = @handler.testscope_from_rawfields(genocolorectal, record)
-      assert_equal 'Targeted Colorectal mutation test', testscope
+      assert_equal 'Targeted Colorectal Lynch or MMR', testscope
       mutations = @handler.assign_gene_mutation(genocolorectal, record)
-      assert_equal 'Targeted Colorectal mutation test', genocolorectal.attribute_map['genetictestscope']
+      assert_equal 'Targeted Colorectal Lynch or MMR', genocolorectal.attribute_map['genetictestscope']
       assert mutations.one?
       assert_equal 1, mutations[0].attribute_map['teststatus']
     end
@@ -84,9 +84,9 @@ class ManchesterHandlerColorectalTest < ActiveSupport::TestCase
                                             Import::Helpers::Colorectal::Providers::R0a::R0aConstants::PASS_THROUGH_FIELDS_COLO)
       @handler.process_fields(record)
       testscope =  @handler.testscope_from_rawfields(genocolorectal, record)
-      assert_equal 'Targeted Colorectal mutation test', testscope
+      assert_equal 'Targeted Colorectal Lynch or MMR', testscope
       mutations = @handler.assign_gene_mutation(genocolorectal, record)
-      assert_equal 'Targeted Colorectal mutation test', genocolorectal.attribute_map['genetictestscope']
+      assert_equal 'Targeted Colorectal Lynch or MMR', genocolorectal.attribute_map['genetictestscope']
       assert mutations.one?
       assert_equal 9, mutations[0].attribute_map['teststatus']
     end
@@ -111,7 +111,7 @@ class ManchesterHandlerColorectalTest < ActiveSupport::TestCase
       @handler.process_fields(record)
       @handler.testscope_from_rawfields(genocolorectal, record)
       mutations = @handler.assign_gene_mutation(genocolorectal, record)
-      assert_equal 'Targeted Colorectal mutation test', genocolorectal.attribute_map['genetictestscope']
+      assert_equal 'Targeted Colorectal Lynch or MMR', genocolorectal.attribute_map['genetictestscope']
       assert_not mutations.one?
       assert_equal 2, mutations[0].attribute_map['teststatus']
       assert_equal 2, mutations[1].attribute_map['teststatus']
@@ -139,7 +139,7 @@ class ManchesterHandlerColorectalTest < ActiveSupport::TestCase
       @handler.process_fields(record)
       @handler.testscope_from_rawfields(genocolorectal, record)
       mutations = @handler.assign_gene_mutation(genocolorectal, record)
-      assert_equal 'Targeted Colorectal mutation test', genocolorectal.attribute_map['genetictestscope']
+      assert_equal 'Targeted Colorectal Lynch or MMR', genocolorectal.attribute_map['genetictestscope']
       assert_not mutations.one?
       assert_equal 2, mutations[0].attribute_map['teststatus']
       assert_equal 2, mutations[1].attribute_map['teststatus']

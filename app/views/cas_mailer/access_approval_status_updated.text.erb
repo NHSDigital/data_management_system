@@ -4,7 +4,7 @@ CAS application <%= @project.id %> - Access approval status has been
 updated to '<%= @project.project_states.last.state_id.titlecase %>'
 
 Title: <%= @project.name %>
-Type: <%= @project.project_type %>
+Type: <%= @project.project_type_name %>
 Raised by: <%= @project.owner_full_name %>
 Team: <%= @project.team.try(:name) %>
 Organisation: <%= @project.team.try(:organisation).try(:name) %>
