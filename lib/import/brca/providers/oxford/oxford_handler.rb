@@ -1,10 +1,3 @@
-require 'possibly'
-require 'import/genotype'
-require 'import/storage_manager/persister'
-require 'core/provider_handler'
-require 'core/extraction_utilities'
-require 'pry'
-
 module Import
   module Brca
     module Providers
