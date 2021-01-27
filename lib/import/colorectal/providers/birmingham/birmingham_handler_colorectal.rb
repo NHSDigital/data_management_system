@@ -1,14 +1,10 @@
-require 'possibly'
-require 'import/storage_manager/persister'
-require 'pry'
-require 'import/brca/core/provider_handler'
 require 'import/helpers/colorectal/providers/rq3/rq3_constants'
 require 'import/helpers/colorectal/providers/rq3/rq3_helper'
 module Import
   module Colorectal
     module Providers
       module Birmingham
-        # Process Cambridge-specific record details into generalized internal genotype format
+        # Process Birmingham-specific record details into generalized internal genotype format
         class BirminghamHandlerColorectal < Import::Brca::Core::ProviderHandler
           include Import::Helpers::Colorectal::Providers::Rq3::Rq3Constants
           include Import::Helpers::Colorectal::Providers::Rq3::Rq3Helper
@@ -42,66 +38,53 @@ module Import
           end
 
           def process_variants_from_report(genocolorectal, record)
-            genotypes = []
+            genotypes  = []
             posnegtest = record.raw_fields['overall2']
             testresult = record.raw_fields['teststatus']
             testreport = record.raw_fields['report']
-            if COLORECTAL_GENES_MAP[record.raw_fields['indication']]
-              genelist = COLORECTAL_GENES_MAP[record.raw_fields['indication']]
-              if posnegtest.upcase == 'P'
-                @logger.debug 'ABNORMAL TEST'
-                if testresult.scan(/MYH/).size.positive?
-                  process_mutyh_specific_variants(testresult, genelist, genotypes, genocolorectal, record)
-                elsif testresult.scan(COLORECTAL_GENES_REGEX).empty?
-                  if testreport.scan(CDNA_REGEX).size.positive?
-                    process_testreport_cdna_variants(testreport, genelist, genotypes, genocolorectal, record)
-                  elsif testreport.scan(CHR_VARIANTS_REGEX).size.positive?
-                    testcolumn = testreport
-                    process_chromosomal_variant(testcolumn, genelist, genotypes, record, genocolorectal)
-                  else
-                    process_malformed_variants(testresult, testreport, genelist, genotypes, genocolorectal, record)
-                  end
+            genelist   = COLORECTAL_GENES_MAP[record.raw_fields['indication']]
+            return genotypes unless genelist
+
+            if posnegtest.upcase == 'P'
+              @logger.debug 'ABNORMAL TEST'
+              if testresult.scan(/MYH/).size.positive?
+                process_mutyh_specific_variants(testresult, genelist, genotypes,
+                                                genocolorectal, record)
+              elsif testresult.scan(COLORECTAL_GENES_REGEX).empty?
+                if testreport.scan(CDNA_REGEX).size.positive?
+                  process_testreport_cdna_variants(testreport, genelist, genotypes,
+                                                   genocolorectal, record)
+                elsif testreport.scan(CHR_VARIANTS_REGEX).size.positive?
+                  process_chromosomal_variant(testreport, genelist, genotypes,
+                                              record, genocolorectal)
                 else
-                  if testresult.scan(CDNA_REGEX).size.positive?
-                    process_testresult_cdna_variants(testresult, testreport, genelist, genotypes, record, genocolorectal)
-                  elsif testresult.scan(CHR_VARIANTS_REGEX).size.positive?
-                    if full_screen?(record)
-                      if sometimes_tested?(record)
-                        genelist = testreport.scan(COLORECTAL_GENES_REGEX).flatten.uniq
-                        negativegenes = genelist - testresult.scan(COLORECTAL_GENES_REGEX).flatten.uniq
-                        process_negative_genes(negativegenes, genotypes, genocolorectal)
-                      else
-                        negativegenes = genelist - testresult.scan(COLORECTAL_GENES_REGEX).flatten.uniq
-                        process_negative_genes(negativegenes, genotypes, genocolorectal)
-                      end
-                    end
-                    testcolumn = testresult
-                    process_chromosomal_variant(testcolumn, genelist, genotypes, record, genocolorectal)
-                  elsif testresult.match(/No known pathogenic/i)
-                    negativegenes = genelist
-                    process_negative_genes(negativegenes, genotypes, genocolorectal)
-                  else
-                    if full_screen?(record)
-                      if sometimes_tested?(record)
-                        genelist = testreport.scan(COLORECTAL_GENES_REGEX).flatten.uniq
-                        negativegenes = genelist - testresult.scan(COLORECTAL_GENES_REGEX).flatten.uniq
-                        process_negative_genes(negativegenes, genotypes, genocolorectal)
-                      else
-                        negativegenes = genelist - testresult.scan(COLORECTAL_GENES_REGEX).flatten.uniq
-                        process_negative_genes(negativegenes, genotypes, genocolorectal)
-                      end
-                    end
-                    genocolorectal.add_gene_colorectal(testresult.scan(COLORECTAL_GENES_REGEX).join)
-                    genocolorectal.add_gene_location('')
-                    genocolorectal.add_status(2)
-                    genotypes.append(genocolorectal)
-                  end
+                  process_malformed_variants(testresult, testreport, genelist, genotypes,
+                                             genocolorectal, record)
                 end
-              elsif posnegtest.upcase == 'N'
-                process_negative_records(genelist, genotypes, testresult, testreport, record, genocolorectal)
-              else @logger.debug "UNRECOGNISED TAG FOR #{record.raw_fields[indication]}"
+              elsif testresult.scan(CDNA_REGEX).size.positive?
+                process_testresult_cdna_variants(testresult, testreport, genelist,
+                                                 genotypes, record, genocolorectal)
+              elsif testresult.scan(CHR_VARIANTS_REGEX).size.positive?
+                process_chr_variants(record, testreport, genotypes, genocolorectal)
+              elsif testresult.match(/No known pathogenic/i)
+                negativegenes = genelist
+                process_negative_genes(negativegenes, genotypes, genocolorectal)
+              else
+                if full_screen?(record)
+                  process_full_screen(record, testreport, genotypes, genocolorectal)
+                end
+                genocolorectal.add_gene_colorectal(testresult.scan(COLORECTAL_GENES_REGEX).join)
+                genocolorectal.add_gene_location('')
+                genocolorectal.add_status(2)
+                genotypes.append(genocolorectal)
               end
+            elsif posnegtest.upcase == 'N'
+              process_negative_records(genelist, genotypes, testresult,
+                                       testreport, record, genocolorectal)
+            else
+              @logger.debug "UNRECOGNISED TAG FOR #{record.raw_fields[indication]}"
             end
+
             genotypes
           end
 

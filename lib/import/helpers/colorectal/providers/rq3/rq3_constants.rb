@@ -27,8 +27,9 @@ module Import
                                      'COCA' => %w[MLH1 MSH2],
                                      'POLY' => %w[APC MUTYH],
                                      'NGS_COLON' => %w[MLH1 MSH2 MSH6 APC MUTYH],
-                                     'COLON' => %w[MLH1 MSH2 MSH6 PMS2 APC MUTYH PTEN SMAD4 BMPR1A STK11],
-                                     'HNPCC' => %w[MLH1 MSH2 MSH6 PMS2 EPCAM] } .freeze
+                                     'COLON' => %w[MLH1 MSH2 MSH6 PMS2 APC MUTYH PTEN
+                                                   SMAD4 BMPR1A STK11],
+                                     'HNPCC' => %w[MLH1 MSH2 MSH6 PMS2 EPCAM] }.freeze
 
             COLORECTAL_GENES_REGEX = /(?<colorectal>APC|
                                                   BMPR1A|
@@ -43,14 +44,15 @@ module Import
                                                   PTEN|
                                                   SMAD4|
                                                   STK11|
-                                                  TACSTD1)/xi .freeze
+                                                  TACSTD1)/xi.freeze
 
-            CDNA_REGEX = /c\.(?<cdna>([0-9]+[^[:alnum:]][0-9][^[:alnum:]][0-9]+[^[:alnum:]][0-9][a-z]+)|
+            CDNA_REGEX = /c\.(?<cdna>([0-9]+[^[:alnum:]][0-9][^[:alnum:]][0-9]+
+                          [^[:alnum:]][0-9][a-z]+)|
                           ([0-9]+[a-z]+[^[:alnum:]][a-z])|
                           ([0-9]+[^[:alnum:]][0-9]+[a-z]+[^[:alnum:]][a-z])|
                           ([0-9]+[a-z]+)|
                           ([0-9]+[^[:alnum:]][0-9]+[a-z]+)|
-                          ([0-9]+[^[:alnum:]][0-9]+[^[:alnum:]][0-9]+[0-9]+[a-z]+))/ix .freeze
+                          ([0-9]+[^[:alnum:]][0-9]+[^[:alnum:]][0-9]+[0-9]+[a-z]+))/ix.freeze
 
             PROTEIN_REGEX = /p\.(\()?((?<impact>.([a-z]+[0-9]+[a-z]+([^[:alnum:]][0-9]+)?)|
                              ([a-z]+[0-9]+[^[:alnum:]])))/ix .freeze

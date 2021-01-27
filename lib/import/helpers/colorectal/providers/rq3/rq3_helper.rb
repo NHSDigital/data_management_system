@@ -138,6 +138,32 @@ module Import
               end
             end
 
+            def process_chr_variants(record, testreport, genotypes, genocolorectal)
+              if full_screen?(record)
+                if sometimes_tested?(record)
+                  genelist = testreport.scan(COLORECTAL_GENES_REGEX).flatten.uniq
+                  negativegenes = genelist - testresult.scan(COLORECTAL_GENES_REGEX).flatten.uniq
+                  process_negative_genes(negativegenes, genotypes, genocolorectal)
+                else
+                  negativegenes = genelist - testresult.scan(COLORECTAL_GENES_REGEX).flatten.uniq
+                  process_negative_genes(negativegenes, genotypes, genocolorectal)
+                end
+              end
+              testcolumn = testresult
+              process_chromosomal_variant(testcolumn, genelist, genotypes, record, genocolorectal)
+            end
+
+            def process_full_screen(record, testreport, genotypes, genocolorectal)
+              if sometimes_tested?(record)
+                genelist = testreport.scan(COLORECTAL_GENES_REGEX).flatten.uniq
+                negativegenes = genelist - testresult.scan(COLORECTAL_GENES_REGEX).flatten.uniq
+                process_negative_genes(negativegenes, genotypes, genocolorectal)
+              else
+                negativegenes = genelist - testresult.scan(COLORECTAL_GENES_REGEX).flatten.uniq
+                process_negative_genes(negativegenes, genotypes, genocolorectal)
+              end
+            end
+
             def process_chromosomal_variant(testcolumn, genelist, genotypes, record, genocolorectal)
               if testcolumn.scan(COLORECTAL_GENES_REGEX).uniq.size == 1
                 if testcolumn.scan(CHR_VARIANTS_REGEX).size == 1
@@ -166,7 +192,8 @@ module Import
               end
             end
 
-            def process_negative_records(genelist, genotypes, testresult, testreport, record, genocolorectal)
+            def process_negative_records(genelist, genotypes, testresult,
+                                         testreport, record, genocolorectal)
               @logger.debug 'NORMAL TEST FOUND'
               if full_screen?(record)
                 if sometimes_tested?(record)
@@ -187,7 +214,8 @@ module Import
               end
             end
 
-            def process_testresult_single_cdnavariant(testresult, testreport, record, genelist, genotypes, genocolorectal)
+            def process_testresult_single_cdnavariant(testresult, testreport, record,
+                                                      genelist, genotypes, genocolorectal)
               if testresult.scan(COLORECTAL_GENES_REGEX).uniq.size == 1
                 if full_screen?(record)
                   if sometimes_tested?(record)
@@ -234,7 +262,8 @@ module Import
                 record.raw_fields['indication'] == 'POLY'
             end
 
-            def process_testresult_multiple_cdnavariant(testresult, testreport, record, genelist, genotypes, genocolorectal)
+            def process_testresult_multiple_cdnavariant(testresult, testreport, record,
+                                                        genelist, genotypes, genocolorectal)
               if testresult.scan(COLORECTAL_GENES_REGEX).uniq.size == 2
                 if full_screen?(record)
                   if sometimes_tested?(record)
