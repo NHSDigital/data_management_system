@@ -77,7 +77,7 @@ class PDFApplicationFacade
   alias_attribute :test_drr_proj_sum,           :description
   alias_attribute :test_drr_why_data_req,       :why_data_required
   alias_attribute :test_drr_public_benefit,     :public_benefit
-  alias_attribute :rec_ref,                     :ethics_approval_nrec_ref
+  alias_attribute :rec_reference,               :ethics_approval_nrec_ref
   alias_attribute :rec_name,                    :ethics_approval_nrec_name
 
   class << self
