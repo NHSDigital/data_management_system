@@ -70,7 +70,7 @@ module Import
                 process_negative_genes(negativegenes, genotypes, genocolorectal)
               else
                 if full_screen?(record)
-                  process_full_screen(record, testreport, genotypes, genocolorectal)
+                  process_full_screen(record, testresult, testreport, genotypes, genocolorectal)
                 end
                 genocolorectal.add_gene_colorectal(testresult.scan(COLORECTAL_GENES_REGEX).join)
                 genocolorectal.add_gene_location('')

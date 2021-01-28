@@ -146,6 +146,7 @@ module Import
                   negativegenes = genelist - unique_colorectal_genes_from(testresult)
                   process_negative_genes(negativegenes, genotypes, genocolorectal)
                 else
+                  genelist = COLORECTAL_GENES_MAP[record.raw_fields['indication']]
                   negativegenes = genelist - unique_colorectal_genes_from(testresult)
                   process_negative_genes(negativegenes, genotypes, genocolorectal)
                 end
@@ -154,12 +155,13 @@ module Import
               process_chromosomal_variant(testcolumn, genelist, genotypes, record, genocolorectal)
             end
 
-            def process_full_screen(record, testreport, genotypes, genocolorectal)
+            def process_full_screen(record, testresult, testreport, genotypes, genocolorectal)
               if sometimes_tested?(record)
                 genelist = unique_colorectal_genes_from(testreport)
                 negativegenes = genelist - unique_colorectal_genes_from(testresult)
                 process_negative_genes(negativegenes, genotypes, genocolorectal)
               else
+                genelist = COLORECTAL_GENES_MAP[record.raw_fields['indication']]
                 negativegenes = genelist - unique_colorectal_genes_from(testresult)
                 process_negative_genes(negativegenes, genotypes, genocolorectal)
               end
