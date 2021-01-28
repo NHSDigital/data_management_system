@@ -17,15 +17,12 @@ class NodeCategoriesController < NodesController
 
   def update
     if perform_authorized_node_category_updates!(node_category_matrix)
-      respond_to do |format|
-        format.html { redirect_to @node.dataset_version, notice: message }
-        format.js
-        flash[:notice] = 'Node categories updated.'
-      end
+      flash[:notice] = 'Node categories updated.'
     else
-      flash.now[:alert] = 'Cannot remove all node_categories!'
-      redirect_to @node.dataset_version
+      flash[:alert] = 'Cannot remove all node_categories!'
     end
+
+    redirect_to @node.dataset_version
   end
 
   def authorize_user_for_editing
