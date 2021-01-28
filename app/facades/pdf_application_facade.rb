@@ -96,6 +96,7 @@ class PDFApplicationFacade
         data_already_held_for_project
         data_to_contact_others
         onwardly_share
+        programme_support
       ]
 
       acroform_boolean_attributes.each do |name|
@@ -205,7 +206,7 @@ class PDFApplicationFacade
   # selects     -> `Y` or `N`
   def cast_acroform_boolean(value)
     return true  if value.to_s.in? %w[Yes Y]
-    return false if value.to_s.in? %w[Off N]
+    return false if value.to_s.in? %w[Off N No]
 
     value
   end
