@@ -31,12 +31,6 @@ class PDFApplicationFacade
   # delegated/magic methods...
   # TODO: Who will be responsible for maintaining accurate (external) organisation data?
   attribute :organisation_name
-  attribute :organisation_department
-  attribute :organisation_add1
-  attribute :organisation_add2
-  attribute :organisation_add_city
-  attribute :organisation_postcode
-  attribute :organisation_country
 
   attribute :sponsor_same_as_applicant, :boolean, default: false
   attribute :funder_same_as_applicant,  :boolean, default: false
@@ -50,6 +44,12 @@ class PDFApplicationFacade
   attribute :security_assurance_applicant
   attribute :security_assurance_outsourced
 
+  alias_attribute :org_department,              :organisation_department
+  alias_attribute :org_add1,                    :organisation_add1
+  alias_attribute :org_add2,                    :organisation_add2
+  alias_attribute :org_add_city,                :organisation_city
+  alias_attribute :org_postcode,                :organisation_postcode
+  alias_attribute :org_country,                 :organisation_country
   alias_attribute :project_title,               :name
   alias_attribute :project_purpose,             :description
   alias_attribute :sponsor_add_city,            :sponsor_city
@@ -271,12 +271,12 @@ class PDFApplicationFacade
     return unless send("#{target}_same_as_applicant")
 
     project.assign_attributes(
-      "#{target}_name":       organisation.name,
-      "#{target}_add1":       organisation.add1,
-      "#{target}_add2":       organisation.add2,
-      "#{target}_city":       organisation.city,
-      "#{target}_postcode":   organisation.postcode,
-      "#{target}_country_id": organisation.country_id
+      "#{target}_name":       organisation_name,
+      "#{target}_add1":       organisation_add1,
+      "#{target}_add2":       organisation_add2,
+      "#{target}_city":       organisation_city,
+      "#{target}_postcode":   organisation_postcode,
+      "#{target}_country_id": Lookups::Country.find_by(value: organisation_country.upcase)&.id
     )
   end
 end

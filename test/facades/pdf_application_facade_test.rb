@@ -190,50 +190,66 @@ class PDFApplicationFacadeTest < ActiveSupport::TestCase
   end
 
   test 'should complete sponsor organisation fields when same as applicant organisation' do
+    @project.update(name: 'blah', owner: users(:standard_user), organisation_add1: '134',
+                    organisation_add2: 'Test Lane', organisation_city: 'Testville',
+                    organisation_postcode: 'T3ST 1NG', organisation_country: 'UNITED KINGDOM')
     @project.sponsor_same_as_applicant = true
+    @project.organisation_name = 'Test Org Name'
     @project.save
 
-    assert_equal @project.sponsor_name,       @project.organisation.name
-    assert_equal @project.sponsor_add1,       @project.organisation.add1
-    assert_equal @project.sponsor_add2,       @project.organisation.add2
-    assert_equal @project.sponsor_city,       @project.organisation.city
-    assert_equal @project.sponsor_postcode,   @project.organisation.postcode
-    assert_equal @project.sponsor_country_id, @project.organisation.country_id
+    assert_equal @project.sponsor_name,       'Test Org Name'
+    assert_equal @project.sponsor_add1,       '134'
+    assert_equal @project.sponsor_add2,       'Test Lane'
+    assert_equal @project.sponsor_city,       'Testville'
+    assert_equal @project.sponsor_postcode,   'T3ST 1NG'
+    assert_equal @project.sponsor_country_id, 'XKU'
   end
 
   test 'should not complete sponsor organisation fields when not same as applicant organisation' do
+    @project.update(name: 'blah', owner: users(:standard_user), organisation_add1: '134',
+                    organisation_add2: 'Test Lane', organisation_city: 'Testville',
+                    organisation_postcode: 'T3ST 1NG', organisation_country: 'UNITED KINGDOM')
     @project.sponsor_same_as_applicant = false
+    @project.organisation_name = 'Test Org Name'
     @project.save
 
-    refute_equal @project.sponsor_name,       @project.organisation.name
-    refute_equal @project.sponsor_add1,       @project.organisation.add1
-    refute_equal @project.sponsor_add2,       @project.organisation.add2
-    refute_equal @project.sponsor_city,       @project.organisation.city
-    refute_equal @project.sponsor_postcode,   @project.organisation.postcode
-    refute_equal @project.sponsor_country_id, @project.organisation.country_id
+    refute_equal @project.sponsor_name,       'Test Org Name'
+    refute_equal @project.sponsor_add1,       '134'
+    refute_equal @project.sponsor_add2,       'Test Lane'
+    refute_equal @project.sponsor_city,       'Testville'
+    refute_equal @project.sponsor_postcode,   'T3ST 1NG'
+    refute_equal @project.sponsor_country_id, 'XKU'
   end
 
   test 'should complete funder organisation fields when same as applicant organisation' do
+    @project.update(name: 'blah', owner: users(:standard_user), organisation_add1: '134',
+                    organisation_add2: 'Test Lane', organisation_city: 'Testville',
+                    organisation_postcode: 'T3ST 1NG', organisation_country: 'UNITED KINGDOM')
     @project.funder_same_as_applicant = true
+    @project.organisation_name = 'Test Org Name'
     @project.save
 
-    assert_equal @project.funder_name,       @project.organisation.name
-    assert_equal @project.funder_add1,       @project.organisation.add1
-    assert_equal @project.funder_add2,       @project.organisation.add2
-    assert_equal @project.funder_city,       @project.organisation.city
-    assert_equal @project.funder_postcode,   @project.organisation.postcode
-    assert_equal @project.funder_country_id, @project.organisation.country_id
+    assert_equal @project.funder_name,       'Test Org Name'
+    assert_equal @project.funder_add1,       '134'
+    assert_equal @project.funder_add2,       'Test Lane'
+    assert_equal @project.funder_city,       'Testville'
+    assert_equal @project.funder_postcode,   'T3ST 1NG'
+    assert_equal @project.funder_country_id, 'XKU'
   end
 
   test 'should not complete funder organisation fields when not same as applicant organisation' do
+    @project.update(name: 'blah', owner: users(:standard_user), organisation_add1: '134',
+                    organisation_add2: 'Test Lane', organisation_city: 'Testville',
+                    organisation_postcode: 'T3ST 1NG', organisation_country: 'UNITED KINGDOM')
     @project.funder_same_as_applicant = false
+    @project.organisation_name = 'Test Org Name'
     @project.save
 
-    refute_equal @project.funder_name,       @project.organisation.name
-    refute_equal @project.funder_add1,       @project.organisation.add1
-    refute_equal @project.funder_add2,       @project.organisation.add2
-    refute_equal @project.funder_city,       @project.organisation.city
-    refute_equal @project.funder_postcode,   @project.organisation.postcode
-    refute_equal @project.funder_country_id, @project.organisation.country_id
+    refute_equal @project.funder_name,       'Test Org Name'
+    refute_equal @project.funder_add1,       '134'
+    refute_equal @project.funder_add2,       'Test Lane'
+    refute_equal @project.funder_city,       'Testville'
+    refute_equal @project.funder_postcode,   'T3ST 1NG'
+    refute_equal @project.funder_country_id, 'XKU'
   end
 end
