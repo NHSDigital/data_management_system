@@ -68,8 +68,8 @@ class PDFApplicationFacade
   alias_attribute :data_already_held,           :data_already_held_for_project
   alias_attribute :patient_contact,             :data_to_contact_others
   alias_attribute :additional_information,      :additional_info
-  alias_attribute :dpa_reg_end_date,            :dpa_registration_end_date
-  alias_attribute :dpa_reg_end_date_outsourced, :dpa_registration_end_date_outsourced
+  alias_attribute :dpareg_end_date,             :dpa_registration_end_date
+  alias_attribute :dpareg_end_date_outsourced,  :dpa_registration_end_date_outsourced
   alias_attribute :program_support,             :programme_support
   alias_attribute :program_support_detail,      :programme_support_detail
   alias_attribute :program_approval_date,       :programme_approval_date
