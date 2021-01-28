@@ -170,7 +170,7 @@ class PDFApplicationFacade
   def level_of_identifiability=(value)
     classification = fetch_classification(value)
     project.classifications.replace(Array.wrap(classification))
-    super(value)
+    project.level_of_identifiability = fetch_level_of_identifiability(value)
   end
 
   def s251_exemption=(value)
@@ -229,6 +229,17 @@ class PDFApplicationFacade
     }
 
     Lookups::CommonLawExemption.find_by(value: map[value.to_s])
+  end
+
+  #TODO: This is not currently an _id column on project
+  def fetch_level_of_identifiability(value)
+    map = {
+      'PersonallyIdentifiable' => 'Personally Identifiable',
+      'DePersonalised' => 'De-personalised',
+      'Anonymised' => 'Anonymous'
+    }
+
+    value = map[value.to_s]
   end
 
   def fetch_security_assurance(value)
