@@ -178,7 +178,7 @@ module Import
                 process_colorectal_genes(colorectal_genes, genocolorectal_dup, gene, genetic_info,
                                          genotypes)
               else
-                process_non_colorectal_genes(genocolorectal_dup, gene, genetic_info, genotypes)
+                process_non_colorectal_genes(genocolorectal_dup, gene, genetic_info, genotypes, genocolorectal)
               end
             end
 
@@ -218,12 +218,58 @@ module Import
               end
             end
 
-            def process_non_colorectal_genes(genocolorectal_dup, gene, genetic_info, genotypes)
+            def process_non_colorectal_genes(genocolorectal_dup, gene, genetic_info, genotypes, genocolorectal)
               @logger.debug("IDENTIFIED #{gene}, #{cdna_from(genetic_info)} from #{genetic_info}")
-              genocolorectal_dup.add_gene_location(cdna_from(genetic_info))
-              if PROT_REGEX.match(genetic_info.join(','))
-                @logger.debug("IDENTIFIED #{protien_from(genetic_info)} from #{genetic_info}")
-                genocolorectal_dup.add_protein_impact(protien_from(genetic_info))
+              mutations = genetic_info.join(',').scan(CDNA_REGEX).flatten.compact.map {|s| s.gsub(/\s+/, "")}.uniq
+              if mutations.size > 1
+                if mutations.size == 2
+                  mutation_duplicate1 = mutations[0]
+                  mutation_duplicate2 = mutations[1]
+                  longest_mutation = mutations.max_by(&:length)
+                  if mutation_duplicate1.include? mutation_duplicate2 or mutation_duplicate2.include? mutation_duplicate1
+                    # TODO: IMPLEMENT THIS
+                    # binding.pry
+                    genetic_info.each.with_index do |info,index|
+                      if info.match(longest_mutation)
+                        gnagna = genocolorectal.dup_colo
+                        gnagna.add_gene_colorectal(gene)
+                        gnagna.add_gene_location(CDNA_REGEX.match(genetic_info[index])[:cdna])
+                        if PROT_REGEX.match(genetic_info[index])
+                          gnagna.add_protein_impact(PROT_REGEX.match(genetic_info[index])[:impact])
+                        end
+                        gnagna.add_status(2)
+                        genotypes.append(gnagna)
+                      end
+                    end
+                  # TODO: IMPLEMENT THIS  
+                  elsif mutations.size > 1 && genetic_info.join(',').scan(PROT_REGEX).blank?
+                    mutations.each do |mutation|
+                      gnagna = genocolorectal.dup_colo
+                      gnagna.add_gene_colorectal(gene)
+                      gnagna.add_gene_location(mutation)
+                      gnagna.add_status(2)
+                      genotypes.append(gnagna)
+                    end
+                  # TODO: IMPLEMENT THIS  
+                  elsif mutations.size > 1 && genetic_info.join(',').scan(PROT_REGEX).size.positive?
+                    variants = mutations.zip(genetic_info.join(',').scan(PROT_REGEX).flatten)
+                    variants.each do |cdna,protein|
+                      gnagna = genocolorectal.dup_colo
+                      gnagna.add_gene_colorectal(gene)
+                      gnagna.add_gene_location(cdna)
+                      gnagna.add_protein_impact(protein)
+                      gnagna.add_status(2)
+                      genotypes.append(gnagna)
+                    end
+                  end
+                  genotypes
+                end
+              elsif mutations.size == 1
+                genocolorectal_dup.add_gene_location(cdna_from(genetic_info))
+                if PROT_REGEX.match(genetic_info.join(','))
+                  @logger.debug("IDENTIFIED #{protien_from(genetic_info)} from #{genetic_info}")
+                  genocolorectal_dup.add_protein_impact(protien_from(genetic_info))
+                end
               end
               add_gene_and_status_to(genocolorectal_dup, gene, 2, genotypes)
               @logger.debug("IDENTIFIED #{gene}, POSITIVE TEST from #{genetic_info}")
