@@ -27,7 +27,9 @@ class BirminghamHandlerColorectalTest < ActiveSupport::TestCase
     @logger.expects(:debug).with('Found EPCAM for list ["MSH2", "EPCAM"]')
     @logger.expects(:debug).with('SUCCESSFUL gene parse for EPCAM')
     @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH6')
-    assert_equal 3, @handler.process_variants_from_report(@genotype, @record).size
+
+    processor = variant_processor_for(@record)
+    assert_equal 3, processor.process_variants_from_report.size
   end
 
   test 'process_mutation_from_fullscreen' do
@@ -37,7 +39,9 @@ class BirminghamHandlerColorectalTest < ActiveSupport::TestCase
     @logger.expects(:debug).with('Found EPCAM for list ["MSH2", "EPCAM"]')
     @logger.expects(:debug).with('SUCCESSFUL gene parse for EPCAM')
     @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH6')
-    assert_equal 'p.Lys145Asn', @handler.process_variants_from_report(@genotype, @record)[2].attribute_map['proteinimpact']
+
+    processor = variant_processor_for(@record)
+    assert_equal 'p.Lys145Asn', processor.process_variants_from_report[2].attribute_map['proteinimpact']
   end
 
   test 'negative_tests_from_fullscreen' do
@@ -50,7 +54,9 @@ class BirminghamHandlerColorectalTest < ActiveSupport::TestCase
     @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH6')
     @logger.expects(:debug).with('Found EPCAM for list ["MSH2", "MSH6", "EPCAM"]')
     @logger.expects(:debug).with('SUCCESSFUL gene parse for EPCAM')
-    assert_equal 3, @handler.process_variants_from_report(@genotype, negative_record).size
+
+    processor = variant_processor_for(negative_record)
+    assert_equal 3, processor.process_variants_from_report.size
   end
 
   test 'process_tests_from_empty_teststatus' do
@@ -60,7 +66,9 @@ class BirminghamHandlerColorectalTest < ActiveSupport::TestCase
     empty_teststatus_record.raw_fields['indication'] = 'FAP'
     @logger.expects(:debug).with('ABNORMAL TEST')
     @logger.expects(:debug).with('SUCCESSFUL gene parse for APC')
-    assert_equal 358, @handler.process_variants_from_report(@genotype, empty_teststatus_record).first.attribute_map['gene']
+
+    processor = variant_processor_for(empty_teststatus_record)
+    assert_equal 358, processor.process_variants_from_report.first.attribute_map['gene']
   end
 
   test 'process_chromosomevariants_from_record' do
@@ -73,7 +81,9 @@ class BirminghamHandlerColorectalTest < ActiveSupport::TestCase
     @logger.expects(:debug).with('SUCCESSFUL gene parse for EPCAM')
     @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH2')
     @logger.expects(:debug).with('SUCCESSFUL gene parse for MLH1')
-    assert_equal 4, @handler.process_variants_from_report(@genotype, chromovariants_record).size
+
+    processor = variant_processor_for(chromovariants_record)
+    assert_equal 4, processor.process_variants_from_report.size
   end
 
   test 'process_mutyh_specific_single_cdna_variants' do
@@ -82,7 +92,9 @@ class BirminghamHandlerColorectalTest < ActiveSupport::TestCase
     mutyh_record.raw_fields['indication'] = 'MAP'
     @logger.expects(:debug).with('ABNORMAL TEST')
     @logger.expects(:debug).with('SUCCESSFUL gene parse for MUTYH')
-    assert_equal 1, @handler.process_variants_from_report(@genotype, mutyh_record).size
+
+    processor = variant_processor_for(mutyh_record)
+    assert_equal 1, processor.process_variants_from_report.size
   end
 
   test 'process_multiple_variants_single_gene' do
@@ -97,7 +109,10 @@ class BirminghamHandlerColorectalTest < ActiveSupport::TestCase
     @logger.expects(:debug).with('SUCCESSFUL gene parse for EPCAM')
     @logger.expects(:debug).with('SUCCESSFUL gene parse for PMS2')
     @logger.expects(:debug).with('SUCCESSFUL gene parse for PMS2')
-    assert_equal 5, @handler.process_variants_from_report(@genotype, multiple_cdna_record).size
+
+    processor = variant_processor_for(multiple_cdna_record)
+    assert_equal 5, processor.process_variants_from_report.size
+
     multiple_cdna_multiple_genes_record = build_raw_record('pseudo_id1' => 'bob')
     multiple_cdna_multiple_genes_record.raw_fields['teststatus'] = 'Heterozygous missense variant (c.1688G>T; p.Arg563Leu) identified in exon 11 of the PMS2 gene and a heterozygous intronic variant (c.251-20T>G) in intron 4 of the MSH2 gene.'
     @logger.expects(:debug).with('ABNORMAL TEST')
@@ -107,7 +122,9 @@ class BirminghamHandlerColorectalTest < ActiveSupport::TestCase
     @logger.expects(:debug).with('SUCCESSFUL gene parse for EPCAM')
     @logger.expects(:debug).with('SUCCESSFUL gene parse for PMS2')
     @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH2')
-    assert_equal 4, @handler.process_variants_from_report(@genotype, multiple_cdna_multiple_genes_record).size
+
+    processor = variant_processor_for(multiple_cdna_multiple_genes_record)
+    assert_equal 4, processor.process_variants_from_report.size
   end
 
   test 'process_chromosomic_variant_empty_teststatus' do
@@ -117,7 +134,9 @@ class BirminghamHandlerColorectalTest < ActiveSupport::TestCase
     empty_teststatus_chromovariant_record.raw_fields['indication'] = 'FAP'
     @logger.expects(:debug).with('ABNORMAL TEST')
     @logger.expects(:debug).with('SUCCESSFUL gene parse for APC')
-    assert_equal 1, @handler.process_variants_from_report(@genotype, empty_teststatus_chromovariant_record).size
+
+    processor = variant_processor_for(empty_teststatus_chromovariant_record)
+    assert_equal 1, processor.process_variants_from_report.size
   end
 
   private
@@ -131,6 +150,10 @@ class BirminghamHandlerColorectalTest < ActiveSupport::TestCase
                         'rawtext_clinical.to_json' => rawtext_clinical_json }
 
     Import::Brca::Core::RawRecord.new(default_options.merge!(options))
+  end
+
+  def variant_processor_for(record)
+    Import::Colorectal::Providers::Birmingham::VariantProcessor.new(@genotype, record, @logger)
   end
 
   def clinical_json
