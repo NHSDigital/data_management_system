@@ -21,7 +21,7 @@ module Import
                                                   POLE|
                                                   PTEN|
                                                   SMAD4|
-                                                  STK11)/xi . freeze
+                                                  STK11)/xi.freeze
 
             MOLTEST_MAP = {
               'HNPCC (hMSH6) MUTATION SCREENING REPORT'              => 'MSH6',
@@ -57,7 +57,7 @@ module Import
               'LYNCH SYNDROME (MSH6) DOSAGE ANALYSIS REPORT'               => 'MSH6'
             }.freeze
 
-            CDNA_REGEX = /c\.(?<cdna>[0-9]+[a-z]+\>[a-z]+)|
+            CDNA_REGEX = /c\.(?<cdna>[0-9]+[a-z]+>[a-z]+)|
                          c\.(?<cdna>[0-9]+.[0-9]+[a-z]+>[a-z]+)|
                          c\.(?<cdna>[0-9]+_[0-9]+[a-z]+)|
                          c\.(?<cdna>[0-9]+[a-z]+)|
@@ -65,12 +65,12 @@ module Import
                          c\.(?<cdna>[0-9]+_[0-9]+\+[0-9]+[a-z]+)|
                          c\.(?<cdna>[0-9]+-[0-9]+_[0-9]+[a-z]+)|
                          c\.(?<cdna>[0-9]+\+[0-9]+_[0-9]+\+[0-9]+[a-z]+)|
-                         c\.(?<cdna>\-[0-9]+[a-z]+\>[a-z]+)|
-                         c\.(?<cdna>[0-9]+\-[0-9]+_[0-9]+\-[0-9]+[a-z]+)/ix .freeze
+                         c\.(?<cdna>-[0-9]+[a-z]+>[a-z]+)|
+                         c\.(?<cdna>[0-9]+-[0-9]+_[0-9]+-[0-9]+[a-z]+)/ix.freeze
 
-            PROT_REGEX = /p\.(\()?(?<impact>[a-z]+[0-9]+[a-z]+)(\))?/i .freeze
-            EXON_REGEX = /(?<insdeldup>ins|del|dup)/i .freeze
-            EXON_LOCATION_REGEX = /ex(?<exon>[\d]+)(.[\d]+)?(\sto\s)?(ex(?<exon2>[\d]+))?/i .freeze
+            PROT_REGEX = /p\.(\()?(?<impact>[a-z]+[0-9]+[a-z]+)(\))?/i.freeze
+            EXON_REGEX = /(?<insdeldup>ins|del|dup)/i.freeze
+            EXON_LOCATION_REGEX = /ex(?<exon>\d+)(.\d+)?(\sto\s)?(ex(?<exon2>\d+))?/i.freeze
           end
         end
       end

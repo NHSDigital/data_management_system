@@ -1,6 +1,6 @@
 require 'test_helper'
-require 'import/genotype.rb'
-require 'import/colorectal/core/genotype_mmr.rb'
+require 'import/genotype'
+require 'import/colorectal/core/genotype_mmr'
 require 'import/brca/core/provider_handler'
 require 'import/storage_manager/persister'
 class ManchesterHandlerColorectalTest < ActiveSupport::TestCase
@@ -245,7 +245,6 @@ class ManchesterHandlerColorectalTest < ActiveSupport::TestCase
     end
   end
 
-
   test 'Dosage record positive result' do
     @importer_stdout, @importer_stderr = capture_io do
       genotypes_exon_molttype_groups = [
@@ -320,7 +319,6 @@ class ManchesterHandlerColorectalTest < ActiveSupport::TestCase
     end
   end
 
-
   test 'Overlapping variant single gene' do
     @importer_stdout, @importer_stderr = capture_io do
       genotypes_exon_molttype_groups = [
@@ -345,8 +343,7 @@ class ManchesterHandlerColorectalTest < ActiveSupport::TestCase
       assert_equal 2744, mutations[2].attribute_map['gene']
     end
   end
-  
-  
+
   private
 
   def build_raw_record(genotypes_exon_molttype_groups, options = {})

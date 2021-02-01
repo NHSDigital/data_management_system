@@ -46,13 +46,13 @@ module Import
                 dosage_genotype_col.append(raw_record['genotype'])
                 dosage_genotype2_col.append(raw_record['genotype2'])
               end
-              if !control_sample?(raw_record) && relevant_consultant?(raw_record)
-                non_dosage_genus_col.append(raw_record['genus'])
-                non_dosage_moltesttype_col.append(raw_record['moleculartestingtype'])
-                non_dosage_exon_col.append(raw_record['exon'])
-                non_dosage_genotype_col.append(raw_record['genotype'])
-                non_dosage_genotype2_col.append(raw_record['genotype2'])
-              end
+              next unless !control_sample?(raw_record) && relevant_consultant?(raw_record)
+
+              non_dosage_genus_col.append(raw_record['genus'])
+              non_dosage_moltesttype_col.append(raw_record['moleculartestingtype'])
+              non_dosage_exon_col.append(raw_record['exon'])
+              non_dosage_genotype_col.append(raw_record['genotype'])
+              non_dosage_genotype2_col.append(raw_record['genotype2'])
             end
             @non_dosage_record_map = { genus: non_dosage_genus_col,
                                        moleculartestingtype: non_dosage_moltesttype_col,
