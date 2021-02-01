@@ -22,6 +22,7 @@ module Import
                                                 MSH2|
                                                 MSH6|
                                                 MUTYH|
+                                                GREM1|
                                                 PMS2|
                                                 POLD1|
                                                 POLE|
