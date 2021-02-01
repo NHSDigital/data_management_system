@@ -294,6 +294,59 @@ class ManchesterHandlerColorectalTest < ActiveSupport::TestCase
     end
   end
 
+  test 'Multiple mutations single gene' do
+    @importer_stdout, @importer_stderr = capture_io do
+      genotypes_exon_molttype_groups = [
+        ['Normal', 'c.81C>T', 'MSH6 Ex10', 'HNPCC PREDICTIVE TESTING REPORT'],
+        ['c.628-55C>T poly het', 'Fail', 'MSH2 Ex4a', 'HNPCC PREDICTIVE TESTING REPORT'],
+        ['Normal', 'Normal', 'MSH6 Ex4c', 'HNPCC PREDICTIVE TESTING REPORT'],
+        ['Fail', 'Fail', 'MSH6 Ex2', 'HNPCC PREDICTIVE TESTING REPORT'],
+        ['c.2633T>A p.V878A', 'Normal', 'MLH1 Ex4d', 'HNPCC PREDICTIVE TESTING REPORT'],
+        ['c.666A>G', 'Normal', 'MLH1 Ex5', 'HNPCC PREDICTIVE TESTING REPORT']
+      ]
+
+      record = build_raw_record(genotypes_exon_molttype_groups, 'pseudo_id1' => 'bob')
+      genocolorectal = Import::Colorectal::Core::Genocolorectal.new(record)
+      genocolorectal.add_passthrough_fields(record.mapped_fields,
+                                            record.raw_fields,
+                                            Import::Helpers::Colorectal::Providers::R0a::R0aConstants::PASS_THROUGH_FIELDS_COLO)
+      @handler.process_fields(record)
+      mutations = @handler.assign_gene_mutation(genocolorectal, record)
+      assert_equal 4, mutations.size
+      assert_equal 2744, mutations[2].attribute_map['gene']
+      assert_equal 'c.2633T>A', mutations[2].attribute_map['codingdnasequencechange']
+      assert_equal 2744, mutations[3].attribute_map['gene']
+      assert_equal 'c.666A>G', mutations[3].attribute_map['codingdnasequencechange']
+    end
+  end
+
+
+  test 'Overlapping variant single gene' do
+    @importer_stdout, @importer_stderr = capture_io do
+      genotypes_exon_molttype_groups = [
+        ['Normal', 'c.81C>T', 'MSH6 Ex10', 'HNPCC PREDICTIVE TESTING REPORT'],
+        ['c.628-55C>T poly het', 'Fail', 'MSH2 Ex4a', 'HNPCC PREDICTIVE TESTING REPORT'],
+        ['Normal', 'Normal', 'MSH6 Ex4c', 'HNPCC PREDICTIVE TESTING REPORT'],
+        ['Fail', 'Fail', 'MSH6 Ex2', 'HNPCC PREDICTIVE TESTING REPORT'],
+        ['c.2628Adel25g', 'Normal', 'MLH1 Ex4d', 'HNPCC PREDICTIVE TESTING REPORT'],
+        ['c.2628Adel', 'Normal', 'MLH1 Ex5', 'HNPCC PREDICTIVE TESTING REPORT']
+      ]
+
+      record = build_raw_record(genotypes_exon_molttype_groups, 'pseudo_id1' => 'bob')
+      genocolorectal = Import::Colorectal::Core::Genocolorectal.new(record)
+      genocolorectal.add_passthrough_fields(record.mapped_fields,
+                                            record.raw_fields,
+                                            Import::Helpers::Colorectal::Providers::R0a::R0aConstants::PASS_THROUGH_FIELDS_COLO)
+      @handler.process_fields(record)
+      mutations = @handler.assign_gene_mutation(genocolorectal, record)
+      assert_equal 3, mutations.size
+      assert_equal 2808, mutations[0].attribute_map['gene']
+      assert_equal 2804, mutations[1].attribute_map['gene']
+      assert_equal 2744, mutations[2].attribute_map['gene']
+    end
+  end
+  
+  
   private
 
   def build_raw_record(genotypes_exon_molttype_groups, options = {})
