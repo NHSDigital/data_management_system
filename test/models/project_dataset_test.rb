@@ -59,7 +59,7 @@ class ProjectDatasetTest < ActiveSupport::TestCase
     assert_equal 0, ProjectDataset.dataset_approval(users(:cas_dataset_approver), nil).count
   end
 
-  test 'should notify cas manager and access approvers on approved update' do
+  test 'should notify casmanager and access approvers on dataset approved update to not nil' do
     project = create_project(project_type: project_types(:cas), project_purpose: 'test')
     dataset = Dataset.find_by(name: 'Extra CAS Dataset One')
     project_dataset = ProjectDataset.new(dataset: dataset, terms_accepted: nil, approved: nil)
@@ -97,7 +97,7 @@ class ProjectDatasetTest < ActiveSupport::TestCase
     end
   end
 
-  test 'should notify user on approved update' do
+  test 'should notify user on dataset approved update to not nil' do
     project = create_project(project_type: project_types(:cas), project_purpose: 'test',
                              owner: users(:no_roles))
     dataset = Dataset.find_by(name: 'Extra CAS Dataset One')
@@ -133,6 +133,41 @@ class ProjectDatasetTest < ActiveSupport::TestCase
 
     assert_no_difference 'notifications.count' do
       project_dataset.update(approved: nil)
+    end
+  end
+
+  test 'should notify dataset approver on dataset approved update to nil' do
+    project_dataset = ProjectDataset.new(dataset: dataset(83), terms_accepted: true,
+                                         approved: true)
+    project = Project.new(project_type: ProjectType.find_by(name: 'CAS')).tap do |a|
+      a.owner = users(:no_roles)
+      a.project_datasets << project_dataset
+      a.save!
+    end
+    project.reload_current_state
+
+    notifications = Notification.where(title: 'CAS Application Requires Dataset Approval')
+
+    # should not send notification if set to nil at DRAFT
+    assert_no_difference 'notifications.count' do
+      project_dataset.update(approved: nil)
+    end
+
+    project_dataset.update(approved: true)
+    project.transition_to!(workflow_states(:submitted))
+
+    # should only send to the 1 dataset approver with grant for this dataset
+    assert_difference 'notifications.count', 1 do
+      project_dataset.update(approved: nil)
+    end
+
+    assert_equal notifications.last.body, "CAS application #{project.id} - Dataset " \
+                                          "approval is required.\n\n"
+
+    # should not send notification if set to true or false
+    assert_no_difference 'notifications.count' do
+      project_dataset.update(approved: true)
+      project_dataset.update(approved: false)
     end
   end
 end

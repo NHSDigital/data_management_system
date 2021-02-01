@@ -59,6 +59,11 @@ en:
         contract_completed: Mark Contract as Completed
         data_released: Flag as Data Released
         data_destroyed: Flag as Data Destroyed
+        access_approver_approved: Approve Access
+        access_approver_rejected: Reject Access
+        rejection_reviewed: Rejection Confirmed
+        account_closed: Close Account
+        access_granted: Renew Account
   workflow/state:
     draft: New
     review: Delegate Approval
@@ -73,6 +78,10 @@ en:
     contract_completed: Contract Completed
     data_released: Data Released
     data_destroyed: Data Destroyed
+    access_approver_approved: Access Approved
+    access_approver_rejected: Access Rejected
+    access_granted: Access Granted
+    account_closed: Account Closed
   projects:
     application:
       form:

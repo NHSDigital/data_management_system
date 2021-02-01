@@ -2,7 +2,7 @@
 <hr />
 
 <p>
-  <%= @project.project_type.name %> project <%= @project.id %> - Dataset approval is required.
+  <%= @project.project_type_name %> project <%= @project.id %> - Dataset approval is required.
 </p>
 
 <%= render 'projects_mailer/project_details', project: @project %>

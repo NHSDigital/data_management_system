@@ -398,11 +398,6 @@ draft_submitted:
   from_state_id: DRAFT
   next_state_id: SUBMITTED
 
-draft_deleted:
-  project_type: cas
-  from_state_id: DRAFT
-  next_state_id: DELETED
-
 submitted_draft:
   project_type: cas
   from_state_id: SUBMITTED

@@ -11,6 +11,8 @@ class ProjectsNotifier
     end
 
     def project_awaiting_assignment(project:, assigned_by: nil)
+      return unless project.odr? || project.project?
+
       create_notification(
         odr_users: true,
         title: 'Project Awaiting Assignment',

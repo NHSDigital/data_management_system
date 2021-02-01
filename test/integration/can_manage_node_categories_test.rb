@@ -49,7 +49,16 @@ class CanManageNodeCategoriesTest < ActionDispatch::IntegrationTest
       check "node_categories_#{dataset_version.categories.find_by(name: 'Tabby Cat').id}"
       check "node_categories_#{dataset_version.categories.find_by(name: 'Hell Cat').id}"
       click_on 'Update Node Categories'
-      assert_no_text 'Tabby Cat'
+      assert_text 'Node categories updated.'
+    end
+
+    assert_no_difference('NodeCategory.count') do
+      click_on 'View/Manage Node Categories'
+      assert_text 'Tabby Cat'
+      uncheck "node_categories_#{dataset_version.categories.find_by(name: 'Tabby Cat').id}"
+      uncheck "node_categories_#{dataset_version.categories.find_by(name: 'Hell Cat').id}"
+      click_on 'Update Node Categories'
+      assert_text 'Cannot remove all node_categories'
     end
   end
 end

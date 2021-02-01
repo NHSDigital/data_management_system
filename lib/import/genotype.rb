@@ -276,6 +276,7 @@ module Import
         @attribute_map['sequencevarianttype'] = 1
       elsif location.include? 'ins'
         @attribute_map['sequencevarianttype'] = 2
+      else @attribute_map['sequencevarianttype'] = 10
       end
     end
 

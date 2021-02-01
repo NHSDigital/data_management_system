@@ -278,7 +278,7 @@ class ProjectCoreTest < ActionDispatch::IntegrationTest
       click_button :submit
     end
 
-    assert_equal root_path, current_path
+    assert_equal dashboard_projects_path, current_path
     assert has_no_content? 'My Projects'
     assert has_no_content? 'Assigned Projects'
     assert has_content? 'Unassigned Projects'
@@ -311,7 +311,7 @@ class ProjectCoreTest < ActionDispatch::IntegrationTest
       click_button :submit
     end
 
-    assert_equal root_path, current_path
+    assert_equal dashboard_projects_path, current_path
     assert has_no_content? 'My Projects'
     assert has_content? 'Assigned Projects'
     assert has_no_content? 'Unassigned Projects'
@@ -330,7 +330,6 @@ class ProjectCoreTest < ActionDispatch::IntegrationTest
       click_button :submit
     end
 
-    assert_equal root_path, current_path
     assert has_no_content? 'new_project'
     assert has_content? 'MyString'
   end

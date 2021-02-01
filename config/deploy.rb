@@ -33,6 +33,7 @@ set :application, 'mbis_front'
 # Paths that are symlinked for each release to the "shared" directory:
 set :shared_paths, %w(
   config/database.yml
+  config/excluded_mbisids.yml.enc
   config/keys
   config/puma.rb
   config/secrets.yml
@@ -54,6 +55,10 @@ set :build_script, <<~SHELL
     rm -f "$fname"
     svn export --force "#{secondary_repo}/$fname" "$fname"
   done
+  for fname in config/credentials.yml.enc; do
+    rm -f "$fname"
+    svn export --force "#{credentials_repo}/$fname" "$fname"
+  done
 SHELL
 
 set :asset_script, <<~SHELL
@@ -62,10 +67,6 @@ set :asset_script, <<~SHELL
   ruby -ryaml -e "puts YAML.dump('production' => { 'secret_key_base' => 'compile_me' })" > config/secrets.yml
   touch config/special_users.production.yml config/admin_users.yml config/odr_users.yml \
         config/user_yubikeys.yml
-  for fname in config/credentials.yml.enc; do
-    rm -f "$fname"
-    svn export --force "#{credentials_repo}/$fname" "$fname"
-  done
   RAILS_ENV=production bundle exec rake assets:precompile
   rm config/secrets.yml config/database.yml
 SHELL

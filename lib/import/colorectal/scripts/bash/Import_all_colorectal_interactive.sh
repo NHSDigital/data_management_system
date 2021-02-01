@@ -78,7 +78,7 @@ IFS=$'\n'
 for x in $(find  $DIRPATH/$FILEPATH -type f -name "*HNPCC*.pseudo" -path "*/$PROV/*")
 do
 IFS="$OIFS"
-$BRAKE import:colorectal fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
+bundle exec rake import:colorectal fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
 done
 }
 
@@ -122,5 +122,14 @@ $BRAKE import:colorectal fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.
 done
 }
 
+RQ3 () {
+PROV='RQ3'
+IFS=$'\n'
+for x in $(find  $DIRPATH/$FILEPATH -type f -name "*.pseudo" -path "*/$PROV/*")
+do
+IFS="$OIFS"
+$BRAKE import:colorectal fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
+done
+}
 
-RR8; RNZ; RTD; RX1; RCU; RGT; R0A; R1K; RPY; RP4; RTH
+RR8; RNZ; RTD; RX1; RCU; RGT; R0A; R1K; RPY; RP4; RTH; RQ3

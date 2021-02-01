@@ -58,8 +58,8 @@
       <%= form.text_area :public_benefit, rows: 5 %>
     <% end %>
 
-    <%= form.control_group(:project_end_uses, t('.data_end_use'), style: 'margin-bottom: 0px;') do %>
-      <% readonly_value = @project.end_use_names.any? ? safe_join(@project.end_use_names, raw('<br />')) : 'Unknown' %>
+    <%= form.control_group(:project_end_uses, t('.data_end_use'), style: 'margin-bottom: 0px;', id: 'project_end_uses') do %>
+      <% readonly_value = @project.end_use_names.any? ? safe_join(@project.end_use_names, raw('<br />')) : '' %>
       <%= form.collection_check_boxes(:end_use_ids, EndUse.all, :id, :name, readonly_value: readonly_value) do |b| %>
         <div class="checkbox">
           <%= b.label { b.check_box + b.text } %>
@@ -111,22 +111,22 @@
       <% form.text_area :data_linkage, rows: 5 %>  
     <% end %>
 
-    <%= form.control_group(:onwardly_share, t('.onwardly_share'), {}, class: 'col-md-2') do %>
-      <%= form.select :onwardly_share, { 'Yes' => true, 'No' => false }, include_blank: true, required: true %>
+    <%= form.control_group(:onwardly_share, t('.onwardly_share'), {}, class: 'col-md-2', id: 'onwardly_share') do %>
+      <%= form.select :onwardly_share, { 'Yes' => true, 'No' => false }, include_blank: true, required: true, readonly_value: boolean_text_conversion(@project.onwardly_share) %>
     <% end %>
     <%= form.control_group(:onwardly_share_detail, t('.onwardly_share_detail')) do %>
       <%= form.text_area :onwardly_share_detail, rows: 5 %>
     <% end %>
 
-    <%= form.control_group(:data_already_held_for_project, t('.data_already_held_for_project'), {}, class: 'col-md-2') do %>
-      <%= form.select :data_already_held_for_project, { 'Yes' => true, 'No' => false }, include_blank: true %>
+    <%= form.control_group(:data_already_held_for_project, t('.data_already_held_for_project'), {}, class: 'col-md-2', id: 'data_already_held_for_project') do %>
+      <%= form.select :data_already_held_for_project, { 'Yes' => true, 'No' => false }, include_blank: true, readonly_value: boolean_text_conversion(@project.data_already_held_for_project) %>
     <% end %>
     <%= form.control_group(:data_already_held_detail, t('.data_already_held_detail')) do %> 
       <% form.text_area :data_already_held_detail, rows: 5 %>
     <% end %>
 
-    <%= form.control_group(:data_to_contact_others, t('.data_to_contact_others'), {}, class: 'col-md-2') do %>
-      <%= form.select :data_to_contact_others, { 'Yes' => true, 'No' => false }, include_blank: true %>
+    <%= form.control_group(:data_to_contact_others, t('.data_to_contact_others'), {}, class: 'col-md-2', id: 'data_to_contact_others') do %>
+      <%= form.select :data_to_contact_others, { 'Yes' => true, 'No' => false }, include_blank: true, readonly_value: boolean_text_conversion(@project.data_to_contact_others) %>
     <% end %>
     <%= form.control_group(:data_to_contact_others_desc, t('.data_to_contact_others_desc')) do %> 
       <% form.text_area :data_to_contact_others_desc, rows: 5 %>
@@ -136,7 +136,7 @@
   <fieldset style="margin-bottom: 20px;">
     <legend>Programme Support</legend>
     <%= form.control_group(:programme_support, t('.programme_support'), {}, class: 'col-md-2') do %>
-      <%= form.select :programme_support, { 'Yes' => true, 'No' => false }, include_blank: true %>
+      <%= form.select :programme_support, { 'Yes' => true, 'No' => false }, include_blank: true, readonly_value: boolean_text_conversion(@project.programme_support) %>
     <% end %>
     <%= form.control_group(:programme_support_detail, t('.programme_support_detail')) do %>
       <%= form.text_area :programme_support_detail, rows: 5 %>
@@ -165,9 +165,9 @@
 
   <fieldset style="margin-bottom: 20px;">
     <legend>Legal Gateway (Data Protection)</legend>
-    <%= form.control_group(:project_lawful_bases, t('.project_lawful_bases')) do %>
-      <% article6readonly_value = form.object.lawful_bases.any? ? safe_join(form.object.lawful_bases.article6.pluck(:value), raw('<br />')) : 'Unknown' %>
-      <% article9readonly_value = form.object.lawful_bases.any? ? safe_join(form.object.lawful_bases.article9.pluck(:value), raw('<br />')) : 'Unknown' %>
+    <%= form.control_group(:project_lawful_bases, t('.project_lawful_bases'), id: 'project_lawful_bases') do %>
+      <% article6readonly_value = form.object.lawful_bases.any? ? safe_join(form.object.lawful_bases.article6.pluck(:value), raw('<br />')) : '' %>
+      <% article9readonly_value = form.object.lawful_bases.any? ? safe_join(form.object.lawful_bases.article9.pluck(:value), raw('<br />')) : '' %>
         <div class="article6">
           <strong><%= t('.article6')%></strong>
           <%= form.collection_check_boxes(:lawful_basis_ids, Lookups::LawfulBasis.article6, :id, :value, readonly_value: article6readonly_value) do |b| %>

@@ -7,7 +7,7 @@ module Pseudo
     setup do
       # Sample demographics, that will produce pseudo_id1 and pseudo_id2 values
       @nhsnumber = '9999999468'
-      @birthdate = '1925-01-27'
+      @birthdate = '1925-01-27' # More than 14 years from @birthdate2, i.e. :veryfuzzy match
       @postcode = 'PE133AB'
       @demographics = { 'nhsnumber' => @nhsnumber, 'birthdate' => @birthdate,
                         'postcode' => @postcode }
@@ -21,6 +21,7 @@ module Pseudo
       @postcode2 = 'OX4 2GX' # Spaces will be stripped in generating pseudo_id2
       @demographics2 = { 'nhsnumber' => @nhsnumber2, 'birthdate' => @birthdate2,
                          'postcode' => @postcode2 }
+      @birthdate3 = '1963-01-01' # Less than 14 years from @birthdate2, i.e. :fuzzy match
     end
 
     test 'create_from_demographics without rawtext' do
@@ -87,7 +88,8 @@ module Pseudo
                               e_batch: @e_batch)
       ppat.save!
       assert_equal(:new, ppat.match_demographics(@nhsnumber, '', @birthdate))
-      assert_equal(:fuzzy, ppat.match_demographics(@nhsnumber2, '', @birthdate))
+      assert_equal(:veryfuzzy, ppat.match_demographics(@nhsnumber2, '', @birthdate))
+      assert_equal(:fuzzy, ppat.match_demographics(@nhsnumber2, '', @birthdate3))
       assert_equal(:perfect, ppat.match_demographics(@nhsnumber2, '', @birthdate2))
       # We can unlock it with blank demographics
       assert(ppat.unlock_demographics('', '', '', :match))

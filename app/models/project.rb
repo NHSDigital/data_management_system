@@ -69,6 +69,7 @@ class Project < ApplicationRecord
   belongs_to :assigned_user, class_name: 'User', inverse_of: :assigned_projects, optional: true
 
   after_save :reset_project_data_items
+  after_create :notify_cas_manager_new_cas_project_saved
 
   # effectively belongs_to .. through: .. association
   # delegate :dataset,      to: :team_dataset, allow_nil: true
@@ -439,6 +440,16 @@ class Project < ApplicationRecord
     project_nodes.each do |project_node|
       project_node.destroy if datasets.exclude? project_node.node.dataset
     end
+  end
+
+  def notify_cas_manager_new_cas_project_saved
+    return unless cas?
+
+    User.cas_managers.each do |user|
+      CasNotifier.new_cas_project_saved(self, user.id)
+    end
+
+    CasMailer.with(project: self).send(:new_cas_project_saved).deliver_now
   end
 
   def senior_user_must_be_active
