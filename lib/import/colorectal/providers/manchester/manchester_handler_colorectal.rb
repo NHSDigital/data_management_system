@@ -39,7 +39,7 @@ module Import
               # if mlpa?(raw_record['exon']) && !control_sample?(raw_record) &&
               #    relevant_consultant?(raw_record)
               if raw_record['moleculartestingtype'].scan(/dosage/i).size.positive? &&
-                !control_sample?(raw_record) && relevant_consultant?(raw_record)
+                 !control_sample?(raw_record) && relevant_consultant?(raw_record)
                 dosage_genus_col.append(raw_record['genus'])
                 dosage_moltesttype_col.append(raw_record['moleculartestingtype'])
                 dosage_exon_col.append(raw_record['exon'])
@@ -71,13 +71,10 @@ module Import
 
             @lines_processed += 1 # TODO: factor this out to be automatic across handlers
             assign_and_populate_results_for(record)
-             @logger.debug('DONE TEST')
+            @logger.debug('DONE TEST')
           end
         end
       end
     end
   end
 end
-
-
-
