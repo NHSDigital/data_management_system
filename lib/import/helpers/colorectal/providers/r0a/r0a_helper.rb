@@ -306,12 +306,16 @@ module Import
                 end
               elsif mutations.size == 1
                 genocolorectal_dup.add_gene_location(cdna_from(genetic_info))
+                genocolorectal_dup.add_gene_colorectal(gene)
+                genocolorectal_dup.add_status(2)
+                genotypes.append(genocolorectal_dup)
                 if PROT_REGEX.match(genetic_info.join(','))
                   @logger.debug("IDENTIFIED #{protien_from(genetic_info)} from #{genetic_info}")
                   genocolorectal_dup.add_protein_impact(protien_from(genetic_info))
                 end
+                genotypes
               end
-              add_gene_and_status_to(genocolorectal_dup, gene, 2, genotypes)
+              # add_gene_and_status_to(genocolorectal_dup, gene, 2, genotypes)
               @logger.debug("IDENTIFIED #{gene}, POSITIVE TEST from #{genetic_info}")
             end
 
