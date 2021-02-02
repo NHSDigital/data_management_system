@@ -1,3 +1,5 @@
+# plan.io 22212
+# Populate ProgrammeSupports lookup table
 class PopulateProgrammeSupports < ActiveRecord::Migration[6.0]
   include MigrationHelper
 

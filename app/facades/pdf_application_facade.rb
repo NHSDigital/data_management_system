@@ -234,7 +234,7 @@ class PDFApplicationFacade
     Lookups::CommonLawExemption.find_by(value: map[value.to_s])
   end
 
-  #TODO: This is not currently an _id column on project
+  # TODO: This is not currently an _id column on project
   def fetch_level_of_identifiability(value)
     map = {
       'PersonallyIdentifiable' => 'Personally Identifiable',
@@ -242,7 +242,7 @@ class PDFApplicationFacade
       'Anonymised' => 'Anonymous'
     }
 
-    value = map[value.to_s]
+    map[value.to_s]
   end
 
   def fetch_security_assurance(value)

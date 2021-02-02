@@ -284,7 +284,8 @@ class ProjectsController < ApplicationController
                                     :sponsor_postcode, :sponsor_country_id,
                                     :funder_name, :funder_add1, :funder_add2, :funder_city,
                                     :funder_postcode, :funder_country_id,
-                                    :data_processor_name, :data_processor_add1, :data_processor_add2,
+                                    :data_processor_name, :data_processor_add1,
+                                    :data_processor_add2,
                                     :data_processor_city, :data_processor_postcode,
                                     :data_processor_country_id,
                                     :processing_territory_id,
@@ -309,7 +310,7 @@ class ProjectsController < ApplicationController
                                                                roleable_id roleable_type],
                                     project_datasets_attributes: %i[id project_id dataset_id
                                                                     terms_accepted _destroy],
-                                    project_attachments_attributes: [:name, :attachment],
+                                    project_attachments_attributes: %i[name attachment],
                                     # CAS
                                     cas_application_fields_attributes: cas_fields)
   end

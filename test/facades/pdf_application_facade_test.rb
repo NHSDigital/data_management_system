@@ -2,7 +2,7 @@ require 'test_helper'
 
 class PDFApplicationFacadeTest < ActiveSupport::TestCase
   def setup
-    team    = teams(:team_one)
+    team = teams(:team_one)
     @project = team.projects.build(project_type: project_types(:application))
     @facade = PDFApplicationFacade.new(@project)
   end
@@ -191,8 +191,8 @@ class PDFApplicationFacadeTest < ActiveSupport::TestCase
 
   test 'should complete sponsor organisation fields when same as applicant organisation' do
     @facade.update(name: 'blah', owner: users(:standard_user), organisation_add1: '134',
-                    organisation_add2: 'Test Lane', organisation_city: 'Testville',
-                    organisation_postcode: 'T3ST 1NG', organisation_country: 'UNITED KINGDOM')
+                   organisation_add2: 'Test Lane', organisation_city: 'Testville',
+                   organisation_postcode: 'T3ST 1NG', organisation_country: 'UNITED KINGDOM')
     @facade.sponsor_same_as_applicant = true
     @facade.organisation_name = 'Test Org Name'
     @facade.save
@@ -207,8 +207,8 @@ class PDFApplicationFacadeTest < ActiveSupport::TestCase
 
   test 'should not complete sponsor organisation fields when not same as applicant organisation' do
     @facade.update(name: 'blah', owner: users(:standard_user), organisation_add1: '134',
-                    organisation_add2: 'Test Lane', organisation_city: 'Testville',
-                    organisation_postcode: 'T3ST 1NG', organisation_country: 'UNITED KINGDOM')
+                   organisation_add2: 'Test Lane', organisation_city: 'Testville',
+                   organisation_postcode: 'T3ST 1NG', organisation_country: 'UNITED KINGDOM')
     @facade.sponsor_same_as_applicant = false
     @facade.organisation_name = 'Test Org Name'
     @facade.save
@@ -223,8 +223,8 @@ class PDFApplicationFacadeTest < ActiveSupport::TestCase
 
   test 'should complete funder organisation fields when same as applicant organisation' do
     @facade.update(name: 'blah', owner: users(:standard_user), organisation_add1: '134',
-                    organisation_add2: 'Test Lane', organisation_city: 'Testville',
-                    organisation_postcode: 'T3ST 1NG', organisation_country: 'UNITED KINGDOM')
+                   organisation_add2: 'Test Lane', organisation_city: 'Testville',
+                   organisation_postcode: 'T3ST 1NG', organisation_country: 'UNITED KINGDOM')
     @facade.funder_same_as_applicant = true
     @facade.organisation_name = 'Test Org Name'
     @facade.save
@@ -239,8 +239,8 @@ class PDFApplicationFacadeTest < ActiveSupport::TestCase
 
   test 'should not complete funder organisation fields when not same as applicant organisation' do
     @facade.update(name: 'blah', owner: users(:standard_user), organisation_add1: '134',
-                    organisation_add2: 'Test Lane', organisation_city: 'Testville',
-                    organisation_postcode: 'T3ST 1NG', organisation_country: 'UNITED KINGDOM')
+                   organisation_add2: 'Test Lane', organisation_city: 'Testville',
+                   organisation_postcode: 'T3ST 1NG', organisation_country: 'UNITED KINGDOM')
     @facade.funder_same_as_applicant = false
     @facade.organisation_name = 'Test Org Name'
     @facade.save
