@@ -258,4 +258,10 @@ class PDFApplicationFacadeTest < ActiveSupport::TestCase
 
     assert_equal 'Personally Identifiable', @project.level_of_identifiability
   end
+
+  test 'should populate programme_support_id field with value from lookup' do
+    @facade.programme_support_id = 'Not applicable'
+
+    assert_equal 3, @project.programme_support_id
+  end
 end

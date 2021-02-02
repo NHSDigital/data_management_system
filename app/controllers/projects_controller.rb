@@ -278,7 +278,7 @@ class ProjectsController < ApplicationController
                                     :data_asset_required,
                                     :why_data_required, :public_benefit, :onwardly_share,
                                     :onwardly_share_detail, :data_already_held_detail,
-                                    :programme_support, :programme_support_detail, :scrn_id,
+                                    :programme_support_id, :programme_support_detail, :scrn_id,
                                     :programme_approval_date, :phe_contacts, :s251_exemption_id,
                                     :sponsor_name, :sponsor_add1, :sponsor_add2, :sponsor_city,
                                     :sponsor_postcode, :sponsor_country_id,

@@ -47,6 +47,8 @@ class Project < ApplicationRecord
 
   belongs_to :s251_exemption, class_name: 'Lookups::CommonLawExemption', optional: true
 
+  belongs_to :programme_support, class_name: 'Lookups::ProgrammeSupport', optional: true
+
   # FIXME: These associations probably live somewhere else realistically...
   with_options class_name: 'Lookups::SecurityAssurance', optional: true do
     belongs_to :security_assurance

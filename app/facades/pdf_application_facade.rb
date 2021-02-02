@@ -70,7 +70,7 @@ class PDFApplicationFacade
   alias_attribute :additional_information,      :additional_info
   alias_attribute :dpareg_end_date,             :dpa_registration_end_date
   alias_attribute :dpareg_end_date_outsourced,  :dpa_registration_end_date_outsourced
-  alias_attribute :program_support,             :programme_support
+  alias_attribute :program_support,             :programme_support_id
   alias_attribute :program_support_detail,      :programme_support_detail
   alias_attribute :program_approval_date,       :programme_approval_date
   alias_attribute :data_sharing_contract_ref,   :scrn_id
@@ -96,7 +96,6 @@ class PDFApplicationFacade
         data_already_held_for_project
         data_to_contact_others
         onwardly_share
-        programme_support
       ]
 
       acroform_boolean_attributes.each do |name|
@@ -176,6 +175,10 @@ class PDFApplicationFacade
   def s251_exemption=(value)
     project.s251_exemption = fetch_s251_exemption(value)
     super(value)
+  end
+
+  def programme_support_id=(value)
+    project.programme_support_id = Lookups::ProgrammeSupport.find_by(value: value).id
   end
 
   def security_assurance_applicant=(value)
