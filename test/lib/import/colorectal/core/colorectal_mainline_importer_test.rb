@@ -77,7 +77,7 @@ class ColorectalMainlineImporterTest < ActiveSupport::TestCase
     filename = safe_path_for(e_batch.original_filename)
     importer = Import::Colorectal::Core::ColorectalMainlineImporter.new(filename, e_batch)
     assert_difference('Pseudo::MolecularData.count', + 3) do
-      assert_difference('Pseudo::GeneticTestResult.count', + 5) do
+      assert_difference('Pseudo::GeneticTestResult.count', + 6) do
         assert_difference('Pseudo::GeneticSequenceVariant.count', + 2) do
           @importer_stdout, @importer_stderr = capture_io do
             importer.load
@@ -92,13 +92,14 @@ class ColorectalMainlineImporterTest < ActiveSupport::TestCase
     expected_logs = [
       '(INFO) Filter rejected 0 of6 genotypes seen',
       '(INFO)  *************** Duplicate status report *************** ',
-      '(INFO) [1, 2]',
+      '(INFO) [1, 1]',
+      '(INFO) [2, 1]',
       '(INFO) [3, 1]',
       '(INFO) ***************** Storage Report *******************',
       '(INFO) Num patients: 3',
       '(INFO) Num genetic tests: 3',
-      '(INFO) Num test results: 5',
-      '(INFO) Num sequence variants: 5',
+      '(INFO) Num test results: 6',
+      '(INFO) Num sequence variants: 6',
       '(INFO) Num true variants: 2',
       '(INFO) Num duplicates encountered: ',
       '(INFO) Finished saving records to db'
@@ -106,7 +107,7 @@ class ColorectalMainlineImporterTest < ActiveSupport::TestCase
 
     expected_logs.each { |expected_log| assert_includes(logs, expected_log) }
 
-    assert_equal 3, Pseudo::GeneticTestResult.negative.count
+    assert_equal 4, Pseudo::GeneticTestResult.negative.count
     assert_equal 2, Pseudo::GeneticTestResult.positive.count
     positive_test = Pseudo::GeneticTestResult.positive.where('raw_record like ?', '%c\.81C>G%').first
     assert_equal 6, positive_test.geneticaberrationtype
