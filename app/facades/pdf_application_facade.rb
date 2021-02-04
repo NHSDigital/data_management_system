@@ -31,12 +31,6 @@ class PDFApplicationFacade
   # delegated/magic methods...
   # TODO: Who will be responsible for maintaining accurate (external) organisation data?
   attribute :organisation_name
-  attribute :organisation_department
-  attribute :organisation_add1
-  attribute :organisation_add2
-  attribute :organisation_add_city
-  attribute :organisation_postcode
-  attribute :organisation_country
 
   attribute :sponsor_same_as_applicant, :boolean, default: false
   attribute :funder_same_as_applicant,  :boolean, default: false
@@ -50,6 +44,12 @@ class PDFApplicationFacade
   attribute :security_assurance_applicant
   attribute :security_assurance_outsourced
 
+  alias_attribute :org_department,              :organisation_department
+  alias_attribute :org_add1,                    :organisation_add1
+  alias_attribute :org_add2,                    :organisation_add2
+  alias_attribute :org_add_city,                :organisation_city
+  alias_attribute :org_postcode,                :organisation_postcode
+  alias_attribute :org_country,                 :organisation_country
   alias_attribute :project_title,               :name
   alias_attribute :project_purpose,             :description
   alias_attribute :sponsor_add_city,            :sponsor_city
@@ -68,16 +68,16 @@ class PDFApplicationFacade
   alias_attribute :data_already_held,           :data_already_held_for_project
   alias_attribute :patient_contact,             :data_to_contact_others
   alias_attribute :additional_information,      :additional_info
-  alias_attribute :dpa_reg_end_date,            :dpa_registration_end_date
-  alias_attribute :dpa_reg_end_date_outsourced, :dpa_registration_end_date_outsourced
-  alias_attribute :program_support,             :programme_support
+  alias_attribute :dpareg_end_date,             :dpa_registration_end_date
+  alias_attribute :dpareg_end_date_outsourced,  :dpa_registration_end_date_outsourced
+  alias_attribute :program_support,             :programme_support_id
   alias_attribute :program_support_detail,      :programme_support_detail
   alias_attribute :program_approval_date,       :programme_approval_date
   alias_attribute :data_sharing_contract_ref,   :scrn_id
   alias_attribute :test_drr_proj_sum,           :description
   alias_attribute :test_drr_why_data_req,       :why_data_required
   alias_attribute :test_drr_public_benefit,     :public_benefit
-  alias_attribute :rec_ref,                     :ethics_approval_nrec_ref
+  alias_attribute :rec_reference,               :ethics_approval_nrec_ref
   alias_attribute :rec_name,                    :ethics_approval_nrec_name
 
   class << self
@@ -169,12 +169,16 @@ class PDFApplicationFacade
   def level_of_identifiability=(value)
     classification = fetch_classification(value)
     project.classifications.replace(Array.wrap(classification))
-    super(value)
+    project.level_of_identifiability = fetch_level_of_identifiability(value)
   end
 
   def s251_exemption=(value)
     project.s251_exemption = fetch_s251_exemption(value)
     super(value)
+  end
+
+  def programme_support_id=(value)
+    project.programme_support_id = Lookups::ProgrammeSupport.find_by(value: value).id
   end
 
   def security_assurance_applicant=(value)
@@ -205,7 +209,7 @@ class PDFApplicationFacade
   # selects     -> `Y` or `N`
   def cast_acroform_boolean(value)
     return true  if value.to_s.in? %w[Yes Y]
-    return false if value.to_s.in? %w[Off N]
+    return false if value.to_s.in? %w[Off N No]
 
     value
   end
@@ -228,6 +232,17 @@ class PDFApplicationFacade
     }
 
     Lookups::CommonLawExemption.find_by(value: map[value.to_s])
+  end
+
+  # TODO: This is not currently an _id column on project
+  def fetch_level_of_identifiability(value)
+    map = {
+      'PersonallyIdentifiable' => 'Personally Identifiable',
+      'DePersonalised' => 'De-personalised',
+      'Anonymised' => 'Anonymous'
+    }
+
+    map[value.to_s]
   end
 
   def fetch_security_assurance(value)
@@ -271,12 +286,12 @@ class PDFApplicationFacade
     return unless send("#{target}_same_as_applicant")
 
     project.assign_attributes(
-      "#{target}_name":       organisation.name,
-      "#{target}_add1":       organisation.add1,
-      "#{target}_add2":       organisation.add2,
-      "#{target}_city":       organisation.city,
-      "#{target}_postcode":   organisation.postcode,
-      "#{target}_country_id": organisation.country_id
+      "#{target}_name":       organisation_name,
+      "#{target}_add1":       organisation_add1,
+      "#{target}_add2":       organisation_add2,
+      "#{target}_city":       organisation_city,
+      "#{target}_postcode":   organisation_postcode,
+      "#{target}_country_id": Lookups::Country.find_by(value: organisation_country.upcase)&.id
     )
   end
 end

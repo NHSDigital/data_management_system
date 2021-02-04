@@ -1,0 +1,11 @@
+yes:
+  id: 1
+  value: 'Yes'
+
+no:
+  id: 2
+  value: 'No'
+
+na:
+  id: 3
+  value: 'Not applicable'
