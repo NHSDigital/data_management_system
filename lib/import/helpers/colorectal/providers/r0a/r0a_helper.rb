@@ -7,6 +7,125 @@ module Import
           module R0aHelper
             include Import::Helpers::Colorectal::Providers::R0a::R0aConstants
 
+            def split_multiplegenes_nondosage_map(_non_dosage_map)
+              @non_dosage_record_map[:exon].each.with_index do |exon, index|
+                if exon.scan(COLORECTAL_GENES_REGEX).size > 1
+                  @non_dosage_record_map[:exon][index] =
+                    @non_dosage_record_map[:exon][index].scan(COLORECTAL_GENES_REGEX)
+                  @non_dosage_record_map[:genotype][index] =
+                    if @non_dosage_record_map[:genotype][index] == 'MLH1 Normal, MSH2 Normal, MSH6 Normal'
+                      @non_dosage_record_map[:genotype][index] = ['NGS Normal'] * 3
+                      @non_dosage_record_map[:genotype][index] =
+                        @non_dosage_record_map[:genotype][index].flatten
+                    elsif @non_dosage_record_map[:genotype][index].scan(/Normal, /i).size.positive?
+                      @non_dosage_record_map[:genotype][index] =
+                        @non_dosage_record_map[:genotype][index].split(',').map do |genotypes|
+                          genotypes.gsub(/.+Normal/, 'Normal')
+                        end
+                      @non_dosage_record_map[:genotype][index] =
+                        @non_dosage_record_map[:genotype][index].flatten
+                    elsif @non_dosage_record_map[:genotype][index] == 'Normal'
+                      @non_dosage_record_map[:genotype][index] =
+                        ['Normal'] * exon.scan(COLORECTAL_GENES_REGEX).size
+                      @non_dosage_record_map[:genotype][index] =
+                        @non_dosage_record_map[:genotype][index].flatten
+                    elsif @non_dosage_record_map[:genotype][index].scan(/MSH2/) &&
+                          @non_dosage_record_map[:genotype][index].scan(/MLH1/).empty? &&
+                          @non_dosage_record_map[:genotype][index].scan(/MSH6/).empty?
+                      @non_dosage_record_map[:genotype][index] =
+                        [@non_dosage_record_map[:genotype][index]].unshift(['Normal'])
+                      @non_dosage_record_map[:genotype][index] =
+                        @non_dosage_record_map[:genotype][index].flatten
+                    elsif @non_dosage_record_map[:genotype][index].scan(/MLH1/) &&
+                          @non_dosage_record_map[:genotype][index].scan(/MSH2/).empty? &&
+                          @non_dosage_record_map[:genotype][index].scan(/MSH6/).empty?
+                      @non_dosage_record_map[:genotype][index] =
+                        [@non_dosage_record_map[:genotype][index]].push(['Normal'])
+                      @non_dosage_record_map[:genotype][index] =
+                        @non_dosage_record_map[:genotype][index].flatten
+                    elsif @non_dosage_record_map[:genotype][index].scan(/MSH2/) &&
+                          @non_dosage_record_map[:genotype][index].scan(/MLH1/) &&
+                          @non_dosage_record_map[:genotype][index].scan(/MSH6/).empty?
+                      @non_dosage_record_map[:genotype][index] =
+                        @non_dosage_record_map[:genotype][index].split(',').map(&:lstrip)
+                    else @non_dosage_record_map[:genotype][index] =
+                           @non_dosage_record_map[:genotype][index]
+                    end
+                  @non_dosage_record_map[:genotype2][index] =
+                    if !@non_dosage_record_map[:genotype2][index].nil? &&
+                       @non_dosage_record_map[:genotype2][index].scan(/100% coverage at 100X/).size.positive?
+                      @non_dosage_record_map[:genotype2][index] = ['NGS Normal'] * 3
+                      @non_dosage_record_map[:genotype2][index] =
+                        @non_dosage_record_map[:genotype2][index].flatten
+                    elsif !@non_dosage_record_map[:genotype2][index].nil? &&
+                          @non_dosage_record_map[:genotype2][index].empty?
+                      @non_dosage_record_map[:genotype2][index] = ['MLPA Normal'] * 2
+                      @non_dosage_record_map[:genotype2][index] =
+                        @non_dosage_record_map[:genotype2][index].flatten
+                    elsif @non_dosage_record_map[:genotype2][index].nil? &&
+                          @non_dosage_record_map[:genotype][index].is_a?(String) &&
+                          @non_dosage_record_map[:genotype][index].scan(/MSH2/).size.positive?
+                      @non_dosage_record_map[:genotype2][index] =
+                        [''] * exon.scan(COLORECTAL_GENES_REGEX).size
+                      @non_dosage_record_map[:genotype2][index] =
+                        @non_dosage_record_map[:genotype2][index].flatten
+                    end
+                end
+              end
+              @non_dosage_record_map[:exon] = @non_dosage_record_map[:exon].flatten
+              @non_dosage_record_map[:genotype] = @non_dosage_record_map[:genotype].flatten
+              @non_dosage_record_map[:genotype2] = @non_dosage_record_map[:genotype2].flatten
+            end
+
+            def split_multiplegenes_dosage_map(_dosage_map)
+              @dosage_record_map[:exon].each.with_index do |exon, index|
+                if exon.scan(COLORECTAL_GENES_REGEX).size > 1
+                  @dosage_record_map[:exon][index] =
+                    @dosage_record_map[:exon][index].scan(COLORECTAL_GENES_REGEX).flatten.each do |gene|
+                      gene.concat('_MLPA')
+                    end
+                  @dosage_record_map[:genotype][index] =
+                    if @dosage_record_map[:genotype][index] == 'Normal'
+                      @dosage_record_map[:genotype][index] =
+                        ['Normal'] * exon.scan(COLORECTAL_GENES_REGEX).size
+                      @dosage_record_map[:genotype][index] =
+                        @dosage_record_map[:genotype][index].flatten
+                    elsif @dosage_record_map[:genotype][index].scan(/MSH2/) &&
+                          @dosage_record_map[:genotype][index].scan(/MLH1/).empty?
+                      @dosage_record_map[:genotype][index] =
+                        [@dosage_record_map[:genotype][index]].unshift(['Normal'])
+                      @dosage_record_map[:genotype][index] =
+                        @dosage_record_map[:genotype][index].flatten
+                    elsif @dosage_record_map[:genotype][index].scan(/MLH1/) &&
+                          @dosage_record_map[:genotype][index].scan(/MSH2/).empty?
+                      @dosage_record_map[:genotype][index] =
+                        [@dosage_record_map[:genotype][index]].push(['Normal'])
+                      @dosage_record_map[:genotype][index] =
+                        @dosage_record_map[:genotype][index].flatten
+                    elsif @dosage_record_map[:genotype][index] == 'MLH1 Normal, MSH2 Normal, MSH6 Normal'
+                      @dosage_record_map[:genotype][index] = ['NGS Normal'] * 3
+                      @dosage_record_map[:genotype][index] =
+                        @dosage_record_map[:genotype][index].flatten
+                    end
+                  @dosage_record_map[:genotype2][index] =
+                    if !@dosage_record_map[:genotype2][index].nil? &&
+                       @dosage_record_map[:genotype2][index].empty?
+                      @dosage_record_map[:genotype2][index] = ['MLPA Normal'] * 2
+                      @dosage_record_map[:genotype2][index] =
+                        @dosage_record_map[:genotype2][index].flatten
+                    elsif !@dosage_record_map[:genotype2][index].nil? &&
+                          @dosage_record_map[:genotype2][index].scan(/100% coverage at 100X/).size.positive?
+                      @dosage_record_map[:genotype2][index] = ['NGS Normal'] * 3
+                      @dosage_record_map[:genotype2][index] =
+                        @dosage_record_map[:genotype2][index].flatten
+                    end
+                end
+              end
+              @dosage_record_map[:exon] = @dosage_record_map[:exon].flatten
+              @dosage_record_map[:genotype] = @dosage_record_map[:genotype].flatten
+              @dosage_record_map[:genotype2] = @dosage_record_map[:genotype2].flatten
+            end
+
             def assign_and_populate_results_for(record)
               genocolorectal = Import::Colorectal::Core::Genocolorectal.new(record)
               genocolorectal.add_passthrough_fields(record.mapped_fields,
@@ -85,10 +204,19 @@ module Import
 
                 if cdna_match?(genetic_info)
                   process_non_dosage_cdna(gene, genetic_info, genocolorectal, genotypes)
-                elsif !cdna_match?(genetic_info) && normal?(genetic_info)
+                elsif genetic_info.join(',').match(EXON_LOCATION_REGEX) &&
+                      exon_match?(genetic_info)
+                  process_colorectal_gene_and_exon_match(genocolorectal, genetic_info, genotypes)
+                elsif !cdna_match?(genetic_info) &&
+                      !exon_match?(genetic_info) &&
+                      normal?(genetic_info)
                   process_non_cdna_normal(gene, genetic_info, genocolorectal, genotypes)
-                elsif !cdna_match?(genetic_info) && !normal?(genetic_info) && fail?(genetic_info)
+                elsif !cdna_match?(genetic_info) &&
+                      !exon_match?(genetic_info) &&
+                      !normal?(genetic_info) &&
+                      fail?(genetic_info)
                   process_non_cdna_fail(gene, genetic_info, genocolorectal, genotypes)
+                  # else binding.pry
                 end
               end
             end
@@ -100,7 +228,8 @@ module Import
                 process_colorectal_genes(colorectal_genes, genocolorectal_dup, gene, genetic_info,
                                          genotypes)
               else
-                process_non_colorectal_genes(genocolorectal_dup, gene, genetic_info, genotypes)
+                process_non_colorectal_genes(genocolorectal_dup, gene, genetic_info, genotypes,
+                                             genocolorectal)
               end
             end
 
@@ -126,6 +255,7 @@ module Import
                                          genotypes)
               if colorectal_genes[:colorectal] != gene
                 process_false_positive(colorectal_genes, gene, genetic_info)
+                process_non_cdna_normal(gene, genetic_info, genocolorectal_dup, genotypes)
               elsif colorectal_genes[:colorectal] == gene
                 @logger.debug("IDENTIFIED TRUE POSITIVE FOR #{gene}, " \
                               "#{cdna_from(genetic_info)} from #{genetic_info}")
@@ -139,14 +269,66 @@ module Import
               end
             end
 
-            def process_non_colorectal_genes(genocolorectal_dup, gene, genetic_info, genotypes)
+            def process_non_colorectal_genes(genocolorectal_dup, gene, genetic_info, genotypes,
+                                             genocolorectal)
               @logger.debug("IDENTIFIED #{gene}, #{cdna_from(genetic_info)} from #{genetic_info}")
-              genocolorectal_dup.add_gene_location(cdna_from(genetic_info))
-              if PROT_REGEX.match(genetic_info.join(','))
-                @logger.debug("IDENTIFIED #{protien_from(genetic_info)} from #{genetic_info}")
-                genocolorectal_dup.add_protein_impact(protien_from(genetic_info))
+              mutations = genetic_info.join(',').scan(CDNA_REGEX).flatten.compact.map do |s|
+                s.gsub(/\s+/, '')
+              end.uniq
+              if mutations.size > 1
+                if mutations.size == 2
+                  mutation_duplicate1 = mutations[0]
+                  mutation_duplicate2 = mutations[1]
+                  longest_mutation = mutations.max_by(&:length)
+                  if mutation_duplicate1.include?(mutation_duplicate2) || mutation_duplicate2.include?(mutation_duplicate1)
+                    # Possibly refactor this
+                    genetic_info.each.with_index do |info, index|
+                      if info.match(longest_mutation)
+                        duplicated_geno = genocolorectal.dup_colo
+                        duplicated_geno.add_gene_colorectal(gene)
+                        duplicated_geno.add_gene_location(CDNA_REGEX.match(genetic_info[index])[:cdna])
+                        if PROT_REGEX.match(genetic_info[index])
+                          duplicated_geno.add_protein_impact(PROT_REGEX.match(genetic_info[index])[:impact])
+                        end
+                        duplicated_geno.add_status(2)
+                        genotypes.append(duplicated_geno)
+                      end
+                    end
+                  # Possibly refactor this
+                  elsif mutations.size > 1 && genetic_info.join(',').scan(PROT_REGEX).blank?
+                    mutations.each do |mutation|
+                      duplicated_geno = genocolorectal.dup_colo
+                      duplicated_geno.add_gene_colorectal(gene)
+                      duplicated_geno.add_gene_location(mutation)
+                      duplicated_geno.add_status(2)
+                      genotypes.append(duplicated_geno)
+                    end
+                  # Possibly refactor this
+                  elsif mutations.size > 1 && genetic_info.join(',').scan(PROT_REGEX).size.positive?
+                    variants = mutations.zip(genetic_info.join(',').scan(PROT_REGEX).flatten)
+                    variants.each do |cdna, protein|
+                      duplicated_geno = genocolorectal.dup_colo
+                      duplicated_geno.add_gene_colorectal(gene)
+                      duplicated_geno.add_gene_location(cdna)
+                      duplicated_geno.add_protein_impact(protein)
+                      duplicated_geno.add_status(2)
+                      genotypes.append(duplicated_geno)
+                    end
+                  end
+                  genotypes
+                end
+              elsif mutations.size == 1
+                genocolorectal_dup.add_gene_location(cdna_from(genetic_info))
+                genocolorectal_dup.add_gene_colorectal(gene)
+                genocolorectal_dup.add_status(2)
+                genotypes.append(genocolorectal_dup)
+                if PROT_REGEX.match(genetic_info.join(','))
+                  @logger.debug("IDENTIFIED #{protien_from(genetic_info)} from #{genetic_info}")
+                  genocolorectal_dup.add_protein_impact(protien_from(genetic_info))
+                end
+                genotypes
               end
-              add_gene_and_status_to(genocolorectal_dup, gene, 2, genotypes)
+              # add_gene_and_status_to(genocolorectal_dup, gene, 2, genotypes)
               @logger.debug("IDENTIFIED #{gene}, POSITIVE TEST from #{genetic_info}")
             end
 
@@ -184,7 +366,8 @@ module Import
 
             def process_colorectal_gene_and_exon_match(genocolorectal, genetic_info, genotypes)
               genocolorectal_dup = genocolorectal.dup_colo
-              colorectal_gene    = colorectal_genes_from(genetic_info)[:colorectal]
+              colorectal_gene    = colorectal_genes_from(genetic_info)[:colorectal] unless
+                                   [nil, 0].include?(colorectal_genes_from(genetic_info))
               genocolorectal_dup.add_gene_colorectal(colorectal_gene)
               genocolorectal_dup.add_variant_type(exon_from(genetic_info))
               if EXON_LOCATION_REGEX.match(genetic_info.join(','))
@@ -197,6 +380,8 @@ module Import
               end
               genocolorectal_dup.add_status(2)
               genotypes.append(genocolorectal_dup)
+              @logger.debug("IDENTIFIED #{colorectal_gene} for exonic variant " \
+                            "#{EXON_REGEX.match(genetic_info.join(','))} from #{genetic_info}")
             end
 
             def add_servicereportidentifier(genocolorectal, record)
@@ -218,7 +403,7 @@ module Import
               grouped_tests = Hash.new { |h, k| h[k] = [] }
               tests.each do |test_array|
                 gene = test_array.first
-                test_array[1..-1].each { |test_value| grouped_tests[gene] << test_value }
+                test_array[1..].each { |test_value| grouped_tests[gene] << test_value }
               end
 
               grouped_tests.transform_values!(&:uniq)
@@ -304,7 +489,7 @@ module Import
             end
 
             def normal?(genetic_info)
-              genetic_info.join(',') =~ /normal/i
+              genetic_info.join(',') =~ /normal|wild type|No pathogenic variant identified|No evidence/i
             end
 
             def fail?(genetic_info)
@@ -312,7 +497,7 @@ module Import
             end
 
             def mlpa?(exon)
-              exon =~ /mlpa/i
+              exon =~ /mlpa|P003/i
             end
 
             def cdna_from(genetic_info)

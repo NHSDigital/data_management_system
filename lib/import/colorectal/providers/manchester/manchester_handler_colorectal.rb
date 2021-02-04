@@ -22,6 +22,7 @@ module Import
 
           # TODO: Further boyscouting
           def process_fields(record)
+            @logger.debug('STARTING PARSING')
             non_dosage_genotype_col    = []
             non_dosage_genotype2_col   = []
             non_dosage_genus_col       = []
@@ -35,37 +36,42 @@ module Import
             dosage_exon_col        = []
 
             record.raw_fields.each do |raw_record|
-              if mlpa?(raw_record['exon']) && !control_sample?(raw_record) &&
-                 relevant_consultant?(raw_record)
+              # if mlpa?(raw_record['exon']) && !control_sample?(raw_record) &&
+              #    relevant_consultant?(raw_record)
+              if raw_record['moleculartestingtype'].scan(/dosage/i).size.positive? &&
+                 !control_sample?(raw_record) && relevant_consultant?(raw_record)
                 dosage_genus_col.append(raw_record['genus'])
                 dosage_moltesttype_col.append(raw_record['moleculartestingtype'])
                 dosage_exon_col.append(raw_record['exon'])
                 dosage_genotype_col.append(raw_record['genotype'])
                 dosage_genotype2_col.append(raw_record['genotype2'])
-              elsif !control_sample?(raw_record) && relevant_consultant?(raw_record)
-                non_dosage_genus_col.append(raw_record['genus'])
-                non_dosage_moltesttype_col.append(raw_record['moleculartestingtype'])
-                non_dosage_exon_col.append(raw_record['exon'])
-                non_dosage_genotype_col.append(raw_record['genotype'])
-                non_dosage_genotype2_col.append(raw_record['genotype2'])
-              else
-                break
               end
-            end
+              next unless !control_sample?(raw_record) && relevant_consultant?(raw_record)
 
+              non_dosage_genus_col.append(raw_record['genus'])
+              non_dosage_moltesttype_col.append(raw_record['moleculartestingtype'])
+              non_dosage_exon_col.append(raw_record['exon'])
+              non_dosage_genotype_col.append(raw_record['genotype'])
+              non_dosage_genotype2_col.append(raw_record['genotype2'])
+            end
             @non_dosage_record_map = { genus: non_dosage_genus_col,
                                        moleculartestingtype: non_dosage_moltesttype_col,
                                        exon: non_dosage_exon_col,
                                        genotype: non_dosage_genotype_col,
                                        genotype2: non_dosage_genotype2_col }
 
+            split_multiplegenes_nondosage_map(@non_dosage_record_map)
+
             @dosage_record_map = { genus: dosage_genus_col,
                                    moleculartestingtype: dosage_moltesttype_col,
                                    exon: dosage_exon_col,
                                    genotype: dosage_genotype_col,
                                    genotype2: dosage_genotype2_col }
+            split_multiplegenes_dosage_map(@dosage_map)
+
             @lines_processed += 1 # TODO: factor this out to be automatic across handlers
             assign_and_populate_results_for(record)
+            @logger.debug('DONE TEST')
           end
         end
       end

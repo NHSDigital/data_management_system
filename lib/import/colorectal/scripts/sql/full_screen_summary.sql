@@ -102,7 +102,7 @@ SELECT
         AVG(Case WHEN prov='RR8' THEN count END)::integer AS RR8,
         AVG(CASE WHEN prov='RTD-RR8' THEN count END)::integer AS RTD_RR8,       
         AVG(CASE WHEN prov='RTD' THEN count END)::integer AS RTD,       
-        AVG(CASE WHEN prov='RW3' THEN count END)::integer AS RW3,
+        AVG(CASE WHEN prov='R0a' THEN count END)::integer AS R0A,
         AVG(CASE WHEN prov='RX1' THEN count END)::integer AS RX1, 
         AVG(CASE WHEN prov='RNZ' THEN count END)::integer AS RNZ, 
         AVG(CASE WHEN prov='RCU' THEN count END)::integer AS RCU 
@@ -245,16 +245,19 @@ CREATE temp TABLE center_counts_by_change ON COMMIT DROP AS
         codingdnasequencechange,
         gene,
         AVG(CASE WHEN provider='RQ3' THEN count END)::integer AS RQ3,
-        AVG(CASE WHEN provider='RVJ' THEN count END)::integer AS RVJ,
+        AVG(CASE WHEN provider='RNZ' THEN count END)::integer AS RNZ,
         AVG(CASE WHEN provider='RGT' THEN count END)::integer AS RGT,
-        AVG(CASE WHEN provider='RJ1' THEN count END)::integer AS RJ1,
+        AVG(CASE WHEN provider='R1K' THEN count END)::integer AS R1K,
         AVG(CASE WHEN provider='RR8' THEN count END)::integer AS RR8,
-        AVG(CASE WHEN provider='RTD-RR8' THEN count END)::integer AS RTD_RR8,        
-        AVG(CASE WHEN provider='RW3' THEN count END)::integer AS RW3,
+        AVG(CASE WHEN provider='RTD-RR8' THEN count END)::integer AS RTD_RR8,
+        AVG(CASE WHEN provider='R0A' THEN count END)::integer AS RA0,
         AVG(CASE WHEN provider='RTD' THEN count END)::integer AS RTD,
-        AVG(CASE WHEN provider='RX1' THEN count END)::integer AS RX1, 
-        AVG(CASE WHEN provider='RNZ' THEN count END)::integer AS RNZ, 
-        AVG(CASE WHEN provider='RCU' THEN count END)::integer AS RCU 
+        AVG(CASE WHEN provider='RX1' THEN count END)::integer AS RX1,
+        AVG(CASE WHEN provider='RNZ' THEN count END)::integer AS RNZ,
+        AVG(CASE WHEN provider='RCU' THEN count END)::integer AS RCU,
+        AVG(CASE WHEN provider='RPY' THEN count END)::integer AS RPY,
+        AVG(CASE WHEN provider='RP4' THEN count END)::integer AS RP4,
+        AVG(CASE WHEN provider='RTH' THEN count END)::integer AS RTH
 FROM center_counts
 GROUP BY codingdnasequencechange, gene);
 -- Put all the pieces together
@@ -618,19 +621,36 @@ SELECT provider,
 CREATE temp TABLE mutation_class_by_center ON COMMIT DROP AS      
 (SELECT
         codingdnasequencechange,
-        CASE WHEN gene::integer=7 THEN 'BRCA1'  
-            WHEN gene::integer=8 THEN 'BRCA2' END AS gene,
-        AVG(CASE WHEN provider='RQ3' THEN pathclass END)::integer AS RQ3,
-        AVG(CASE WHEN provider='RVJ' THEN pathclass END)::integer AS RVJ,
-        AVG(CASE WHEN provider='RGT' THEN pathclass END)::integer AS RGT,
-        AVG(CASE WHEN provider='RJ1' THEN pathclass END)::integer AS RJ1,
-        AVG(CASE WHEN provider='RR8' THEN pathclass END)::integer AS RR8,
-        AVG(CASE WHEN provider='RTD-RR8' THEN pathclass END)::integer AS RTD_RR8,        
-        AVG(CASE WHEN provider='RW3' THEN pathclass END)::integer AS RW3,
-        AVG(CASE WHEN provider='RTD' THEN pathclass END)::integer AS RTD,
-        AVG(CASE WHEN provider='RX1' THEN pathclass END)::integer AS RX1, 
-        AVG(CASE WHEN provider='RNZ' THEN pathclass END)::integer AS RNZ, 
-        AVG(CASE WHEN provider='RCU' THEN pathclass END)::integer AS RCU 
+   	   CASE WHEN ls.gene::integer=358 THEN 'APC'
+   	   WHEN ls.gene::integer=577 THEN 'BMPR1A'
+   	   WHEN ls.gene::integer=1432 THEN 'EPCAM'
+   	   WHEN ls.gene::integer=2744 THEN 'MLH1'
+   	   WHEN ls.gene::integer=2804 THEN 'MSH2'
+   	   WHEN ls.gene::integer=2808 THEN 'MSH6'
+   	   WHEN ls.gene::integer=2850 THEN 'MUTYH'
+   	   WHEN ls.gene::integer=3394 THEN 'PMS2'
+   	   WHEN ls.gene::integer=3408 THEN 'POLD1'
+   	   WHEN ls.gene::integer=5000 THEN 'POLE'
+   	   WHEN ls.gene::integer=62 THEN 'PTEN'
+   	   WHEN ls.gene::integer=72 THEN 'SMAD4'
+   	   WHEN ls.gene::integer=76 THEN 'STK11'
+   	   WHEN ls.gene::integer=1882 THEN 'GREM1'
+   	   WHEN ls.gene::integer=3108 THEN 'NTHL1'
+	     END AS gene,
+       AVG(CASE WHEN provider='RQ3' THEN count END)::integer AS RQ3,
+       AVG(CASE WHEN provider='RNZ' THEN count END)::integer AS RNZ,
+       AVG(CASE WHEN provider='RGT' THEN count END)::integer AS RGT,
+       AVG(CASE WHEN provider='R1K' THEN count END)::integer AS R1K,
+       AVG(CASE WHEN provider='RR8' THEN count END)::integer AS RR8,
+       AVG(CASE WHEN provider='RTD-RR8' THEN count END)::integer AS RTD_RR8,
+       AVG(CASE WHEN provider='R0A' THEN count END)::integer AS RA0,
+       AVG(CASE WHEN provider='RTD' THEN count END)::integer AS RTD,
+       AVG(CASE WHEN provider='RX1' THEN count END)::integer AS RX1,
+       AVG(CASE WHEN provider='RNZ' THEN count END)::integer AS RNZ,
+       AVG(CASE WHEN provider='RCU' THEN count END)::integer AS RCU,
+       AVG(CASE WHEN provider='RPY' THEN count END)::integer AS RPY,
+       AVG(CASE WHEN provider='RP4' THEN count END)::integer AS RP4,
+       AVG(CASE WHEN provider='RTH' THEN count END)::integer AS RTH
 FROM mutations_path_class
 GROUP BY codingdnasequencechange, gene
 ORDER BY codingdnasequencechange, gene);
