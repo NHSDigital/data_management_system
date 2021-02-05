@@ -53,19 +53,18 @@ class ProjectDataset < ApplicationRecord
     return unless project.cas?
     # Should only be approving after DRAFT
     return if project.current_state&.id == 'DRAFT'
+    return if approved.nil?
 
-    unless approved.nil?
-      User.cas_manager_and_access_approvers.each do |user|
-        CasNotifier.dataset_approved_status_updated(project, self, user.id)
-      end
-      CasMailer.with(project: project, project_dataset: self).send(
-        :dataset_approved_status_updated
-      ).deliver_now
-      CasNotifier.dataset_approved_status_updated_to_user(project, self)
-      CasMailer.with(project: project, project_dataset: self).send(
-        :dataset_approved_status_updated_to_user
-      ).deliver_now
+    User.cas_manager_and_access_approvers.each do |user|
+      CasNotifier.dataset_approved_status_updated(project, self, user.id)
     end
+    CasMailer.with(project: project, project_dataset: self).send(
+      :dataset_approved_status_updated
+    ).deliver_now
+    CasNotifier.dataset_approved_status_updated_to_user(project, self)
+    CasMailer.with(project: project, project_dataset: self).send(
+      :dataset_approved_status_updated_to_user
+    ).deliver_now
   end
 
   def readable_approved_status

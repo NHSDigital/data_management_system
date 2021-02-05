@@ -5,7 +5,7 @@ class CasRenewalMidpointNotifier
   def renewal_notify
     renewable_projects = Project.joins(:current_state).
                          where(workflow_current_project_states: { state_id: 'RENEWAL' }).
-                         where("date(workflow_current_project_states.created_at) = ?",
+                         where('date(workflow_current_project_states.created_at) = ?',
                                DAYS_BEFORE_NOTIFIED.days.ago.to_date)
 
     renewable_projects.each do |project|

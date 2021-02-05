@@ -129,8 +129,6 @@ module Workflow
       save!
     end
 
-    private
-
     def notify_and_mail_requires_dataset_approval(project)
       DatasetRole.fetch(:approver).users.each do |user|
         matching_datasets = project.project_datasets.any? do |pd|
