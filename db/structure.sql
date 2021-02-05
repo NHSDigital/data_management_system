@@ -5,12 +5,13 @@ SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SELECT pg_catalog.set_config('search_path', '', false);
 SET check_function_bodies = false;
+SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
 SET default_tablespace = '';
 
-SET default_with_oids = false;
+SET default_table_access_method = heap;
 
 --
 -- Name: addresses; Type: TABLE; Schema: public; Owner: -
@@ -207,6 +208,7 @@ CREATE TABLE public.birth_data (
 --
 
 CREATE SEQUENCE public.birth_data_birth_dataid_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -386,6 +388,7 @@ CREATE TABLE public.classifications (
 --
 
 CREATE SEQUENCE public.classifications_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -757,6 +760,7 @@ CREATE TABLE public.data_source_items (
 --
 
 CREATE SEQUENCE public.data_source_items_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -790,6 +794,7 @@ CREATE TABLE public.data_sources (
 --
 
 CREATE SEQUENCE public.data_sources_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1266,6 +1271,7 @@ CREATE TABLE public.death_data (
 --
 
 CREATE SEQUENCE public.death_data_death_dataid_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1298,6 +1304,7 @@ CREATE TABLE public.directorates (
 --
 
 CREATE SEQUENCE public.directorates_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1332,6 +1339,7 @@ CREATE TABLE public.divisions (
 --
 
 CREATE SEQUENCE public.divisions_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1476,6 +1484,7 @@ CREATE TABLE public.end_uses (
 --
 
 CREATE SEQUENCE public.end_uses_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1707,6 +1716,7 @@ CREATE TABLE public.genetic_sequence_variants (
 --
 
 CREATE SEQUENCE public.genetic_sequence_variants_geneticsequencevariantid_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1757,6 +1767,7 @@ CREATE TABLE public.genetic_test_results (
 --
 
 CREATE SEQUENCE public.genetic_test_results_genetictestresultid_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1997,6 +2008,7 @@ CREATE TABLE public.memberships (
 --
 
 CREATE SEQUENCE public.memberships_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -2051,6 +2063,7 @@ CREATE TABLE public.molecular_data (
 --
 
 CREATE SEQUENCE public.molecular_data_molecular_dataid_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -2257,6 +2270,7 @@ CREATE TABLE public.notifications (
 --
 
 CREATE SEQUENCE public.notifications_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -2357,6 +2371,7 @@ CREATE TABLE public.outputs (
 --
 
 CREATE SEQUENCE public.outputs_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -2387,6 +2402,7 @@ CREATE TABLE public.ppatient_rawdata (
 --
 
 CREATE SEQUENCE public.ppatient_rawdata_ppatient_rawdataid_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -2421,6 +2437,7 @@ CREATE TABLE public.ppatients (
 --
 
 CREATE SEQUENCE public.ppatients_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -2478,6 +2495,7 @@ CREATE TABLE public.prescription_data (
 --
 
 CREATE SEQUENCE public.prescription_data_prescription_dataid_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -2617,6 +2635,7 @@ CREATE TABLE public.project_attachments (
 --
 
 CREATE SEQUENCE public.project_attachments_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -2647,6 +2666,7 @@ CREATE TABLE public.project_classifications (
 --
 
 CREATE SEQUENCE public.project_classifications_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -2684,6 +2704,7 @@ CREATE TABLE public.project_comments (
 --
 
 CREATE SEQUENCE public.project_comments_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -2719,6 +2740,7 @@ CREATE TABLE public.project_data_end_users (
 --
 
 CREATE SEQUENCE public.project_data_end_users_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -2752,6 +2774,7 @@ CREATE TABLE public.project_data_passwords (
 --
 
 CREATE SEQUENCE public.project_data_passwords_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -2785,6 +2808,7 @@ CREATE TABLE public.project_data_source_items (
 --
 
 CREATE SEQUENCE public.project_data_source_items_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -2851,6 +2875,7 @@ CREATE TABLE public.project_end_uses (
 --
 
 CREATE SEQUENCE public.project_end_uses_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -2914,6 +2939,7 @@ CREATE TABLE public.project_memberships (
 --
 
 CREATE SEQUENCE public.project_memberships_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -2979,6 +3005,7 @@ CREATE TABLE public.project_outputs (
 --
 
 CREATE SEQUENCE public.project_outputs_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -3291,6 +3318,7 @@ CREATE TABLE public.projects (
 --
 
 CREATE SEQUENCE public.projects_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -3337,6 +3365,7 @@ CREATE TABLE public.pseudonymisation_keys (
 --
 
 CREATE SEQUENCE public.pseudonymisation_keys_pseudonymisation_keyid_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -3520,6 +3549,7 @@ CREATE TABLE public.team_data_sources (
 --
 
 CREATE SEQUENCE public.team_data_sources_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -3584,6 +3614,7 @@ CREATE TABLE public.team_delegate_users (
 --
 
 CREATE SEQUENCE public.team_delegate_users_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -3659,6 +3690,7 @@ CREATE TABLE public.teams (
 --
 
 CREATE SEQUENCE public.teams_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -3723,6 +3755,7 @@ CREATE TABLE public.user_notifications (
 --
 
 CREATE SEQUENCE public.user_notifications_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -3785,6 +3818,7 @@ CREATE TABLE public.users (
 --
 
 CREATE SEQUENCE public.users_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -3817,6 +3851,7 @@ CREATE TABLE public.version_associations (
 --
 
 CREATE SEQUENCE public.version_associations_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -3853,6 +3888,7 @@ CREATE TABLE public.versions (
 --
 
 CREATE SEQUENCE public.versions_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -4092,6 +4128,7 @@ CREATE TABLE public.z_project_statuses (
 --
 
 CREATE SEQUENCE public.z_project_statuses_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -4123,6 +4160,7 @@ CREATE TABLE public.z_team_statuses (
 --
 
 CREATE SEQUENCE public.z_team_statuses_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -4154,6 +4192,7 @@ CREATE TABLE public.z_user_statuses (
 --
 
 CREATE SEQUENCE public.z_user_statuses_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -4643,14 +4682,14 @@ ALTER TABLE ONLY public.processing_territories ALTER COLUMN id SET DEFAULT nextv
 
 
 --
--- Name: project_amendments id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: programme_supports id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.programme_supports ALTER COLUMN id SET DEFAULT nextval('public.programme_supports_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: project_amendments id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.project_amendments ALTER COLUMN id SET DEFAULT nextval('public.project_amendments_id_seq'::regclass);
@@ -5433,7 +5472,7 @@ ALTER TABLE ONLY public.processing_territories
 
 
 --
--- Name: programme_supports_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: programme_supports programme_supports_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.programme_supports
@@ -5441,7 +5480,7 @@ ALTER TABLE ONLY public.programme_supports
 
 
 --
--- Name: project_amendments_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: project_amendments project_amendments_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.project_amendments
@@ -7264,7 +7303,7 @@ ALTER TABLE ONLY public.project_amendments
 
 
 --
--- Name: fk_rails_e829d9cb9c; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: projects fk_rails_e829d9cb9c; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.projects
@@ -7272,7 +7311,7 @@ ALTER TABLE ONLY public.projects
 
 
 --
--- Name: fk_rails_e863729edc; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: data_privacy_impact_assessments fk_rails_e863729edc; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.data_privacy_impact_assessments
@@ -7768,7 +7807,6 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20201126114719'),
 ('20201126114922'),
 ('20201126115056'),
-('20201210150402'),
 ('20210104125759'),
 ('20210104144033'),
 ('20210105125403'),
@@ -7776,6 +7814,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20210201115059'),
 ('20210201115318'),
 ('20210201122226'),
-('20210201122300');
+('20210201122300'),
+('20210202173000');
 
 
