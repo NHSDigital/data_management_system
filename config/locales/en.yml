@@ -103,7 +103,7 @@ en:
         data_already_held_detail: Provide the dataset name, classification of the data…
         data_to_contact_others: Does this project involve patient contact
         data_to_contact_others_desc: If yes, please give details
-        programme_support: Has programme support been granted?
+        programme_support_id: Has programme support been granted?
         programme_support_detail: Has programme support been granted, detail?
         scrn_id: Programme approval reference
         programme_approval_date: Date of programme approval

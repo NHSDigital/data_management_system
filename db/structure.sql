@@ -2524,6 +2524,37 @@ ALTER SEQUENCE public.processing_territories_id_seq OWNED BY public.processing_t
 
 
 --
+-- Name: programme_supports; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.programme_supports (
+    id bigint NOT NULL,
+    value character varying,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: programme_supports_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.programme_supports_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: programme_supports_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.programme_supports_id_seq OWNED BY public.programme_supports.id;
+
+
+--
 -- Name: project_amendments; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -3250,7 +3281,8 @@ CREATE TABLE public.projects (
     form_data jsonb DEFAULT '{}'::jsonb,
     dataset_id integer,
     receiptsentby character varying,
-    closure_date date
+    closure_date date,
+    programme_support_id integer
 );
 
 
@@ -4614,6 +4646,13 @@ ALTER TABLE ONLY public.processing_territories ALTER COLUMN id SET DEFAULT nextv
 -- Name: project_amendments id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY public.programme_supports ALTER COLUMN id SET DEFAULT nextval('public.programme_supports_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.project_amendments ALTER COLUMN id SET DEFAULT nextval('public.project_amendments_id_seq'::regclass);
 
 
@@ -5394,7 +5433,15 @@ ALTER TABLE ONLY public.processing_territories
 
 
 --
--- Name: project_amendments project_amendments_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: programme_supports_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.programme_supports
+    ADD CONSTRAINT programme_supports_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: project_amendments_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.project_amendments
@@ -7217,7 +7264,15 @@ ALTER TABLE ONLY public.project_amendments
 
 
 --
--- Name: data_privacy_impact_assessments fk_rails_e863729edc; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: fk_rails_e829d9cb9c; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.projects
+    ADD CONSTRAINT fk_rails_e829d9cb9c FOREIGN KEY (programme_support_id) REFERENCES public.programme_supports(id);
+
+
+--
+-- Name: fk_rails_e863729edc; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.data_privacy_impact_assessments
@@ -7718,6 +7773,9 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20210104144033'),
 ('20210105125403'),
 ('20210112164055'),
-('20210202173000');
+('20210201115059'),
+('20210201115318'),
+('20210201122226'),
+('20210201122300');
 
 
