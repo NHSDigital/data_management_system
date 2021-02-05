@@ -21,6 +21,7 @@ module Import
         COLORECTAL_MAP = { 'APC' => 358,
                            'BMPR1A' => 577,
                            'EPCAM' => 1432,
+                           'TACSTD1' => 1432,
                            'MLH1' => 2744,
                            'MSH2' => 2804,
                            'MSH6' => 2808,
@@ -35,19 +36,20 @@ module Import
                            'NTHL1' => 3108 }.freeze
 
         COLORECTAL_REGEX = /(?<apc>APC)|
-                            (?<bmpr>BMPR1A) |
-                            (?<epcam>EPCAM) |
-                            (?<mlh1>MLH1) |
-                            (?<msh2>MSH2) |
-                            (?<msh6>MSH6) |
-                            (?<mutyh>MUTYH) |
-                            (?<pms2>PMS2) |
-                            (?<pold>POLD1) |
-                            (?<pole>POLE) |
-                            (?<pten>PTEN) |
-                            (?<smad>SMAD4) |
-                            (?<stk>STK11) |
-                            (?<grem>GREM1) |
+                            (?<bmpr>BMPR1A)|
+                            (?<epcam>EPCAM)|
+                            (?<tacstd1>TACSTD1)|
+                            (?<mlh1>MLH1)|
+                            (?<msh2>MSH2)|
+                            (?<msh6>MSH6)|
+                            (?<mutyh>MUTYH)|
+                            (?<pms2>PMS2)|
+                            (?<pold>POLD1)|
+                            (?<pole>POLE)|
+                            (?<pten>PTEN)|
+                            (?<smad>SMAD4)|
+                            (?<stk>STK11)|
+                            (?<grem>GREM1)|
                             (?<nthl>NTHL1)/ix .freeze # Added by Francesco
 
         # ------------------------ Interogators ------------------------------
@@ -55,7 +57,6 @@ module Import
         # this is present in Newcastle storage manager
         def full_screen?
           scope = @attribute_map['genetictestscope']
-
           return nil unless scope
 
           scope == 'Full screen Colorectal Lynch or MMR'
@@ -66,11 +67,13 @@ module Import
           when Integer
             if [1432, 358, 577, 2744, 2804, 2808, 2850, 3394,
                 3408, 5000, 62, 72, 76, 1882, 3108].include? colorectal_input
+
               @attribute_map['gene'] = colorectal_input
               @logger.debug "SUCCESSFUL gene parse for #{colorectal_input}"
             else
               @logger.error "Invalid gene reference given to addGene; given: #{colorectal_input}"
             end
+
           when String
             return if colorectal_input.empty?
 

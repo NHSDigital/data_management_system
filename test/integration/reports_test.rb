@@ -8,6 +8,7 @@ class ReportsTest < ActionDispatch::IntegrationTest
 
   test 'data in report 1 is correct' do
     visit report1_path
+    assert has_content? 'Births Gold Standard'
     assert page.has_selector?('table tr', count: Project.of_type_project.count + 1)
     click_on 'CSV'
     wait_for_download

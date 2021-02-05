@@ -135,8 +135,8 @@
 
   <fieldset style="margin-bottom: 20px;">
     <legend>Programme Support</legend>
-    <%= form.control_group(:programme_support, t('.programme_support'), {}, class: 'col-md-2') do %>
-      <%= form.select :programme_support, { 'Yes' => true, 'No' => false }, include_blank: true, readonly_value: boolean_text_conversion(@project.programme_support) %>
+    <%= form.control_group(:programme_support_id, t('.programme_support_id'), {}, class: 'col-md-2') do %>
+      <%= form.collection_select :programme_support_id, Lookups::ProgrammeSupport.all, :id, :value, include_blank: true, readonly_value: form.object.programme_support&.value %>
     <% end %>
     <%= form.control_group(:programme_support_detail, t('.programme_support_detail')) do %>
       <%= form.text_area :programme_support_detail, rows: 5 %>

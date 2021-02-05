@@ -41,7 +41,7 @@
             <td><%#raw p[:members].join('</br>')%></td>
             <td><%#raw p[:data_users].join('</br>')%></td>-->
             <td><%= p[:end_uses].join(';') %></td>
-            <td><%= p[:data_source] %></td>
+            <td><%= p[:dataset].join(',') %></td>
             <!--<td><%#raw p[:data_items].join('</br>')%></td>-->
           </tr>
         <% end %>

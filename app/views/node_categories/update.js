@@ -1,2 +1,0 @@
-jQuery('#node-categories').click()
-
