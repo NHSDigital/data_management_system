@@ -11,7 +11,7 @@ class CasRenewalMidpointNotifierTest < ActiveSupport::TestCase
 
     assert_equal 'RENEWAL', project.current_state.id
 
-    travel_to 14.day.from_now
+    travel_to 14.days.from_now
 
     klass = CasRenewalMidpointNotifier.new
     klass.renewal_notify
@@ -20,7 +20,7 @@ class CasRenewalMidpointNotifierTest < ActiveSupport::TestCase
     assert_equal 'RENEWAL', project.current_state.id
     assert_equal 0, Notification.by_title('CAS Access Urgently Requires Renewal').count
 
-    travel_to 15.days.from_now
+    travel_to 1.day.from_now
 
     klass = CasRenewalMidpointNotifier.new
     klass.renewal_notify
