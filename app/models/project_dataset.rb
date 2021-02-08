@@ -2,8 +2,6 @@
 # If ODR EOI's and Applications are a choice of every single dataset, do we even need this anymore?
 # It will only exist to limit an MBIS team to 1 of the 4 MBIS dataset. Any point?
 class ProjectDataset < ApplicationRecord
-  include SharedMailersNotifications
-
   belongs_to :project
   belongs_to :dataset
 
@@ -55,21 +53,18 @@ class ProjectDataset < ApplicationRecord
     return unless project.cas?
     # Should only be approving after DRAFT
     return if project.current_state&.id == 'DRAFT'
+    return if approved.nil?
 
-    if approved.nil?
-      notify_and_mail_requires_dataset_approval(project)
-    else
-      User.cas_manager_and_access_approvers.each do |user|
-        CasNotifier.dataset_approved_status_updated(project, self, user.id)
-      end
-      CasMailer.with(project: project, project_dataset: self).send(
-        :dataset_approved_status_updated
-      ).deliver_now
-      CasNotifier.dataset_approved_status_updated_to_user(project, self)
-      CasMailer.with(project: project, project_dataset: self).send(
-        :dataset_approved_status_updated_to_user
-      ).deliver_now
+    User.cas_manager_and_access_approvers.each do |user|
+      CasNotifier.dataset_approved_status_updated(project, self, user.id)
     end
+    CasMailer.with(project: project, project_dataset: self).send(
+      :dataset_approved_status_updated
+    ).deliver_now
+    CasNotifier.dataset_approved_status_updated_to_user(project, self)
+    CasMailer.with(project: project, project_dataset: self).send(
+      :dataset_approved_status_updated_to_user
+    ).deliver_now
   end
 
   def readable_approved_status

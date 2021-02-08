@@ -11,7 +11,7 @@ class CasAccountClosureTest < ActiveSupport::TestCase
 
     assert_equal 'RENEWAL', project.current_state.id
 
-    travel_to 10.days.from_now
+    travel_to 1.day.from_now
 
     klass = CasAccountClosure.new
     klass.account_closures
@@ -19,7 +19,7 @@ class CasAccountClosureTest < ActiveSupport::TestCase
     project.reload.current_state
     assert_equal 'RENEWAL', project.current_state.id
 
-    travel_to 1.month.from_now
+    travel_to 30.days.from_now
 
     klass = CasAccountClosure.new
     klass.account_closures

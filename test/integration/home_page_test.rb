@@ -48,13 +48,13 @@ class HomePageTest < ActionDispatch::IntegrationTest
     assert has_content?('New CAS Application')
   end
 
-  test 'should visit projects page when clicking My CAS Projects link' do
+  test 'should visit projects page when clicking My Applications link' do
     sign_in users(:no_roles)
 
     visit root_path
     assert has_content?('Welcome to Data Management System')
 
-    click_link('My CAS Projects')
+    click_link('My Applications')
 
     assert_equal projects_path, current_path
   end

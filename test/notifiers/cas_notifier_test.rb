@@ -186,8 +186,27 @@ class CasNotifierTest < ActiveSupport::TestCase
 
     # TODO: Should it be creating UserNotifications?
 
-    assert_equal Notification.last.body, 'Your CAS account requires renewal, please click the ' \
-                                         "renew button on your application.\n\n"
+    assert_equal Notification.last.body, 'Your access to CAS needs to be renewed, please visit ' \
+                                         'your application to confirm renewal. If you have not ' \
+                                         'renewed within 30 days your access will be removed and ' \
+                                         "you will need to contact Beatrice Coker to reapply\n\n"
+  end
+
+  test 'should generate requires_renewal_midway_to_user Notifications' do
+    user = users(:no_roles)
+    project = create_project(project_type: project_types(:cas), project_purpose: 'test',
+                             owner: user)
+
+    assert_difference -> { Notification.by_title('CAS Access Urgently Requires Renewal').count }, 1 do
+      CasNotifier.requires_renewal_midpoint_to_user(project)
+    end
+
+    # TODO: Should it be creating UserNotifications?
+
+    assert_equal Notification.last.body, 'Your access to CAS needs to be renewed, please visit ' \
+                                         'your application to confirm renewal. If you have not ' \
+                                         'renewed within 15 days your access will be removed and ' \
+                                         "you will need to contact Beatrice Coker to reapply\n\n"
   end
 
   test 'should generate account_closed_to_user Notifications' do
