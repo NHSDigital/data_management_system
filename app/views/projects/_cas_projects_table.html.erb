@@ -19,7 +19,8 @@ dataset_link = false if local_assigns[:dataset_link].nil?
           <div class="pull-right">
             <%= button_group do %>
               <% if dataset_link %>
-                <%= details_link(project_path(project, anchor: "!datasets")) %>
+                <%= details_link(project_path(project, anchor: "!datasets"),
+                                 skip_authorization: true) %>
               <% else %>
                 <%= details_link project %>
               <% end %>
