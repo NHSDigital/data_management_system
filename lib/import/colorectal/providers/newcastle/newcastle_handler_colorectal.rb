@@ -285,9 +285,9 @@ module Import
                 genotypes.append(genocolorectal)
               end
               genotypes
-            elsif (colorectal_input.empty? && record.raw_fields['genotype'].empty? &&
+            elsif (colorectal_input.blank? && record.raw_fields['genotype'].blank? &&
                   TEST_SCOPE_FROM_TYPE_MAP_COLO[moltesttype&.downcase.strip] == :full_screen) ||
-                  (colorectal_input.empty? && record.raw_fields['genotype'].empty? &&
+                  (colorectal_input.blank? && record.raw_fields['genotype'].blank? &&
                   record.raw_fields['service category'].to_s.downcase.strip.match(/o|c|0/))
               if record.raw_fields['investigation code'].downcase.strip == 'hnpcc'
                 HNPCC.each do |genes|
@@ -323,7 +323,7 @@ module Import
                 genocolorectal.add_status(1)
                 genotypes << genocolorectal
               end
-            elsif colorectal_input.empty? && record.raw_fields['genotype'].empty? &&
+            elsif colorectal_input.blank? && record.raw_fields['genotype'].blank? &&
                   TEST_SCOPE_FROM_TYPE_MAP_COLO[moltesttype&.downcase.strip] == :targeted_mutation ||
                   TEST_SCOPE_FROM_TYPE_MAP_COLO[moltesttype&.downcase.strip].nil?
               genocolorectal.add_status(:unknown)
