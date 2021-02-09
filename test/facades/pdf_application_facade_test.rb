@@ -260,6 +260,11 @@ class PDFApplicationFacadeTest < ActiveSupport::TestCase
   end
 
   test 'should populate programme_support_id field with value from lookup' do
+    # can handle nils
+    @facade.programme_support_id = nil
+
+    assert_nil @project.programme_support_id
+
     @facade.programme_support_id = 'Not applicable'
 
     assert_equal 3, @project.programme_support_id

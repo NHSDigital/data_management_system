@@ -178,7 +178,7 @@ class PDFApplicationFacade
   end
 
   def programme_support_id=(value)
-    project.programme_support_id = Lookups::ProgrammeSupport.find_by(value: value).id
+    project.programme_support_id = Lookups::ProgrammeSupport.find_by(value: value)&.id
   end
 
   def security_assurance_applicant=(value)
