@@ -178,6 +178,8 @@ class PDFApplicationFacade
   end
 
   def programme_support_id=(value)
+    # Mapped to account for various versions of YES and NO provided by different pdf readers
+    value = fetch_programme_support_id(value)
     project.programme_support_id = Lookups::ProgrammeSupport.find_by(value: value)&.id
   end
 
@@ -243,6 +245,17 @@ class PDFApplicationFacade
     }
 
     map[value.to_s]
+  end
+
+  # Mapped to account for various versions of YES and NO provided by different pdf readers
+  def fetch_programme_support_id(value)
+    map = {
+      'Y' => 'Yes',
+      'N' => 'No',
+      'Off' => 'No'
+    }
+
+    map[value].presence || value
   end
 
   def fetch_security_assurance(value)
