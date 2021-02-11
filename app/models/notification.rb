@@ -39,6 +39,6 @@ class Notification < ActiveRecord::Base
   def send_admin_email
     return unless generate_mail
     return unless admin_users
-    NotificationMailer.send_admin_messages(self).deliver_now
+    NotificationMailer.send_admin_messages(self).deliver_later
   end
 end

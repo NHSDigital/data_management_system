@@ -55,12 +55,12 @@ module Workflow
       User.cas_access_approvers.each do |user|
         CasNotifier.requires_account_approval(project, user.id)
       end
-      CasMailer.with(project: project).send(:requires_account_approval).deliver_now
+      CasMailer.with(project: project).send(:requires_account_approval).deliver_later
 
       User.cas_managers.each do |user|
         CasNotifier.application_submitted(project, user.id)
       end
-      CasMailer.with(project: project).send(:application_submitted).deliver_now
+      CasMailer.with(project: project).send(:application_submitted).deliver_later
     end
 
     def notify_cas_manager_approver_application_approved_rejected
@@ -70,7 +70,7 @@ module Workflow
       User.cas_manager_and_access_approvers.each do |user|
         CasNotifier.access_approval_status_updated(project, user.id, state_id)
       end
-      CasMailer.with(project: project).send(:access_approval_status_updated).deliver_now
+      CasMailer.with(project: project).send(:access_approval_status_updated).deliver_later
     end
 
     def notify_user_cas_application_approved
@@ -78,7 +78,7 @@ module Workflow
       return unless state_id == 'ACCESS_APPROVER_APPROVED'
 
       CasNotifier.account_approved_to_user(project)
-      CasMailer.with(project: project).send(:account_approved_to_user).deliver_now
+      CasMailer.with(project: project).send(:account_approved_to_user).deliver_later
     end
 
     def notify_user_cas_application_rejected
@@ -86,7 +86,7 @@ module Workflow
       return unless state_id == 'REJECTION_REVIEWED'
 
       CasNotifier.account_rejected_to_user(project)
-      CasMailer.with(project: project).send(:account_rejected_to_user).deliver_now
+      CasMailer.with(project: project).send(:account_rejected_to_user).deliver_later
     end
 
     def notify_cas_access_granted
@@ -96,10 +96,10 @@ module Workflow
       User.cas_managers.each do |user|
         CasNotifier.account_access_granted(project, user.id)
       end
-      CasMailer.with(project: project).send(:account_access_granted).deliver_now
+      CasMailer.with(project: project).send(:account_access_granted).deliver_later
 
       CasNotifier.account_access_granted_to_user(project)
-      CasMailer.with(project: project).send(:account_access_granted_to_user).deliver_now
+      CasMailer.with(project: project).send(:account_access_granted_to_user).deliver_later
     end
 
     def notify_requires_renewal
@@ -107,7 +107,7 @@ module Workflow
       return unless state_id == 'RENEWAL'
 
       CasNotifier.requires_renewal_to_user(project)
-      CasMailer.with(project: project).send(:requires_renewal_to_user).deliver_now
+      CasMailer.with(project: project).send(:requires_renewal_to_user).deliver_later
     end
 
     def notify_account_closed
@@ -115,7 +115,7 @@ module Workflow
       return unless state_id == 'ACCOUNT_CLOSED'
 
       CasNotifier.account_closed_to_user(project)
-      CasMailer.with(project: project).send(:account_closed_to_user).deliver_now
+      CasMailer.with(project: project).send(:account_closed_to_user).deliver_later
     end
 
     def auto_transition_access_approver_approved_to_access_granted
@@ -137,7 +137,7 @@ module Workflow
         next unless matching_datasets
 
         CasNotifier.requires_dataset_approval(project, user.id)
-        CasMailer.with(project: project, user: user).send(:requires_dataset_approval).deliver_now
+        CasMailer.with(project: project, user: user).send(:requires_dataset_approval).deliver_later
       end
     end
   end

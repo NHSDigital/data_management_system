@@ -11,7 +11,7 @@ class ProjectsMailerTest < ActionMailer::TestCase
     email = CasMailer.with(project: project, project_dataset: project_dataset).dataset_approved_status_updated
 
     assert_emails 1 do
-      email.deliver_now
+      email.deliver_later
     end
 
     assert_equal User.cas_manager_and_access_approvers.map(&:email), email.to
@@ -29,7 +29,7 @@ class ProjectsMailerTest < ActionMailer::TestCase
     email = CasMailer.with(project: project, project_dataset: project_dataset).dataset_approved_status_updated_to_user
 
     assert_emails 1 do
-      email.deliver_now
+      email.deliver_later
     end
 
     assert_equal Array.wrap(project.owner.email), email.to
@@ -46,7 +46,7 @@ class ProjectsMailerTest < ActionMailer::TestCase
     email = CasMailer.with(project: project).access_approval_status_updated
 
     assert_emails 1 do
-      email.deliver_now
+      email.deliver_later
     end
 
     assert_equal User.cas_manager_and_access_approvers.map(&:email), email.to
@@ -65,7 +65,7 @@ class ProjectsMailerTest < ActionMailer::TestCase
     email = CasMailer.with(project: project).account_approved_to_user
 
     assert_emails 1 do
-      email.deliver_now
+      email.deliver_later
     end
 
     assert_equal Array.wrap(project.owner.email), email.to
@@ -84,7 +84,7 @@ class ProjectsMailerTest < ActionMailer::TestCase
     email = CasMailer.with(project: project).account_rejected_to_user
 
     assert_emails 1 do
-      email.deliver_now
+      email.deliver_later
     end
 
     assert_equal Array.wrap(project.owner.email), email.to
@@ -101,7 +101,7 @@ class ProjectsMailerTest < ActionMailer::TestCase
     email = CasMailer.with(project: project).account_access_granted_to_user
 
     assert_emails 1 do
-      email.deliver_now
+      email.deliver_later
     end
 
     assert_equal Array.wrap(project.owner.email), email.to
@@ -119,7 +119,7 @@ class ProjectsMailerTest < ActionMailer::TestCase
     email = CasMailer.with(project: project).account_access_granted
 
     assert_emails 1 do
-      email.deliver_now
+      email.deliver_later
     end
 
     assert_equal User.cas_managers.pluck(:email), email.to
@@ -135,7 +135,7 @@ class ProjectsMailerTest < ActionMailer::TestCase
     email = CasMailer.with(project: project).requires_account_approval
 
     assert_emails 1 do
-      email.deliver_now
+      email.deliver_later
     end
 
     assert_equal User.cas_access_approvers.pluck(:email), email.to
@@ -154,7 +154,7 @@ class ProjectsMailerTest < ActionMailer::TestCase
     email = CasMailer.with(project: project, user: DatasetRole.fetch(:approver).users.first).requires_dataset_approval
 
     assert_emails 1 do
-      email.deliver_now
+      email.deliver_later
     end
 
     assert_equal Array.wrap(DatasetRole.fetch(:approver).users.first.email), email.to
@@ -170,7 +170,7 @@ class ProjectsMailerTest < ActionMailer::TestCase
     email = CasMailer.with(project: project).application_submitted
 
     assert_emails 1 do
-      email.deliver_now
+      email.deliver_later
     end
 
     assert_equal User.cas_managers.pluck(:email), email.to
@@ -185,7 +185,7 @@ class ProjectsMailerTest < ActionMailer::TestCase
     email = CasMailer.with(project: project).requires_renewal_to_user
 
     assert_emails 1 do
-      email.deliver_now
+      email.deliver_later
     end
 
     assert_equal Array.wrap(project.owner.email), email.to
@@ -200,7 +200,7 @@ class ProjectsMailerTest < ActionMailer::TestCase
     email = CasMailer.with(project: project).requires_renewal_midpoint_to_user
 
     assert_emails 1 do
-      email.deliver_now
+      email.deliver_later
     end
 
     assert_equal Array.wrap(project.owner.email), email.to
@@ -215,7 +215,7 @@ class ProjectsMailerTest < ActionMailer::TestCase
     email = CasMailer.with(project: project).account_closed_to_user
 
     assert_emails 1 do
-      email.deliver_now
+      email.deliver_later
     end
 
     assert_equal Array.wrap(project.owner.email), email.to
@@ -230,7 +230,7 @@ class ProjectsMailerTest < ActionMailer::TestCase
     email = CasMailer.with(project: project).new_cas_project_saved
 
     assert_emails 1 do
-      email.deliver_now
+      email.deliver_later
     end
 
     assert_equal User.cas_managers.pluck(:email), email.to
