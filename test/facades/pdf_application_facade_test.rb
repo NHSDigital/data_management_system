@@ -265,6 +265,26 @@ class PDFApplicationFacadeTest < ActiveSupport::TestCase
 
     assert_nil @project.programme_support_id
 
+    @facade.programme_support_id = 'Yes'
+
+    assert_equal 1, @project.programme_support_id
+
+    @facade.programme_support_id = 'Y'
+
+    assert_equal 1, @project.programme_support_id
+
+    @facade.programme_support_id = 'No'
+
+    assert_equal 2, @project.programme_support_id
+
+    @facade.programme_support_id = 'N'
+
+    assert_equal 2, @project.programme_support_id
+
+    @facade.programme_support_id = 'Off'
+
+    assert_equal 2, @project.programme_support_id
+
     @facade.programme_support_id = 'Not applicable'
 
     assert_equal 3, @project.programme_support_id
