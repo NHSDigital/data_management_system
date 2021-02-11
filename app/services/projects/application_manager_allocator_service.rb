@@ -50,7 +50,7 @@ module Projects
       return unless project.assigned_user
 
       ProjectsNotifier.project_assignment(project: project)
-      ProjectsMailer.with(project: project).project_assignment.deliver_now
+      ProjectsMailer.with(project: project).project_assignment.deliver_later
     end
 
     def notify_odr_managers

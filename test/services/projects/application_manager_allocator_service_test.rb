@@ -2,6 +2,8 @@ require 'test_helper'
 
 module Projects
   class ApplicationManagerAllocatorServiceTest < ActiveSupport::TestCase
+    include ActionMailer::TestHelper
+
     test 'should assigned application managers based on least number of active projects' do
       team = teams(:team_one)
 
@@ -291,9 +293,10 @@ module Projects
         project_purpose: 'Test'
       )
 
-      ProjectsMailer.any_instance.expects(:project_assignment)
       ProjectsNotifier.expects(:project_assignment)
-      ApplicationManagerAllocatorService.call(project: project)
+      assert_emails 1 do
+        ApplicationManagerAllocatorService.call(project: project)
+      end
     end
 
     test 'should generate alerts on unsuccessful allocation' do
@@ -304,9 +307,10 @@ module Projects
       project.save
 
       ApplicationManagerAllocatorService.any_instance.stubs(allocation_threshold: 0)
-      ProjectsMailer.any_instance.expects(:project_awaiting_assignment)
       ProjectsNotifier.expects(:project_awaiting_assignment)
-      ApplicationManagerAllocatorService.call(project: project)
+      assert_emails 1 do
+        ApplicationManagerAllocatorService.call(project: project)
+      end
     end
   end
 end
