@@ -39,6 +39,8 @@ Rails.application.configure do
   # host/port of the puma instance by Rails, to ensure they're actually clickable.
   config.action_mailer.default_url_options = { host: 'mbis' }
 
+  config.active_job.queue_adapter = :test
+
   # Print deprecation notices to the stderr.
   config.active_support.deprecation = :stderr
 

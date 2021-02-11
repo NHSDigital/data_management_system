@@ -11,7 +11,7 @@ class ProjectsMailerTest < ActionMailer::TestCase
     email = ProjectsMailer.with(project: project).project_assignment
 
     assert_emails 1 do
-      email.deliver_now
+      email.deliver_later
     end
 
     assert_equal [assigned_user.email], email.to
@@ -27,7 +27,7 @@ class ProjectsMailerTest < ActionMailer::TestCase
     email = ProjectsMailer.with(project: project).project_awaiting_assignment
 
     assert_emails 1 do
-      email.deliver_now
+      email.deliver_later
     end
 
     assert_equal User.odr_users.map(&:email), email.to
@@ -45,7 +45,7 @@ class ProjectsMailerTest < ActionMailer::TestCase
     email = ProjectsMailer.with(project: project).project_assignment
 
     assert_emails 0 do
-      email.deliver_now
+      email.deliver_later
     end
   end
 
@@ -58,7 +58,7 @@ class ProjectsMailerTest < ActionMailer::TestCase
     email = ProjectsMailer.with(project: project).project_awaiting_assignment
 
     assert_emails 0 do
-      email.deliver_now
+      email.deliver_later
     end
   end
 end
