@@ -451,7 +451,7 @@ class Project < ApplicationRecord
       CasNotifier.new_cas_project_saved(self, user.id)
     end
 
-    CasMailer.with(project: self).send(:new_cas_project_saved).deliver_now
+    CasMailer.with(project: self).send(:new_cas_project_saved).deliver_later
   end
 
   def senior_user_must_be_active

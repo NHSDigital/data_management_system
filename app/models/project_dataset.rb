@@ -60,11 +60,11 @@ class ProjectDataset < ApplicationRecord
     end
     CasMailer.with(project: project, project_dataset: self).send(
       :dataset_approved_status_updated
-    ).deliver_now
+    ).deliver_later
     CasNotifier.dataset_approved_status_updated_to_user(project, self)
     CasMailer.with(project: project, project_dataset: self).send(
       :dataset_approved_status_updated_to_user
-    ).deliver_now
+    ).deliver_later
   end
 
   def readable_approved_status
