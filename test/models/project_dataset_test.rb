@@ -76,7 +76,7 @@ class ProjectDatasetTest < ActiveSupport::TestCase
     project.transition_to!(workflow_states(:submitted))
     project.reload_current_state
 
-    assert_difference 'notifications.count', 3 do
+    assert_difference 'notifications.count', 4 do
       project_dataset.update(approved: true)
     end
 
@@ -84,7 +84,7 @@ class ProjectDatasetTest < ActiveSupport::TestCase
                                           "Dataset One' has been updated to Approval status of " \
                                           "'Approved'.\n\n"
 
-    assert_difference 'notifications.count', 3 do
+    assert_difference 'notifications.count', 4 do
       project_dataset.update(approved: false)
     end
 

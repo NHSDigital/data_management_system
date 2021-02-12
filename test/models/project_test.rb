@@ -395,7 +395,7 @@ class ProjectTest < ActiveSupport::TestCase
     refute_includes(application.errors.keys, :project)
   end
 
-  test 'dataset_approval scope should only return projects that the user is allowed to approve' do
+  test 'cas_dataset_approval scope should only return projects that user is allowed to approve' do
     user = users(:standard_user2)
     dataset = Dataset.find_by(name: 'Extra CAS Dataset One')
     # grant user approver role for our dataset
@@ -408,18 +408,18 @@ class ProjectTest < ActiveSupport::TestCase
     cas_project.project_datasets << project_dataset
 
     # Should not be returned while at DRAFT state
-    assert_equal 0, Project.dataset_approval(user).count
+    assert_equal 0, Project.cas_dataset_approval(user).count
 
     cas_project.transition_to!(workflow_states(:submitted))
 
-    assert_equal 1, Project.dataset_approval(user).count
+    assert_equal 1, Project.cas_dataset_approval(user).count
 
     project_dataset.approved = true
     project_dataset.save!(validate: false)
 
     # Test the use of the scope with and without approved = nil argument
-    assert_equal 0, Project.dataset_approval(user, nil).count
-    assert_equal 1, Project.dataset_approval(user).count
+    assert_equal 0, Project.cas_dataset_approval(user, nil).count
+    assert_equal 1, Project.cas_dataset_approval(user).count
 
     new_project = Project.create(project_type: ProjectType.find_by(name: 'CAS'),
                                  owner: users(:standard_user1)).tap(&:valid?)
@@ -429,7 +429,7 @@ class ProjectTest < ActiveSupport::TestCase
 
     new_project.transition_to!(workflow_states(:submitted))
 
-    assert_equal 0, Project.dataset_approval(user, nil).count
+    assert_equal 0, Project.cas_dataset_approval(user, nil).count
   end
 
   test 'should notify cas_manager on new project creation' do

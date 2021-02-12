@@ -1,8 +1,0 @@
-<%= render 'projects/search', url: dataset_approvals_projects_path %>
-<%= bootstrap_panel_tag panel_heading_segments(
-  center: content_tag(:h4) { 'CAS Applications' },
-) do %>
-  <%= render 'cas_show_tabs', projects: @projects %>
-  <%= render 'cas_show_tab_panels', projects: @projects %>
-  <%= will_paginate @projects, class: 'pagination center-block text-center' %>
-<% end %>

@@ -41,8 +41,8 @@
                 <%= bootstrap_list_link_to 'Teams', teams_path %>
                 <%= bootstrap_list_link_to 'Projects', projects_path %>
               <% end %>
-                <%= bootstrap_list_link_to 'My Dataset Approvals', dataset_approvals_projects_path %>
               <% if current_user.cas_dataset_approver? || current_user.cas_access_approver?  %>
+                <%= bootstrap_list_link_to 'My Approvals', cas_approvals_projects_path %>
               <% end %>
               <% if current_user.administrator? %>
                 <li class="dropdown">

@@ -71,7 +71,7 @@ Rails.application.routes.draw do
 
   resources :projects do
     get :dashboard, on: :collection
-    get :dataset_approvals, on: :collection
+    get :cas_approvals, on: :collection
   end
 
   resources :projects, shallow: true do

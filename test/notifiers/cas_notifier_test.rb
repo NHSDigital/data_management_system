@@ -8,7 +8,7 @@ class CasNotifierTest < ActiveSupport::TestCase
     project.project_datasets << project_dataset
     recipients = SystemRole.cas_manager_and_access_approvers.map(&:users).flatten
     title = 'Dataset Approval Status Change'
-    assert_difference -> { Notification.by_title(title).count }, 3 do
+    assert_difference -> { Notification.by_title(title).count }, 4 do
       recipients.each do |user|
         CasNotifier.dataset_approved_status_updated(project, project_dataset, user.id)
       end
@@ -46,7 +46,7 @@ class CasNotifierTest < ActiveSupport::TestCase
     # Auto-transition to Access granted makes this a bit tricky to test state_id here
     # although it is covered in project_state test
     title = 'Access Approval Status Updated'
-    assert_difference -> { Notification.by_title(title).count }, 3 do
+    assert_difference -> { Notification.by_title(title).count }, 4 do
       recipients.each do |user|
         CasNotifier.access_approval_status_updated(project, user.id,
                                                    workflow_states(:access_approver_approved).id)
@@ -124,7 +124,7 @@ class CasNotifierTest < ActiveSupport::TestCase
   test 'should generate requires_account_approval Notifications' do
     project = create_project(project_type: project_types(:cas), project_purpose: 'test')
     title = 'CAS Application Requires Access Approval'
-    assert_difference -> { Notification.by_title(title).count }, 1 do
+    assert_difference -> { Notification.by_title(title).count }, 2 do
       User.cas_access_approvers.each do |user|
         CasNotifier.requires_account_approval(project, user.id)
       end
@@ -145,7 +145,7 @@ class CasNotifierTest < ActiveSupport::TestCase
     end
 
     title = 'CAS Application Requires Dataset Approval'
-    assert_difference -> { Notification.by_title(title).count }, 2 do
+    assert_difference -> { Notification.by_title(title).count }, 3 do
       project.datasets.each do |dataset|
         dataset.approvers.each do |approver|
           CasNotifier.requires_dataset_approval(project, approver.id)

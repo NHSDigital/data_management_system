@@ -2,9 +2,9 @@
 class ProjectsController < ApplicationController
   load_and_authorize_resource :team
   load_and_authorize_resource :project, through: :team, shallow: true,
-                                        except: %i[dashboard dataset_approvals], new: %i[import]
+                                        except: %i[dashboard cas_approvals], new: %i[import]
 
-  before_action -> { authorize! :read, Project }, only: %i[dashboard dataset_approvals]
+  before_action -> { authorize! :read, Project }, only: %i[dashboard cas_approvals]
 
   # include late to ensure correct callback order
   include Workflow::Controller
@@ -65,10 +65,15 @@ class ProjectsController < ApplicationController
       end
   end
 
-  def dataset_approvals
-    @projects = Project.dataset_approval(current_user, nil).order(updated_at: :desc)
-    @projects = @projects.my_projects_search(search_params).order(updated_at: :desc)
-    @projects = @projects.paginate(page: params[:page], per_page: 10)
+  def cas_approvals
+    @projects = Project.my_projects_search(search_params).accessible_by(current_ability, :read).
+                order(updated_at: :desc)
+    @my_dataset_approvals = @projects.cas_dataset_approval(current_user, nil).
+                            order(updated_at: :desc)
+    @my_access_approvals = @projects.cas_access_approval.order(updated_at: :desc)
+
+    @my_dataset_approvals = @my_dataset_approvals.paginate(page: params[:page], per_page: 10)
+    @my_access_approvals = @my_access_approvals.paginate(page: params[:page], per_page: 10)
   end
 
   def approve_members

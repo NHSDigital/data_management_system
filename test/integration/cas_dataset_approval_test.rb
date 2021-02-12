@@ -1,10 +1,10 @@
 require 'test_helper'
 
 class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
-  test 'should be able to view list of projects that user has access to approve' do
-    @user = users(:cas_dataset_approver)
+  test 'should be able to approve and reject datasets' do
+    user = users(:cas_dataset_approver)
     ProjectDatasetsController.any_instance.expects(:valid_otp?).twice.returns(false).then.returns(true)
-    sign_in @user
+    sign_in user
 
     project = Project.create(project_type: project_types(:cas),
                              owner: users(:standard_user2))
@@ -12,9 +12,9 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
     project.project_datasets << ProjectDataset.new(dataset: dataset, terms_accepted: true)
 
     project.transition_to!(workflow_states(:submitted))
-    visit dataset_approvals_projects_path
+    visit cas_approvals_projects_path
 
-    within '#awaiting_approval' do
+    within '#my_dataset_approvals' do
       assert has_content?(project.id.to_s)
       click_link(href: "/projects/#{project.id}#!datasets", title: 'Details')
     end
@@ -53,8 +53,8 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
   end
 
   test 'should be able to reapply for a dataset if approval declined' do
-    @user = users(:no_roles)
-    sign_in @user
+    user = users(:no_roles)
+    sign_in user
 
     project = Project.create(project_type: project_types(:cas),
                              owner: users(:no_roles))
@@ -92,8 +92,8 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
 
   test 'should show applicant correct pending dataset status' do
     # Other statuses are covered in the test above
-    @user = users(:no_roles)
-    sign_in @user
+    user = users(:no_roles)
+    sign_in user
 
     project = Project.create(project_type: project_types(:cas),
                              owner: users(:no_roles))
@@ -111,8 +111,8 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
   end
 
   test 'should show cas_dataset approver correct dataset statuses' do
-    @user = users(:cas_dataset_approver)
-    sign_in @user
+    user = users(:cas_dataset_approver)
+    sign_in user
 
     project = Project.create(project_type: project_types(:cas),
                              owner: users(:standard_user2))
