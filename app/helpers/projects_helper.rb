@@ -313,11 +313,4 @@ module ProjectsHelper
 
     field ? 'Yes' : 'No'
   end
-
-  def blah?(approval_type)
-    return false if approval_type == 'access' && current_user.cas_dataset_approver? &&
-                    current_user.cas_access_approver?
-
-    true
-  end
 end
