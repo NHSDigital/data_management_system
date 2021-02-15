@@ -304,7 +304,9 @@ class PDFApplicationFacade
       "#{target}_add2":       organisation_add2,
       "#{target}_city":       organisation_city,
       "#{target}_postcode":   organisation_postcode,
-      "#{target}_country_id": Lookups::Country.find_by(value: organisation_country.upcase)&.id
+      # some pdf readers send through value instead of id
+      "#{target}_country_id": Lookups::Country.find_by(value: organisation_country.upcase)&.id ||
+                              organisation_country
     )
   end
 end
