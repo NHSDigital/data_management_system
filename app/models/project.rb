@@ -140,9 +140,14 @@ class Project < ApplicationRecord
   scope :contributors, ->(user) { joins(:grants).where(
                                   grants: { roleable: ProjectRole.can_edit, user_id: user.id }) }
 
-  scope :dataset_approval, lambda { |user, approved_values = [nil, true, false]|
+  scope :cas_dataset_approval, lambda { |user, approved_values = [nil, true, false]|
     where(id: ProjectDataset.dataset_approval(user, approved_values).pluck(:project_id)).order(:id).
       joins(:current_state).merge(Workflow::State.dataset_approval_states)
+  }
+
+  scope :cas_access_approval, lambda {
+    joins(:current_state).where(workflow_current_project_states: { state_id: 'SUBMITTED' }).
+      joins(:project_type).merge(ProjectType.cas)
   }
 
   accepts_nested_attributes_for :project_attachments

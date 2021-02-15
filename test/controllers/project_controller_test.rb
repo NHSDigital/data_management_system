@@ -49,7 +49,7 @@ class ProjectControllerTest < ActionDispatch::IntegrationTest
     @user = users(:cas_dataset_approver)
     sign_in(@user)
 
-    get dataset_approvals_projects_url(@project)
+    get cas_approvals_projects_url(@project)
     assert_response :success
   end
 end

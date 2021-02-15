@@ -430,3 +430,13 @@ cas_dataset_approver_2:
   username: cda
   directorate_id: 1
   division_id: 1
+
+cas_access_and_dataset_approver:
+  email: cas_a_d_approver@phe.gov.uk
+  first_name: Cas
+  last_name: Access-Dataset-Approver
+  z_user_status: active_user_status
+  location: phe
+  username: cda
+  directorate_id: 1
+  division_id: 1

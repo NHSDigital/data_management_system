@@ -345,10 +345,10 @@ class Ability
     return unless user.role?(DatasetRole.fetch(:approver))
 
     can %i[read], Project, project_type_id: ProjectType.cas.pluck(:id),
-                           id: Project.dataset_approval(user).map(&:id)
+                           id: Project.cas_dataset_approval(user).map(&:id)
     can %i[update approve], ProjectDataset, dataset_id: user.datasets.pluck(:id),
                                             project: {
-                                              id: Project.dataset_approval(user).map(&:id)
+                                              id: Project.cas_dataset_approval(user).map(&:id)
                                             }
   end
 

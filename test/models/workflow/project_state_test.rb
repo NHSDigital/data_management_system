@@ -95,7 +95,7 @@ module Workflow
         project.transition_to!(workflow_states(:submitted))
       end
 
-      assert_difference 'notifications.count', 3 do
+      assert_difference 'notifications.count', 4 do
         project.transition_to!(workflow_states(:access_approver_approved))
       end
 
@@ -113,7 +113,7 @@ module Workflow
         project.transition_to!(workflow_states(:submitted))
       end
 
-      assert_difference 'notifications.count', 3 do
+      assert_difference 'notifications.count', 4 do
         project.transition_to!(workflow_states(:access_approver_rejected))
       end
 
@@ -207,7 +207,7 @@ module Workflow
 
       notifications = Notification.where(title: 'CAS Application Requires Access Approval')
 
-      assert_difference 'notifications.count', 1 do
+      assert_difference 'notifications.count', 2 do
         project.transition_to!(workflow_states(:submitted))
       end
 
@@ -230,8 +230,8 @@ module Workflow
 
       notifications = Notification.where(title: 'CAS Application Requires Dataset Approval')
 
-      # should only send to the 1 dataset approver with grant for this dataset
-      assert_difference 'notifications.count', 1 do
+      # should only send to the 2 dataset approvers with grant for this dataset
+      assert_difference 'notifications.count', 2 do
         one_dataset_project.transition_to!(workflow_states(:submitted))
       end
 
@@ -254,7 +254,7 @@ module Workflow
       two_dataset_project.reload_current_state
 
       # should only send to dataset approvers with grant for either of these 2 datasets
-      assert_difference 'notifications.count', 2 do
+      assert_difference 'notifications.count', 3 do
         two_dataset_project.transition_to!(workflow_states(:submitted))
       end
 
