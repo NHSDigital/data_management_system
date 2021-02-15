@@ -253,6 +253,22 @@ class PDFApplicationFacadeTest < ActiveSupport::TestCase
     refute_equal @facade.funder_country_id, 'XKU'
   end
 
+  test 'should set sponsor country if id provided instead of country name' do
+    @facade.update(organisation_country: 'XKU')
+    @facade.sponsor_same_as_applicant = true
+    @facade.save
+
+    assert_equal @facade.sponsor_country_id, 'XKU'
+  end
+
+  test 'should set country if id provided instead of country name' do
+    @facade.update(organisation_country: 'XKU')
+    @facade.funder_same_as_applicant = true
+    @facade.save
+
+    assert_equal @facade.funder_country_id, 'XKU'
+  end
+
   test 'should map incoming pdf level_of_identifiability symbol into correct mapped string' do
     @facade.level_of_identifiability = :PersonallyIdentifiable
 
