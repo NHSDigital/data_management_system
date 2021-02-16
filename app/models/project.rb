@@ -1,6 +1,7 @@
 # Project associations and validations
 class Project < ApplicationRecord
   include Workflow::Model
+  include Commentable
 
   has_many :project_attachments, as: :attachable, dependent: :destroy
   has_many :project_comments, dependent: :destroy
