@@ -27,6 +27,7 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
+--
 -- Name: addresses; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -135,7 +136,6 @@ CREATE TABLE public.ar_internal_metadata (
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL
 );
-
 
 --
 -- Name: birth_data; Type: TABLE; Schema: public; Owner: -
@@ -3440,6 +3440,7 @@ CREATE SEQUENCE public.releases_id_seq
 --
 
 ALTER SEQUENCE public.releases_id_seq OWNED BY public.releases.id;
+
 
 
 --
@@ -7782,7 +7783,6 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20201126114719'),
 ('20201126114922'),
 ('20201126115056'),
-('20201210150402'),
 ('20210104125759'),
 ('20210104144033'),
 ('20210105125403'),
