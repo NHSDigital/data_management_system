@@ -26,6 +26,10 @@ Rails.application.routes.draw do
     get :download, on: :member
   end
 
+  concern :commentable do
+    resources :comments, shallow: true, only: %i[index create destroy]
+  end
+
   get 'notifications/index'
   get '/reports/report1', to: 'reports#report1', as: 'report1'
   get '/reports/report2', to: 'reports#report2', as: 'report2'

@@ -1,0 +1,7 @@
+<%= content_tag(:div, id: "#{dom_id(@commentable)}_comments") do %>
+  <%= render 'form', comment: @comment %>
+  <hr />
+  <div class="comments-list">
+    <%= render @comments %>
+  </div>
+<% end %>

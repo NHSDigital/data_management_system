@@ -6,6 +6,7 @@
 @import "phe_logo";
 @import "file_upload";
 @import "nodes";
+@import "comments";
 
 // Ensure date picker renders over bootstrap's static nav, modals, tooltips etc
 .datepicker {
@@ -46,7 +47,7 @@
 //  font-weight: bold;
 }
 
-tr.comments:hover {
+tr.data-item--comments:hover {
   background-color: white !important;
 }
 

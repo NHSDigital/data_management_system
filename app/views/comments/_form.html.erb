@@ -1,0 +1,25 @@
+<%
+  url = comment.persisted? ? comment_path(comment) : polymorphic_path([comment.commentable, comment])
+%>
+
+<%= bootstrap_form_with model: comment, url: url, local: false, html: { class: 'comment-form', id: dom_id(comment) } do |form| %>
+  <div class="media comment">
+    <div class="media-left">
+      <div class="comment--avatar">
+        <%= bootstrap_icon_tag('user') %>
+      </div>
+    </div>
+    <div class="media-body comment--body">
+      <div class="media-heading comment--heading">
+        <strong><%= current_user.full_name %></strong><br />
+        <small><em>now</em></small>
+      </div>
+
+      <%= form.control_group(:body, '') do %>
+        <%= form.text_area :body, rows: 3 %>
+      <% end %>
+
+      <%= form.submit class: 'btn btn-primary btn-sm' %>
+    </div>
+  </div>
+<% end %>

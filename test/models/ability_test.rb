@@ -916,6 +916,28 @@ class AbilityTest < ActiveSupport::TestCase
     end
   end
 
+  test 'comments' do
+    user        = users(:standard_user1)
+    commentable = projects(:dummy_project)
+
+    comment_one = Comment.create!(
+      commentable: commentable,
+      user: user,
+      body: 'I like to move it, move it'
+    )
+
+    comment_two = Comment.create!(
+      commentable: commentable,
+      user: users(:standard_user2),
+      body: 'I love Zoflora'
+    )
+
+    assert user.can? :create, comment_one
+    assert user.can? :delete, comment_one
+    refute user.can? :create, comment_two
+    refute user.can? :delete, comment_two
+  end
+
   test 'can create CAS application with no roles' do
     mbis_application    = Project.new(project_type: ProjectType.find_by(name: 'Project'))
     odr_eoi_application = Project.new(project_type: ProjectType.find_by(name: 'EOI'))

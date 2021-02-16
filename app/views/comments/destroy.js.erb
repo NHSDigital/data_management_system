@@ -1,0 +1,6 @@
+$("#<%= dom_id(@comment) %>").remove();
+
+var $badge = $("#<%= "#{dom_id(@comment.commentable)}_comments_count_badge" %>");
+var count = +$badge.text();
+
+$badge.text(count - 1);

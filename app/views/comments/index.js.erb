@@ -1,0 +1,8 @@
+var $modal = $('#modal');
+
+$('.modal-title', $modal).html("<%= j(Comment.model_name.human.pluralize) %>");
+$('.modal-body', $modal).html(
+  "<%= j render(partial: 'comments', locals: { commentable: @commentable, comments: @comments }) %>"
+);
+
+$modal.modal('show');
