@@ -164,7 +164,7 @@ Rails.application.routes.draw do
       end
     end
     resources :team_datasets, only: [:index, :new, :create, :destroy]
-    resources :projects, shallow: true do
+    resources :projects, shallow: true, concerns: %i[commentable] do
       resources :grants, controller: :project_grants do
         collection do
           get :edit

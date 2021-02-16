@@ -15,8 +15,8 @@
 
   <div class="panel-body" id="project-details">
     <div class="row" id="project_show_tabs">
-      <%= render "projects/#{@project.project_type_name.downcase}/show_project_tabs" %>
-      <%= render "projects/#{@project.project_type_name.downcase}/show_project_tab_panels" %>
+      <%= render "projects/#{@project.project_type_name.downcase}/show_project_tabs",       project: @project, sub_resource_counts: @sub_resource_counts %>
+      <%= render "projects/#{@project.project_type_name.downcase}/show_project_tab_panels", project: @project, sub_resource_counts: @sub_resource_counts %>
     </div>
   </div>
 <% end %>

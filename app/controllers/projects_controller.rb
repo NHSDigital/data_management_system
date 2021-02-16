@@ -62,6 +62,9 @@ class ProjectsController < ApplicationController
   def show
     @readonly = true
     @team = @project.team
+    @sub_resource_counts = {
+      'comments': @project.comments.count
+    }
   end
 
   # TODO: plugin multiple datasets

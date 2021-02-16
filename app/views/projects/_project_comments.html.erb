@@ -1,66 +1,16 @@
+<%
+  # TODO: Remove me once `project_comments` fully retired.
+  project ||= @project
+%>
+
 <div id='project_comment_information'>
   <div class="panel panel-default" style="border-top:0px">
     <div class="panel-heading" style="border-top:0px">
-      <div class="row">
-        <div class="col-md-8">
-          <div class="pull-left" style="font-size:1.5em">
-            Comments
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="pull-right">
-          	<%= link_to bootstrap_icon_tag('plus') +' Add comment', new_project_project_comment_path(@project, comment_type: 'free', project_data_source_item_id: nil), remote: true, class: 'btn btn-primary btn-sm reject_data_source_item' %>
-          </div>
-        </div>
-      </div>
+      Comments
     </div>
   </div>
 
-  <div>
-    <h4>Filter
-      <select id='projectCommentFilter'>
-        <option value='all'>All</option>
-        <% @project.project_comments.all.collect(&:comment_type).uniq.each do |ct| %>
-          <option value='<%= ct%>'><%= ct%></option>
-        <% end %>
-      </select>
-    </h4>
-  </div>
-
-  <table class="table table-hover" data-toggle="table" id='projectCommentsTable'>
-    <thead>
-      <tr>
-        <th style="width:15%" data-sortable="true">Type</th>
-        <th style="width:10%" data-sortable="true">Item</th>
-        <th style="width:10%" data-sortable="true">Description</th>
-        <th style="width:50%">Comment</th>
-        <th style="width:15%" data-sortable="true">User</th>
-        <th style="width:10%" data-sortable="true">When</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @project.project_comments.order('updated_at DESC').each do |comment| %>
-        <tr>
-        	<td>
-        	  <%= comment.comment_type %>
-        	</td>
-        	<td>
-        	  <% if !comment.project_node.nil? %>
-              <%= comment.project_node.node.name %>
-            <% end %>
-          </td>
-        	<td>
-        	  <% if !comment.project_node.nil? %>
-              <%= comment.project_node.node.description %>
-            <% end %>
-          </td>
-          <td>
-          	<%= comment.comment %>
-          </td>
-          <td><%= comment.user_email %></td>
-          <td><%= timeago_tag(comment.created_at) %></td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
+  <%= async_content_tag(:div, polymorphic_path([project, :comments])) do %>
+    <strong>Loading...</strong>
+  <% end %>
 </div>

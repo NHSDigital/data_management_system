@@ -60,7 +60,7 @@ class ProjectsNotifier
           title: title,
           body: CONTENT_TEMPLATES[body_template]['body'] %
           { project: project.name,
-            comments: project.project_comments.last.comment },
+            comments: project.comments.last.body },
           project_id: project.id
         ),
         user_to_notify

@@ -27,11 +27,11 @@ class DelegateUserTest < ActionDispatch::IntegrationTest
     @project = projects(:pending_delegate_project)
     visit project_path(@project)
 
-    assert_difference -> { @project.project_comments.count } do
+    assert_difference -> { @project.comments.count } do
       click_button('Close')
 
       within_modal selector: '#modal-rejected' do
-        fill_in 'project_project_comments_attributes_0_comment', with: 'Delegate had rejected project details'
+        fill_in 'project_comments_attributes_0_body', with: 'Delegate had rejected project details'
         click_button 'Save'
       end
 

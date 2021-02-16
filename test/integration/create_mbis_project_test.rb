@@ -227,7 +227,7 @@ class CreateMbisProjectTest < ActionDispatch::IntegrationTest
     end
 
     click_link 'Comments'
-    assert has_content? 'Filter'
+
     within(id: 'tabs') do
       click_link 'Datasets'
     end

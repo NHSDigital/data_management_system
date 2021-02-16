@@ -22,7 +22,7 @@
     <%= render partial: 'project_uploads' %>
   </div>
   <div class="tab-pane " id="comments">
-    <%= render partial: 'project_comments' %>
+    <%= render 'project_comments', project: project, comments_count: sub_resource_counts.fetch(:comments, 0) %>
   </div>
   <!--
   <div class="tab-pane " id="actions">

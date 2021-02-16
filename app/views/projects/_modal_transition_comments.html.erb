@@ -25,11 +25,11 @@
           <% end %>
 
           <% unless state.id.in? %w[DPIA_REVIEW] %>
-            <%= form.fields_for(:project_comments, project.project_comments.build(user: current_user)) do |comment_form| %>
+            <%= form.fields_for(:comments, project.comments.build(user: current_user)) do |comment_form| %>
               <%= comment_form.hidden_field :user_id %>
               <div class="form-group">
-                <%= comment_form.label :comment, 'Comment' %>
-                <%= comment_form.text_area(:comment, class: 'form-control', rows: 8) %>
+                <%= comment_form.label :body, 'Comment' %>
+                <%= comment_form.text_area(:body, class: 'form-control', rows: 8) %>
               </div>
             <% end %>
           <% end %>

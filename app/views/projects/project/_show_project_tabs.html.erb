@@ -29,6 +29,7 @@
   <li>
     <a href="#comments" data-toggle='tab'>
       Comments
+      <%= comments_count_badge_for(project, sub_resource_counts.fetch(:comments, 0)) %>
     </a>
   </li>
 <!--
