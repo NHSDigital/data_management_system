@@ -27,15 +27,6 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- Name: a; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.a (
-    id integer,
-    val text
-);
-
-
 --
 -- Name: addresses; Type: TABLE; Schema: public; Owner: -
 --
@@ -145,17 +136,6 @@ CREATE TABLE public.ar_internal_metadata (
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL
 );
-
-
---
--- Name: b; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.b (
-    id integer,
-    val text
-);
-
 
 --
 -- Name: birth_data; Type: TABLE; Schema: public; Owner: -
@@ -463,32 +443,6 @@ CREATE SEQUENCE public.closure_reasons_id_seq
 --
 
 ALTER SEQUENCE public.closure_reasons_id_seq OWNED BY public.closure_reasons.id;
-
-
---
--- Name: colorectal_tab2_all; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.colorectal_tab2_all (
-    gene text,
-    prov_name text,
-    provider character varying,
-    full_screen_count bigint,
-    full_screen_path_count bigint
-);
-
-
---
--- Name: colorectal_tab2_all_no_overlap; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.colorectal_tab2_all_no_overlap (
-    gene text,
-    prov_name text,
-    provider character varying(255),
-    full_screen_count bigint,
-    full_screen_path_count bigint
-);
 
 
 --
@@ -1736,23 +1690,6 @@ CREATE TABLE public.error_logs (
 
 
 --
--- Name: fs_pathogenic; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.fs_pathogenic (
-    pseudo_id1 text,
-    pseudo_id2 text,
-    codingdnasequencechange text,
-    proteinimpact text,
-    variantpathclass numeric,
-    moleculartestingtype integer,
-    genetictestscope text,
-    teststatus numeric(19,0),
-    gene text
-);
-
-
---
 -- Name: genetic_sequence_variants; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -2457,28 +2394,6 @@ CREATE TABLE public.overlap_ids (
     id2 text
 );
 
-
---
--- Name: pids; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.pids (
-    id1 text,
-    id2 text
-);
-
-
---
--- Name: possibly_nulls; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.possibly_nulls (
-    pseudo_id1 text,
-    pseudo_id2 text,
-    provider character varying,
-    teststatus numeric(19,0),
-    raw_record text
-);
 
 
 --
@@ -3635,27 +3550,6 @@ CREATE TABLE public.restricted_variants_no_null_class (
 );
 
 
---
--- Name: rnz; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.rnz (
-    gene text,
-    count bigint
-);
-
-
---
--- Name: rtd_variants; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.rtd_variants (
-    gene text,
-    codingdnasequencechange text,
-    genetictestscope text,
-    count bigint
-);
-
 
 --
 -- Name: schema_migrations; Type: TABLE; Schema: public; Owner: -
@@ -3695,160 +3589,6 @@ CREATE SEQUENCE public.security_assurances_id_seq
 --
 
 ALTER SEQUENCE public.security_assurances_id_seq OWNED BY public.security_assurances.id;
-
-
---
--- Name: sri_r1k; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.sri_r1k (
-    provider character varying(255),
-    servicereportidentifier text,
-    original_filename character varying(255)
-);
-
-
---
--- Name: sri_rcu; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.sri_rcu (
-    provider character varying(255),
-    servicereportidentifier text,
-    original_filename character varying(255)
-);
-
-
---
--- Name: sri_rgt; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.sri_rgt (
-    provider character varying(255),
-    servicereportidentifier text,
-    original_filename character varying(255)
-);
-
-
---
--- Name: sri_rj1; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.sri_rj1 (
-    provider character varying(255),
-    servicereportidentifier text,
-    original_filename character varying(255)
-);
-
-
---
--- Name: sri_rj7; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.sri_rj7 (
-    provider character varying(255),
-    servicereportidentifier text,
-    original_filename character varying(255)
-);
-
-
---
--- Name: sri_rnz; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.sri_rnz (
-    provider character varying(255),
-    servicereportidentifier text,
-    original_filename character varying(255)
-);
-
-
---
--- Name: sri_rpy; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.sri_rpy (
-    provider character varying(255),
-    servicereportidentifier text,
-    original_filename character varying(255)
-);
-
-
---
--- Name: sri_rq3; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.sri_rq3 (
-    provider character varying(255),
-    servicereportidentifier text,
-    original_filename character varying(255)
-);
-
-
---
--- Name: sri_rr8; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.sri_rr8 (
-    provider character varying(255),
-    servicereportidentifier text,
-    original_filename character varying(255)
-);
-
-
---
--- Name: sri_rtd; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.sri_rtd (
-    provider character varying(255),
-    servicereportidentifier text,
-    original_filename character varying(255)
-);
-
-
---
--- Name: sri_rth; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.sri_rth (
-    provider character varying(255),
-    servicereportidentifier text,
-    original_filename character varying(255)
-);
-
-
---
--- Name: sri_rvj; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.sri_rvj (
-    provider character varying(255),
-    servicereportidentifier text,
-    original_filename character varying(255)
-);
-
-
---
--- Name: sri_rx1; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.sri_rx1 (
-    provider character varying(255),
-    servicereportidentifier text,
-    original_filename character varying(255)
-);
-
-
---
--- Name: strange_pids_var; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.strange_pids_var (
-    pseudo_id1 text,
-    pseudo_id2 text,
-    provider character varying
-);
 
 
 --
