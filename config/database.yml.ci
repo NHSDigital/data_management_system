@@ -6,10 +6,6 @@ default: &default
   username: <%= ENV['DB_USERNAME'] %>
   password: <%= ENV['DB_PASSWORD'] %>
 
-development:
-  <<: *default
-  database: data_management_system_development
-
 test:
   <<: *default
   database: data_management_system_test

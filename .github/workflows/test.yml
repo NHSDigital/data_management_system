@@ -26,6 +26,9 @@ jobs:
       DB_USERNAME: rails
       DB_PASSWORD: rails_password
 
+      # Prep the whole stack in test-only mode:
+      RAILS_ENV: test
+
     steps:
     - uses: actions/checkout@v2
     - name: Set up Ruby
@@ -38,8 +41,6 @@ jobs:
       run: bin/rails db:setup
     - name: Precompile assets
       run: bin/rails assets:precompile
-      env:
-        RAILS_ENV: test
     - name: Run tests
       run: bin/rails test
 
