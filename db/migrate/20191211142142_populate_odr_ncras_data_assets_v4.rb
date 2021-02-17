@@ -1,6 +1,10 @@
 # If this fails on production server, it's because a project has been made  with items from
 # these datasets
 class PopulateOdrNcrasDataAssetsV4 < ActiveRecord::Migration[6.0]
+  class Dataset < ApplicationRecord
+    has_many :dataset_versions, dependent: :destroy
+  end
+
   def up
     return if Rails.env.test?
 
