@@ -13,6 +13,8 @@ module Import
                                         authoriseddate requesteddate practitionercode genomicchange
                                         specimentype].freeze
 
+
+                                        
           COLORECTAL_GENES_REGEX = /(?<colorectal>APC|
                                                 BMPR1A|
                                                 EPCAM|
@@ -70,6 +72,7 @@ module Import
             process_large_deldup(genocolorectal, record)
             process_test_scope(genocolorectal, record)
             process_test_type(genocolorectal, record)
+            add_organisationcode_testresult(genocolorectal)
             # @persister.integrate_and_store(genocolorectal)
             res = process_gene(genocolorectal, record)# Added by Francesco
             res.map { |cur_genotype| @persister.integrate_and_store(cur_genotype) }
@@ -83,6 +86,10 @@ module Import
           #   end
           # end
 
+          def add_organisationcode_testresult(genocolorectal)
+            genocolorectal.attribute_map['organisationcode_testresult'] = '696L0'
+          end
+          
           def process_gene(genocolorectal, record)
             genotypes = []
             genes = record.raw_fields['gene']
