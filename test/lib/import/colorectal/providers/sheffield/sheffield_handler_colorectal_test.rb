@@ -28,12 +28,21 @@ class SheffieldHandlerColorectalTest < ActiveSupport::TestCase
     Import::Brca::Core::RawRecord.new(default_options.merge!(options))
   end
 
-  test 'add_test_scope_from_karyo' do
+  test 'add_test_scope_from_karyo_fullscreen' do
     @logger.expects(:debug).with('ADDED FULL_SCREEN TEST for: MLH1 MSH2 & MSH6')
     @handler.add_test_scope_from_karyo(@genotype, @record)
   end
 
-  test 'add_colorectal_from_raw_test' do
+  test 'add_test_scope_from_karyo_targeted' do
+    targeted_record = build_raw_record('pseudo_id1' => 'bob')
+    targeted_record.mapped_fields['genetictestscope'] = 'R210 :: Inherited MMR deficiency (Lynch syndrome)'
+    targeted_record.raw_fields['karyotypingmethod'] = 'R242.1 :: Predictive testing'
+    @logger.expects(:debug).with('ADDED TARGETED TEST for: R242.1 :: Predictive testing')
+    @handler.add_test_scope_from_karyo(@genotype, targeted_record)
+  end
+
+
+  test 'add_colorectal_from_raw_test_full_screen' do
     # @logger.expects(:debug).with('ADDED FULL_SCREEN TEST for: MLH1 MSH2 & MSH6')
     # @handler.add_test_scope_from_karyo(@genotype, @record)
     @genotype.attribute_map['genetictestscope'] = 'Full screen Colorectal Lynch or MMR'
@@ -55,6 +64,21 @@ class SheffieldHandlerColorectalTest < ActiveSupport::TestCase
     raw_test = @handler.add_colorectal_from_raw_test(@genotype, @record)
     assert_equal 3, raw_test.size
   end
+
+  test 'add_colorectal_from_raw_test_targeted' do
+    # @logger.expects(:debug).with('ADDED FULL_SCREEN TEST for: MLH1 MSH2 & MSH6')
+    # @handler.add_test_scope_from_karyo(@genotype, @record)
+    @genotype.attribute_map['genetictestscope'] = 'Targeted Colorectal Lynch or MMR'
+    targeted_record = build_raw_record('pseudo_id1' => 'bob')
+    targeted_record.mapped_fields['genetictestscope'] = 'R210 :: Inherited MMR deficiency (Lynch syndrome)'
+    targeted_record.raw_fields['karyotypingmethod'] = 'R242.1 :: Predictive testing'
+    targeted_record.raw_fields['genotype'] = 'c.[2079dup];[2079=]  p.[(Cys694fs)];[(Cys694=)] MSH6 '
+    @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH6')
+    @logger.expects(:debug).with('SUCCESSFUL cdna change parse for: 2079dup')
+    @logger.expects(:debug).with('SUCCESSFUL protein change parse for: Cys694fs')
+    @handler.add_colorectal_from_raw_test(@genotype, targeted_record)
+  end
+
 
   test 'process_teststatus' do
     @handler.process_teststatus(@genotype, @record)
