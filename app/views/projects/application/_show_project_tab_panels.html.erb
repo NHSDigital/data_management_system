@@ -14,7 +14,7 @@
   <%= render 'project_datasets', project: @project %>
 
   <div class="tab-pane" id="data_items">
-    <%= render 'project_data_items' %>
+    <%= render 'project_data_items', project: project, comments_count: sub_resource_counts.fetch(:'project_nodes.comments', {}) %>
   </div>
 
   <div class="tab-pane " id="users">

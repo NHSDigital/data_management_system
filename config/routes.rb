@@ -180,7 +180,7 @@ Rails.application.routes.draw do
       resources :project_data_end_users
       resources :project_attachments
       resources :project_comments
-      resources :project_nodes do
+      resources :project_nodes, concerns: %i[commentable] do
         collection { patch :update_all }
       end
 

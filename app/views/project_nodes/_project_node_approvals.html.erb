@@ -7,17 +7,9 @@
 </td>
 <td><%= data_item.node.description %></td>
 <td>
-  <% if data_item.project_comments.count == 0 && data_item.project.current_state.id == 'DRAFT' %>
-    <%= link_to bootstrap_icon_tag('plus') +' Add Justification',
-        new_project_project_comment_path(@project, comment_type: 'DataSourceItemJustification', project_node_id: data_item.id),
-        remote: true,
-        class: 'btn btn-primary btn-xs reject_data_source_item' %>
-  <% elsif data_item.project_comments.count > 0 %>
-    <span data-toggle="collapse" data-target="#<%= dom_id(data_item) %>_comments">
-      <a href="javascript:;" data-turbolinks="false">
-        <%= pluralize(data_item.project_comments.count, 'Comment', plural: 'Comments') %>
-      </a>
-    </span>
+  <%= link_to(polymorphic_path([data_item, :comments]), remote: true) do %>
+    <%= Comment.model_name.human.pluralize %>
+    <%= comments_count_badge_for(data_item, comments_count) %>
   <% end %>
 </td>
 <td class='text-right'>

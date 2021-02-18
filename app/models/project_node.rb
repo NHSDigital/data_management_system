@@ -1,5 +1,7 @@
 # This is the ProjectDataSourceItem model
 class ProjectNode < ApplicationRecord
+  include Commentable
+
   belongs_to :project
   belongs_to :node
   has_many :project_comments, dependent: :destroy
@@ -8,9 +10,6 @@ class ProjectNode < ApplicationRecord
   # be sorted by DataSourceItem.name
   delegate :name, to: :node
   delegate :governance, to: :node
-
-  # need to get a 'default' comment when creating new item
-  attr_accessor :comment
 
   # Allow for auditing/version tracking of ProjectDataSourceItem
   has_paper_trail

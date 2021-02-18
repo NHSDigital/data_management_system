@@ -221,7 +221,7 @@ class Project < ApplicationRecord
 
   def unjustified_data_items
     project_nodes.count do |a|
-      a.governance&.value == 'DIRECT IDENTIFIER' && a.project_comments.empty?
+      a.governance&.value == 'DIRECT IDENTIFIER' && a.comments.empty?
     end
   end
 

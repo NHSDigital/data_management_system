@@ -3,7 +3,7 @@
     <%= render partial: 'project_summary_data' %>
   </div>
   <div class="tab-pane " id="data">
-    <%= render partial: 'project_data_items' %>
+    <%= render 'project_data_items', project: project, comments_count: sub_resource_counts.fetch(:'project_nodes.comments', {}) %>
   </div>
   <div class="tab-pane " id="legal">
     <%= render partial: 'project_legal_ethical' %>

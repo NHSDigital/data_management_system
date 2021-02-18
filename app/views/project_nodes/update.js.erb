@@ -2,7 +2,7 @@
   @project ||= @project_node.project # shallow routing means this may not have been set
 %>
 
-$('#<%= "project_node_#{@project_node.id}"%>').html("<%= escape_javascript(render partial: 'project_node_approvals', locals: { data_item: @project_node } ) %>");
+$('#<%= "project_node_#{@project_node.id}"%>').html("<%= escape_javascript(render partial: 'project_node_approvals', locals: { data_item: @project_node, comments_count: @project_node.comments.count } ) %>");
 
 $(".decline_project_data_source_items").bind('click', function() {
     if ($(this).nextAll('textarea')[0].value.length < 5){
