@@ -7,18 +7,31 @@ class ApprovePendingProjectTest < ActionDispatch::IntegrationTest
     visit project_path(@project)
 
     click_link('Project Details')
-    find('#approve_details_status').find_link('Approve').click
+
+    within('#approve_details_status') do
+      click_button 'Approve'
+      assert has_text?('APPROVED')
+    end
+
     click_link('Data Items')
     assert page.has_content? 'Approve All'
     assert page.has_content? 'Undo All'
     page.find('#project_data_items_information').find('.glyphicon-ok').click
     assert find('#data_item_approval_status').has_text?('APPROVED')
+
     click_link('Users')
-    find('#approve_members_status').find_link('Approve').click
-    assert find('#user_approval_status').has_text?('APPROVED')
+
+    within('#approve_members_status') do
+      click_button 'Approve'
+      assert has_text?('APPROVED')
+    end
+
     click_link('Legal / Ethical')
-    find('#approve_legal_status').find_link('Approve').click
-    assert find('#legal_ethical_approval_status').has_text?('APPROVED')
+
+    within('#approve_legal_status') do
+      click_button 'Approve'
+      assert has_text?('APPROVED')
+    end
 
     accept_prompt do
       click_button('Approve')
@@ -52,13 +65,14 @@ class ApprovePendingProjectTest < ActionDispatch::IntegrationTest
 
     click_link('Project Details')
 
-    find('#approve_details_status').find_link('Decline').click
-    within_modal do
-      fill_in 'project_comment_text_field', with: 'Rejected project details comment'
-      click_button 'Save'
+    within('#approve_details_status') do
+      click_link 'Decline'
     end
 
-    assert page.has_content?('Rejected project details comment')
+    within_modal do
+      fill_in 'project_comments_attributes_0_body', with: 'Rejected project details comment'
+      click_button 'Save'
+    end
 
     within('#project_header') do
       click_button 'Close'
@@ -84,13 +98,14 @@ class ApprovePendingProjectTest < ActionDispatch::IntegrationTest
 
     click_link('Users')
 
-    find('#approve_members_status').find_link('Decline').click
-    within_modal do
-      fill_in 'project_comment_text_field', with: 'Rejected member details comment'
-      click_button 'Save'
+    within('#approve_members_status') do
+      click_link 'Decline'
     end
 
-    assert page.has_content?('Rejected member details comment')
+    within_modal do
+      fill_in 'project_comments_attributes_0_body', with: 'Rejected member details comment'
+      click_button 'Save'
+    end
 
     within '#project_header' do
       click_button 'Close'
@@ -116,9 +131,12 @@ class ApprovePendingProjectTest < ActionDispatch::IntegrationTest
 
     click_link('Legal / Ethical')
 
-    find('#approve_legal_status').find_link('Decline').click
+    within('#approve_legal_status') do
+      click_link 'Decline'
+    end
+
     within_modal do
-      fill_in 'project_comment_text_field', with: 'Rejected legal details comment'
+      fill_in 'project_comments_attributes_0_body', with: 'Rejected legal details comment'
       click_button 'Save'
     end
 

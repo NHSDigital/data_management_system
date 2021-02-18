@@ -1,9 +1,15 @@
 <% if can?(:approve, @project) %>
   <% if project.members_approved.nil? %>
-      <%= link_to 'Approve', approve_project_members_project_path(:id => project.id, "project[members_approved]" => true), method: :patch, remote: true, class: 'btn btn-success btn-sm' %>
-      <%= link_to ' Decline', new_project_project_comment_path(@project, comment_type: 'MemberRejection'), remote: true, class: 'btn btn-danger btn-sm' %>
+    <div class="btn-group" role="group">
+      <%= button_to 'Approve', project_members_approval_path(project), remote: true, class: 'btn btn-success btn-sm' %>
+    </div>
+    <div class="btn-group" role="group">
+      <%= link_to ' Decline', new_project_members_rejection_path(project), remote: true, class: 'btn btn-danger btn-sm' %>
+    </div>
   <% else %>
-    <%= link_to 'X', approve_project_members_project_path(:id => project.id, "project[members_approved]" => ''), method: :patch, remote: true, class: 'btn btn-default btn-xs', title: 'Undo', rel: 'tooltip', "data-placement" => "left" %>
+    <div class="btn-group" role="group">
+      <%= button_to 'X', project_members_approval_path(project), method: :delete, remote: true, class: 'btn btn-default btn-xs', title: 'Undo', rel: 'tooltip', data: { placement: 'left', container: 'body' } %>
+    </div>
     <span id="members_approval_status" class="label label-<%= approval_button_style(@project.members_approved) %>"><%= approval_button_message(@project.members_approved) %></span>
   <% end %>
 <% end %>

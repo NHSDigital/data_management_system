@@ -1,0 +1,8 @@
+var $modal = $("#modal");
+
+$('.modal-title', $modal).text("Approve project members");
+$('.modal-body', $modal).html(
+  "<%= j(render 'approvals/form', model: @project, url: project_members_approval_path(@project)) %>"
+);
+
+$modal.modal('show');

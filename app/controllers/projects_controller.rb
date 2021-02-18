@@ -89,18 +89,6 @@ class ProjectsController < ApplicationController
     @my_access_approvals = @my_access_approvals.paginate(page: params[:page], per_page: 10)
   end
 
-  def approve_members
-    @project.update(approval_params)
-  end
-
-  def approve_details
-    @project.update(approval_params)
-  end
-
-  def approve_legal
-    @project.update(approval_params)
-  end
-
   def reset_project_approvals
     @project.reset_approvals
     redirect_to @project, notice: "#{@project.project_type_name} approval details reset"

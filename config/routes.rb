@@ -30,6 +30,11 @@ Rails.application.routes.draw do
     resources :comments, shallow: true, only: %i[index create destroy]
   end
 
+  concern :approvable do
+    resource :approval,  only: %i[new create destroy]
+    resource :rejection, only: %i[new create destroy]
+  end
+
   get 'notifications/index'
   get '/reports/report1', to: 'reports#report1', as: 'report1'
   get '/reports/report2', to: 'reports#report2', as: 'report2'
@@ -188,12 +193,11 @@ Rails.application.routes.draw do
         post :import
       end
 
-      member do
-        # this one works ...
-        patch :approve_project_members, to: 'projects#approve_members'
-        patch :approve_project_details, to: 'projects#approve_details'
-        patch :approve_project_legal,   to: 'projects#approve_legal'
+      resource :details, only: [], concerns: %i[approvable], module: 'projects/details'
+      resource :legal,   only: [], concerns: %i[approvable], module: 'projects/legal'
+      resource :members, only: [], concerns: %i[approvable], module: 'projects/members'
 
+      member do
         # FIXME: This should be PATCH
         get :reset_project_approvals
         get :edit_data_source_items

@@ -41,14 +41,22 @@ class ProjectCoreTest < ActionDispatch::IntegrationTest
   end
 
   test 'reset project approvals' do
+    project = projects(:pending_project)
+
     sign_in @odr
     visit terms_and_conditions_path
     click_on 'Accept'
-    visit project_path(projects(:pending_project))
+    visit project_path(project)
     click_link('Project Details')
-    find('#approve_details_status').find_link('Approve').click
-    assert find('#approve_details_status').has_no_link?('Approve')
-    assert Project.find_by(name: 'pending_project').details_approved?
+
+    assert_changes -> { project.reload.details_approved } do
+      within('#approve_details_status') do
+        click_button 'Approve'
+
+        assert has_no_button? 'Approve'
+        assert has_text? 'APPROVED'
+      end
+    end
 
     accept_prompt do
       click_link('Reset Approvals')
