@@ -3,7 +3,7 @@ require 'test_helper'
 # Tests behaviour of ProjectsMailer
 class ProjectsMailerTest < ActionMailer::TestCase
   test 'dataset approved status updated' do
-    project = create_project(project_type: project_types(:cas), project_purpose: 'test')
+    project = create_cas_project(project_purpose: 'test')
     dataset = Dataset.find_by(name: 'Extra CAS Dataset One')
     project_dataset = ProjectDataset.new(dataset: dataset, terms_accepted: true, approved: true)
     project.project_datasets << project_dataset
@@ -21,7 +21,7 @@ class ProjectsMailerTest < ActionMailer::TestCase
   end
 
   test 'dataset approved status updated_to_user' do
-    project = create_project(project_type: project_types(:cas), project_purpose: 'test')
+    project = create_cas_project(project_purpose: 'test')
     dataset = Dataset.find_by(name: 'Extra CAS Dataset One')
     project_dataset = ProjectDataset.new(dataset: dataset, terms_accepted: true, approved: true)
     project.project_datasets << project_dataset
@@ -38,7 +38,7 @@ class ProjectsMailerTest < ActionMailer::TestCase
   end
 
   test 'access approval status updated' do
-    project = create_project(project_type: project_types(:cas), project_purpose: 'test')
+    project = create_cas_project(project_purpose: 'test')
     project.transition_to!(workflow_states(:submitted))
 
     project.transition_to!(workflow_states(:access_approver_approved))
@@ -56,7 +56,7 @@ class ProjectsMailerTest < ActionMailer::TestCase
   end
 
   test 'account approved to user' do
-    project = create_project(project_type: project_types(:cas), project_purpose: 'test',
+    project = create_cas_project(project_purpose: 'test',
                              owner: users(:no_roles))
     project.transition_to!(workflow_states(:submitted))
 
@@ -74,8 +74,7 @@ class ProjectsMailerTest < ActionMailer::TestCase
   end
 
   test 'account rejected to user' do
-    project = create_project(project_type: project_types(:cas), project_purpose: 'test',
-                             owner: users(:no_roles))
+    project = create_cas_project(project_purpose: 'test', owner: users(:no_roles))
     project.transition_to!(workflow_states(:submitted))
     project.transition_to!(workflow_states(:access_approver_rejected))
 
@@ -93,8 +92,8 @@ class ProjectsMailerTest < ActionMailer::TestCase
   end
 
   test 'account access granted to user' do
-    project = create_project(project_type: project_types(:cas), project_purpose: 'test',
-                             owner: users(:no_roles))
+    project = create_cas_project(project_purpose: 'test', owner: users(:no_roles))
+    project.transition_to!(workflow_states(:submitted))
     # Auto-transitions to Access Granted
     project.transition_to!(workflow_states(:access_approver_approved))
 
@@ -110,8 +109,7 @@ class ProjectsMailerTest < ActionMailer::TestCase
   end
 
   test 'account access granted' do
-    project = create_project(project_type: project_types(:cas), project_purpose: 'test',
-                             owner: users(:no_roles))
+    project = create_cas_project(project_purpose: 'test', owner: users(:no_roles))
 
     project.transition_to!(workflow_states(:submitted))
     project.transition_to!(workflow_states(:access_approver_approved))
@@ -128,8 +126,7 @@ class ProjectsMailerTest < ActionMailer::TestCase
   end
 
   test 'requires account approval' do
-    project = create_project(project_type: project_types(:cas), project_purpose: 'test',
-                             owner: users(:no_roles))
+    project = create_cas_project(project_purpose: 'test', owner: users(:no_roles))
     project.transition_to!(workflow_states(:submitted))
 
     email = CasMailer.with(project: project).requires_account_approval
@@ -144,8 +141,7 @@ class ProjectsMailerTest < ActionMailer::TestCase
   end
 
   test 'requires dataset approval' do
-    project = create_project(project_type: project_types(:cas), project_purpose: 'test',
-                             owner: users(:no_roles))
+    project = create_cas_project(project_purpose: 'test', owner: users(:no_roles))
     dataset = Dataset.find_by(name: 'Extra CAS Dataset One')
     project_dataset = ProjectDataset.new(dataset: dataset, terms_accepted: true, approved: nil)
     project.project_datasets << project_dataset
@@ -163,8 +159,7 @@ class ProjectsMailerTest < ActionMailer::TestCase
   end
 
   test 'application submitted' do
-    project = create_project(project_type: project_types(:cas), project_purpose: 'test',
-                             owner: users(:no_roles))
+    project = create_cas_project(project_purpose: 'test', owner: users(:no_roles))
     project.transition_to!(workflow_states(:submitted))
 
     email = CasMailer.with(project: project).application_submitted
@@ -179,7 +174,7 @@ class ProjectsMailerTest < ActionMailer::TestCase
   end
 
   test 'requires renewal to user' do
-    project = create_project(project_type: project_types(:cas), project_purpose: 'test',
+    project = create_cas_project(project_purpose: 'test',
                              owner: users(:no_roles))
 
     email = CasMailer.with(project: project).requires_renewal_to_user
@@ -194,7 +189,7 @@ class ProjectsMailerTest < ActionMailer::TestCase
   end
 
   test 'requires renewal midpoint to user' do
-    project = create_project(project_type: project_types(:cas), project_purpose: 'test',
+    project = create_cas_project(project_purpose: 'test',
                              owner: users(:no_roles))
 
     email = CasMailer.with(project: project).requires_renewal_midpoint_to_user
@@ -209,7 +204,7 @@ class ProjectsMailerTest < ActionMailer::TestCase
   end
 
   test 'account closed to user' do
-    project = create_project(project_type: project_types(:cas), project_purpose: 'test',
+    project = create_cas_project(project_purpose: 'test',
                              owner: users(:no_roles))
 
     email = CasMailer.with(project: project).account_closed_to_user
@@ -224,7 +219,7 @@ class ProjectsMailerTest < ActionMailer::TestCase
   end
 
   test 'new cas project saved' do
-    project = create_project(project_type: project_types(:cas), project_purpose: 'test',
+    project = create_cas_project(project_purpose: 'test',
                              owner: users(:no_roles))
 
     email = CasMailer.with(project: project).new_cas_project_saved

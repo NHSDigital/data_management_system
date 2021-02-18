@@ -156,6 +156,14 @@ module Workflow
       { base: :no_attached_contract }
     end
 
+    def reasons_not_to_transition_to_submitted
+      # Eventually this may apply to all project/application types
+      return {} unless cas? && current_state.id == 'DRAFT'
+      return {} if User::CAS_ACCOUNT_FIELDS.all? { |field| owner.send(field).present? }
+
+      { base: :user_details_not_complete }
+    end
+
     def transition_blocking_approval_reasons
       return {} unless project? && current_state.id == 'SUBMITTED'
 

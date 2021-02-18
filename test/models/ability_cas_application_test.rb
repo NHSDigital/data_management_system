@@ -7,7 +7,7 @@ class AbilityCasApplicationTest < ActiveSupport::TestCase
 
     not_owner_project = create_project(project_type: project_types(:cas),
                                        owner: users(:standard_user))
-    owner_project = create_project(project_type: project_types(:cas), owner: applicant)
+    owner_project = create_cas_project(owner: applicant)
     owner_project.reload.current_state
 
     dataset = Dataset.find_by(name: 'Extra CAS Dataset One')
@@ -45,9 +45,8 @@ class AbilityCasApplicationTest < ActiveSupport::TestCase
     applicant = create_user(username: 'casdataset-approver', email: 'cda@phe.gov.uk',
                             first_name: 'cas', last_name: 'dataset-approver')
 
-    matched_dataset_project = create_project(project_type: project_types(:cas),
-                                             owner: users(:standard_user))
-    owner_project = create_project(project_type: project_types(:cas), owner: applicant)
+    matched_dataset_project = create_cas_project(owner: users(:standard_user))
+    owner_project = create_cas_project(owner: applicant)
     owner_project.reload.current_state
     non_matched_dataset_project = create_project(project_type: project_types(:cas),
                                                  owner: users(:standard_user))
@@ -106,8 +105,8 @@ class AbilityCasApplicationTest < ActiveSupport::TestCase
     applicant = create_user(username: 'casaccess-approver', email: 'caa@phe.gov.uk',
                             first_name: 'cas', last_name: 'dataset-approver')
 
-    not_owner_project = create_project(project_type: project_types(:cas), owner: users(:standard_user))
-    owner_project = create_project(project_type: project_types(:cas), owner: applicant)
+    not_owner_project = create_cas_project(owner: users(:standard_user))
+    owner_project = create_cas_project(owner: applicant)
     owner_project.reload.current_state
     non_cas_project = create_project(project_type: project_types(:eoi), project_purpose: 'test',
                                      owner: users(:standard_user))
@@ -143,8 +142,8 @@ class AbilityCasApplicationTest < ActiveSupport::TestCase
     applicant = create_user(username: 'casmanager', email: 'cm@phe.gov.uk',
                             first_name: 'cas', last_name: 'manager')
 
-    not_owner_project = create_project(project_type: project_types(:cas), owner: users(:standard_user))
-    owner_project = create_project(project_type: project_types(:cas), owner: applicant)
+    not_owner_project = create_cas_project(owner: users(:standard_user))
+    owner_project = create_cas_project(owner: applicant)
     owner_project.reload.current_state
     non_cas_project = create_project(project_type: project_types(:eoi), project_purpose: 'test',
                                      owner: users(:standard_user))

@@ -32,15 +32,17 @@ class CasApplicationFormTest < ActionDispatch::IntegrationTest
     application = Project.new.tap do |app|
       app.owner = users(:odr_user)
       app.project_type = project_types(:cas)
-      app.build_cas_application_fields(firstname: 'John', surname: 'Smith',
+      app.build_cas_application_fields(address: 'Fake Street', organisation: 'PHE',
                                        declaration: %w[1Yes 2No 4Yes])
       app.dataset_ids = Dataset.cas.pluck(:id)
       app.save!
     end
 
     visit edit_project_path(application)
-    assert has_field?('First name', with: application.cas_application_fields.firstname)
-    assert has_field?('Surname', with: application.cas_application_fields.surname)
+    assert has_field?('Full physical addresses & postcodes CAS will be accessed from',
+                      with: application.cas_application_fields.address)
+    assert has_field?('Organisation employing user to do CAS work',
+                      with: application.cas_application_fields.organisation)
 
     Dataset.cas.pluck(:id).each do |id|
       assert has_checked_field?("project_dataset_ids_#{id}")
@@ -68,14 +70,11 @@ class CasApplicationFormTest < ActionDispatch::IntegrationTest
     assert has_content?('I have completed the relevant data access forms for the ONS incidence ' \
                         'dataset')
 
-    application = Project.new.tap do |app|
-      app.owner = users(:no_roles)
-      app.project_type = project_types(:cas)
-      app.build_cas_application_fields(firstname: 'John', surname: 'Smith',
-                                       declaration: %w[1Yes 2No 4Yes])
-      app.dataset_ids = Dataset.cas.pluck(:id)
-      app.save!
-    end
+    application = create_cas_project(owner: users(:no_roles))
+    application.build_cas_application_fields(address: 'Fake Street', organisation: 'PHE',
+                                             declaration: %w[1Yes 2No 4Yes])
+    application.dataset_ids = Dataset.cas.pluck(:id)
+    application.save!
 
     visit project_path(application)
 
@@ -102,5 +101,59 @@ class CasApplicationFormTest < ActionDispatch::IntegrationTest
     assert_not has_content?('N3 IP address CAS will be accessed from')
     assert_not has_content?('I have completed the relevant data access forms for the ONS ' \
                             'incidence dataset')
+  end
+
+  test 'requestor details section should be readonly' do
+    sign_in users(:no_roles)
+
+    visit new_project_path(project: { project_type_id: project_types(:cas).id })
+
+    within('#first_name') do
+      assert has_css?('.form-control-static')
+    end
+    within('#email') do
+      assert has_css?('.form-control-static')
+    end
+    # Other sections should not be effected and should be editable
+    within('#organisation') do
+      assert has_no_css?('.form-control-static')
+    end
+
+    assert has_content?('These are your user details that will form part of your application. If ' \
+                        'you wish to change these there will be the chance to edit this in the ' \
+                        'My Account section after you create this application.')
+
+    application = create_cas_project(owner: users(:no_roles))
+    application.build_cas_application_fields(address: 'Fake Street', organisation: 'PHE',
+                                             declaration: %w[1Yes 2No 4Yes])
+    application.dataset_ids = Dataset.cas.pluck(:id)
+    application.save!
+
+    visit project_path(application)
+
+    click_link('Edit')
+
+    within('#first_name') do
+      assert has_css?('.form-control-static')
+    end
+    within('#email') do
+      assert has_css?('.form-control-static')
+    end
+    # Other sections should not be effected and should be editable
+    within('#organisation') do
+      assert has_no_css?('.form-control-static')
+    end
+  end
+
+  test 'should disable submit button and show transition error if user details not complete' do
+    sign_in users(:no_roles)
+
+    visit new_project_path(project: { project_type_id: project_types(:cas).id })
+
+    click_button('Create Application')
+
+    assert has_button?('Submit', disabled: true)
+    assert has_content?('some user details are not complete - please visit the My Account page ' \
+                        'to update')
   end
 end

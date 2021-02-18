@@ -47,21 +47,29 @@
             </div>
           <% else %>
             <%= bootstrap_form_for @user, horizontal: 2, readonly: @readonly do |form| %>
-              <%= form.control_group :first_name, 'First name' do %>
-                <%= form.text_field :first_name, class: 'mandatory' %>
+              <%= form.control_group :first_name, 'First name', id: 'first_name' do %>
+                <%= form.text_field :first_name, class: 'mandatory', readonly: @admin_readonly %>
               <% end %>
               <%= form.control_group :last_name, 'Last name' do %>
-                <%= form.text_field :last_name, class: 'mandatory' %>
+                <%= form.text_field :last_name, class: 'mandatory', readonly: @admin_readonly %>
               <% end %>
               <%= form.control_group :username, 'Username' do %>
-                <%= form.text_field :username %>
-                <small>* must be unique and match an existing yubikey username, usually first name concatenated to last name</small>
+                <%= form.text_field :username, readonly: @admin_readonly %>
               <% end %>
               <%= form.control_group :email, 'Email' do %>
-                <%= form.text_field :email, class: 'mandatory' %>
+              <%= form.text_field :email, class: 'mandatory', readonly: @admin_readonly %>
               <% end %>
               <%= form.control_group :job_title, 'Job title' do %>
                 <%= form.text_field :job_title %>
+              <% end %>
+              <%= form.control_group :line_manager_name, 'Name of line manager' do %>
+                <%= form.text_field :line_manager_name %>
+              <% end %>
+              <%= form.control_group :line_manager_email, 'Email address of line manager' do %>
+                <%= form.text_field :line_manager_email %>
+              <% end %>
+              <%= form.control_group :line_manager_telephone, 'Telephone number of line manager' do %>
+                <%= form.text_field :line_manager_telephone %>
               <% end %>
 
               <div class='row form-group'>
@@ -93,6 +101,13 @@
               </div>
 
               <div class='row form-group', data-depends-on="#user_employment", data-depends-on-value="Contract">
+                <label class="control-label col-md-2" for="project_frequenct">Contract start date</label>
+                <div class='col-md-3'>
+                  <%= form.text_field :contract_start_date, "data-depends-on" => "#user_employment", "data-depends-on-value" => "Contract", data: { provide: 'datepicker' } %>
+                </div>
+              </div>
+
+              <div class='row form-group', data-depends-on="#user_employment", data-depends-on-value="Contract">
                 <label class="control-label col-md-2" for="project_frequenct">Contract end date</label>
                 <div class='col-md-3'>
                   <%= form.text_field :contract_end_date, "data-depends-on" => "#user_employment", "data-depends-on-value" => "Contract", data: { provide: 'datepicker' } %>
@@ -109,11 +124,13 @@
               <%= form.control_group :location, 'Location' do %>
                 <%= form.text_field :location %>
               <% end %>
-              <%= form.control_group :z_user_status_id, 'Status' do %>
-                <%= form.select(:z_user_status_id, ZUserStatus.all.map { |status| [status.name, status.id] }) %>
-              <% end %>
-              <%= form.control_group :notes, 'Notes' do %>
-                <%= form.text_area :notes %>
+              <% if current_user.administrator? %>
+                <%= form.control_group :z_user_status_id, 'Status' do %>
+                  <%= form.select(:z_user_status_id, ZUserStatus.all.map { |status| [status.name, status.id] }) %>
+                <% end %>
+                <%= form.control_group :notes, 'Notes' do %>
+                  <%= form.text_area :notes %>
+                <% end %>
               <% end %>
               <%= form.control_group nil do %>
                 <div class='pull-right'>

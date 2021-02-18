@@ -3,10 +3,10 @@ require 'test_helper'
 class CreateAndEditUserTest < ActionDispatch::IntegrationTest
   def setup
     @admin = users(:admin_user)
-    login_and_accept_terms(@admin)
   end
 
   test 'creating a user should generate password' do
+    login_and_accept_terms(@admin)
     visit users_path
     click_link 'Create New User'
 
@@ -14,7 +14,14 @@ class CreateAndEditUserTest < ActionDispatch::IntegrationTest
     fill_in 'user_last_name',  with: ''
     fill_in 'user_username',  with: 'testname'
     fill_in 'user_email',      with: 'test_email@phe.gov.uk'
-    fill_in 'user_telephone',  with: '01223213499'
+
+    fill_in 'user_telephone',  with: '01234567890'
+    fill_in 'user_line_manager_name', with: 'MINNIE'
+    fill_in 'user_line_manager_email', with: 'testlm@phe.gov.uk'
+    fill_in 'user_line_manager_telephone', with: '01234567892'
+    select 'Contract', from: 'user_employment'
+    fill_in 'user_contract_start_date', with: '01/01/2021'
+    fill_in 'user_contract_end_date', with: '31/01/2021'
     select 'AA', from: 'user_grade'
     select 'Directorate 1', from: 'user_directorate_id'
     select 'Division 1 from directorate 1', from: 'user_division_id'
@@ -26,17 +33,19 @@ class CreateAndEditUserTest < ActionDispatch::IntegrationTest
     assert page.has_content?("can't be blank") # last_name was blank
 
     fill_in 'user_last_name', with: 'MOUSE'
-    click_button 'Save'
+
+    assert_difference('User.count', 1) { click_button 'Save' }
+
     assert page.has_content?('User was successfully created')
     assert page.has_text?('MICKEY')
     assert page.has_text?('MOUSE')
 
     visit user_path(User.last)
     assert page.has_content?('AA')
-
   end
 
   test 'edit user' do
+    login_and_accept_terms(@admin)
     visit users_path
 
     page.find('#users_table').click_link('Edit', match: :first)
@@ -50,6 +59,7 @@ class CreateAndEditUserTest < ActionDispatch::IntegrationTest
   end
 
   test 'can update a user team grants' do
+    login_and_accept_terms(@admin)
     team = teams(:team_one)
     user = users(:standard_user)
 
@@ -74,6 +84,7 @@ class CreateAndEditUserTest < ActionDispatch::IntegrationTest
   end
 
   test 'can update a user system grants' do
+    login_and_accept_terms(@admin)
     visit users_path
 
     page.find('#users_table').click_link('Details', match: :first)
@@ -84,5 +95,45 @@ class CreateAndEditUserTest < ActionDispatch::IntegrationTest
       page.check("grants_SystemRole_system_#{SystemRole.fetch(:odr).id}")
       find_button('Update Roles').click
     end
+  end
+
+  test 'non admin users should not be able to edit certain fields on their own account' do
+    login_and_accept_terms(users(:no_roles))
+    visit users_path
+
+    page.find('#users_table').click_link('Edit', match: :first)
+
+    assert has_content?('no_roles@phe.gov.uk')
+
+    assert find('#user_first_name').readonly?
+    assert find('#user_last_name').readonly?
+    assert find('#user_username').readonly?
+    assert find('#user_email').readonly?
+    assert_not find('#user_job_title').readonly?
+
+    # User shouldn't be able to set these for themselves
+    assert has_no_content?('Status')
+    assert has_no_content?('Notes')
+  end
+
+  test 'admin users should be able to see fields hidden or readonly to other users' do
+    login_and_accept_terms(@admin)
+    visit user_path(users(:no_roles))
+
+    within('#user_details_panel') do
+      click_link('Edit', match: :first)
+    end
+
+    assert has_content?('no_roles@phe.gov.uk')
+
+    assert_not find('#user_first_name').readonly?
+    assert_not find('#user_last_name').readonly?
+    assert_not find('#user_username').readonly?
+    assert_not find('#user_email').readonly?
+    assert_not find('#user_job_title').readonly?
+
+    # User shouldn't be able to set these for themselves
+    assert has_content?('Status')
+    assert has_content?('Notes')
   end
 end

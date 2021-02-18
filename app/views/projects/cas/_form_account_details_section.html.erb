@@ -1,13 +1,14 @@
 <fieldset>
   <legend>Account Details</legend>
-
-  <%= form.control_group :username do %>
-    <%= form.text_field :username %>
+  <%= form.control_group :organisation, 'Organisation employing user to do CAS work', id: 'organisation' do %>
+    <%= form.text_field :organisation %>
   <% end %>
+<% if !@project.persisted? || @project.owner == current_user %>
   <%= form.control_group :address do %>
     <%= form.text_area :address, rows: 6 %>
   <% end %>
   <%= form.control_group :n3_ip_address do %>
     <%= form.text_area :n3_ip_address, rows: 4 %>
   <% end %>
+<% end %>
 </fieldset>

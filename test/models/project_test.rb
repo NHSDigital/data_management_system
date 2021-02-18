@@ -401,8 +401,7 @@ class ProjectTest < ActiveSupport::TestCase
     # grant user approver role for our dataset
     Grant.create(roleable: DatasetRole.fetch(:approver), dataset: dataset, user: user)
 
-    cas_project = Project.create(project_type: ProjectType.find_by(name: 'CAS'),
-                                 owner: users(:standard_user1)).tap(&:valid?)
+    cas_project = create_cas_project(owner: users(:standard_user1)).tap(&:valid?)
 
     project_dataset = ProjectDataset.new(dataset: dataset, terms_accepted: true, approved: nil)
     cas_project.project_datasets << project_dataset
@@ -421,8 +420,7 @@ class ProjectTest < ActiveSupport::TestCase
     assert_equal 0, Project.cas_dataset_approval(user, nil).count
     assert_equal 1, Project.cas_dataset_approval(user).count
 
-    new_project = Project.create(project_type: ProjectType.find_by(name: 'CAS'),
-                                 owner: users(:standard_user1)).tap(&:valid?)
+    new_project = create_cas_project(owner: users(:standard_user1)).tap(&:valid?)
     new_project_dataset = ProjectDataset.new(dataset: Dataset.find_by(name: 'SACT'),
                                              terms_accepted: true, approved: nil)
     new_project.project_datasets << new_project_dataset
@@ -436,7 +434,7 @@ class ProjectTest < ActiveSupport::TestCase
     notifications = Notification.where(title: 'New CAS Application Created')
 
     assert_difference 'notifications.count', 2 do
-      create_project(project_type: project_types(:cas), project_purpose: 'notify new project',
+      create_cas_project(project_purpose: 'notify new project',
                      owner: users(:no_roles))
     end
 

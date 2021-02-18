@@ -56,6 +56,29 @@ module CreateRecordsHelper
     build_project(options).tap(&:save!)
   end
 
+  def create_cas_project(options = {})
+    default_options = {
+      project_type: project_types(:cas),
+      name: 'NCRS',
+      description: 'Example CAS Project',
+      owner: users(:standard_user2)
+    }
+    cas = Project.new(default_options.merge(options))
+    cas.save!
+    User.find(cas.owner.id).update(
+      job_title: 'Tester',
+      telephone: '01234 5678910',
+      line_manager_name: 'Line Manager',
+      line_manager_email: 'linemanager@test.co.uk',
+      line_manager_telephone: '10987 654321',
+      employment: 'Contract',
+      contract_start_date: '01/01/2021',
+      contract_end_date: '30/06/2021'
+    )
+    cas.reload.current_state
+    cas
+  end
+
   def build_and_validate_project(options = {})
     build_project(options).tap(&:valid?)
   end

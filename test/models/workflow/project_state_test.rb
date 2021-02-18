@@ -86,7 +86,7 @@ module Workflow
     end
 
     test 'should notify cas manager and access approvers on update to approved' do
-      project = create_project(project_type: project_types(:cas), project_purpose: 'test')
+      project = create_cas_project(project_purpose: 'test')
       project.reload_current_state
 
       notifications = Notification.where(title: 'Access Approval Status Updated')
@@ -104,7 +104,7 @@ module Workflow
     end
 
     test 'should notify cas manager and access approvers on update to rejected' do
-      project = create_project(project_type: project_types(:cas), project_purpose: 'test')
+      project = create_cas_project(project_purpose: 'test')
       project.reload_current_state
 
       notifications = Notification.where(title: 'Access Approval Status Updated')
@@ -122,7 +122,7 @@ module Workflow
     end
 
     test 'should notify user on update to approved' do
-      project = create_project(project_type: project_types(:cas), project_purpose: 'test',
+      project = create_cas_project(project_purpose: 'test',
                                owner: users(:no_roles))
       project.reload_current_state
 
@@ -142,7 +142,7 @@ module Workflow
     end
 
     test 'should notify user on update to rejected' do
-      project = create_project(project_type: project_types(:cas), project_purpose: 'test',
+      project = create_cas_project(project_purpose: 'test',
                                owner: users(:no_roles))
       project.reload_current_state
 
@@ -162,7 +162,7 @@ module Workflow
     end
 
     test 'should notify user on update to access granted' do
-      project = create_project(project_type: project_types(:cas), project_purpose: 'test',
+      project = create_cas_project(project_purpose: 'test',
                                owner: users(:no_roles))
       project.reload_current_state
 
@@ -182,7 +182,7 @@ module Workflow
     end
 
     test 'should notify cas manager on update to access granted' do
-      project = create_project(project_type: project_types(:cas), project_purpose: 'test')
+      project = create_cas_project(project_purpose: 'test')
       project.reload_current_state
 
       notifications = Notification.where(title: 'CAS Access Status Updated')
@@ -202,7 +202,7 @@ module Workflow
     end
 
     test 'should notify cas access approver on update to submitted' do
-      project = create_project(project_type: project_types(:cas), project_purpose: 'test')
+      project = create_cas_project(project_purpose: 'test')
       project.reload_current_state
 
       notifications = Notification.where(title: 'CAS Application Requires Access Approval')
@@ -220,13 +220,10 @@ module Workflow
     end
 
     test 'should notify cas dataset approver at submitted for project with their dataset' do
-      one_dataset_project = Project.new(project_type: ProjectType.find_by(name: 'CAS')).tap do |a|
-        a.owner = users(:no_roles)
-        a.project_datasets << ProjectDataset.new(dataset: dataset(83), terms_accepted: true,
-                                                 approved: nil)
-        a.save!
-      end
-      one_dataset_project.reload_current_state
+      one_dataset_project = create_cas_project(owner: users(:no_roles))
+      one_dataset_project.project_datasets << ProjectDataset.new(dataset: dataset(83),
+                                                                 terms_accepted: true,
+                                                                 approved: nil)
 
       notifications = Notification.where(title: 'CAS Application Requires Dataset Approval')
 
@@ -243,15 +240,13 @@ module Workflow
         one_dataset_project.transition_to!(workflow_states(:access_approver_approved))
       end
 
-      two_dataset_project = Project.new(project_type: ProjectType.find_by(name: 'CAS')).tap do |a|
-        a.owner = users(:no_roles)
-        a.project_datasets << ProjectDataset.new(dataset: dataset(83), terms_accepted: true,
-                                                 approved: nil)
-        a.project_datasets << ProjectDataset.new(dataset: dataset(84), terms_accepted: true,
-                                                 approved: nil)
-        a.save!
-      end
-      two_dataset_project.reload_current_state
+      two_dataset_project = create_cas_project(owner: users(:no_roles))
+      two_dataset_project.project_datasets << ProjectDataset.new(dataset: dataset(83),
+                                                                 terms_accepted: true,
+                                                                 approved: nil)
+      two_dataset_project.project_datasets << ProjectDataset.new(dataset: dataset(84),
+                                                                 terms_accepted: true,
+                                                                 approved: nil)
 
       # should only send to dataset approvers with grant for either of these 2 datasets
       assert_difference 'notifications.count', 3 do
@@ -261,7 +256,7 @@ module Workflow
       assert_equal notifications.last.body, "CAS application #{two_dataset_project.id} - Dataset " \
                                             "approval is required.\n\n"
 
-      no_dataset_project = create_project(project_type: project_types(:cas), owner: users(:no_roles))
+      no_dataset_project = create_cas_project(owner: users(:no_roles))
       no_dataset_project.reload_current_state
 
       # should not send to dataset approvers if there are no datasets
@@ -274,7 +269,7 @@ module Workflow
     end
 
     test 'should notify cas manager when project reaches submitted' do
-      project = create_project(project_type: project_types(:cas), project_purpose: 'test')
+      project = create_cas_project(project_purpose: 'test')
       project.reload_current_state
 
       notifications = Notification.where(title: 'CAS Application Submitted')
@@ -291,7 +286,7 @@ module Workflow
     end
 
     test 'should notify user on update to renewal' do
-      project = create_project(project_type: project_types(:cas), project_purpose: 'test',
+      project = create_cas_project(project_purpose: 'test',
                                owner: users(:no_roles))
       project.reload_current_state
 
@@ -314,7 +309,7 @@ module Workflow
     end
 
     test 'should notify user on account closure' do
-      project = create_project(project_type: project_types(:cas), project_purpose: 'test',
+      project = create_cas_project(project_purpose: 'test',
                                owner: users(:no_roles))
       project.reload_current_state
 
@@ -341,10 +336,7 @@ module Workflow
 
     test 'should auto-transition cas application from ACCESS_APPROVER_APPROVED to ACCESS_GRANTED' do
       # TODO: will need updating when script to generate access is added
-      application = Project.new(project_type: ProjectType.find_by(name: 'CAS')).tap do |a|
-        a.owner = users(:no_roles)
-        a.save!
-      end
+      application = create_cas_project(owner: users(:no_roles))
 
       application.transition_to!(workflow_states(:submitted))
       application.transition_to!(workflow_states(:access_approver_approved))

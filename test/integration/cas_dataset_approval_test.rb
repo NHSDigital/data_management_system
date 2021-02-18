@@ -6,8 +6,7 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
     ProjectDatasetsController.any_instance.expects(:valid_otp?).twice.returns(false).then.returns(true)
     sign_in user
 
-    project = Project.create(project_type: project_types(:cas),
-                             owner: users(:standard_user2))
+    project = create_cas_project(owner: users(:standard_user2))
     dataset = Dataset.find_by(name: 'Extra CAS Dataset One')
     project.project_datasets << ProjectDataset.new(dataset: dataset, terms_accepted: true)
 
@@ -56,8 +55,7 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
     user = users(:no_roles)
     sign_in user
 
-    project = Project.create(project_type: project_types(:cas),
-                             owner: users(:no_roles))
+    project = create_cas_project(owner: users(:no_roles))
     project_dataset = ProjectDataset.new(dataset: Dataset.find_by(name: 'Extra CAS Dataset One'),
                                          terms_accepted: true)
     project.project_datasets << project_dataset
@@ -95,8 +93,7 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
     user = users(:no_roles)
     sign_in user
 
-    project = Project.create(project_type: project_types(:cas),
-                             owner: users(:no_roles))
+    project = create_cas_project(owner: users(:no_roles))
     project_dataset = ProjectDataset.new(dataset: Dataset.find_by(name: 'Extra CAS Dataset One'),
                                          terms_accepted: nil)
     project.project_datasets << project_dataset
@@ -114,8 +111,7 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
     user = users(:cas_dataset_approver)
     sign_in user
 
-    project = Project.create(project_type: project_types(:cas),
-                             owner: users(:standard_user2))
+    project = create_cas_project(owner: users(:standard_user2))
     grant_dataset = ProjectDataset.new(dataset: Dataset.find_by(name: 'Extra CAS Dataset One'),
                                        terms_accepted: true)
     non_grant_dataset = ProjectDataset.new(dataset: Dataset.find_by(name: 'Extra CAS Dataset Two'),

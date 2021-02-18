@@ -4,7 +4,7 @@ module Workflow
   # Tests grants relating to the CAS workflow.
   class CasWorkflowTest < ActiveSupport::TestCase
     def setup
-      @project = create_project(project_type: project_types(:cas), project_purpose: 'test')
+      @project = create_cas_project(project_purpose: 'test')
     end
 
     test 'project workflow as basic user on project they do not own' do

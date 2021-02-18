@@ -11,7 +11,7 @@ class ProjectDatasetTest < ActiveSupport::TestCase
   end
 
   test 'dataset_approval scope should only return to user with correct grant' do
-    project = Project.create(project_type: project_types(:cas), owner: users(:standard_user2))
+    project = create_cas_project(owner: users(:standard_user2))
     project_dataset = ProjectDataset.new(dataset: Dataset.find_by(name: 'Extra CAS Dataset One'))
     project.project_datasets << project_dataset
 
@@ -27,7 +27,7 @@ class ProjectDatasetTest < ActiveSupport::TestCase
   end
 
   test 'dataset_approval scope should return all datasets for that user by default' do
-    project = Project.create(project_type: project_types(:cas), owner: users(:standard_user2))
+    project = create_cas_project(owner: users(:standard_user2))
     project_dataset = ProjectDataset.new(dataset: Dataset.find_by(name: 'Extra CAS Dataset One'),
                                          approved: nil)
     project.project_datasets << project_dataset
@@ -46,7 +46,7 @@ class ProjectDatasetTest < ActiveSupport::TestCase
   end
 
   test 'dataset_approval scope should only return approved status is nil if passed that argument' do
-    project = Project.create(project_type: project_types(:cas), owner: users(:standard_user2))
+    project = create_cas_project(owner: users(:standard_user2))
     project_dataset = ProjectDataset.new(dataset: Dataset.find_by(name: 'Extra CAS Dataset One'),
                                          approved: nil)
     project.project_datasets << project_dataset
@@ -60,7 +60,7 @@ class ProjectDatasetTest < ActiveSupport::TestCase
   end
 
   test 'should notify casmanager and access approvers on dataset approved update to not nil' do
-    project = create_project(project_type: project_types(:cas), project_purpose: 'test')
+    project = create_cas_project(project_purpose: 'test')
     dataset = Dataset.find_by(name: 'Extra CAS Dataset One')
     project_dataset = ProjectDataset.new(dataset: dataset, terms_accepted: nil, approved: nil)
     project.project_datasets << project_dataset
@@ -98,8 +98,7 @@ class ProjectDatasetTest < ActiveSupport::TestCase
   end
 
   test 'should notify user on dataset approved update to not nil' do
-    project = create_project(project_type: project_types(:cas), project_purpose: 'test',
-                             owner: users(:no_roles))
+    project = create_cas_project(project_purpose: 'test', owner: users(:no_roles))
     dataset = Dataset.find_by(name: 'Extra CAS Dataset One')
     project_dataset = ProjectDataset.new(dataset: dataset, terms_accepted: nil, approved: nil)
     project.project_datasets << project_dataset
@@ -139,12 +138,8 @@ class ProjectDatasetTest < ActiveSupport::TestCase
   test 'should not notify dataset approver on dataset approved update to nil' do
     project_dataset = ProjectDataset.new(dataset: dataset(83), terms_accepted: true,
                                          approved: true)
-    project = Project.new(project_type: ProjectType.find_by(name: 'CAS')).tap do |a|
-      a.owner = users(:no_roles)
-      a.project_datasets << project_dataset
-      a.save!
-    end
-    project.reload_current_state
+    project = create_cas_project(owner: users(:no_roles))
+    project.project_datasets << project_dataset
 
     notifications = Notification.where(title: 'CAS Application Requires Dataset Approval')
 

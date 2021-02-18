@@ -32,7 +32,7 @@ class ProjectsHelperTest < ActionView::TestCase
   end
 
   test 'cas transition buttons' do
-    project = create_project(project_type: project_types(:cas), project_purpose: 'test')
+    project = create_cas_project(project_purpose: 'test')
 
     project.transition_to!(workflow_states(:submitted))
     project.transition_to!(workflow_states(:access_approver_rejected))

@@ -10,7 +10,7 @@ class Ability
 
     can %i[terms_and_conditions read destroy], Notification
     can :destroy, UserNotification, user_id: user.id
-    can :read, User, id: user.id
+    can %i[read update], User, id: user.id
     can :read, Grant, user_id: user.id
     can :read, [Category, Node]
     can :create, Project, project_type_id: ProjectType.cas.pluck(:id)

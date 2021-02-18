@@ -8,7 +8,7 @@ class CasAccessApproverTest < ActionDispatch::IntegrationTest
   test 'cas access approver should be able to update state to ACCESS_APPROVER_APPROVED' do
     sign_in @user
 
-    project = Project.create(project_type: project_types(:cas), owner: users(:standard_user2))
+    project = create_cas_project(owner: users(:standard_user2))
 
     project.transition_to!(workflow_states(:submitted))
 
@@ -36,7 +36,7 @@ class CasAccessApproverTest < ActionDispatch::IntegrationTest
   test 'cas access approver should be able to update state to ACCESS_APPROVER_REJECTED' do
     sign_in @user
 
-    project = Project.create(project_type: project_types(:cas), owner: users(:standard_user2))
+    project = create_cas_project(owner: users(:standard_user2))
 
     project.transition_to!(workflow_states(:submitted))
 
