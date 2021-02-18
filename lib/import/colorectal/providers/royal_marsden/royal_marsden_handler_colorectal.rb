@@ -65,7 +65,6 @@ module Import
             genocolorectal.add_passthrough_fields(record.mapped_fields,
                                                   record.raw_fields,
                                                   PASS_THROUGH_FIELDS_COLO)
-            # process_gene(genocolorectal, record)
             process_varpathclass(genocolorectal, record)
             process_teststatus(genocolorectal, record)
             process_variant(genocolorectal, record)
@@ -73,23 +72,14 @@ module Import
             process_test_scope(genocolorectal, record)
             process_test_type(genocolorectal, record)
             add_organisationcode_testresult(genocolorectal)
-            # @persister.integrate_and_store(genocolorectal)
             res = process_gene(genocolorectal, record)# Added by Francesco
             res.map { |cur_genotype| @persister.integrate_and_store(cur_genotype) }
           end
 
-          # def process_gene(genocolorectal, record)
-          #   genes = record.raw_fields['gene']
-          #   if COLORECTAL_GENES_REGEX.match(genes)
-          #     genocolorectal.add_gene_colorectal($LAST_MATCH_INFO[:colorectal])
-          #     @successful_gene_counter += 1
-          #   end
-          # end
-
           def add_organisationcode_testresult(genocolorectal)
             genocolorectal.attribute_map['organisationcode_testresult'] = '696L0'
           end
-          
+
           def process_gene(genocolorectal, record)
             genotypes = []
             genes = record.raw_fields['gene']

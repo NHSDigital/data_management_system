@@ -15,6 +15,10 @@ module Import
               end
             end
 
+            def add_organisationcode_testresult(genocolorectal)
+              genocolorectal.attribute_map['organisationcode_testresult'] = '699F0'
+            end
+
             def full_screen?(record)
               moleculartestingtype = record.raw_fields['moleculartestingtype'].downcase.strip
               testscope = TEST_SCOPE_MAP_COLO_COLO[moleculartestingtype]

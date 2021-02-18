@@ -176,8 +176,13 @@ module Import
             add_positive_teststatus(genocolorectal, record)
             failed_teststatus(genocolorectal, record)
             add_benign_varclass(genocolorectal, record)
+            add_organisationcode_testresult(genocolorectal)
             res = add_gene_from_report(genocolorectal, record) # Added by Francesco
             res.map { |cur_genotype| @persister.integrate_and_store(cur_genotype) }
+          end
+
+          def add_organisationcode_testresult(genocolorectal)
+            genocolorectal.attribute_map['organisationcode_testresult'] = '699C0'
           end
 
           def add_positive_teststatus(genocolorectal, record)
