@@ -38,8 +38,13 @@ module Import
             process_protein_impact(genotype, record)
             assign_genomic_change(genotype, record)
             assign_servicereportidentifier(genotype, record)
+            add_organisationcode_testresult(genotype)
             res = process_gene(genotype, record)
             res&.each { |cur_genotype| @persister.integrate_and_store(cur_genotype) }
+          end
+
+          def add_organisationcode_testresult(genotype)
+            genotype.attribute_map['organisationcode_testresult'] = '698C0'
           end
 
           def assign_method(genotype, record)

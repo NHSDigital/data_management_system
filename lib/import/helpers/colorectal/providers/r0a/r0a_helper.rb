@@ -131,10 +131,15 @@ module Import
               genocolorectal.add_passthrough_fields(record.mapped_fields,
                                                     record.raw_fields,
                                                     PASS_THROUGH_FIELDS_COLO)
+              add_organisationcode_testresult(genocolorectal)
               add_servicereportidentifier(genocolorectal, record)
               testscope_from_rawfields(genocolorectal, record)
               results = assign_gene_mutation(genocolorectal, record)
               results.each { |genotype| @persister.integrate_and_store(genotype) }
+            end
+
+            def add_organisationcode_testresult(genocolorectal)
+              genocolorectal.attribute_map['organisationcode_testresult'] = '69820'
             end
 
             def assign_gene_mutation(genocolorectal, _record)

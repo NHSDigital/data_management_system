@@ -59,8 +59,13 @@ module Import
             assign_genomic_change(genocolorectal, record)
             assign_servicereportidentifier(genocolorectal, record)
             assign_variantpathclass(genocolorectal, record)
+            add_organisationcode_testresult(genocolorectal)
             res = process_records(genocolorectal, record)
             res.each { |cur_genotype| @persister.integrate_and_store(cur_genotype) }
+          end
+
+          def add_organisationcode_testresult(genocolorectal)
+            genocolorectal.attribute_map['organisationcode_testresult'] = '698C0'
           end
 
           def assign_method(genocolorectal, record)

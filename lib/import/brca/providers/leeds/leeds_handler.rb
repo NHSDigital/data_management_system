@@ -136,7 +136,7 @@ module Import
             add_gene_cdna_protein_from_report(genotype, record) # Added by Francesco
             add_scope_and_type_from_genotype(genotype, record) # Added by Francesco
             add_b1_b2_c3_pos(genotype, record) # Added by Francesco ad hoc
-
+            add_organisationcode_testresult(genotype)
             genotype.add_provider_name(record.raw_fields['reffac.name'])
             sample_type = record.raw_fields['sampletype']
             genotype.add_specimen_type(sample_type) unless sample_type.nil?
@@ -153,6 +153,10 @@ module Import
             process_scope(geno, genotype, record)
             res = @extractor.process(geno, report, genotype)
             res.map { |cur_genotype| @persister.integrate_and_store(cur_genotype) }
+          end
+
+          def add_organisationcode_testresult(genotype)
+            genotype.attribute_map['organisationcode_testresult'] = '699C0'
           end
 
           def add_BRCA_from_raw_genotype(genotype, record)

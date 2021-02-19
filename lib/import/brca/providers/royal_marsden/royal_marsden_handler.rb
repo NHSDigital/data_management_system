@@ -28,8 +28,13 @@ module RoyalMarsden
                                       record.raw_fields,
                                       PASS_THROUGH_FIELDS)
       process_cdna_change(genotype, record)
+      add_organisationcode_testresult(genotype)
       process_gene(genotype, record)
       @persister.integrate_and_store(genotype)
+    end
+
+    def add_organisationcode_testresult(genotype)
+      genotype.attribute_map['organisationcode_testresult'] = '696L0'
     end
 
     def process_cdna_change(genotype, record)

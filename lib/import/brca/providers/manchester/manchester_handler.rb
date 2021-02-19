@@ -42,10 +42,15 @@ module Manchester
                                       record.raw_fields,
                                       PASS_THROUGH_FIELDS)
       # @persister.integrate_and_store(genotype)
-      genotype.add_test_scope(:full_screen)
-      genotype.add_molecular_testing_type_strict(:predictive)
+      # genotype.add_test_scope(:full_screen)
+      # genotype.add_molecular_testing_type_strict(:predictive)
+      add_organisationcode_testresult(genotype)
       final_genotypes = process_raw_genotype(genotype, record)
       final_genotypes.map { |cur_genotype| @persister.integrate_and_store(cur_genotype) }
+    end
+
+    def add_organisationcode_testresult(genotype)
+      genotype.attribute_map['organisationcode_testresult'] = '69820'
     end
 
     def process_raw_genotype(genotype, record)
