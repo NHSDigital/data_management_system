@@ -30,9 +30,13 @@ Rails.application.routes.draw do
     resources :comments, shallow: true, only: %i[index create destroy]
   end
 
-  concern :approvable do
-    resource :approval,  only: %i[new create destroy]
-    resource :rejection, only: %i[new create destroy]
+  concern :approvable do |options|
+    default_options = {
+      only: %i[new create destroy]
+    }
+
+    resource :approval,  default_options.merge(options)
+    resource :rejection, default_options.merge(options)
   end
 
   get 'notifications/index'
@@ -180,8 +184,15 @@ Rails.application.routes.draw do
       resources :project_data_end_users
       resources :project_attachments
       resources :project_comments
-      resources :project_nodes, concerns: %i[commentable] do
-        collection { patch :update_all }
+      resources :project_nodes, except: %i[edit update], concerns: %i[commentable] do
+        concerns :approvable, module: 'project_nodes'
+
+        collection do
+          scope :bulk, module: :project_nodes, only: %i[new create destroy] do
+            resource :approvals,  controller: :bulk_approvals,  as: :project_nodes_bulk_approval
+            resource :rejections, controller: :bulk_rejections, as: :project_nodes_bulk_rejection
+          end
+        end
       end
 
       resources :amendments, controller: :project_amendments, as: :project_amendments

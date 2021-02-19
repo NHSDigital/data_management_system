@@ -1,0 +1,9 @@
+// Refresh project header
+$("#project_header").html(
+  "<%= j(render 'projects/header', project: project) %>"
+);
+
+// Refresh transition blocker messages
+$("#project_transition_errors").html(
+  "<%= j(render 'projects/transition_errors', project: project) %>"
+);

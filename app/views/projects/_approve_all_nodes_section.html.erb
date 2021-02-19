@@ -1,8 +1,14 @@
 <% if can?(:approve, @project) %>
   <div class="pull-right">
-    <%= link_to 'Approve All', update_all_project_project_nodes_path(project_id: @project.id, "project_node[approved]" => 'true'), method: :patch, remote: true, class: 'btn btn-success btn-sm' %>
-    <%= link_to 'Undo All', update_all_project_project_nodes_path(project_id: @project.id, "project_node[approved]" => ''), method: :patch, remote: true, class: 'btn btn-danger btn-sm' %>
-    <%= link_to 'X', update_all_project_project_nodes_path(project_id: @project.id, "project_node[approved]" => ''), method: :patch, remote: true, class: 'btn btn-default btn-xs', title: 'Undo', rel: 'tooltip', "data-placement" => "left" %>
+    <div class="btn-group" role="group">
+      <%= button_to 'Approve All', project_project_nodes_bulk_approval_path(project), class: 'btn btn-success btn-sm', remote: true %>
+    </div>
+    <div class="btn-group" role="group">
+      <%= link_to 'Reject All', new_project_project_nodes_bulk_rejection_path(project), remote: true, class: 'btn btn-danger btn-sm' %>
+    </div>
+    <div class="btn-group" role="group">
+      <%= button_to 'X', project_project_nodes_bulk_approval_path(project), method: :delete, remote: true, class: 'btn btn-default btn-sm', title: 'Undo', rel: 'tooltip', data: { placement: 'left', container: 'body' } %>
+    </div>
   </div>
 <% end %>
 

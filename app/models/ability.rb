@@ -234,7 +234,7 @@ class Ability
     can %i[odr_submit_project_approvals], Project
 
     # TODO: this needs to chage to approve as normal users / admin can update
-    can %i[update update_all], ProjectNode
+    can :approve, ProjectNode
   end
 
   def delegator_grants(user)

@@ -14,8 +14,9 @@ class ApprovePendingProjectTest < ActionDispatch::IntegrationTest
     end
 
     click_link('Data Items')
-    assert page.has_content? 'Approve All'
-    assert page.has_content? 'Undo All'
+
+    assert has_button?('Approve All')
+    assert has_link?('Reject All')
     page.find('#project_data_items_information').find('.glyphicon-ok').click
     assert find('#data_item_approval_status').has_text?('APPROVED')
 

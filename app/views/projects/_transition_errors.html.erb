@@ -1,15 +1,17 @@
-<% project.transitionable_states.each do |state| %>
-  <% next unless current_user.can?(:create, Workflow::ProjectState.new(project: project, state: state)) %>
+<div id="project_transition_errors">
+  <% project.transitionable_states.each do |state| %>
+    <% next unless current_user.can?(:create, Workflow::ProjectState.new(project: project, state: state)) %>
 
-  <% reasons = project.textual_reasons_not_to_transition_to(state) %>
-  <% if reasons.any? %>
-    <div class="alert alert-danger">
-    <strong>This project cannot move to "<%= state.name %>" for <%= pluralize(reasons.length, 'reason') %>:</strong>
-      <ul>
+    <% reasons = project.textual_reasons_not_to_transition_to(state) %>
+    <% if reasons.any? %>
+      <div class="alert alert-danger">
+        <strong>This project cannot move to "<%= state.name %>" for <%= pluralize(reasons.length, 'reason') %>:</strong>
+        <ul>
         <% reasons.each do |reason| %>
           <li><%= reason %></li>
         <% end %>
-      </ul>
-    </div>
+        </ul>
+      </div>
+    <% end %>
   <% end %>
-<% end %>
+</div>

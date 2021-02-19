@@ -1,0 +1,9 @@
+// Replace project_node/data_item row
+$("#<%= dom_id(@project_node) %>").html(
+  "<%= j(render 'project_nodes/project_node_approvals', data_item: @project_node, comments_count: @project_node.comments.count) %>"
+);
+
+<%= render 'project_nodes/approvals/refresh_project_header', project: @project_node.project %>
+<%= render 'project_nodes/approvals/refresh_tab_label',      project: @project_node.project %>
+
+$("#modal").modal('hide');

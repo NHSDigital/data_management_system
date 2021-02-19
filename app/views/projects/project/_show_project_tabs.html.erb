@@ -6,7 +6,9 @@
   </li>
   <li>
     <a href="#data" data-toggle='tab'>Data Items
-      <%= approval_status_msg(@project, @project.data_items_approved, current_user, id: 'data_item_approval_status') %>
+      <span id="data_item_approval_status">
+        <%= approval_status_msg(@project, @project.data_items_approved, current_user) %>
+      </span>
     </a>
   </li>
   <li>

@@ -20,10 +20,20 @@
     <% if current_user.odr? %>
       <% if data_item.project.current_state.id == 'SUBMITTED'%>
         <% if data_item.approved.nil? %>
-          <%= link_to bootstrap_icon_tag('ok'), project_node_path(:id => data_item.id, "project_node[approved]" => 'true'), :method => :patch, remote: true, class: 'btn btn-success btn-sm  rce_item' %>
-          <%= link_to bootstrap_icon_tag('remove'), new_project_project_comment_path(data_item.project, comment_type: 'DataSourceItemRejection', project_node_id: data_item.id), remote: true, class: 'btn btn-danger btn-sm reject_data_source_item' %>
+          <div class="btn-group" role="group">
+            <%= form_with url: project_node_approval_path(data_item), local: false do |form| %>
+              <button type="submit" class="btn btn-success btn-sm">
+                <%= bootstrap_icon_tag('ok') %>
+              </button>
+            <% end %>
+          </div>
+          <div class="btn-group" role="group">
+            <%= link_to bootstrap_icon_tag('remove'), new_project_node_rejection_path(data_item), remote: true, class: 'btn btn-danger btn-sm' %>
+          </div>
         <% else %>
-          <%= link_to 'X', project_node_path(:id => data_item.id, "project_node[approved]" => ''), method: :patch, remote: true, class: 'btn btn-default btn-xs', title: 'Undo', rel: 'tooltip', "data-placement" => "left" %>
+          <div class="btn-group" role="group">
+            <%= button_to 'X', project_node_approval_path(data_item), method: :delete, class: 'btn btn-default btn-xs', title: 'Undo', remote: true, rel: 'tooltip', data: { placement: 'left', container: 'body' } %>
+          </div>
           <span id="data_item_status" class="label label-<%= approval_button_style(data_item.approved) %>"><%= approval_button_message(data_item.approved) %></span>
         <% end %>
       <% else %>

@@ -1,0 +1,8 @@
+$("#project_data_items_information").replaceWith(
+  "<%= j(render 'projects/project_data_items', project: @project, comments_count: comments_count) %>"
+);
+
+<%= render 'project_nodes/approvals/refresh_project_header', project: @project %>
+<%= render 'project_nodes/approvals/refresh_tab_label',      project: @project %>
+
+$("#modal").modal('hide');
