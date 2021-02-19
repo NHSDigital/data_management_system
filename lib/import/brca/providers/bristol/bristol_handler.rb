@@ -24,7 +24,12 @@ module Import
             add_simple_fields(genotype, record)
             process_cdna_change(genotype, record)
             add_protein_impact(genotype, record)
+            add_organisationcode_testresult(genotype)
             @persister.integrate_and_store(genotype)
+          end
+
+          def add_organisationcode_testresult(genotype)
+            genotype.attribute_map['organisationcode_testresult'] = '698V0'
           end
 
           def add_simple_fields(genotype, record)
