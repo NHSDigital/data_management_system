@@ -12,7 +12,7 @@ class UsersController < ApplicationController
   end
 
   def new
-    @admin_readonly = current_user.administrator? ? false : true
+    @admin_readonly = !current_user.administrator?
   end
 
   def show
@@ -20,7 +20,7 @@ class UsersController < ApplicationController
   end
 
   def edit
-    @admin_readonly = current_user.administrator? ? false : true
+    @admin_readonly = !current_user.administrator?
   end
 
   # TODO: Use NdrSupport for password generation.
