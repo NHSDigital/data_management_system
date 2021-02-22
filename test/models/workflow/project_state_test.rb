@@ -219,6 +219,82 @@ module Workflow
       end
     end
 
+    test 'should notify cas dataset approver if project with their dataset is renewed' do
+      approved_with_grant_project = create_cas_project(owner: users(:no_roles))
+      approved_with_grant_project.project_datasets << ProjectDataset.new(dataset: dataset(83),
+                                                                         terms_accepted: true,
+                                                                         approved: true)
+      approved_with_grant_project.save!
+      notifications = Notification.where(title: 'CAS Account Renewed With Access to Dataset')
+
+      assert_no_difference 'notifications.count' do
+        approved_with_grant_project.transition_to!(workflow_states(:submitted))
+        # auto-transitions to access_granted
+        approved_with_grant_project.transition_to!(workflow_states(:access_approver_approved))
+        approved_with_grant_project.transition_to!(workflow_states(:renewal))
+      end
+
+      assert_difference 'notifications.count', 2 do
+        approved_with_grant_project.transition_to!(workflow_states(:access_granted))
+      end
+
+      assert_equal notifications.last.body, "CAS account #{approved_with_grant_project.id} has " \
+                                            'been renewed. This account has access to one or ' \
+                                            "more datasets that you are an approver for.\n\n"
+
+      not_approved_with_grant_project = create_cas_project(owner: users(:no_roles))
+      not_approved_with_grant_project.project_datasets << ProjectDataset.new(dataset: dataset(83),
+                                                                             terms_accepted: true,
+                                                                             approved: nil)
+      not_approved_with_grant_project.save!
+
+      assert_no_difference 'notifications.count' do
+        not_approved_with_grant_project.transition_to!(workflow_states(:submitted))
+        # auto-transitions to access_granted
+        not_approved_with_grant_project.transition_to!(workflow_states(:access_approver_approved))
+        not_approved_with_grant_project.transition_to!(workflow_states(:renewal))
+        not_approved_with_grant_project.transition_to!(workflow_states(:access_granted))
+      end
+
+      approved_no_grant_project = create_cas_project(owner: users(:no_roles))
+      approved_no_grant_project.project_datasets << ProjectDataset.new(dataset: dataset(85),
+                                                                       terms_accepted: true,
+                                                                       approved: true)
+      approved_no_grant_project.save!
+
+      assert_no_difference 'notifications.count' do
+        approved_no_grant_project.transition_to!(workflow_states(:submitted))
+        # auto-transitions to access_granted
+        approved_no_grant_project.transition_to!(workflow_states(:access_approver_approved))
+        approved_no_grant_project.transition_to!(workflow_states(:renewal))
+        approved_no_grant_project.transition_to!(workflow_states(:access_granted))
+      end
+
+      approved_one_grant_project = create_cas_project(owner: users(:no_roles))
+      approved_one_grant_project.project_datasets << ProjectDataset.new(dataset: dataset(83),
+                                                                        terms_accepted: true,
+                                                                        approved: true)
+      approved_one_grant_project.project_datasets << ProjectDataset.new(dataset: dataset(84),
+                                                                        terms_accepted: true,
+                                                                        approved: true)
+      approved_one_grant_project.save!
+
+      assert_no_difference 'notifications.count' do
+        approved_one_grant_project.transition_to!(workflow_states(:submitted))
+        # auto-transitions to access_granted
+        approved_one_grant_project.transition_to!(workflow_states(:access_approver_approved))
+        approved_one_grant_project.transition_to!(workflow_states(:renewal))
+      end
+
+      assert_difference 'notifications.count', 3 do
+        approved_one_grant_project.transition_to!(workflow_states(:access_granted))
+      end
+
+      assert_equal notifications.last.body, "CAS account #{approved_one_grant_project.id} has " \
+                                            'been renewed. This account has access to one or ' \
+                                            "more datasets that you are an approver for.\n\n"
+    end
+
     test 'should notify cas dataset approver at submitted for project with their dataset' do
       one_dataset_project = create_cas_project(owner: users(:no_roles))
       one_dataset_project.project_datasets << ProjectDataset.new(dataset: dataset(83),
@@ -332,6 +408,46 @@ module Workflow
                                             'require access please re-apply using your existing ' \
                                             "application by clicking the 'return to draft' " \
                                             "button.\n\n"
+    end
+
+    test 'should notify cas manager on account closure' do
+      project = create_cas_project(project_purpose: 'test', owner: users(:no_roles))
+
+      notifications = Notification.where(title: 'CAS Account Has Closed')
+      # Should not send out notifications for changes when not RENEWAL
+      assert_no_difference 'notifications.count' do
+        project.transition_to!(workflow_states(:submitted))
+        project.transition_to!(workflow_states(:access_approver_approved))
+      end
+
+      assert_difference 'notifications.count', 2 do
+        project.transition_to!(workflow_states(:account_closed))
+      end
+
+      assert_no_difference 'notifications.count' do
+        project.transition_to!(workflow_states(:draft))
+      end
+
+      assert_equal notifications.last.body, "CAS account #{project.id} has been closed.\n\n"
+    end
+
+    test 'should notify cas manager and access approvers on account renewal' do
+      project = create_cas_project(project_purpose: 'test')
+
+      notifications = Notification.where(title: 'CAS Account Renewed')
+
+      assert_no_difference 'notifications.count' do
+        project.transition_to!(workflow_states(:submitted))
+        # auto-transitions to access_granted
+        project.transition_to!(workflow_states(:access_approver_approved))
+        project.transition_to!(workflow_states(:renewal))
+      end
+
+      assert_difference 'notifications.count', 4 do
+        project.transition_to!(workflow_states(:access_granted))
+      end
+
+      assert_equal notifications.last.body, "CAS Account #{project.id} has been renewed.\n\n"
     end
 
     test 'should auto-transition cas application from ACCESS_APPROVER_APPROVED to ACCESS_GRANTED' do

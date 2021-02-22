@@ -93,9 +93,11 @@ class ProjectsMailerTest < ActionMailer::TestCase
 
   test 'account access granted to user' do
     project = create_cas_project(project_purpose: 'test', owner: users(:no_roles))
+
     project.transition_to!(workflow_states(:submitted))
     # Auto-transitions to Access Granted
     project.transition_to!(workflow_states(:access_approver_approved))
+    project.reload.current_state
 
     email = CasMailer.with(project: project).account_access_granted_to_user
 
@@ -215,6 +217,53 @@ class ProjectsMailerTest < ActionMailer::TestCase
 
     assert_equal Array.wrap(project.owner.email), email.to
     assert_equal 'CAS Account Closed', email.subject
+    assert_match %r{http://[^/]+/projects/#{project.id}}, email.text_part.body.to_s
+  end
+
+  test 'account closed' do
+    project = create_cas_project(project_purpose: 'test', owner: users(:no_roles))
+
+    email = CasMailer.with(project: project).account_closed
+
+    assert_emails 1 do
+      email.deliver_later
+    end
+
+    assert_equal User.cas_managers.pluck(:email), email.to
+    assert_equal 'CAS Account Has Closed', email.subject
+    assert_match %r{http://[^/]+/projects/#{project.id}}, email.text_part.body.to_s
+  end
+
+  test 'account renewed' do
+    project = create_cas_project(project_purpose: 'test')
+
+    email = CasMailer.with(project: project).account_renewed
+
+    assert_emails 1 do
+      email.deliver_later
+    end
+
+    assert_equal User.cas_manager_and_access_approvers.map(&:email), email.to
+    assert_equal 'CAS Account Renewed', email.subject
+    assert_match %r{http://[^/]+/projects/#{project.id}}, email.text_part.body.to_s
+  end
+
+  test 'account renewed dataset approver' do
+    project = create_cas_project(project_purpose: 'test', owner: users(:no_roles))
+
+    dataset = Dataset.find_by(name: 'Extra CAS Dataset One')
+    project_dataset = ProjectDataset.new(dataset: dataset, terms_accepted: true, approved: true)
+    project.project_datasets << project_dataset
+    project.transition_to!(workflow_states(:submitted))
+
+    email = CasMailer.with(project: project, user: DatasetRole.fetch(:approver).users.first).account_renewed_dataset_approver
+
+    assert_emails 1 do
+      email.deliver_later
+    end
+
+    assert_equal Array.wrap(DatasetRole.fetch(:approver).users.first.email), email.to
+    assert_equal 'CAS Account Renewed With Access to Dataset', email.subject
     assert_match %r{http://[^/]+/projects/#{project.id}}, email.text_part.body.to_s
   end
 

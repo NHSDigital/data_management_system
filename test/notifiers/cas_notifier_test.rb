@@ -226,6 +226,63 @@ class CasNotifierTest < ActiveSupport::TestCase
                                          "button.\n\n"
   end
 
+  test 'should generate account_closed Notifications' do
+    project = create_cas_project(project_purpose: 'test')
+
+    recipients = User.cas_managers
+    title = 'CAS Account Has Closed'
+
+    assert_difference -> { Notification.by_title(title).count }, 2 do
+      recipients.each do |user|
+        CasNotifier.account_closed(project, user.id)
+      end
+    end
+
+    # TODO: Should it be creating UserNotifications?
+
+    assert_equal Notification.last.body, "CAS account #{project.id} has been closed.\n\n"
+  end
+
+  test 'should generate account_renewed Notifications' do
+    project = create_cas_project(project_purpose: 'test')
+
+    recipients = SystemRole.cas_manager_and_access_approvers.map(&:users).flatten
+
+    title = 'CAS Account Renewed'
+    assert_difference -> { Notification.by_title(title).count }, 4 do
+      recipients.each do |user|
+        CasNotifier.account_renewed(project, user.id)
+      end
+    end
+
+    # TODO: Should it be creating UserNotifications?
+
+    assert_equal Notification.last.body, "CAS Account #{project.id} has been renewed.\n\n"
+  end
+
+  test 'should generate account_renewed_dataset_approver Notifications' do
+    project = create_cas_project(owner: users(:no_roles))
+    project.project_datasets << ProjectDataset.new(dataset: dataset(83), terms_accepted: true,
+                                                   approved: true)
+    project.project_datasets << ProjectDataset.new(dataset: dataset(84), terms_accepted: true,
+                                                   approved: true)
+    project.save!
+
+    title = 'CAS Account Renewed With Access to Dataset'
+    assert_difference -> { Notification.by_title(title).count }, 3 do
+      project.datasets.each do |dataset|
+        dataset.approvers.each do |approver|
+          CasNotifier.account_renewed_dataset_approver(project, approver.id)
+        end
+      end
+    end
+
+    # TODO: Should it be creating UserNotifications?
+    assert_equal Notification.last.body, "CAS account #{project.id} has been renewed. This " \
+                                         'account has access to one or more datasets that you ' \
+                                         "are an approver for.\n\n"
+  end
+
   test 'should generate new_cas_project_saved Notifications' do
     project = create_cas_project(project_purpose: 'test')
 

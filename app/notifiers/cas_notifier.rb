@@ -121,6 +121,31 @@ class CasNotifier
       )
     end
 
+    def account_closed(project, user_id)
+      create_notification(
+        user_id: user_id,
+        title: 'CAS Account Has Closed',
+        body: "CAS account #{project.id} has been closed.\n\n"
+      )
+    end
+
+    def account_renewed(project, user_id)
+      create_notification(
+        user_id: user_id,
+        title: 'CAS Account Renewed',
+        body: "CAS Account #{project.id} has been renewed.\n\n"
+      )
+    end
+
+    def account_renewed_dataset_approver(project, user_id)
+      create_notification(
+        user_id: user_id,
+        title: 'CAS Account Renewed With Access to Dataset',
+        body: "CAS account #{project.id} has been renewed. This account has access to one or " \
+              "more datasets that you are an approver for.\n\n"
+      )
+    end
+
     def new_cas_project_saved(project, user_id)
       create_notification(
         user_id: user_id,
