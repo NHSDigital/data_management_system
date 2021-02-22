@@ -64,12 +64,17 @@ module Import
             genocolorectal.add_specimen_type(record.mapped_fields['specimentype'])
             genocolorectal.add_received_date(record.raw_fields['date of receipt'])
             extract_teststatus(genocolorectal, record)
+            add_organisationcode_testresult(genocolorectal)
             res = add_colorectal_from_raw_test(genocolorectal, record)
             res.map { |cur_genotype| @persister.integrate_and_store(cur_genotype) }
             status = genocolorectal.attribute_map['teststatus']
             @logger.debug "Extracted Teststatus was #{status}"
           end
 
+          def add_organisationcode_testresult(genocolorectal)
+            genocolorectal.attribute_map['organisationcode_testresult'] = '699H0'
+          end
+          
           def add_colorectal_from_raw_test(genocolorectal, record)
             colo_string = record.raw_fields['test']
             genotypes = []

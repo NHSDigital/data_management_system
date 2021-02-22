@@ -33,9 +33,14 @@ module Import
             #process_cdna_change(genotype, record)
             process_varpathclass(genotype, record)
             process_exons(genotype, record)
+            add_organisationcode_testresult(genotype)
             res = process_gene(genotype, record)
             res.map { |cur_genotype| @persister.integrate_and_store(cur_genotype) }
             # @persister.integrate_and_store(genotype)
+          end
+
+          def add_organisationcode_testresult(genotype)
+            genotype.attribute_map['organisationcode_testresult'] = '697Q0'
           end
 
           def process_single_cdna_change(genotype, record)

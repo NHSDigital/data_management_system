@@ -23,8 +23,13 @@ module StGeorge
       genotype.add_passthrough_fields(record.mapped_fields,
                                       record.raw_fields,
                                       PASS_THROUGH_FIELDS)
+      add_organisationcode_testresult(genotype)
       process_cdna_change(genotype, record)
       @persister.integrate_and_store(genotype)
+    end
+
+    def add_organisationcode_testresult(genotype)
+      genotype.attribute_map['organisationcode_testresult'] = '697N0'
     end
 
     def process_cdna_change(genotype, record)

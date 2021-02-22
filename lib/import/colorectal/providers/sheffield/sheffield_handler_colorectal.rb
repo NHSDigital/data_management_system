@@ -87,8 +87,13 @@ module Import
                                                   record.raw_fields,
                                                   PASS_THROUGH_FIELDS_COLO)
             add_test_scope_from_karyo(genocolorectal, record)
+            add_organisationcode_testresult(genocolorectal)
             res = add_colorectal_from_raw_test(genocolorectal, record)
             res.map { |cur_genotype| @persister.integrate_and_store(cur_genotype) }
+          end
+
+          def add_organisationcode_testresult(genocolorectal)
+            genocolorectal.attribute_map['organisationcode_testresult'] = '699D0'
           end
 
           def add_test_scope_from_karyo(genocolorectal, record)
@@ -165,7 +170,7 @@ module Import
             geno = record.mapped_fields['genetictestscope']
             karyo = record.raw_fields['karyotypingmethod']
             genotypes = []
-            if genocolorectal.attribute_map['genetictestscope'] == 'Targeted Colorectal mutation test'
+            if genocolorectal.attribute_map['genetictestscope'] == 'Targeted Colorectal Lynch or MMR'
               if NULL_TARGETED_TEST_REGEX.match(colo_string)
                 genocolorectal.add_status(1)
                 genocolorectal.add_gene_colorectal(COLORECTAL_GENES_REGEX.match(colo_string)[:colorectal])

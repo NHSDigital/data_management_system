@@ -66,7 +66,12 @@ module Import
             process_impact(genotype, record)
             process_genomic_change(genotype, record)
             process_test_scope_and_type(genotype, record)
+            add_organisationcode_testresult(genotype)
             @persister.integrate_and_store(genotype)
+          end
+
+          def add_organisationcode_testresult(genotype)
+            genotype.attribute_map['organisationcode_testresult'] = '699F0'
           end
 
           # TODO: this same parser occurs in Cambridge as well - should find a nice

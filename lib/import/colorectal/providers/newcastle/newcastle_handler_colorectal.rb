@@ -107,9 +107,14 @@ module Import
             identifier = record.raw_fields['ngs sample number']
             genocolorectal.add_servicereportidentifier(identifier) unless identifier.nil?
             process_test_type(genocolorectal, record)
+            add_organisationcode_testresult(genocolorectal)
             process_investigation_code(genocolorectal, record)
             res = process_gene_colorectal(genocolorectal, record) # Added by Francesco
             res.map { |cur_genotype| @persister.integrate_and_store(cur_genotype) }
+          end
+
+          def add_organisationcode_testresult(genocolorectal)
+            genocolorectal.attribute_map['organisationcode_testresult'] = '699A0'
           end
 
           def process_investigation_code(genocolorectal, record)

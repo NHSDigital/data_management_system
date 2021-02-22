@@ -176,8 +176,13 @@ module Import
             add_positive_teststatus(genocolorectal, record)
             failed_teststatus(genocolorectal, record)
             add_benign_varclass(genocolorectal, record)
+            add_organisationcode_testresult(genocolorectal)
             res = add_gene_from_report(genocolorectal, record) # Added by Francesco
             res.map { |cur_genotype| @persister.integrate_and_store(cur_genotype) }
+          end
+
+          def add_organisationcode_testresult(genocolorectal)
+            genocolorectal.attribute_map['organisationcode_testresult'] = '699C0'
           end
 
           def add_positive_teststatus(genocolorectal, record)
@@ -525,7 +530,7 @@ module Import
                   @logger.debug "SUCCESSFUL protein impact parse for: #{$LAST_MATCH_INFO[:impact]}"
                   @logger.debug "FOUND ABSENT VARIANT FOR : #{rawreport}"
                   genotypes << genocolorectal
-                elsif genetictestscope == 'Targeted Colorectal mutation test'
+                elsif genetictestscope == 'Targeted Colorectal Lynch or MMR'
                   genocolorectal.add_gene_colorectal($LAST_MATCH_INFO[:genes])
                   genocolorectal.add_protein_impact(nil)
                   genocolorectal.add_gene_location(nil)
@@ -574,7 +579,7 @@ module Import
                   genocolorectal.add_variant_type(rawreport)
                   genocolorectal.add_status(1)
                   genotypes.append(genocolorectal)
-                elsif genetictestscope == 'Targeted Colorectal mutation test'
+                elsif genetictestscope == 'Targeted Colorectal Lynch or MMR'
                   genocolorectal.add_gene_colorectal(COLORECTAL_GENES_REGEX.match(rawreport)[0])
                   genocolorectal.add_exon_location(nil)
                   genocolorectal.add_variant_type(nil)
@@ -590,7 +595,7 @@ module Import
                   genocolorectal.add_variant_type(rawreport)
                   genocolorectal.add_status(1)
                   genotypes.append(genocolorectal)
-                elsif genetictestscope == 'Targeted Colorectal mutation test'
+                elsif genetictestscope == 'Targeted Colorectal Lynch or MMR'
                   genocolorectal.add_gene_colorectal(COLORECTAL_GENES_REGEX.match(rawreport)[0])
                   genocolorectal.add_exon_location(nil)
                   genocolorectal.add_variant_type(nil)

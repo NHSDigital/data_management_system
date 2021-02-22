@@ -38,8 +38,13 @@ module Import
                                                   record.raw_fields,
                                                   PASS_THROUGH_FIELDS_COLO)
             genocolorectal.add_test_scope(:full_screen)
+            add_organisationcode_testresult(genocolorectal)
             res = extract_lynch_from_record(genocolorectal, record)
             res.map { |cur_genotype| @persister.integrate_and_store(cur_genotype) }
+          end
+
+          def add_organisationcode_testresult(genocolorectal)
+            genocolorectal.attribute_map['organisationcode_testresult'] = '697Q0'
           end
 
           def extract_lynch_from_record(genocolorectal, record)

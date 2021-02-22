@@ -50,12 +50,17 @@ module Salisbury
         genotype.add_test_scope(scope) if scope
       end
       extract_teststatus(genotype, record)
+      add_organisationcode_testresult(genotype)
       genotype.add_specimen_type(record.mapped_fields['specimentype'])
       genotype.add_received_date(record.raw_fields['date of receipt'])
       genotype.add_passthrough_fields(record.mapped_fields,
                                       record.raw_fields,
                                       PASS_THROUGH_FIELDS)
       @persister.integrate_and_store(genotype)
+    end
+
+    def add_organisationcode_testresult(genotype)
+      genotype.attribute_map['organisationcode_testresult'] = '699H0'
     end
 
     def extract_gene(test_string, genotype)

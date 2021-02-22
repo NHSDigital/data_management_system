@@ -78,7 +78,12 @@ module Import
             process_gene_colorectal(genotype, record) # Added by Francesco
             extract_variantclass_from_genotype(genotype, record) # Added by Francesco
             extract_teststatus(genotype, record) # added by Francesco
+            add_organisationcode_testresult(genotype)
             @persister.integrate_and_store(genotype)
+          end
+
+          def add_organisationcode_testresult(genotype)
+            genotype.attribute_map['organisationcode_testresult'] = '698A0'
           end
 
           def add_test_type(genotype, record)
