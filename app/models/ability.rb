@@ -201,7 +201,7 @@ class Ability
     return unless user.odr? || user.role?(SystemRole.fetch(:application_manager))
 
     can :read, [
-      Organisation, Team, User, Project, ProjectComment, ProjectAttachment, ProjectDataset,
+      Organisation, Team, User, ProjectComment, ProjectAttachment, ProjectDataset,
       ProjectNode, ProjectAmendment, DataPrivacyImpactAssessment, Contract, Release, ProjectEndUse,
       ProjectClassification, ProjectLawfulBasis
     ]
@@ -211,6 +211,8 @@ class Ability
 
     # Senior ODR users have additonal powers...
     return unless user.odr?
+
+    can :read, Project, project_type_id: ProjectType.odr_mbis.map(&:id)
 
     can %i[create update], Contract
 
@@ -242,6 +244,9 @@ class Ability
     can :create, ProjectComment
   end
 
+  # TODO: Do we need a project_user_type model that determines what project_types a user can see
+  # TODO Should we have a generic application_approver role that applies across all project_types
+  # CAS - Cas_Access_Approver, MBIS - Delegate, ODR - Application_Manager, CARA - ?
   def application_manager_grants(user)
     junior = user.role?(SystemRole.fetch(:application_manager))
     senior = user.role?(SystemRole.fetch(:senior_application_manager))
@@ -249,7 +254,8 @@ class Ability
 
     can :manage, [User, Organisation, Division, Directorate, Team]
 
-    can %i[create read], Project
+    can :create, Project
+    can :read, Project, project_type_id: ProjectType.odr_mbis.map(&:id)
     can %i[create read], ProjectAttachment
     can %i[update destroy edit_data_source_items],
         Project, current_state: { id: %w[DRAFT AMEND] }

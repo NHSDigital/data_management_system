@@ -8,6 +8,7 @@ class ProjectsController < ApplicationController
 
   # include late to ensure correct callback order
   include Workflow::Controller
+  include ProjectsHelper
 
   respond_to :js, :html
 
@@ -21,14 +22,23 @@ class ProjectsController < ApplicationController
   end
 
   def dashboard
-    @projects            = Project.search(search_params).accessible_by(current_ability, :read).
-                           odr_projects.order(updated_at: :desc)
-    @my_projects         = current_user.projects.odr_projects.
-                           my_projects_search(search_params).order(updated_at: :desc)
-    @assigned_projects   = @projects.assigned_to(current_user)
-    @unassigned_projects = @projects.unassigned
+    # all tables apart from my_projects are currently scoped to only return mbis and odr
+    @projects                     = Project.search(search_params).
+                                    accessible_by(current_ability, :read).
+                                    send(dashboard_projects_by_role(current_user)).
+                                    order(updated_at: :desc)
+    @my_projects                  = current_user.projects.my_projects_search(search_params).
+                                    order(updated_at: :desc)
+    @assigned_projects            = @projects.assigned_to(current_user)
+    @unassigned_projects          = @projects.unassigned
 
-    @projects = @projects.paginate(
+    @all_projects_filtered        = @projects.by_project_type(type_filter).order(updated_at: :desc)
+    @assigned_projects_filtered   = @assigned_projects.by_project_type(type_filter).
+                                    order(updated_at: :desc)
+    @unassigned_projects_filtered = @unassigned_projects.by_project_type(type_filter).
+                                    order(updated_at: :desc)
+
+    @all_projects_filtered = @all_projects_filtered.paginate(
       page: params[:projects_page],
       per_page: 10
     )
@@ -38,12 +48,12 @@ class ProjectsController < ApplicationController
       per_page: 10
     )
 
-    @assigned_projects = @assigned_projects.paginate(
+    @assigned_projects_filtered = @assigned_projects_filtered.paginate(
       page: params[:assigned_projects_page],
       per_page: 10
     )
 
-    @unassigned_projects = @unassigned_projects.paginate(
+    @unassigned_projects_filtered = @unassigned_projects_filtered.paginate(
       page: params[:unassigned_projects_page],
       per_page: 10
     )
@@ -356,5 +366,13 @@ class ProjectsController < ApplicationController
 
   def search_params
     params.fetch(:search, {}).permit(:name)
+  end
+
+  def type_filter
+    return :all if search_params[:name].present?
+    return :odr if current_user.odr? && params[:project_type].blank?
+    return :all if params[:project_type].blank?
+
+    params[:project_type].to_sym
   end
 end

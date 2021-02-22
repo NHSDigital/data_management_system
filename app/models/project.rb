@@ -134,6 +134,7 @@ class Project < ApplicationRecord
   scope :of_type_application, -> { joins(:project_type).merge(ProjectType.application) }
   scope :of_type_project,     -> { joins(:project_type).merge(ProjectType.project) }
   scope :odr_projects,        -> { joins(:project_type).merge(ProjectType.odr) }
+  scope :odr_mbis_projects, -> { joins(:project_type).merge(ProjectType.odr_mbis) }
 
   scope :owned_by, ->(user) { joins(:grants).where(
                               grants: { roleable: ProjectRole.owner, user_id: user.id }) }
@@ -148,6 +149,10 @@ class Project < ApplicationRecord
   scope :cas_access_approval, lambda {
     joins(:current_state).where(workflow_current_project_states: { state_id: 'SUBMITTED' }).
       joins(:project_type).merge(ProjectType.cas)
+  }
+
+  scope :by_project_type, lambda { |type = :all|
+    joins(:project_type).where(project_type: ProjectType.send(type))
   }
 
   accepts_nested_attributes_for :project_attachments
