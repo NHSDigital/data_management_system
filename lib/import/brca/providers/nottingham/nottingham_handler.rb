@@ -45,8 +45,13 @@ module Import
             process_gene(genotype, record) # Added by Francesco
             process_cdna_change(genotype, record)
             process_varpathclass(genotype, record)
+            add_organisationcode_testresult(genotype)
             extract_teststatus(genotype, record) # added by Francesco
             @persister.integrate_and_store(genotype)
+          end
+
+          def add_organisationcode_testresult(genotype)
+            genotype.attribute_map['organisationcode_testresult'] = '698A0'
           end
 
           def add_simple_fields(genotype, record)

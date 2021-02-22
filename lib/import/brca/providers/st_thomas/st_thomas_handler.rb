@@ -17,8 +17,12 @@ module StThomas
                                       PASS_THROUGH_FIELDS)
       mtype = record.raw_fields['moleculartestingtype']
       genotype.add_molecular_testing_type_strict(mtype) if mtype
-
+      add_organisationcode_testresult(genotype)
       @persister.integrate_and_store(genotype)
+    end
+
+    def add_organisationcode_testresult(genotype)
+      genotype.attribute_map['organisationcode_testresult'] = '699L0'
     end
 
     # use the raw:predictive test performed overall, but check that full screen result is null

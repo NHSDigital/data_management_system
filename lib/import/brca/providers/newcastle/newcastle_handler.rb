@@ -93,36 +93,14 @@ module Import
             add_brca_from_raw_genotype(genotype, record) # Added by Francesco
             add_cdna_change_from_report(genotype, record) # Added by Francesco
             process_protein_impact(genotype, record) # Added by Francesco
+            add_organisationcode_testresult(genotype)
             final_results = process_raw_genotype(genotype, record)
             final_results.map { |x| @persister.integrate_and_store(x) }
           end
 
-          # def process_investigation_code(genotype, record)
-          #   raw_code = Maybe(record.raw_fields['investigationcode']).
-          #              or_else(Maybe(record.raw_fields['moleculartestingtype'])).
-          #              or_else(Maybe(record.raw_fields['service category'])).
-          #              or_else(Maybe(record.raw_fields['referralreason'])
-          #   puts
-          #   case raw_code
-          #   when String
-          #     inv_code = 'o'
-          #     scope = TEST_SCOPE_MAP[raw_code.downcase.strip]
-          #     scope2 = TEST_SCOPE_FROM_TYPE_MAP[raw_code.downcase.strip]
-          #     if inv_code
-          #       dd_scope_from_service_category(record.raw_fields['service category'], genotype)
-          #     elsif scope
-          #       genotype.add_test_scope(scope)
-          #     elsif scope2
-          #       @logger.info "SUCA"
-          #       process_scope_from_type(genotype,record)
-          #     else
-          #       puts 'CAZZI'
-          #       #add_scope_from_service_category(record.raw_fields['service category'], genotype)
-          #     end
-          #   when Nil
-          #     add_scope_from_service_category(record.raw_fields['service category'], genotype)
-          #   end
-          # end
+          def add_organisationcode_testresult(genotype)
+            genotype.attribute_map['organisationcode_testresult'] = '699A0'
+          end
 
           def process_investigation_code(genotype, record)
             if record.raw_fields['service category'].to_s.downcase.strip == 'o'

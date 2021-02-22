@@ -26,6 +26,7 @@ module Import
                                                   record.raw_fields,
                                                   PASS_THROUGH_FIELDS_COLO)
             process_genetictestscope(genocolorectal, record)
+            add_organisationcode_testresult(genocolorectal)
             variant_processor = VariantProcessor.new(genocolorectal, record, @logger)
             res = variant_processor.process_variants_from_report
             res.each { |cur_genotype| @persister.integrate_and_store(cur_genotype) }

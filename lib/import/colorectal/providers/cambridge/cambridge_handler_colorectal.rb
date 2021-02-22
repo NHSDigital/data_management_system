@@ -40,8 +40,13 @@ module Import
             genocolorectal.add_test_scope(:full_screen)
             genocolorectal.add_method('ngs')
             add_zygosity(genocolorectal, record)
+            add_organisationcode_testresult(genocolorectal)
             process_exons(record.raw_fields['proteinimpact'], genocolorectal)
             @persister.integrate_and_store(genocolorectal)
+          end
+
+          def add_organisationcode_testresult(genocolorectal)
+            genocolorectal.attribute_map['organisationcode_testresult'] = '69860'
           end
 
           def process_cdna_change(genocolorectal, record)

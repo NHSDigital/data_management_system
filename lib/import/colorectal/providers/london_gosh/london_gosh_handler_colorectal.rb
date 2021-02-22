@@ -67,10 +67,15 @@ module Import
                                                   PASS_THROUGH_FIELDS_COLO)
             genocolorectal.add_test_scope(:full_screen)
             process_varpathclass(genocolorectal, record)
+            add_organisationcode_testresult(genocolorectal)
             # process_gene_and_variant(genocolorectal, record)
             res = process_gene_and_variant(genocolorectal, record)
             res.map { |cur_genotype| @persister.integrate_and_store(cur_genotype) }
             # @persister.integrate_and_store(genocolorectal)
+          end
+
+          def add_organisationcode_testresult(genocolorectal)
+            genocolorectal.attribute_map['organisationcode_testresult'] = '69A70'
           end
 
           def process_gene_and_variant(genocolorectal, record)

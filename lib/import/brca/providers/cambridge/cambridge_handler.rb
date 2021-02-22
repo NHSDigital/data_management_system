@@ -43,7 +43,12 @@ module Import
             genotype.add_method('ngs')
             add_zygosity(genotype, record)
             process_exons(record.raw_fields['proteinimpact'], genotype)
+            add_organisationcode_testresult(genotype)
             @persister.integrate_and_store(genotype)
+          end
+
+          def add_organisationcode_testresult(genotype)
+            genotype.attribute_map['organisationcode_testresult'] = '69860'
           end
 
           def process_cdna_change(genotype, record)

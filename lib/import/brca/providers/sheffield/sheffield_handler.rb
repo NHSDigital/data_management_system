@@ -71,10 +71,15 @@ module Import
             add_test_scope_from_karyo(genotype, record)
             process_exons(record.raw_fields['genotype'], genotype)
             process_gene_from_column(genotype, record) # Just added
+            add_organisationcode_testresult(genotype)
             res = process_gene(genotype, record)
             res.map { |cur_genotype| @persister.integrate_and_store(cur_genotype) }
 
             # @lines_processed += 1 # TODO: factor this out to be automatic across handlers
+          end
+
+          def add_organisationcode_testresult(genotype)
+            genotype.attribute_map['organisationcode_testresult'] = '699D0'
           end
 
           def add_test_scope(genotype, record)
