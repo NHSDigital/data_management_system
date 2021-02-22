@@ -212,7 +212,7 @@ class Ability
     # Senior ODR users have additonal powers...
     return unless user.odr?
 
-    can :read, Project, project_type_id: ProjectType.odr_mbis.map(&:id)
+    can :read, Project, project_type_id: ProjectType.odr_mbis.pluck(:id)
 
     can %i[create update], Contract
 
@@ -255,7 +255,7 @@ class Ability
     can :manage, [User, Organisation, Division, Directorate, Team]
 
     can :create, Project
-    can :read, Project, project_type_id: ProjectType.odr_mbis.map(&:id)
+    can :read, Project, project_type_id: ProjectType.odr_mbis.pluck(:id)
     can %i[create read], ProjectAttachment
     can %i[update destroy edit_data_source_items],
         Project, current_state: { id: %w[DRAFT AMEND] }
