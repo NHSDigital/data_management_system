@@ -21,6 +21,7 @@ module Workflow
     after_save :notify_user_cas_application_rejected
     after_save :notify_cas_access_granted
     after_save :notify_requires_renewal
+    after_save :notify_account_renewed
     after_save :notify_account_closed
     after_save :auto_transition_access_approver_approved_to_access_granted
 
@@ -110,10 +111,36 @@ module Workflow
       CasMailer.with(project: project).send(:requires_renewal_to_user).deliver_later
     end
 
+    def notify_account_renewed
+      return unless project.cas?
+      return unless state_id == 'ACCESS_GRANTED'
+      return unless project.current_state.id == 'RENEWAL'
+
+      DatasetRole.fetch(:approver).users.each do |user|
+        matching_datasets = project.project_datasets.any? do |pd|
+          ProjectDataset.dataset_approval(user, true).include? pd
+        end
+        next unless matching_datasets
+
+        CasNotifier.account_renewed_dataset_approver(project, user)
+        CasMailer.with(project: project, user: user).send(:account_renewed_dataset_approver).
+          deliver_later
+      end
+
+      User.cas_manager_and_access_approvers.each do |user|
+        CasNotifier.account_renewed(project, user)
+      end
+      CasMailer.with(project: project).send(:account_renewed).deliver_later
+    end
+
     def notify_account_closed
       return unless project.cas?
       return unless state_id == 'ACCOUNT_CLOSED'
 
+      User.cas_managers.each do |user|
+        CasNotifier.account_closed(project, user.id)
+      end
+      CasMailer.with(project: project).send(:account_closed).deliver_later
       CasNotifier.account_closed_to_user(project)
       CasMailer.with(project: project).send(:account_closed_to_user).deliver_later
     end

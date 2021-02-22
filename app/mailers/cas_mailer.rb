@@ -82,6 +82,24 @@ class CasMailer < ApplicationMailer
     mail(to: recipient, subject: 'CAS Account Closed') if recipient.any?
   end
 
+  def account_closed
+    recipients = User.cas_managers.pluck(:email)
+
+    mail(to: recipients, subject: 'CAS Account Has Closed') if recipients.any?
+  end
+
+  def account_renewed
+    recipients = User.cas_manager_and_access_approvers.pluck(:email)
+
+    mail(to: recipients, subject: 'CAS Account Renewed') if recipients.any?
+  end
+
+  def account_renewed_dataset_approver
+    recipient = Array.wrap(params[:user].email)
+
+    mail(to: recipient, subject: 'CAS Account Renewed With Access to Dataset') if recipient.any?
+  end
+
   def new_cas_project_saved
     recipients = User.cas_managers.pluck(:email)
 
