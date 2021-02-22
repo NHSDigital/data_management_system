@@ -501,6 +501,22 @@ class AbilityTest < ActiveSupport::TestCase
     assert @non_senior_team_member_ability.cannot? :publish, DatasetVersion
   end
 
+  test 'user update abilities' do
+    assert @admin.can? :update, @no_roles
+    # should be able to update own user details
+    assert @no_roles_ability.can? :update, @no_roles
+    refute @senior_team_member_ability.can? :update, @no_roles
+    refute @non_senior_team_member_ability.can? :update, @no_roles
+    # TODO: This needs fixing - application_manager should not be able to change cas user info
+    assert @application_manager_ability.can? :update, @no_roles
+    refute @odr_ability.can? :update, @no_roles
+    refute @senior_project_member_ability.can? :update, @no_roles
+    refute @non_senior_project_member_ability.can? :update, @no_roles
+
+    # should not be able to update other user's user details
+    refute @no_roles_ability.can? :update, @senior_team_member
+  end
+
   test 'dataset version abilities published scope' do
     dataset = Dataset.create!(name: 'Not Published Version', dataset_type: dataset_type(:table_spec),
                               team: Team.first)

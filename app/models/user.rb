@@ -124,6 +124,10 @@ class User < ActiveRecord::Base
     session_index
   ]
 
+  CAS_ACCOUNT_FIELDS = %i[first_name last_name email job_title username telephone line_manager_name
+                          line_manager_email line_manager_telephone employment contract_start_date
+                          contract_end_date].freeze
+
   def current_ability
     @current_ability ||= self.class.module_parent::Ability.new(self)
   end

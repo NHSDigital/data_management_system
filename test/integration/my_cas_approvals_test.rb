@@ -4,13 +4,12 @@ class MyCasApprovalsTest < ActionDispatch::IntegrationTest
   test 'dataset approver should be able to view list of projects with a dataset they can approve' do
     sign_in users(:cas_dataset_approver)
 
-    grant_project = Project.create(project_type: project_types(:cas), owner: users(:standard_user2))
+    grant_project = create_cas_project(owner: users(:standard_user2))
     grant_dataset = Dataset.find_by(name: 'Extra CAS Dataset One')
     grant_project.project_datasets << ProjectDataset.new(dataset: grant_dataset,
                                                          terms_accepted: true)
 
-    no_grant_project = Project.create(project_type: project_types(:cas),
-                                      owner: users(:standard_user2))
+    no_grant_project = create_cas_project(owner: users(:standard_user2))
     no_grant_dataset = Dataset.find_by(name: 'Extra CAS Dataset Two')
     no_grant_project.project_datasets << ProjectDataset.new(dataset: no_grant_dataset,
                                                             terms_accepted: true)
@@ -30,11 +29,8 @@ class MyCasApprovalsTest < ActionDispatch::IntegrationTest
   test 'access approver should be able to view list of projects with a dataset they can approve' do
     sign_in users(:cas_access_approver)
 
-    submitted_state_project = Project.create(project_type: project_types(:cas),
-                                             owner: users(:standard_user2))
-    draft_state_project = Project.create(project_type: project_types(:cas),
-                                         owner: users(:standard_user2))
-    draft_state_project.reload.current_state
+    submitted_state_project = create_cas_project(owner: users(:standard_user2))
+    draft_state_project = create_cas_project(owner: users(:standard_user2))
 
     submitted_state_project.transition_to!(workflow_states(:submitted))
 

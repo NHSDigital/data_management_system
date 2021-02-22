@@ -2,7 +2,7 @@ require 'test_helper'
 
 class CasNotifierTest < ActiveSupport::TestCase
   test 'should generate dataset_approved_status_updated Notifications' do
-    project = create_project(project_type: project_types(:cas), project_purpose: 'test')
+    project = create_cas_project(project_purpose: 'test')
     dataset = Dataset.find_by(name: 'Extra CAS Dataset One')
     project_dataset = ProjectDataset.new(dataset: dataset, terms_accepted: true, approved: true)
     project.project_datasets << project_dataset
@@ -22,7 +22,7 @@ class CasNotifierTest < ActiveSupport::TestCase
   end
 
   test 'should generate dataset_approved_status_updated_to_user Notifications' do
-    project = create_project(project_type: project_types(:cas), project_purpose: 'test',
+    project = create_cas_project(project_purpose: 'test',
                              owner: users(:no_roles))
     dataset = Dataset.find_by(name: 'Extra CAS Dataset One')
     project_dataset = ProjectDataset.new(dataset: dataset, terms_accepted: true, approved: true)
@@ -39,7 +39,7 @@ class CasNotifierTest < ActiveSupport::TestCase
   end
 
   test 'should generate access_approval_status_updated Notifications' do
-    project = create_project(project_type: project_types(:cas), project_purpose: 'test')
+    project = create_cas_project(project_purpose: 'test')
 
     recipients = SystemRole.cas_manager_and_access_approvers.map(&:users).flatten
 
@@ -61,7 +61,7 @@ class CasNotifierTest < ActiveSupport::TestCase
 
   test 'should generate account_approved_to_user Notifications' do
     user = users(:no_roles)
-    project = create_project(project_type: project_types(:cas), project_purpose: 'test',
+    project = create_cas_project(project_purpose: 'test',
                              owner: user)
     assert_difference -> { Notification.by_title('CAS Access Approved').count }, 1 do
       CasNotifier.account_approved_to_user(project)
@@ -76,7 +76,7 @@ class CasNotifierTest < ActiveSupport::TestCase
 
   test 'should generate account_rejected_to_user Notifications' do
     user = users(:no_roles)
-    project = create_project(project_type: project_types(:cas), project_purpose: 'test',
+    project = create_cas_project(project_purpose: 'test',
                              owner: user)
     assert_difference -> { Notification.by_title('CAS Access Rejected').count }, 1 do
       CasNotifier.account_rejected_to_user(project)
@@ -89,7 +89,7 @@ class CasNotifierTest < ActiveSupport::TestCase
   end
 
   test 'should generate account_access_granted Notifications' do
-    project = create_project(project_type: project_types(:cas), project_purpose: 'test')
+    project = create_cas_project(project_purpose: 'test')
 
     recipients = User.cas_managers
 
@@ -108,7 +108,7 @@ class CasNotifierTest < ActiveSupport::TestCase
 
   test 'should generate account_access_granted_to_user Notifications' do
     user = users(:no_roles)
-    project = create_project(project_type: project_types(:cas), project_purpose: 'test',
+    project = create_cas_project(project_purpose: 'test',
                              owner: user)
 
     assert_difference -> { Notification.by_title('CAS Access Granted').count }, 1 do
@@ -122,7 +122,7 @@ class CasNotifierTest < ActiveSupport::TestCase
   end
 
   test 'should generate requires_account_approval Notifications' do
-    project = create_project(project_type: project_types(:cas), project_purpose: 'test')
+    project = create_cas_project(project_purpose: 'test')
     title = 'CAS Application Requires Access Approval'
     assert_difference -> { Notification.by_title(title).count }, 2 do
       User.cas_access_approvers.each do |user|
@@ -159,7 +159,7 @@ class CasNotifierTest < ActiveSupport::TestCase
   end
 
   test 'should generate application_submitted Notifications' do
-    project = create_project(project_type: project_types(:cas), project_purpose: 'test')
+    project = create_cas_project(project_purpose: 'test')
 
     recipients = User.cas_managers
     title = 'CAS Application Submitted'
@@ -177,7 +177,7 @@ class CasNotifierTest < ActiveSupport::TestCase
 
   test 'should generate requires_renewal_to_user Notifications' do
     user = users(:no_roles)
-    project = create_project(project_type: project_types(:cas), project_purpose: 'test',
+    project = create_cas_project(project_purpose: 'test',
                              owner: user)
 
     assert_difference -> { Notification.by_title('CAS Access Requires Renewal').count }, 1 do
@@ -194,7 +194,7 @@ class CasNotifierTest < ActiveSupport::TestCase
 
   test 'should generate requires_renewal_midway_to_user Notifications' do
     user = users(:no_roles)
-    project = create_project(project_type: project_types(:cas), project_purpose: 'test',
+    project = create_cas_project(project_purpose: 'test',
                              owner: user)
 
     assert_difference -> { Notification.by_title('CAS Access Urgently Requires Renewal').count }, 1 do
@@ -211,7 +211,7 @@ class CasNotifierTest < ActiveSupport::TestCase
 
   test 'should generate account_closed_to_user Notifications' do
     user = users(:no_roles)
-    project = create_project(project_type: project_types(:cas), project_purpose: 'test',
+    project = create_cas_project(project_purpose: 'test',
                              owner: user)
 
     assert_difference -> { Notification.by_title('CAS Account Closed').count }, 1 do
@@ -227,7 +227,7 @@ class CasNotifierTest < ActiveSupport::TestCase
   end
 
   test 'should generate new_cas_project_saved Notifications' do
-    project = create_project(project_type: project_types(:cas), project_purpose: 'test')
+    project = create_cas_project(project_purpose: 'test')
 
     recipients = User.cas_managers
     title = 'New CAS Application Created'

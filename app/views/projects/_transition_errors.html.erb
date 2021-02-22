@@ -1,5 +1,6 @@
 <% project.transitionable_states.each do |state| %>
   <% next unless current_user.can?(:create, Workflow::ProjectState.new(project: project, state: state)) %>
+
   <% reasons = project.textual_reasons_not_to_transition_to(state) %>
   <% if reasons.any? %>
     <div class="alert alert-danger">

@@ -265,6 +265,18 @@ class ApplicationProjectTest < ActionDispatch::IntegrationTest
     end
   end
 
+  # testing that cas changes don't have a knock on effect to other project_types
+  test 'should not disable submit button and show transition error if user details not complete' do
+    project = Project.create(project_type: project_types(:application), owner: @user,
+                             name: 'Test yes/no', team: teams(:team_one))
+
+    visit project_path(project)
+
+    assert has_button?('Submit', disabled: false)
+    assert has_no_content?('some user details are not complete - please visit the My Account ' \
+                           'page to update')
+  end
+
   private
 
   def reassign_for_moderation_to(user)

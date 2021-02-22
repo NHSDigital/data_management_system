@@ -11,8 +11,16 @@ class UsersController < ApplicationController
              order(updated_at: :desc)
   end
 
+  def new
+    @admin_readonly = !current_user.administrator?
+  end
+
   def show
     @readonly = true
+  end
+
+  def edit
+    @admin_readonly = !current_user.administrator? && !current_user.application_manager?
   end
 
   # TODO: Use NdrSupport for password generation.
@@ -92,10 +100,12 @@ class UsersController < ApplicationController
 
   # Only allow a trusted parameter "white list" through.
   def user_params
-    params.require(:user).permit(:first_name, :last_name, :email, :postcode, :telephone, :mobile, :grade,
-                                 :location, :z_user_status_id, :notes, :job_title, :username,
-                                 :directorate_id, :division_id, :delegate_user, :employment, :contract_end_date,
-                                 team_ids: [])
+    params.require(:user).permit(:first_name, :last_name, :username, :email, :postcode, :telephone,
+                                 :mobile, :grade, :location, :z_user_status_id, :notes, :job_title,
+                                 :directorate_id, :division_id, :delegate_user,
+                                 :employment, :line_manager_name, :line_manager_email,
+                                 :line_manager_telephone, :contract_start_date,
+                                 :contract_end_date, team_ids: [])
   end
 
   def search_params

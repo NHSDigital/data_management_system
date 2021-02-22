@@ -47,14 +47,21 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
-  test 'should not get edit user unless current user is admin' do
+  test 'should get edit user for own account' do
     refute @user.administrator?
     sign_in(@user)
     get edit_user_url(@user)
+    assert_response :success
+  end
+
+  test 'should not get edit user for other users if not admin' do
+    refute @user.administrator?
+    sign_in(@user)
+    get edit_user_url(@admin)
     assert_redirected_to root_url
   end
 
-  test 'should get edit user when current user is admin' do
+  test 'should get edit user for any user when current user is admin' do
     sign_in(@admin)
     get edit_user_url(@user)
     assert_response :success

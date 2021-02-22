@@ -2,7 +2,7 @@ require 'test_helper'
 
 class CasRenewalMidpointNotifierTest < ActiveSupport::TestCase
   test 'CAS application notifier and mailer sent when at renewal for 15 days' do
-    project = Project.create(project_type: project_types(:cas), owner: users(:standard_user2))
+    project = create_cas_project(owner: users(:standard_user2))
 
     project.transition_to!(workflow_states(:submitted))
     # Auto-transitions to ACCESS_GRANTED

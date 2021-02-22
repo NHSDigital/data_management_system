@@ -2,7 +2,7 @@ require 'test_helper'
 
 class CasAccountClosureTest < ActiveSupport::TestCase
   test 'CAS application moves to account closed after 1 month' do
-    project = Project.create(project_type: project_types(:cas), owner: users(:standard_user2))
+    project = create_cas_project(owner: users(:standard_user2))
 
     project.transition_to!(workflow_states(:submitted))
     # Auto-transitions to ACCESS_GRANTED
