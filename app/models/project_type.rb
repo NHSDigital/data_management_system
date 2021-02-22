@@ -11,6 +11,7 @@ class ProjectType < ApplicationRecord
   scope :cas,           -> { where(name: 'CAS') }
   scope :odr,           -> { eoi.or(application) }
   scope :bound_to_team, -> { where.not(name: 'CAS') }
+  scope :odr_mbis, -> { where(name: %w[Project EOI Application]) }
 
   def available_datasets
     datasets.empty? ? published_datasets : datasets

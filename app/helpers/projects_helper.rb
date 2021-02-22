@@ -313,4 +313,35 @@ module ProjectsHelper
 
     field ? 'Yes' : 'No'
   end
+
+  def dashboard_projects_by_role(user)
+    if user.odr?
+      :odr_mbis_projects
+    elsif user.application_manager? || user.senior_application_manager?
+      :odr_projects
+    elsif user.mbis_delegate?
+      :of_type_project
+    else
+      :all
+    end
+  end
+
+  def project_filter_dropdown_button
+    menu = capture do
+      content_tag(:ul, class: 'dropdown-menu') do
+        %w[all mbis odr].each do |project_type|
+          project_type_text = project_type == 'all' ? project_type.titlecase : project_type.upcase
+          project_type = project_type == 'mbis' ? 'project' : project_type
+          link = link_to("#{project_type_text} applications",
+                         dashboard_projects_path(project_type: project_type))
+          concat content_tag(:li, link)
+        end
+      end
+    end
+
+    button = button_tag('Application Filter', class: 'btn btn-primary dropdown-toggle',
+                                              id: 'application_filter', data: { toggle: :dropdown })
+
+    button_group { safe_join([button, menu]) }
+  end
 end

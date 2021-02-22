@@ -213,6 +213,10 @@ class User < ActiveRecord::Base
     return true if role?(SystemRole.fetch(:senior_application_manager))
   end
 
+  def mbis_delegate?
+    return true if role?(TeamRole.fetch(:mbis_delegate))
+  end
+
   def standard?
     !administrator? && !odr? && !application_manager? && !senior_application_manager?
   end
