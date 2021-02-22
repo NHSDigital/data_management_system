@@ -136,4 +136,25 @@ class CreateAndEditUserTest < ActionDispatch::IntegrationTest
     assert has_content?('Status')
     assert has_content?('Notes')
   end
+
+  test 'application manager should be able to see fields hidden or readonly to other users' do
+    login_and_accept_terms(users(:application_manager_one))
+    visit user_path(users(:no_roles))
+
+    within('#user_details_panel') do
+      click_link('Edit', match: :first)
+    end
+
+    assert has_content?('no_roles@phe.gov.uk')
+
+    assert_not find('#user_first_name').readonly?
+    assert_not find('#user_last_name').readonly?
+    assert_not find('#user_username').readonly?
+    assert_not find('#user_email').readonly?
+    assert_not find('#user_job_title').readonly?
+
+    # User shouldn't be able to set these for themselves
+    assert has_content?('Status')
+    assert has_content?('Notes')
+  end
 end
