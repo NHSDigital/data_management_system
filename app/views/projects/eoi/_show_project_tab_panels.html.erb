@@ -24,6 +24,6 @@
   </div>
 
   <%= render 'project_datasets',  project: @project %>
-  <%= render 'project_timeline',  project: @project %>
+  <%= render 'project_timeline',  project: @project, comments_count: sub_resource_counts.fetch('workflow/project_states.comments', {}) %>
   <%= render 'project_heirarchy', project: @project %>
 </div>

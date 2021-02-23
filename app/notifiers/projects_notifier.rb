@@ -21,7 +21,7 @@ class ProjectsNotifier
       )
     end
 
-    def project_dpia_updated(project:, status:, id_of_user_to_notify:)
+    def project_dpia_updated(project:, status:, id_of_user_to_notify:, comment: nil)
       return unless status.in? %w[DPIA_REJECTED DPIA_MODERATION]
       return unless id_of_user_to_notify
 
@@ -42,7 +42,8 @@ class ProjectsNotifier
       send_dpia_email(project: project,
                       title: title,
                       body_template: template,
-                      user_to_notify: user_to_notify)
+                      user_to_notify: user_to_notify,
+                      comment: comment)
     end
 
     private
@@ -54,13 +55,13 @@ class ProjectsNotifier
       end
     end
 
-    def send_dpia_email(project:, title:, body_template:, user_to_notify:)
+    def send_dpia_email(project:, title:, body_template:, user_to_notify:, comment:)
       NotificationMailer.send_message(
         create_notification(
           title: title,
           body: CONTENT_TEMPLATES[body_template]['body'] %
           { project: project.name,
-            comments: project.comments.last.body },
+            comments: comment },
           project_id: project.id
         ),
         user_to_notify

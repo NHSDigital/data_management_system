@@ -22,12 +22,17 @@ module Workflow
       @project.transition_to(@state, current_user) do |project, project_state|
         authorize!(:create, project_state)
         project.assign_attributes(transition_params)
+
+        # NOTE: Meh. Rather than adding and drilling through layers of nested attributes we'll
+        # redirect the comment attributes onto the `project_state` object instead.
+        project_state.assign_attributes(comment_params)
       end
 
       if @project.current_state.id.in? %w[DPIA_REJECTED DPIA_MODERATION]
         ProjectsNotifier.project_dpia_updated(project: @project,
                                               status: @project.current_state.id,
-                                              id_of_user_to_notify: @project.assigned_user_id)
+                                              id_of_user_to_notify: @project.assigned_user_id,
+                                              comment: comment_params[:body])
       end
 
       redirect_to @project
@@ -36,8 +41,15 @@ module Workflow
     private
 
     def transition_params
-      params.fetch(:project, {}).permit(:closure_reason_id, :assigned_user_id,
-                                        comments_attributes: %i[user_id body])
+      params.fetch(:project, {}).permit(:closure_reason_id, :assigned_user_id)
+    end
+
+    def comment_params
+      return {} unless params.dig(:project, :comments_attributes, '0')
+
+      params.fetch(:project).permit(comments_attributes: %i[body]).tap do |object|
+        object[:comments_attributes]['0'][:user] = current_user
+      end
     end
 
     def allocate_project

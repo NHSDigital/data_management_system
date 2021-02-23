@@ -50,8 +50,20 @@ class ApplicationProjectTest < ActionDispatch::IntegrationTest
     visit project_path(@project)
     assert has_button?('Begin DPIA')
 
-    click_link 'Comment'
-    assert has_text?('not today!')
+    click_link 'Timeline'
+
+    within('#timeline') do
+      within(first('tr.workflow_project_state')) do
+        assert has_text?('DPIA Rejected')
+        click_link('Comments')
+      end
+    end
+
+    within('#modal') do
+      assert has_text?('not today!')
+    end
+
+    close_modal
 
     accept_confirm { click_button 'Begin DPIA' }
 

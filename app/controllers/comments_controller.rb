@@ -49,7 +49,10 @@ class CommentsController < ApplicationController
       param_key, id = request.path_parameters.detect { |key, _| key.to_s =~ /\A\w+_id\z/ }
 
       if param_key
-        klass = param_key.to_s.gsub('_id', '').classify.constantize
+        klass = (params[:commentable_class] || param_key.to_s.gsub('_id', '')).
+                classify.
+                constantize
+
         klass.find(id).tap { |object| authorize!(:read, object) }
       end
     end

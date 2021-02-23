@@ -26,8 +26,13 @@ Rails.application.routes.draw do
     get :download, on: :member
   end
 
-  concern :commentable do
-    resources :comments, shallow: true, only: %i[index create destroy]
+  concern :commentable do |options|
+    defaults = {
+      shallow: true,
+      only:    %i[index create destroy]
+    }
+
+    resources :comments, defaults.merge(options)
   end
 
   concern :approvable do |options|
@@ -199,6 +204,14 @@ Rails.application.routes.draw do
       resources :data_privacy_impact_assessments, concerns: %i[downloadable]
       resources :contracts, concerns: %i[downloadable]
       resources :releases
+
+      namespace :workflow do
+        resources :project_states, only: [] do
+          concerns :commentable, controller: '/comments', defaults: {
+            commentable_class: 'Workflow::ProjectState'
+          }
+        end
+      end
 
       collection do
         post :import

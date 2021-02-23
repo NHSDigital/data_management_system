@@ -25,8 +25,7 @@
           <% end %>
 
           <% unless state.id.in? %w[DPIA_REVIEW] %>
-            <%= form.fields_for(:comments, project.comments.build(user: current_user)) do |comment_form| %>
-              <%= comment_form.hidden_field :user_id %>
+            <%= form.fields_for(:comments, project.comments.build) do |comment_form| %>
               <div class="form-group">
                 <%= comment_form.label :body, 'Comment' %>
                 <%= comment_form.text_area(:body, class: 'form-control', rows: 8) %>

@@ -27,7 +27,7 @@ class DelegateUserTest < ActionDispatch::IntegrationTest
     @project = projects(:pending_delegate_project)
     visit project_path(@project)
 
-    assert_difference -> { @project.comments.count } do
+    assert_difference -> { Comment.where(commentable_type: 'Workflow::ProjectState').count } do
       click_button('Close')
 
       within_modal selector: '#modal-rejected' do
