@@ -94,12 +94,12 @@ class CasApplicationFormTest < ActionDispatch::IntegrationTest
 
     visit project_path(application)
 
-    assert_not has_content?('Contract start date')
-    assert_not has_content?('Contract end date')
-    assert_not has_content?('Preferred username')
-    assert_not has_content?('Full physical addresses & postcodes CAS will be accessed from')
-    assert_not has_content?('N3 IP address CAS will be accessed from')
-    assert_not has_content?('I have completed the relevant data access forms for the ONS ' \
+    assert has_no_content?('Contract start date')
+    assert has_no_content?('Contract end date')
+    assert has_no_content?('Preferred username')
+    assert has_no_content?('Full physical addresses & postcodes CAS will be accessed from')
+    assert has_no_content?('N3 IP address CAS will be accessed from')
+    assert has_no_content?('I have completed the relevant data access forms for the ONS ' \
                             'incidence dataset')
   end
 

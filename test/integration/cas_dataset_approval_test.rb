@@ -70,7 +70,7 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
     click_link(href: '#datasets')
     assert has_content?('Extra CAS Dataset One')
     assert_equal find('#dataset_status').text, 'APPROVED'
-    assert_not has_content?('Reapply')
+    assert has_no_content?('Reapply')
 
     project_dataset.approved = false
     project_dataset.save!(validate: false)
@@ -83,8 +83,8 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
     click_link('Reapply')
 
     assert has_content?('PENDING')
-    assert_not page.has_css?('.btn-danger')
-    assert_not page.has_css?('.btn-success')
+    assert has_no_css?('.btn-danger')
+    assert has_no_css?('.btn-success')
     assert_nil project_dataset.reload.approved
   end
 
@@ -130,12 +130,12 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
     within("#project_dataset_#{grant_dataset.id}") do
       assert has_css?('.btn-danger')
       assert has_css?('.btn-success')
-      assert_not has_content?('PENDING')
+      assert has_no_content?('PENDING')
     end
 
     within("#project_dataset_#{non_grant_dataset.id}") do
-      assert_not has_css?('.btn-danger')
-      assert_not has_css?('.btn-success')
+      assert has_no_css?('.btn-danger')
+      assert has_no_css?('.btn-success')
       assert_equal find('#dataset_status').text, 'PENDING'
     end
 
@@ -147,8 +147,8 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
     click_link(href: '#datasets')
 
     within("#project_dataset_#{non_grant_dataset.id}") do
-      assert_not has_css?('.btn-danger')
-      assert_not has_css?('.btn-success')
+      assert has_no_css?('.btn-danger')
+      assert has_no_css?('.btn-success')
       assert_equal find('#dataset_status').text, 'APPROVED'
     end
 
@@ -160,8 +160,8 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
     click_link(href: '#datasets')
 
     within("#project_dataset_#{non_grant_dataset.id}") do
-      assert_not has_css?('.btn-danger')
-      assert_not has_css?('.btn-success')
+      assert has_no_css?('.btn-danger')
+      assert has_no_css?('.btn-success')
       assert_equal find('#dataset_status').text, 'DECLINED'
     end
   end

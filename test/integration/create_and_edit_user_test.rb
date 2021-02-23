@@ -105,11 +105,11 @@ class CreateAndEditUserTest < ActionDispatch::IntegrationTest
 
     assert has_content?('no_roles@phe.gov.uk')
 
-    assert find('#user_first_name').readonly?
-    assert find('#user_last_name').readonly?
-    assert find('#user_username').readonly?
-    assert find('#user_email').readonly?
-    assert_not find('#user_job_title').readonly?
+    assert has_field?('user[first_name]', readonly: true)
+    assert has_field?('user[last_name]', readonly: true)
+    assert has_field?('user[username]', readonly: true)
+    assert has_field?('user[email]', readonly: true)
+    assert has_field?('user[job_title]', readonly: false)
 
     # User shouldn't be able to set these for themselves
     assert has_no_content?('Status')
@@ -126,11 +126,11 @@ class CreateAndEditUserTest < ActionDispatch::IntegrationTest
 
     assert has_content?('no_roles@phe.gov.uk')
 
-    assert_not find('#user_first_name').readonly?
-    assert_not find('#user_last_name').readonly?
-    assert_not find('#user_username').readonly?
-    assert_not find('#user_email').readonly?
-    assert_not find('#user_job_title').readonly?
+    assert has_field?('user[first_name]', readonly: false)
+    assert has_field?('user[last_name]', readonly: false)
+    assert has_field?('user[username]', readonly: false)
+    assert has_field?('user[email]', readonly: false)
+    assert has_field?('user[job_title]', readonly: false)
 
     # User shouldn't be able to set these for themselves
     assert has_content?('Status')
@@ -147,11 +147,11 @@ class CreateAndEditUserTest < ActionDispatch::IntegrationTest
 
     assert has_content?('no_roles@phe.gov.uk')
 
-    assert_not find('#user_first_name').readonly?
-    assert_not find('#user_last_name').readonly?
-    assert_not find('#user_username').readonly?
-    assert_not find('#user_email').readonly?
-    assert_not find('#user_job_title').readonly?
+    assert has_field?('user[first_name]', readonly: false)
+    assert has_field?('user[last_name]', readonly: false)
+    assert has_field?('user[username]', readonly: false)
+    assert has_field?('user[email]', readonly: false)
+    assert has_field?('user[job_title]', readonly: false)
 
     # User shouldn't be able to set these for themselves
     assert has_content?('Status')
