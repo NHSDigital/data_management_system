@@ -2,3 +2,6 @@ test_comment:
   user: standard_user
   commentable: dummy_project (Project)
   body: Confused as a chameleon in a bag of Skittles.
+  metadata: {
+    tags: ['TestTag']
+  }

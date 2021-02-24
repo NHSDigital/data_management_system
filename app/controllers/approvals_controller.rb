@@ -23,7 +23,7 @@ class ApprovalsController < ApplicationController
   def comment_params
     return {} unless resource_params.dig(:comments_attributes, '0')
 
-    resource_params.permit(comments_attributes: %i[body]).tap do |object|
+    resource_params.permit(comments_attributes: [:body, { tags: [] }]).tap do |object|
       object[:comments_attributes]['0'][:user] = current_user
     end
   end

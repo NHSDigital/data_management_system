@@ -47,4 +47,29 @@ class CommentTest < ActiveSupport::TestCase
       assert_auditable(comment)
     end
   end
+
+  test 'should be taggable' do
+    comment = Comment.new(
+      commentable: projects(:dummy_project),
+      user: users(:standard_user),
+      body: 'Test comment'
+    )
+
+    assert_equal [], comment.tags
+
+    comment.tags << 'TestTag'
+    comment.save
+    comment.reload
+
+    assert_includes comment.tags, 'TestTag'
+  end
+
+  test 'should reject blank tags' do
+    comment = comments(:test_comment)
+
+    assert_no_changes -> { comment.reload.tags } do
+      comment.tags.concat ['', nil]
+      comment.save
+    end
+  end
 end
