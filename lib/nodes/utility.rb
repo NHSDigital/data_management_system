@@ -1,6 +1,10 @@
 module Nodes
   # Shared methods for buliding schema browser and change log
   module Utility
+    def self.schema_pack_location
+      @schema_pack_location ||= Rails.root.join('tmp')
+    end
+
     def indent
       ' ' * (@depth * 2)
     end
@@ -11,7 +15,7 @@ module Nodes
 
     def save_schema_pack_file(output, filename, zipfile = nil)
       if zipfile.nil?
-        File.open(Rails.root.join('tmp', filename), 'w') do |f|
+        File.open(Utility.schema_pack_location.join(filename), 'w') do |f|
           f.write output
         end
       else

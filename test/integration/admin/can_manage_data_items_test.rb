@@ -78,7 +78,7 @@ class CanManageDataItemsTest < ActionDispatch::IntegrationTest
     find_button('New Node').click
     find_link('Entity').click
 
-    within_modal(remain: true) do
+    within_modal do
       fill_in 'Name',        with: 'New Entity'
       fill_in 'Min Occurs',  with: 1
       fill_in 'Max Occurs',  with: 2
@@ -122,7 +122,7 @@ class CanManageDataItemsTest < ActionDispatch::IntegrationTest
     find_button('New Node').click
     find_link('Data Item').click
 
-    within_modal(remain: true) do
+    within_modal do
       fill_in 'Name',        with: 'New Data Item With Data Dictionary Element'
       fill_in 'Min Occurs',  with: 1
       fill_in 'Max Occurs',  with: 2

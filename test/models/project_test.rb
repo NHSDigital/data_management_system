@@ -458,7 +458,7 @@ class ProjectTest < ActiveSupport::TestCase
     projects = Project.where(id: projects.pluck(:id))
 
     assert_equal 4, projects.by_project_type(:all).count
-    assert_equal %w[EOI Application], projects.by_project_type(:odr).map(&:project_type_name)
+    assert_equal %w[Application EOI], projects.by_project_type(:odr).map(&:project_type_name).sort
     assert_equal %w[Project], projects.by_project_type(:project).map(&:project_type_name)
     assert_equal %w[CAS], projects.by_project_type(:cas).map(&:project_type_name)
   end

@@ -7,11 +7,25 @@ require 'rake'
 class SchemaTest < ActiveSupport::TestCase
   include NdrImport::Helpers::File::Xml
 
+  # A ephemeral subdirectory, to allow multiple processes to test at once.
+  def self.tmp_subdir
+    @tmp_subdir ||= SecureRandom.hex(16)
+  end
+
+  # Clean up once the tests are over:
+  Minitest.after_run do
+    directory = Rails.root.join('tmp', SchemaTest.tmp_subdir)
+    FileUtils.rm_r(directory) if File.exist?(directory)
+  end
+
   def setup
     @@already_built ||= nil
     return if @@already_built
 
-    remove_previous_schema_files
+    ensure_file_paths_exist(self.class.tmp_subdir)
+
+    Nodes::Utility.stubs(schema_pack_location: tmp_location)
+
     build_schema_files
     @@already_built = true
   end
@@ -20,10 +34,10 @@ class SchemaTest < ActiveSupport::TestCase
     return unless RUN_SCHEMA_TESTS
 
     assert_nothing_raised do
-      sact_two_zero       = Rails.root.join('tmp', 'schema', 'SACT-v2-0.xsd')
-      pathology_three_one = Rails.root.join('tmp', 'schema', 'COSD_Pathology-v3-1.xsd')
-      pathology_four_one = Rails.root.join('tmp', 'schema', 'COSD_Pathology-v4-1.xsd')
-      cosd_nine_zero      = Rails.root.join('tmp', 'schema', 'COSD-v9-0.xsd')
+      sact_two_zero       = tmp_location.join('schema', 'SACT-v2-0.xsd')
+      pathology_three_one = tmp_location.join('schema', 'COSD_Pathology-v3-1.xsd')
+      pathology_four_one  = tmp_location.join('schema', 'COSD_Pathology-v4-1.xsd')
+      cosd_nine_zero      = tmp_location.join('schema', 'COSD-v9-0.xsd')
 
       Nokogiri::XML::Schema(File.open(sact_two_zero))
       Nokogiri::XML::Schema(File.open(pathology_three_one))
@@ -71,14 +85,14 @@ class SchemaTest < ActiveSupport::TestCase
   test 'Generated COSD v9-0 sample file is passes schema' do
     return unless RUN_SCHEMA_TESTS
 
-    filepath = SafePath.new('tmp').join('sample_xml/COSD-v9-0_sample_items.xml')
+    filepath = tmp_safepath.join('sample_xml/COSD-v9-0_sample_items.xml')
 
     puts "TESTING filepath => #{filepath}" if print_output
     assert_nothing_raised do
       validate_cosd_schema(filepath, 'COSD')
     end
 
-    filepath = SafePath.new('tmp').join('sample_xml/COSD-v9-0_sample_choices.xml')
+    filepath = tmp_safepath.join('sample_xml/COSD-v9-0_sample_choices.xml')
 
     puts "TESTING filepath => #{filepath}" if print_output
     assert_nothing_raised do
@@ -89,14 +103,14 @@ class SchemaTest < ActiveSupport::TestCase
   test 'Generated COSD Pathology 4-1 sample file is passes schema' do
     return unless RUN_SCHEMA_TESTS
 
-    filepath = SafePath.new('tmp').join('sample_xml/COSD_Pathology-v4-1_sample_items.xml')
+    filepath = tmp_safepath.join('sample_xml/COSD_Pathology-v4-1_sample_items.xml')
 
     puts "TESTING filepath => #{filepath}" if print_output
     assert_nothing_raised do
       validate_cosd_schema(filepath, 'COSD_Pathology')
     end
 
-    filepath = SafePath.new('tmp').join('sample_xml/COSD_Pathology-v4-1_sample_choices.xml')
+    filepath = tmp_safepath.join('sample_xml/COSD_Pathology-v4-1_sample_choices.xml')
     puts "TESTING filepath => #{filepath}" if print_output
     assert_nothing_raised do
       validate_cosd_schema(filepath, 'COSD_Pathology')
@@ -106,7 +120,7 @@ class SchemaTest < ActiveSupport::TestCase
   test 'Generated COSD Pathology 3-1 sample file is passes schema' do
     return unless RUN_SCHEMA_TESTS
 
-    filepath = SafePath.new('tmp').join('sample_xml/COSD_Pathology-v3-1_sample_items.xml')
+    filepath = tmp_safepath.join('sample_xml/COSD_Pathology-v3-1_sample_items.xml')
 
     puts "TESTING filepath => #{filepath}" if print_output
     assert_nothing_raised do
@@ -117,7 +131,7 @@ class SchemaTest < ActiveSupport::TestCase
   test 'Generated SACT sample file is passes schema' do
     return unless RUN_SCHEMA_TESTS
 
-    filepath = SafePath.new('tmp').join('sample_xml/SACT-v2-0_sample_items.xml')
+    filepath = tmp_safepath.join('sample_xml/SACT-v2-0_sample_items.xml')
 
     puts "TESTING filepath => #{filepath}" if print_output
     assert_nothing_raised do
@@ -128,7 +142,7 @@ class SchemaTest < ActiveSupport::TestCase
   test 'Generated MultipleRecordTypeDataset sample file is passes schema' do
     return unless RUN_SCHEMA_TESTS
 
-    filepath = SafePath.new('tmp').join('sample_xml/MultipleRecordTypeDataset-v1-0_sample_items.xml')
+    filepath = tmp_safepath.join('sample_xml/MultipleRecordTypeDataset-v1-0_sample_items.xml')
 
     puts "TESTING filepath => #{filepath}" if print_output
     assert_nothing_raised do
@@ -168,7 +182,8 @@ class SchemaTest < ActiveSupport::TestCase
     schema = KNOWN_SCHEMAS[dataset][@schema_version]
     raise "Cannot validate #{dataset}-v#{@schema_version}" unless schema
 
-    schema_file = SafePath.new('tmp', schema.last)
+    # schema_file = SafePath.new('tmp', schema.last)
+    schema_file = tmp_safepath.join(schema.last)
     schema_exists = SafeFile.exists?(schema_file)
     raise SecurityError, 'Permissions denied. Cannot access the schema.' unless schema_exists
 
@@ -219,15 +234,9 @@ class SchemaTest < ActiveSupport::TestCase
 
   private
 
-  # should clear from last run but only build once for current run
-  def remove_previous_schema_files
-    system('rm -f tmp/sample_xml/*.xml')
-    system('rm -f tmp/schema/*.xsd')
-  end
-
   def build_schema_files
-    ensure_file_paths_exist('schema')
-    ensure_file_paths_exist('sample_xml')
+    ensure_file_paths_exist("#{self.class.tmp_subdir}/schema")
+    ensure_file_paths_exist("#{self.class.tmp_subdir}/sample_xml")
     datasets.each do |dataset|
       dataset.dataset_versions.each do |v|
         # Only building dataset versions to build change log
@@ -255,5 +264,13 @@ class SchemaTest < ActiveSupport::TestCase
 
   def datasets
     Dataset.where(name: %w[COSD COSD_Pathology SACT MultipleRecordTypeDataset])
+  end
+
+  def tmp_location
+    @tmp_location ||= Rails.root.join('tmp').join(self.class.tmp_subdir)
+  end
+
+  def tmp_safepath
+    @tmp_safepath ||= SafePath.new('tmp').join(self.class.tmp_subdir)
   end
 end

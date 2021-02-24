@@ -25,10 +25,9 @@ require_relative 'download_helpers'
 
 Capybara.server = :puma, { Silent: true }
 
-# Test switch is flakey on CI; looking at logs, many requests there taking
-# longer than the default 2 second wait, meaning a good chance (some of)
-# the flakiness might be being caused by that...
-Capybara.default_max_wait_time = 5.seconds
+# When running in parallel, there can be occassional chokes, so this accounts for that.
+# This shouldn't slow down tests that are well-written.
+Capybara.default_max_wait_time = 10.seconds
 
 # Devise support for functional / integration test
 module ActionDispatch
@@ -127,12 +126,15 @@ end
 # Bootstrap for the single process case:
 bootstrap_download_helper
 
+# Ensure the driver is installed in advance of any parallel testing.
+Webdrivers::Chromedriver.update
+
 module ActiveSupport
   class TestCase
     # Something about MBIS doesn't like parallel testing. Very noticeable on the CI
     # platform, occassionally also developing locally. For now, will disable parallel
     # testing unless the `PARALLEL_WORKERS` variable is explicitly set.
-    parallelize(workers: ENV.fetch('PARALLEL_WORKERS', 1).to_i)
+    parallelize(workers: :number_of_processors)
 
     # Re-bootstrap for the multi process case:
     parallelize_setup do
@@ -163,11 +165,6 @@ module ActiveSupport
       within :xpath, "//table//tr[td[contains(.,\"#{text}\")]]" do
         yield
       end
-    end
-
-    # You shouldn't need this...
-    def snooze(seconds)
-      sleep(seconds) unless ENV.key?('WAKEY_WAKEY')
     end
 
     require 'mocha/mini_test'
