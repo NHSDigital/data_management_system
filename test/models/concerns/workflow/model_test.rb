@@ -298,7 +298,37 @@ module Workflow
       assert_equal 1, project.transitionable_states.size
       assert_includes project.transitionable_states, workflow_states(:dpia_start)
     end
-    
+
+    test 'should not be able to submit cas applications without user details' do
+      project = create_project(project_type: project_types(:cas), owner: users(:no_roles))
+      project.reload_current_state
+      # give all cas user details except job_title
+      project.owner.update(telephone: '01234 5678910', line_manager_name: 'Line Manager',
+                           line_manager_email: 'linemanager@test.co.uk',
+                           line_manager_telephone: '10987 654321', employment: 'Contract',
+                           contract_start_date: '01/01/2021', contract_end_date: '30/06/2021')
+
+      refute project.transition_to(workflow_states(:submitted))
+
+      project.owner.update(job_title: 'Tester')
+      project.reload
+
+      assert project.transition_to(workflow_states(:submitted))
+    end
+
+    test 'should not require contract start and end date if employment is permanent' do
+      project = create_project(project_type: project_types(:cas), owner: users(:no_roles))
+      project.reload_current_state
+      # give all cas user details except job_title
+      project.owner.update(job_title: 'Tester', telephone: '01234 5678910',
+                           line_manager_name: 'Line Manager',
+                           line_manager_email: 'linemanager@test.co.uk',
+                           line_manager_telephone: '10987 654321', employment: 'Permanent',
+                           contract_start_date: nil, contract_end_date: nil)
+
+      assert project.transition_to(workflow_states(:submitted))
+    end
+
     private
 
     def add_attachment(project, type, filename: 'foo.txt', contents: SecureRandom.hex)

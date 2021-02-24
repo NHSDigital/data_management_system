@@ -159,7 +159,7 @@ module Workflow
     def reasons_not_to_transition_to_submitted
       # Eventually this may apply to all project/application types
       return {} unless cas? && current_state.id == 'DRAFT'
-      return {} if User::CAS_ACCOUNT_FIELDS.all? { |field| owner.send(field).present? }
+      return {} if all_cas_user_fields_present?
 
       { base: :user_details_not_complete }
     end
@@ -199,6 +199,15 @@ module Workflow
       yield
     ensure
       @target_state = old_value
+    end
+
+    def all_cas_user_fields_present?
+      cas_account_fields = User::CAS_ACCOUNT_FIELDS
+
+      unless owner.send(:employment) == 'Permanent'
+        cas_account_fields += %i[contract_start_date contract_end_date]
+      end
+      cas_account_fields.all? { |field| owner.send(field).present? }
     end
   end
 end
