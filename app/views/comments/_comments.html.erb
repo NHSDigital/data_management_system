@@ -2,6 +2,8 @@
   <%= render 'form', comment: @comment %>
   <hr />
   <div class="comments-list">
-    <%= render @comments %>
+    <% @comments.each do |comment| %>
+      <%= render 'comment', comment: comment %>
+    <% end %>
   </div>
 <% end %>
