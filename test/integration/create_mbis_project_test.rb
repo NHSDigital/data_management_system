@@ -84,7 +84,7 @@ class CreateMbisProjectTest < ActionDispatch::IntegrationTest
         row = page.find('tr', text: text)
         assert_difference('Comment.count', 1) do
           within row do
-            click_link('Comments')
+            click_link('Add Justification')
           end
 
           within_modal(remain: true) do

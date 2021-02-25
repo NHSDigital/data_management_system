@@ -161,7 +161,7 @@ en:
       owner: Chief Investigator Name
     project_data_items:
       justification:
-        Please add comments to justify your need for data items where required (i.e Direct Identifiers, ICD and
+        Please add a justification for data items where required (i.e Direct Identifiers, ICD and
         Locations items)
     eoi:
       form:

@@ -88,7 +88,7 @@ class CreateAndEditProjectTest < ActionDispatch::IntegrationTest
       click_button 'Save'
     end
 
-    assert page.has_content?('Please add comments to justify')
+    assert page.has_content?('Please add a justification')
 
     find_link('Data Items').click
     find_link('Add / Remove data items').click
@@ -149,7 +149,7 @@ class CreateAndEditProjectTest < ActionDispatch::IntegrationTest
       row = page.find('tr', text: text)
 
       within row do
-        click_link('Comments')
+        click_link('Add Justification')
       end
 
       # This is known flakeyness location, where clicking the
