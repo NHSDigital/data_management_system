@@ -270,19 +270,6 @@ class ProjectTest < ActiveSupport::TestCase
     refute_includes Project.of_type_project, eoi
   end
 
-  test 'should accept nested attributes for project comments' do
-    project = projects(:one)
-
-    assert_difference -> { project.project_comments.count } do
-      project.update project_comments_attributes: [
-        { comment: 'si, bueno', user: project.owner },
-        { comment: 'no bueno', user: nil },
-        { comment: nil, user: project.owner },
-        { comment: nil, user: nil }
-      ]
-    end
-  end
-
   test 'should require project_purpose if EOI' do
     eoi = build_project(project_type: project_types(:eoi), name: 'Test EOI')
 
@@ -341,7 +328,7 @@ class ProjectTest < ActiveSupport::TestCase
                               sponsor_country_id: "",
                               funder_country_id: "",
                               data_processor_country_id: "")
-    
+
     # They'll be many more validations to add...
     assert application.valid?
     assert_difference('Project.count', 1) do
@@ -366,7 +353,7 @@ class ProjectTest < ActiveSupport::TestCase
     version_entity.child_nodes << item_group
     version_entity.child_nodes << item_three
     version_entity.save!
-    
+
     project = Project.new(name: 'TEST', project_type: project_types(:project))
     project.nodes << item_group
     project.nodes << item_two

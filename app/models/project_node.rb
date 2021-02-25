@@ -4,7 +4,6 @@ class ProjectNode < ApplicationRecord
 
   belongs_to :project
   belongs_to :node
-  has_many :project_comments, dependent: :destroy
 
   # Allows a ProjectDataSourceItem to
   # be sorted by DataSourceItem.name

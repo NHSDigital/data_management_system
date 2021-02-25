@@ -187,20 +187,6 @@ $(document).on('turbolinks:load', function() {
     $('#project_data_source_terms_accepted').prop('checked', false);
   });
 
-  $("#projectCommentFilter").change(function(e){
-    var pCT = document.getElementById("projectCommentFilter");
-    var selected = pCT.options[pCT.selectedIndex].text;
-
-    if (selected == 'All'){
-      $('#projectCommentsTable tbody tr').show();
-    } else {
-      $('#projectCommentsTable tbody tr').hide();
-      var $rowsNo = $('#projectCommentsTable tbody tr').filter(function () {
-        return $.trim($(this).find('td').eq(0).text()) === selected
-      }).show();
-    };
-  });
-
   $("#project_end_data_date").datepicker({
     autoclose: true,
   }).on('changeDate', function (selected) {

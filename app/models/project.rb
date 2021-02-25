@@ -4,11 +4,10 @@ class Project < ApplicationRecord
   include Commentable
 
   has_many :project_attachments, as: :attachable, dependent: :destroy
-  has_many :project_comments, dependent: :destroy
   has_many :project_nodes, dependent: :destroy
-  has_many :nodes, through: :project_nodes, before_remove: :remove_comments
+  has_many :nodes, through: :project_nodes
   has_many :data_items, through: :project_nodes, class_name: 'Nodes::DataItem', source: :node,
-                        foreign_key: 'node_id', before_remove: :remove_comments
+                        foreign_key: 'node_id'
 
   has_many :project_data_end_users, dependent: :destroy
   has_many :project_outputs, dependent: :destroy
@@ -90,10 +89,6 @@ class Project < ApplicationRecord
     accepts_nested_attributes_for :owner_grant, update_only: :true
     accepts_nested_attributes_for :project_datasets, update_only: :true
   end
-
-  accepts_nested_attributes_for :project_comments, reject_if: ->(attrs) {
-    attrs.fetch(:comment, nil).blank? || attrs.values_at(:user, :user_id).reject(&:blank?).none?
-  }
 
   validates :name, presence: true, uniqueness: {
     scope:   %i[team_id project_type_id],
@@ -472,12 +467,6 @@ class Project < ApplicationRecord
     errors.add(:senior_user_id, 'is flagged as deleted!')
   end
 
-  # delete comments for data source item
-  def remove_comments(data_item)
-    project_data_item = ProjectNode.where(project_id: id, node_id: data_item.id)
-    project_data_item.first.project_comments.destroy_all
-  end
-
   def end_date_after_start_date?
     return unless end_data_date.present? && start_data_date.present?
     return unless end_data_date < start_data_date
@@ -504,18 +493,23 @@ class Project < ApplicationRecord
   end
 
   def clone_data_source_items_and_associated_comments(existing)
-    # find the original comment attached to a data source item and copy if present
-    data_items.each do |dsi|
-      existing_item = existing_comment(existing, dsi)
-      next if existing_item.project_comments.blank?
+    transaction do
+      # find the original comment attached to a data source item and copy if present
+      data_items.each do |dsi|
+        existing_item = existing_comment(existing, dsi)
+        next if existing_item.comments.blank?
 
-      # make a new comment based on original project
-      existing_item.project_comments.each do |item_comments|
-        new_comment_attrs = item_comments.attributes.except(*DATA_SOURCE_ITEM_NO_CLONE_FIELDS).dup
-        new_comment = ProjectComment.new(new_comment_attrs)
-        new_comment.project_id = id
-        new_comment.project_node = ProjectNode.find_by(project_id: id, node_id: dsi.id)
-        new_comment.save
+        project_node = project_nodes.find_by(node: dsi)
+        next if project_node.nil?
+
+        # make a new comment based on original project
+        existing_item.comments.each do |item_comments|
+          project_node.comment.create!(
+            user: item_comments.user,
+            body: item_comments.body,
+            tags: item_comments.tags
+          )
+        end
       end
     end
   end

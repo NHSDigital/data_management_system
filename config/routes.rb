@@ -188,7 +188,7 @@ Rails.application.routes.draw do
       resources :project_memberships, only: [:index, :new, :create, :destroy]
       resources :project_data_end_users
       resources :project_attachments
-      resources :project_comments
+
       resources :project_nodes, except: %i[edit update], concerns: %i[commentable] do
         concerns :approvable, module: 'project_nodes'
 

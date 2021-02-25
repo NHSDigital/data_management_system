@@ -38,7 +38,6 @@ class Ability
     project_data_source_item_grants(user)
     project_data_end_user_grants(user)
     project_attachment_grants(user)
-    project_comment_grants(user)
 
     odr_grants(user)
     delegator_grants(user)
@@ -97,7 +96,7 @@ class Ability
                            roleable: ProjectRole.can_edit },
                  current_state: { id: 'DRAFT' }
 
-    can %i[read], [ProjectDataset, ProjectComment, ProjectNode,
+    can %i[read], [ProjectDataset, ProjectNode,
                    ProjectEndUse, ProjectClassification, ProjectLawfulBasis],
         project: { grants: { user_id: user.id, project_id: can_edit_project_ids,
                              roleable: ProjectRole.can_edit } }
@@ -130,13 +129,6 @@ class Ability
   # from being granted `role`
   def accessible_projects_via(role, roleable_type, user)
     user.projects.active.through_grant_of(role, roleable_type)
-  end
-
-  def project_comment_grants(user)
-    can :create, ProjectComment, project: {
-      grants: { user_id: user.id, project_id: project_ids_for(user),
-                roleable: ProjectRole.can_edit }
-    }
   end
 
   def project_attachment_grants(user)
@@ -186,7 +178,7 @@ class Ability
     can %i[read create update], Team
     can(:destroy, Team) { |team| team.z_team_status.name != 'Deleted' }
 
-    can :read, [Project, ProjectDataset, ProjectComment, ProjectNode, ProjectAmendment,
+    can :read, [Project, ProjectDataset, ProjectNode, ProjectAmendment,
                 ProjectEndUse, ProjectClassification, ProjectLawfulBasis]
 
     # Manage allows :edit_grants
@@ -205,13 +197,12 @@ class Ability
     return unless user.odr? || user.role?(SystemRole.fetch(:application_manager))
 
     can :read, [
-      Organisation, Team, User, ProjectComment, ProjectAttachment, ProjectDataset,
+      Organisation, Team, User, Project, ProjectAttachment, ProjectDataset,
       ProjectNode, ProjectAmendment, DataPrivacyImpactAssessment, Contract, Release, ProjectEndUse,
       ProjectClassification, ProjectLawfulBasis
     ]
 
     can %i[assign import], Project
-    can :create, ProjectComment
 
     # Senior ODR users have additonal powers...
     return unless user.odr?
@@ -242,10 +233,9 @@ class Ability
 
     can :read, Team, grants: { user_id: user.id }
     can %i[read], Project, team: { grants: { user_id: user.id } }
-    can :read, [ProjectDataset, ProjectComment, ProjectNode, ProjectEndUse, ProjectClassification,
+    can :read, [ProjectDataset, ProjectNode, ProjectEndUse, ProjectClassification,
                 ProjectLawfulBasis],
                project: { team: { grants: { user_id: user.id } } }
-    can :create, ProjectComment
   end
 
   # TODO: Do we need a project_user_type model that determines what project_types a user can see

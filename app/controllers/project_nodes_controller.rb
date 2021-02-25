@@ -9,16 +9,20 @@ class ProjectNodesController < ApplicationController
   end
 
   # POST /project_memberships
+  # NOTE: Unused code path? Going down this route would resolve the issue with PaperTrail being
+  # bypassed via `Project`s use of directly setting a collection of id values.
   def create
     message = "#{@project_node.data_source_item.name} successfully added to " \
               "#{@project_node.project.name}."
     message += ' The project status has been set to New' if @project_node.project.submitted?
-    if @project_node.save
-      @project.project_comments.create(user_id: current_user.id,
-                                       comment_type: 'DataSourceItemJustification',
-                                       comment:  project_data_source_item_params[:comment],
-                                       project_data_source_item_id: @project_node.id)
 
+    @project_node.comments.build(
+      user: current_user,
+      body: project_data_source_item_params[:comment],
+      tags: ['DataSourceItemJustification']
+    )
+
+    if @project_node.save
       respond_to do |format|
         format.html { redirect_to @project_node.project, notice: message }
         format.js

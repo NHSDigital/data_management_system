@@ -63,34 +63,5 @@
         </tbody>
       </table>
     <% end %>
-
-    <% if @project.project_comments.members.length > 0 && !(@project.current_state == 'SUBMITTED' && !current_user.odr?) %>
-      <%= bootstrap_panel_tag(capture { %>
-        <h3 class="panel-title clearfix">Comments</h3>
-      <% }) do %>
-        <div class='row'>
-          <div class='col-md-12'>
-            <span data-toggle="collapse" data-target="#project_memberships_comments">
-              <div class='row'>
-                <div class='col-md-12'>
-                  <div style="font-size:1.5em">
-                    <a href="#" data-turbolinks="false">
-                      <%= pluralize(@project.project_comments.members.length, 'Comment', plural: 'Comments') %>
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </span>
-            <div id="project_memberships_comments" class="collapse" style="padding: 0 1em">
-              <%= render partial:  '/project_comments/standard_view',
-                             locals: { comments: @project.project_comments.members,
-                                       comment_type: 'MemberJustification',
-                                       project_data_source_item_id: nil
-                                      } %>
-            </div>
-          </div>
-        </div>
-      <% end %>
-    <% end %>
   </div>
 </div>
