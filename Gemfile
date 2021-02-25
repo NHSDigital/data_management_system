@@ -63,10 +63,10 @@ group :development, :test do
   gem 'pry-rails'
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug'
-  gem 'ndr_dev_support', '~> 5.9'
+  gem 'ndr_dev_support', '~> 6.0'
   # gem 'ndr_dev_support', branch: 'flakey_tests', git: 'https://github.com/PublicHealthEngland/ndr_dev_support.git'
 
-  gem 'minitest', "~> 5.10.3" # locked for seattlerb/minitest/issues/730
+  gem 'minitest'
 
   gem 'simplecov'
   gem 'mocha'
