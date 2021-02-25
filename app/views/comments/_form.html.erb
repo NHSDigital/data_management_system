@@ -3,6 +3,10 @@
 %>
 
 <%= bootstrap_form_with model: comment, url: url, local: false, html: { class: 'comment-form', id: dom_id(comment) } do |form| %>
+  <% comment.tags.map do |tag| %>
+    <%= form.hidden_field(:tags, value: tag, multiple: true) %>
+  <% end %>
+
   <div class="media comment">
     <div class="media-left">
       <div class="comment--avatar">

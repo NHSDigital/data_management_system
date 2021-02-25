@@ -6,7 +6,7 @@ var $commentList = $(".comments-list", scope);
   $commentForm.html("<%= j render('form', comment: @comment) %>");
 <% else %>
   $commentList.prepend("<%= j render(@comment) %>");
-  $commentForm.html("<%= j render('form', comment: Comment.new(commentable: @commentable)) %>");
+  $commentForm.html("<%= j render('form', comment: Comment.new(commentable: @commentable, tags: @comment.tags)) %>");
 
   var $badge = $("#<%= "#{dom_id(@commentable)}_comments_count_badge" %>");
   var count = +$badge.text();

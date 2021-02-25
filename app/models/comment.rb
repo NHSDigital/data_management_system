@@ -14,6 +14,8 @@ class Comment < ApplicationRecord
   after_initialize :initialize_tags
   before_save :reject_blank_tags
 
+  scope :tagged_with, ->(*tags) { where("metadata -> 'tags' ?| ARRAY[:tags]", tags: tags) }
+
   private
 
   def initialize_tags

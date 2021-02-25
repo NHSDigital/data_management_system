@@ -72,4 +72,23 @@ class CommentTest < ActiveSupport::TestCase
       comment.save
     end
   end
+
+  test 'tagged_by scope' do
+    comments = []
+
+    %w[Tag1 Tag2 Tag3 Tag4].each_cons(2) do |tags|
+      comments << Comment.create!(
+        commentable: projects(:dummy_project),
+        user: users(:standard_user),
+        body: 'Tagged',
+        tags: tags
+      )
+    end
+
+    scope = Comment.tagged_with('Tag1', 'Tag2')
+
+    assert_includes scope, comments[0]
+    assert_includes scope, comments[1]
+    refute_includes scope, comments[2]
+  end
 end

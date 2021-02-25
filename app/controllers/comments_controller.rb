@@ -6,6 +6,11 @@ class CommentsController < ApplicationController
     @comments = commentable.comments.includes(:user).order(created_at: :desc)
     @comment  = Comment.new(commentable: commentable)
 
+    if tags ||= params[:tags]
+      @comments = @comments.tagged_with(*tags)
+      @comment.tags.concat(tags)
+    end
+
     locals = {
       comments: @comments,
       comment:  @comments
@@ -41,7 +46,7 @@ class CommentsController < ApplicationController
   private
 
   def comment_params
-    params.require(:comment).permit(:body)
+    params.require(:comment).permit(:body, tags: [])
   end
 
   def commentable
