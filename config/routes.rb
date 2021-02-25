@@ -207,9 +207,7 @@ Rails.application.routes.draw do
 
       namespace :workflow do
         resources :project_states, only: [] do
-          concerns :commentable, controller: '/comments', defaults: {
-            commentable_class: 'Workflow::ProjectState'
-          }
+          concerns :commentable, controller: '/comments'
         end
       end
 
