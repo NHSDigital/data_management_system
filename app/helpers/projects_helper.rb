@@ -319,7 +319,7 @@ module ProjectsHelper
       :odr_mbis_projects
     elsif user.application_manager? || user.senior_application_manager?
       :odr_projects
-    elsif user.mbis_delegate?
+    elsif user.mbis_delegate? || user.mbis_applicant?
       :of_type_project
     else
       :all
