@@ -253,8 +253,36 @@ module Workflow
         # auto-transitions to access_granted
         not_approved_with_grant_project.transition_to!(workflow_states(:access_approver_approved))
         not_approved_with_grant_project.transition_to!(workflow_states(:renewal))
+      end
+
+      assert_difference 'notifications.count', 2 do
         not_approved_with_grant_project.transition_to!(workflow_states(:access_granted))
       end
+
+      assert_equal notifications.last.body, "CAS account #{not_approved_with_grant_project.id} " \
+                                            'has been renewed. This account has access to one or ' \
+                                            "more datasets that you are an approver for.\n\n"
+
+      rejected_with_grant_project = create_cas_project(owner: users(:no_roles))
+      rejected_with_grant_project.project_datasets << ProjectDataset.new(dataset: dataset(83),
+                                                                         terms_accepted: true,
+                                                                         approved: false)
+      rejected_with_grant_project.save!
+
+      assert_no_difference 'notifications.count' do
+        rejected_with_grant_project.transition_to!(workflow_states(:submitted))
+        # auto-transitions to access_granted
+        rejected_with_grant_project.transition_to!(workflow_states(:access_approver_approved))
+        rejected_with_grant_project.transition_to!(workflow_states(:renewal))
+      end
+
+      assert_difference 'notifications.count', 2 do
+        rejected_with_grant_project.transition_to!(workflow_states(:access_granted))
+      end
+
+      assert_equal notifications.last.body, "CAS account #{rejected_with_grant_project.id} " \
+                                            'has been renewed. This account has access to one or ' \
+                                            "more datasets that you are an approver for.\n\n"
 
       approved_no_grant_project = create_cas_project(owner: users(:no_roles))
       approved_no_grant_project.project_datasets << ProjectDataset.new(dataset: dataset(85),
