@@ -118,7 +118,7 @@ module Workflow
 
       DatasetRole.fetch(:approver).users.each do |user|
         matching_datasets = project.project_datasets.any? do |pd|
-          ProjectDataset.dataset_approval(user, true).include? pd
+          ProjectDataset.dataset_approval(user).include? pd
         end
         next unless matching_datasets
 
