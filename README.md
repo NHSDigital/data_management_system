@@ -1,6 +1,4 @@
-[![CircleCI](https://circleci.com/gh/publichealthengland/data_management_system.svg?style=shield)](https://app.circleci.com/pipelines/github/publichealthengland/data_management_system)
-
-# Data Management System
+# Data Management System [![Build Status](https://github.com/publichealthengland/data_management_system/workflows/Test/badge.svg)](https://github.com/publichealthengland/data_management_system/actions?query=workflow%3Atest)
 
 * Rails version 6.0.3.2
 * Ruby version is 2.6.3
