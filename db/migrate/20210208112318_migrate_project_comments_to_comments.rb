@@ -1,4 +1,10 @@
 class MigrateProjectCommentsToComments < ActiveRecord::Migration[6.0]
+  class ProjectComment < ApplicationRecord
+    belongs_to :project
+    belongs_to :user
+    belongs_to :project_node, optional: true
+  end
+
   ProjectComment.reset_column_information
   Comment.reset_column_information
 
