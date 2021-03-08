@@ -62,6 +62,11 @@ class ProjectsController < ApplicationController
   def show
     @readonly = true
     @team = @project.team
+    @sub_resource_counts = {
+      'comments': @project.comments.count,
+      'project_nodes.comments': @project.project_nodes.joins(:comments).group(:id).count,
+      'workflow/project_states.comments': @project.project_states.joins(:comments).group(:id).count
+    }
   end
 
   # TODO: plugin multiple datasets
@@ -84,18 +89,6 @@ class ProjectsController < ApplicationController
 
     @my_dataset_approvals = @my_dataset_approvals.paginate(page: params[:page], per_page: 10)
     @my_access_approvals = @my_access_approvals.paginate(page: params[:page], per_page: 10)
-  end
-
-  def approve_members
-    @project.update(approval_params)
-  end
-
-  def approve_details
-    @project.update(approval_params)
-  end
-
-  def approve_legal
-    @project.update(approval_params)
   end
 
   def reset_project_approvals

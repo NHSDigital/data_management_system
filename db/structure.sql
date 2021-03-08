@@ -133,8 +133,8 @@ ALTER SEQUENCE public.amendment_types_id_seq OWNED BY public.amendment_types.id;
 CREATE TABLE public.ar_internal_metadata (
     key character varying NOT NULL,
     value character varying,
-    created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
 );
 
 --
@@ -443,6 +443,41 @@ CREATE SEQUENCE public.closure_reasons_id_seq
 --
 
 ALTER SEQUENCE public.closure_reasons_id_seq OWNED BY public.closure_reasons.id;
+
+
+--
+-- Name: comments; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.comments (
+    id bigint NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
+    user_id bigint NOT NULL,
+    commentable_type character varying NOT NULL,
+    commentable_id bigint NOT NULL,
+    body character varying NOT NULL,
+    metadata jsonb DEFAULT '{}'::jsonb NOT NULL
+);
+
+
+--
+-- Name: comments_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.comments_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: comments_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.comments_id_seq OWNED BY public.comments.id;
 
 
 --
@@ -2035,13 +2070,13 @@ CREATE TABLE public.molecular_data (
     providercode text,
     practitionercode text,
     patienttype text,
+    moleculartestingtype integer,
     requesteddate date,
     collecteddate date,
     receiveddate date,
     authoriseddate date,
     indicationcategory integer,
     clinicalindication text,
-    moleculartestingtype integer,
     organisationcode_testresult text,
     servicereportidentifier text,
     specimentype integer,
@@ -2614,12 +2649,12 @@ CREATE TABLE public.project_attachments (
     comments character varying,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
+    attachment_contents bytea,
+    digest character varying,
     attachment_file_name character varying,
     attachment_content_type character varying,
     attachment_file_size integer,
     attachment_updated_at timestamp without time zone,
-    attachment_contents bytea,
-    digest character varying,
     workflow_project_state_id bigint,
     attachable_type character varying,
     attachable_id bigint
@@ -4336,6 +4371,13 @@ ALTER TABLE ONLY public.closure_reasons ALTER COLUMN id SET DEFAULT nextval('pub
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY public.comments ALTER COLUMN id SET DEFAULT nextval('public.comments_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.common_law_exemptions ALTER COLUMN id SET DEFAULT nextval('public.common_law_exemptions_id_seq'::regclass);
 
 
@@ -5041,6 +5083,14 @@ ALTER TABLE ONLY public.classifications
 
 ALTER TABLE ONLY public.closure_reasons
     ADD CONSTRAINT closure_reasons_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: comments_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.comments
+    ADD CONSTRAINT comments_pkey PRIMARY KEY (id);
 
 
 --
@@ -5879,6 +5929,20 @@ CREATE INDEX index_cas_application_fields_on_project_id ON public.cas_applicatio
 
 
 --
+-- Name: index_comments_on_commentable_type_and_commentable_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_comments_on_commentable_type_and_commentable_id ON public.comments USING btree (commentable_type, commentable_id);
+
+
+--
+-- Name: index_comments_on_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_comments_on_user_id ON public.comments USING btree (user_id);
+
+
+--
 -- Name: index_contracts_on_project_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -6592,6 +6656,14 @@ ALTER TABLE ONLY public.projects
 
 ALTER TABLE ONLY public.releases
     ADD CONSTRAINT fk_rails_02fcb709b7 FOREIGN KEY (income_received) REFERENCES public.propositions(id);
+
+
+--
+-- Name: fk_rails_03de2dc08c; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.comments
+    ADD CONSTRAINT fk_rails_03de2dc08c FOREIGN KEY (user_id) REFERENCES public.users(id);
 
 
 --
@@ -7796,6 +7868,6 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20210201122226'),
 ('20210201122300'),
 ('20210202173000'),
+('20210208111919'),
+('20210208112318'),
 ('20210208172519');
-
-

@@ -1,0 +1,15 @@
+var scope = "#<%= "#{dom_id(@commentable)}_comments" %>";
+var $commentForm = $(".comment-form", scope);
+var $commentList = $(".comments-list", scope);
+
+<% if @comment.errors.any? %>
+  $commentForm.html("<%= j render('form', comment: @comment) %>");
+<% else %>
+  $commentList.prepend("<%= j render(@comment) %>");
+  $commentForm.html("<%= j render('form', comment: Comment.new(commentable: @commentable, tags: @comment.tags)) %>");
+
+  var $badge = $("#<%= "#{dom_id(@commentable)}_comments_count_badge" %>");
+  var count = +$badge.text();
+
+  $badge.text(count + 1);
+<% end %>

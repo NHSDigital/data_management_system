@@ -1,0 +1,8 @@
+var $modal = $("#modal");
+
+$('.modal-title', $modal).text("Approve legal/ethical details");
+$('.modal-body', $modal).html(
+  "<%= j(render 'approvals/form', model: @project, url: project_legal_approval_path(@project)) %>"
+);
+
+$modal.modal('show');

@@ -208,6 +208,18 @@ module PaperTrailHelper
   end
 end
 
+module NdrDevSupport
+  module IntegrationTesting
+    module DSL
+      def close_modal(selector: '#modal')
+        within(selector) do
+          find('*[data-dismiss="modal"]').click
+        end
+      end
+    end
+  end
+end
+
 ActiveSupport::TestCase.include(PaperTrailHelper)
 ActionDispatch::IntegrationTest.include(PaperTrailHelper)
 

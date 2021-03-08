@@ -47,6 +47,10 @@ class WorkflowTest < ActionDispatch::IntegrationTest
         click_button 'Approve'
       end
 
+      within('#project_status') do
+        assert has_text?('APPROVED')
+      end
+
       assert has_no_text? 'Authentication Required'
     end
   end

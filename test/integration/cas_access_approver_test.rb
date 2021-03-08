@@ -18,7 +18,7 @@ class CasAccessApproverTest < ActionDispatch::IntegrationTest
     project_changes = { from: 'SUBMITTED', to: 'ACCESS_GRANTED' }
     assert_changes -> { project.reload.current_state.id }, project_changes do
       click_button('Approve Access')
-      assert_difference('project.project_comments.count', 1) do
+      assert_difference -> { Comment.where(commentable_type: 'Workflow::ProjectState').count } do
         within('.modal') do
           fill_in('Comment', with: 'Test')
           click_button('Save')

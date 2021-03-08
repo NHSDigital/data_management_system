@@ -87,14 +87,15 @@ class CreateAndEditProjectTest < ActionDispatch::IntegrationTest
     within('#top-buttons') do
       click_button 'Save'
     end
+
     assert page.has_content?('Please add a justification')
+
     find_link('Data Items').click
     find_link('Add / Remove data items').click
     page.find('strong', text: 'HAUTPOD').click
     within('#top-buttons') do
       click_button 'Save'
     end
-    assert page.has_content?('Please add a justification')
 
     click_link 'Users'
     assert page.has_content? 'Download Terms & Conditions'
@@ -148,8 +149,7 @@ class CreateAndEditProjectTest < ActionDispatch::IntegrationTest
       row = page.find('tr', text: text)
 
       within row do
-        find_link('Add Justification').evaluate_script("this.click()")
-        # click_link 'Add Justification'
+        click_link('Add Justification')
       end
 
       # This is known flakeyness location, where clicking the
@@ -158,16 +158,16 @@ class CreateAndEditProjectTest < ActionDispatch::IntegrationTest
       # out why. Possible `row` is stale, because of this loop
       # causing bits of the to refresh? Or because there's animation
       # on the page?
-      within_modal do
-        assert has_content? 'Add Comment to'
-        fill_in 'project_comment_text_field', with: 'I need this'
-        click_button 'Save'
+      within_modal(remain: true) do
+        fill_in 'comment[body]', with: 'I need this'
+        click_button 'Add Comment'
+
+        within('.comments-list') do
+          assert has_text?('I need this')
+        end
       end
 
-      within row do
-        assert has_text?('1 Comment')
-        assert has_no_link?('Add Justification')
-      end
+      close_modal
     end
 
     # Attempt to destroy Senior User's membership

@@ -222,33 +222,5 @@
 				<%= @project.outputs_other %>
 			</div>
 		</div>
-
-		<!-- experimental -->
-
-		<% if @project.project_comments.details.length > 0 && !(@project.current_state == 'SUBMITTED' && !current_user.odr?) %>
-		<hr>
-		<span data-toggle="collapse" data-target="#project_summary_data_comments">
-			<div class='row'>
-				<div class='col-md-2'>
-					<div style="font-size:1.5em" class='pull-right'>
-					  <a href="#" data-turbolinks="false">
-						  <%= pluralize(@project.project_comments.details.length, 'Comment', plural: 'Comments') %>
-						</a>
-					</div>
-				</div>
-			</div> </span>
-		<div id="project_summary_data_comments" class="collapse" style="padding: 0 1em">
-			<div class='row'>
-				<div class='col-md-2'></div>
-				<div class='col-md-10'>
-					<%= render partial:  '/project_comments/standard_view',
-					locals: { comments: @project.project_comments.details,
-					comment_type: 'DetailJustification',
-					project_data_source_item_id: nil} %>
-				</div>
-			</div>
-		</div>
-		<% end %>
 	</div>
-
 </div>

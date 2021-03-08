@@ -1,0 +1,21 @@
+<%
+  tags ||= []
+%>
+
+<%= form_with model: model, url: url, method: :post, local: false do |form| %>
+  <%= form.fields_for(:comments, model.comments.build) do |comment_form| %>
+    <% tags.map do |tag| %>
+      <%= comment_form.hidden_field(:tags, value: tag, multiple: true) %>
+    <% end %>
+
+    <div class="form-group">
+      <%= comment_form.label :body, 'Comment' %>
+      <%= comment_form.text_area(:body, class: 'form-control', rows: 8) %>
+    </div>
+  <% end %>
+
+  <div class="pull-right">
+    <button class="btn btn-default" data-dismiss="modal">Cancel</button>
+    <%= form.submit 'Save', class: 'btn btn-primary' %>
+  </div>
+<% end %>

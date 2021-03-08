@@ -1,0 +1,8 @@
+var $modal = $("#modal");
+
+$('.modal-title', $modal).text("Reject <%= j(ProjectNode.model_name.human) %>");
+$('.modal-body', $modal).html(
+  "<%= j(render 'approvals/form', model: @project, url: project_project_nodes_bulk_rejection_path(@project), tags: ['DataSourceItemRejection']) %>"
+);
+
+$modal.modal('show');

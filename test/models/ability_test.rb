@@ -234,30 +234,6 @@ class AbilityTest < ActiveSupport::TestCase
     refute @non_senior_project_member_ability.can? :update, @project_node
   end
 
-  test 'project comment grants' do
-    # @non_senior_project_member is a member of @project
-    # @non_senior_project_member now has read only role
-    refute @non_senior_project_member_ability.can? :create, ProjectComment.new(project: @project)
-    assert @contributor_ability.can? :create, ProjectComment.new(project: @project)
-    # contributor role is needed to added comments
-    # assert @non_senior_project_member_ability.can? :create, ProjectComment.new(project: @project)
-    refute @non_senior_project_member_ability.can? :update, ProjectComment.new(project: @project)
-    refute @non_senior_project_member_ability.can? :destroy, ProjectComment.new(project: @project)
-
-    # @senior_project_member_ability is NOT a member of @project
-    refute @senior_project_member_ability.can? :create, ProjectComment.new(project: @project)
-    refute @senior_project_member_ability.can? :update, ProjectComment.new(project: @project)
-    refute @senior_project_member_ability.can? :destroy, ProjectComment.new(project: @project)
-
-    # @odr_ability can [:new, :create] a ProjectComment on any project
-    assert @odr_ability.can? :create, ProjectComment.new(project: @project)
-    assert @odr_ability.can? :create, ProjectComment.new(project: @other_project)
-    refute @odr_ability.can? :update, ProjectComment.new(project: @project)
-    refute @odr_ability.can? :destroy, ProjectComment.new(project: @project)
-    refute @odr_ability.can? :update, ProjectComment.new(project: @other_project)
-    refute @odr_ability.can? :destroy, ProjectComment.new(project: @other_project)
-  end
-
   test 'admin user can manage all EXCEPT approvals' do
     assert @admin_ability.can? :create, Team.new
     assert @admin_ability.can? :read, @team
@@ -411,17 +387,6 @@ class AbilityTest < ActiveSupport::TestCase
       assert users(:application_manager_one).can? :read, project_node
       assert users(:odr_user).can?                :read, project_node
       assert users(:admin_user).can?              :read, project_node
-    end
-  end
-
-  test 'project comment' do
-    ProjectComment.where(project: @project).each do |project_comment|
-      assert @senior_team_member_ability.can?     :read, project_comment
-      assert @contributor.can?                    :read, project_comment
-      assert users(:delegate_user1).can?          :read, project_comment
-      assert users(:application_manager_one).can? :read, project_comment
-      assert users(:odr_user).can?                :read, project_comment
-      assert users(:admin_user).can?              :read, project_comment
     end
   end
 
@@ -914,6 +879,28 @@ class AbilityTest < ActiveSupport::TestCase
       @project.stubs current_state: workflow_states(state)
       refute user.can? :create, @project.project_nodes.build
     end
+  end
+
+  test 'comments' do
+    user        = users(:standard_user1)
+    commentable = projects(:dummy_project)
+
+    comment_one = Comment.create!(
+      commentable: commentable,
+      user: user,
+      body: 'I like to move it, move it'
+    )
+
+    comment_two = Comment.create!(
+      commentable: commentable,
+      user: users(:standard_user2),
+      body: 'I love Zoflora'
+    )
+
+    assert user.can? :create, comment_one
+    assert user.can? :delete, comment_one
+    refute user.can? :create, comment_two
+    refute user.can? :delete, comment_two
   end
 
   test 'can create CAS application with no roles' do

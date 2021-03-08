@@ -198,33 +198,4 @@
 
   </div>
   </div>
-    <% if @project.project_comments.legal.length > 0 && !(@project.current_state.id == 'SUBMITTED' && !current_user.odr?) %>
-      <div class='row'>
-  	    <div class='col-md-12'>
-
-      <hr>
-      <span data-toggle="collapse" data-target="#project_memberships_comments">
-        <div class='row'>
-          <div class='col-md-9'>
-            <a href="#" data-turbolinks="false">
-              <div style="font-size:1.5em">
-                <%= pluralize(@project.project_comments.legal.length, 'Comment', plural: 'Comments') %>
-              </div>
-            </a>
-          </span>
-        </div>
-      </div>
-      <div id="project_memberships_comments" class="collapse" style="padding: 0 1em">
-        <%= render partial:  '/project_comments/standard_view',
-                             locals: { comments: @project.project_comments.legal,
-                                       comment_type: 'MemberJustification',
-                                       project_data_source_item_id: nil
-                                      } %>
-      </div>
-      </div>
-      </div>
-    <% end %>
-
-
-
 </div>

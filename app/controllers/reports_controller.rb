@@ -43,18 +43,19 @@ class ReportsController < ApplicationController
     end
   end
 
+  # TODO: This report is unused and should be removed.
   def report2
     @rows = []
     Team.find_each do |team|
       team.projects.of_type_project.find_each do |project|
-        project.project_comments.each do |comment|
+        project.comments.each do |comment|
           @rows << {
             team_name: team.name,
             project_name: project.name,
-            type: comment.comment_type,
-            comment: comment.comment,
-            item: (comment.project_node_id.nil? ? '' : comment.project_node.name),
-            user: comment.user.full_name
+            type: comment.tags.join(', '),
+            comment: comment.body,
+            item: '',
+            user: comment.user_full_name
           }
         end
       end

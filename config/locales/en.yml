@@ -64,6 +64,8 @@ en:
         rejection_reviewed: Rejection Confirmed
         account_closed: Close Account
         access_granted: Renew Account
+      comment:
+        create: Add %{model}
   workflow/state:
     draft: New
     review: Delegate Approval

@@ -4,6 +4,8 @@ module Workflow
   class ProjectState < ApplicationRecord
     self.table_name_prefix = 'workflow_'
 
+    include Commentable
+
     belongs_to :project
     belongs_to :state
 

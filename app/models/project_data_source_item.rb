@@ -1,8 +1,9 @@
 # This is the ProjectDataSourceItem model
+# TODO: This model is deprecated (it was replaced by ProjectNode) and should be removed.
 class ProjectDataSourceItem < ApplicationRecord
   belongs_to :project
   belongs_to :data_source_item
-  has_many :project_comments, dependent: :destroy
+  has_many :comments, dependent: :destroy
 
   # Allows a ProjectDataSourceItem to
   # be sorted by DataSourceItem.name

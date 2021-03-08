@@ -1,0 +1,8 @@
+var $modal = $("#modal");
+
+$('.modal-title', $modal).text("Approve <%= j(ProjectNode.model_name.human) %>");
+$('.modal-body', $modal).html(
+  "<%= j(render 'approvals/form', model: @project_node, url: project_node_approvals_path(@project_node)) %>"
+);
+
+$modal.modal('show');

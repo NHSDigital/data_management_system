@@ -51,4 +51,15 @@ module ApplicationHelper
     end
     link_to(name, '#', class: "add_fields " + args[:class], data: {id: id, fields: fields.gsub("\n", "") })
   end
+
+  def async_content_tag(tag, path, options = {}, &block)
+    defaults = {
+      data: {
+        controller: 'async-loader',
+        'async-loader-url': path
+      }
+    }
+
+    content_tag(tag, nil, defaults.deep_merge(options), &block)
+  end
 end

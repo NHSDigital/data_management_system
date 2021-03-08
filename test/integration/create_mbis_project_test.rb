@@ -79,21 +79,28 @@ class CreateMbisProjectTest < ActionDispatch::IntegrationTest
       click_button 'commit', match: :first
     end
 
-    assert_difference('ProjectComment.count', 3) do
+    assert_difference('Comment.count', 3) do
       %w[FNAMM SNAMM DOB].each do |text|
         row = page.find('tr', text: text)
-        assert_difference('ProjectComment.count', 1) do
+        assert_difference('Comment.count', 1) do
           within row do
-            find_link('Add Justification').evaluate_script('this.click()')
+            click_link('Add Justification')
           end
-          within_modal do
-            fill_in 'project_comment_text_field', with: 'Test'
-            click_button 'Save'
-            assert has_no_content? 'Please fill in this field'
+
+          within_modal(remain: true) do
+            fill_in 'comment[body]', with: 'I need this'
+            click_button 'Add Comment'
+
+            within('.comments-list') do
+              assert has_text?('I need this')
+            end
           end
         end
+
+        close_modal
       end
     end
+
     click_link 'Legal / Ethical'
     click_link 'Users'
     click_link 'Edit'
@@ -227,7 +234,7 @@ class CreateMbisProjectTest < ActionDispatch::IntegrationTest
     end
 
     click_link 'Comments'
-    assert has_content? 'Filter'
+
     within(id: 'tabs') do
       click_link 'Datasets'
     end

@@ -38,7 +38,7 @@ class ApplicationProjectTest < ActionDispatch::IntegrationTest
     assert_emails 1 do
       within_modal(selector: '#modal-dpia_rejected') do
         select @user.full_name, from: 'project[assigned_user_id]'
-        fill_in 'project_project_comments_attributes_0_comment', with: 'not today!'
+        fill_in 'project_comments_attributes_0_body', with: 'not today!'
         click_button 'Save'
       end
     end
@@ -50,8 +50,20 @@ class ApplicationProjectTest < ActionDispatch::IntegrationTest
     visit project_path(@project)
     assert has_button?('Begin DPIA')
 
-    click_link 'Comment'
-    assert has_text?('not today!')
+    click_link 'Timeline'
+
+    within('#timeline') do
+      within(first('tr.workflow_project_state')) do
+        assert has_text?('DPIA Rejected')
+        click_link('Comments')
+      end
+    end
+
+    within('#modal') do
+      assert has_text?('not today!')
+    end
+
+    close_modal
 
     accept_confirm { click_button 'Begin DPIA' }
 
@@ -61,7 +73,7 @@ class ApplicationProjectTest < ActionDispatch::IntegrationTest
     assert_emails 1 do
       within_modal(selector: '#modal-dpia_moderation') do
         select @senior.full_name, from: 'project[assigned_user_id]'
-        fill_in 'project_project_comments_attributes_0_comment', with: 'looks good'
+        fill_in 'project_comments_attributes_0_body', with: 'looks good'
         click_button 'Save'
       end
     end
@@ -214,7 +226,7 @@ class ApplicationProjectTest < ActionDispatch::IntegrationTest
     assert has_no_content? 'Edit'
     assert has_content? 'Approve'
   end
-  
+
   test 'should show boolean dropdown options as Yes/No in show screen' do
     project = Project.create(project_type: project_types(:application), owner: @user,
                              name: 'Test yes/no', team: teams(:team_one),
