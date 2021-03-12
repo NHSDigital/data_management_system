@@ -33,6 +33,11 @@ class SalisburyHandlerTest < ActiveSupport::TestCase
     assert_equal 1, @genotype.attribute_map['sequencevarianttype']
   end
 
+  test 'add_organisationcode_testresult' do
+    @handler.add_organisationcode_testresult(@genotype)
+    assert_equal '699H0', @genotype.attribute_map['organisationcode_testresult']
+  end
+
   private
 
   # TODO: DRY this method up into a helper
