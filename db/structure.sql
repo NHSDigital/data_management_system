@@ -1330,45 +1330,6 @@ ALTER SEQUENCE public.death_data_death_dataid_seq OWNED BY public.death_data.dea
 
 
 --
--- Name: delayed_jobs; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.delayed_jobs (
-    id bigint NOT NULL,
-    priority integer DEFAULT 0 NOT NULL,
-    attempts integer DEFAULT 0 NOT NULL,
-    handler text NOT NULL,
-    last_error text,
-    run_at timestamp without time zone,
-    locked_at timestamp without time zone,
-    failed_at timestamp without time zone,
-    locked_by character varying,
-    queue character varying,
-    created_at timestamp(6) without time zone,
-    updated_at timestamp(6) without time zone
-);
-
-
---
--- Name: delayed_jobs_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.delayed_jobs_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: delayed_jobs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.delayed_jobs_id_seq OWNED BY public.delayed_jobs.id;
-
-
---
 -- Name: directorates; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -3557,38 +3518,6 @@ ALTER SEQUENCE public.security_assurances_id_seq OWNED BY public.security_assura
 
 
 --
--- Name: snomedct; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.snomedct (
-    providercode character varying(200),
-    providername character varying(200),
-    e_batchid bigint,
-    e_base_recordid bigint,
-    diagnosisdate character varying(12),
-    klass character varying(50),
-    field character varying(50),
-    val character varying(200)
-);
-
-
---
--- Name: snomedct_path; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.snomedct_path (
-    providercode character varying(200),
-    providername character varying(200),
-    e_batchid bigint,
-    e_base_recordid bigint,
-    diagnosisdate character varying(12),
-    klass character varying(50),
-    field character varying(50),
-    val character varying(200)
-);
-
-
---
 -- Name: system_roles; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -4553,13 +4482,6 @@ ALTER TABLE ONLY public.death_data ALTER COLUMN death_dataid SET DEFAULT nextval
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.delayed_jobs ALTER COLUMN id SET DEFAULT nextval('public.delayed_jobs_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
 ALTER TABLE ONLY public.directorates ALTER COLUMN id SET DEFAULT nextval('public.directorates_id_seq'::regclass);
 
 
@@ -5299,14 +5221,6 @@ ALTER TABLE ONLY public.death_data
 
 
 --
--- Name: delayed_jobs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.delayed_jobs
-    ADD CONSTRAINT delayed_jobs_pkey PRIMARY KEY (id);
-
-
---
 -- Name: directorates_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -5976,13 +5890,6 @@ ALTER TABLE ONLY public.zprovider
 
 ALTER TABLE ONLY public.zuser
     ADD CONSTRAINT zuser_pkey PRIMARY KEY (zuserid);
-
-
---
--- Name: delayed_jobs_priority; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX delayed_jobs_priority ON public.delayed_jobs USING btree (priority, run_at);
 
 
 --
@@ -7963,6 +7870,6 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20210208111919'),
 ('20210208112318'),
 ('20210208172519'),
-('20210221131304');
+('20210312171649');
 
 
