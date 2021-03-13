@@ -32,7 +32,7 @@ module Nodes
                                                                            entity_items: {} } }
       all_categories(dataset_version).each do |category|
         lookup[dataset_version.name][dataset_version.semver_version][:xsd_names][category] = {}
-        dataset_version.entities.each_with_object({}) do |entity, entity_lookup|
+        dataset_version.preloaded_entities.each_with_object({}) do |entity, entity_lookup|
           next unless entity.node_for_category?(category)
           entity_lookup[entity.name] = { element_name: entity.xsd_element_name,
                                          type_name: entity.xsd_type_name(category) }
