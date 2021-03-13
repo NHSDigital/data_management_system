@@ -7,6 +7,7 @@ module Nodes
                       optional: true, inverse_of: :data_items
     belongs_to :entity, class_name: 'Nodes::Entity', foreign_key: 'parent_id',
                         optional: true, inverse_of: :category_choices
+    # TODO: keep normal inverse here
     has_many :child_nodes, class_name: 'Node', foreign_key: 'parent_id',
                            dependent: :destroy, inverse_of: :category_choice
 
@@ -60,12 +61,12 @@ module Nodes
 
     def samples_for(choices, options)
       choices.each do |choice|
-        parent_choice_ids = choice.parent_choices_to_get_to_this_choice
+        parent_choices = choice.parent_choices_to_get_to_this_choice
         choice.valid_choice_combinations.each.with_index(1) do |combination, i|
           # For each choice make the simplest valid sample xml record possible
           choice.categories_for_sample_choice.each do |category|
             node_options = { xml: options[:xml], category: category, choice: combination,
-                             parent_choices: parent_choice_ids, choice_no: i }
+                             parent_choices: parent_choices, choice_no: i }
             build_child_node_samples(options, node_options)
           end
         end

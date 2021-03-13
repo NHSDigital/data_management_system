@@ -83,7 +83,7 @@ module Nodes
     end
   
     def choice_in_children?(options)
-      Node.where(id: options[:choice]).any? { |n| n.in_child_path_for?(self) }
+      Array.wrap(options[:choice]).any? { |n| n.in_child_path_for?(self) }
     end
   end
 end

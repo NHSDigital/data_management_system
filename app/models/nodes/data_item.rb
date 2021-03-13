@@ -16,12 +16,21 @@ module Nodes
                        optional: true, inverse_of: :data_items
     belongs_to :data_item_group, class_name: 'Nodes::DataItemGroup', foreign_key: 'parent_id',
                                  optional: true, inverse_of: :data_items
-                        
+
     belongs_to :xml_type, optional: true
     belongs_to :data_dictionary_element, optional: true
 
     delegate :name, :link, :format_length, :national_codes,
              to: :data_dictionary_element, prefix: true, allow_nil: true
+
+    def self.preload_strategy
+      superclass.preload_strategy + [
+        xml_type: { enumeration_values: :dataset_versions },
+        data_dictionary_element: {
+          xml_type: { enumeration_values: :dataset_versions }
+        }
+      ]
+    end
 
     # If we have no data dictionary element yet, use direct association to xml_type
     def xmltype

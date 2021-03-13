@@ -133,7 +133,7 @@ module Nodes
       choice_node.save!
       choice_node.reload
       actual = choice_node.mandatory_choice_combinations.sort
-      expected = choice_node.child_nodes.pluck(:id).map { |i| [i] }.sort
+      expected = choice_node.child_nodes.map { |i| [i] }.sort
       assert_equal  expected, actual, 'choice combinations not expected'
     end
 
@@ -144,7 +144,7 @@ module Nodes
       choice_node.save!
       choice_node.reload
       actual = choice_node.valid_choice_combinations.sort
-      expected = choice_node.child_nodes.pluck(:id).map { |i| [i] }
+      expected = choice_node.child_nodes.map { |i| [i] }
       expected << []
       assert_equal expected.sort, actual, 'choice combinations not expected'
     end
@@ -156,7 +156,7 @@ module Nodes
       choice_node.save!
       choice_node.reload
       actual = choice_node.valid_choice_combinations.sort
-      expected = choice_node.child_nodes.pluck(:id).sort
+      expected = choice_node.child_nodes.sort
       assert_equal expected.sort, actual, 'choice combinations not expected'
     end
 

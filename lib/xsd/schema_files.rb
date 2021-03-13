@@ -18,6 +18,8 @@ module Xsd
     end
 
     def build
+      @dataset_version.preloaded_descendants
+
       master_file
       xml_types_file
       record_entities_file

@@ -3,10 +3,10 @@ class DatasetVersion < ApplicationRecord
   include Xsd::XmlHeader
 
   has_many :nodes, class_name: 'Node', inverse_of: :dataset_version, dependent: :destroy
-  has_many :entities, class_name: 'Nodes::Entity', inverse_of: :dataset_version,
-                      dependent: :destroy
-  has_many :data_items, class_name: 'Nodes::DataItem', inverse_of: :dataset_version,
-                        dependent: :destroy
+  # has_many :entities, class_name: 'Nodes::Entity', inverse_of: :dataset_version,
+  #                     dependent: :destroy
+  # has_many :data_items, class_name: 'Nodes::DataItem', inverse_of: :dataset_version,
+  #                       dependent: :destroy
   has_many :groups, class_name: 'Nodes::Group', inverse_of: :dataset_version,
                     dependent: :destroy
   has_many :categories, class_name: 'Category', inverse_of: :dataset_version,
@@ -28,6 +28,8 @@ class DatasetVersion < ApplicationRecord
 
   # dataset_name
   delegate :name, to: :dataset
+
+  delegate :preloaded_descendants, to: :version_entity
 
   validates :semver_version, uniqueness: { scope: :dataset,
                                            message: 'Version already exists for dataset!' }
@@ -75,7 +77,15 @@ class DatasetVersion < ApplicationRecord
   end
 
   def version_entity
-    entities.find_by(name: name)
+    @version_entity ||= nodes.find_by(type: 'Nodes::Entity', name: name)
+  end
+
+  def entities
+    @entities ||= [version_entity] + preloaded_descendants.select(&:entity?)
+  end
+
+  def data_items
+    @data_items ||= preloaded_descendants.select(&:data_item?)
   end
 
   # Build all the common Complex Types. e.g LinkagePatientId
