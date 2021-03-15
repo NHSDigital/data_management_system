@@ -10,7 +10,7 @@ class Ability
 
     # NOTE: If `user` can :read the parent resource then it is assumed that they should be able to
     # :read any/all `comment`s on that resource (hence no :read permission defined for `Comment`).
-    can %i[create destroy], Comment, user_id: user.id
+    can %i[create], Comment, user_id: user.id
 
     can %i[terms_and_conditions read destroy], Notification
     can :destroy, UserNotification, user_id: user.id

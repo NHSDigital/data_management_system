@@ -898,7 +898,7 @@ class AbilityTest < ActiveSupport::TestCase
     )
 
     assert user.can? :create, comment_one
-    assert user.can? :delete, comment_one
+    refute user.can? :delete, comment_one
     refute user.can? :create, comment_two
     refute user.can? :delete, comment_two
   end
