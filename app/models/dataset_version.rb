@@ -3,6 +3,7 @@ class DatasetVersion < ApplicationRecord
   include Xsd::XmlHeader
 
   has_many :nodes, class_name: 'Node', inverse_of: :dataset_version, dependent: :destroy
+  # TODO: consider rewriting to hang these solely off the version_entity (which is part of the node tree)
   has_many :entities, class_name: 'Nodes::Entity', inverse_of: :dataset_version,
                       dependent: :destroy
   has_many :data_items, class_name: 'Nodes::DataItem', inverse_of: :dataset_version,
@@ -28,6 +29,8 @@ class DatasetVersion < ApplicationRecord
 
   # dataset_name
   delegate :name, to: :dataset
+
+  delegate :preloaded_descendants, to: :version_entity
 
   validates :semver_version, uniqueness: { scope: :dataset,
                                            message: 'Version already exists for dataset!' }
@@ -75,12 +78,22 @@ class DatasetVersion < ApplicationRecord
   end
 
   def version_entity
-    entities.find_by(name: name)
+    @version_entity ||= nodes.find_by(type: 'Nodes::Entity', name: name)
+  end
+
+  # Optimised set of entities, for "hot paths" of schema generation:
+  def preloaded_entities
+    @preloaded_entities ||= [version_entity] + preloaded_descendants.select(&:entity?)
+  end
+
+  # Optimised set of data items, for "hot paths" of schema generation:
+  def preloaded_data_items
+    @preloaded_data_items ||= preloaded_descendants.select(&:data_item?)
   end
 
   # Build all the common Complex Types. e.g LinkagePatientId
   def build_common(schema)
-    entities.each do |entity|
+    preloaded_entities.each do |entity|
       entity.complex_entity(schema, true)
     end
   end
@@ -93,7 +106,7 @@ class DatasetVersion < ApplicationRecord
   end
 
   def build_xml_data_type_references(schema)
-    data_items.map(&:xmltype).uniq.each do |xml_type|
+    preloaded_data_items.map(&:xmltype).uniq.each do |xml_type|
       next unless xml_type.build_xsd?
 
       xml_type.to_xsd(schema, self)
@@ -147,14 +160,14 @@ class DatasetVersion < ApplicationRecord
   # TODO: add test
   def immediate_child_entities_of_record
     first_level_of_version_child_entities.each_with_object([]) do |version_child_entity, r|
-      entities.each do |e|
+      preloaded_entities.each do |e|
         r << e if e.parent_entity_in_tree == version_child_entity
       end
     end
   end
 
   def first_level_of_version_child_entities
-    entities.find_all { |n| n.parent_entity_in_tree == version_entity }
+    preloaded_entities.find_all { |n| n.parent_entity_in_tree == version_entity }
   end
 
   # For some fields we only want to select one node for many occurences in the db

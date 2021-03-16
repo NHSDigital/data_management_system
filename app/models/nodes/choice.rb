@@ -10,6 +10,7 @@ module Nodes
                         optional: true, inverse_of: :choices
     belongs_to :choice_type, class_name: 'ChoiceType', foreign_key: 'choice_type_id',
                              inverse_of: :choices
+    # TODO: keep normal inverse here
     has_many :child_nodes, class_name: 'Node', foreign_key: 'parent_id',
                            dependent: :delete_all, inverse_of: :choice
     has_many :data_items, class_name: 'Nodes::DataItem', foreign_key: 'parent_id',
@@ -104,32 +105,32 @@ module Nodes
 
       # IF not part of a dataset using categories e.g SACT
       chosen = options[:choice].nil? ? random_sample : category_sample(options)
-      Node.where(id: chosen).find_each { |node| node.to_xml_choice(options) }
+      chosen.each { |node| node.to_xml_choice(options) }
     end
 
     def random_sample
-      Array(child_nodes.sample.id)
+      Array(child_nodes.sample)
     end
 
     def category_sample(options)
       # If I'm a choice that contains a choice down the line of the choice in question,
       # then make the required choice
       # Required choice
-      chosen = Array(options[:choice]) & child_nodes.pluck(:id)
+      chosen = Array(options[:choice]).select { |node| node.id.in? child_nodes.pluck(:id) }
       sample_msg = "#{name} choice example #{options[:choice_no]}" if chosen.present?
       options[:xml].comment sample_msg if chosen.present?
       # Parent choice
       chosen = Array(options[:parent_choices][id]) if chosen.blank?
       # not part of path, nake random choice
-      chosen = Array(choices_for_category(options[:category]&.name).sample.id) if chosen.blank?
+      chosen = Array(choices_for_category(options[:category]&.name).sample) if chosen.blank?
       chosen
     end
 
     def valid_choice_combinations
-      return child_nodes.pluck(:id) if max_occurs.eql?(1)
+      return child_nodes if max_occurs.eql?(1)
 
       # Also include no choice as an example
-      return child_nodes.pluck(:id).combination(1).to_a << [] if min_occurs.eql?(0)
+      return child_nodes.to_a.combination(1).to_a << [] if min_occurs.eql?(0)
 
       mandatory_choice_combinations
     end
@@ -137,7 +138,7 @@ module Nodes
     def mandatory_choice_combinations
       combos = []
       (min_occurs..max_occurs).each do |no_of_choices|
-        combos += child_nodes.pluck(:id).combination(no_of_choices).to_a
+        combos += child_nodes.to_a.combination(no_of_choices).to_a
       end
       combos
     end

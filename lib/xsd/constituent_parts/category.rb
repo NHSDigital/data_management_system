@@ -29,7 +29,7 @@ module Xsd
 
       def xsd_category(category)
         # Assuming only one Nodes::Category per version
-        category_choice_node = dataset_version.nodes.find_by(type: 'Nodes::CategoryChoice')
+        category_choice_node = dataset_version.preloaded_descendants.find(&:category_choice?)
         schema.xs :schema, ns('xs', :w3, :schema, true) do |schema_|
           category_choice_node.build_category(schema_, category)
         end

@@ -60,6 +60,15 @@ class Node < ApplicationRecord
     throw(:abort) if in_use?
   end
 
+  # Once all descendant "child nodes" have been loaded, what else should be?
+  def self.preload_strategy
+    [
+      :categories,
+      { dataset_version: :dataset },
+      :parent_node # FIXME: some entity types set conflicting inverse_ofs, which reduces efficiency
+    ]
+  end
+
   def min_occur_must_not_be_nil
     return if type == 'Nodes::Group'
     return if type == 'Nodes::Choice'
@@ -275,7 +284,7 @@ class Node < ApplicationRecord
   def parent_choices_to_get_to_this_choice(parent_choices = {})
     return parent_choices if parent_node.name == 'Record'
 
-    parent_choices[parent_node.id] = id if parent_node.choice?
+    parent_choices[parent_node.id] = self if parent_node.choice?
     parent_node.parent_choices_to_get_to_this_choice(parent_choices)
   end
 
@@ -371,6 +380,25 @@ class Node < ApplicationRecord
     return parent_node if parent_node.table_node?
     
     parent_node.parent_table_node
+  end
+
+  def preload_tree(children)
+    ActiveRecord::Associations::Preloader.new.preload(children, :child_nodes)
+    grandchildren = children.flat_map(&:child_nodes)
+
+    if grandchildren.any?
+      children + preload_tree(grandchildren)
+    else
+      children
+    end
+  end
+
+  def preloaded_descendants
+    descendants = preload_tree(child_nodes)
+    descendants.group_by(&:class).each do |klass, instances|
+      ActiveRecord::Associations::Preloader.new.preload(instances, klass.preload_strategy)
+    end
+    descendants
   end
 
   private

@@ -58,7 +58,7 @@ module Xsd
 
       def build_record_parents(schema)
         entity_file_list = dataset_version.first_level_of_version_child_entities +
-                             dataset_version.entities.where(name: dataset_name)
+                             [dataset_version.version_entity]
         entity_file_list.each do |entity|
           entity.complex_entity(schema, true)
           entity.child_nodes.groups.each do |group|
