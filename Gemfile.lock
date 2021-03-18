@@ -499,7 +499,7 @@ DEPENDENCIES
   bootstrap-table-rails
   byebug
   cancancan (~> 3.0)
-  capistrano (~> 2.15.7)
+  capistrano (>= 2.5.0, < 3.0)
   capybara-email
   cocoon
   coffee-rails
