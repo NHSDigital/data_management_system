@@ -157,7 +157,7 @@
 
     <strong>Statutory (Section 251) Exemption</strong><br />
     <%= form.control_group(:s251_exemption_id, t('.s251_exemption_id'), {}, class: 'col-md-3') do %>
-      <%= form.collection_select(:s251_exemption_id, Lookups::CommonLawExemption.s251, :id, :value, { include_blank: true, readonly_value: form.object.s251_exemption&.value }, class: 'form-control') %>
+      <%= form.collection_select(:s251_exemption_id, Lookups::CommonLawExemption.all, :id, :value, { include_blank: true, readonly_value: form.object.s251_exemption&.value }, class: 'form-control') %>
     <% end %>
     <%= form.control_group(:cag_ref, t('.cag_ref'), {}, class: 'col-md-3') { form.text_field :cag_ref } %>
     <%= form.control_group(:date_of_renewal, t('.date_of_renewal'), {}, class: 'col-md-3') { form.datepicker_field :date_of_renewal } %>
