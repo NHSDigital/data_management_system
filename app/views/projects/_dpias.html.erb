@@ -13,6 +13,7 @@
         <th><%= DataPrivacyImpactAssessment.human_attribute_name(:ig_assessment_status_id) %></th>
         <th><%= DataPrivacyImpactAssessment.human_attribute_name(:review_meeting_date) %></th>
         <th><%= DataPrivacyImpactAssessment.human_attribute_name(:dpia_decision_date) %></th>
+        <th><%= 'DPIA attached' %></th>
         <th>
           <div class="pull-right">
             <% if can?(:create, DataPrivacyImpactAssessment.new(project: project)) %>
@@ -30,6 +31,7 @@
           <td><%= dpia.ig_assessment_status_value %></td>
           <td><%= dpia.review_meeting_date&.to_s(:ui) %></td>
           <td><%= dpia.dpia_decision_date&.to_s(:ui) %></td>
+          <td id='dpia_attached_date'><%= dpia&.attachment&.created_at&.to_s(:ui) %></td>
           <td>
             <div class="pull-right">
               <%= inline_controls_for(dpia) %>
