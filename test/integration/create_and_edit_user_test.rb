@@ -132,12 +132,11 @@ class CreateAndEditUserTest < ActionDispatch::IntegrationTest
     assert has_field?('user[email]', readonly: false)
     assert has_field?('user[job_title]', readonly: false)
 
-    # User shouldn't be able to set these for themselves
     assert has_content?('Status')
     assert has_content?('Notes')
   end
 
-  test 'application manager should be able to see fields hidden or readonly to other users' do
+  test 'application manager should be able to edit fields hidden or readonly to other users' do
     login_and_accept_terms(users(:application_manager_one))
     visit user_path(users(:no_roles))
 
@@ -153,8 +152,20 @@ class CreateAndEditUserTest < ActionDispatch::IntegrationTest
     assert has_field?('user[email]', readonly: false)
     assert has_field?('user[job_title]', readonly: false)
 
-    # User shouldn't be able to set these for themselves
     assert has_content?('Status')
     assert has_content?('Notes')
+  end
+
+  test 'application manager should be able to see readonly fields when creating new user' do
+    login_and_accept_terms(users(:application_manager_one))
+    visit users_path
+
+    click_link('Create New User')
+
+    assert has_field?('user[first_name]', readonly: false)
+    assert has_field?('user[last_name]', readonly: false)
+    assert has_field?('user[username]', readonly: false)
+    assert has_field?('user[email]', readonly: false)
+    assert has_field?('user[job_title]', readonly: false)
   end
 end

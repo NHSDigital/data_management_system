@@ -2,6 +2,8 @@ require 'test_helper'
 
 class CasApplicationRenewalTest < ActiveSupport::TestCase
   test 'CAS application moves to renewal after 1 year' do
+    skip
+
     project = create_cas_project(owner: users(:standard_user2))
 
     project.transition_to!(workflow_states(:submitted))
