@@ -12,12 +12,17 @@ class DataPrivacyImpactAssessmentsTest < ActionDispatch::IntegrationTest
     visit project_path(project)
     click_on('DPIAs')
 
+    assert has_content?('DPIA attached')
+
     dom_id = "\#data_privacy_impact_assessment_#{dpia.id}"
 
     assert has_no_link?(href: new_project_data_privacy_impact_assessment_path(project))
     assert has_selector?(dom_id)
 
     within(dom_id) do
+      within('#dpia_attached_date') do
+        assert has_content?(Date.current.strftime('%d/%m/%Y').to_s)
+      end
       assert has_link?(href: data_privacy_impact_assessment_path(dpia),         title: 'Details')
       assert has_no_link?(href: edit_data_privacy_impact_assessment_path(dpia), title: 'Edit')
       assert has_no_link?(href: data_privacy_impact_assessment_path(dpia),      title: 'Delete')
