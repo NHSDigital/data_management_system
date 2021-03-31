@@ -16,7 +16,9 @@ class ProjectDashboardTest < ActionDispatch::IntegrationTest
     visit terms_and_conditions_path
     click_on 'Accept'
     visit dashboard_projects_path
-
+    within('#projects-table', match: :first) do
+      assert has_content?('Project Title')
+    end
     assert has_content?('My Projects')
     assert has_content?('Unassigned Projects')
     assert has_content?('All Projects')
