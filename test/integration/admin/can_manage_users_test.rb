@@ -48,7 +48,7 @@ class CanManageUsersTest < ActionDispatch::IntegrationTest
   test 'mandatory fields should be highlighted' do
     visit users_path
     click_link 'Create New User'
-    page.assert_selector('.form-control.mandatory', count: 3)
+    page.assert_selector('.form-control.mandatory', count: 4)
   end
 
   private

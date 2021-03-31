@@ -54,7 +54,7 @@
                 <%= form.text_field :last_name, class: 'mandatory', readonly: @admin_readonly %>
               <% end %>
               <%= form.control_group :username, 'Username' do %>
-                <%= form.text_field :username, readonly: @admin_readonly %>
+                <%= form.text_field :username, class: 'mandatory', readonly: @admin_readonly %>
               <% end %>
               <%= form.control_group :email, 'Email' do %>
               <%= form.text_field :email, class: 'mandatory', readonly: @admin_readonly %>
