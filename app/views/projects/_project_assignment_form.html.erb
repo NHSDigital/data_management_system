@@ -1,7 +1,7 @@
 <%= form_with model: project, url: assign_project_path(project), method: :patch, class: 'form-inline' do |form| %>
   <div class="form-group">
     <%= form.label :assigned_user_id, 'Application Manager: ' do %>
-      <%= form.collection_select :assigned_user_id, User.all_application_managers.in_use, :id, :full_name, { include_blank: true }, class: 'form-control' %>
+      <%= form.collection_select :assigned_user_id, User.all_application_managers.in_use, :id, :full_name, { include_blank: true }, class: 'form-control', id: 'project_assignment' %>
     <% end %>
   </div>
   <%= form.submit 'Apply', class: 'btn btn-default' %>

@@ -57,3 +57,8 @@ twelve:
   project: rejected_project
   state_id: REJECTED
   user: odr_user
+
+thirteen:
+  project: test_eoi
+  state_id: DRAFT
+  user: standard_user1

@@ -144,3 +144,10 @@ test_application:
   project_type: application
   name: Test Application
   description: A test application
+
+test_eoi:
+  team: team_one
+  project_type: eoi
+  name: Test EOI
+  description: A test eoi
+  project_purpose: testing

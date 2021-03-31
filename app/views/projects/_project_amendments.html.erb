@@ -14,7 +14,7 @@
         <th>
           <div class="pull-right">
             <% if can?(:create, ProjectAmendment.new(project: project)) %>
-              <%= link_to_with_icon(icon: 'plus-sign', text: true, title: 'New', path: new_project_project_amendment_path(project), class: 'btn btn-primary btn-xs') %>
+              <%= link_to_with_icon(icon: 'plus-sign', text: true, title: 'New', path: new_project_project_amendment_path(project), class: 'btn btn-primary btn-xs', id: 'new_amendment') %>
             <% end %>
           </div>
         </th>
