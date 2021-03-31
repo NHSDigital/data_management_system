@@ -243,19 +243,6 @@ CREATE TABLE public.cas_application_fields (
     id bigint NOT NULL,
     project_id bigint,
     status character varying,
-    firstname character varying,
-    surname character varying,
-    jobtitle character varying,
-    phe_email character varying,
-    work_number character varying,
-    organisation character varying,
-    line_manager_name character varying,
-    line_manager_email character varying,
-    line_manager_number character varying,
-    employee_type character varying,
-    contract_startdate date,
-    contract_enddate date,
-    username character varying,
     address text,
     n3_ip_address text,
     reason_justification text,
@@ -264,7 +251,20 @@ CREATE TABLE public.cas_application_fields (
     extra_datasets_rationale character varying,
     declaration character varying,
     created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
+    updated_at timestamp(6) without time zone NOT NULL,
+    organisation character varying,
+    username character varying,
+    contract_enddate date,
+    contract_startdate date,
+    employee_type character varying,
+    line_manager_number character varying,
+    line_manager_email character varying,
+    line_manager_name character varying,
+    work_number character varying,
+    phe_email character varying,
+    jobtitle character varying,
+    surname character varying,
+    firstname character varying
 );
 
 
@@ -7872,6 +7872,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20210208172519'),
 ('20210312171649'),
 ('20210315142901'),
-('20210316142127');
+('20210316142127'),
+('20210331115138');
 
 
