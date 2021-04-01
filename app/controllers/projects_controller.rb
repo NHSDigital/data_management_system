@@ -118,7 +118,6 @@ class ProjectsController < ApplicationController
         format.html { redirect_to @project, notice: "#{@project.project_type_name} was successfully created." }
         format.js { render action: 'show', id: @project.id }
       end
-      @project.send(:clone_project_sub_details)
       # send mail
     else
       form_type = project_params['clone_of'].presence ? :duplicate : :new

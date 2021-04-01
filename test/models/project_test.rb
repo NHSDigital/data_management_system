@@ -211,18 +211,14 @@ class ProjectTest < ActiveSupport::TestCase
     cloned_project.owner = original_project.owner
     cloned_project.save!
 
-    refute cloned_project.end_uses == original_project.end_uses
-    refute cloned_project.classifications == original_project.classifications
-    refute cloned_project.outputs == original_project.outputs
-
-    cloned_project.send(:clone_project_sub_details)
     # original items remain
     assert original_project.end_uses.count.positive?
     assert original_project.classifications.count.positive?
     assert original_project.outputs.count.positive?
-    assert cloned_project.end_uses, original_project.end_uses
-    assert cloned_project.classifications, original_project.classifications
-    assert cloned_project.outputs, original_project.outputs
+
+    assert_equal original_project.end_uses, cloned_project.end_uses
+    assert_equal original_project.classifications, cloned_project.classifications
+    assert_equal original_project.outputs, cloned_project.outputs
   end
 
   test 'should only be assignable to application managers' do
