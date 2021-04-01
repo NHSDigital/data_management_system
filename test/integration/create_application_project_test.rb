@@ -136,7 +136,7 @@ class CreateApplicationProjectTest < ActionDispatch::IntegrationTest
     assert project.why_data_required == 'Testing why data required'
     assert project.how_data_will_be_used == 'Testing how data will be used'
     assert project.public_benefit == 'Testing public benefit'
-    # assert project.end_use_names.sort == ['Research', 'Service Evaluation'].sort
+    assert project.end_use_names.sort == ['Research', 'Service Evaluation'].sort
     assert project.end_use_other == 'Testing end use other'
     assert project.start_data_date == '01/01/2019'.to_date
     assert project.end_data_date == '01/01/2022'.to_date
