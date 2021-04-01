@@ -156,11 +156,11 @@ class CreateApplicationProjectTest < ActionDispatch::IntegrationTest
     assert_equal 'Testing phe contacts', project.phe_contacts
     assert_equal 'Testing acg who', project.acg_who
     assert_equal project.s251_exemption_id ==
-           Lookups::CommonLawExemption.find_by(value: 'S251 Regulation 2').id
+                 Lookups::CommonLawExemption.find_by(value: 'S251 Regulation 2').id
     assert_equal 'Testing cag ref', project.cag_ref
     assert_equal '01/05/2019'.to_date, project.date_of_renewal
     assert_equal project.project_lawful_bases.map(&:lawful_basis_id).sort ==
-           %w[6.1a 6.1b 6.1c 6.1d 6.1e 6.1f 9.2a 9.2b 9.2c 9.2d 9.2e 9.2f 9.2h 9.2i 9.2j].sort
+                 %w[6.1a 6.1b 6.1c 6.1d 6.1e 6.1f 9.2a 9.2b 9.2c 9.2d 9.2e 9.2f 9.2h 9.2i 9.2j].sort
     assert_equal 'Testing ethics approval nrec name', project.ethics_approval_nrec_name
     assert_equal 'Testing ethics approval nrec ref', project.ethics_approval_nrec_ref
     assert_equal Lookups::ProcessingTerritory.find_by(value: 'UK').id, project.processing_territory_id
@@ -169,7 +169,7 @@ class CreateApplicationProjectTest < ActionDispatch::IntegrationTest
     assert_equal 'Testing dpa org name', project.dpa_org_name
     assert_equal '01/06/2022'.to_date, project.dpa_registration_end_date
     assert_equal project.security_assurance_id ==
-           Lookups::SecurityAssurance.find_by(value: 'ISO 27001').id
+                 Lookups::SecurityAssurance.find_by(value: 'ISO 27001').id
     assert_equal 'Testing ig code', project.ig_code
     assert_equal 'Testing data processor name', project.data_processor_name
     assert_equal 'Testing data processor add1', project.data_processor_add1
@@ -178,14 +178,14 @@ class CreateApplicationProjectTest < ActionDispatch::IntegrationTest
     assert_equal 'Testing data processor postcode', project.data_processor_postcode
     assert_equal 'XKU', project.data_processor_country_id
     assert_equal project.processing_territory_outsourced_id ==
-           Lookups::ProcessingTerritory.find_by(value: 'UK').id
+                 Lookups::ProcessingTerritory.find_by(value: 'UK').id
     assert_equal project.processing_territory_outsourced_other ==
-           'Testing processing territory outsourced other'
+                 'Testing processing territory outsourced other'
     assert_equal 'Testing dpa org code outsourced', project.dpa_org_code_outsourced
     assert_equal 'Testing dpa org name outsourced', project.dpa_org_name_outsourced
     assert_equal '01/04/2019'.to_date, project.dpa_registration_end_date_outsourced
     assert_equal project.security_assurance_outsourced_id ==
-           Lookups::SecurityAssurance.find_by(value: 'ISO 27001').id
+                 Lookups::SecurityAssurance.find_by(value: 'ISO 27001').id
     assert_equal 'Testing ig code outsourced', project.ig_code_outsourced
     assert_equal 'Testing ig toolkit version outsourced', project.ig_toolkit_version_outsourced
     assert_equal 'Testing additional info', project.additional_info
