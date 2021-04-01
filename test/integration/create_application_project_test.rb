@@ -14,7 +14,7 @@ class CreateApplicationProjectTest < ActionDispatch::IntegrationTest
     click_on 'Accept'
   end
 
-  test_repeatedly 'create application', times: 20 do
+  test 'create application' do
     click_link 'Admin'
     click_link 'Teams'
     assert has_text? 'Listing Teams'
@@ -111,7 +111,8 @@ class CreateApplicationProjectTest < ActionDispatch::IntegrationTest
     fill_in 'project_additional_info', with: 'Testing additional info'
     click_button 'Create Application'
     assert has_content?('Application was successfully created.')
-    click_button 'Submit'
+
+    accept_alert { click_button 'Submit' }
 
     project = Project.find_by(name: 'New application test')
 
