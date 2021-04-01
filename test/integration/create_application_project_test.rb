@@ -14,7 +14,7 @@ class CreateApplicationProjectTest < ActionDispatch::IntegrationTest
     click_on 'Accept'
   end
 
-  test 'create application' do
+  test_repeatedly 'create application', times: 20 do
     click_link 'Admin'
     click_link 'Teams'
     assert has_text? 'Listing Teams'
