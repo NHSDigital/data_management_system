@@ -14,7 +14,7 @@ class CreateApplicationProjectTest < ActionDispatch::IntegrationTest
     click_on 'Accept'
   end
 
-  test_repeatedly 'create application', times: 20 do
+  test 'create application' do
     click_link 'Admin'
     click_link 'Teams'
     assert has_text? 'Listing Teams'
@@ -111,83 +111,84 @@ class CreateApplicationProjectTest < ActionDispatch::IntegrationTest
     fill_in 'project_additional_info', with: 'Testing additional info'
     click_button 'Create Application'
     assert has_content?('Application was successfully created.')
-    click_button 'Submit'
+
+    accept_alert { click_button 'Submit' }
 
     project = Project.find_by(name: 'New application test')
 
-    assert project.owner == User.find_by(username: 'standarduser1')
-    assert project.main_contact_name == 'Testing contact name'
-    assert project.main_contact_email == 'Testing contact email'
-    assert project.sponsor_name == 'Testing sponsor name'
-    assert project.sponsor_add1 == 'Testing sponsor add1'
-    assert project.sponsor_add2 == 'Testing sponsor add2'
-    assert project.sponsor_city == 'Testing sponsor city'
-    assert project.sponsor_postcode == 'Testing sponsor postcode'
-    assert project.sponsor_country_id == 'XKU'
-    assert project.funder_name == 'Testing funding name'
-    assert project.funder_add1 == 'Testing funder add1'
-    assert project.funder_add2 == 'Testing funder add2'
-    assert project.funder_city == 'Testing funder city'
-    assert project.funder_postcode == 'Testing funder postcode'
-    assert project.funder_country_id == 'XKU'
-    assert project.awarding_body_ref == 'Testing funder reference'
-    assert project.clone_of == Project.find_by(name: 'Test EOI').id
-    assert project.description == 'Test project description'
-    assert project.why_data_required == 'Testing why data required'
-    assert project.how_data_will_be_used == 'Testing how data will be used'
-    assert project.public_benefit == 'Testing public benefit'
-    assert project.end_use_names.sort == ['Research', 'Service Evaluation'].sort
-    assert project.end_use_other == 'Testing end use other'
-    assert project.start_data_date == '01/01/2019'.to_date
-    assert project.end_data_date == '01/01/2022'.to_date
-    assert project.level_of_identifiability == 'Personally Identifiable'
-    assert project.data_linkage == 'Testing data linkage'
-    assert project.onwardly_share == true
-    assert project.onwardly_share_detail == 'Testing onwardly share detail'
-    assert project.data_already_held_for_project == true
-    assert project.data_already_held_detail == 'Testing data already held detail'
-    assert project.data_to_contact_others == true
-    assert project.data_to_contact_others_desc == 'Testing data to contact others desc'
-    assert project.programme_support_id == Lookups::ProgrammeSupport.find_by(value: 'Yes').id
-    assert project.programme_support_detail == 'Testing programme support detail'
-    assert project.scrn_id == 'Testing scrn id'
-    assert project.programme_approval_date == '01/06/2019'.to_date
-    assert project.phe_contacts == 'Testing phe contacts'
-    assert project.acg_who == 'Testing acg who'
-    assert project.s251_exemption_id ==
+    assert_equal User.find_by(username: 'standarduser1'), project.owner
+    assert_equal 'Testing contact name', project.main_contact_name
+    assert_equal 'Testing contact email', project.main_contact_email
+    assert_equal 'Testing sponsor name', project.sponsor_name
+    assert_equal 'Testing sponsor add1', project.sponsor_add1
+    assert_equal 'Testing sponsor add2', project.sponsor_add2
+    assert_equal 'Testing sponsor city', project.sponsor_city
+    assert_equal 'Testing sponsor postcode', project.sponsor_postcode
+    assert_equal 'XKU', project.sponsor_country_id
+    assert_equal 'Testing funding name', project.funder_name
+    assert_equal 'Testing funder add1', project.funder_add1
+    assert_equal 'Testing funder add2', project.funder_add2
+    assert_equal 'Testing funder city', project.funder_city
+    assert_equal 'Testing funder postcode', project.funder_postcode
+    assert_equal 'XKU', project.funder_country_id
+    assert_equal 'Testing funder reference', project.awarding_body_ref
+    assert_equal Project.find_by(name: 'Test EOI').id, project.clone_of
+    assert_equal 'Test project description', project.description
+    assert_equal 'Testing why data required', project.why_data_required
+    assert_equal 'Testing how data will be used', project.how_data_will_be_used
+    assert_equal 'Testing public benefit', project.public_benefit
+    assert_equal ['Research', 'Service Evaluation'].sort, project.end_use_names.sort
+    assert_equal 'Testing end use other', project.end_use_other
+    assert_equal '01/01/2019'.to_date, project.start_data_date
+    assert_equal '01/01/2022'.to_date, project.end_data_date
+    assert_equal 'Personally Identifiable', project.level_of_identifiability
+    assert_equal 'Testing data linkage', project.data_linkage
+    assert_equal true, project.onwardly_share
+    assert_equal 'Testing onwardly share detail', project.onwardly_share_detail
+    assert_equal true, project.data_already_held_for_project
+    assert_equal 'Testing data already held detail', project.data_already_held_detail
+    assert_equal true, project.data_to_contact_others
+    assert_equal 'Testing data to contact others desc', project.data_to_contact_others_desc
+    assert_equal Lookups::ProgrammeSupport.find_by(value: 'Yes').id, project.programme_support_id
+    assert_equal 'Testing programme support detail', project.programme_support_detail
+    assert_equal 'Testing scrn id', project.scrn_id
+    assert_equal '01/06/2019'.to_date, project.programme_approval_date
+    assert_equal 'Testing phe contacts', project.phe_contacts
+    assert_equal 'Testing acg who', project.acg_who
+    assert_equal project.s251_exemption_id ==
            Lookups::CommonLawExemption.find_by(value: 'S251 Regulation 2').id
-    assert project.cag_ref == 'Testing cag ref'
-    assert project.date_of_renewal == '01/05/2019'.to_date
-    assert project.project_lawful_bases.map(&:lawful_basis_id).sort ==
+    assert_equal 'Testing cag ref', project.cag_ref
+    assert_equal '01/05/2019'.to_date, project.date_of_renewal
+    assert_equal project.project_lawful_bases.map(&:lawful_basis_id).sort ==
            %w[6.1a 6.1b 6.1c 6.1d 6.1e 6.1f 9.2a 9.2b 9.2c 9.2d 9.2e 9.2f 9.2h 9.2i 9.2j].sort
-    assert project.ethics_approval_nrec_name == 'Testing ethics approval nrec name'
-    assert project.ethics_approval_nrec_ref == 'Testing ethics approval nrec ref'
-    assert project.processing_territory_id == Lookups::ProcessingTerritory.find_by(value: 'UK').id
-    assert project.processing_territory_other == 'Testing processing territory other'
-    assert project.dpa_org_code == 'Testing dpa org code'
-    assert project.dpa_org_name == 'Testing dpa org name'
-    assert project.dpa_registration_end_date == '01/06/2022'.to_date
-    assert project.security_assurance_id ==
+    assert_equal 'Testing ethics approval nrec name', project.ethics_approval_nrec_name
+    assert_equal 'Testing ethics approval nrec ref', project.ethics_approval_nrec_ref
+    assert_equal Lookups::ProcessingTerritory.find_by(value: 'UK').id, project.processing_territory_id
+    assert_equal 'Testing processing territory other', project.processing_territory_other
+    assert_equal 'Testing dpa org code', project.dpa_org_code
+    assert_equal 'Testing dpa org name', project.dpa_org_name
+    assert_equal '01/06/2022'.to_date, project.dpa_registration_end_date
+    assert_equal project.security_assurance_id ==
            Lookups::SecurityAssurance.find_by(value: 'ISO 27001').id
-    assert project.ig_code == 'Testing ig code'
-    assert project.data_processor_name == 'Testing data processor name'
-    assert project.data_processor_add1 == 'Testing data processor add1'
-    assert project.data_processor_add2 == 'Testing data processor add2'
-    assert project.data_processor_city == 'Testing data processor city'
-    assert project.data_processor_postcode == 'Testing data processor postcode'
-    assert project.data_processor_country_id == 'XKU'
-    assert project.processing_territory_outsourced_id ==
+    assert_equal 'Testing ig code', project.ig_code
+    assert_equal 'Testing data processor name', project.data_processor_name
+    assert_equal 'Testing data processor add1', project.data_processor_add1
+    assert_equal 'Testing data processor add2', project.data_processor_add2
+    assert_equal 'Testing data processor city', project.data_processor_city
+    assert_equal 'Testing data processor postcode', project.data_processor_postcode
+    assert_equal 'XKU', project.data_processor_country_id
+    assert_equal project.processing_territory_outsourced_id ==
            Lookups::ProcessingTerritory.find_by(value: 'UK').id
-    assert project.processing_territory_outsourced_other ==
+    assert_equal project.processing_territory_outsourced_other ==
            'Testing processing territory outsourced other'
-    assert project.dpa_org_code_outsourced == 'Testing dpa org code outsourced'
-    assert project.dpa_org_name_outsourced == 'Testing dpa org name outsourced'
-    assert project.dpa_registration_end_date_outsourced == '01/04/2019'.to_date
-    assert project.security_assurance_outsourced_id ==
+    assert_equal 'Testing dpa org code outsourced', project.dpa_org_code_outsourced
+    assert_equal 'Testing dpa org name outsourced', project.dpa_org_name_outsourced
+    assert_equal '01/04/2019'.to_date, project.dpa_registration_end_date_outsourced
+    assert_equal project.security_assurance_outsourced_id ==
            Lookups::SecurityAssurance.find_by(value: 'ISO 27001').id
-    assert project.ig_code_outsourced == 'Testing ig code outsourced'
-    assert project.ig_toolkit_version_outsourced == 'Testing ig toolkit version outsourced'
-    assert project.additional_info == 'Testing additional info'
+    assert_equal 'Testing ig code outsourced', project.ig_code_outsourced
+    assert_equal 'Testing ig toolkit version outsourced', project.ig_toolkit_version_outsourced
+    assert_equal 'Testing additional info', project.additional_info
   end
 
   test 'edit application' do
@@ -208,18 +209,19 @@ class CreateApplicationProjectTest < ActionDispatch::IntegrationTest
     fill_in 'project_funder_postcode', with: 'Testing funder postcode'
     select 'UNITED KINGDOM', from: 'project_funder_country_id'
     click_button 'commit'
-    click_button 'Submit'
+
+    accept_alert { click_button 'Submit' }
 
     project = Project.find_by(description: 'making changes to an application')
 
-    assert project.data_already_held_detail == 'Testing editing an application'
-    assert project.project_lawful_bases.map(&:lawful_basis_id).sort == %w[6.1f 9.2a].sort
-    assert project.funder_name == 'Testing funding name'
-    assert project.funder_add1 == 'Testing funder add1'
-    assert project.funder_add2 == 'Testing funder add2'
-    assert project.funder_city == 'Testing funder city'
-    assert project.funder_postcode == 'Testing funder postcode'
-    assert project.funder_country_id == 'XKU'
+    assert_equal 'Testing editing an application', project.data_already_held_detail
+    assert_equal %w[6.1f 9.2a].sort, project.project_lawful_bases.map(&:lawful_basis_id).sort
+    assert_equal 'Testing funding name', project.funder_name
+    assert_equal 'Testing funder add1', project.funder_add1
+    assert_equal 'Testing funder add2', project.funder_add2
+    assert_equal 'Testing funder city', project.funder_city
+    assert_equal 'Testing funder postcode', project.funder_postcode
+    assert_equal 'XKU', project.funder_country_id
   end
 
   test 'Approve DPIA' do
@@ -248,7 +250,7 @@ class CreateApplicationProjectTest < ActionDispatch::IntegrationTest
     within('#project_status') do
       assert has_text?('DPIA Peer Review')
     end
-    assert_equal workflow_states(:dpia_review), @project.reload.current_state
+    assert_equal @project.reload.current_state, workflow_states(:dpia_review)
   end
 
   test 'Reject DPIA' do
@@ -273,7 +275,7 @@ class CreateApplicationProjectTest < ActionDispatch::IntegrationTest
     within('#project_status') do
       assert has_text?('Closed')
     end
-    assert_equal workflow_states(:rejected), @project.reload.current_state
+    assert_equal @project.reload.current_state, workflow_states(:rejected)
   end
 
   test 'send for moderation' do
@@ -300,7 +302,7 @@ class CreateApplicationProjectTest < ActionDispatch::IntegrationTest
     within('#project_status') do
       assert has_text?('DPIA Peer Review')
     end
-    assert_equal workflow_states(:dpia_review), @project.reload.current_state
+    assert_equal @project.reload.current_state, workflow_states(:dpia_review)
     click_button 'Send for Moderation'
     within_modal(selector: '#modal-dpia_moderation') do
       select @senior.full_name, from: 'project[assigned_user_id]'
@@ -311,7 +313,7 @@ class CreateApplicationProjectTest < ActionDispatch::IntegrationTest
     within('#project_status') do
       assert has_text?('DPIA Moderation')
     end
-    assert_equal workflow_states(:dpia_moderation), @project.reload.current_state
+    assert_equal @project.reload.current_state, workflow_states(:dpia_moderation)
   end
 
   test 'Reject peer review' do
@@ -338,7 +340,7 @@ class CreateApplicationProjectTest < ActionDispatch::IntegrationTest
     within('#project_status') do
       assert has_text?('DPIA Peer Review')
     end
-    assert_equal workflow_states(:dpia_review), @project.reload.current_state
+    assert_equal @project.reload.current_state, workflow_states(:dpia_review)
     click_button 'Reject DPIA'
     within_modal(selector: '#modal-dpia_rejected') do
       select @user.full_name, from: 'project[assigned_user_id]'
@@ -348,7 +350,7 @@ class CreateApplicationProjectTest < ActionDispatch::IntegrationTest
     within('#project_status') do
       assert has_text?('DPIA Rejected')
     end
-    assert_equal workflow_states(:dpia_rejected), @project.reload.current_state
+    assert_equal @project.reload.current_state, workflow_states(:dpia_rejected)
   end
 
   test 'Approve moderation' do
@@ -375,7 +377,7 @@ class CreateApplicationProjectTest < ActionDispatch::IntegrationTest
     within('#project_status') do
       assert has_text?('DPIA Peer Review')
     end
-    assert_equal workflow_states(:dpia_review), @project.reload.current_state
+    assert_equal @project.reload.current_state, workflow_states(:dpia_review)
     click_button 'Send for Moderation'
     within_modal(selector: '#modal-dpia_moderation') do
       select @senior.full_name, from: 'project[assigned_user_id]'
@@ -385,7 +387,7 @@ class CreateApplicationProjectTest < ActionDispatch::IntegrationTest
     within('#project_status') do
       assert has_text?('DPIA Moderation')
     end
-    assert_equal workflow_states(:dpia_moderation), @project.reload.current_state
+    assert_equal @project.reload.current_state, workflow_states(:dpia_moderation)
     sign_in @senior
     visit project_path(@project)
 
@@ -411,7 +413,7 @@ class CreateApplicationProjectTest < ActionDispatch::IntegrationTest
     within('#project_status') do
       assert has_text?('Contract Draft')
     end
-    assert_equal workflow_states(:contract_draft), @project.reload.current_state
+    assert_equal @project.reload.current_state, workflow_states(:contract_draft)
   end
 
   test 'reject moderation' do
@@ -438,7 +440,7 @@ class CreateApplicationProjectTest < ActionDispatch::IntegrationTest
     within('#project_status') do
       assert has_text?('DPIA Peer Review')
     end
-    assert_equal workflow_states(:dpia_review), @project.reload.current_state
+    assert_equal @project.reload.current_state, workflow_states(:dpia_review)
     click_button 'Send for Moderation'
     within_modal(selector: '#modal-dpia_moderation') do
       select @senior.full_name, from: 'project[assigned_user_id]'
@@ -448,7 +450,7 @@ class CreateApplicationProjectTest < ActionDispatch::IntegrationTest
     within('#project_status') do
       assert has_text?('DPIA Moderation')
     end
-    assert_equal workflow_states(:dpia_moderation), @project.reload.current_state
+    assert_equal @project.reload.current_state, workflow_states(:dpia_moderation)
     sign_in @senior
     visit project_path(@project)
     assert has_button? 'Reject DPIA'
@@ -461,7 +463,7 @@ class CreateApplicationProjectTest < ActionDispatch::IntegrationTest
     within('#project_status') do
       assert has_text?('DPIA Rejected')
     end
-    assert_equal workflow_states(:dpia_rejected), @project.reload.current_state
+    assert_equal @project.reload.current_state, workflow_states(:dpia_rejected)
   end
 
   test 'contract complete' do
@@ -516,7 +518,7 @@ class CreateApplicationProjectTest < ActionDispatch::IntegrationTest
     within('#project_status') do
       assert has_text?('Contract Completed')
     end
-    assert_equal workflow_states(:contract_completed), @project.reload.current_state
+    assert_equal @project.reload.current_state, workflow_states(:contract_completed)
   end
 
   test 'amendments' do
@@ -579,7 +581,7 @@ class CreateApplicationProjectTest < ActionDispatch::IntegrationTest
     within('#project_status') do
       assert has_text?('DPIA Moderation')
     end
-    assert_equal workflow_states(:dpia_moderation), @project.reload.current_state
+    assert_equal @project.reload.current_state, workflow_states(:dpia_moderation)
   end
 
   test 'contract rejected' do
@@ -631,7 +633,7 @@ class CreateApplicationProjectTest < ActionDispatch::IntegrationTest
     within('#project_status') do
       assert has_text?('Contract Rejected')
     end
-    assert_equal workflow_states(:contract_rejected), @project.reload.current_state
+    assert_equal @project.reload.current_state, workflow_states(:contract_rejected)
   end
 
   test 'data released' do
@@ -686,7 +688,7 @@ class CreateApplicationProjectTest < ActionDispatch::IntegrationTest
     within('#project_status') do
       assert has_text?('Contract Completed')
     end
-    assert_equal workflow_states(:contract_completed), @project.reload.current_state
+    assert_equal @project.reload.current_state, workflow_states(:contract_completed)
     select @user.full_name, from: 'project_assignment'
     click_button 'Apply'
     sign_in @user
@@ -714,7 +716,7 @@ class CreateApplicationProjectTest < ActionDispatch::IntegrationTest
     within('#project_status') do
       assert has_text?('Data Released')
     end
-    assert_equal workflow_states(:data_released), @project.reload.current_state
+    assert_equal @project.reload.current_state, workflow_states(:data_released)
     sign_in @user
     visit project_path(@project)
     assert has_button?('Flag as Data Destroyed')
@@ -723,6 +725,6 @@ class CreateApplicationProjectTest < ActionDispatch::IntegrationTest
     within('#project_status') do
       assert has_text?('Data Destroyed')
     end
-    assert_equal workflow_states(:data_destroyed), @project.reload.current_state
+    assert_equal @project.reload.current_state, workflow_states(:data_destroyed)
   end
 end

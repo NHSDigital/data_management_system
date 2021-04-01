@@ -66,9 +66,9 @@ class EoiProjectTest < ActionDispatch::IntegrationTest
     end
     assert_equal workflow_states(:submitted), @project.reload.current_state
 
-    assert @project.name == 'Testing edit EOI'
-    assert @project.project_purpose == 'Changed description'
-    assert @project.level_of_identifiability == 'De-personalised'
-    assert @project.end_use_names.sort == ['Research', 'Service Evaluation'].sort
+    assert_equal 'Testing edit EOI', @project.name
+    assert_equal 'Changed description', @project.project_purpose
+    assert_equal 'De-personalised', @project.level_of_identifiability
+    assert_equal ['Research', 'Service Evaluation'].sort, @project.end_use_names.sort
   end
 end
