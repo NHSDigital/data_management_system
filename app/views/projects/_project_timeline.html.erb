@@ -19,6 +19,7 @@
         <%= content_tag(:tr, class: dom_class(project_state), id: dom_id(project_state)) do %>
           <td><%= project_state.created_at.to_s(:long) %></td>
           <td><%= project_state.user&.full_name || 'System' %></td>
+          <td class="text-left"><%= timeline_allocated_user_label(project, project_state.state) %></td>
           <td class="text-left"><%= project_status_label(project, project_state.state) %></td>
           <td class="text-right">
             <%= link_to(polymorphic_path([project_state, :comments]), remote: true) do %>
