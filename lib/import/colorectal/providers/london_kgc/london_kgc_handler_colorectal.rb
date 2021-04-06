@@ -1,12 +1,4 @@
 require 'possibly'
-require 'import/storage_manager/persister'
-require 'import/brca/core/provider_handler'
-require 'import/helpers/colorectal/providers/kgc/kgc_constants'
-require 'import/helpers/colorectal/providers/kgc/kgc_lynch_helper'
-require 'import/helpers/colorectal/providers/kgc/kgc_lynch_specific_helper'
-require 'import/helpers/colorectal/providers/kgc/kgc_msh26_specific_helper'
-require 'import/helpers/colorectal/providers/kgc/kgc_non_lynch_gene_helper'
-require 'import/helpers/colorectal/providers/kgc/kgc_union_lynch_gene_helper'
 
 module Import
   module Colorectal

@@ -1,7 +1,3 @@
-require 'import/genotype'
-require 'import/colorectal/core/genotype_mmr'
-require 'import/brca/core/provider_handler'
-require 'import/brca/core/extraction_utilities'
 require 'possibly'
 
 module Import
@@ -10,7 +6,7 @@ module Import
       module Nottingham
         # Process Nottingham-specific record details into generalized internal genotype format
         class NottinghamHandlerColorectal < Import::Brca::Core::ProviderHandler
-          include Utility
+          include ExtractionUtilities
           TEST_TYPE_MAP_COLO = { 'confirmation' => :diagnostic,
                                  'confirmation of familial mutation' => :diagnostic,
                                  'diagnostic' => :diagnostic,

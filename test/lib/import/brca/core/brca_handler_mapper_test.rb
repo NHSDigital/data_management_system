@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class BRCAHandlerMappingTest < ActiveSupport::TestCase
+class BrcaHandlerMappingTest < ActiveSupport::TestCase
   test 'intialize' do
     assert get_handler('RQ3')
   end

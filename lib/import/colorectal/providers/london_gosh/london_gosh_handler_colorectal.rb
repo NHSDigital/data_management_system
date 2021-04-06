@@ -1,7 +1,5 @@
 require 'possibly'
-require 'import/storage_manager/persister'
 require 'pry'
-require 'import/brca/core/provider_handler'
 
 module Import
   module Colorectal

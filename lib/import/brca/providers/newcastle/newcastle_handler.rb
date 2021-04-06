@@ -1,8 +1,5 @@
-require 'import/genotype'
-require 'core/provider_handler'
 require 'possibly'
-require 'core/extraction_utilities'
-require 'providers/newcastle/newcastle_storage_manager'
+# require 'import/brca/providers/newcastle/newcastle_storage_manager'
 
 module Import
   module Brca
@@ -10,13 +7,13 @@ module Import
       module Newcastle
         # Process Newcastle-specific record details into generalized internal genotype format
         class NewcastleHandler < Import::Brca::Core::ProviderHandler
-          include Utility
           TEST_SCOPE_MAP = { 'brca-ng'           => :full_screen,
                              'brca-rapid screen' => :full_screen,
                              'brca top up'       => :full_screen,
                              'brca-pred'         => :targeted_mutation,
                              'brca1'             => :targeted_mutation,
-                             'brca2'             => :targeted_mutation } .freeze
+                             'brca2'             => :targeted_mutation }.freeze
+
           TEST_TYPE_MAP = { 'diag - symptoms'    => :diagnostic,
                             'diagnosis'          => :diagnostic,
                             'diagnostic'         => :diagnostic,
@@ -26,7 +23,7 @@ module Import
                             'predictive test'    => :predictive,
                             'carrier'            => :carrier,
                             'carrier test'       => :carrier,
-                            'prenatal diagnosis' => :prenatal } .freeze
+                            'prenatal diagnosis' => :prenatal }.freeze
 
           TEST_SCOPE_FROM_TYPE_MAP =   {  'carrier' => :targeted_mutation,
                                           'carrier test' => :targeted_mutation,
@@ -40,7 +37,7 @@ module Import
                                           'predictive test' => :targeted_mutation,
                                           'presymptomatic' => :targeted_mutation,
                                           'presymptomatic test' => :targeted_mutation,
-                                          'storage' => :full_screen } .freeze
+                                          'storage' => :full_screen }.freeze
 
           PASS_THROUGH_FIELDS = %w[age authoriseddate
                                    requesteddate
@@ -48,30 +45,29 @@ module Import
                                    providercode
                                    consultantcode
                                    servicereportidentifier].freeze
+
           FIELD_NAME_MAPPINGS = { 'consultantcode'    => 'practitionercode',
-                                  'ngs sample number' => 'servicereportidentifier' } .freeze
+                                  'ngs sample number' => 'servicereportidentifier' }.freeze
+
           PROTEIN_REGEX = /p\.\((?<impact>.+)\)|
                           \(p\.(?<impact>[A-Za-z]+.+)\)|
                           p\.(?<impact>[A-Za-z]+.+)/ix.freeze # Added by Francesco
           BRCA1_REGEX = /BRCA1/i.freeze
           BRCA2_REGEX = /BRCA2/i.freeze
-
-          #    NASTY_CDNA_REGEX = /c\.(?<cdna>[0-9]*.>[A-Za-z]+*+)|
-          #                       c\.(?<cdna>[0-9].+[0-9]*+[A-Za-z].+)/ix.freeze
           CDNA_REGEX = /c\.(?<cdna>[0-9]+[a-z]+>[a-z]+)(.+)?|
                         c\.(?<cdna>[0-9]+.[0-9]+[a-z]+>[a-z]+)(.+)?|
                         c\.(?<cdna>[0-9]+.[0-9]+[a-z]+)(.+)?/ix.freeze
-                  
+
           def initialize(batch)
             @records_attempted_counter = 0
             @failed_variant_counter    = 0
             @variants_processed_counter = 0
-            @ex = LocationExtractor.new
+            @ex = Import::ExtractionUtilities::LocationExtractor.new
             super
           end
 
           def attach_persister(batch)
-            @persister = NewcastlePersister.new(batch)
+            @persister = Import::Brca::Providers::Newcastle::NewcastlePersister.new(batch)
           end
 
           def process_fields(record)
@@ -149,14 +145,6 @@ module Import
             end
           end
 
-          # def process_scope_from_type(genotype, record)
-          #       # cludge to handle their change in field mapping...
-          #     #  reason2 = record.raw_fields['referral reason']
-          #     #  genotype.add_test_scope(TEST_SCOPE_FROM_TYPE_MAP[reason2.downcase.strip]) unless reason2.nil?
-          #       mtype2 = record.raw_fields['moleculartestingtype']
-          #       genotype.add_test_scope(TEST_SCOPE_FROM_TYPE_MAP[mtype2.downcase.strip]) unless mtype2.nil?
-          #     end
-
           def process_raw_genotype(genotype, record)
             # **************** These are dependant on the format change *****************
             geno = record.raw_fields['teststatus']
@@ -191,7 +179,7 @@ module Import
             end
           end
 
-          def add_brca_from_raw_genotype(genotype, record) # Added by Francesco
+          def add_brca_from_raw_genotype(genotype, record)
             case record.raw_fields['gene']
             when BRCA1_REGEX
               genotype.add_gene('BRCA1')
@@ -200,7 +188,7 @@ module Import
             end
           end
 
-          def add_cdna_change_from_report(genotype, record) # Added by Francesco
+          def add_cdna_change_from_report(genotype, record)
             case record.raw_fields['genotype']
             when CDNA_REGEX
               genotype.add_gene_location($LAST_MATCH_INFO[:cdna])
@@ -225,7 +213,6 @@ module Import
               genotype.add_test_scope(:full_screen)
             else
               @logger.info 'Possibly not a full screen'
-              # genotype.add_test_scope(:targeted_mutation)
             end
           end
 

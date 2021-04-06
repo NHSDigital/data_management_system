@@ -4,12 +4,12 @@ class PDFApplicationFacadeTest < ActiveSupport::TestCase
   def setup
     team = teams(:team_one)
     @project = team.projects.build(project_type: project_types(:application))
-    @facade = PDFApplicationFacade.new(@project)
+    @facade = PdfApplicationFacade.new(@project)
   end
 
   test 'should only be used with new projects' do
     assert_raises do
-      PDFApplicationFacade.new(projects(:one))
+      PdfApplicationFacade.new(projects(:one))
     end
   end
 

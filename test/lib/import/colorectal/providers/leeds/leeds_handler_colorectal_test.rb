@@ -1,8 +1,8 @@
 require 'test_helper'
-require 'import/genotype.rb'
-require 'import/colorectal/core/genotype_mmr.rb'
-require 'import/brca/core/provider_handler'
-require 'import/storage_manager/persister'
+#require 'import/genotype.rb'
+#require 'import/colorectal/core/genotype_mmr.rb'
+#require 'import/brca/core/provider_handler'
+#require 'import/storage_manager/persister'
 
 class LeedsHandlerColorectalTest < ActiveSupport::TestCase
   def setup

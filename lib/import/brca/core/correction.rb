@@ -1,6 +1,5 @@
 require 'csv'
 require 'pry'
-require 'import/central_logger'
 # Sometimes labs just write the wrong thing in a field, this class allows us
 # patch such errors before they reach the main extraction framework
 module Import

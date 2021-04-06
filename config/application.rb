@@ -28,10 +28,11 @@ module Mbis
     # Configure the ActionDispatch::ShowExceptions middleware to use NdrError's exception logger:
     config.exceptions_app = NdrError::Middleware::PublicExceptions.new(Rails.public_path)
 
-    # Ideally, we'd just eager_load the lib/ directory, but BRCA code prevents this.
-    # Instead, we allow lib/ to autoload, than manually enable autoloading in production.
-    config.autoload_paths += %W[#{config.root}/lib]
-    config.enable_dependency_loading = true
+    config.autoloader = :zeitwerk
+    config.eager_load_paths += %W[#{config.root}/lib]
+
+    # Weird assets are not Ruby code:
+    Rails.autoloaders.main.ignore("#{config.root}/lib/schema_browser/Template")
 
     config.action_mailer.delivery_method = :smtp
     smtp_fname = config.root.join('config', 'smtp_settings.yml')

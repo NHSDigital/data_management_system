@@ -1,5 +1,3 @@
-require 'import/helpers/colorectal/providers/rq3/rq3_constants'
-require 'import/helpers/colorectal/providers/rq3/rq3_helper'
 
 module Import
   module Colorectal

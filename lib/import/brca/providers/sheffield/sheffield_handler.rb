@@ -1,6 +1,3 @@
-require 'import/central_logger'
-require 'core/extraction_utilities'
-require 'core/provider_handler'
 require 'pry'
 require 'possibly'
 
@@ -10,7 +7,7 @@ module Import
       module Sheffield
         # Process Sheffield-specific record details into generalized internal genotype format
         class SheffieldHandler < Import::Brca::Core::ProviderHandler
-          include Utility
+          include ExtractionUtilities
           TEST_SCOPE_MAPPING = { 'BRCA1 and 2 familial mutation' => :targeted_mutation,
                                  'Breast & Ovarian cancer panel' => :full_screen,
                                  'Breast Ovarian & Colorectal cancer panel' => :full_screen,

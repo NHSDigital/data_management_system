@@ -1,5 +1,5 @@
 require 'test_helper'
-require 'import/central_logger'
+#require 'import/central_logger'
 
 class PseudonymisedFileWrapperTest < ActiveSupport::TestCase
   test 'intialize' do

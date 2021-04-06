@@ -1,8 +1,3 @@
-require 'import/central_logger'
-require 'core/extraction_utilities'
-require 'import/genotype.rb'
-require 'import/storage_manager/persister'
-require 'core/provider_handler'
 require 'possibly'
 
 module Import

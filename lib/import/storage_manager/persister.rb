@@ -1,15 +1,6 @@
 require 'possibly'
 require 'pry'
-require 'import/database_wrappers/genetic_sequence_variant'
-require 'import/database_wrappers/genetic_test_result'
-require 'import/database_wrappers/genetic_test'
-require 'import/database_wrappers/genotype_wrapper'
-require 'import/storage_manager/genotype_filter'
-require 'import/storage_manager/persiter_reporter'
-require 'import/storage_manager/default_filter'
 
-require 'import/central_logger'
-require 'import/import_key'
 module Import
   module StorageManager
     # Aggregates individual genotype records into tests, results, and variants,

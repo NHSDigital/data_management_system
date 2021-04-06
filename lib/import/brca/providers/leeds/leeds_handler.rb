@@ -1,5 +1,3 @@
-require 'providers/leeds/report_extractor'
-require 'core/provider_handler'
 require 'pry'
 
 module Import
@@ -14,7 +12,7 @@ module Import
                              'predictive' => :targeted_mutation,
                              'prenatal' => :targeted_mutation,
                              'ashkenazi pre-screen' => :aj_screen,
-                             '(v2) Any gene C5 - unaffected patient' => :full_screen, # From this point on I added them for a quick and dirty thing
+                             '(v2) Any gene C5 - unaffected patient' => :full_screen,
                              '(v2) Class 5 low penetrance gene' => :full_screen,
                              '(v2) Normal' => :full_screen,
                              '(v2) Normal (MLPA dosage)' => :full_screen,
@@ -52,14 +50,15 @@ module Import
                              'Predictive AJ pos 3seq' => :aj_screen,
                              'Predictive BRCA1 MLPA neg' => :targeted_mutation,
                              'Predictive BRCA1 seq pos' => :targeted_mutation,
-                             'Predictive BRCA2 seq neg' => :targeted_mutation } .freeze
+                             'Predictive BRCA2 seq neg' => :targeted_mutation }.freeze
+
           TEST_TYPE_MAP = { 'diagnostic' => :diagnostic,
                             'mutation screening' => :diagnostic,
                             'confirmation' => :diagnostic,
                             'predictive' => :predictive,
                             'prenatal' => :prenatal,
                             'ashkenazi pre-screen' => nil,
-                            '(v2) Any gene C5 - unaffected patient' => :predictive, # From this point on I added them for a quick and dirty thing
+                            '(v2) Any gene C5 - unaffected patient' => :predictive,
                             '(v2) Class 5 low penetrance gene' => :diagnostic,
                             '(v2) Normal' => :diagnostic,
                             '(v2) Normal (MLPA dosage)' => :diagnostic,
@@ -97,7 +96,7 @@ module Import
                             'Predictive AJ pos 3seq' => :predictive,
                             'Predictive BRCA1 MLPA neg' => :predictive,
                             'Predictive BRCA1 seq pos' => :predictive,
-                            'Predictive BRCA2 seq neg' => :predictive } .freeze
+                            'Predictive BRCA2 seq neg' => :predictive }.freeze
 
           PASS_THROUGH_FIELDS = %w[age consultantcode
                                    providercode
@@ -108,7 +107,7 @@ module Import
                                    organisationcode_testresult
                                    specimentype].freeze
           FIELD_NAME_MAPPINGS = { 'consultantcode'  => 'practitionercode',
-                                  'instigated_date' => 'requesteddate' } .freeze
+                                  'instigated_date' => 'requesteddate' }.freeze
           CDNA_REGEX = /c\.(?<cdna>[0-9]+.>[A-Za-z]+)|c\.(?<cdna>[0-9]+.[0-9]+[A-Za-z]+)/i.freeze
           PROTEIN_REGEX = /p\.\((?<impact>.\w+\d+\w+)\)/i.freeze
           BRCA1_REGEX = /B1/i.freeze
@@ -116,7 +115,7 @@ module Import
           TESTSTATUS_REGEX = /unaffected|neg|normal/i.freeze
           GENE_CDNA_PROTEIN_REGEX = /(?<brca> BRCA(1|2)) variant (c\.(?<cdna>[0-9]+.>[A-Za-z]+)|c\.(?<cdna>[0-9]+.[0-9]+[A-Za-z]+)) (?:p\.\((?<impact>.\w+\d+\w+)\))|(?<brca> BRCA(1|2)) sequence variant c\.(?<cdna>[0-9]+.>[A-Za-z]+)|c\.(?<cdna>[0-9]+.[0-9]+[A-Za-z]+) (?:p\.\((?<impact>.\w+\d+\w+)\))/i.freeze
           def initialize(batch)
-            @extractor = GenotypeAndReportExtractor.new
+            @extractor = ReportExtractor::GenotypeAndReportExtractor.new
             @negative_test = 0 # Added by Francesco
             @positive_test = 0 # Added by Francesco
             super
@@ -190,7 +189,7 @@ module Import
             end
           end
 
-          def add_b1_b2_c3_pos(genotype, record) # Added by Francesco ad hoc
+          def add_b1_b2_c3_pos(genotype, record)
             case record.raw_fields['genotype']
             when %r{B1/B2 - C3 pos}i
               genotype.add_test_scope(:full_screen)
@@ -198,7 +197,7 @@ module Import
             end
           end
 
-          def add_cdna_change_from_report(genotype, record) # Added by Francesco
+          def add_cdna_change_from_report(genotype, record)
             case record.mapped_fields['report']
             when CDNA_REGEX
               genotype.add_gene_location($LAST_MATCH_INFO[:cdna])
@@ -209,7 +208,7 @@ module Import
             end
           end
 
-          def add_protein_impact_from_report(genotype, record) # Added by Francesco
+          def add_protein_impact_from_report(genotype, record)
             case record.mapped_fields['report']
             when PROTEIN_REGEX
               genotype.add_protein_impact($LAST_MATCH_INFO[:impact])
@@ -219,7 +218,7 @@ module Import
             end
           end
 
-          def add_scope_and_type_from_genotype(genotype, record) # Added by Francesco
+          def add_scope_and_type_from_genotype(genotype, record)
             Maybe(record.raw_fields['genotype']).each do |typescopegeno|
               genotype.add_molecular_testing_type_strict(TEST_TYPE_MAP[typescopegeno])
               scope = TEST_SCOPE_MAP[typescopegeno]

@@ -1,5 +1,5 @@
 require 'highline/import'
-require 'import/colorectal/core/colorectal'
+# require 'import/colorectal/core/colorectal'
 namespace :import do
   desc 'Import Colorectal data'
   task colorectal: [:environment] do

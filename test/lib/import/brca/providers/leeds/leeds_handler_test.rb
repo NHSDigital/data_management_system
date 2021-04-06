@@ -4,7 +4,7 @@ class LeedsHandlerTest < ActiveSupport::TestCase
   def setup
     @record   = build_raw_record('pseudo_id1' => 'bob')
     @genotype = Import::Brca::Core::GenotypeBrca.new(@record)
-    @extractor = Import::Brca::Providers::Leeds::GenotypeAndReportExtractor.new
+    @extractor = Import::Brca::Providers::Leeds::ReportExtractor::GenotypeAndReportExtractor.new
     @importer_stdout, @importer_stderr = capture_io do
       @handler = Import::Brca::Providers::Leeds::LeedsHandler.new(EBatch.new)
     end

@@ -4,14 +4,9 @@ require 'json'
 require 'pry'
 require 'csv'
 
-folder = File.expand_path('../', __dir__)
-$LOAD_PATH.unshift(folder) unless $LOAD_PATH.include?(folder)
+# folder = File.expand_path('../', __dir__)
+# $LOAD_PATH.unshift(folder) unless $LOAD_PATH.include?(folder)
 
-require 'import/colorectal/core/colorectal'
-require 'import/colorectal/core/colorectal_handler_mapper'
-require 'import/central_logger'
-require 'import/import_key'
-require 'import/brca/utility/pseudonymised_file_wrapper'
 
 module Import
   module Colorectal

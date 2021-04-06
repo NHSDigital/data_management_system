@@ -1,9 +1,5 @@
 require 'pry'
-require 'import/genotype'
-require 'import/brca/core/provider_handler'
 require 'possibly'
-require 'import/brca/core/extraction_utilities'
-require 'import/colorectal/providers/newcastle/newcastle_storage_manager'
 
 module Import
   module Colorectal
@@ -11,7 +7,7 @@ module Import
       module Newcastle
         # Process Newcastle-specific record details into generalized internal genotype format
         class NewcastleHandlerColorectal < Import::Brca::Core::ProviderHandler
-          include Utility
+          include ExtractionUtilities
           TEST_SCOPE_MAP_COLO = { 'brca-ng' => :full_screen,
                                   'brca-rapid screen' => :full_screen,
                                   'brca top up' => :full_screen,

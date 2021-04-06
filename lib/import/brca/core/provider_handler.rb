@@ -1,6 +1,3 @@
-require 'import/storage_manager/persister'
-require 'import/central_logger'
-require 'import/brca/core/correction_preprocessor'
 
 module Import
   module Brca

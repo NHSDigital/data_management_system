@@ -1,6 +1,6 @@
 require 'test_helper'
-require 'import/genotype.rb'
-require 'import/brca/core/provider_handler'
+#require 'import/genotype.rb'
+#require 'import/brca/core/provider_handler'
 
 class NottinghamHandlerTest < ActiveSupport::TestCase
   def setup

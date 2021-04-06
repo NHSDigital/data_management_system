@@ -1,7 +1,3 @@
-require 'import/storage_manager/persister'
-require 'import/brca/core/provider_handler'
-require 'import/helpers/colorectal/providers/r0a/r0a_constants'
-require 'import/helpers/colorectal/providers/r0a/r0a_helper'
 
 module Import
   module Colorectal

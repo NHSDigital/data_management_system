@@ -4,14 +4,9 @@ require 'json'
 require 'pry'
 require 'csv'
 
-folder = File.expand_path('../', __dir__)
-$LOAD_PATH.unshift(folder) unless $LOAD_PATH.include?(folder)
+# folder = File.expand_path('../', __dir__)
+# $LOAD_PATH.unshift(folder) unless $LOAD_PATH.include?(folder)
 
-require 'core/brca'
-require 'core/brca_handler_mapper'
-require 'import/central_logger'
-require 'import/import_key'
-require 'import/brca/utility/pseudonymised_file_wrapper'
 
 module Import
   module Brca
@@ -51,7 +46,7 @@ module Import
         def load
           # Set the EBatch.digest
           insert_e_batch_digest(@batch) if file
-          @handler = Import::Brca::Core::BRCAHandlerMapping.
+          @handler = Import::Brca::Core::BrcaHandlerMapping.
                      get_handler(@batch.provider).
                      new(@batch)
           super

@@ -1,11 +1,5 @@
 require 'possibly'
 require 'pry'
-require 'import/database_wrappers/genetic_sequence_variant'
-require 'import/database_wrappers/genetic_test_result'
-require 'import/database_wrappers/genetic_test'
-require 'import/database_wrappers/genotype_wrapper'
-require 'import/central_logger'
-require 'import/import_key'
 module Import
   module StorageManager
     # Externalize summarization for the Persister
@@ -60,4 +54,4 @@ module Import
       end
     end
   end
-    end
+end
