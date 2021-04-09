@@ -279,7 +279,7 @@ GEM
       jquery-rails (>= 4.1.0)
       rails (>= 5.1, < 7.0)
       sass
-    ndr_workflow (1.1.6)
+    ndr_workflow (1.2.2)
       ndr_support (~> 5.0)
       rails (>= 5.2, < 7)
     nenv (0.3.0)
@@ -523,7 +523,7 @@ DEPENDENCIES
   ndr_pseudonymise (~> 0.2.6)
   ndr_support (~> 5.7.1)
   ndr_ui
-  ndr_workflow (= 1.1.6)
+  ndr_workflow (~> 1.2, >= 1.2.2)
   nokogiri (~> 1.11)
   paper_trail (~> 10.0)
   paper_trail-association_tracking

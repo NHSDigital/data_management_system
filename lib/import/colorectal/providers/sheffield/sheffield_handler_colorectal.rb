@@ -1,6 +1,3 @@
-require 'import/central_logger'
-require 'import/brca/core/extraction_utilities'
-require 'import/brca/core/provider_handler'
 require 'pry'
 require 'possibly'
 

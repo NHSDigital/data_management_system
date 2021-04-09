@@ -219,7 +219,7 @@ class ProjectsController < ApplicationController
     if upload.content_type.in? %w[application/pdf]
       begin
         reader  = PDF::Reader.new(upload.tempfile)
-        project = PDFApplicationFacade.new(@project) do |resource|
+        project = PdfApplicationFacade.new(@project) do |resource|
           resource.project_type  = ProjectType.find_by(name: 'Application')
           resource.assigned_user = current_user # should only be ODR application managers doing this
           acroform_data          = reader.acroform_data.transform_values(&:presence)

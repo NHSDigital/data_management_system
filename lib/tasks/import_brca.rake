@@ -1,5 +1,5 @@
 require 'highline/import'
-require 'import/brca/core/brca.rb'
+# require 'import/brca/core/brca.rb'
 namespace :import do
   desc 'Import BRCA data'
   task brca: [:environment] do

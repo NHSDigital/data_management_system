@@ -1,15 +1,10 @@
-require 'import/storage_manager/persister'
-require 'import/database_wrappers/genetic_sequence_variant'
-require 'import/database_wrappers/genetic_test_result'
-require 'import/database_wrappers/genetic_test'
-require 'import/database_wrappers/genotype_wrapper'
 
 module Import
   module Brca
     module Providers
       module Newcastle
         # Make Newcastle-specific changes to storage behavior
-        class NewcastlePersister < Import::StorageManager::Persister
+        class NewcastlePersisterDeprecated < Import::StorageManager::Persister
           def process_results(test, test_patient)
             md = generate_molecular_data(test_patient, test)
             results = @genetic_test_results[test]
@@ -21,14 +16,15 @@ module Import
                representative_genotype.
                full_screen?
               real_result = results.first
-              new_genotype = Import::Brca::Core::GenotypeBrca.new(real_result.
+              new_genotype = Import::Brca::Core::Genotype.new(real_result.
                                             representative_genotype.
                                             raw_record)
               new_genotype.add_status(:normal)
               new_genotype.add_gene(real_result.
                                       representative_genotype.
                                       other_gene)
-              results.append(Import::DatabaseWrappers::GeneticTestResult.new(new_genotype))
+
+              results.append(Import::Brca::Core::DatabaseWrappers::GeneticTestResult.new(new_genotype))
             end
             results.each do |testresult|
               process_single_result(testresult, md)
@@ -39,4 +35,3 @@ module Import
     end
   end
 end
-

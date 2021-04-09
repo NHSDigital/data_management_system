@@ -1,6 +1,5 @@
 require 'ndr_import/table'
 require 'ndr_import/file/registry'
-require 'import/import_key'
 
 module Import
   # Imports and pseudonymises delimited MBIS data

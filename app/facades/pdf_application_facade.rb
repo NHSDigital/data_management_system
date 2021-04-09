@@ -1,5 +1,5 @@
 # Facade come form object for handling `Project`s in the context of an ODR data application.
-class PDFApplicationFacade
+class PdfApplicationFacade
   include ActiveModel::Model
   include ActiveModel::Attributes
   extend  ActiveModel::Callbacks

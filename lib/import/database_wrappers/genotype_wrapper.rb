@@ -1,7 +1,6 @@
 require 'json'
 require 'possibly'
 require 'pry'
-require 'import/central_logger'
 # These wrappers contain genotypes, but provide comparisons at the level appropriate
 # to the described database table
 module Import

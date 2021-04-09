@@ -1,8 +1,5 @@
 require 'date'
 require 'possibly'
-require 'import/central_logger'
-require 'import/amino_acids'
-require 'import/genotype'
 module Import
   module Colorectal
     module Core
