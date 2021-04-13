@@ -76,4 +76,14 @@ class ProjectsHelperTest < ActionView::TestCase
     @project.project_type.stubs(name: 'Application')
     assert_equal "<small>ODR Reference: #{@project.id}</small>", odr_reference(@project)
   end
+
+  test 'timeline_allocated_user_label' do
+    state = workflow_states(:submitted)
+
+    assert_equal '', timeline_allocated_user_label(@project, state)
+
+    state = workflow_states(:dpia_review)
+
+    assert_equal 'with application manager', timeline_allocated_user_label(@project, state)
+  end
 end

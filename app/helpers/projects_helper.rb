@@ -95,6 +95,16 @@ module ProjectsHelper
     content_tag(:span, state.name, html_options.merge(default_options))
   end
 
+  def timeline_allocated_user_label(project, state = nil)
+    state ||= project.current_state
+
+    i18n_scope = %i[helpers timeline state_allocated_user]
+    i18n_key     = state.id.downcase.to_sym
+    i18n_default = ''
+
+    t(i18n_key, scope: i18n_scope, default: i18n_default)
+  end
+
   def odr_reference(project)
     return unless project&.project_type&.name&.in? %w[Application EOI]
 

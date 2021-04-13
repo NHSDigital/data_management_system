@@ -66,6 +66,13 @@ en:
         access_granted: Renew Account
       comment:
         create: Add %{model}
+    timeline:
+      state_allocated_user:
+        dpia_review: with application manager
+        dpia_moderation: with senior application manager
+        dpia_rejected: with application manager
+        contract_draft: with senior application manager
+        contract_completed: with ODR
   workflow/state:
     draft: New
     review: Delegate Approval

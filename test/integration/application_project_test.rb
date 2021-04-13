@@ -289,6 +289,41 @@ class ApplicationProjectTest < ActionDispatch::IntegrationTest
                            'page to update')
   end
 
+  test 'should show allocated user text in timeline' do
+    @project.transition_to!(workflow_states(:submitted))
+    @project.transition_to!(workflow_states(:dpia_start))
+    create_dpia(@project)
+    @project.transition_to!(workflow_states(:dpia_review))
+    @project.transition_to!(workflow_states(:dpia_rejected))
+    @project.transition_to!(workflow_states(:dpia_start))
+    @project.transition_to!(workflow_states(:dpia_review))
+    @project.transition_to!(workflow_states(:dpia_moderation))
+    create_contract(@project)
+    @project.transition_to!(workflow_states(:contract_draft))
+    @project.transition_to!(workflow_states(:contract_completed))
+
+    visit project_path(@project)
+    click_link 'Timeline'
+
+    timeline_row = page.find('#timeline').find('tr', text: 'Contract Completed')
+    within(timeline_row) { assert has_text?('with ODR') }
+
+    timeline_row = page.find('#timeline').find('tr', text: 'Contract Draft')
+    within(timeline_row) { assert has_text?('with senior application manager') }
+
+    timeline_row = page.find('#timeline').find('tr', text: 'DPIA Moderation')
+    within(timeline_row) { assert has_text?('with senior application manager') }
+
+    timeline_row = page.find('#timeline').find('tr', text: 'Pending')
+    within(timeline_row) { assert has_text?('') }
+
+    timeline_row = page.find('#timeline').find('tr', text: 'DPIA Rejected')
+    within(timeline_row) { assert has_text?('with application manager') }
+
+    timeline_row = page.find('#timeline').find('tr', text: 'DPIA Peer Review', match: :first)
+    within(timeline_row) { assert has_text?('with application manager') }
+  end
+
   private
 
   def reassign_for_moderation_to(user)
