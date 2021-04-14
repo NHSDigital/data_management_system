@@ -83,4 +83,19 @@ class TeamCoreTest < ActionDispatch::IntegrationTest
     assert find('tr', text: 'Standard User1', visible: false)
     assert find('tr', text: 'Contribu Tor', visible: true)
   end
+
+  test 'should be able to search by fullname or email in project edit grants page' do
+    visit edit_project_grants_path(projects(:test_application))
+    # should show based on email search
+    fill_in 'user_search', with: 'su11'
+
+    assert find('tr', text: 'Standard User1', visible: true)
+    assert find('tr', text: 'Standard2 User2', visible: false)
+
+    # should show based on fullname search
+    fill_in 'user_search', with: 'standard2'
+
+    assert find('tr', text: 'Standard User1', visible: false)
+    assert find('tr', text: 'Standard2 User2', visible: true)
+  end
 end
