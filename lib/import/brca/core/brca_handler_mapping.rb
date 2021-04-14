@@ -14,12 +14,13 @@ module Import
           'RCU' => Import::Brca::Providers::Sheffield::SheffieldHandler,
           'R0A' => Import::Brca::Providers::Manchester::ManchesterHandler,
           'RJ1' => Import::Brca::Providers::StThomas::StThomasHandler,
-          'RQ3' => Import::Brca::Providers::Birmingham::BirminghamHandler,
+          # 'RQ3' => Import::Brca::Providers::Birmingham::BirminghamHandler,
           'RGT' => Import::Brca::Providers::Cambridge::CambridgeHandler,
           'RTH' => Import::Brca::Providers::Oxford::OxfordHandler,
           'RJ7' => Import::Brca::Providers::StGeorge::StGeorgeHandler,
           'RPY' => Import::Brca::Providers::RoyalMarsden::RoyalMarsdenHandler,
-          'R1K' => Import::Brca::Providers::LondonKgc::LondonKgcHandler
+          'R1K' => Import::Brca::Providers::LondonKgc::LondonKgcHandler,
+          'RQ3' => Import::Brca::Providers::Birmingham::BirminghamHandlerNewformat
         }.freeze
 
         def self.get_handler(provider_code)
