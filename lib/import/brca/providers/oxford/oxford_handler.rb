@@ -109,7 +109,7 @@ module Import
             genotypes = []
             gene      = record.mapped_fields['gene'].to_i
             synonym   = record.raw_fields['sinonym'].to_s
-            if (7..8).cover? gene
+            if [7,8,79,451,3186].include? gene
               genotype.add_gene(gene)
               @logger.debug "SUCCESSFUL gene parse for:#{record.mapped_fields['gene'].to_i}"
               genotypes << genotype
