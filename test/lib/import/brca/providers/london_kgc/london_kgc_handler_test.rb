@@ -31,6 +31,7 @@ class LondonKgcHandlerTest < ActiveSupport::TestCase
 
   test 'process_gene' do
     @logger.expects(:debug).with('SUCCESSFUL gene parse for: BRCA1')
+    @logger.expects(:debug).with('SUCCESSFUL gene parse for BRCA1')
     @logger.expects(:debug).with('SUCCESSFUL cdna change parse for: 697G>A')
     @logger.expects(:debug).with('SUCCESSFUL protein impact parse for: Val233Ile')
     @handler.process_gene(@genotype, @record)
@@ -46,6 +47,8 @@ class LondonKgcHandlerTest < ActiveSupport::TestCase
     @handler.process_gene(@genotype, nogene_record)
     doublegene_record = build_raw_record('pseudo_id1' => 'bob')
     doublegene_record.mapped_fields['genotype'] = 'BRCA1 c.697G>A p.(Val233Ile) BRCA2 c.666C>G p.(Val666Hys)'
+    @logger.expects(:debug).with('SUCCESSFUL gene parse for BRCA1')
+    @logger.expects(:debug).with('SUCCESSFUL gene parse for BRCA2')
     @logger.expects(:debug).with('SUCCESSFUL cdna change parse for: BRCA1 and BRCA2')
     genotypes = @handler.process_gene(@genotype, doublegene_record)
     assert_equal 2, genotypes.size
