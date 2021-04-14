@@ -128,9 +128,11 @@ module Export
           if ppat2.death_data['dor'].start_with?('2017') ||
              ppat.death_data['dor'].start_with?('2017')
             # TODO: keep testing, remove warning below?
-            puts 'Unexpected fallback for ppat2 vs ppat DOR: ' \
-                 "#{ppat2.death_data['dor']} == #{ppat.death_data['dor']} " \
-                 "for #{ppat2.record_reference} / #{ppat.record_reference}"
+            # May be best fixed by removing weekly death records, and only keeping gold standard
+            # annual death registrations
+            Rails.logger.debug('Unexpected fallback for ppat2 vs ppat DOR: ' \
+                               "#{ppat2.death_data['dor']} == #{ppat.death_data['dor']} " \
+                               "for #{ppat2.record_reference} / #{ppat.record_reference}")
           end
         end
         if same_person && match_row?(ppat2, surveillance_code) # Would already have matched
