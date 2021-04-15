@@ -50,6 +50,19 @@ if ! command -v $PUMA_CMD 2>&1 >/dev/null; then
   exit 1
 fi
 
+# Pick a system stack:
+# UNCOMMENT AS REQUIRED ON NON SAMPLE FILE
+# STACK="beta"
+# STACK="live"
+
+if [ -n "$STACK" ]; then
+  echo Running stack as $STACK...
+else
+  echo Unable to auto-detect a stack! Please choose beta or live
+  read -rep "Stack [beta/live]: " STACK
+  echo
+fi
+
 # =================================================================================================
 # UNCOMMENT THIS TO ALLOW SECRET KEY GENERATION / SUPPLY (currently, its hardcoded)
 #
