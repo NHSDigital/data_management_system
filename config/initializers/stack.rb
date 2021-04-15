@@ -1,4 +1,3 @@
-
 module Mbis
   class << self
     def stack
