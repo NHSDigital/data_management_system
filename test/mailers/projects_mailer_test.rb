@@ -61,4 +61,18 @@ class ProjectsMailerTest < ActionMailer::TestCase
       email.deliver_later
     end
   end
+
+  test 'mail from beta stack displays beta' do
+    Mbis.stubs(:stack).returns('beta')
+    assert_equal 'beta', Mbis.stack
+    email = ProjectsMailer.with(project: projects(:one)).project_awaiting_assignment
+    assert_includes(email.from_address.to_s, 'DMS BETA')
+  end
+
+  test 'mail from live stack displays live' do
+    Mbis.stubs(:stack).returns('live')
+    assert_equal 'live', Mbis.stack
+    email = ProjectsMailer.with(project: projects(:one)).project_awaiting_assignment
+    assert_includes(email.from_address.to_s, 'DMS LIVE')
+  end
 end

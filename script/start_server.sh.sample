@@ -20,16 +20,17 @@
 #   These variables are exported by the script, and can be
 #   supplied in advance if needed:
 #
-#     +--------------------------+-----------------------+
-#     | variable                 | default               |
-#     +--------------------------+-----------------------+
-#     | RAILS_ENV                | "production"          |
-#     | MBIS_DATABASE_USERNAME * | none; required        |
-#     | MBIS_DATABASE_PASSWORD * | none; required        |
-#     | SECRET_KEY_BASE        * | defaults to random    |
-#     +--------------------------+-----------------------+
-#     | * not use yet                                    |
-#     +--------------------------------------------------+
+#     +--------------------------+-----------------------       +
+#     | variable                 | default                      |
+#     +--------------------------+-----------------------       +
+#     | RAILS_ENV                | "production"                 |
+#     | MBIS_DATABASE_USERNAME * | none; required               |
+#     | MBIS_DATABASE_PASSWORD * | none; required               |
+#     | SECRET_KEY_BASE        * | defaults to random           |
+#     | STACK                  * | attempts to derive from user |
+#     +--------------------------+-----------------------       +
+#     | * not use yet                                           |
+#     +--------------------------------------------------       +
 #
 # ===========================================================
 
@@ -48,6 +49,28 @@ fi
 if ! command -v $PUMA_CMD 2>&1 >/dev/null; then
   echo "$PUMA_CMD not found in PATH!"
   exit 1
+fi
+
+# Pick a system stack:
+# UNCOMMENT AS REQUIRED ON NON SAMPLE FILE
+# STACK="beta"
+# STACK="live"
+
+# If not given, attempt to derive stack from application user:
+if [ -z "$STACK" ]; then
+  if [[ $USER =~ _live$ ]]; then
+    STACK="live"
+  elif [[ $USER =~ _beta$ ]]; then
+    STACK="beta"
+  fi
+fi
+
+if [ -n "$STACK" ]; then
+  echo Running stack as $STACK...
+else
+  echo Unable to auto-detect a stack! Please choose beta or live
+  read -rep "Stack [beta/live]: " STACK
+  echo
 fi
 
 # =================================================================================================
