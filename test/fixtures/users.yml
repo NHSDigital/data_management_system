@@ -440,3 +440,14 @@ cas_access_and_dataset_approver:
   username: cda
   directorate_id: 1
   division_id: 1
+
+non_phe_user:
+  email: test@test.com
+  first_name: test
+  last_name: Access-Dataset-Approver
+  z_user_status: active_user_status
+  location: Cambridge
+  username: test_test
+  directorate_id: 1
+  division_id: 1
+  
