@@ -1,0 +1,27 @@
+<div id="<%= dom_id(address_owner) %>_addresses" class="collapse" style="padding: 0 0em; width: 63%;">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <div class="row">
+        <h5>Other Addresses</h5>
+      </div>
+    </div>
+    <div class="panel-body">
+      <div class="row">
+        <div>
+          <% addresses.each do |address| %>
+          <div id="<%= dom_id(address) %>">
+          <div class="row">
+            <div class="col-md-6" style="font-size:1em">
+              <%= address_tag(address) %>
+            </div>
+            <div class="col-md-6" style="font-size:1em">
+              <%= link_to 'set as default address', default_address_path(default_address: address.id, addressable_id: address.addressable_id, addressable_type: address.addressable_type), method: :patch %>
+            </div>
+          </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

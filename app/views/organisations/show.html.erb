@@ -6,7 +6,22 @@
           <strong><%= @organisation.name %></strong><br />
           <small><%= @organisation.organisation_type_value %></small>
         </h4>
-        <%= address_tag(@organisation) %>
+        <% default, others = @organisation.addresses.partition do |address| %>
+          <% if address.default_address %>
+            <% true %>
+          <% elsif @organisation.addresses.none? { |address| address.default_address } %>
+            <% @organisation.addresses.order('created_at desc').limit(1).first == address %>
+          <% end %>
+        <% end %>
+        <% if default.any? %>
+          <div><h5>Primary Address</h5></div>
+        <% end %>
+        <div id="default_address"><%= address_tag(default.first) %></div>
+        <span data-toggle="collapse" data-target="#<%= dom_id(@organisation) %>_addresses">
+          <% if others.count >= 1 %>
+            <a href="#" class="other_addresses_hide" data-turbolinks="false">other addresses</a>
+          <% end %>
+        </span>
       </div>
       <div class="col-md-5">
         <div class="pull-right">
@@ -24,6 +39,9 @@
           </div>
         </div>
       </div>
+    </div>
+    <div class="addresses">
+      <%= render 'shared/show_addresses', addresses: others, address_owner: @organisation %>
     </div>
   </div>
   <div class="panel-footer">

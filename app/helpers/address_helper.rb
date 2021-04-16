@@ -1,16 +1,14 @@
+# helper for the Address class
 module AddressHelper
-  # TODO: show historic addresses. For now objects only have one address
-  def address_tag(klass)
-    recent_address = klass.addresses.order('created_at desc').limit(1)
-    return if recent_address.blank?
+  def address_tag(address)
+    return if address.blank?
 
-    address = recent_address.first.attributes.
-              values_at('add1', 'add2', 'city', 'postcode', 'telephone')
+    address_array = address.attributes.values_at('add1', 'add2', 'city', 'postcode', 'telephone')
 
-    address << recent_address.first.country_value if recent_address.first.country
-    address.compact!
+    address_array << address.country_value if address.country
+    address_array.compact!
 
-    content_tag :address, safe_join(address.compact, raw('<br />'))
+    content_tag :address, safe_join(address_array.compact, raw('<br />'))
   end
 
   def most_recent_telephone_number(klass)

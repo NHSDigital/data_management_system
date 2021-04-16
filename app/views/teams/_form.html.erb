@@ -50,17 +50,43 @@
               <div class="col-md-2"><%= @team.z_team_status.name %></div>
             </div>
             <div class="row">
-              <div class="col-md-2 text-right"><strong>Address:</strong></div>
-              <div class="col-md-2"><%= address_tag(@team)%></div>
-            </div>
-            <div class="row">
               <div class="col-md-2 text-right"><strong>Notes:</strong></div>
               <div class="col-md-6"><%= @team.notes %></div>
             </div>
-          <% else %>
-            <%= form.control_group :name, 'Name' do %>
-              <%= form.text_field :name, class: 'mandatory' %>
-            <% end %>
+            <div class="row">
+              <% default, others = @team.addresses.partition do |address| %>
+                <% if address.default_address %>
+                  <% true %>
+                <% elsif @team.addresses.none? { |address| address.default_address } %>
+                  <% @team.addresses.order('created_at desc').limit(1).first == address %>
+                <% end %>
+              <% end %>
+              <% if default.any? %>
+                <div class="col-md-2 text-right"><strong>Primary Address:</strong></div>
+              <% end %>
+              <div id="default_address" class="col-md-2"><%= address_tag(default.first) %></div>
+            </div>
+            <div class="row">
+              <div class="col-md-2"></div>
+              <div class="col-md-6">
+                <span data-toggle="collapse" data-target="#<%= dom_id(@team) %>_addresses">
+                  <% if others.count >= 1 %>
+                    <a href="#" class="other_addresses_hide" data-turbolinks="false">other addresses</a>
+                  <% end %>
+                </span>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-2"></div>
+              <div class="col-md-6 addresses">
+                <%= render 'shared/show_addresses', addresses: others, address_owner: @team %>
+              </div>
+            </div>
+        </div>
+        <% else %>
+          <%= form.control_group :name, 'Name' do %>
+            <%= form.text_field :name, class: 'mandatory' %>
+        <% end %>
 
             <div class='row form-group'>
               <label class="control-label col-md-2" for="directorate_id">Directorate</label>
