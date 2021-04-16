@@ -14,6 +14,7 @@ class Notification < ActiveRecord::Base
   has_many :user_notifications, dependent: :destroy
   has_many :users, through: :user_notifications
   belongs_to :team, optional: true
+  belongs_to :project, optional: true
   around_create :assign_to_users
   after_create :send_admin_email
 
@@ -26,10 +27,10 @@ class Notification < ActiveRecord::Base
     users << User.in_use.ids if all_users
     users << User.administrators.ids if admin_users
     users << User.odr_users.ids if odr_users
-    users << Project.find(project_id).users.collect(&:id) if project_id
+    users << project_user_ids(project_id)
     users << Team.find(team_id).users.collect(&:id) if team_id
     users << user_id if user_id
-    users.flatten.uniq.each do |u|
+    users.flatten.compact.uniq.each do |u|
       user_notifications.build(user_id: u, generate_mail: generate_mail)
     end
 
@@ -40,5 +41,13 @@ class Notification < ActiveRecord::Base
     return unless generate_mail
     return unless admin_users
     NotificationMailer.send_admin_messages(self).deliver_later
+  end
+
+  # attempt to not tread on MBIS application behaviour for now until
+  # notifications ana mail is fully decoupled
+  def project_user_ids(project_id)
+    return if project_id.nil?
+
+    project.users.internal.pluck(:id)
   end
 end

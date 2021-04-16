@@ -69,7 +69,7 @@ class TeamTest < ActiveSupport::TestCase
   test 'active_users_who_are_not_team_members' do
     team = teams(:team_one)
     # this is the number of users who are not admin / odr or already part of the team
-    assert_equal 28, team.active_users_who_are_not_team_members.count
+    assert_equal 29, team.active_users_who_are_not_team_members.count
     assert_equal 'Pick a Team member...', team.team_membership_prompt
     assert_equal false, team.disable_team_membership_dropdown?
 

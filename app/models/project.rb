@@ -27,6 +27,8 @@ class Project < ApplicationRecord
   has_many :project_lawful_bases, dependent: :destroy
   has_many :lawful_bases, through: :project_lawful_bases
 
+  has_many :notifications, dependent: :destroy
+
   has_one :cas_application_fields, dependent: :destroy
   accepts_nested_attributes_for :cas_application_fields, allow_destroy: true
 
