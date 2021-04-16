@@ -14,6 +14,7 @@ class Notification < ActiveRecord::Base
   has_many :user_notifications, dependent: :destroy
   has_many :users, through: :user_notifications
   belongs_to :team, optional: true
+  belongs_to :project, optional: true
   around_create :assign_to_users
   after_create :send_admin_email
 
@@ -47,11 +48,6 @@ class Notification < ActiveRecord::Base
   def project_user_ids(project_id)
     return if project_id.nil?
 
-    application = Project.find(project_id)
-
-    users_associated_to_application = Project.find(project_id).users
-    users_associated_to_application.each_with_object([]) do |user, ids|
-      ids << user.id if user.email.match?(/@phe.gov.uk\z/)
-    end
+    project.users.internal.pluck(:id)
   end
 end

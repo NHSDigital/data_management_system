@@ -89,6 +89,7 @@ class User < ActiveRecord::Base
               merge(SystemRole.cas_manager_and_access_approvers))
   }
 
+  scope :internal, -> { where(arel_table[:email].matches('%@phe.gov.uk')) }
   validates :username,      uniqueness: { conditions: -> { where.not(username: nil) } }
   validates :first_name,    presence: true
   validates :last_name,     presence: true
