@@ -105,6 +105,7 @@ fi
 # =================================================================================================
 
 export RAILS_ENV="${RAILS_ENV:-production}"
+export STACK
 
 echo 'Checking credentials...'
 if (cd "$CURRENT" && bundle exec rails runner "User.count; puts 'Credentials OK.'"); then
