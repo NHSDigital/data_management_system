@@ -1,4 +1,4 @@
-# Project owner grants 
+# Project owner grants
 owner_project_one:
   roleable: owner
   roleable_type: ProjectRole
@@ -394,4 +394,9 @@ cas_access_and_dataset_approver_dataset_role:
 cas_access_and_dataset_approver_access_role:
   user: cas_access_and_dataset_approver
   roleable: cas_access_approver
+  roleable_type: SystemRole
+
+developer_role:
+  user: developer
+  roleable: developer
   roleable_type: SystemRole

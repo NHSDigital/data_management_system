@@ -1,0 +1,74 @@
+queued:
+  queue: default
+  priority: 0
+  attempts: 0
+  run_at: <%= 10.minutes.from_now %>
+  created_at: <%= Time.zone.now %>
+  updated_at: <%= Time.zone.now %>
+  handler: |
+    ---
+    !ruby/object:ActiveJob::QueueAdapters::DelayedJobAdapter::JobWrapper
+    job_data:
+      job_class: DummyJob
+      job_id: 51fa2cc9-759a-4b71-a5c6-974c431290ff
+      provider_job_id:
+      queue_name: default
+      priority:
+      arguments: []
+      executions: 0
+      exception_executions:
+      locale: en
+      timezone: UTC
+      enqueued_at: <%= Time.zone.now.to_s(:iso8601) %>
+
+running:
+  queue: default
+  priority: 0
+  attempts: 0
+  run_at: <%= 1.minute.ago %>
+  locked_by: worker.1
+  locked_at: <%= 30.seconds.ago %>
+  created_at: <%= 2.minutes.ago %>
+  updated_at: <%= 2.minutes.ago %>
+  handler: |
+    ---
+    !ruby/object:ActiveJob::QueueAdapters::DelayedJobAdapter::JobWrapper
+    job_data:
+      job_class: DummyJob
+      job_id: a9b1f9b3-2ad7-49ca-bf55-bc65a6103e3a
+      provider_job_id:
+      queue_name: default
+      priority:
+      arguments: []
+      executions: 0
+      exception_executions:
+      locale: en
+      timezone: UTC
+      enqueued_at: <%= 2.minutes.ago.to_s(:iso8601) %>
+
+failed:
+  queue: default
+  priority: 0
+  attempts: 5
+  run_at: <%= 1.hour.ago %>
+  created_at: <%= 61.minutes.ago %>
+  updated_at: <%= 45.minutes.ago %>
+  failed_at: <%= 45.minutes.ago %>
+  last_error: |
+    undefined local variable or method `foo`
+    <stack trace>
+  handler: |
+    ---
+    !ruby/object:ActiveJob::QueueAdapters::DelayedJobAdapter::JobWrapper
+    job_data:
+      job_class: DummyJob
+      job_id: 15bf05a8-0fd5-4e8d-97a2-392671a8a615
+      provider_job_id:
+      queue_name: default
+      priority:
+      arguments: []
+      executions: 0
+      exception_executions:
+      locale: en
+      timezone: UTC
+      enqueued_at: <%= 61.minutes.ago.to_s(:iso8601) %>

@@ -919,6 +919,26 @@ class AbilityTest < ActiveSupport::TestCase
     assert @application_manager_ability.can?    :create, cas_application
   end
 
+  test 'jobs' do
+    user                = users(:standard_user)
+    application_manager = users(:application_manager_one)
+    odr                 = users(:odr_user)
+    administrator       = users(:admin_user)
+    developer           = users(:developer)
+
+    refute user.can?                :read, Delayed::Job
+    refute application_manager.can? :read, Delayed::Job
+    refute odr.can?                 :read, Delayed::Job
+    refute administrator.can?       :read, Delayed::Job
+    assert developer.can?           :read, Delayed::Job
+
+    refute user.can?                :delete, Delayed::Job
+    refute application_manager.can? :delete, Delayed::Job
+    refute odr.can?                 :delete, Delayed::Job
+    refute administrator.can?       :delete, Delayed::Job
+    assert developer.can?           :delete, Delayed::Job
+  end
+
   private
 
   def create_dataset(options)

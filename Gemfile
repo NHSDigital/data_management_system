@@ -21,6 +21,10 @@ gem 'turbolinks', '~> 5.x'
 
 gem 'webpacker', '~> 4.x'
 
+gem 'daemons'
+gem 'delayed_job', '~> 4.1'
+gem 'delayed_job_active_record'
+
 gem 'devise', '~> 4.7', '>=  4.7.1'
 gem 'cancancan', '~> 3.0'
 gem 'highline'

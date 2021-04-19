@@ -52,6 +52,8 @@ class Ability
     cas_dataset_approver_grants(user)
     cas_access_approver_grants(user)
     cas_manager_grants(user)
+
+    developer_grants(user)
     merge(Workflow::Ability.new(user))
   end
 
@@ -363,6 +365,12 @@ class Ability
     return unless user.role?(SystemRole.fetch(:cas_manager))
 
     can %i[read], Project, project_type_id: ProjectType.cas.pluck(:id)
+  end
+
+  def developer_grants(user)
+    return unless user.role?(SystemRole.fetch(:developer))
+
+    can %i[read destroy], Delayed::Job
   end
 
   private

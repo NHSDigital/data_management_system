@@ -115,6 +115,10 @@ else
   read
 fi
 
+# Start Delayed Job backend process:
+echo 'Starting DelayedJob...'
+cd "$CURRENT" && bin/delayed_job start
+
 # Start puma cluster, using the configuration committed:
 echo 'Starting puma...'
 cd "$CURRENT" && $PUMA_CMD -F $PUMA_CONFIG start

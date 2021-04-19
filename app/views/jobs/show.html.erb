@@ -1,0 +1,57 @@
+<ol class="breadcrumb">
+  <li><%= link_to t('system.name'), root_path %></li>
+  <li><%= link_to @job.model_name.human.pluralize, jobs_path %></li>
+  <li><%= @job.id %></li>
+</ol>
+
+<h3><%= "#{Delayed::Job.model_name.human} Details" %></h3>
+<%= delete_link(@job, text: true, path: job_path(@job)) %>
+<hr />
+
+<%= content_tag(:div, class: ['row', dom_class(@job)], id: dom_id(@job)) do %>
+  <div class="col-md-6">
+    <dl class="dl-horizontal">
+      <dt><%= Delayed::Job.human_attribute_name(:queue) %></dt>
+      <dd><span class="label label-primary"><%= @job.queue %></span></dd>
+      <dt><%= Delayed::Job.human_attribute_name(:priority) %></dt>
+      <dd><%= @job.priority %></dd>
+      <dt><%= Delayed::Job.human_attribute_name(:attempts) %></dt>
+      <dd><%= @job.attempts %></dd>
+      <dt></dt>
+      <dd></dd>
+      <dt><%= Delayed::Job.human_attribute_name(:status) %></dt>
+      <dd><%= job_status(@job) %></dd>
+      <dt><%= Delayed::Job.human_attribute_name(:created_at) %></dt>
+      <dd><%= @job.created_at.to_s(:db) %></dd>
+      <dt><%= Delayed::Job.human_attribute_name(:updated_at) %></dt>
+      <dd><%= @job.updated_at.to_s(:db) %></dd>
+    </dl>
+  </div>
+  <div class="col-md-6">
+    <dl class="dl-horizontal">
+
+      <dt><%= Delayed::Job.human_attribute_name(:run_at) %></dt>
+      <dd><%= @job.run_at.to_s(:db) %></dd>
+      <dt><%= Delayed::Job.human_attribute_name(:failed_at) %></dt>
+      <dd><%= @job.failed_at&.to_s(:db) %></dd>
+      <dt><%= Delayed::Job.human_attribute_name(:locked_at) %></dt>
+      <dd><%= @job.locked_at&.to_s(:db) %></dd>
+      <dt><%= Delayed::Job.human_attribute_name(:locked_by) %></dt>
+      <dd><%= @job.locked_by %></dd>
+    </dl>
+  </div>
+  <div class="col-md-12">
+    <dl class="dl-horizontal">
+      <dt><%= Delayed::Job.human_attribute_name(:job_data) %></dt>
+      <dd>
+        <pre class="console"><%= JSON.pretty_generate(@job.payload_object.job_data) %></pre>
+      </dd>
+      <% if @job.last_error %>
+        <dt><%= Delayed::Job.human_attribute_name(:last_error) %></dt>
+        <dd>
+          <pre class="pre-scrollable console"><%= @job.last_error %></pre>
+        </dd>
+      <% end %>
+    </dl>
+  </div>
+<% end %>
