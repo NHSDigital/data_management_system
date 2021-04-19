@@ -16,19 +16,9 @@ class AddressesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should set all default_address values to false then set selected one to true' do
-    patch default_address_url, params: { default_address: @address2.id,
-                                         addressable_id: @address2.addressable_id,
-                                         addressable_type: @address2.addressable_type }
+    patch default_address_url, params: { default_address_id: @address2.id }
     assert_redirected_to team_url(@team)
     assert @address1.reload.default_address == false
     assert @address2.reload.default_address == true
-  end
-
-  test 'should raise error if invalid Addressable_type passed' do
-    assert_raise(RuntimeError) do
-      patch default_address_url, params: { default_address: @address2.id,
-                                           addressable_id: @address2.addressable_id,
-                                           addressable_type: 'Cabbage' }
-    end
   end
 end

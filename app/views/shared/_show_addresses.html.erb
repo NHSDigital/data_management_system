@@ -15,7 +15,7 @@
               <%= address_tag(address) %>
             </div>
             <div class="col-md-6" style="font-size:1em">
-              <%= link_to 'set as default address', default_address_path(default_address: address.id, addressable_id: address.addressable_id, addressable_type: address.addressable_type), method: :patch %>
+              <%= link_to 'set as default address', default_address_path(default_address_id: address.id), method: :patch %>
             </div>
           </div>
             <% end %>
