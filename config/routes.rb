@@ -235,6 +235,8 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :jobs, only: %i[index show destroy]
+
   get '/terms_rejected', to: 'terms_and_conditions#terms_rejected', as: 'terms_rejected'
 
   get ':resource_type/:resource_id/versions',     to: 'versions#index', as: :papertrail_versions

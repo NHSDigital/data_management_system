@@ -36,3 +36,6 @@ PIDFILE=`sed -nr "s/^pidfile\s+'([^']*)'$/\1/p" $CURRENT/$PUMA_CONFIG`
 # Stop puma cluster
 echo "Stopping puma... (pidfile: $CURRENT/$PIDFILE)"
 cd "$CURRENT" && $PUMA_CMD -P $PIDFILE stop
+
+# Stop Delayed Job backend process:
+cd "$CURRENT" && bin/delayed_job stop

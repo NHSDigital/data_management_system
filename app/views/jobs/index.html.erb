@@ -1,0 +1,11 @@
+<ol class="breadcrumb">
+  <li><%= link_to t('system.name'), root_path %></li>
+  <li><%= Delayed::Job.model_name.human.pluralize %></li>
+</ol>
+
+<h1>Jobs</h1>
+<hr />
+
+<%= render 'table', jobs: @jobs %>
+
+<%= will_paginate(@jobs) %>

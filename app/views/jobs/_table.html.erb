@@ -1,0 +1,19 @@
+<table class="table table-responsive jobs">
+  <thead>
+    <tr>
+      <th><%= Delayed::Job.human_attribute_name(:id) %></th>
+      <th><%= Delayed::Job.human_attribute_name(:queue) %></th>
+      <th><%= Delayed::Job.human_attribute_name(:status) %></th>
+      <th><%= Delayed::Job.human_attribute_name(:attempts) %></th>
+      <th><%= Delayed::Job.human_attribute_name(:run_at) %></th>
+      <th>Type</th>
+      <th>ActiveJob ID</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% jobs.each do |job| %>
+      <%= render 'row', job: job %>
+    <% end %>
+  </tbody>
+</table>

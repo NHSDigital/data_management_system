@@ -1,10 +1,13 @@
 require 'bundler/capistrano'
 require 'ndr_dev_support/capistrano/ndr_model'
+require 'delayed_job/recipes'
 
 set :application, 'mbis_front'
 set :repository, 'https://github.com/PublicHealthEngland/data_management_system'
 set :scm, :git
 
+set :delayed_job_command, 'bin/delayed_job'
+# set :delayed_job_args,    '-n 1'
 
 # Use private repository for some configuration files
 set :secondary_repo, 'https://ndr-svn.phe.gov.uk/svn/non-era/mbis'
@@ -86,6 +89,10 @@ end
 
 before 'deploy:update_code', 'deploy:check_umask'         # Deployment needs a permissive umask
 before 'deploy:restart',     'deploy:check_umask'         # Deployment needs a permissive umask
+
+after 'deploy:stop',    'delayed_job:stop'
+after 'deploy:start',   'delayed_job:start'
+after 'deploy:restart', 'delayed_job:restart'
 
 before 'ndr_dev_support:update_out_of_bundle_gems' do
   set :out_of_bundle_gems, webapp_deployment ? %w[puma nio4r] : %w[]

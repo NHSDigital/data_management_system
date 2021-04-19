@@ -1,0 +1,19 @@
+<%
+  job_data = job.payload_object.job_data
+%>
+
+<%= content_tag(:tr, class: 'job', id: "job_#{job.id}") do %>
+  <td><%= job.id %></td>
+  <td><span class="label label-primary"><%= job.queue %><span></td>
+  <td><%= job_status(job) %></td>
+  <td><%= job.attempts %></td>
+  <td><%= job.run_at.to_s(:db) %></td>
+  <td><code><%= job_data['job_class'] %></code></td>
+  <td><code><%= job_data['job_id'] %></code></td>
+  <td>
+    <div class="pull-right">
+      <%= details_link(job, path: job_path(job)) %>
+      <%= delete_link(job,  path: job_path(job), disabled: job.locked_at?) %>
+    </div>
+  </td>
+<% end %>

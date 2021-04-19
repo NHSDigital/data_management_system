@@ -140,3 +140,21 @@ authorised to put the project into the requested state. This also allows for a r
 grained control mechanism as we can judiciously apply conditions to the CanCan rules to limit
 the scope of when a user may make a state change (e.g. by specifying what a project's current
 state must be for user to make that change).
+
+### Background Processing
+DMS uses ActiveJob for asyncronous/background processing. This is configured to use `delayed_job`
+as its backend (development/production only) and is reliant upon an additional,
+external process to be started. There is a binstub for controlling this process (`bin/delayed_job`):
+
+- Start the process in the background:
+```
+$ bin/delayed_job start
+```
+- Start the process in the foreground
+```
+$ bin/delayed_job run
+```
+- Stop the process:
+```
+$ bin/delayed_job stop
+```
