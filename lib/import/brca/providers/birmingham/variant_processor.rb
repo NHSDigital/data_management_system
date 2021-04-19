@@ -34,7 +34,7 @@ module Import
                 @testreport.scan(BRCA_REGEX).size.positive?
                 process_positive_malformed_variants(@genelist, @genotypes, @testresult, 
                                                     @testreport, @record, @genotype)
-              else binding.pry
+              # else binding.pry
               # elsif @testresult.match(/No known pathogenic/i)
               #   process_negative_genes(@genelist, @genotypes, @genocolorectal)
               # else
