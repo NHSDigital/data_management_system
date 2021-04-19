@@ -23,6 +23,7 @@
 //= require ndr_ui/timeago
 //= require projects
 //= require notifications
+//= require organisations
 //= require users
 //= require file_upload
 //= require nodes

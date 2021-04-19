@@ -168,6 +168,8 @@ Rails.application.routes.draw do
     resources :teams
   end
 
+  patch :default_address, to: 'addresses#default_address'
+
   resources :teams, shallow: true, except: %i[new create] do
     resources :datasets
     resources :memberships

@@ -1,7 +1,8 @@
+# Controller for Organisation
 class OrganisationsController < ApplicationController
   load_and_authorize_resource
 
-  respond_to :html
+  respond_to :js, :html
 
   def index
     @organisations = @organisations.search(search_params).paginate(page: params[:page], per_page: 15)
