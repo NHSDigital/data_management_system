@@ -1,6 +1,6 @@
 require 'bundler/capistrano'
 require 'ndr_dev_support/capistrano/ndr_model'
-require 'delayed_job/recipes'
+require 'delayed/recipes'
 
 set :application, 'mbis_front'
 set :repository, 'https://github.com/PublicHealthEngland/data_management_system'
