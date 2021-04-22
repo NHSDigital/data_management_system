@@ -17,9 +17,12 @@ class ProjectAmendmentsTest < ActionDispatch::IntegrationTest
 
       assert has_no_link?(href: new_project_project_amendment_path(project))
       assert has_selector?(dom_id)
+      assert has_text?('Requested at')
+      assert has_text?('Amendment approved date')
 
       within(dom_id) do
         assert has_text?(amendment.requested_at.to_s(:ui))
+        assert has_text?(amendment.amendment_approved_date.to_s(:ui))
         assert has_link?(href: project_amendment_path(amendment),         title: 'Details')
         assert has_no_link?(href: edit_project_amendment_path(amendment), title: 'Edit')
         assert has_no_link?(href: project_amendment_path(amendment),      title: 'Delete')
@@ -38,8 +41,8 @@ class ProjectAmendmentsTest < ActionDispatch::IntegrationTest
     click_on('Amendments')
 
     click_link('New')
-
     fill_in('project_amendment[requested_at]', with: '27/03/2020')
+    fill_in('project_amendment[amendment_approved_date]', with: '29/03/2020')
     attach_file('project_amendment[upload]', file_fixture('odr_amendment_request_form-1.0.pdf'))
 
     assert_difference -> { project.project_amendments.count } do

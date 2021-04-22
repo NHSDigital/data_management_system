@@ -51,7 +51,8 @@ class ProjectAmendmentsController < ApplicationController
   private
 
   def resource_params
-    params.require(:project_amendment).permit(:requested_at, { labels: [] }, :upload)
+    params.require(:project_amendment).permit(:requested_at, :amendment_approved_date,
+                                              { labels: [] }, :upload)
   end
 
   def after_manipulation_path
