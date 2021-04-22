@@ -28,7 +28,7 @@ class DelegateUserTest < ActionDispatch::IntegrationTest
     visit project_path(@project)
 
     assert_difference -> { Comment.where(commentable_type: 'Workflow::ProjectState').count } do
-      click_button('Close')
+      click_button('Reject')
 
       within_modal selector: '#modal-rejected' do
         fill_in 'project_comments_attributes_0_body', with: 'Delegate had rejected project details'
