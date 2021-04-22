@@ -1,6 +1,6 @@
 require 'test_helper'
-#require 'import/genotype.rb'
-#require 'import/brca/core/provider_handler'
+# require 'import/genotype.rb'
+# require 'import/brca/core/provider_handler'
 
 class NottinghamHandlerTest < ActiveSupport::TestCase
   def setup
@@ -31,9 +31,9 @@ class NottinghamHandlerTest < ActiveSupport::TestCase
 
   test 'process_gene' do
     @importer_stdout, @importer_stderr = capture_io do
-    @handler.process_gene(@genotype, @record)
-    assert_equal 8, @genotype.attribute_map['gene']
-  end
+      @handler.process_gene(@genotype, @record)
+      assert_equal 8, @genotype.attribute_map['gene']
+    end
   end
 
   private
@@ -62,7 +62,7 @@ class NottinghamHandlerTest < ActiveSupport::TestCase
       specimentype: '5',
       gene: '8',
       requesteddate: '2019-03-28T00: 00: 00.000+00: 00',
-      age: 999 } .to_json
+      age: 999 }.to_json
   end
 
   def rawtext_clinical_json
