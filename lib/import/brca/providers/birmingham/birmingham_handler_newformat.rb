@@ -13,8 +13,8 @@ module Import
           def process_fields(record)
             genotype = Import::Brca::Core::GenotypeBrca.new(record)
             genotype.add_passthrough_fields(record.mapped_fields,
-                                                  record.raw_fields,
-                                                  PASS_THROUGH_FIELDS_COLO)
+                                            record.raw_fields,
+                                            PASS_THROUGH_FIELDS_COLO)
             process_genetictestscope(genotype, record)
             add_organisationcode_testresult(genotype)
             variant_processor = VariantProcessor.new(genotype, record, @logger)

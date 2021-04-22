@@ -1,4 +1,3 @@
-
 module Import
   module Brca
     module Providers
@@ -25,28 +24,32 @@ module Import
               if brca_genes_from_test_result.empty?
                 process_result_without_brca_genes
               elsif @testresult.scan(CDNA_REGEX).size.positive?
-              process_testresult_cdna_variants(@testresult, @testreport, @genelist,
-                                               @genotypes, @record, @genotype)
+                process_testresult_cdna_variants(@testresult, @testreport, @genelist,
+                                                 @genotypes, @record, @genotype)
               elsif @testresult.scan(CHR_VARIANTS_REGEX).size.positive?
                 process_chr_variants(@record, @testresult, @testreport, @genotypes, @genotype)
               elsif @testresult.scan(CDNA_REGEX).blank? &&
-                @testresult.scan(BRCA_REGEX).size.positive? &&
-                @testreport.scan(BRCA_REGEX).size.positive?
-                process_positive_malformed_variants(@genelist, @genotypes, @testresult, 
+                    @testresult.scan(BRCA_REGEX).size.positive? &&
+                    @testreport.scan(BRCA_REGEX).size.positive?
+                process_positive_malformed_variants(@genelist, @genotypes, @testresult,
                                                     @testreport, @record, @genotype)
-              # else binding.pry
-              # elsif @testresult.match(/No known pathogenic/i)
-              #   process_negative_genes(@genelist, @genotypes, @genocolorectal)
-              # else
-              #   process_remainder
+              elsif @testreport.scan(BRCA_REGEX).blank? &&
+                    @testresult.scan(BRCA_REGEX).size.positive?
+                @logger.debug 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHHHHHHHHHHHHHHH'
+                process_empty_testreport_results(@testresult, @genelist, @genotypes, @record,
+                                                 @genotype)
+                # elsif @testresult.match(/No known pathogenic/i)
+                #   process_negative_genes(@genelist, @genotypes, @genocolorectal)
+                # else
+                #   process_remainder
               end
             elsif @posnegtest.upcase == 'N' &&
-                  @testresult.scan(/INTERNAL REPORT/i).size == 0 &&
+                  @testresult.scan(/INTERNAL REPORT/i).size.zero? &&
                   !@testreport.nil?
-                  process_negative_records(@genelist, @genotypes, @testresult,
-                                          @testreport, @record, @genotype)
-            # else
-            #   @logger.debug "UNRECOGNISED TAG FOR #{@record.raw_fields[indication]}"
+              process_negative_records(@genelist, @genotypes, @testresult,
+                                       @testreport, @record, @genotype)
+              # else
+              #   @logger.debug "UNRECOGNISED TAG FOR #{@record.raw_fields[indication]}"
             end
 
             @genotypes
@@ -60,9 +63,9 @@ module Import
             elsif @testreport.scan(CHR_VARIANTS_REGEX).size.positive?
               process_chromosomal_variant(@testreport, @genelist, @genotypes,
                                           @record, @genotype)
-            # else
-            #   process_malformed_variants(@testresult, @testreport, @genelist, @genotypes,
-            #                              @genotype, @record)
+              # else
+              #   process_malformed_variants(@testresult, @testreport, @genelist, @genotypes,
+              #                              @genotype, @record)
             end
           end
 
