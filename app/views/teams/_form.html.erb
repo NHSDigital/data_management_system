@@ -44,15 +44,16 @@
           </div>
         <% end %>
         <div class="panel-footer">
-          <% if @readonly %>
-            <div class="row">
-              <div class="col-md-2 text-right"><strong>Status:</strong></div>
-              <div class="col-md-2"><%= @team.z_team_status.name %></div>
-            </div>
-            <div class="row">
-              <div class="col-md-2 text-right"><strong>Notes:</strong></div>
-              <div class="col-md-6"><%= @team.notes %></div>
-            </div>
+        <% if @readonly %>
+          <div class="row">
+            <div class="col-md-2 text-right"><strong>Status:</strong></div>
+            <div class="col-md-2"><%= @team.z_team_status.name %></div>
+          </div>
+          <div class="row">
+            <div class="col-md-2 text-right"><strong>Notes:</strong></div>
+            <div class="col-md-6"><%= @team.notes %></div>
+          </div>
+          <% if @team.addresses.any? %>
             <div class="row">
               <% default, others = @team.addresses.partition do |address| %>
                 <% if address.default_address %>
@@ -66,6 +67,7 @@
               <% end %>
               <div id="default_address" class="col-md-2"><%= address_tag(default.first) %></div>
             </div>
+            <% if others.any? %>
             <div class="row">
               <div class="col-md-2"></div>
               <div class="col-md-6">
@@ -82,12 +84,13 @@
                 <%= render 'shared/show_addresses', addresses: others, address_owner: @team %>
               </div>
             </div>
-        </div>
+            <% end %>
+          <% end %>
         <% else %>
           <%= form.control_group :name, 'Name' do %>
-            <%= form.text_field :name, class: 'mandatory' %>
+          <%= form.text_field :name, class: 'mandatory' %>
         <% end %>
-
+        </div>
             <div class='row form-group'>
               <label class="control-label col-md-2" for="directorate_id">Directorate</label>
               <div class='col-md-6'>
