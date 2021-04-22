@@ -68,8 +68,14 @@ class TeamCoreTest < ActionDispatch::IntegrationTest
     assert page.has_text?("Organisation: #{teams(:team_one).organisation.name}")
   end
 
-  test 'should be able to search by fullname in team edit grants page' do
+  test 'should be able to search by fullname and email in team edit grants page' do
     visit edit_team_grants_path(teams(:team_one))
+
+    # should show based on email search
+    fill_in 'user_search', with: 'su11'
+
+    assert find('tr', text: 'Standard User1', visible: true)
+    assert find('tr', text: 'Contribu Tor', visible: false)
 
     # should show based on fullname search
     fill_in 'user_search', with: 'contrib'
@@ -78,8 +84,15 @@ class TeamCoreTest < ActionDispatch::IntegrationTest
     assert find('tr', text: 'Contribu Tor', visible: true)
   end
 
-  test 'should be able to search by fullname in project edit grants page' do
+  test 'should be able to search by fullname and email in project edit grants page' do
     visit edit_project_grants_path(projects(:test_application))
+
+    # should show based on email search
+    fill_in 'user_search', with: 'su11'
+
+    assert find('tr', text: 'Standard User1', visible: true)
+    assert find('tr', text: 'Standard2 User2', visible: false)
+
     # should show based on fullname search
     fill_in 'user_search', with: 'standard2'
 

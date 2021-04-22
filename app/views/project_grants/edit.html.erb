@@ -26,9 +26,10 @@
         <!-- TODO: scope Users with read only role and not other roles in team-->
         <% project_team_users.each do |user| %>
           <% fullname = user&.full_name %>
-          <%= content_tag(:tr, 'data-user-name' => fullname) do %>
+          <% email = user&.email %>
+          <%= content_tag(:tr, 'data-user-name' => (fullname + email)) do %>
             <td><%= link_to(fullname, user) if user %></td>
-            <td><%= user.email %></td>
+            <td><%= email %></td>
             <% ProjectRole.grantable_by_owner.each do |role|%>
               <% already_granted = user.role?(role, at: @project) %>
               <td>
