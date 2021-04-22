@@ -28,8 +28,9 @@ module Import
               genotype.attribute_map['organisationcode_testresult'] = '699F0'
             end
 
-            def process_testreport_cdna_variants(testreport, genotypes, genotype)
-              if testreport.scan(CDNA_REGEX).size == 1
+            def process_testreport_cdna_variants(testreport, genotypes, _genotype)
+              case testreport.scan(CDNA_REGEX).size
+              when 1
                 if testreport.scan(BRCA_REGEX).uniq.size == 1
                   genocolorectal.add_gene_colorectal(unique_colorectal_genes_from(testreport).join)
                   genocolorectal.add_gene_location(testreport.scan(CDNA_REGEX).join)
@@ -39,7 +40,7 @@ module Import
                   end
                   genotypes.append(genocolorectal)
                 end
-              elsif testreport.scan(CDNA_REGEX).size == 2
+              when 2
                 if testreport.scan(BRCA_REGEX).uniq.size == 2
                   genes = brca_genes_from(testreport)
                   cdnas = testreport.scan(CDNA_REGEX).flatten
@@ -49,16 +50,26 @@ module Import
                 end
               end
             end
-            
+
+            def process_empty_testreport_results(testresult, _genelist, genotypes, _record, genotype)
+              genotype.add_status(2)
+              genotype.add_gene(brca_genes_from(testresult).join)
+              genotype.add_gene_location('')
+              genotypes.append(genotype)
+            end
+
             def process_testresult_cdna_variants(testresult, testreport, genelist, genotypes, record, genotype)
-              if testresult.scan(CDNA_REGEX).size == 1
-                process_testresult_single_cdnavariant(testresult, testreport, record, genelist, genotypes, genotype)
-              elsif testresult.scan(CDNA_REGEX).size == 2
-                process_testresult_multiple_cdnavariant(testresult, testreport, record, genelist, genotypes, genotype)
+              case testresult.scan(CDNA_REGEX).size
+              when 1
+                process_testresult_single_cdnavariant(testresult, testreport, record, genelist,
+                                                      genotypes, genotype)
+              when 2
+                process_testresult_multiple_cdnavariant(testresult, testreport, record, genelist,
+                                                        genotypes, genotype)
               end
             end
 
-            def process_testresult_single_cdnavariant(testresult, testreport, record,
+            def process_testresult_single_cdnavariant(testresult, _testreport, record,
                                                       genelist, genotypes, genotype)
               if unique_brca_genes_from(testresult).one?
                 if full_screen?(record)
@@ -87,12 +98,12 @@ module Import
               end
             end
 
-            def process_testresult_multiple_cdnavariant(testresult, testreport, record,
+            def process_testresult_multiple_cdnavariant(testresult, _testreport, record,
                                                         genelist, genotypes, genotype)
               if testresult.scan(BRCA_REGEX).uniq.size == 2
                 if full_screen?(record)
-                    negativegenes = genelist - unique_brca_genes_from(testresult)
-                    process_negative_genes(negativegenes, genotypes, genotype)
+                  negativegenes = genelist - unique_brca_genes_from(testresult)
+                  process_negative_genes(negativegenes, genotypes, genotype)
                 end
                 genes = brca_genes_from(testresult)
                 cdnas = testresult.scan(CDNA_REGEX).flatten
@@ -112,7 +123,7 @@ module Import
               end
             end
 
-            def process_chr_variants(record, testresult, testreport, genotypes, genotype)
+            def process_chr_variants(record, testresult, _testreport, genotypes, genotype)
               if full_screen?(record)
                 genelist = BRCA_GENES_MAP[record.raw_fields['indication']]
                 negativegenes = genelist - unique_brca_genes_from(testresult)
@@ -122,7 +133,7 @@ module Import
               process_chromosomal_variant(testcolumn, genelist, genotypes, record, genotype)
             end
 
-            def process_chromosomal_variant(testcolumn, genelist, genotypes, record, genotype)
+            def process_chromosomal_variant(testcolumn, _genelist, genotypes, _record, genotype)
               brca_genes = unique_brca_genes_from(testcolumn)
               if brca_genes.one?
                 if testcolumn.scan(CHR_VARIANTS_REGEX).size == 1
@@ -191,17 +202,16 @@ module Import
                 genotypes.append(duplicated_genotype)
               end
             end
-            
 
-            def full_screen?(genotype)
-              @genotype.attribute_map["genetictestscope"] == "Full screen BRCA1 and BRCA2"
+            def full_screen?(_genotype)
+              @genotype.attribute_map['genetictestscope'] == 'Full screen BRCA1 and BRCA2'
             end
 
             def process_negative_records(genelist, genotypes, testresult,
                                          testreport, record, genotype)
               @logger.debug 'NORMAL TEST FOUND'
               if full_screen?(record)
-                  negativegenes = genelist
+                negativegenes = genelist
               else
                 testresultgenes = unique_brca_genes_from(testresult)
                 testreportgenes = unique_brca_genes_from(testreport)
@@ -210,12 +220,12 @@ module Import
               process_negative_genes(negativegenes, genotypes, genotype)
             end
 
-            def process_positive_malformed_variants(genelist, genotypes, testresult, 
+            def process_positive_malformed_variants(genelist, genotypes, testresult,
                                                     testreport, record, genotype)
               if !testreport.nil? &&
-                testresult.scan(CDNA_REGEX).blank? &&
-                testreport.scan(CDNA_REGEX).blank? &&
-                testreport.scan(BRCA_REGEX).size.positive?
+                 testresult.scan(CDNA_REGEX).blank? &&
+                 testreport.scan(CDNA_REGEX).blank? &&
+                 testreport.scan(BRCA_REGEX).size.positive?
                 if full_screen?(record)
                   negativegenes = genelist - unique_brca_genes_from(testresult)
                   process_negative_genes(negativegenes, genotypes, genotype)
@@ -230,7 +240,6 @@ module Import
                 end
               end
             end
-
 
             # if !@testreport.nil? &&
             #   @testresult.scan(CDNA_REGEX).blank? &&
@@ -327,10 +336,6 @@ module Import
             #
 
             #
-
-            #
-
-            #
             # def sometimes_tested?(record)
             #   record.raw_fields['indication'] == 'HNPCC' ||
             #     record.raw_fields['indication'] == 'COLON' ||
@@ -375,9 +380,6 @@ module Import
             #   end
             # end
             #
-
-            #
-
           end
         end
       end

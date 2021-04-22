@@ -8,7 +8,6 @@ module Import
                                           providercode authoriseddate receiveddate
                                           moleculartestingtype specimentype].freeze
 
-
             TEST_SCOPE_MAP_COLO_COLO = { '100kgp confirmation' => :full_screen,
                                          'confirmation' => :targeted_mutation,
                                          'diagnosis' => :full_screen,
@@ -17,13 +16,11 @@ module Import
                                          'prenatal diagnosis' => :targeted_mutation,
                                          'presymptomatic' => :targeted_mutation,
                                          'ajp confirmation' => :aj_screen,
-                                         'ajp screen' => :aj_screen
-                                        }.freeze
+                                         'ajp screen' => :aj_screen }.freeze
 
             BRCA_GENES_MAP = { 'AZOVCA' => %w[BRCA1 BRCA2],
                                'BROV' => %w[BRCA1 BRCA2],
                                'BRCA' => %w[BRCA1 BRCA2 ATM CHEK2 PALB2 TP53] }.freeze
-
 
             REPORT_GENETICTESTSCOPE_REGEX = /previously identified in this family|previously reported in this family|previously found in an affected relative/i.freeze
 
@@ -38,7 +35,7 @@ module Import
                           ([0-9]+[^[:alnum:]][0-9]+[^[:alnum:]][0-9]+[0-9]+[a-z]+))/ix.freeze
 
             PROTEIN_REGEX = /p\.(\()?((?<impact>.([a-z]+[0-9]+[a-z]+([^[:alnum:]][0-9]+)?)|
-                             ([a-z]+[0-9]+[^[:alnum:]])))/ix .freeze
+                             ([a-z]+[0-9]+[^[:alnum:]])))/ix.freeze
 
             CHR_VARIANTS_REGEX = /frameshift|
                                   truncation|
@@ -47,10 +44,10 @@ module Import
                                   duplication|
                                   missense|
                                   splice site|
-                                  splice\-site|
+                                  splice-site|
                                   substitution|
                                   Splice site mutation|
-                                  Nonsense/ix .freeze
+                                  Nonsense/ix.freeze
 
             EXON_LOCATION_REGEX_COLO = /exons? (\d+[a-z]*(?: ?- ?\d+[a-z]*)?)/i.freeze
           end
