@@ -1,8 +1,4 @@
 require 'test_helper'
-#require 'import/genotype.rb'
-#require 'import/colorectal/core/genotype_mmr.rb'
-#require 'import/brca/core/provider_handler'
-#require 'import/storage_manager/persister'
 
 class BirminghamHandlerNewformatTest < ActiveSupport::TestCase
   def setup
@@ -99,7 +95,6 @@ class BirminghamHandlerNewformatTest < ActiveSupport::TestCase
     assert_equal 6, processor.process_variants_from_report.size
   end
 
-
   test 'process_multiple_variants_single_gene' do
     multiple_cdna_record = build_raw_record('pseudo_id1' => 'bob')
     multiple_cdna_record.raw_fields['teststatus'] = 'Heterozygous missense variant (c.1688G>T; p.Arg563Leu) identified in exon 11 of the BRCA2 gene and a heterozygous intronic variant (c.251-20T>G) in intron 4 of the BRCA2 gene.'
@@ -156,49 +151,49 @@ class BirminghamHandlerNewformatTest < ActiveSupport::TestCase
   end
 
   def clinical_json
-    { sex:'2',
-      consultantcode:'Consultant Code',
-      providercode:'Provider Code',
-      receiveddate:'2009-04-28T00:00:00.000+01:00',
-      authoriseddate:'2009-06-12T00:00:00.000+01:00',
-      servicereportidentifier:'ServiceReportIdentifier',
-      sortdate:'2009-04-28T00:00:00.000+01:00',
-      moleculartestingtype:'1',
-      specimentype:'5',
-      report:'Sequencing analysis has been used to screen coding exons of the BRCA1 and BRCA2 genes. Due to the identification of a pathogenic mutation the entire BRCA1 and BRCA2 coding sequences may not have been completely screened. Sequence nomenclature using HGVS guidelines. GenBank accession numbers: U14680.1 (BRCA1) and U43746.1 (BRCA2). MLPA analysis of all exons of BRCA1 and BRCA2 to detect whole exon deletions and duplications (MRC-Holland kits P002-B1 and P090-A1 respectively). DNA has been stored.',
-      age:'999'} .to_json
+    { sex: '2',
+      consultantcode: 'Consultant Code',
+      providercode: 'Provider Code',
+      receiveddate: '2009-04-28T00:00:00.000+01:00',
+      authoriseddate: '2009-06-12T00:00:00.000+01:00',
+      servicereportidentifier: 'ServiceReportIdentifier',
+      sortdate: '2009-04-28T00:00:00.000+01:00',
+      moleculartestingtype: '1',
+      specimentype: '5',
+      report: 'Sequencing analysis has been used to screen coding exons of the BRCA1 and BRCA2 genes. Due to the identification of a pathogenic mutation the entire BRCA1 and BRCA2 coding sequences may not have been completely screened. Sequence nomenclature using HGVS guidelines. GenBank accession numbers: U14680.1 (BRCA1) and U43746.1 (BRCA2). MLPA analysis of all exons of BRCA1 and BRCA2 to detect whole exon deletions and duplications (MRC-Holland kits P002-B1 and P090-A1 respectively). DNA has been stored.',
+      age: '999' }.to_json
   end
 
   def rawtext_clinical_json
     { 'patient id' => 'PatientID',
-      sex:'F',
-      servicereportidentifier:'ServiceReportIdentifier',
-      reason:'Diagnosis',
-      moleculartestingtype:'Diagnosis',
-      reportresult:'C40-BRCA HT Frameshift Pathogenic',
-      authoriseddate:'2009-06-12 00:00:00',
-      teststatus:'Heterozygous frameshift mutation (c.3767_3768delCA; p.Thr1256ArgfsX10) identified in exon 11 of the BRCA1 gene.',
-      overall2:'P',
+      sex: 'F',
+      servicereportidentifier: 'ServiceReportIdentifier',
+      reason: 'Diagnosis',
+      moleculartestingtype: 'Diagnosis',
+      reportresult: 'C40-BRCA HT Frameshift Pathogenic',
+      authoriseddate: '2009-06-12 00:00:00',
+      teststatus: 'Heterozygous frameshift mutation (c.3767_3768delCA; p.Thr1256ArgfsX10) identified in exon 11 of the BRCA1 gene.',
+      overall2: 'P',
       'sarah class 3' => '#N/A',
       'sarah class 4' => '#N/A',
       'sarah class 5' => '#N/A',
-      indication:'BRCA',
-      receiveddate:'2009-04-28 00:00:00',
-      specimentype:'Blood',
-      report:'Sequencing analysis has been used to screen coding exons of the BRCA1 and BRCA2 genes. Due to the identification of a pathogenic mutation the entire BRCA1 and BRCA2 coding sequences may not have been completely screened. Sequence nomenclature using HGVS guidelines. GenBank accession numbers: U14680.1 (BRCA1) and U43746.1 (BRCA2). MLPA analysis of all exons of BRCA1 and BRCA2 to detect whole exon deletions and duplications (MRC-Holland kits P002-B1 and P090-A1 respectively). DNA has been stored.',
-      ref_fac:'REF_FAC',
-      city:'City',
-      name:'Hospital',
-      providercode:'ProviderCode',
+      indication: 'BRCA',
+      receiveddate: '2009-04-28 00:00:00',
+      specimentype: 'Blood',
+      report: 'Sequencing analysis has been used to screen coding exons of the BRCA1 and BRCA2 genes. Due to the identification of a pathogenic mutation the entire BRCA1 and BRCA2 coding sequences may not have been completely screened. Sequence nomenclature using HGVS guidelines. GenBank accession numbers: U14680.1 (BRCA1) and U43746.1 (BRCA2). MLPA analysis of all exons of BRCA1 and BRCA2 to detect whole exon deletions and duplications (MRC-Holland kits P002-B1 and P090-A1 respectively). DNA has been stored.',
+      ref_fac: 'REF_FAC',
+      city: 'City',
+      name: 'Hospital',
+      providercode: 'ProviderCode',
       'hospital address' => 'Hospital Address',
       'hospital city' => 'City',
       'hospital name' => 'Hospital Name',
       'hospital postcode' => 'PostCode',
-      consultantcode:'ConsultantCode',
+      consultantcode: 'ConsultantCode',
       'clinician surname' => 'Surname',
       'clinician first name' => 'Name',
       'clinician role' => 'Role',
-      specialty:'Specialty',
-      department:'Department' }.to_json
+      specialty: 'Specialty',
+      department: 'Department' }.to_json
   end
 end

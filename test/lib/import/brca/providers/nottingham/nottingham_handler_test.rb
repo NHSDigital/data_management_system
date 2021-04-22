@@ -30,8 +30,10 @@ class NottinghamHandlerTest < ActiveSupport::TestCase
   end
 
   test 'process_gene' do
+    @importer_stdout, @importer_stderr = capture_io do
     @handler.process_gene(@genotype, @record)
     assert_equal 8, @genotype.attribute_map['gene']
+  end
   end
 
   private
