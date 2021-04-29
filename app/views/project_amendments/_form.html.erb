@@ -12,6 +12,10 @@
     <%= form.datepicker_field(:requested_at) %>
   <% end %>
 
+  <%= form.control_group(:amendment_approved_date, nil, {}, class: 'col-xs-5 col-sm-4 col-md-3') do %>
+    <%= form.datepicker_field(:amendment_approved_date) %>
+  <% end %>
+
   <%= form.control_group(:upload) do %>
     <%= form.file_field(:upload, multiple: false, accept: 'application/pdf') %>
   <% end %>

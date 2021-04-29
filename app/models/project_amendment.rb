@@ -33,6 +33,7 @@ class ProjectAmendment < ApplicationRecord
 
   validates :requested_at, presence: true
   validates :requested_at, date: { no_future: true }
+  validates :amendment_approved_date, date: { no_future: true }
 
   validates :attachment, presence: true
   validate :ensure_valid_attachment

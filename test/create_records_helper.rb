@@ -170,7 +170,8 @@ module CreateRecordsHelper
     )
 
     attributes.reverse_merge!(
-      requested_at: Time.zone.today,
+      requested_at: 1.day.ago,
+      amendment_approved_date: Time.zone.today,
       upload: upload
     )
 

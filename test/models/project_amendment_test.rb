@@ -58,6 +58,16 @@ class ProjectAmendmentTest < ActiveSupport::TestCase
     assert_includes amendment.errors.details[:requested_at], error: :no_future, no_future: true
   end
 
+  test 'should not allow amendment_approved_date in the future' do
+    project   = projects(:one)
+    amendment = project.project_amendments.build(amendment_approved_date: Time.zone.tomorrow)
+
+    amendment.valid?
+
+    assert_includes amendment.errors.details[:amendment_approved_date], error: :no_future,
+                                                                        no_future: true
+  end
+
   test 'should validate attachment' do
     project    = projects(:one)
     amendment  = project.project_amendments.build(requested_at: Time.zone.today)
