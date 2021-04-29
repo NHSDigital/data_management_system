@@ -91,8 +91,7 @@ module ProjectsHelper
     default_options = {
       class: ['label', STATE_LABEL_CLASSES.fetch(state.id, 'label-default')]
     }
-
-    content_tag(:span, state.name, html_options.merge(default_options))
+    content_tag(:span, state.name(project), html_options.merge(default_options))
   end
 
   def timeline_allocated_user_label(project, state = nil)
@@ -112,7 +111,8 @@ module ProjectsHelper
   end
 
   def transition_button(project, state, **options)
-    i18n_scope   = %i[helpers submit workflow/project_state]
+    project_type_name = project.project_type_name.downcase
+    i18n_scope   = [:helpers, :submit, 'workflow/project_state'.to_sym, project_type_name.to_sym]
     i18n_key     = state.id.downcase.to_sym
     i18n_default = state.id
 

@@ -41,29 +41,46 @@ en:
   helpers:
     submit:
       workflow/project_state:
-        review: Submit for Delegate Approval
-        draft: Return to draft
-        submitted: Submit to ODR
-        rejected: Close
-        deleted: Delete
-        submitted: Submit
-        approved: Approve
-        amend: Amend
-        completed: Proceed to Application
-        dpia_start: Begin DPIA
-        dpia_review: Send for Peer Review
-        dpia_moderation: Send for Moderation
-        dpia_rejected: Reject DPIA
-        contract_draft: Start Contract Drafting
-        contract_rejected: Reject Contract
-        contract_completed: Mark Contract as Completed
-        data_released: Flag as Data Released
-        data_destroyed: Flag as Data Destroyed
-        access_approver_approved: Approve Access
-        access_approver_rejected: Reject Access
-        rejection_reviewed: Rejection Confirmed
-        account_closed: Close Account
-        access_granted: Renew Account
+        application:
+          draft: Return to draft
+          submitted: Submit to ODR
+          rejected: Close
+          deleted: Delete
+          submitted: Submit
+          amend: Amend
+          dpia_start: Begin DPIA
+          dpia_review: Send for Peer Review
+          dpia_moderation: Send for Moderation
+          dpia_rejected: Reject DPIA
+          contract_draft: Start Contract Drafting
+          contract_rejected: Reject Contract
+          contract_completed: Mark Contract as Completed
+          data_released: Flag as Data Released
+          data_destroyed: Flag as Data Destroyed
+        cas:
+          draft: Return to draft
+          submitted: Submit to ODR
+          submitted: Submit
+          access_approver_approved: Approve Access
+          access_approver_rejected: Reject Access
+          rejection_reviewed: Rejection Confirmed
+          account_closed: Close Account
+          access_granted: Renew Account
+        project:
+          review: Submit for Delegate Approval
+          draft: Return to draft
+          submitted: Submit to ODR
+          rejected: Reject
+          deleted: Delete
+          submitted: Submit
+          approved: Approve
+        eoi:
+          draft: Return to draft
+          submitted: Submit to ODR
+          rejected: Close
+          deleted: Delete
+          submitted: Submit
+          approved: Approve
       comment:
         create: Add %{model}
     timeline:
@@ -74,23 +91,35 @@ en:
         contract_draft: with senior application manager
         contract_completed: with ODR
   workflow/state:
-    draft: New
-    review: Delegate Approval
-    submitted: Pending
-    rejected: Closed
-    dpia_start: DPIA
-    dpia_review: DPIA Peer Review
-    dpia_moderation: DPIA Moderation
-    dpia_rejected: DPIA Rejected
-    contract_draft: Contract Draft
-    contract_rejected: Contract Rejected
-    contract_completed: Contract Completed
-    data_released: Data Released
-    data_destroyed: Data Destroyed
-    access_approver_approved: Access Approved
-    access_approver_rejected: Access Rejected
-    access_granted: Access Granted
-    account_closed: Account Closed
+    application:
+      draft: New
+      submitted: Pending
+      rejected: Closed
+      dpia_start: DPIA
+      dpia_review: DPIA Peer Review
+      dpia_moderation: DPIA Moderation
+      dpia_rejected: DPIA Rejected
+      contract_draft: Contract Draft
+      contract_rejected: Contract Rejected
+      contract_completed: Contract Completed
+      data_released: Data Released
+      data_destroyed: Data Destroyed
+    cas:
+      draft: New
+      submitted: Pending
+      access_approver_approved: Access Approved
+      access_approver_rejected: Access Rejected
+      access_granted: Access Granted
+      account_closed: Account Closed
+    project:
+      draft: New
+      review: Delegate Approval
+      submitted: Pending
+      rejected: Rejected
+    eoi:
+      draft: New
+      submitted: Pending
+      rejected: Closed
   projects:
     application:
       form:

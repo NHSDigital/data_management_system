@@ -29,8 +29,9 @@ module Workflow
     scope :not_submitted_for_sign_off,  -> { where.not(id: %w[REVIEW SUBMITTED]) }
 
     # Get a humanised name from localisation files:
-    def name
-      I18n.t(id.downcase.to_sym, scope: model_name.i18n_key, default: id)
+    def name(project)
+      I18n.t(id.downcase.to_sym,
+             scope: [model_name.i18n_key, project.project_type_name.downcase.to_sym], default: id)
     end
   end
 end

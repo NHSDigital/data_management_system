@@ -74,9 +74,8 @@ class ApprovePendingProjectTest < ActionDispatch::IntegrationTest
       fill_in 'project_comments_attributes_0_body', with: 'Rejected project details comment'
       click_button 'Save'
     end
-
     within('#project_header') do
-      click_button 'Close'
+      click_button 'Reject'
     end
 
     within_modal selector: '#modal-rejected' do
@@ -84,7 +83,7 @@ class ApprovePendingProjectTest < ActionDispatch::IntegrationTest
     end
 
     within '#project_status' do
-      assert page.has_text? 'Closed'
+      assert page.has_text? 'Rejected'
     end
   end
 
@@ -109,7 +108,7 @@ class ApprovePendingProjectTest < ActionDispatch::IntegrationTest
     end
 
     within '#project_header' do
-      click_button 'Close'
+      click_button 'Reject'
     end
 
     within_modal selector: '#modal-rejected' do
@@ -117,7 +116,7 @@ class ApprovePendingProjectTest < ActionDispatch::IntegrationTest
     end
 
     within '#project_status' do
-      assert page.has_text? 'Closed'
+      assert page.has_text? 'Rejected'
     end
   end
 
@@ -140,9 +139,8 @@ class ApprovePendingProjectTest < ActionDispatch::IntegrationTest
       fill_in 'project_comments_attributes_0_body', with: 'Rejected legal details comment'
       click_button 'Save'
     end
-
     within '#project_header' do
-      click_button 'Close'
+      click_button 'Reject'
     end
 
     within_modal selector: '#modal-rejected' do
@@ -150,7 +148,7 @@ class ApprovePendingProjectTest < ActionDispatch::IntegrationTest
     end
 
     within '#project_status' do
-      assert page.has_text? 'Closed'
+      assert page.has_text? 'Rejected'
     end
   end
 
