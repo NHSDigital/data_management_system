@@ -338,7 +338,8 @@ class Project < ApplicationRecord
   def odr_approval_needed_notification
     Notification.create!(title: "#{name} - has been submitted for approval",
                          body: CONTENT_TEMPLATES['email_project_odr_approval_needed']['body'],
-                         project_id: id)
+                         project_id: id,
+                         odr_users: project? ? true : false)
   end
 
   def odr_rejected_notification

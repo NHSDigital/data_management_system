@@ -126,8 +126,9 @@ class NotificationRecipientsTest < ActionDispatch::IntegrationTest
 
     assert_equal 'pending_delegate_project - has been submitted for approval', Notification.last.title
     users_notified = Notification.last.users.collect(&:id).sort
-    users_who_should_be_notified = project.users.map(&:id).uniq.sort
-    assert_equal users_notified, users_who_should_be_notified
+    users_who_should_be_notified = project.users.map(&:id).uniq
+    users_who_should_be_notified += SystemRole.fetch(:odr).users.pluck(:id)
+    assert_equal users_notified, users_who_should_be_notified.sort
   end
 
   test 'project approved by odr' do
