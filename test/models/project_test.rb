@@ -456,7 +456,7 @@ class ProjectTest < ActiveSupport::TestCase
     project = build_project(project_type: ProjectType.find_by(name: 'Application'))
     project.save!(validate: false)
     project.reload
-    
+
     assert_difference 'Notification.count', 3 do
       assert_emails 3 do
         project.odr_approval_needed_notification
@@ -476,6 +476,21 @@ class ProjectTest < ActiveSupport::TestCase
         project.odr_approval_needed_notification
         project.odr_rejected_notification
         project.odr_approved_notification
+      end
+    end
+  end
+
+  # this is the ODR system role
+  test 'ODR should be emailed when MBIS application is submitted' do
+    project = build_project(project_type: project_types(:project))
+    project.save!(validate: false)
+    project.reload
+
+    # 2 ODR users in fixtures
+    # 1 owner of application
+    assert_difference 'Notification.count', 1 do
+      assert_emails 3 do
+        project.odr_approval_needed_notification 
       end
     end
   end
