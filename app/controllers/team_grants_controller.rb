@@ -12,7 +12,7 @@ class TeamGrantsController < ApplicationController
   def index
     redirect_to "/teams/#{params[:team_id]}"
   end
-  
+
   def update
     if perform_authorized_grant_updates!(grant_matrix)
       flash[:notice] = 'Team grants updated.'
@@ -22,8 +22,9 @@ class TeamGrantsController < ApplicationController
       render :index
     end
   end
-  
+
   def edit
+    @roles = TeamRole.all
     @grant = Grant.new(team_id: params[:team_id], roleable: TeamRole.fetch(:read_only))
     @team = Team.find(params[:team_id])
   end

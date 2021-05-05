@@ -15,7 +15,7 @@
         <tr>
           <th>User</th>
           <th>Email</th>
-          <% TeamRole.all.each do |role|%>
+          <% @roles.each do |role|%>
             <th><%= role.name %></th>
           <% end %>
         </tr>
@@ -28,7 +28,7 @@
           <%= content_tag(:tr, 'data-user-name' => (fullname + email)) do %>
             <td><%= link_to(fullname, user) if user %></td>
             <td><%= email %></td>
-             <% TeamRole.all.each do |role| %>
+             <% @roles.each do |role| %>
              <% already_granted = user.role?(role, at: @team) %>
                <td>
                  <%= hidden_field_tag "grants[users][#{user.id}][#{role.id}]", nil %>
