@@ -25,7 +25,7 @@ class TeamGrantsController < ApplicationController
 
   def edit
     @roles = TeamRole.all
-    @users = User.includes(grants: :roleable)
+    @users = User.includes(grants: :roleable).select(:id, :first_name, :last_name, :email)
     @grant = Grant.new(team_id: params[:team_id], roleable: TeamRole.fetch(:read_only))
     @team = Team.find(params[:team_id])
   end
