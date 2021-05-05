@@ -22,7 +22,7 @@
       </thead>
       <tbody>
         <!-- TODO: scope Users with read only role and not other roles-->
-        <% User.all.each do |user| %>
+        <% @users.find_each do |user| %>
           <% fullname = user&.full_name %>
           <% email = user&.email %>
           <%= content_tag(:tr, 'data-user-name' => (fullname + email)) do %>
