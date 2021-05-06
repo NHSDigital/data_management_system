@@ -23,6 +23,9 @@ class CreateAndActivateTeamTest < ActionDispatch::IntegrationTest
 
   # Complex Team is a team that with multiple datasets and members
   test 'can create and activate a new complex team (member added last)' do
+    user = users(:standard_user)
+    role = TeamRole.fetch(:mbis_applicant)
+
     visit organisation_path(@organisation)
 
     click_link 'Add', href: new_organisation_team_path(@organisation)
@@ -39,9 +42,9 @@ class CreateAndActivateTeamTest < ActionDispatch::IntegrationTest
     within('#team_show_tabs') do
       click_on 'Users'
     end
+
     click_on 'Edit team grants'
-    page.check("grants_users_#{users(:standard_user).id}_#{TeamRole.fetch(:mbis_applicant).id}")
-    find_button('Update Roles').click
+    toggle_user_role(user, role)
 
     assert page.find_link('ACTIVATE')
     assert page.find_link('ACTIVATE').not_matches_css?('.disabled')
@@ -53,6 +56,9 @@ class CreateAndActivateTeamTest < ActionDispatch::IntegrationTest
 
   # Complex Team is a team that with multiple datasets and members
   test 'can create and activate a new complex team (member added first)' do
+    user = users(:standard_user)
+    role = TeamRole.fetch(:mbis_applicant)
+
     visit organisation_path(@organisation)
 
     click_link 'Add', href: new_organisation_team_path(@organisation)
@@ -69,9 +75,10 @@ class CreateAndActivateTeamTest < ActionDispatch::IntegrationTest
     within('#team_show_tabs') do
       click_on 'Users'
     end
+
     click_on 'Edit team grants'
-    page.check("grants_users_#{users(:standard_user).id}_#{TeamRole.fetch(:mbis_applicant).id}")
-    find_button('Update Roles').click
+    toggle_user_role(user, role)
+
     assert page.find_link('ACTIVATE').not_matches_css?('.disabled')
     assert page.find_link('ACTIVATE').matches_css?('.btn-success')
 
@@ -80,6 +87,10 @@ class CreateAndActivateTeamTest < ActionDispatch::IntegrationTest
   end
 
   test 'can activate a team, when datasets and members added' do
+    user_one = users(:standard_user)
+    user_two = users(:standard_user2)
+    role     = TeamRole.fetch(:mbis_applicant)
+
     visit organisation_path(@organisation)
 
     click_link 'Add', href: new_organisation_team_path(@organisation)
@@ -92,9 +103,10 @@ class CreateAndActivateTeamTest < ActionDispatch::IntegrationTest
     within('#team_show_tabs') do
       click_on 'Users'
     end
+
     click_on 'Edit team grants'
-    page.check("grants_users_#{users(:standard_user).id}_#{TeamRole.fetch(:mbis_applicant).id}")
-    find_button('Update Roles').click
+    toggle_user_role(user_one, role)
+
     assert page.find_link('ACTIVATE').matches_css?('.btn-success')
     click_link 'ACTIVATE'
     assert_equal Notification.last.title, 'New team created in MBIS : Test Team 4'
@@ -107,12 +119,12 @@ class CreateAndActivateTeamTest < ActionDispatch::IntegrationTest
     within('#team_show_tabs') do
       click_on 'Users'
     end
+
     click_on 'Edit team grants'
-    page.check("grants_users_#{users(:standard_user2).id}_#{TeamRole.fetch(:mbis_applicant).id}")
-    find_button('Update Roles').click
+    toggle_user_role(user_two, role)
 
     assert has_no_selector?('#modal', visible: true)
-    assert_equal 'New team created in MBIS : Test Team 4', Notification.last.title 
+    assert_equal 'New team created in MBIS : Test Team 4', Notification.last.title
     # TODO: do we really want to email every time we edit a grant?
     # assert Notification.last.body.include? 'Team member Standard2 User2 added to team Test Team'
     assert Notification.last.admin_users
@@ -126,5 +138,25 @@ class CreateAndActivateTeamTest < ActionDispatch::IntegrationTest
     select 'Division 1 from directorate 1', from: 'team_division_id'
     # check 'Delegate1 User'
     fill_in 'team_notes',        with: 'Some interesting notes about this project'
+  end
+
+  def search_for_user(user)
+    within('#user_search') do
+      fill_in 'user_search[first_name]', with: user.first_name
+      fill_in 'user_search[last_name]',  with: user.last_name
+      fill_in 'user_search[email]',      with: user.email
+
+      click_button 'Search'
+    end
+  end
+
+  def toggle_user_role(user, role)
+    search_for_user(user)
+
+    within("tr#user_#{user.id}") do
+      check("grants_users_#{user.id}_#{role.id}")
+    end
+
+    click_button('Update Roles')
   end
 end

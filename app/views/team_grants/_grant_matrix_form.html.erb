@@ -17,7 +17,7 @@
     </thead>
     <tbody>
       <!-- TODO: scope Users with read only role and not other roles-->
-      <% users.find_each do |user| %>
+      <% users.each do |user| %>
         <%= content_tag(:tr, class: dom_class(user), id: dom_id(user)) do %>
           <td><%= link_to(user.full_name, user) %></td>
           <td><%= user.email %></td>
@@ -32,6 +32,12 @@
       <% end %>
     </tbody>
   </table>
+
+  <div class="text-center">
+    <hr />
+    <%= will_paginate(users) %>
+    <hr />
+  </div>
 
   <div class="row">
     <div class="col-md-2 col-md-offset-4">

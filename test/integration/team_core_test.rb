@@ -28,7 +28,7 @@ class TeamCoreTest < ActionDispatch::IntegrationTest
       accept_prompt do
         click_on 'delete_team_button'
       end
-      
+
       assert page.has_content?('Team still has active projects so has not been deleted')
     end
   end
@@ -47,7 +47,7 @@ class TeamCoreTest < ActionDispatch::IntegrationTest
       assert has_no_text?('team_two')
     end
   end
-  
+
   test 'should be able to search for teams by organisation' do
     visit teams_path
 
@@ -66,6 +66,15 @@ class TeamCoreTest < ActionDispatch::IntegrationTest
   test 'should show teams organisation' do
     visit team_path(teams(:team_one))
     assert page.has_text?("Organisation: #{teams(:team_one).organisation.name}")
+  end
+
+  test 'should paginate team edit grants page' do
+    team = teams(:team_one)
+
+    visit edit_team_grants_path(team)
+
+    assert has_selector?('tr.user', count: 20)
+    assert has_selector?('.pagination')
   end
 
   test 'should be able to search by fullname and email in team edit grants page' do

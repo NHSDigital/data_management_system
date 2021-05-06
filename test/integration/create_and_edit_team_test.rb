@@ -24,22 +24,40 @@ class CreateAndEditTeamTest < ActionDispatch::IntegrationTest
   end
 
   test 'can add multiple members to new team' do
-    team = teams(:team_NO_members)
+    team     = teams(:team_NO_members)
+    user_one = users(:standard_user)
+    user_two = users(:standard_user2)
+    role     = TeamRole.fetch(:mbis_applicant)
+
     visit team_path team
     # Add Team members
     within('#team_show_tabs') do
       click_on 'Users'
     end
+
     click_on 'Edit team grants'
-    page.check("grants_users_#{users(:standard_user).id}_#{TeamRole.fetch(:mbis_applicant).id}")
-    page.check("grants_users_#{users(:standard_user2).id}_#{TeamRole.fetch(:mbis_applicant).id}")
-    find_button('Update Roles').click
+
+    within('#user_search') do
+      fill_in 'user_search[first_name]', with: 'standard'
+      fill_in 'user_search[last_name]',  with: 'user'
+
+      click_button 'Search'
+    end
+
+    check("grants_users_#{user_one.id}_#{role.id}")
+    check("grants_users_#{user_two.id}_#{role.id}")
+
+    click_button 'Update Roles'
 
     assert has_selector?('table#memberships-table tr', count: 2)
     assert_equal 2, team.users.count
   end
 
   test 'can create a new team with members' do
+    user_one = users(:standard_user)
+    user_two = users(:standard_user2)
+    role     = TeamRole.fetch(:mbis_applicant)
+
     visit organisation_path(@organisation)
 
     click_link 'Add', href: new_organisation_team_path(@organisation)
@@ -55,9 +73,18 @@ class CreateAndEditTeamTest < ActionDispatch::IntegrationTest
       click_on 'Users'
     end
     click_on 'Edit team grants'
-    page.check("grants_users_#{users(:standard_user).id}_#{TeamRole.fetch(:mbis_applicant).id}")
-    page.check("grants_users_#{users(:standard_user2).id}_#{TeamRole.fetch(:mbis_applicant).id}")
-    find_button('Update Roles').click
+
+    within('#user_search') do
+      fill_in 'user_search[first_name]', with: 'standard'
+      fill_in 'user_search[last_name]',  with: 'user'
+
+      click_button 'Search'
+    end
+
+    check("grants_users_#{user_one.id}_#{role.id}")
+    check("grants_users_#{user_two.id}_#{role.id}")
+
+    click_button('Update Roles')
 
     assert has_selector?('table#memberships-table tr', count: 2)
 

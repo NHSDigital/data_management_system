@@ -27,7 +27,9 @@ class TeamGrantsController < ApplicationController
     @roles = TeamRole.all
     @users = User.search(params: search_params).
              includes(grants: :roleable).
-             select(:id, :first_name, :last_name, :email)
+             select(:id, :first_name, :last_name, :email).
+             order(:last_name, :first_name).
+             paginate(page: params[:page], per_page: 20)
 
     @grant = Grant.new(team_id: params[:team_id], roleable: TeamRole.fetch(:read_only))
     @team = Team.find(params[:team_id])
