@@ -69,19 +69,20 @@ class TeamCoreTest < ActionDispatch::IntegrationTest
   end
 
   test 'should be able to search by fullname and email in team edit grants page' do
+    user = users(:standard_user1)
+
     visit edit_team_grants_path(teams(:team_one))
 
-    # should show based on email search
-    fill_in 'user_search', with: 'su11'
+    within('#user_search') do
+      fill_in 'user_search[first_name]', with: user.first_name
+      fill_in 'user_search[last_name]',  with: user.last_name
+      fill_in 'user_search[email]',      with: user.email
 
-    assert find('tr', text: 'Standard User1', visible: true)
-    assert find('tr', text: 'Contribu Tor', visible: false)
+      click_button 'Search'
+    end
 
-    # should show based on fullname search
-    fill_in 'user_search', with: 'contrib'
-
-    assert find('tr', text: 'Standard User1', visible: false)
-    assert find('tr', text: 'Contribu Tor', visible: true)
+    assert find('tr.user', count: 1)
+    assert find('tr.user', text: 'Standard User1')
   end
 
   test 'should be able to search by fullname and email in project edit grants page' do

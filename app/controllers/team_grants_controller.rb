@@ -25,12 +25,19 @@ class TeamGrantsController < ApplicationController
 
   def edit
     @roles = TeamRole.all
-    @users = User.includes(grants: :roleable).select(:id, :first_name, :last_name, :email)
+    @users = User.search(params: search_params).
+             includes(grants: :roleable).
+             select(:id, :first_name, :last_name, :email)
+
     @grant = Grant.new(team_id: params[:team_id], roleable: TeamRole.fetch(:read_only))
     @team = Team.find(params[:team_id])
   end
 
   private
+
+  def search_params
+    params.fetch(:user_search, {}).permit(:first_name, :last_name, :email)
+  end
 
   def grant_matrix
     TeamGrantMatrix.new(params).call
