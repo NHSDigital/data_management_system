@@ -1,0 +1,27 @@
+<%
+  comments_count ||= 0
+%>
+
+<%= content_tag(:tr, class: dom_class(communication), id: dom_id(communication)) do %>
+  <td><%= communication.id %></td>
+  <td><%= communication.sender_full_name %></td>
+  <td><%= communication.recipient_full_name %></td>
+  <td><%= communication.contacted_at.to_s(:ui) %></td>
+  <td><%= communication.medium.titleize %></td>
+  <td><%= "re: #{communication.parent_id}" if communication.parent_id %></td>
+  <td class="text-right">
+    <%= link_to(polymorphic_path([communication, :comments]), remote: true) do %>
+      <%= Comment.model_name.human.pluralize %>
+      <%= comments_count_badge_for(communication, comments_count) %>
+    <% end %>
+  </td>
+  <td>
+    <div class="pull-right">
+      <% new_response_params = { communication: { parent_id: communication.id, sender_id: communication.recipient_id, recipient_id: communication.sender_id } } %>
+      <%= link_to new_project_communication_path(communication.project, new_response_params), class: 'btn btn-default btn-xs', title: 'Log Response', remote: true do %>
+        <span class="glyphicon glyphicon-share" style="transform: scaleX(-1);"></span>
+      <% end %>
+      <%= delete_link(communication, remote: true) %>
+    </div>
+  </td>
+<% end %>

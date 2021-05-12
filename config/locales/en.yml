@@ -354,3 +354,8 @@ en:
         drr_no: DRR No
         individual_to_release: Name(s) of individuals releasing data
         release_date: Data Release date
+      communication:
+        id: ID
+        contacted_at: Contact Date
+        medium: Method
+        parent: Responding To

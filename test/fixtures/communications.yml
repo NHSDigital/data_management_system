@@ -1,0 +1,16 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+incoming:
+  project: dummy_project
+  sender: dummy_project_owner
+  recipient: application_manager_one
+  contacted_at: 2021-01-01
+  medium: 3
+
+outgoing:
+  project: dummy_project
+  parent: incoming
+  sender: application_manager_one
+  recipient: dummy_project_owner
+  contacted_at: 2021-01-03
+  medium: 1

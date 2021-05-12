@@ -23,6 +23,7 @@ class Project < ApplicationRecord
   has_many :dpias, class_name: 'DataPrivacyImpactAssessment', dependent: :destroy
   has_many :contracts, dependent: :destroy
   has_many :releases,  dependent: :destroy
+  has_many :communications, dependent: :destroy
 
   has_many :project_lawful_bases, dependent: :destroy
   has_many :lawful_bases, through: :project_lawful_bases

@@ -1,0 +1,9 @@
+<div class="panel panel-default" style="border-top: 0px;">
+  <div class="panel-heading" style="font-size: 1.5em;">
+    <%= Communication.model_name.human.pluralize %>
+  </div>
+</div>
+
+<%= async_content_tag(:div, project_communications_path(project)) do %>
+  <strong>Loading...</strong>
+<% end %>

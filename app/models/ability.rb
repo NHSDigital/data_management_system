@@ -278,6 +278,8 @@ class Ability
 
     can %i[create read update destroy], Release
 
+    can %i[create read destroy], Communication
+
     can :read, [ProjectEndUse, ProjectClassification, ProjectLawfulBasis]
   end
 
