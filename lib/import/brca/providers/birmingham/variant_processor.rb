@@ -16,6 +16,7 @@ module Import
             @testresult     = @record.raw_fields['teststatus']
             @testreport     = @record.raw_fields['report']
             @genelist       = BRCA_GENES_MAP[@record.raw_fields['indication']]
+            @testprocessor = TestresultProcessor.new(@genotype,@record,@testresult)
           end
 
           def process_variants_from_report
