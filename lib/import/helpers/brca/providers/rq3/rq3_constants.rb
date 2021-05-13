@@ -26,14 +26,21 @@ module Import
 
             BRCA_REGEX = /(?<brca>BRCA(1|2)|PALB2|ATM|CHEK2|TP53)/i.freeze
 
-            CDNA_REGEX = /c\.(?<cdna>([0-9]+[^[:alnum:]][0-9][^[:alnum:]][0-9]+
-                          [^[:alnum:]][0-9][a-z]+)|
-                          ([0-9]+[a-z]+[^[:alnum:]][a-z])|
-                          ([0-9]+[^[:alnum:]][0-9]+[a-z]+[^[:alnum:]][a-z])|
-                          ([0-9]+[a-z]+)|
-                          ([0-9]+[^[:alnum:]][0-9]+[a-z]+)|
-                          ([0-9]+[^[:alnum:]][0-9]+[^[:alnum:]][0-9]+[0-9]+[a-z]+))/ix.freeze
+            # CDNA_REGEX = /c\.(?<cdna>([0-9]+[+>_-][0-9][+>_-][0-9]+[+>_-][0-9][a-z]+)|
+            #               ([0-9]+[a-z]+[+>_-][a-z])|
+            #               ([0-9]+[+>_-][0-9]+[a-z]+)|
+            #               ([0-9]+[a-z]+)|
+            #               ([0-9]+[+>_-][0-9]+[a-z]+)|
+            #               ([0-9]+[+>_-][0-9]+[+>_-][0-9]+[0-9]+[a-z]+))/ix.freeze
+            CDNA_REGEX = /c\.(?<cdna>([0-9]+[+>_-][0-9][+>_-][0-9]+[+>_-][0-9][ACGTdelinsdup]+)|
+                         ([0-9]+[+>_-][0-9]+[ACGTdelinsdup][+>_-][ACGTdelinsdup])|
+                         ([0-9]+[ACGTdelinsdup]+[+>_-][ACGTdelinsdup])|
+                         ([0-9]+[+>_-][0-9]+[ACGTdelinsdup]+)|
+                         ([0-9]+[+>_-][0-9]+[+>_-][0-9]+[0-9]+[ACGTdelinsdup]+)|
+                         ([0-9]+[ACGTdelinsdup]+))/x.freeze
 
+            NO_EVIDENCE_REGEX = /(no evidence|additional).+(?<wtgenes>BRCA(1|2)|PALB2|ATM|CHEK2|TP53)+.+gene(s)?\./i
+            
             PROTEIN_REGEX = /p\.(\()?((?<impact>.([a-z]+[0-9]+[a-z]+([^[:alnum:]][0-9]+)?)|
                              ([a-z]+[0-9]+[^[:alnum:]])))/ix.freeze
 
