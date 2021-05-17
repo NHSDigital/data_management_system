@@ -354,4 +354,12 @@ module ProjectsHelper
 
     button_group { safe_join([button, menu]) }
   end
+
+  def project_sub_type_path_prefix(project)
+    "projects/#{project.project_type_name.parameterize(separator: '_')}"
+  end
+
+  def project_form_path(project)
+    "#{project_sub_type_path_prefix(project)}/form"
+  end
 end

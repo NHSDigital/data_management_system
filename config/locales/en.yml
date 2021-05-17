@@ -123,6 +123,19 @@ en:
   projects:
     application:
       form:
+        sections:
+          chief_investigator: Chief Investigator
+          sponsorship: Sponsorship
+          funding: Funding
+          overview: Overview
+          data_specification: Data Specification
+          programme_support: Programme Support
+          legal_gateway_common_law: Legal gateway (Common Law)
+          legal_gateway_data_protection: Legal Gateway (Data Protection)
+          hra_ethics: HRA Research Ethics Service Approval
+          confidentiality: Confidentiality and Data Protection Assurances
+          data_processor: Data Processor
+          additional_information: Additional Information
         name: Project Title
         description: "Lay Summary: Overall Project Aims"
         why_data_required: "Lay Summary: Why this project is needed"

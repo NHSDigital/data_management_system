@@ -1,0 +1,22 @@
+<%
+  sections = %i[
+    chief_investigator
+    sponsorship
+    funding
+    overview
+    data_specification
+    programme_support
+    legal_gateway_common_law
+    legal_gateway_data_protection
+    hra_ethics
+    confidentiality
+    data_processor
+    additional_information
+  ]
+%>
+
+<% sections.each do |section| %>
+  <li role="presentation">
+    <%= link_to t(section, scope: 'projects.application.form.sections'), "\##{section}" %>
+  </li>
+<% end %>

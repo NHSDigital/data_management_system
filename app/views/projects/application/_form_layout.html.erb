@@ -1,0 +1,16 @@
+<div class="row">
+  <div class="col-md-9">
+    <main>
+      <%= yield %>
+    </main>
+  </div>
+  <div class="col-md-3 hidden-sm hidden-xs hidden-print" role="complimentary">
+    <aside>
+      <nav class="panel panel-default" id="form_navigation" data-turbolinks="false" data-controller="page-navigation", data-page-navigation-position-top="25">
+        <ul class="nav nav-pills nav-stacked panel-body">
+          <%= render 'projects/application/form_links' %>
+        </ul>
+      </nav>
+    </aside>
+  </div>
+</div>

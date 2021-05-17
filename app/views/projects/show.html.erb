@@ -1,22 +1,8 @@
-<%= content_tag :div, class: 'project', id: dom_id(@project) do %>
-  <% if @project.errors.any? %>
-    <div class="alert alert-danger">
-      <strong><%= pluralize(@project.errors.count, "error") %></strong>
-      <ul>
-        <% @project.errors.full_messages.each do |msg| %>
-          <li><%= msg %></li>
-        <% end %>
-      </ul>
-    </div>
-  <% end %>
+<%
+  path_prefix = project_sub_type_path_prefix(@project)
+%>
 
-  <%= render 'transition_errors', project: @project %>
-  <%= render 'header', project: @project %>
-
-  <div class="panel-body" id="project-details">
-    <div class="row" id="project_show_tabs">
-      <%= render "projects/#{@project.project_type_name.downcase}/show_project_tabs",       project: @project, sub_resource_counts: @sub_resource_counts %>
-      <%= render "projects/#{@project.project_type_name.downcase}/show_project_tab_panels", project: @project, sub_resource_counts: @sub_resource_counts %>
-    </div>
-  </div>
+<%= render layout: 'projects/layout' do %>
+  <%= render "#{path_prefix}/show_project_tabs",       project: @project, sub_resource_counts: @sub_resource_counts %>
+  <%= render "#{path_prefix}/show_project_tab_panels", project: @project, sub_resource_counts: @sub_resource_counts %>
 <% end %>
