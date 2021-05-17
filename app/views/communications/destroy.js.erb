@@ -1,0 +1,10 @@
+<% if @communication.destroyed? %>
+  var $badge = $('a[href="#communications"] .badge');
+  var count = +$badge.text();
+
+  $badge.text(count - 1);
+
+  $('#<%= j(dom_id(@communication)) %>').fadeOut(function() {
+    $(this).remove();
+  });
+<% end %>

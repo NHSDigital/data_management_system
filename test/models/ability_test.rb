@@ -939,6 +939,32 @@ class AbilityTest < ActiveSupport::TestCase
     assert developer.can?           :delete, Delayed::Job
   end
 
+  test 'communications' do
+    user                = users(:standard_user)
+    application_manager = users(:application_manager_one)
+    odr                 = users(:odr_user)
+    administrator       = users(:admin_user)
+    developer           = users(:developer)
+
+    refute user.can?                :read, Communication
+    assert application_manager.can? :read, Communication
+    refute odr.can?                 :read, Communication
+    refute administrator.can?       :read, Communication
+    refute developer.can?           :read, Communication
+
+    refute user.can?                :create, Communication
+    assert application_manager.can? :create, Communication
+    refute odr.can?                 :create, Communication
+    refute administrator.can?       :create, Communication
+    refute developer.can?           :create, Communication
+
+    refute user.can?                :delete, Communication
+    assert application_manager.can? :delete, Communication
+    refute odr.can?                 :delete, Communication
+    refute administrator.can?       :delete, Communication
+    refute developer.can?           :delete, Communication
+  end
+
   private
 
   def create_dataset(options)

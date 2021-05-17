@@ -1,0 +1,29 @@
+<%
+  comments_count ||= {}
+%>
+
+<div class="table-responsive">
+  <table class="table" id="communications_table">
+    <thead>
+      <tr>
+        <th><%= Communication.human_attribute_name(:id) %></th>
+        <th><%= Communication.human_attribute_name(:sender) %></th>
+        <th><%= Communication.human_attribute_name(:recipient) %></th>
+        <th><%= Communication.human_attribute_name(:contacted_at) %></th>
+        <th><%= Communication.human_attribute_name(:medium) %></th>
+        <th><%= Communication.human_attribute_name(:parent) %></th>
+        <th></th>
+        <th>
+          <div class="pull-right">
+            <%= link_to bootstrap_icon_tag('plus-sign') + ' New', new_project_communication_path(project), class: 'btn btn-primary btn-xs', remote: true %>
+          </div>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <% communications.each do |communication| %>
+        <%= render communication, comments_count: comments_count.fetch(communication.id, 0) %>
+      <% end %>
+    </tbody>
+  </table>
+</div>

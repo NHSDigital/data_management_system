@@ -1,0 +1,39 @@
+<%
+  readonly ||= false
+  project  ||= communication.project
+
+  url = url_for(communication) if communication.persisted?
+  url ||= polymorphic_url([project, :communications])
+
+  form_html_options = {
+    class: dom_class(communication),
+    id: dom_id(communication)
+  }
+%>
+
+<%= bootstrap_form_with(model: communication, url: url, readonly: readonly, horizontal: true, local: false, html: form_html_options) do |form| %>
+  <%= form.hidden_field :parent_id, value: params.dig(:communication, :parent_id) %>
+
+  <%= form.error_and_warning_alert_boxes %>
+
+  <%= form.control_group(:sender) do %>
+    <%= form.collection_select(:sender_id, project.users, :id, :full_name, { include_blank: true }, class: 'form-control') %>
+  <% end %>
+
+  <%= form.control_group(:recipient) do %>
+    <%= form.collection_select(:recipient_id, project.users, :id, :full_name, { include_blank: true }, class: 'form-control') %>
+  <% end %>
+
+  <%= form.control_group(:contacted_at) do %>
+    <%= form.datepicker_field(:contacted_at) %>
+  <% end %>
+
+  <%= form.control_group(:medium) do %>
+    <%= form.select :medium, Communication.media.keys.map { |key| [key.titleize, key] }, include_blank: true %>
+  <% end %>
+
+  <hr />
+  <div class="text-right">
+    <%= form.submit 'Save', class: 'btn btn-primary' %>
+  </div>
+<% end %>
