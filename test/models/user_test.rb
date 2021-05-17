@@ -228,4 +228,47 @@ class UserTest < ActiveSupport::TestCase
       assert user.access_locked?
     end
   end
+
+  test 'search scope is chainable' do
+    assert_kind_of ActiveRecord::Relation, User.search
+  end
+
+  test 'search scope returns all with no parameters' do
+    assert_equal User.all, User.search
+  end
+
+  test 'search scope filters on all criteria' do
+    scope = User.search(
+      params: { first_name: 'Application', last_name: 'Manager-One' }
+    )
+
+    assert_includes scope, users(:application_manager_one)
+    refute_includes scope, users(:application_manager_two)
+  end
+
+  test 'search scope filter on any criteria' do
+    scope = User.search(
+      params: { first_name: 'Application', last_name: 'Manager-One' },
+      greedy: false
+    )
+
+    assert_includes scope, users(:application_manager_one)
+    assert_includes scope, users(:application_manager_two)
+  end
+
+  test 'search scope is case insensitive' do
+    scope = User.search(
+      params: { first_name: 'application', last_name: 'manager-One' }
+    )
+
+    assert_includes scope, users(:application_manager_one)
+  end
+
+  test 'search scope is fuzzy' do
+    scope = User.search(
+      params: { first_name: 'App', last_name: 'Manager-One' }
+    )
+
+    assert_includes scope, users(:application_manager_one)
+  end
 end

@@ -23,6 +23,12 @@
     <%= render 'project_comments', project: project, comments_count: sub_resource_counts.fetch(:comments, 0) %>
   </div>
 
+  <% if can?(:read, Communication) %>
+    <div class="tab-pane" id="communications">
+      <%= render 'communications', project: project, comments_count: 0 %>
+    </div>
+  <% end %>
+
   <%= render 'project_datasets',  project: @project %>
   <%= render 'project_timeline',  project: @project, comments_count: sub_resource_counts.fetch('workflow/project_states.comments', {}) %>
   <%= render 'project_heirarchy', project: @project %>

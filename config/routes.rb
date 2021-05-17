@@ -206,6 +206,7 @@ Rails.application.routes.draw do
       resources :data_privacy_impact_assessments, concerns: %i[downloadable]
       resources :contracts, concerns: %i[downloadable]
       resources :releases
+      resources :communications, except: %i[show edit update], concerns: %i[commentable]
 
       namespace :workflow do
         resources :project_states, only: [] do

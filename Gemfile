@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 6.0.3.5'
+gem 'rails', '~> 6.0.3.7'
 # Use postgresql as the database for Active Record
 gem 'pg'
 # use Puma as the app server
@@ -48,7 +48,7 @@ gem 'ndr_import'
 gem 'ndr_error', '~> 2.0'
 gem 'ndr_workflow', '~> 1.2', '>= 1.2.2'
 gem 'ndr_ui'
-gem 'activemodel-caution', tag: 'rails_6_0_3_5', git: 'https://github.com/PublicHealthEngland/activemodel-caution.git'
+gem 'activemodel-caution', '6.0.3.7.0'
 gem 'ndr_pseudonymise', '~> 0.2.6'
 gem 'ndr_authenticate', '0.2.3.1'
 
@@ -93,6 +93,8 @@ group :development do
 
   # Access an IRB console on exception pages or by using <%= console %> in views
   gem 'web-console', '~> 3.0'
+
+  gem 'rack-mini-profiler'
 
   # Spring speeds up development by keeping your application running in the background.
   # Read more: https://github.com/rails/spring

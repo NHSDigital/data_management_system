@@ -34,6 +34,9 @@ class AuditTest < ActionDispatch::IntegrationTest
   end
 
   test 'auditing of team' do
+    user = users(:standard_user)
+    role = TeamRole.fetch(:mbis_applicant)
+
     with_versioning do
       # Create a new team:
       visit organisation_path(@organisation)
@@ -56,9 +59,9 @@ class AuditTest < ActionDispatch::IntegrationTest
       within('#team_show_tabs') do
         click_on 'Users'
       end
+
       click_on 'Edit team grants'
-      page.check("grants_users_#{users(:standard_user).id}_#{TeamRole.fetch(:mbis_applicant).id}")
-      find_button('Update Roles').click
+      toggle_user_role(user, role)
 
       # The now the standard user should be there too:
       page.assert_selector('#memberships-panel tbody tr', count: 1)
@@ -106,5 +109,27 @@ class AuditTest < ActionDispatch::IntegrationTest
         assert page.has_content?('Some interesting notes about this project')
       end
     end
+  end
+
+  private
+
+  def search_for_user(user)
+    within('#user_search') do
+      fill_in 'user_search[first_name]', with: user.first_name
+      fill_in 'user_search[last_name]',  with: user.last_name
+      fill_in 'user_search[email]',      with: user.email
+
+      click_button 'Search'
+    end
+  end
+
+  def toggle_user_role(user, role)
+    search_for_user(user)
+
+    within("tr#user_#{user.id}") do
+      check("grants_users_#{user.id}_#{role.id}")
+    end
+
+    click_button('Update Roles')
   end
 end

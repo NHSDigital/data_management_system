@@ -1,0 +1,21 @@
+<% if @communication.errors.any? %>
+  <% html = render 'form', communication: @communication %>
+
+  $('#new_communication').html('<%= j(html) %>');
+<% else %>
+  <% html = render 'communication', communication: @communication %>
+
+  var $table = $('#communications_table');
+  var $row = $('<%= j(html) %>');
+  var $badge = $('a[href="#communications"] .badge');
+  var count = +$badge.text();
+
+  $badge.text(count + 1);
+
+  $row.hide().
+    prependTo($table).
+    fadeIn();
+
+  $('#modal').modal('hide');
+  $('#new_communication').remove();
+<% end %>

@@ -33,6 +33,9 @@
       <%= comments_count_badge_for(project, sub_resource_counts.fetch(:comments, 0)) %>
     </a>
   </li>
+  <% if can?(:read, Communication) %>
+    <%= tab_to Communication.model_name.human.pluralize, '#communications', count: sub_resource_counts.fetch(:communications, 0), data: { toggle: :tab } %>
+  <% end %>
   <li>
     <a href="#timeline" data-toggle="tab">Timeline</a>
   </li>

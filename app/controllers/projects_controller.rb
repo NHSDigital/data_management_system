@@ -63,6 +63,7 @@ class ProjectsController < ApplicationController
     @readonly = true
     @team = @project.team
     @sub_resource_counts = {
+      'communications': @project.communications.count,
       'comments': @project.comments.count,
       'project_nodes.comments': @project.project_nodes.joins(:comments).group(:id).count,
       'workflow/project_states.comments': @project.project_states.joins(:comments).group(:id).count

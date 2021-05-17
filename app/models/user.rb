@@ -128,6 +128,31 @@ class User < ActiveRecord::Base
   CAS_ACCOUNT_FIELDS = %i[first_name last_name email job_title username telephone line_manager_name
                           line_manager_email line_manager_telephone employment].freeze
 
+  class << self
+    def search(params: {}, greedy: true)
+      filters = [
+        text_filter(:first_name, params[:first_name]),
+        text_filter(:last_name,  params[:last_name]),
+        text_filter(:email,      params[:email]),
+        text_filter(:username,   params[:username])
+      ]
+
+      filters.compact!
+
+      return all if filters.none?
+
+      filters.inject(where(filters.shift)) do |chain, filter|
+        greedy ? chain.where(filter) : chain.or(where(filter))
+      end
+    end
+
+    private
+
+    def text_filter(field, text)
+      arel_table[field].matches("%#{text.strip}%") if text.present?
+    end
+  end
+
   def current_ability
     @current_ability ||= self.class.module_parent::Ability.new(self)
   end
@@ -403,32 +428,5 @@ class User < ActiveRecord::Base
 
   def save_only?
     saved_changes.empty?
-  end
-
-  class << self
-    def search(params)
-      filters = []
-      %i[first_name last_name username email].each do |field|
-        filters << field_filter(field, params[:name])
-      end
-
-      filters.compact!
-      scope = all
-      filters.each_with_index do |filter, i|
-        scope = i.zero? ? scope.where(filter) : scope.or(where(filter))
-      end
-
-      scope
-    end
-
-    private
-
-    def name_filter(text)
-      arel_table[:name].matches("%#{text.strip}%") if text.present?
-    end
-
-    def field_filter(field, text)
-      arel_table[field].matches("%#{text.strip}%") if text.present?
-    end
   end
 end

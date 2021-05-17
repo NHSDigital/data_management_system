@@ -1,0 +1,6 @@
+<% title = "New #{Communication.model_name.human}" %>
+<% html  = render 'form', communication: @communication %>
+
+$('#modal_title').text('<%= j(title) %>');
+$('#modal_body').html('<%= j(html) %>');
+$('#modal').modal('show');

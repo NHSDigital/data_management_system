@@ -86,4 +86,17 @@ class ProjectsHelperTest < ActionView::TestCase
 
     assert_equal 'with application manager', timeline_allocated_user_label(@project, state)
   end
+
+  test 'project_sub_type_path_prefix' do
+    project = projects(:dummy_project)
+    project.stubs(project_type_name: 'Dummy Project')
+
+    assert_equal 'projects/dummy_project', project_sub_type_path_prefix(project)
+  end
+
+  test 'project_form_path' do
+    project = projects(:dummy_project)
+
+    assert_equal 'projects/dummy/form', project_form_path(project)
+  end
 end
