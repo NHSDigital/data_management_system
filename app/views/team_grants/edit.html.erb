@@ -1,91 +1,20 @@
-  <% url = team_grants_url(@team) %>
-  <%= form_tag(url, method: :patch) %>
-  <%= hidden_field_tag "grants[team_id]", @team.id %>
-  <%= text_field_tag :user_search, '',
-                     placeholder: "Filter #{User.model_name.human.pluralize}...",
-                     style: 'width:100%' %>
-  <%= bootstrap_panel_tag panel_heading_segments(
-    left: link_to('Team', team_path(@team), class: 'btn btn-default'),
-    center: content_tag(:h4) { "Edit #{@team.name} Grants" }
+<%= bootstrap_panel_tag panel_heading_segments(
+  left: link_to('Team', team_path(@team), class: 'btn btn-default'),
+  center: content_tag(:h4) { "Edit #{@team.name} Grants" }
+) do %>
+<% end %>
 
-  ) do %>
-  <% end %>
-    <table class="table table-hover">
-      <thead>
-        <tr>
-          <th>User</th>
-          <th>Email</th>
-          <% TeamRole.all.each do |role|%>
-            <th><%= role.name %></th>
-          <% end %>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- TODO: scope Users with read only role and not other roles-->
-        <% User.all.each do |user| %>
-          <% fullname = user&.full_name %>
-          <% email = user&.email %>
-          <%= content_tag(:tr, 'data-user-name' => (fullname + email)) do %>
-            <td><%= link_to(fullname, user) if user %></td>
-            <td><%= email %></td>
-             <% TeamRole.all.each do |role| %>
-             <% already_granted = user.role?(role, at: @team) %>
-               <td>
-                 <%= hidden_field_tag "grants[users][#{user.id}][#{role.id}]", nil %>
-                 <%= check_box_tag    "grants[users][#{user.id}][#{role.id}]", 1, already_granted %>
-               </td>
-             <% end %>
-          <% end %>
-        <% end %>
-      </tbody>
-    </table>
-
-    <div class="row">
-      <div class="col-md-2 col-md-offset-4">
-        <%= link_to 'Cancel', url, class: 'btn btn-default btn-block' %>
-      </div>
-      <div class="col-md-2">
-        <%= submit_tag 'Update Roles', class: 'btn btn-primary btn-block' %>
-      </div>
+<div class="row">
+  <div class="col-md-12">
+    <div class="pull-right">
+      <%= render 'user_search_form' %>
     </div>
-  </form>
+  </div>
+</div>
+<hr />
 
-
-<script type="text/javascript">
-  jQuery(document).ready(function() {
-    // This is a static list:
-    var userLookup = {},
-        searchFunction  = function() {
-          var search = $searchField.val().toLowerCase(),
-              $toShow = jQuery(),
-              $toHide = jQuery();
-
-          jQuery.each(userLookup, function(value, $row) {
-            if (~value.indexOf(search)) {
-              $toShow = $toShow.add($row);
-            } else {
-              $toHide = $toHide.add($row);
-            }
-          });
-
-          $toShow.show();
-          $toHide.hide();
-        },
-        debounceTimer,
-        $searchField;
-
-    jQuery('tr[data-user-name]').each(function(_index, item) {
-      var $row = jQuery(item);
-      userLookup[$row.data('user-name').toLowerCase()] = $row;
-    });
-
-    jQuery('#user_search').on('keyup change', function(event) {
-      // Set the shared variable, so we don't have to rebind (problem in IE8)
-      $searchField = jQuery(event.target);
-
-      // Don't filter more than five times per second:
-      if (debounceTimer) clearTimeout(debounceTimer);
-      debounceTimer = setTimeout(searchFunction, 200);
-    });
-  });
-</script>
+<div class="row">
+  <div class="col-md-12">
+    <%= render 'grant_matrix_form', team: @team, users: @users, roles: @roles %>
+  </div>
+</div>

@@ -7,7 +7,8 @@ class UsersController < ApplicationController
 
   def index
     # @users
-    @users = @users.search(search_params).paginate(page: params[:page], per_page: 15).
+    @users = @users.search(params: search_params, greedy: false).
+             paginate(page: params[:page], per_page: 15).
              order(updated_at: :desc)
   end
 
@@ -111,6 +112,15 @@ class UsersController < ApplicationController
   end
 
   def search_params
-    params.fetch(:search, {}).permit(:name)
+    search_term = params.dig(:search, :name)
+
+    params.fetch(:search, {}).
+      merge(
+        first_name: search_term,
+        last_name:  search_term,
+        email:      search_term,
+        username:   search_term
+      ).
+      permit(:first_name, :last_name, :email, :username)
   end
 end

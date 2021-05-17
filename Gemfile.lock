@@ -333,6 +333,8 @@ GEM
     quantile (0.2.1)
     racc (1.5.2)
     rack (2.2.3)
+    rack-mini-profiler (2.3.1)
+      rack (>= 1.2.0)
     rack-proxy (0.6.5)
       rack
     rack-test (1.1.0)
@@ -528,6 +530,7 @@ DEPENDENCIES
   pry
   pry-rails
   puma (~> 4.0, >= 4.3.5)
+  rack-mini-profiler
   railroady
   rails (~> 6.0.3.7)
   regexp-examples

@@ -12,7 +12,7 @@ class TeamGrantsController < ApplicationController
   def index
     redirect_to "/teams/#{params[:team_id]}"
   end
-  
+
   def update
     if perform_authorized_grant_updates!(grant_matrix)
       flash[:notice] = 'Team grants updated.'
@@ -22,13 +22,24 @@ class TeamGrantsController < ApplicationController
       render :index
     end
   end
-  
+
   def edit
+    @roles = TeamRole.all
+    @users = User.search(params: search_params).
+             includes(grants: :roleable).
+             select(:id, :first_name, :last_name, :email).
+             order(:last_name, :first_name).
+             paginate(page: params[:page], per_page: 20)
+
     @grant = Grant.new(team_id: params[:team_id], roleable: TeamRole.fetch(:read_only))
     @team = Team.find(params[:team_id])
   end
 
   private
+
+  def search_params
+    params.fetch(:user_search, {}).permit(:first_name, :last_name, :email)
+  end
 
   def grant_matrix
     TeamGrantMatrix.new(params).call
