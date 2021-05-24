@@ -76,6 +76,7 @@ module Pseudo
     def build_key_store_entry(key_name)
       key_attributes = @bundle.extract(key_name.to_sym)
       raise("Unknown key #{key_name}") unless key_attributes
+
       klass = case key_attributes[:mode]
               when 'encrypt'
                 Pseudo::KeyStoreLocal::Encrypt
@@ -83,7 +84,7 @@ module Pseudo
                 Pseudo::KeyStoreLocal::PseudonymiseNhsOnly
               when 'pseudonymise_nhsnumber_postcode_birthdate'
                 # decrypt_key is a key bundle (binary encoded, not base-64)
-                raise('Not yet implemented')
+                Pseudo::KeyStoreLocal::PseudonymiseNhsPostcodeBirthdate
               else
                 raise("Unknown mode #{key_attributes[:mode]}")
               end
