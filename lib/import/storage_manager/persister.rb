@@ -8,7 +8,7 @@ module Import
     # which handles accumulating records in the correct structure, and 'finalize',
     # which is responsible for writing that structure into the database
     class Persister
-      include Import::ImportKey
+      include Import::Brca::Core::ImportKey
 
       def initialize(batch)
         @genetic_tests = {}
@@ -109,9 +109,9 @@ module Import
         def generate_patient(person)
           @e_batch.save!
           key_record = generate_key
-          raw_data = Pseudo::PpatientRawdata.new('rawdata' => person.raw_all.to_s,
-          'decrypt_key' => 'apple')
-          # TODO: still don't have?
+          decrypt_key = Pseudo::PseudonymisationKey.pack_decrypt_key(person.keys)
+          raw_data = Pseudo::PpatientRawdata.new(rawdata: person.raw_all.to_s,
+                                                 decrypt_key: decrypt_key)
           raw_data.save!
           test_patient = Pseudo::Ppatient.new('pseudo_id1' => person.pseudo_id1,
           'pseudo_id2' => person.pseudo_id2,
@@ -147,9 +147,7 @@ module Import
         end
 
         def generate_key
-          key_record = Pseudo::PseudonymisationKey.new('key_name' => key) # from tab delimited
-          key_record.save!
-          key_record
+          Pseudo::PseudonymisationKey.find_or_create_by(key_name: key)
         end
 
         def process_variants(variants, tresult)

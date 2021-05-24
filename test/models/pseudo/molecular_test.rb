@@ -45,9 +45,9 @@ module Pseudo
       assert_equal(ppatient.ppatient_rawdata, ppat2.ppatient_rawdata,
                    'Should re-use ppatient_rawdata')
 
-      # Unlock demographics with postcode and birthdate
       assert_raises(ArgumentError, 'Demographics should be locked') { ppat2.demographics }
-      assert(ppat2.unlock_demographics(@nhsnumber, '', @birthdate, :match))
+      assert(ppat2.unlock_demographics('', @postcode, @birthdate, :match),
+             'Should unlock demographics with postcode and birthdate')
       assert_equal(@demographics, ppat2.demographics)
 
       # Create a third ppatient with tweaked demographics, but same pseudo_id1
@@ -100,6 +100,51 @@ module Pseudo
     # Match and unlock an existing, hard-wired record (check data format stable over time)
     # TODO: write test 'match_demographics with existing data' do
     # end
+
+    test 'match_demographics with new data' do
+      rawtext = nil
+      fields_no_demog = { e_batch: @e_batch }
+      ppat = Molecular.initialize_from_demographics(@key, @demographics, rawtext, fields_no_demog)
+      ppat.save!
+      assert_raise(ArgumentError, 'Demographics should be locked') { ppat.demographics }
+      assert_equal(:perfect, ppat.match_demographics(@nhsnumber, @postcode, @birthdate))
+      ppat.lock_demographics
+      assert_equal(:perfect, ppat.match_demographics(@nhsnumber, '', @birthdate))
+      ppat.lock_demographics
+      assert_raise(ArgumentError, 'Demographics should be locked') { ppat.demographics }
+      assert_equal(:veryfuzzy, ppat.match_demographics(@nhsnumber, '', @birthdate2))
+      ppat.lock_demographics
+      assert_equal(:new, ppat.match_demographics('', '', @birthdate))
+      ppat.lock_demographics
+      assert_equal(:fuzzy_postcode, ppat.match_demographics('', @postcode, @birthdate))
+    end
+
+    test 'match_demographics with ISO dateofbirth in demographics' do
+      rawtext = nil
+      fields_no_demog = { e_batch: @e_batch }
+      demographics3 = { 'nhsnumber' => @nhsnumber,
+                        'dateofbirth' => "#{@birthdate}T00:00:00.000+00:00",
+                        'postcode' => @postcode }
+      ppat = Molecular.initialize_from_demographics(@key, @demographics, rawtext, fields_no_demog)
+      # Replace ppat.ppatient_rawdata with demographics3, i.e. use dateofbirth instead of birthdate
+      demog_json = demographics3.to_json
+      _pseudo_id1, _pseudo_id2, decrypt_key, rawdata = \
+        @keystore.encrypt_record(@key, :demographics, demog_json, @nhsnumber, @postcode, @birthdate,
+                                 :create)
+      ppat.ppatient_rawdata = PpatientRawdata.new(decrypt_key: decrypt_key, rawdata: rawdata)
+      ppat.save!
+      assert_raise(ArgumentError, 'Demographics should be locked') { ppat.demographics }
+      assert_equal(:perfect, ppat.match_demographics(@nhsnumber, @postcode, @birthdate))
+      ppat.lock_demographics
+      assert_equal(:perfect, ppat.match_demographics(@nhsnumber, '', @birthdate))
+      ppat.lock_demographics
+      assert_raise(ArgumentError, 'Demographics should be locked') { ppat.demographics }
+      assert_equal(:veryfuzzy, ppat.match_demographics(@nhsnumber, '', @birthdate2))
+      ppat.lock_demographics
+      assert_equal(:new, ppat.match_demographics('', '', @birthdate))
+      ppat.lock_demographics
+      assert_equal(:fuzzy_postcode, ppat.match_demographics('', @postcode, @birthdate))
+    end
 
     # Ensure that find_matching_ppatients works as expected, when some patients have missing fields
     # TODO: write test 'find_matching_ppatients' do
