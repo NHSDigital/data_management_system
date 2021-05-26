@@ -16,14 +16,34 @@ module Import
                      'ATM' => 451,
                      'CHEK2' => 865,
                      'PALB2' => 3186,
-                     'TP53' => 79 }.freeze
+                     'TP53' => 79,
+                     'MLH1' => 2744,
+                     'MSH2' => 2804,
+                     'MSH6' => 2808,
+                     'PMS2' => 3394,
+                     'PTEN' => 62,
+                     'STK11' => 76,
+                     'BRIP1' => 590,
+                     'NBN' => 2912,
+                     'RAD51C' => 3615,
+                     'RAD51D' => 3616 }.freeze
 
         BRCA_REGEX = /(?<atm>ATM)|
                       (?<chek2>CHEK2)|
                       (?<palb2>PALB2)|
                       (?<brca1>BRCA1)|
                       (?<brca2>BRCA2)|
-                      (?<tp53>TP53)/ix.freeze # Added by Francesco
+                      (?<tp53>TP53)|
+                      (?<mlh1>MLH1)|
+                      (?<msh2>MSH2)|
+                      (?<msh6>MSH6)|
+                      (?<pms2>PMS2)|
+                      (?<stk>STK11)|
+                      (?<pten>PTEN)|
+                      (?<brip1>BRIP1)|
+                      (?<nbn>NBN)|
+                      (?<rad51c>RAD51C)|
+                      (?<rad51d>RAD51D)/ix .freeze # Added by Francesco
 
         def other_gene
           gene = @attribute_map['gene']
@@ -81,12 +101,10 @@ module Import
         #     gene_regex_input(brca_input)
         #   end
         # end
-
         def add_gene(brca_input)
           case brca_input
           when Integer
-            if [7, 8, 79, 451, 865, 3186].include? brca_input
-
+            if [7, 8, 79, 451, 865, 3186, 2744, 2804, 3394, 62, 76, 590, 2912, 3615, 3616].include? brca_input
               @attribute_map['gene'] = brca_input
               @logger.debug "SUCCESSFUL gene parse for #{brca_input}"
             elsif (1..2).cover? brca_input
@@ -112,7 +130,7 @@ module Import
               end
               case variable = BRCA_REGEX.match(brca_input.strip)
               when nil
-                @logger.debug 'Null input for BRCA genes'
+                @logger.debug "Null input for BRCA genes"
               else
                 @attribute_map['gene'] = BRCA_MAP[variable&.to_s]
                 @logger.debug "SUCCESSFUL gene parse for #{brca_input}"
@@ -125,7 +143,6 @@ module Import
 
         def add_test_scope(scope)
           return if scope.blank?
-
           case scope
           when :full_screen
             @attribute_map['genetictestscope'] = 'Full screen BRCA1 and BRCA2'
