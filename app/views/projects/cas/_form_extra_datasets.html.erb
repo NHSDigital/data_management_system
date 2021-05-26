@@ -1,10 +1,20 @@
 <fieldset>
   <%= content_tag :p, t('.extra_datasets_note') %>
   <%= form.label :extra_datasets %>
-  <% readonly_value = @project.dataset_names.any? ? safe_join(@project.dataset_names, raw('<br />')) : 'Unknown' %>
-  <%= form.collection_check_boxes(:dataset_ids, Dataset.cas, :id, :name, readonly_value: readonly_value) do |b| %>
-    <div class="checkbox">
-      <%= b.label { b.check_box + b.text } %>
-    </div>
-  <% end %>
+  <table class="table">
+    <tr>
+      <th>Dataset</th>
+      <th>1</th>
+      <th>2</th>
+      <th>3</th>
+    </tr>
+    <%= form.fields_for :project_datasets do |pd| %>
+      <tr>
+        <td width="85%"><%= pd.object.dataset.name %></td>
+        <td width="5%"><%= pd.check_box :level_one, readonly_value: check_icon(pd.object.level_one) %></td>
+        <td width="5%"><%= pd.check_box :level_two, readonly_value: check_icon(pd.object.level_two) %></td>
+        <td width="5%"><%= pd.check_box :level_three, readonly_value: check_icon(pd.object.level_three) %></td>
+      </tr>
+    <% end %>
+  </table>
 </fieldset>

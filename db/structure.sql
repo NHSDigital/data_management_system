@@ -133,8 +133,8 @@ ALTER SEQUENCE public.amendment_types_id_seq OWNED BY public.amendment_types.id;
 CREATE TABLE public.ar_internal_metadata (
     key character varying NOT NULL,
     value character varying,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
 );
 
 
@@ -888,6 +888,38 @@ CREATE SEQUENCE public.data_sources_id_seq
 --
 
 ALTER SEQUENCE public.data_sources_id_seq OWNED BY public.data_sources.id;
+
+
+--
+-- Name: dataset_levels; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.dataset_levels (
+    id bigint NOT NULL,
+    value character varying,
+    description character varying,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: dataset_levels_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.dataset_levels_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: dataset_levels_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.dataset_levels_id_seq OWNED BY public.dataset_levels.id;
 
 
 --
@@ -2146,13 +2178,13 @@ CREATE TABLE public.molecular_data (
     providercode text,
     practitionercode text,
     patienttype text,
-    moleculartestingtype integer,
     requesteddate date,
     collecteddate date,
     receiveddate date,
     authoriseddate date,
     indicationcategory integer,
     clinicalindication text,
+    moleculartestingtype integer,
     organisationcode_testresult text,
     servicereportidentifier text,
     specimentype integer,
@@ -2726,12 +2758,12 @@ CREATE TABLE public.project_attachments (
     comments character varying,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    attachment_contents bytea,
-    digest character varying,
     attachment_file_name character varying,
     attachment_content_type character varying,
     attachment_file_size integer,
     attachment_updated_at timestamp without time zone,
+    attachment_contents bytea,
+    digest character varying,
     workflow_project_state_id bigint,
     attachable_type character varying,
     attachable_id bigint
@@ -2926,6 +2958,39 @@ ALTER SEQUENCE public.project_data_source_items_id_seq OWNED BY public.project_d
 
 
 --
+-- Name: project_dataset_levels; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.project_dataset_levels (
+    id bigint NOT NULL,
+    project_dataset_id bigint,
+    level integer,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
+    zdataset_level_id integer
+);
+
+
+--
+-- Name: project_dataset_levels_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.project_dataset_levels_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: project_dataset_levels_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.project_dataset_levels_id_seq OWNED BY public.project_dataset_levels.id;
+
+
+--
 -- Name: project_datasets; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -2936,7 +3001,10 @@ CREATE TABLE public.project_datasets (
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL,
     terms_accepted boolean,
-    approved boolean
+    approved boolean,
+    level_one boolean,
+    level_two boolean,
+    level_three boolean
 );
 
 
@@ -4298,6 +4366,38 @@ ALTER SEQUENCE public.z_user_statuses_id_seq OWNED BY public.z_user_statuses.id;
 
 
 --
+-- Name: zdataset_levels; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.zdataset_levels (
+    id bigint NOT NULL,
+    value character varying,
+    description character varying,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: zdataset_levels_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.zdataset_levels_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: zdataset_levels_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.zdataset_levels_id_seq OWNED BY public.zdataset_levels.id;
+
+
+--
 -- Name: ze_actiontype; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -4524,6 +4624,13 @@ ALTER TABLE ONLY public.data_source_items ALTER COLUMN id SET DEFAULT nextval('p
 --
 
 ALTER TABLE ONLY public.data_sources ALTER COLUMN id SET DEFAULT nextval('public.data_sources_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dataset_levels ALTER COLUMN id SET DEFAULT nextval('public.dataset_levels_id_seq'::regclass);
 
 
 --
@@ -4852,6 +4959,13 @@ ALTER TABLE ONLY public.project_data_source_items ALTER COLUMN id SET DEFAULT ne
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY public.project_dataset_levels ALTER COLUMN id SET DEFAULT nextval('public.project_dataset_levels_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.project_datasets ALTER COLUMN id SET DEFAULT nextval('public.project_datasets_id_seq'::regclass);
 
 
@@ -5087,6 +5201,13 @@ ALTER TABLE ONLY public.z_user_statuses ALTER COLUMN id SET DEFAULT nextval('pub
 
 
 --
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.zdataset_levels ALTER COLUMN id SET DEFAULT nextval('public.zdataset_levels_id_seq'::regclass);
+
+
+--
 -- Name: addresses_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -5276,6 +5397,14 @@ ALTER TABLE ONLY public.data_source_items
 
 ALTER TABLE ONLY public.data_sources
     ADD CONSTRAINT data_sources_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: dataset_levels_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dataset_levels
+    ADD CONSTRAINT dataset_levels_pkey PRIMARY KEY (id);
 
 
 --
@@ -5671,6 +5800,14 @@ ALTER TABLE ONLY public.project_data_source_items
 
 
 --
+-- Name: project_dataset_levels_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.project_dataset_levels
+    ADD CONSTRAINT project_dataset_levels_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: project_datasets_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -5964,6 +6101,14 @@ ALTER TABLE ONLY public.z_team_statuses
 
 ALTER TABLE ONLY public.z_user_statuses
     ADD CONSTRAINT z_user_statuses_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: zdataset_levels_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.zdataset_levels
+    ADD CONSTRAINT zdataset_levels_pkey PRIMARY KEY (id);
 
 
 --
@@ -6451,6 +6596,13 @@ CREATE INDEX index_project_data_source_items_on_data_source_item_id ON public.pr
 --
 
 CREATE INDEX index_project_data_source_items_on_project_id ON public.project_data_source_items USING btree (project_id);
+
+
+--
+-- Name: index_project_dataset_levels_on_project_dataset_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_project_dataset_levels_on_project_dataset_id ON public.project_dataset_levels USING btree (project_dataset_id);
 
 
 --
@@ -7004,6 +7156,14 @@ ALTER TABLE ONLY public.projects
 
 ALTER TABLE ONLY public.e_workflow
     ADD CONSTRAINT fk_rails_2df7f418f6 FOREIGN KEY (provider) REFERENCES public.zprovider(zproviderid);
+
+
+--
+-- Name: fk_rails_2f912bd782; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.project_dataset_levels
+    ADD CONSTRAINT fk_rails_2f912bd782 FOREIGN KEY (project_dataset_id) REFERENCES public.project_datasets(id);
 
 
 --
@@ -8052,6 +8212,12 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20210408152005'),
 ('20210414134929'),
 ('20210415143021'),
-('20210506093309');
+('20210506093309'),
+('20210520183013'),
+('20210521073454'),
+('20210521074801'),
+('20210521075241'),
+('20210521075411'),
+('20210526162851');
 
 

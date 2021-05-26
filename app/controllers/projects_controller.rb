@@ -318,7 +318,9 @@ class ProjectsController < ApplicationController
                                     owner_grant_attributes: %i[id user_id project_id
                                                                roleable_id roleable_type],
                                     project_datasets_attributes: %i[id project_id dataset_id
-                                                                    terms_accepted _destroy],
+                                                                    terms_accepted _destroy
+                                                                    level_one level_two
+                                                                    level_three],
                                     project_attachments_attributes: %i[name attachment],
                                     # CAS
                                     cas_application_fields_attributes: cas_fields)

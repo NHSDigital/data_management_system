@@ -362,4 +362,10 @@ module ProjectsHelper
   def project_form_path(project)
     "#{project_sub_type_path_prefix(project)}/form"
   end
+
+  def check_icon(value)
+    return bootstrap_icon_tag('ok') if value
+
+    bootstrap_icon_tag('remove')
+  end
 end
