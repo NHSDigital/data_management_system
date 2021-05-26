@@ -28,6 +28,21 @@ module Import
               genotype.attribute_map['organisationcode_testresult'] = '699F0'
             end
 
+            def process_noevidence_records(record, testresult, genotypes, genotype)
+              no_evidence = @testresult.scan(/no evidence(?!\.).+[^.]|no further(?!\.).+[^.]/i).join
+              true_variant = @testresult.gsub(/no evidence(?!\.).+[^.]|no further(?!\.).+[^.]/i,'')
+              no_evidence.scan(BRCA_REGEX).flatten - true_variant.scan(BRCA_REGEX).flatten
+              negativegenes = no_evidence.scan(BRCA_REGEX).flatten - true_variant.scan(BRCA_REGEX).flatten
+              process_negative_genes(negativegenes, @genotypes, @genotype)
+              genotype.add_gene(unique_brca_genes_from(true_variant).join)
+              genotype.add_gene_location(true_variant.scan(CDNA_REGEX).join)
+              genotype.add_status(2)
+              if true_variant.scan(PROTEIN_REGEX).size.positive?
+                genotype.add_protein_impact(true_variant.scan(PROTEIN_REGEX).join)
+              end
+              genotypes.append(genotype)
+            end
+
             def process_testreport_cdna_variants(testreport, genotypes, _genotype)
               case testreport.scan(CDNA_REGEX).size
               when 1
@@ -59,11 +74,10 @@ module Import
             end
 
             def process_testresult_cdna_variants(testresult, testreport, genelist, genotypes, record, genotype)
-              case testresult.scan(CDNA_REGEX).size
-              when 1
+               if testresult.scan(CDNA_REGEX).size == 1 
                 process_testresult_single_cdnavariant(testresult, testreport, record, genelist,
                                                       genotypes, genotype)
-              when 2
+              else
                 process_testresult_multiple_cdnavariant(testresult, testreport, record, genelist,
                                                         genotypes, genotype)
               end
@@ -82,11 +96,11 @@ module Import
                     process_negative_genes(negativegenes, genotypes, genotype)
                   end
                 end
-                genotype.add_gene(@testprocessor.find_single_true_positives(@testresult)[:gene])
-                genotype.add_gene_location(@testprocessor.find_single_true_positives(@testresult)[:cdna])
+                genotype.add_gene(unique_brca_genes_from(testresult).join)
+                genotype.add_gene_location(testresult.scan(CDNA_REGEX).join)
                 genotype.add_status(2)
-                if !@testprocessor.find_single_true_positives(@testresult).nil?
-                  genotype.add_protein_impact(@testprocessor.find_single_true_positives(@testresult)[:protein])
+                if testresult.scan(PROTEIN_REGEX).size.positive?
+                  genotype.add_protein_impact(testresult.scan(PROTEIN_REGEX).join)
                 end
                 genotypes.append(genotype)
               else
@@ -112,7 +126,7 @@ module Import
 
             def process_testresult_multiple_cdnavariant(testresult, testreport, record,
                                                         genelist, genotypes, genotype)
-              if testresult.scan(BRCA_REGEX).uniq.size == 2
+              if testresult.scan(BRCA_REGEX).uniq.size > 1
                 if full_screen?(record)
                   if sometimes_tested?(record)
                     genelist = unique_brca_genes_from(testreport)
@@ -139,8 +153,13 @@ module Import
                     process_negative_genes(negativegenes, genotypes, genotype)
                   end
                 end
-                genes = unique_brca_genes_from(testresult) * 2
-                cdnas = testresult.scan(CDNA_REGEX).flatten
+                if testresult.scan(/known as #{CDNA_REGEX}/i).size.positive?
+                  false_cdnas  = testresult.scan(/known as #{CDNA_REGEX}/i).flatten
+                  cdnas = testresult.scan(CDNA_REGEX).flatten - false_cdnas
+                else cdnas = testresult.scan(CDNA_REGEX).flatten
+                end
+                genes = unique_brca_genes_from(testresult) * cdnas.size
+                # cdnas = testresult.scan(CDNA_REGEX).flatten
                 proteins = testresult.scan(PROTEIN_REGEX).flatten
                 positive_results = genes.zip(cdnas, proteins)
                 positive_multiple_cdna_variants(positive_results, genotypes, genotype)
@@ -261,8 +280,14 @@ module Import
                  testreport.scan(CDNA_REGEX).blank? &&
                  testreport.scan(BRCA_REGEX).size.positive?
                 if full_screen?(record)
-                  negativegenes = genelist - unique_brca_genes_from(testresult)
-                  process_negative_genes(negativegenes, genotypes, genotype)
+                  if sometimes_tested?(record)
+                    genelist = unique_brca_genes_from(testreport)
+                    negativegenes = genelist - unique_brca_genes_from(testresult)
+                    process_negative_genes(negativegenes, genotypes, genotype)
+                  else
+                    negativegenes = genelist - unique_brca_genes_from(testresult)
+                    process_negative_genes(negativegenes, genotypes, genotype)
+                  end
                 end
                 genes = brca_genes_from(testreport)
                 genes.uniq do |gene|
@@ -278,145 +303,6 @@ module Import
             def sometimes_tested?(record)
               record.raw_fields['indication'] == 'BRCA'
             end
-            # if !@testreport.nil? &&
-            #   @testresult.scan(CDNA_REGEX).blank? &&
-            #   @testreport.scan(CDNA_REGEX).blank? &&
-            #   @testreport.scan(BRCA_REGEX).size.positive?
-            #   if full_screen?(@record)
-            #     negativegenes = @genelist - unique_brca_genes_from(@testresult)
-            #     process_negative_genes(negativegenes, @genotypes, @genotype)
-            #   end
-            #   genes = brca_genes_from(@testreport)
-            #   genes.uniq do |gene|
-            #     @logger.debug "FUCCKITY for list #{gene}"
-            #     duplicated_genotype = @genotype.dup
-            #     duplicated_genotype.add_status(2)
-            #     duplicated_genotype.add_gene(gene)
-            #     duplicated_genotype.add_gene_location('')
-            #     @genotypes.append(duplicated_genotype)
-            #   end
-            # end
-            # def process_testreport_cdna_variants(testreport, genotypes, genocolorectal)
-            #   if testreport.scan(CDNA_REGEX).size == 1
-            #     if testreport.scan(COLORECTAL_GENES_REGEX).uniq.size == 1
-            #       genocolorectal.add_gene_colorectal(unique_colorectal_genes_from(testreport).join)
-            #       genocolorectal.add_gene_location(testreport.scan(CDNA_REGEX).join)
-            #       genocolorectal.add_status(2)
-            #       if testreport.scan(PROTEIN_REGEX).size.positive?
-            #         genocolorectal.add_protein_impact(testreport.scan(PROTEIN_REGEX).join)
-            #       end
-            #       genotypes.append(genocolorectal)
-            #     end
-            #   elsif testreport.scan(CDNA_REGEX).size == 2
-            #     if testreport.scan(COLORECTAL_GENES_REGEX).uniq.size == 2
-            #       genes = colorectal_genes_from(testreport)
-            #       cdnas = testreport.scan(CDNA_REGEX).flatten
-            #       proteins = testreport.scan(PROTEIN_REGEX).flatten
-            #       positive_results = genes.zip(cdnas, proteins)
-            #       positive_multiple_cdna_variants(positive_results, genotypes, genocolorectal)
-            #     end
-            #   end
-            # end
-            #
-            # def process_malformed_variants(testresult, testreport, genelist, genotypes, genocolorectal, record)
-            #   if (testresult =~ /FAP/ && testreport.scan(/APC/i).size.positive?) ||
-            #      (testresult =~ /High risk haplotype identified in this patient/ && testreport.scan(/APC/i).size.positive?)
-            #     if full_screen?(record)
-            #       negativegenes = genelist - ['APC']
-            #       process_negative_genes(negativegenes, genotypes, genocolorectal)
-            #     end
-            #     genocolorectal.add_gene_colorectal('APC')
-            #     genocolorectal.add_gene_location('')
-            #     genocolorectal.add_status(2)
-            #     genotypes.append(genocolorectal)
-            #   elsif testreport.match(COLORECTAL_GENES_REGEX)
-            #     gene = testreport.match(COLORECTAL_GENES_REGEX)[0]
-            #     if full_screen?(record)
-            #       negativegenes = genelist - [gene]
-            #       process_negative_genes(negativegenes, genotypes, genocolorectal)
-            #     end
-            #     genocolorectal.add_gene_colorectal(gene)
-            #     genocolorectal.add_gene_location('')
-            #     genocolorectal.add_status(2)
-            #     genotypes.append(genocolorectal)
-            #   end
-            # end
-            #
-
-            # def process_chr_variants(record, testresult, testreport, genotypes, genocolorectal)
-            #   if full_screen?(record)
-            #     if sometimes_tested?(record)
-            #       genelist = unique_colorectal_genes_from(testreport)
-            #       negativegenes = genelist - unique_colorectal_genes_from(testresult)
-            #       process_negative_genes(negativegenes, genotypes, genocolorectal)
-            #     else
-            #       genelist = COLORECTAL_GENES_MAP[record.raw_fields['indication']]
-            #       negativegenes = genelist - unique_colorectal_genes_from(testresult)
-            #       process_negative_genes(negativegenes, genotypes, genocolorectal)
-            #     end
-            #   end
-            #   testcolumn = testresult
-            #   process_chromosomal_variant(testcolumn, genelist, genotypes, record, genocolorectal)
-            # end
-            #
-            # def process_full_screen(record, testresult, testreport, genotypes, genocolorectal)
-            #   if sometimes_tested?(record)
-            #     genelist = unique_colorectal_genes_from(testreport)
-            #     negativegenes = genelist - unique_colorectal_genes_from(testresult)
-            #     process_negative_genes(negativegenes, genotypes, genocolorectal)
-            #   else
-            #     genelist = COLORECTAL_GENES_MAP[record.raw_fields['indication']]
-            #     negativegenes = genelist - unique_colorectal_genes_from(testresult)
-            #     process_negative_genes(negativegenes, genotypes, genocolorectal)
-            #   end
-            # end
-            #
-
-            #
-            # def sometimes_tested?(record)
-            #   record.raw_fields['indication'] == 'HNPCC' ||
-            #     record.raw_fields['indication'] == 'COLON' ||
-            #     record.raw_fields['indication'] == 'NGS_COLON' ||
-            #     record.raw_fields['indication'] == 'POLY'
-            # end
-            #
-            # def process_testresult_multiple_cdnavariant(testresult, testreport, record,
-            #                                             genelist, genotypes, genocolorectal)
-            #   if testresult.scan(COLORECTAL_GENES_REGEX).uniq.size == 2
-            #     if full_screen?(record)
-            #       if sometimes_tested?(record)
-            #         genelist = unique_colorectal_genes_from(testreport)
-            #         negativegenes = genelist - unique_colorectal_genes_from(testresult)
-            #         process_negative_genes(negativegenes, genotypes, genocolorectal)
-            #       else
-            #         negativegenes = genelist - unique_colorectal_genes_from(testresult)
-            #         process_negative_genes(negativegenes, genotypes, genocolorectal)
-            #       end
-            #     end
-            #     genes = colorectal_genes_from(testresult)
-            #     cdnas = testresult.scan(CDNA_REGEX).flatten
-            #     proteins = testresult.scan(PROTEIN_REGEX).flatten
-            #     positive_results = genes.zip(cdnas, proteins)
-            #     positive_multiple_cdna_variants(positive_results, genotypes, genocolorectal)
-            #   elsif unique_colorectal_genes_from(testresult).one?
-            #     if full_screen?(record)
-            #       if sometimes_tested?(record)
-            #         genelist = unique_colorectal_genes_from(testreport)
-            #         negativegenes = genelist - unique_colorectal_genes_from(testresult)
-            #         process_negative_genes(negativegenes, genotypes, genocolorectal)
-            #       else
-            #         negativegenes = genelist - unique_colorectal_genes_from(testresult)
-            #         process_negative_genes(negativegenes, genotypes, genocolorectal)
-            #       end
-            #     end
-            #     genes = unique_colorectal_genes_from(testresult) * 2
-            #     cdnas = testresult.scan(CDNA_REGEX).flatten
-            #     proteins = testresult.scan(PROTEIN_REGEX).flatten
-            #     positive_results = genes.zip(cdnas, proteins)
-            #     positive_multiple_cdna_variants(positive_results, genotypes, genocolorectal)
-            #   end
-            # end
-            #
           end
         end
       end

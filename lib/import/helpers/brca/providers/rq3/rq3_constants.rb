@@ -20,11 +20,11 @@ module Import
 
             BRCA_GENES_MAP = { 'AZOVCA' => %w[BRCA1 BRCA2],
                                'BROV' => %w[BRCA1 BRCA2],
-                               'BRCA' => %w[BRCA1 BRCA2 ATM CHEK2 PALB2 TP53] }.freeze
+                               'BRCA' => %w[BRCA1 BRCA2 ATM CHEK2 PALB2 TP53 MLH1 MSH2 MSH6 PMS2 STK11 PTEN BRIP1 NBN RAD51C RAD51D] }.freeze
 
             REPORT_GENETICTESTSCOPE_REGEX = /previously identified in this family|previously reported in this family|previously found in an affected relative/i.freeze
 
-            BRCA_REGEX = /(?<brca>BRCA(1|2)|PALB2|ATM|CHEK2|TP53)/i.freeze
+            BRCA_REGEX = /(?<brca>BRCA(1|2)|PALB2|ATM|CHEK2|TP53|MLH1|MSH2|MSH6|PMS2|STK11|PTEN|BRIP1|NBN|RAD51C|RAD51D)/i.freeze
 
             # CDNA_REGEX = /c\.(?<cdna>([0-9]+[+>_-][0-9][+>_-][0-9]+[+>_-][0-9][a-z]+)|
             #               ([0-9]+[a-z]+[+>_-][a-z])|
@@ -32,16 +32,16 @@ module Import
             #               ([0-9]+[a-z]+)|
             #               ([0-9]+[+>_-][0-9]+[a-z]+)|
             #               ([0-9]+[+>_-][0-9]+[+>_-][0-9]+[0-9]+[a-z]+))/ix.freeze
-            CDNA_REGEX = /c\.(?<cdna>([0-9]+[+>_-][0-9][+>_-][0-9]+[+>_-][0-9][ACGTdelinsdup]+)|
+            CDNA_REGEX = /(c\.)?(?<cdna>([0-9]+[+>_-][0-9][+>_-][0-9]+[+>_-][0-9][ACGTdelinsdup]+)|
                          ([0-9]+[+>_-][0-9]+[ACGTdelinsdup][+>_-][ACGTdelinsdup])|
                          ([0-9]+[ACGTdelinsdup]+[+>_-][ACGTdelinsdup])|
                          ([0-9]+[+>_-][0-9]+[ACGTdelinsdup]+)|
                          ([0-9]+[+>_-][0-9]+[+>_-][0-9]+[0-9]+[ACGTdelinsdup]+)|
                          ([0-9]+[ACGTdelinsdup]+))/x.freeze
 
-            NO_EVIDENCE_REGEX = /(no evidence|additional).+(?<wtgenes>BRCA(1|2)|PALB2|ATM|CHEK2|TP53)+.+gene(s)?\./i
+            NO_EVIDENCE_REGEX = /(no evidence|additional).+(?<wtgenes>BRCA(1|2)|PALB2|ATM|CHEK2|TP53|MLH1|MSH2|MSH6|PMS2|STK11|PTEN|BRIP1|NBN|RAD51C|RAD51D)+.+gene(s)?\./i
             
-            PROTEIN_REGEX = /p\.(\()?((?<impact>.([a-z]+[0-9]+[a-z]+([^[:alnum:]][0-9]+)?)|
+            PROTEIN_REGEX = /(p\.)?(\()?((?<impact>.([a-z]+[0-9]+[a-z]+([^[:alnum:]][0-9]+)?)|
                              ([a-z]+[0-9]+[^[:alnum:]])))/ix.freeze
 
             CHR_VARIANTS_REGEX = /frameshift|
