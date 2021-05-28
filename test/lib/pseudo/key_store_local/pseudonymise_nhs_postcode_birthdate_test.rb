@@ -97,6 +97,28 @@ module Pseudo
         skip 'TODO: Support extra key types in skip_keys' if skip_keys.present?
       end
 
+      test 'encrypt and decrypt demographics with different demographics' do
+        @key_names.each do |key_name|
+          demog_hash = { 'nhsnumber' => @nhsnumber, 'postcode' => @postcode, 'birthdate' => @birthdate, 'surname' => @surname, 'forenames' => @forenames, 'blankfield' => @blankfield }
+          demog_json = demog_hash.to_json
+          pseudo_id1, pseudo_id2, decrypt_key, rawdata = @keystore.encrypt_record(key_name, :demographics, demog_json, @nhsnumber, @postcode, @birthdate, :create)
+          begin
+            decrypted_json = @keystore.decrypt_record(key_name, :demographics, decrypt_key, rawdata, @nhsnumber, '', '', :match)
+          rescue OpenSSL::Cipher::CipherError
+            flunk('Record pseudonymised with nhsnumber, postcode and birthdate ' \
+                  'should unlock with just nhsnumber')
+          end
+          assert_equal(demog_json, decrypted_json)
+          begin
+            decrypted_json = @keystore.decrypt_record(key_name, :demographics, decrypt_key, rawdata, '', @postcode, @birthdate, :match)
+          rescue OpenSSL::Cipher::CipherError
+            flunk('Record pseudonymised with nhsnumber, postcode and birthdate should ' \
+                  'unlock with just postcode and birthdate')
+          end
+          assert_equal(demog_json, decrypted_json)
+        end
+      end
+
       # rubocop:disable Metrics/ParameterLists # Lightweight API for trusted crypto support
       test 'decrypt existing data' do
         # To produce sample data, set dump_key_names in test 'encrypt and decrypt demographics' above.

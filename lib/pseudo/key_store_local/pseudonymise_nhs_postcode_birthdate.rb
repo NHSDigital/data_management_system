@@ -31,11 +31,16 @@ module Pseudo
           # decrypt_key contains 4 x 80 byte keys:
           # demog_key1_encrypted, rawtext_key1_encrypted [both unlocked by nhsnumber]
           # demog_key2_encrypted, rawtext_key2_encrypted [both unlocked by postcode + birthdate]
-          demog_key1 = decrypt_data(real_id1 + @salt_demog, decrypt_key[0..79])
-          decrypt_data(demog_key1, rawdata)
-          # or equivalently
-          # demog_key2 = decrypt_data(real_id2 + @salt_demog, decrypt_key[160..239])
-          # decrypt_data(demog_key2, rawdata)
+          begin
+            demog_key1 = decrypt_data(real_id1 + @salt_demog, decrypt_key[0..79])
+            decrypt_data(demog_key1, rawdata)
+          rescue OpenSSL::Cipher::CipherError, ArgumentError
+            # nhsnumber decrypt failed, but birthdate + postcode may still match
+            # Either the decryption of the demog_key1 fails, or it produces a junk demog_key1
+            # which then fails with an ArgumentError in decrypt_key
+            demog_key2 = decrypt_data(real_id2 + @salt_demog, decrypt_key[160..239])
+            decrypt_data(demog_key2, rawdata)
+          end
         when 160
           # decrypt_key contains 4 x 80 byte keys:
           # either demog_key1_encrypted, rawtext_key1_encrypted [both unlocked by nhsnumber]
@@ -43,16 +48,14 @@ module Pseudo
           # We can't tell which from context, so we need to try both
           begin
             demog_key1 = decrypt_data(real_id1 + @salt_demog, decrypt_key[0..79])
-            return decrypt_data(demog_key1, rawdata)
-          # rubocop:disable Lint/SuppressedException
-          rescue OpenSSL::Cipher::CipherError
-          end
-          # rubocop:enable Lint/SuppressedException
-          begin
+            decrypt_data(demog_key1, rawdata)
+          rescue OpenSSL::Cipher::CipherError, ArgumentError
             demog_key2 = decrypt_data(real_id2 + @salt_demog, decrypt_key[0..79])
-            decrypt_data(demog_key2, rawdata)
-          rescue OpenSSL::Cipher::CipherError
-            raise(OpenSSL::Cipher::CipherError, 'Cannot decrypt with pseudo_id1 or pseudo_id2')
+            begin
+              decrypt_data(demog_key2, rawdata)
+            rescue OpenSSL::Cipher::CipherError, ArgumentError
+              raise(OpenSSL::Cipher::CipherError, 'Cannot decrypt with pseudo_id1 or pseudo_id2')
+            end
           end
         when 0
           raise(OpenSSL::Cipher::CipherError, 'Insufficient original demographics to decrypt ' \

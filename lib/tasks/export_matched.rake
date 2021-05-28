@@ -8,7 +8,8 @@ namespace :export do
 Export matched MBIS data (matching by exact NHS number and date of birth)
 Syntax: rake export:matched [infile=demog.csv] [outfile=creg_data.ncr] \\
         e_type=PSDEATH klass=Export::CancerDeathWeekly [verbose=true] [allow_fuzzy=true]
-allow_fuzzy options: true / veryfuzzy / fuzzy / false
+allow_fuzzy options: true / veryfuzzy / fuzzy / fuzzy_postcode / perfect / false / none
+                     or comma-separated combinations, e.g. fuzzy,fuzzy_postcode
 infile (or stdin) is a CSV of rowid,nhsnumber,birthdate,postcode
 e.g.: 12345,9999999468,1925-01-27,B6 5RQ
 EOT
@@ -29,12 +30,8 @@ Enter CSV data, ^D to finish. For syntax: rake -D match:demographics
     raise 'Expected parameter e_type' unless e_type
     key_names = ENV['key_names'] ? ENV['key_names'].split(',') : nil
     logger = ENV['verbose'] ? ActiveSupport::Logger.new($stdout) : nil
-    match_scores = case ENV['allow_fuzzy']
-                   when 'true', 'veryfuzzy'; [:veryfuzzy, :perfect, :fuzzy]
-                   when 'fuzzy'; [:perfect, :fuzzy]
-                   when 'false', nil; [:perfect]
-                   else raise 'Invalid allow_fuzzy parameter value'
-                   end
+    match_scores = Pseudo::RakeHelper::MatchDemographics.
+                   expand_allow_fuzzy_options(ENV['allow_fuzzy'])
     klass = ENV['klass'].constantize # e.g. Export::DelimitedFile, Export::CancerMortalityFile
     matches = Pseudo::Match::Ppatients.new([e_type], key_names, logger).
               match(infile, match_scores) # list of [pseudo_id1, rowid, ppatientid, match_status]

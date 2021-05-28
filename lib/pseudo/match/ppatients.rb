@@ -8,7 +8,7 @@ module Pseudo
       HEADER_VARIANTS = [%w[rowid patientid],
                          %w[nhsnumber],
                          %w[birthdate dateofbirth],
-                         %w[current_postcode]].freeze
+                         %w[current_postcode postcode]].freeze
 
       def initialize(e_types, key_names, logger)
         @e_types = e_types
@@ -17,6 +17,7 @@ module Pseudo
       end
 
       # Returns a list of [pseudo_id1, rowid, ppatientid, match_status] for the ppatient records
+      # (or whatever #match_one returns)
       def match(infile, match_scores = nil)
         result = []
         in_csv = CSV.new(infile, row_sep: :auto)
@@ -45,7 +46,8 @@ module Pseudo
         @logger&.warn { [rowid, nhsnumber, birthdate, postcode] }
         @logger&.warn do
           "Matched #{ppats.size} Ppatient records with pseudo_id1 " \
-          "#{ppats.collect(&:pseudo_id1).inspect}"
+          "#{ppats.collect(&:pseudo_id1).inspect}, pseudo_id2 " \
+          "#{ppats.collect(&:pseudo_id2).inspect}"
         end
         ppats.collect do |pat|
           matched = pat.match_demographics(nhsnumber, postcode, birthdate)
