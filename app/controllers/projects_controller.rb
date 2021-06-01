@@ -261,7 +261,9 @@ class ProjectsController < ApplicationController
   # Only allow a trusted parameter 'white list' through.
   def project_params
     params.require(:project).permit(:alternative_data_access_address,
-                                    :alternative_data_access_postcode, :data_access_address,
+                                    :alternative_data_access_postcode,
+                                    :application_date,
+                                    :data_access_address,
                                     :data_access_postcode, :description, :end_data_date,
                                     :how_data_will_be_used, :name,
                                     :senior_user_id, :start_data_date, :team_id,

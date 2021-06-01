@@ -12,6 +12,10 @@
       <%= form.error_and_warning_alert_boxes %>
       <%= form.hidden_field(:project_type_id) %>
 
+      <%= form.control_group(:application_date) do %>
+        <%= form.datepicker_field(:application_date) %>
+      <% end %>
+
       <fieldset style="margin-bottom: 20px;" id="chief_investigator">
         <legend><%= t('sections.chief_investigator', scope: i18n_scope) %></legend>
         <%= render 'projects/project_owner_grant', form: form %>

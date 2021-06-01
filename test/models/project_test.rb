@@ -494,4 +494,25 @@ class ProjectTest < ActiveSupport::TestCase
       end
     end
   end
+
+  test 'fetches an application date' do
+    project = Project.new(
+      project_type: project_types(:dummy),
+      name: 'Application Date test'
+    )
+
+    assert_nil project[:application_date]
+
+    timestamp = Time.zone.now
+    travel_to(timestamp) do
+      assert_equal timestamp.to_s, project.application_date.to_s
+    end
+
+    travel_to(1.day.ago) { project.save!(validate: false) }
+    assert_equal project.created_at, project.application_date
+
+    timestamp = 2.days.ago
+    project.application_date = timestamp
+    assert_equal timestamp, project.application_date
+  end
 end

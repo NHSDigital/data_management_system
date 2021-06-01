@@ -163,6 +163,10 @@ class Project < ApplicationRecord
 
   DATA_SOURCE_ITEM_NO_CLONE_FIELDS = %w[id project_id project_data_source_item_id].freeze
 
+  def application_date
+    super || created_at || Time.zone.now
+  end
+
   def classification_names
     classifications.map(&:name)
   end
