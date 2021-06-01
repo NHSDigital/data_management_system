@@ -77,16 +77,14 @@ class Ability
 
     # Can only read projects that have a read only grant on
     role = ProjectRole.read_only
-    roleable_type = 'ProjectRole'
-    read_only_project_ids =
-      accessible_projects_via(role, roleable_type, user).pluck('grants.project_id')
+    read_only_project_ids = accessible_projects_via(role, user).pluck('grants.project_id')
+
     can %i[read show_ons_access_agreement show_ons_declaration_use show_ons_declaration_list],
         Project, grants: { user_id: user.id, project_id: read_only_project_ids,
                            roleable: ProjectRole.read_only }
 
     role = ProjectRole.can_edit
-    can_edit_project_ids =
-      accessible_projects_via(role, roleable_type, user).pluck('grants.project_id')
+    can_edit_project_ids = accessible_projects_via(role, user).pluck('grants.project_id')
 
     can %i[read show duplicate], Project, grants: { user_id: user.id,
                                                     project_id: can_edit_project_ids,
@@ -113,8 +111,8 @@ class Ability
     #     Project, senior_user_id: user.id
 
     role = ProjectRole.owner
-    roleable_type = 'ProjectRole'
-    project_ids = accessible_projects_via(role, roleable_type, user).pluck('grants.project_id')
+    project_ids = accessible_projects_via(role, user).pluck('grants.project_id')
+
     can %i[edit_grants reset_password], User,
         grants: { project_id: project_ids, roleable: ProjectRole.owner }
 
@@ -129,8 +127,8 @@ class Ability
 
   # For the user, returns the active projects they're able to access
   # from being granted `role`
-  def accessible_projects_via(role, roleable_type, user)
-    user.projects.active.through_grant_of(role, roleable_type)
+  def accessible_projects_via(role, user)
+    user.projects.active.through_grant_of(role)
   end
 
   def project_attachment_grants(user)
@@ -384,8 +382,7 @@ class Ability
 
   def project_ids_for(user)
     roles = ProjectRole.can_edit
-    roleable_type = 'ProjectRole'
-    accessible_projects_via(roles, roleable_type, user).pluck('grants.project_id')
+    accessible_projects_via(roles, user).pluck('grants.project_id')
   end
 
   # Can read dataset if at least one of it's versions is published

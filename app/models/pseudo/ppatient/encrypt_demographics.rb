@@ -97,22 +97,57 @@ module Pseudo
       # Returns true if the demographics are encrypted (not pseudonymised) or the
       # (nhsnumber) or (postcode + birthdate) match the details supplied.
       def unlock_demographics(nhsnumber, postcode, birthdate, context)
+        # BRCA sets ppatient_rawdata.rawdata as a JSON-serialized hash
+        # with the encrypted demographics having key encrypted_demog
+        # and encrpyted rawtext having key encrypted_rawtext_demog
+        # TODO: Refactor this into Pseudo::PpatientRawdata
+        # TODO: Make rawdata be JSON, not just a .to_s of the hash
+        matched_rawdata = ppatient_rawdata.rawdata.match(/"encrypted_demog"=>"([^"]*)"/)
+        rawdata = if matched_rawdata
+                    Base64.strict_decode64(matched_rawdata[1])
+                  else
+                    ppatient_rawdata.rawdata
+                  end
         @demographics = JSON.parse(keystore.decrypt_record(
                                      pseudonymisation_key.key_name, :demographics,
-                                     ppatient_rawdata.decrypt_key, ppatient_rawdata.rawdata,
+                                     ppatient_rawdata.decrypt_key, rawdata,
                                      nhsnumber, postcode, birthdate, context
-        ))
+                                   ))
         true
       rescue OpenSSL::Cipher::CipherError
         false
       rescue ArgumentError => e
         raise if e.message == 'Unknown context'
+
         false
       end
 
       def demographics
         raise(ArgumentError, 'Demographics locked') unless @demographics
         @demographics
+      end
+
+      # Lock the demographics associated with this patient
+      def lock_demographics
+        @demographics = nil
+      end
+
+      # Extract birthdate from demographics
+      # birthdate is usually stored in demographics hash in YYYY-MM-DD format
+      # but sometimes stored in dateofbirth in ISO format e.g. "1999-12-31T00:00:00.000+01:00"
+      def demographics_birthdate_yyyymmdd
+        raise(ArgumentError, 'Demographics locked') unless @demographics
+
+        if @demographics.key?('birthdate')
+          @demographics['birthdate']
+        elsif @demographics.key?('dateofbirth')
+          begin
+            Date.parse(@demographics['dateofbirth']).strftime('%Y-%m-%d')
+          rescue Date::Error
+            nil
+          end
+        end
+        # Implicitly else nil
       end
 
       # Unpack the demographics for this patient, and confirm the match
@@ -122,18 +157,25 @@ module Pseudo
       # :new otherwise
       def match_demographics(nhsnumber, postcode, birthdate)
         unlock_demographics(nhsnumber, postcode, birthdate, :match) unless @demographics
-        return :new unless @demographics && nhsnumber.present? &&
-                           nhsnumber == @demographics['nhsnumber']
+        return :new unless @demographics
 
-        if birthdate.present?
-          return :perfect if birthdate == @demographics['birthdate']
-          if (year1 = birthdate.to_s[0..3]).match?(/\A[0-9]{4}\z/) &&
-             (year2 = @demographics['birthdate'].to_s[0..3]).match?(/\A[0-9]{4}\z/) &&
-             (year2.to_i - year1.to_i).abs <= 14
-            return :fuzzy
+        demographics_birthdate = demographics_birthdate_yyyymmdd
+        if nhsnumber.present? && nhsnumber == @demographics['nhsnumber']
+          if birthdate.present?
+            return :perfect if birthdate == demographics_birthdate
+            if (year1 = birthdate.to_s[0..3]).match?(/\A[0-9]{4}\z/) &&
+               (year2 = demographics_birthdate.to_s[0..3]).match?(/\A[0-9]{4}\z/) &&
+               (year2.to_i - year1.to_i).abs <= 14
+              return :fuzzy
+            end
           end
+          :veryfuzzy
+        elsif postcode.present? && birthdate.present? && postcode == @demographics['postcode'] &&
+              birthdate == demographics_birthdate
+          :fuzzy_postcode
+        else
+          :new
         end
-        :veryfuzzy
       end
     end
   end

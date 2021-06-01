@@ -15,6 +15,15 @@ class ApplicationProjectTest < ActionDispatch::IntegrationTest
     click_on 'Accept'
   end
 
+  # TODO: Complete coverage
+  test 'create an application' do
+    visit team_path(@project.team)
+    click_button 'New'
+    click_link 'Application'
+
+    assert has_field?('project_application_date', with: Time.zone.today.to_s(:ui))
+  end
+
   test 'the DPIA process' do
     @project.transition_to!(workflow_states(:submitted))
 

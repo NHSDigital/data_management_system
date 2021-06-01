@@ -270,7 +270,7 @@ class ProjectCoreTest < ActionDispatch::IntegrationTest
 
       within_modal do
         assert has_text? 'Could not import file!'
-        assert has_text? 'Bang!'
+        # assert has_text?(/fingerprint.*[0-9a-f]{32}\z/)
 
         click_button 'OK'
       end

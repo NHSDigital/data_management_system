@@ -15,26 +15,36 @@ class Notification < ActiveRecord::Base
   has_many :users, through: :user_notifications
   belongs_to :team, optional: true
   belongs_to :project, optional: true
-  around_create :assign_to_users
+  after_create :create_user_notifications
   after_create :send_admin_email
 
   # FIXME: Decouple presentation layer from persistence layer
   attribute :generate_mail, :boolean, default: true
 
-  # all of the notifications will be sent to relevant users
-  def assign_to_users
-    users = []
-    users << User.in_use.ids if all_users
-    users << User.administrators.ids if admin_users
-    users << User.odr_users.ids if odr_users
-    users << project_user_ids(project_id)
-    users << Team.find(team_id).users.collect(&:id) if team_id
-    users << user_id if user_id
-    users.flatten.compact.uniq.each do |u|
-      user_notifications.build(user_id: u, generate_mail: generate_mail)
-    end
+  def users_not_to_notify
+    @users_not_to_notify ||= Set.new
+  end
 
-    yield
+  # all of the notifications will be sent to relevant users
+  def users_to_notify
+    Set.new.tap do |set|
+      set.merge(User.in_use.ids) if all_users
+      set.merge(User.administrators.ids) if admin_users
+      set.merge(User.odr_users.ids) if odr_users
+      set.merge(project_user_ids) if project
+      set.merge(team.users.ids) if team
+      set.add(user_id) if user_id
+
+      set.subtract(users_not_to_notify)
+    end
+  end
+
+  private
+
+  def create_user_notifications
+    users_to_notify.each do |user_id|
+      user_notifications.create(user_id: user_id, generate_mail: generate_mail)
+    end
   end
 
   def send_admin_email
@@ -45,8 +55,8 @@ class Notification < ActiveRecord::Base
 
   # attempt to not tread on MBIS application behaviour for now until
   # notifications ana mail is fully decoupled
-  def project_user_ids(project_id)
-    return if project_id.nil?
+  def project_user_ids
+    return [] if project_id.nil?
 
     project.users.internal.pluck(:id)
   end

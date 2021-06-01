@@ -100,7 +100,8 @@ namespace :pseudo do
           menu.choice('Add a key to your bundle') do
             puts "Existing keys: #{bundle.keys.inspect}"
             key_name = read_key_name.call('Enter new key name')
-            allowed_modes = %w(pseudonymise_nhsnumber_only encrypt string)
+            allowed_modes = %w[pseudonymise_nhsnumber_only
+                               pseudonymise_nhsnumber_postcode_birthdate encrypt string]
             puts <<~EOT
               mode is #{allowed_modes.join(' or ')}
               mode 'string' is for simple textual key/values. Other modes are for pseudonymisation:

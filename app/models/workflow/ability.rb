@@ -25,30 +25,28 @@ module Workflow
 
     def as_project_member
       role = ProjectRole.can_edit
-      roleable_type = 'ProjectRole'
-      project_ids =
-        @user.projects.active.through_grant_of(role, roleable_type).pluck('grants.project_id')
+      project_ids = @user.projects.active.through_grant_of(role).pluck('grants.project_id')
+
       can :read, ProjectState, project_id: project_ids
     end
 
     # TODO: disable a project contributor from transitioning
     def as_project_senior
-      role = TeamRole.applicants
-      roleable_type = 'TeamRole'
-      teams = @user.teams.through_grant_of(role, roleable_type)
+      role  = TeamRole.applicants
+      teams = @user.teams.through_grant_of(role)
       project_conditions = { team: teams }
+
       can :read,       ProjectState, project: project_conditions
       can :transition, Project,      project_conditions
     end
 
-    def accessible_projects_via(role, roleable_type, user)
-      user.projects.active.through_grant_of(role, roleable_type)
+    def accessible_projects_via(role, user)
+      user.projects.active.through_grant_of(role)
     end
 
     def as_team_delegate
-      role = TeamRole.delegates
-      roleable_type = 'TeamRole'
-      teams = @user.teams.through_grant_of(role, roleable_type)
+      role  = TeamRole.delegates
+      teams = @user.teams.through_grant_of(role)
       project_conditions = { team: teams }
 
       can :read,       ProjectState, project: project_conditions
@@ -463,10 +461,9 @@ module Workflow
       # Added to stop cas_manager inheriting roles as 'basic_user'
       return if @user.cas_manager?
 
-      role = Array.wrap(ProjectRole.fetch(:owner))
-      roleable_type = 'ProjectRole'
-      project_ids =
-        @user.projects.active.through_grant_of(role, roleable_type).pluck('grants.project_id')
+      role = ProjectRole.fetch(:owner)
+      project_ids = @user.projects.active.through_grant_of(role).pluck('grants.project_id')
+
       can :read, ProjectState, project_id: project_ids
       can :create, ProjectState, state: { id: 'DRAFT' },
                                  project: { current_state: { id: 'SUBMITTED' },
@@ -494,10 +491,9 @@ module Workflow
     def as_account_approver
       return unless @user.cas_access_approver?
 
-      role = Array.wrap(ProjectRole.fetch(:owner))
-      roleable_type = 'ProjectRole'
-      project_ids =
-        @user.projects.active.through_grant_of(role, roleable_type).pluck('grants.project_id')
+      role = ProjectRole.fetch(:owner)
+      project_ids = @user.projects.active.through_grant_of(role).pluck('grants.project_id')
+
       can :create, ProjectState, state: { id: %w[ACCESS_APPROVER_APPROVED
                                                  ACCESS_APPROVER_REJECTED] },
                                  project: { current_state: { id: 'SUBMITTED' },

@@ -7,3 +7,7 @@ pseudonymisation_key2:
   pseudonymisation_keyid: 2
   key_name: "unittest_encrypt"
 
+pseudonymisation_key3:
+  pseudonymisation_keyid: 3
+  key_name: "unittest_pseudo_molecular"
+

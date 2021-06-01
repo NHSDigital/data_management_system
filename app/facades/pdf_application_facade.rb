@@ -79,6 +79,7 @@ class PdfApplicationFacade
   alias_attribute :test_drr_public_benefit,     :public_benefit
   alias_attribute :rec_reference,               :ethics_approval_nrec_ref
   alias_attribute :rec_name,                    :ethics_approval_nrec_name
+  alias_attribute :informed_consent_attach,     :informed_patient_consent
 
   class << self
     def perform_metaprogamming
@@ -96,6 +97,7 @@ class PdfApplicationFacade
         data_already_held_for_project
         data_to_contact_others
         onwardly_share
+        informed_patient_consent
       ]
 
       acroform_boolean_attributes.each do |name|
@@ -227,13 +229,14 @@ class PdfApplicationFacade
   end
 
   def fetch_s251_exemption(value)
-    map = {
+    value = value.to_s
+    map   = {
       'Regulation 2' => 'S251 Regulation 2',
       'Regulation 3' => 'S251 Regulation 3',
       'Regulation 5' => 'S251 Regulation 5'
     }
 
-    Lookups::CommonLawExemption.find_by(value: map[value.to_s])
+    Lookups::CommonLawExemption.find_by(value: map.fetch(value, value))
   end
 
   # TODO: This is not currently an _id column on project

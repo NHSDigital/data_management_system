@@ -275,6 +275,20 @@ class PDFApplicationFacadeTest < ActiveSupport::TestCase
     assert_equal 'Personally Identifiable', @project.level_of_identifiability
   end
 
+  test 'should map incoming pdf statuatory exemption' do
+    @facade.s251_exemption = incoming_value = 'Regulation 2'
+    assert_equal incoming_value, @facade.s251_exemption
+    assert_equal lookups_common_law_exemption(:regulation_two), @project.s251_exemption
+
+    @facade.s251_exemption = incoming_value = 'Informed Consent'
+    assert_equal incoming_value, @facade.s251_exemption
+    assert_equal lookups_common_law_exemption(:informed_consent), @project.s251_exemption
+
+    @facade.s251_exemption = incoming_value = 'Not in lookup'
+    assert_equal incoming_value, @facade.s251_exemption
+    assert_nil @project.s251_exemption
+  end
+
   test 'should populate programme_support_id field with value from lookup' do
     # can handle nils
     @facade.programme_support_id = nil

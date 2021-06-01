@@ -1,0 +1,80 @@
+# Created by `bin/rails lookup:create_fixture[CommonLawExemption]` at 2021-05-20 14:14:18 UTC
+---
+informed_consent:
+  id: 1
+  value: Informed Consent
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &1 2019-01-23 10:11:01.034674000 Z
+    zone: &2 !ruby/object:ActiveSupport::TimeZone
+      name: Etc/UTC
+    time: *1
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &3 2019-01-23 10:11:01.034674000 Z
+    zone: *2
+    time: *3
+direct_care:
+  id: 2
+  value: Direct Care Relationship
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &4 2019-01-23 10:11:01.043195000 Z
+    zone: *2
+    time: *4
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &5 2019-01-23 10:11:01.043195000 Z
+    zone: *2
+    time: *5
+regulation_two:
+  id: 3
+  value: S251 Regulation 2
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &6 2019-01-23 10:11:01.048231000 Z
+    zone: *2
+    time: *6
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &7 2019-01-23 10:11:01.048231000 Z
+    zone: *2
+    time: *7
+regulation_three:
+  id: 4
+  value: S251 Regulation 3
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &8 2019-01-23 10:11:01.055174000 Z
+    zone: *2
+    time: *8
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &9 2019-01-23 10:11:01.055174000 Z
+    zone: *2
+    time: *9
+regulation_five:
+  id: 5
+  value: S251 Regulation 5
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &10 2019-01-23 10:11:01.059892000 Z
+    zone: *2
+    time: *10
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &11 2019-01-23 10:11:01.059892000 Z
+    zone: *2
+    time: *11
+other:
+  id: 6
+  value: Other
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &12 2019-01-23 10:11:01.063513000 Z
+    zone: *2
+    time: *12
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &13 2019-01-23 10:11:01.063513000 Z
+    zone: *2
+    time: *13
+no_gateway:
+  id: 7
+  value: No legal gateway required
+  created_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &14 2021-03-15 11:52:11.250546000 Z
+    zone: *2
+    time: *14
+  updated_at: !ruby/object:ActiveSupport::TimeWithZone
+    utc: &15 2021-03-15 11:52:11.250546000 Z
+    zone: *2
+    time: *15

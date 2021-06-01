@@ -2,8 +2,7 @@
 # and are automatically loaded by Rails. If you want to use locales other
 # than English, add the necessary files in this directory.
 #
-# To use the locales, use `
-.t`:
+# To use the locales, use `.t`:
 #
 #     I18n.t 'hello'
 #
@@ -121,6 +120,12 @@ en:
       submitted: Pending
       rejected: Closed
   projects:
+    import:
+      ndr_error:
+        message_html: >
+          An unexpected error prevented the system from processing this file.
+          To aid with investigation please quote the follow fingerprint in any correspondence
+          regarding this error/file: <strong>%{fingerprint}</strong>
     application:
       form:
         sections:
@@ -187,6 +192,8 @@ en:
         main_contact_name: Primary contact name (if different from above)
         main_contact_email: Primary contact email
         closure_date: Closure Date
+        informed_patient_consent: >
+          The individual has provided consent to the processing of this application
       organisation:
         sponsor_name: 'Sponsor: Name of sponsor'
         sponsor_add1: 'Sponsor: Address line 1'
@@ -300,6 +307,9 @@ en:
     event_field_name: 'event_field_name:'
     lookup_table: 'lookup_table:'
     comments: 'comments:'
+  project_amendments:
+    form:
+      file_type_guidance: File must be a pdf. Convert a Word doc using File then 'Save as Adobe pdf'
   activerecord:
     errors:
       models:
