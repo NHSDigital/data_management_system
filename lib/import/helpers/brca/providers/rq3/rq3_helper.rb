@@ -31,7 +31,6 @@ module Import
             def process_noevidence_records(record, testresult, genotypes, genotype)
               no_evidence = @testresult.scan(/no evidence(?!\.).+[^.]|no further(?!\.).+[^.]/i).join
               true_variant = @testresult.gsub(/no evidence(?!\.).+[^.]|no further(?!\.).+[^.]/i,'')
-              no_evidence.scan(BRCA_REGEX).flatten - true_variant.scan(BRCA_REGEX).flatten
               negativegenes = no_evidence.scan(BRCA_REGEX).flatten - true_variant.scan(BRCA_REGEX).flatten
               process_negative_genes(negativegenes, @genotypes, @genotype)
               genotype.add_gene(unique_brca_genes_from(true_variant).join)
