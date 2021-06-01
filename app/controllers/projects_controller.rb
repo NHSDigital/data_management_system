@@ -27,19 +27,16 @@ class ProjectsController < ApplicationController
     @projects                     = Project.search(search_params).
                                     accessible_by(current_ability, :read).
                                     send(dashboard_projects_by_role(current_user)).
+                                    by_project_type(type_filter).
                                     order(updated_at: :desc)
-    @my_projects                  = current_user.projects.my_projects_search(search_params).
+    @my_projects                  = current_user.projects.
+                                    through_grant_of(ProjectRole.fetch(:owner)).
+                                    my_projects_search(search_params).
                                     order(updated_at: :desc)
     @assigned_projects            = @projects.assigned_to(current_user)
     @unassigned_projects          = @projects.unassigned
 
-    @all_projects_filtered        = @projects.by_project_type(type_filter).order(updated_at: :desc)
-    @assigned_projects_filtered   = @assigned_projects.by_project_type(type_filter).
-                                    order(updated_at: :desc)
-    @unassigned_projects_filtered = @unassigned_projects.by_project_type(type_filter).
-                                    order(updated_at: :desc)
-
-    @all_projects_filtered = @all_projects_filtered.paginate(
+    @projects = @projects.paginate(
       page: params[:projects_page],
       per_page: 10
     )
@@ -49,12 +46,12 @@ class ProjectsController < ApplicationController
       per_page: 10
     )
 
-    @assigned_projects_filtered = @assigned_projects_filtered.paginate(
+    @assigned_projects = @assigned_projects.paginate(
       page: params[:assigned_projects_page],
       per_page: 10
     )
 
-    @unassigned_projects_filtered = @unassigned_projects_filtered.paginate(
+    @unassigned_projects = @unassigned_projects.paginate(
       page: params[:unassigned_projects_page],
       per_page: 10
     )

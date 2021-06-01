@@ -10,24 +10,24 @@
   <% end %>
 <% end %>
 
-<% if @assigned_projects_filtered.any? %>
+<% if @assigned_projects.any? %>
   <%= bootstrap_panel_tag 'Assigned Projects', id: 'assigned-projects' do %>
-    <%= render 'projects_table', projects: @assigned_projects_filtered %>
-    <%= will_paginate @assigned_projects_filtered, class: 'pagination center-block text-center', param_name: :assigned_projects_page, params: params %>
+    <%= render 'projects_table', projects: @assigned_projects %>
+    <%= will_paginate @assigned_projects, class: 'pagination center-block text-center', param_name: :assigned_projects_page, params: params %>
   <% end %>
 <% end %>
 
-<% if @unassigned_projects_filtered.any? %>
+<% if @unassigned_projects.any? %>
   <%= bootstrap_panel_tag 'Unassigned Projects', id: 'unassigned-projects' do %>
-    <%= render 'projects_table', projects: @unassigned_projects_filtered %>
-    <%= will_paginate @unassigned_projects_filtered, class: 'pagination center-block text-center', param_name: :unassigned_projects_page, params: params %>
+    <%= render 'projects_table', projects: @unassigned_projects %>
+    <%= will_paginate @unassigned_projects, class: 'pagination center-block text-center', param_name: :unassigned_projects_page, params: params %>
   <% end %>
 <% end %>
 
-<% if @all_projects_filtered.any? %>
+<% if @projects.any? %>
   <%= bootstrap_panel_tag 'All Projects', id: 'all-projects' do %>
-    <%= render 'projects_table', projects: @all_projects_filtered %>
-    <%= will_paginate @all_projects_filtered, class: 'pagination center-block text-center', param_name: :projects_page, params: params %>
+    <%= render 'projects_table', projects: @projects %>
+    <%= will_paginate @projects, class: 'pagination center-block text-center', param_name: :projects_page, params: params %>
   <% end %>
 <% end %>
 
