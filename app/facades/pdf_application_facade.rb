@@ -229,13 +229,14 @@ class PdfApplicationFacade
   end
 
   def fetch_s251_exemption(value)
-    map = {
+    value = value.to_s
+    map   = {
       'Regulation 2' => 'S251 Regulation 2',
       'Regulation 3' => 'S251 Regulation 3',
       'Regulation 5' => 'S251 Regulation 5'
     }
 
-    Lookups::CommonLawExemption.find_by(value: map[value.to_s])
+    Lookups::CommonLawExemption.find_by(value: map.fetch(value, value))
   end
 
   # TODO: This is not currently an _id column on project
