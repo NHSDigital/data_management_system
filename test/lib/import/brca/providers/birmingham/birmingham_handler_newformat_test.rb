@@ -18,59 +18,35 @@ class BirminghamHandlerNewformatTest < ActiveSupport::TestCase
 
   test 'process_multiple_tests_from_fullscreen' do
     @logger.expects(:debug).with('ABNORMAL TEST')
-    @logger.expects(:debug).with('Found BRCA2 for list ["BRCA2", "ATM", "CHEK2", "PALB2", "TP53"]')
+    @logger.expects(:debug).with('Found BRCA2 for list ["BRCA2"]')
     @logger.expects(:debug).with('SUCCESSFUL gene parse for BRCA2')
-    @logger.expects(:debug).with('Found ATM for list ["BRCA2", "ATM", "CHEK2", "PALB2", "TP53"]')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for ATM')
-    @logger.expects(:debug).with('Found CHEK2 for list ["BRCA2", "ATM", "CHEK2", "PALB2", "TP53"]')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for CHEK2')
-    @logger.expects(:debug).with('Found PALB2 for list ["BRCA2", "ATM", "CHEK2", "PALB2", "TP53"]')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for PALB2')
-    @logger.expects(:debug).with('Found TP53 for list ["BRCA2", "ATM", "CHEK2", "PALB2", "TP53"]')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for TP53')
     @logger.expects(:debug).with('SUCCESSFUL gene parse for BRCA1')
     @genotype.attribute_map['genetictestscope'] = 'Full screen BRCA1 and BRCA2'
     processor = variant_processor_for(@record)
-    assert_equal 6, processor.process_variants_from_report.size
+    assert_equal 2, processor.process_variants_from_report.size
   end
 
   test 'process_mutation_from_fullscreen' do
     @logger.expects(:debug).with('ABNORMAL TEST')
-    @logger.expects(:debug).with('Found BRCA2 for list ["BRCA2", "ATM", "CHEK2", "PALB2", "TP53"]')
+    @logger.expects(:debug).with('Found BRCA2 for list ["BRCA2"]')
     @logger.expects(:debug).with('SUCCESSFUL gene parse for BRCA2')
-    @logger.expects(:debug).with('Found ATM for list ["BRCA2", "ATM", "CHEK2", "PALB2", "TP53"]')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for ATM')
-    @logger.expects(:debug).with('Found CHEK2 for list ["BRCA2", "ATM", "CHEK2", "PALB2", "TP53"]')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for CHEK2')
-    @logger.expects(:debug).with('Found PALB2 for list ["BRCA2", "ATM", "CHEK2", "PALB2", "TP53"]')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for PALB2')
-    @logger.expects(:debug).with('Found TP53 for list ["BRCA2", "ATM", "CHEK2", "PALB2", "TP53"]')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for TP53')
     @logger.expects(:debug).with('SUCCESSFUL gene parse for BRCA1')
     @genotype.attribute_map['genetictestscope'] = 'Full screen BRCA1 and BRCA2'
     processor = variant_processor_for(@record)
-    assert_equal 'p.Thr1256Argfsx', processor.process_variants_from_report[5].attribute_map['proteinimpact']
+    assert_equal 'p.Thr1256Argfsx', processor.process_variants_from_report[1].attribute_map['proteinimpact']
   end
 
   test 'negative_tests_from_fullscreen' do
     negative_record = build_raw_record('pseudo_id1' => 'bob')
     negative_record.raw_fields['overall2'] = 'N'
     @logger.expects(:debug).with('NORMAL TEST FOUND')
-    @logger.expects(:debug).with('Found BRCA1 for list ["BRCA1", "BRCA2", "ATM", "CHEK2", "PALB2", "TP53"]')
+    @logger.expects(:debug).with('Found BRCA1 for list ["BRCA1", "BRCA2"]')
     @logger.expects(:debug).with('SUCCESSFUL gene parse for BRCA1')
-    @logger.expects(:debug).with('Found BRCA2 for list ["BRCA1", "BRCA2", "ATM", "CHEK2", "PALB2", "TP53"]')
+    @logger.expects(:debug).with('Found BRCA2 for list ["BRCA1", "BRCA2"]')
     @logger.expects(:debug).with('SUCCESSFUL gene parse for BRCA2')
-    @logger.expects(:debug).with('Found ATM for list ["BRCA1", "BRCA2", "ATM", "CHEK2", "PALB2", "TP53"]')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for ATM')
-    @logger.expects(:debug).with('Found CHEK2 for list ["BRCA1", "BRCA2", "ATM", "CHEK2", "PALB2", "TP53"]')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for CHEK2')
-    @logger.expects(:debug).with('Found PALB2 for list ["BRCA1", "BRCA2", "ATM", "CHEK2", "PALB2", "TP53"]')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for PALB2')
-    @logger.expects(:debug).with('Found TP53 for list ["BRCA1", "BRCA2", "ATM", "CHEK2", "PALB2", "TP53"]')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for TP53')
     @genotype.attribute_map['genetictestscope'] = 'Full screen BRCA1 and BRCA2'
     processor = variant_processor_for(negative_record)
-    assert_equal 6, processor.process_variants_from_report.size
+    assert_equal 2, processor.process_variants_from_report.size
   end
 
   test 'process_chromosomevariants_from_record' do
@@ -79,58 +55,48 @@ class BirminghamHandlerNewformatTest < ActiveSupport::TestCase
     chromovariants_record.raw_fields['report'] = 'DNA from this patient has undergone Multiplex Ligation-dependent Probe Amplification (MLPA) to detect deletions and duplications in the BRCA1 and BRCA2 genes.  Long range PCR has also been used to amplify across the deletion to confirm the MLPA result.'
     chromovariants_record.mapped_fields['report'] = 'DNA from this patient has undergone Multiplex Ligation-dependent Probe Amplification (MLPA) to detect deletions and duplications in the BRCA1 and BRCA2 genes.  Long range PCR has also been used to amplify across the deletion to confirm the MLPA result.'
     @logger.expects(:debug).with('ABNORMAL TEST')
-    @logger.expects(:debug).with('Found BRCA2 for list ["BRCA2", "ATM", "CHEK2", "PALB2", "TP53"]')
+    @logger.expects(:debug).with('Found BRCA2 for list ["BRCA2"]')
     @logger.expects(:debug).with('SUCCESSFUL gene parse for BRCA2')
-    @logger.expects(:debug).with('Found ATM for list ["BRCA2", "ATM", "CHEK2", "PALB2", "TP53"]')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for ATM')
-    @logger.expects(:debug).with('Found CHEK2 for list ["BRCA2", "ATM", "CHEK2", "PALB2", "TP53"]')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for CHEK2')
-    @logger.expects(:debug).with('Found PALB2 for list ["BRCA2", "ATM", "CHEK2", "PALB2", "TP53"]')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for PALB2')
-    @logger.expects(:debug).with('Found TP53 for list ["BRCA2", "ATM", "CHEK2", "PALB2", "TP53"]')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for TP53')
     @logger.expects(:debug).with('SUCCESSFUL gene parse for BRCA1')
     @genotype.attribute_map['genetictestscope'] = 'Full screen BRCA1 and BRCA2'
     processor = variant_processor_for(chromovariants_record)
-    assert_equal 6, processor.process_variants_from_report.size
+    assert_equal 2, processor.process_variants_from_report.size
   end
 
   test 'process_multiple_variants_single_gene' do
     multiple_cdna_record = build_raw_record('pseudo_id1' => 'bob')
     multiple_cdna_record.raw_fields['teststatus'] = 'Heterozygous missense variant (c.1688G>T; p.Arg563Leu) identified in exon 11 of the BRCA2 gene and a heterozygous intronic variant (c.251-20T>G) in intron 4 of the BRCA2 gene.'
     @logger.expects(:debug).with('ABNORMAL TEST')
-    @logger.expects(:debug).with('Found BRCA1 for list ["BRCA1", "ATM", "CHEK2", "PALB2", "TP53"]')
+    @logger.expects(:debug).with('Found BRCA1 for list ["BRCA1"]')
     @logger.expects(:debug).with('SUCCESSFUL gene parse for BRCA1')
-    @logger.expects(:debug).with('Found ATM for list ["BRCA1", "ATM", "CHEK2", "PALB2", "TP53"]')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for ATM')
-    @logger.expects(:debug).with('Found CHEK2 for list ["BRCA1", "ATM", "CHEK2", "PALB2", "TP53"]')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for CHEK2')
-    @logger.expects(:debug).with('Found PALB2 for list ["BRCA1", "ATM", "CHEK2", "PALB2", "TP53"]')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for PALB2')
-    @logger.expects(:debug).with('Found TP53 for list ["BRCA1", "ATM", "CHEK2", "PALB2", "TP53"]')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for TP53')
     @logger.expects(:debug).with('SUCCESSFUL gene parse for BRCA2')
     @logger.expects(:debug).with('SUCCESSFUL gene parse for BRCA2')
     @genotype.attribute_map['genetictestscope'] = 'Full screen BRCA1 and BRCA2'
     processor = variant_processor_for(multiple_cdna_record)
-    assert_equal 7, processor.process_variants_from_report.size
+    assert_equal 3, processor.process_variants_from_report.size
 
     multiple_cdna_multiple_genes_record = build_raw_record('pseudo_id1' => 'bob')
     multiple_cdna_multiple_genes_record.raw_fields['teststatus'] = 'Heterozygous missense variant (c.1688G>T; p.Arg563Leu) identified in exon 11 of the BRCA1 gene and a heterozygous intronic variant (c.251-20T>G) in intron 4 of the BRCA2 gene.'
     @logger.expects(:debug).with('ABNORMAL TEST')
-    @logger.expects(:debug).with('Found ATM for list ["ATM", "CHEK2", "PALB2", "TP53"]')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for ATM')
-    @logger.expects(:debug).with('Found CHEK2 for list ["ATM", "CHEK2", "PALB2", "TP53"]')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for CHEK2')
-    @logger.expects(:debug).with('Found PALB2 for list ["ATM", "CHEK2", "PALB2", "TP53"]')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for PALB2')
-    @logger.expects(:debug).with('Found TP53 for list ["ATM", "CHEK2", "PALB2", "TP53"]')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for TP53')
     @logger.expects(:debug).with('SUCCESSFUL gene parse for BRCA1')
     @logger.expects(:debug).with('SUCCESSFUL gene parse for BRCA2')
     @genotype.attribute_map['genetictestscope'] = 'Full screen BRCA1 and BRCA2'
     processor = variant_processor_for(multiple_cdna_multiple_genes_record)
-    assert_equal 6, processor.process_variants_from_report.size
+    assert_equal 2, processor.process_variants_from_report.size
+  end
+
+  test 'process_positive_malformed_variants' do
+    malformed_record = build_raw_record('pseudo_id1' => 'bob')
+    malformed_record.raw_fields['teststatus'] = 'Molecular analysis shows presence of the familial mutation in the BRCA1 gene.'
+    malformed_record.raw_fields['report'] = 'DNA from this patient has undergone Multiplex Ligation-dependent Probe Amplification (MLPA) to detect a mutation previously identified in this family.\n\nMutation nomenclature according to GenBank accession number U14680 (BRCA1)/U43746 (BRCA2).'
+    @logger.expects(:debug).with('ABNORMAL TEST')
+    @logger.expects(:debug).with('Found BRCA2 for list ["BRCA2"]')
+    @logger.expects(:debug).with('SUCCESSFUL gene parse for BRCA2')
+    @logger.expects(:debug).with('SUCCESSFUL gene parse for BRCA1')
+    @logger.expects(:debug).with('SUCCESSFUL gene parse for BRCA2')
+    @genotype.attribute_map['genetictestscope'] = 'Full screen BRCA1 and BRCA2'
+    processor = variant_processor_for(malformed_record)
+    assert_equal 3, processor.process_variants_from_report.size
   end
 
   private
