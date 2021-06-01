@@ -18,6 +18,7 @@
 
   <%= form.control_group(:upload) do %>
     <%= form.file_field(:upload, multiple: false, accept: 'application/pdf') %>
+    <%= t('.file_type_guidance') %>
   <% end %>
 
   <%= form.control_group(:labels) do %>

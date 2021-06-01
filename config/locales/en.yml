@@ -300,6 +300,9 @@ en:
     event_field_name: 'event_field_name:'
     lookup_table: 'lookup_table:'
     comments: 'comments:'
+  project_amendments:
+    form:
+      file_type_guidance: File must be a pdf. Convert a Word doc using File then 'Save as Adobe pdf'
   activerecord:
     errors:
       models:
