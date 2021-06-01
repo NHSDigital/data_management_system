@@ -3,8 +3,13 @@
     <span class="input-group-addon" style="width: 50%;">
       <%= form.select(:dataset_id, project_dataset_selection) %>
     </span>
+    <div class="input-group-addon">
+      <label class="input-group-addon">Accept Data Source Terms and Conditions</label>
+    </div>
+    <div class="input-group-addon">
+      <%= form.check_box(:terms_accepted) %>
+    </div>
     <%= content_tag(:div, bootstrap_icon_tag(:"minus-sign"), class: 'remove_record input-group-addon') unless form.readonly? %>
     <%= form.hidden_field :_destroy %>
-    <%= form.hidden_field :terms_accepted, value: true %>
   </div>
 </li>

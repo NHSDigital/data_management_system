@@ -1,17 +1,13 @@
-  <%= form.hidden_field :data_already_held_for_project, value: @project.data_already_held_for_project %>
-  <%= form.hidden_field :senior_user_id, value: @project.senior_user_id %>
-</fieldset>
-<fieldset>
-  <%= form.hidden_field :data_source_terms_accepted, value: 1 %>
-  <%= form.hidden_field :cohort_inclusion_exclusion_criteria, value: @project.cohort_inclusion_exclusion_criteria %>
-  <%= form.hidden_field :data_linkage, value: @project.data_linkage %>
-  <%= form.hidden_field :frequency, value: @project.frequency %>
-  <%= form.hidden_field :frequency_other, value: @project.frequency_other %>
-  <%= form.hidden_field :how_data_will_be_used, value: @project.how_data_will_be_used %>
-	<%= form.hidden_field :level_of_identifiability, value: @project.level_of_identifiability %>
-<fieldset>
-  <%= form.hidden_field :acg_support, value: @project.acg_support %>
-  <%= form.hidden_field :acg_who, value: @project.acg_who %>
-  <%= form.hidden_field :acg_date, value: @project.acg_date %>
-  <%= form.hidden_field :caldicott_email, value: @project.caldicott_email %>
-</fieldset>
+<%= form.hidden_field :data_already_held_for_project, value: @project.data_already_held_for_project %>
+<%= form.hidden_field :senior_user_id, value: @project.senior_user_id %>
+<%= form.hidden_field :data_source_terms_accepted, value: 1 %>
+<%= form.hidden_field :cohort_inclusion_exclusion_criteria, value: @project.cohort_inclusion_exclusion_criteria %>
+<%= form.hidden_field :data_linkage, value: @project.data_linkage %>
+<%= form.hidden_field :frequency, value: @project.frequency %>
+<%= form.hidden_field :frequency_other, value: @project.frequency_other %>
+<%= form.hidden_field :how_data_will_be_used, value: @project.how_data_will_be_used %>
+<%= form.hidden_field :level_of_identifiability, value: @project.level_of_identifiability %>
+<%= form.hidden_field :acg_support, value: @project.acg_support %>
+<%= form.hidden_field :acg_who, value: @project.acg_who %>
+<%= form.hidden_field :acg_date, value: @project.acg_date %>
+<%= form.hidden_field :caldicott_email, value: @project.caldicott_email %>

@@ -1,20 +1,19 @@
-    <div class='row form-group'>
-      <label class="control-label col-md-3" for="project_start_date">Data already held for this project / purpose ?</label>
-      <div class='col-md-3'>
-        <%= form.select :data_already_held_for_project, [['Yes',true],['No',false]], {include_blank: true, required: true} %>
-      </div>
+  <div class='row form-group'>
+    <label class="control-label col-md-3" for="project_start_date">Data already held for this project / purpose ?</label>
+    <div class='col-md-3'>
+      <%= form.select :data_already_held_for_project, [['Yes',true],['No',false]], {include_blank: true, required: true} %>
     </div>
-    <%= render 'projects/project_owner_grant', form: form %>
-  </fieldset>
+  </div>
+  <%= render 'projects/project_owner_grant', form: form %>
 
   <fieldset>
 	<legend>Data specification</legend>
     <div class='row' id="multi_project_datasets">
       <!-- TODO: Hide add button if only one dataset is available for selection -->
-      <%= form.control_group :project_datasets, link_to_add_row('Add Dataset', form, :project_datasets, class: 'btn btn-primary') do %>
+      <%= form.control_group :project_datasets, link_to_add_row('Add Dataset', form, :project_datasets, partial: 'projects/project/project_dataset', class: 'btn btn-primary') do %>
         <ul class='repeatable-fields list-group'>
           <%= form.fields_for :project_datasets do |builder| %>
-            <%= render 'projects/project_dataset', form: builder %>
+            <%= render 'projects/project/project_dataset', form: builder %>
           <% end %>
         </ul>
       <% end %>

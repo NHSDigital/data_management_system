@@ -19,7 +19,15 @@ class CreateEoiProjectTest < ActionDispatch::IntegrationTest
     assert page.has_text? 'Project Title'
     fill_in 'project_name', with: 'Test EOI'
     fill_in 'project_project_purpose', with: 'Testing EOI'
-    select_and_accept_new_dataset('Births Gold Standard')
+
+    within('#multi_project_datasets') do
+      element = find_new('select') { click_link('Add Dataset') }
+
+      within(element) do
+        select 'Births Gold Standard'
+      end
+    end
+
     # classifications
     assert page.has_text? 'Classification of data requested'
     select 'Anonymous', from: 'project_level_of_identifiability'
