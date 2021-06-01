@@ -79,6 +79,7 @@ class PdfApplicationFacade
   alias_attribute :test_drr_public_benefit,     :public_benefit
   alias_attribute :rec_reference,               :ethics_approval_nrec_ref
   alias_attribute :rec_name,                    :ethics_approval_nrec_name
+  alias_attribute :informed_consent_attach,     :informed_patient_consent
 
   class << self
     def perform_metaprogamming
@@ -96,6 +97,7 @@ class PdfApplicationFacade
         data_already_held_for_project
         data_to_contact_others
         onwardly_share
+        informed_patient_consent
       ]
 
       acroform_boolean_attributes.each do |name|

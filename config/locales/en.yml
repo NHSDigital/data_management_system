@@ -2,8 +2,7 @@
 # and are automatically loaded by Rails. If you want to use locales other
 # than English, add the necessary files in this directory.
 #
-# To use the locales, use `
-.t`:
+# To use the locales, use `.t`:
 #
 #     I18n.t 'hello'
 #
@@ -193,6 +192,8 @@ en:
         main_contact_name: Primary contact name (if different from above)
         main_contact_email: Primary contact email
         closure_date: Closure Date
+        informed_patient_consent: >
+          The individual has provided consent to the processing of this application
       organisation:
         sponsor_name: 'Sponsor: Name of sponsor'
         sponsor_add1: 'Sponsor: Address line 1'

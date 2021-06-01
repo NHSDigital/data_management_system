@@ -162,6 +162,11 @@
         <%= form.control_group(:acg_who, t('acg_who', scope: i18n_scope)) { form.text_field :acg_who } %>
         <hr/>
 
+        <strong>Informed Consent</strong><br />
+        <%= form.control_group(:informed_patient_consent, t(:informed_patient_consent, scope: i18n_scope), {}, class: 'col-md-3') do %>
+          <%= form.select(:informed_patient_consent, { 'Yes' => true, 'No' => false }, include_blank: true, readonly_value: boolean_text_conversion(form.object.informed_patient_consent)) %>
+        <% end %>
+
         <strong>Statutory (Section 251) Exemption</strong><br />
         <%= form.control_group(:s251_exemption_id, t('s251_exemption_id', scope: i18n_scope), {}, class: 'col-md-3') do %>
           <%= form.collection_select(:s251_exemption_id, Lookups::CommonLawExemption.all, :id, :value, { include_blank: true, readonly_value: form.object.s251_exemption&.value }, class: 'form-control') %>
