@@ -121,6 +121,12 @@ en:
       submitted: Pending
       rejected: Closed
   projects:
+    import:
+      ndr_error:
+        message_html: >
+          An unexpected error prevented the system from processing this file.
+          To aid with investigation please quote the follow fingerprint in any correspondence
+          regarding this error/file: <strong>%{fingerprint}</strong>
     application:
       form:
         sections:

@@ -27,6 +27,10 @@ class ApplicationController < ActionController::Base
 
   private
 
+  def capture_exception(exception)
+    NdrError.log(exception, NdrError.log_parameters.call(request), request)
+  end
+
   helper_method def accepted_terms_and_conditions?
     session[:accepted_terms_and_conditions]
   end
