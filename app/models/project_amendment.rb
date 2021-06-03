@@ -39,8 +39,19 @@ class ProjectAmendment < ApplicationRecord
   validate :ensure_valid_attachment
   validate :ensure_valid_pdf
 
+  before_validation :populate_reference
+  after_save :increment_amendment_number
+
   def upload=(file)
     (attachment || build_attachment).upload = file
+  end
+
+  def populate_reference
+    self.reference = project.next_amendment_reference
+  end
+
+  def increment_amendment_number
+    project.update(amendment_number: project.amendment_number + 1)
   end
 
   private
