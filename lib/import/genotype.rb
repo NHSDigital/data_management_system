@@ -508,23 +508,6 @@ module Import
       @attribute_map['genomicchange'] = "#{chr_num}:#{gchange}"
     end
 
-    def add_test_scope(scope)
-      return if scope.blank?
-
-      case scope
-      when :full_screen
-        @attribute_map['genetictestscope'] = 'Full screen BRCA1 and BRCA2'
-      when :targeted_mutation
-        @attribute_map['genetictestscope'] = 'Targeted BRCA mutation test'
-      when :aj_screen
-        @attribute_map['genetictestscope'] = 'AJ screen'
-      when :polish_screen
-        @attribute_map['genetictestscope'] = 'Polish screen'
-      else
-        @logger.warn "Bad key given to addTestScope: #{scope}"
-      end
-    end
-
     def add_typed_location(extracted)
       case extracted
       when Import::ExtractionUtilities::ExactLocation
