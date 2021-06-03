@@ -133,8 +133,8 @@ ALTER SEQUENCE public.amendment_types_id_seq OWNED BY public.amendment_types.id;
 CREATE TABLE public.ar_internal_metadata (
     key character varying NOT NULL,
     value character varying,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
 );
 
 
@@ -2146,13 +2146,13 @@ CREATE TABLE public.molecular_data (
     providercode text,
     practitionercode text,
     patienttype text,
-    moleculartestingtype integer,
     requesteddate date,
     collecteddate date,
     receiveddate date,
     authoriseddate date,
     indicationcategory integer,
     clinicalindication text,
+    moleculartestingtype integer,
     organisationcode_testresult text,
     servicereportidentifier text,
     specimentype integer,
@@ -2726,12 +2726,12 @@ CREATE TABLE public.project_attachments (
     comments character varying,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    attachment_contents bytea,
-    digest character varying,
     attachment_file_name character varying,
     attachment_content_type character varying,
     attachment_file_size integer,
     attachment_updated_at timestamp without time zone,
+    attachment_contents bytea,
+    digest character varying,
     workflow_project_state_id bigint,
     attachable_type character varying,
     attachable_id bigint
@@ -3407,7 +3407,8 @@ CREATE TABLE public.projects (
     dataset_id integer,
     receiptsentby character varying,
     closure_date date,
-    programme_support_id integer
+    programme_support_id integer,
+    amendment_number integer DEFAULT 0
 );
 
 
@@ -8052,6 +8053,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20210408152005'),
 ('20210414134929'),
 ('20210415143021'),
-('20210506093309');
+('20210506093309'),
+('20210603114230');
 
 
