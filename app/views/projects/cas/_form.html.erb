@@ -7,7 +7,7 @@
     <%= bootstrap_form_for current_user, horizontal: 2, readonly: true do |form| %>
       <%= render partial: 'projects/cas/form_requester_details_section', locals: { form: form } %>
     <% end %>
-    <%= bootstrap_form_for @project, horizontal: true, remote: remote, readonly: readonly do |form| %>
+    <%= bootstrap_form_for setup_project(@project), horizontal: true, remote: remote, readonly: readonly do |form| %>
       <%= form.error_and_warning_alert_boxes %>
       <%= form.hidden_field(:project_type_id) %>
 

@@ -1,7 +1,8 @@
-##### Dataset Approval Status Change #####
+##### Dataset Level Approval Status Change #####
 
-CAS application <%= @project.id %> - Dataset <%= @project_dataset.dataset_name %>
-has been updated to Approval status of <%= @project_dataset.approved %>
+CAS application <%= @project.id %> - Dataset <%= @load_project_dataset_level.project_dataset.dataset_name %>
+has been updated to Approval status of '<%= @load_project_dataset_level.approved %>' for level
+<%= @load_project_dataset_level.access_level_id %> access.
 
 Title: <%= @project.name %>
 Type: <%= @project.project_type_name %>

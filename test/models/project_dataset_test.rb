@@ -14,6 +14,8 @@ class ProjectDatasetTest < ActiveSupport::TestCase
     project = create_cas_project(owner: users(:standard_user2))
     project_dataset = ProjectDataset.new(dataset: Dataset.find_by(name: 'Extra CAS Dataset One'))
     project.project_datasets << project_dataset
+    pdl = ProjectDatasetLevel.new(access_level_id: 1, expiry_date: Time.zone.today + 1.week)
+    project_dataset.project_dataset_levels << pdl
 
     assert_equal 0, ProjectDataset.dataset_approval(users(:standard_user2)).count
 
@@ -28,125 +30,55 @@ class ProjectDatasetTest < ActiveSupport::TestCase
 
   test 'dataset_approval scope should return all datasets for that user by default' do
     project = create_cas_project(owner: users(:standard_user2))
-    project_dataset = ProjectDataset.new(dataset: Dataset.find_by(name: 'Extra CAS Dataset One'),
-                                         approved: nil)
+    project_dataset = ProjectDataset.new(dataset: Dataset.find_by(name: 'Extra CAS Dataset One'))
     project.project_datasets << project_dataset
+    pdl = ProjectDatasetLevel.new(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
+                                  approved: nil)
+    project_dataset.project_dataset_levels << pdl
 
     assert_equal 1, ProjectDataset.dataset_approval(users(:cas_dataset_approver)).count
 
-    project_dataset.approved = true
-    project_dataset.save!
+    pdl.approved = true
+    pdl.save!
 
     assert_equal 1, ProjectDataset.dataset_approval(users(:cas_dataset_approver)).count
 
-    project_dataset.approved = true
-    project_dataset.save!
+    pdl.approved = true
+    pdl.save!
 
     assert_equal 1, ProjectDataset.dataset_approval(users(:cas_dataset_approver)).count
   end
 
   test 'dataset_approval scope should only return approved status is nil if passed that argument' do
     project = create_cas_project(owner: users(:standard_user2))
-    project_dataset = ProjectDataset.new(dataset: Dataset.find_by(name: 'Extra CAS Dataset One'),
-                                         approved: nil)
+    project_dataset = ProjectDataset.new(dataset: Dataset.find_by(name: 'Extra CAS Dataset One'))
     project.project_datasets << project_dataset
+    pdl = ProjectDatasetLevel.new(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
+                                  approved: nil)
+    project_dataset.project_dataset_levels << pdl
 
-    assert_equal 1, ProjectDataset.dataset_approval(users(:cas_dataset_approver), nil).count
+    assert_equal 1, ProjectDataset.dataset_approval(users(:cas_dataset_approver), [nil]).count
 
-    project_dataset.approved = true
+    pdl.approved = true
+    pdl.save!
+
+    assert_equal 0, ProjectDataset.dataset_approval(users(:cas_dataset_approver), [nil]).count
+  end
+
+  test 'destroy_project_dataset_levels_without_selected before_save callback' do
+    project = create_cas_project(owner: users(:standard_user2))
+    project_dataset = ProjectDataset.new(dataset: dataset(83), terms_accepted: true)
+    project.project_datasets << project_dataset
+    pdl1 = ProjectDatasetLevel.new(access_level_id: 1, expiry_date: Time.zone.today, selected: true)
+    pdl2 = ProjectDatasetLevel.new(access_level_id: 2, expiry_date: Time.zone.today,
+                                   selected: false)
+    project_dataset.project_dataset_levels << pdl1
+    project_dataset.project_dataset_levels << pdl2
     project_dataset.save!
 
-    assert_equal 0, ProjectDataset.dataset_approval(users(:cas_dataset_approver), nil).count
-  end
-
-  test 'should notify casmanager and access approvers on dataset approved update to not nil' do
-    project = create_cas_project(project_purpose: 'test')
-    dataset = Dataset.find_by(name: 'Extra CAS Dataset One')
-    project_dataset = ProjectDataset.new(dataset: dataset, terms_accepted: nil, approved: nil)
-    project.project_datasets << project_dataset
-    project.reload_current_state
-
-    notifications = Notification.where(title: 'Dataset Approval Status Change')
-
-    # Should not send out notifications for changes when at Draft
-    assert_no_difference 'notifications.count' do
-      project_dataset.update(terms_accepted: true)
-    end
-
-    project.transition_to!(workflow_states(:submitted))
-    project.reload_current_state
-
-    assert_difference 'notifications.count', 4 do
-      project_dataset.update(approved: true)
-    end
-
-    assert_equal notifications.last.body, "CAS application #{project.id} - Dataset 'Extra CAS " \
-                                          "Dataset One' has been updated to Approval status of " \
-                                          "'Approved'.\n\n"
-
-    assert_difference 'notifications.count', 4 do
-      project_dataset.update(approved: false)
-    end
-
-    assert_equal notifications.last.body, "CAS application #{project.id} - Dataset 'Extra CAS " \
-                                          "Dataset One' has been updated to Approval status of " \
-                                          "'Rejected'.\n\n"
-
-    assert_no_difference 'notifications.count' do
-      project_dataset.update(approved: nil)
-    end
-  end
-
-  test 'should notify user on dataset approved update to not nil' do
-    project = create_cas_project(project_purpose: 'test', owner: users(:no_roles))
-    dataset = Dataset.find_by(name: 'Extra CAS Dataset One')
-    project_dataset = ProjectDataset.new(dataset: dataset, terms_accepted: nil, approved: nil)
-    project.project_datasets << project_dataset
-    project.reload_current_state
-
-    notifications = Notification.where(title: 'Dataset Approval Updated')
-
-    # Should not send out notifications for changes when at Draft
-    assert_no_difference 'notifications.count' do
-      project_dataset.update(terms_accepted: true)
-    end
-
-    project.transition_to!(workflow_states(:submitted))
-    project.reload_current_state
-
-    assert_difference 'notifications.count', 1 do
-      project_dataset.update(approved: true)
-    end
-
-    assert_equal notifications.last.body, "Your CAS dataset access request for 'Extra CAS " \
-                                          "Dataset One' has been updated to Approval status of " \
-                                          "'Approved'.\n\n"
-
-    assert_difference 'notifications.count', 1 do
-      project_dataset.update(approved: false)
-    end
-
-    assert_equal notifications.last.body, "Your CAS dataset access request for 'Extra CAS " \
-                                          "Dataset One' has been updated to Approval status of " \
-                                          "'Rejected'.\n\n"
-
-    assert_no_difference 'notifications.count' do
-      project_dataset.update(approved: nil)
-    end
-  end
-
-  test 'should not notify dataset approver on dataset approved update to nil' do
-    project_dataset = ProjectDataset.new(dataset: dataset(83), terms_accepted: true,
-                                         approved: true)
-    project = create_cas_project(owner: users(:no_roles))
-    project.project_datasets << project_dataset
-
-    notifications = Notification.where(title: 'CAS Application Requires Dataset Approval')
-
-    project.transition_to!(workflow_states(:submitted))
-
-    assert_no_difference 'notifications.count' do
-      project_dataset.update(approved: nil)
-    end
+    assert pdl1.persisted?
+    refute pdl2.persisted?
+    assert project_dataset.project_dataset_levels.include? pdl1
+    refute project_dataset.project_dataset_levels.include? pdl2
   end
 end

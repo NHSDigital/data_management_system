@@ -27,6 +27,38 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
+-- Name: access_levels; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.access_levels (
+    id bigint NOT NULL,
+    value character varying,
+    description character varying,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: access_levels_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.access_levels_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: access_levels_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.access_levels_id_seq OWNED BY public.access_levels.id;
+
+
+--
 -- Name: addresses; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -133,8 +165,8 @@ ALTER SEQUENCE public.amendment_types_id_seq OWNED BY public.amendment_types.id;
 CREATE TABLE public.ar_internal_metadata (
     key character varying NOT NULL,
     value character varying,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
 );
 
 
@@ -244,19 +276,6 @@ CREATE TABLE public.cas_application_fields (
     id bigint NOT NULL,
     project_id bigint,
     status character varying,
-    firstname character varying,
-    surname character varying,
-    jobtitle character varying,
-    phe_email character varying,
-    work_number character varying,
-    organisation character varying,
-    line_manager_name character varying,
-    line_manager_email character varying,
-    line_manager_number character varying,
-    employee_type character varying,
-    contract_startdate date,
-    contract_enddate date,
-    username character varying,
     address text,
     n3_ip_address text,
     reason_justification text,
@@ -265,7 +284,20 @@ CREATE TABLE public.cas_application_fields (
     extra_datasets_rationale character varying,
     declaration character varying,
     created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
+    updated_at timestamp(6) without time zone NOT NULL,
+    organisation character varying,
+    username character varying,
+    contract_enddate date,
+    contract_startdate date,
+    employee_type character varying,
+    line_manager_number character varying,
+    line_manager_email character varying,
+    line_manager_name character varying,
+    work_number character varying,
+    phe_email character varying,
+    jobtitle character varying,
+    surname character varying,
+    firstname character varying
 );
 
 
@@ -1001,7 +1033,9 @@ CREATE TABLE public.datasets (
     updated_at timestamp without time zone NOT NULL,
     terms character varying(999),
     dataset_type_id integer,
-    team_id integer
+    team_id integer,
+    levels jsonb DEFAULT '{}'::jsonb NOT NULL,
+    cas_type smallint
 );
 
 
@@ -2146,13 +2180,13 @@ CREATE TABLE public.molecular_data (
     providercode text,
     practitionercode text,
     patienttype text,
-    moleculartestingtype integer,
     requesteddate date,
     collecteddate date,
     receiveddate date,
     authoriseddate date,
     indicationcategory integer,
     clinicalindication text,
+    moleculartestingtype integer,
     organisationcode_testresult text,
     servicereportidentifier text,
     specimentype integer,
@@ -2726,12 +2760,12 @@ CREATE TABLE public.project_attachments (
     comments character varying,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    attachment_contents bytea,
-    digest character varying,
     attachment_file_name character varying,
     attachment_content_type character varying,
     attachment_file_size integer,
     attachment_updated_at timestamp without time zone,
+    attachment_contents bytea,
+    digest character varying,
     workflow_project_state_id bigint,
     attachable_type character varying,
     attachable_id bigint
@@ -2926,6 +2960,41 @@ ALTER SEQUENCE public.project_data_source_items_id_seq OWNED BY public.project_d
 
 
 --
+-- Name: project_dataset_levels; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.project_dataset_levels (
+    id bigint NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
+    project_dataset_id bigint,
+    access_level_id integer,
+    expiry_date date,
+    approved boolean,
+    selected boolean
+);
+
+
+--
+-- Name: project_dataset_levels_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.project_dataset_levels_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: project_dataset_levels_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.project_dataset_levels_id_seq OWNED BY public.project_dataset_levels.id;
+
+
+--
 -- Name: project_datasets; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -2935,8 +3004,7 @@ CREATE TABLE public.project_datasets (
     dataset_id bigint,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL,
-    terms_accepted boolean,
-    approved boolean
+    terms_accepted boolean
 );
 
 
@@ -4376,6 +4444,13 @@ CREATE TABLE public.zuser (
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY public.access_levels ALTER COLUMN id SET DEFAULT nextval('public.access_levels_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.addresses ALTER COLUMN id SET DEFAULT nextval('public.addresses_id_seq'::regclass);
 
 
@@ -4852,6 +4927,13 @@ ALTER TABLE ONLY public.project_data_source_items ALTER COLUMN id SET DEFAULT ne
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY public.project_dataset_levels ALTER COLUMN id SET DEFAULT nextval('public.project_dataset_levels_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.project_datasets ALTER COLUMN id SET DEFAULT nextval('public.project_datasets_id_seq'::regclass);
 
 
@@ -5084,6 +5166,14 @@ ALTER TABLE ONLY public.z_team_statuses ALTER COLUMN id SET DEFAULT nextval('pub
 --
 
 ALTER TABLE ONLY public.z_user_statuses ALTER COLUMN id SET DEFAULT nextval('public.z_user_statuses_id_seq'::regclass);
+
+
+--
+-- Name: access_levels_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.access_levels
+    ADD CONSTRAINT access_levels_pkey PRIMARY KEY (id);
 
 
 --
@@ -5668,6 +5758,14 @@ ALTER TABLE ONLY public.project_data_passwords
 
 ALTER TABLE ONLY public.project_data_source_items
     ADD CONSTRAINT project_data_source_items_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: project_dataset_levels_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.project_dataset_levels
+    ADD CONSTRAINT project_dataset_levels_pkey PRIMARY KEY (id);
 
 
 --
@@ -6454,6 +6552,13 @@ CREATE INDEX index_project_data_source_items_on_project_id ON public.project_dat
 
 
 --
+-- Name: index_project_dataset_levels_on_project_dataset_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_project_dataset_levels_on_project_dataset_id ON public.project_dataset_levels USING btree (project_dataset_id);
+
+
+--
 -- Name: index_project_datasets_on_dataset_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -7004,6 +7109,14 @@ ALTER TABLE ONLY public.projects
 
 ALTER TABLE ONLY public.e_workflow
     ADD CONSTRAINT fk_rails_2df7f418f6 FOREIGN KEY (provider) REFERENCES public.zprovider(zproviderid);
+
+
+--
+-- Name: fk_rails_2f912bd782; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.project_dataset_levels
+    ADD CONSTRAINT fk_rails_2f912bd782 FOREIGN KEY (project_dataset_id) REFERENCES public.project_datasets(id);
 
 
 --
@@ -8052,6 +8165,12 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20210408152005'),
 ('20210414134929'),
 ('20210415143021'),
-('20210506093309');
+('20210506093309'),
+('20210518103646'),
+('20210518150518'),
+('20210519161222'),
+('20210519161356'),
+('20210521102230'),
+('20210526131356');
 
 

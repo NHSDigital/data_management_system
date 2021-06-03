@@ -24,13 +24,16 @@ class Ability
     can %i[update destroy], Project, project_type_id: ProjectType.cas.pluck(:id),
                                      grants: { user_id: user.id, roleable: ProjectRole.owner },
                                      current_state: { id: 'DRAFT' }
-    can %i[reapply], ProjectDataset, approved: false,
-                                     project: { project_type_id: ProjectType.cas.pluck(:id),
-                                                current_state: {
-                                                  id: Workflow::State.reapply_dataset_states.pluck(:id)
-                                                },
-                                                grants: { user_id: user.id,
-                                                          roleable: ProjectRole.owner } }
+    can %i[reapply], ProjectDatasetLevel, approved: false, project_dataset: {
+      project:
+        { project_type_id: ProjectType.cas.pluck(:id),
+          current_state: {
+            id: Workflow::State.reapply_dataset_states.pluck(:id)
+          },
+          grants: { user_id: user.id,
+                    roleable: ProjectRole.owner } }
+    }
+
     team_grants(user)
     organisation_grants(user)
 
@@ -348,10 +351,10 @@ class Ability
 
     can %i[read], Project, project_type_id: ProjectType.cas.pluck(:id),
                            id: Project.cas_dataset_approval(user).map(&:id)
-    can %i[update approve], ProjectDataset, dataset_id: user.datasets.pluck(:id),
-                                            project: {
-                                              id: Project.cas_dataset_approval(user).map(&:id)
-                                            }
+    can %i[update approve], ProjectDatasetLevel, project_dataset: {
+      dataset_id: user.datasets.pluck(:id),
+      project_id: Project.cas_dataset_approval(user).map(&:id)
+    }
   end
 
   def cas_access_approver_grants(user)

@@ -11,13 +11,14 @@ class CasNotifier
       )
     end
 
-    def dataset_approved_status_updated(project, project_dataset, user_id)
+    def dataset_level_approved_status_updated(project, project_dataset_level, user_id)
       create_notification(
         user_id: user_id,
-        title: 'Dataset Approval Status Change',
+        title: 'Dataset Approval Level Status Change',
         body: "#{project.project_type_name} application #{project.id} - Dataset " \
-              "'#{project_dataset.dataset_name}' has been updated to Approval status of " \
-              "'#{project_dataset.readable_approved_status}'.\n\n"
+              "'#{project_dataset_level.project_dataset.dataset_name}' has been updated to " \
+              "Approval status of '#{project_dataset_level.readable_approved_status}' for level " \
+              "#{project_dataset_level.access_level_id}.\n\n"
       )
     end
 
@@ -30,12 +31,14 @@ class CasNotifier
       )
     end
 
-    def dataset_approved_status_updated_to_user(project, project_dataset)
+    def dataset_level_approved_status_updated_to_user(project, project_dataset_level)
       create_notification(
         user_id: project.owner.id,
-        title: 'Dataset Approval Updated',
-        body: "Your CAS dataset access request for '#{project_dataset.dataset_name}' has been " \
-              "updated to Approval status of '#{project_dataset.readable_approved_status}'.\n\n"
+        title: 'Dataset Approval Level Updated',
+        body: 'Your CAS dataset access request for ' \
+              "'#{project_dataset_level.project_dataset.dataset_name}' has been updated to " \
+              "Approval status of '#{project_dataset_level.readable_approved_status}' for level " \
+              "#{project_dataset_level.access_level_id}.\n\n"
       )
     end
 

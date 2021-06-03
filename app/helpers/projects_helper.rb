@@ -362,4 +362,33 @@ module ProjectsHelper
   def project_form_path(project)
     "#{project_sub_type_path_prefix(project)}/form"
   end
+
+  def display_level_date(project_dataset_level)
+    return unless project_dataset_level.expiry_date
+
+    if project_dataset_level.approved
+      project_dataset_level.expiry_date.strftime('%d/%m/%Y (expiry)')
+    else
+      project_dataset_level.expiry_date.strftime('%d/%m/%Y (requested)')
+    end
+  end
+
+  def setup_project(project)
+    (Dataset.cas_extras.pluck(:id) - project.project_datasets.pluck(:dataset_id)).each do |id|
+      project.project_datasets.build(dataset_id: id)
+    end
+    project.project_datasets.each do |pd|
+      levels = Lookups::AccessLevel.pluck(:id) - pd.project_dataset_levels.pluck(:access_level_id)
+      levels.each do |level|
+        pd.project_dataset_levels.build(access_level_id: level)
+      end
+    end
+    project
+  end
+
+  def check_icon(value)
+    return bootstrap_icon_tag('ok') if value
+
+    bootstrap_icon_tag('remove')
+  end
 end

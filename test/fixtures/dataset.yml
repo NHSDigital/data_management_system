@@ -127,13 +127,18 @@
   name: 'Extra CAS Dataset One'
   dataset_type_id: 5
   team: cas_application_team
+  levels: [1, 2]
+  cas_type: 2
 84:
   id: 84
   name: 'Extra CAS Dataset Two'
   dataset_type_id: 5
   team: cas_application_team
+  levels: [2, 3]
+  cas_type: 2
 85:
   id: 85
   name: 'No grant dataset'
   dataset_type_id: 5
   team: cas_application_team
+  cas_type: 1
