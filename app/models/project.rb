@@ -445,6 +445,16 @@ class Project < ApplicationRecord
     datasets.map(&:name)
   end
 
+  # display this but for all intent and purposes project.id is all that is needed to link
+  # eois and applications together
+  def odr_application_log
+    return unless odr?
+    return unless first_contact_date
+
+    application_fyear = financial_year(first_contact_date)
+    application_log || "ODR_#{application_fyear.first.year}_#{application_fyear.last.year}_#{id}"
+  end
+
   private
 
   def project_type_inquirer
@@ -594,6 +604,12 @@ class Project < ApplicationRecord
     return if team
 
     errors.add(:project, 'Must belong to a Team!')
+  end
+
+  def financial_year(date)
+    start_year = date.month < 4 ? date.year - 1 : date.year
+
+    Date.new(start_year, 4, 1)..Date.new(start_year + 1, 3, 31)
   end
 
   class << self
