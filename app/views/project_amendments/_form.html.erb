@@ -8,6 +8,12 @@
 <%= bootstrap_form_with model: project_amendment, url: url, readonly: readonly, horizontal: 2, html: { id: dom_id(project_amendment) } do |form| %>
   <%= form.error_and_warning_alert_boxes %>
 
+  <% unless form.object.reference.nil? %>
+    <%= form.control_group(:reference, nil, {}, class: 'col-xs-5 col-sm-4 col-md-3') do %>
+      <%= form.text_field(:reference, readonly: true) %>
+    <% end %>
+  <% end %>
+
   <%= form.control_group(:requested_at, nil, {}, class: 'col-xs-5 col-sm-4 col-md-3') do %>
     <%= form.datepicker_field(:requested_at) %>
   <% end %>
