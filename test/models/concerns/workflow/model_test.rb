@@ -163,10 +163,11 @@ module Workflow
 
     test 'returning to draft should reset approvals' do
       project = projects(:rejected_project)
+      assert_equal 'DRAFT', project.previous_state_id, "Previous state should have been 'DRAFT'"
       assert_changes -> { project.details_approved }, from: false, to: nil do
         assert_changes -> { project.members_approved }, from: false, to: nil do
           assert_changes -> { project.legal_ethical_approved }, from: false, to: nil do
-            project.transition_to(workflow_states(:draft), project.owner)
+            project.transition_to!(workflow_states(:draft), project.owner)
           end
         end
       end
