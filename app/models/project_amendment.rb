@@ -47,7 +47,7 @@ class ProjectAmendment < ApplicationRecord
   end
 
   def populate_reference
-    self.reference = project.next_amendment_reference
+    self.reference = project&.next_amendment_reference
   end
 
   def increment_amendment_number
