@@ -107,7 +107,8 @@ module ProjectsHelper
   def odr_reference(project)
     return unless project&.project_type&.name&.in? %w[Application EOI]
 
-    content_tag(:small, "ODR Reference: #{project.id}")
+    odr_reference = project.application_log || project.odr_application_log
+    content_tag(:small, "ODR Reference: #{odr_reference}")
   end
 
   def transition_button(project, state, **options)
