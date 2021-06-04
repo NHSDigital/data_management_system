@@ -84,7 +84,7 @@ module Workflow
     def previous_state
       return if project_states.blank?
 
-      project_states.order(:created_at)[-2]
+      project_states.order(:created_at, :id)[-2]
     end
 
     def previous_state_id
