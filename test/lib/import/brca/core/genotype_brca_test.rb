@@ -29,16 +29,6 @@ class GenotypeBrcaTest < ActiveSupport::TestCase
     end
   end
 
-  # test 'gene_integer_input' do
-  #   assert_equal 7, @genotype.gene_integer_input(1)
-  #   assert_equal 8, @genotype.gene_integer_input(2)
-  #   assert_equal 7, @genotype.gene_integer_input(7)
-  #   assert_equal 8, @genotype.gene_integer_input(8)
-  #
-  #   @logger.expects(:error).with('Invalid gene reference given to addGene; needs 1 or 2, given: 99')
-  #   @genotype.gene_integer_input(99)
-  # end
-
   test 'other_gene' do
     @importer_stdout, @importer_stderr = capture_io do
       genotype = Import::Brca::Core::GenotypeBrca.new(build_raw_record('pseudo_id1' => 'bob'))
@@ -49,29 +39,6 @@ class GenotypeBrcaTest < ActiveSupport::TestCase
       genotype.other_gene
     end
   end
-
-  # test 'gene_regex_input' do
-  #   brca_imput = @genotype.raw_record.raw_fields['test']
-  #   assert_equal 7, @genotype.gene_regex_input(brca_imput)
-  #
-  #   @logger.expects(:debug).with('Bad input string given for brca1/2 extraction: Cabbage')
-  #   @genotype.gene_regex_input('Cabbage')
-  # end
-
-  # test 'gene_string_input' do
-  #   brca_imput = @genotype.raw_record.raw_fields['test']
-  #   assert_equal 7, @genotype.gene_string_input(brca_imput)
-  #
-  #   expected = 'Bad input string (too many genes) given for brca1/2 extraction: BRCA1 and BRCA2'
-  #   @logger.expects(:debug).with(expected)
-  #   @genotype.gene_string_input('BRCA1 and BRCA2')
-  #
-  #   @logger.expects(:debug).with('Bad input string (no detected genes) given for brca1/2 extraction: Cabbage')
-  #   @genotype.gene_string_input('Cabbage')
-  #
-  #   @logger.expects(:debug).with('WARNING: string provided for gene extraction contains aslash, possible multi-gene error: BRCA1/')
-  #   @genotype.gene_string_input('BRCA1/')
-  # end
 
   def build_raw_record(options = {})
     default_options = {
