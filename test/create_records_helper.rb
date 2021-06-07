@@ -91,6 +91,7 @@ module CreateRecordsHelper
       team: teams(:team_one),
       start_data_date: '01/01/2017',
       end_data_date: '31/12/2017',
+      first_contact_date: '31/12/2016',
       data_to_contact_others: true,
       data_to_contact_others_desc: 'do something',
       classifications: [classifications(:one), classifications(:two)],

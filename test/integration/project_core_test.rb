@@ -376,7 +376,8 @@ class ProjectCoreTest < ActionDispatch::IntegrationTest
   def create_eoi
     eoi = Project.new(project_type: project_types(:eoi),
                       name: 'E Oh Eye Do Like To Be Beside The Seaside',
-                      project_purpose: 'Ice Cream')
+                      project_purpose: 'Ice Cream',
+                      first_contact_date: Date.current - 1.month)
     dataset = Dataset.find_by(name: 'Death Transaction')
     eoi.project_datasets << ProjectDataset.new(dataset: dataset,
                                                terms_accepted: true)

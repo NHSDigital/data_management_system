@@ -239,7 +239,8 @@ class ApplicationProjectTest < ActionDispatch::IntegrationTest
   test 'should show boolean dropdown options as Yes/No in show screen' do
     project = Project.create(project_type: project_types(:application), owner: @user,
                              name: 'Test yes/no', team: teams(:team_one),
-                             onwardly_share: true, data_already_held_for_project: false)
+                             onwardly_share: true, data_already_held_for_project: false,
+                             first_contact_date: Date.current - 1.month)
 
     visit project_path(project)
 
@@ -260,7 +261,8 @@ class ApplicationProjectTest < ActionDispatch::IntegrationTest
   test 'should show blank instead of unknown if there are no tick boxes filled in' do
     project = Project.create(project_type: project_types(:application), owner: @user,
                              name: 'Test tick boxes', team: teams(:team_one),
-                             onwardly_share: true, data_already_held_for_project: false)
+                             onwardly_share: true, data_already_held_for_project: false,
+                             first_contact_date: Date.current - 1.month)
 
     visit project_path(project)
 
@@ -289,7 +291,8 @@ class ApplicationProjectTest < ActionDispatch::IntegrationTest
   # testing that cas changes don't have a knock on effect to other project_types
   test 'should not disable submit button and show transition error if user details not complete' do
     project = Project.create(project_type: project_types(:application), owner: @user,
-                             name: 'Test yes/no', team: teams(:team_one))
+                             name: 'Test yes/no', team: teams(:team_one),
+                             first_contact_date: Date.current - 1.month)
 
     visit project_path(project)
 

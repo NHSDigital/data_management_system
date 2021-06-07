@@ -144,3 +144,4 @@ test_application:
   project_type: application
   name: Test Application
   description: A test application
+  first_contact_date: <%= Date.current - 1.month %>
