@@ -86,7 +86,7 @@ module Import
               end
               case variable = BRCA_REGEX.match(brca_input.strip)
               when nil
-                @logger.debug "Null input for BRCA genes"
+                @logger.debug 'Null input for BRCA genes'
               else
                 @attribute_map['gene'] = BRCA_MAP[variable&.to_s]
                 @logger.debug "SUCCESSFUL gene parse for #{brca_input}"
@@ -99,6 +99,7 @@ module Import
 
         def add_test_scope(scope)
           return if scope.blank?
+
           case scope
           when :full_screen
             @attribute_map['genetictestscope'] = 'Full screen BRCA1 and BRCA2'
@@ -116,7 +117,6 @@ module Import
         def dup
           Import::Brca::Core::GenotypeBrca.new(@raw_record, @attribute_map.dup)
         end
-
       end
     end
   end

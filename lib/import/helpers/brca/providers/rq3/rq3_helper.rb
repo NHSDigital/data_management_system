@@ -28,9 +28,9 @@ module Import
               genotype.attribute_map['organisationcode_testresult'] = '699F0'
             end
 
-            def process_noevidence_records(record, testresult, genotypes, genotype)
+            def process_noevidence_records(_record, _testresult, genotypes, genotype)
               no_evidence = @testresult.scan(/no evidence(?!\.).+[^.]|no further(?!\.).+[^.]/i).join
-              true_variant = @testresult.gsub(/no evidence(?!\.).+[^.]|no further(?!\.).+[^.]/i,'')
+              true_variant = @testresult.gsub(/no evidence(?!\.).+[^.]|no further(?!\.).+[^.]/i, '')
               negativegenes = no_evidence.scan(BRCA_REGEX).flatten - true_variant.scan(BRCA_REGEX).flatten
               process_negative_genes(negativegenes, @genotypes, @genotype)
               genotype.add_gene(unique_brca_genes_from(true_variant).join)
@@ -65,15 +65,17 @@ module Import
               end
             end
 
-            def process_empty_testreport_results(testresult, _genelist, genotypes, _record, genotype)
+            def process_empty_testreport_results(testresult, _genelist, genotypes,
+                                                 _record, genotype)
               genotype.add_status(2)
               genotype.add_gene(brca_genes_from(testresult).join)
               genotype.add_gene_location('')
               genotypes.append(genotype)
             end
 
-            def process_testresult_cdna_variants(testresult, testreport, genelist, genotypes, record, genotype)
-               if testresult.scan(CDNA_REGEX).size == 1 
+            def process_testresult_cdna_variants(testresult, testreport, genelist, genotypes,
+                                                 record, genotype)
+              if testresult.scan(CDNA_REGEX).size == 1 
                 process_testresult_single_cdnavariant(testresult, testreport, record, genelist,
                                                       genotypes, genotype)
               else
