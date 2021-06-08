@@ -60,6 +60,19 @@ Devise.setup do |config|
       users = model.where('email ILIKE ?', email).all
       users.one? ? users.first : nil
     end
+
+    # Configure SAML certificates for ADFS; these will need to be provided and may need periodic
+    # rotation in live environments (the files can be replaced as needed).
+    certificates_path = Rails.root.join('config/certificates/saml')
+    encryption_path   = certificates_path.join('encryption.phe.adfs.pem')
+    signing_path      = certificates_path.join('signing.phe.adfs.pem')
+    encryption_certs  = File.read(encryption_path).split(/\n{2,}/) if File.exist?(encryption_path)
+    signing_certs     = File.read(signing_path).split(/\n{2,}/)    if File.exist?(signing_path)
+
+    config.saml_config.idp_cert_multi = {
+      encryption: Array.wrap(encryption_certs),
+      signing:    Array.wrap(signing_certs)
+    }
   else
     config.saml_route_helper_prefix = 'saml'
     config.parent_controller        = 'ApplicationController'
