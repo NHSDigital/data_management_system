@@ -75,7 +75,7 @@ module Import
 
             def process_testresult_cdna_variants(testresult, testreport, genelist, genotypes,
                                                  record, genotype)
-              if testresult.scan(CDNA_REGEX).size == 1 
+              if testresult.scan(CDNA_REGEX).size == 1
                 process_testresult_single_cdnavariant(testresult, testreport, record, genelist,
                                                       genotypes, genotype)
               else
@@ -90,12 +90,9 @@ module Import
                 if full_screen?(record)
                   if sometimes_tested?(record)
                     genelist = unique_brca_genes_from(testreport)
-                    negativegenes = genelist - unique_brca_genes_from(testresult)
-                    process_negative_genes(negativegenes, genotypes, genotype)
-                  else
-                    negativegenes = genelist - unique_brca_genes_from(testresult)
-                    process_negative_genes(negativegenes, genotypes, genotype)
                   end
+                  negativegenes = genelist - unique_brca_genes_from(testresult)
+                  process_negative_genes(negativegenes, genotypes, genotype)
                 end
                 genotype.add_gene(unique_brca_genes_from(testresult).join)
                 genotype.add_gene_location(testresult.scan(CDNA_REGEX).join)
@@ -103,17 +100,15 @@ module Import
                 if testresult.scan(PROTEIN_REGEX).size.positive?
                   genotype.add_protein_impact(testresult.scan(PROTEIN_REGEX).join)
                 end
-                genotypes.append(genotype)
               else
                 if full_screen?(record)
                   if sometimes_tested?(record)
                     genelist = unique_brca_genes_from(testreport)
                     negativegenes = genelist - unique_brca_genes_from(testresult)
-                    process_negative_genes(negativegenes, genotypes, genotype)
                   else
                     negativegenes = genelist - [unique_brca_genes_from(testresult)[0]]
-                    process_negative_genes(negativegenes, genotypes, genotype)
                   end
+                  process_negative_genes(negativegenes, genotypes, genotype)
                 end
                 genotype.add_gene(unique_brca_genes_from(testresult)[0])
                 genotype.add_gene_location(testresult.scan(CDNA_REGEX).join)
@@ -121,8 +116,8 @@ module Import
                 if testresult.scan(PROTEIN_REGEX).size.positive?
                   genotype.add_protein_impact(testresult.scan(PROTEIN_REGEX).join)
                 end
-                genotypes.append(genotype)
               end
+              genotypes.append(genotype)
             end
 
             def process_testresult_multiple_cdnavariant(testresult, testreport, record,
@@ -131,12 +126,9 @@ module Import
                 if full_screen?(record)
                   if sometimes_tested?(record)
                     genelist = unique_brca_genes_from(testreport)
-                    negativegenes = genelist - unique_brca_genes_from(testresult)
-                    process_negative_genes(negativegenes, genotypes, genotype)
-                  else
-                    negativegenes = genelist - unique_brca_genes_from(testresult)
-                    process_negative_genes(negativegenes, genotypes, genotype)
                   end
+                  negativegenes = genelist - unique_brca_genes_from(testresult)
+                  process_negative_genes(negativegenes, genotypes, genotype)
                 end
                 genes = brca_genes_from(testresult)
                 cdnas = testresult.scan(CDNA_REGEX).flatten
@@ -147,12 +139,9 @@ module Import
                 if full_screen?(record)
                   if sometimes_tested?(record)
                     genelist = unique_brca_genes_from(testreport)
-                    negativegenes = genelist - unique_brca_genes_from(testresult)
-                    process_negative_genes(negativegenes, genotypes, genotype)
-                  else
-                    negativegenes = genelist - unique_brca_genes_from(testresult)
-                    process_negative_genes(negativegenes, genotypes, genotype)
                   end
+                  negativegenes = genelist - unique_brca_genes_from(testresult)
+                  process_negative_genes(negativegenes, genotypes, genotype)
                 end
                 if testresult.scan(/known as #{CDNA_REGEX}/i).size.positive?
                   false_cdnas  = testresult.scan(/known as #{CDNA_REGEX}/i).flatten
@@ -160,7 +149,6 @@ module Import
                 else cdnas = testresult.scan(CDNA_REGEX).flatten
                 end
                 genes = unique_brca_genes_from(testresult) * cdnas.size
-                # cdnas = testresult.scan(CDNA_REGEX).flatten
                 proteins = testresult.scan(PROTEIN_REGEX).flatten
                 positive_results = genes.zip(cdnas, proteins)
                 positive_multiple_cdna_variants(positive_results, genotypes, genotype)
@@ -171,13 +159,11 @@ module Import
               if full_screen?(record)
                 if sometimes_tested?(record)
                   genelist = unique_brca_genes_from(testreport)
-                  negativegenes = genelist - unique_brca_genes_from(testresult)
-                  process_negative_genes(negativegenes, genotypes, genotype)
                 else
                   genelist = BRCA_GENES_MAP[record.raw_fields['indication']]
-                  negativegenes = genelist - unique_brca_genes_from(testresult)
-                  process_negative_genes(negativegenes, genotypes, genotype)
                 end
+                negativegenes = genelist - unique_brca_genes_from(testresult)
+                process_negative_genes(negativegenes, genotypes, genotype)
               end
               testcolumn = testresult
               process_chromosomal_variant(testcolumn, genelist, genotypes, record, genotype)
@@ -186,29 +172,24 @@ module Import
             def process_chromosomal_variant(testcolumn, _genelist, genotypes, _record, genotype)
               brca_genes = unique_brca_genes_from(testcolumn)
               if brca_genes.one?
+                genotype.add_gene(brca_genes.join)
                 if testcolumn.scan(CHR_VARIANTS_REGEX).size == 1
-                  genotype.add_gene(brca_genes.join)
                   genotype.add_variant_type(testcolumn.scan(CHR_VARIANTS_REGEX).join)
-                  genotype.add_status(2)
-                  genotypes.append(genotype)
                 else
-                  genotype.add_gene(brca_genes.join)
                   genotype.add_variant_type(testcolumn.scan(CHR_VARIANTS_REGEX)[1])
-                  genotype.add_status(2)
-                  genotypes.append(genotype)
                 end
+                genotype.add_status(2)
+                genotypes.append(genotype)
               elsif brca_genes.size > 1
+                genes = brca_genes_from(testcolumn)
                 if testcolumn.scan(CHR_VARIANTS_REGEX).size == 1
-                  genes = brca_genes_from(testcolumn)
                   chromosomalvariants = testcolumn.scan(CHR_VARIANTS_REGEX).flatten * genes.size
-                  positive_results = genes.zip(chromosomalvariants)
-                  positive_multiple_chromosomal_variants(positive_results, genotypes, genotype)
                 else
                   genes = brca_genes_from(testcolumn)
                   chromosomalvariants = testcolumn.scan(CHR_VARIANTS_REGEX).flatten
-                  positive_results = genes.zip(chromosomalvariants)
-                  positive_multiple_chromosomal_variants(positive_results, genotypes, genotype)
                 end
+                positive_results = genes.zip(chromosomalvariants)
+                positive_multiple_chromosomal_variants(positive_results, genotypes, genotype)
               end
             end
 
@@ -283,12 +264,9 @@ module Import
                 if full_screen?(record)
                   if sometimes_tested?(record)
                     genelist = unique_brca_genes_from(testreport)
-                    negativegenes = genelist - unique_brca_genes_from(testresult)
-                    process_negative_genes(negativegenes, genotypes, genotype)
-                  else
-                    negativegenes = genelist - unique_brca_genes_from(testresult)
-                    process_negative_genes(negativegenes, genotypes, genotype)
                   end
+                  negativegenes = genelist - unique_brca_genes_from(testresult)
+                  process_negative_genes(negativegenes, genotypes, genotype)
                 end
                 genes = brca_genes_from(testreport)
                 genes.uniq do |gene|
