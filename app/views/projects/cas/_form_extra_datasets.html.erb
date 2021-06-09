@@ -3,7 +3,7 @@
   <table id="extra_datasets" class="table table-hover">
     <thead>
       <tr>
-        <th width="31%" style="text-align:center; border-top: 0px;">Dataset name</th>
+        <th colspan="6" style="text-align:center; border-top: 0px;">Dataset name</th>
         <th colspan="2" style="text-align:center; border-top: 0px;">Level 1</th>
         <th colspan="2" style="text-align:center; border-top: 0px;">Level 2</th>
         <th colspan="2" style="text-align:center; border-top: 0px;">Level 3</th>
@@ -13,7 +13,7 @@
       <%= form.fields_for :project_datasets, @project.project_datasets.sort_by(&:dataset_id) do |pd| %>
         <tr id="dataset_<%=pd.object.dataset.id=%>_row">
           <%= pd.hidden_field :dataset_id, value: pd.object.dataset_id %>
-          <td width="31%" data-toggle="tooltip" data-placement="left" title="<%= pd.object.dataset.name %>">
+          <td colspan="6" data-toggle="tooltip" data-placement="left" title="<%= pd.object.dataset.name %>">
             <%= truncate(pd.object.dataset.name) %>
           </td>
           <%= pd.fields_for :project_dataset_levels, pd.object.project_dataset_levels.sort_by(&:access_level_id) do |pdl| %>

@@ -2,7 +2,7 @@
 class UpdateCasTypeCasDatasets < ActiveRecord::Migration[6.0]
   include MigrationHelper
   def change
-    (59..68).each do |id|
+    Dataset.cas.pluck(:id).each do |id|
       change_lookup Dataset, id, { cas_type: nil }, { cas_type: 2 }
     end
   end
