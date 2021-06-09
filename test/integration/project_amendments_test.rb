@@ -42,6 +42,8 @@ class ProjectAmendmentsTest < ActionDispatch::IntegrationTest
     click_on('Amendments')
 
     click_link('New')
+    assert has_no_field?('project_amendment[reference]')
+
     fill_in('project_amendment[requested_at]', with: '27/03/2020')
     fill_in('project_amendment[amendment_approved_date]', with: '29/03/2020')
     attach_file('project_amendment[upload]', file_fixture('odr_amendment_request_form-1.0.pdf'))
@@ -72,6 +74,7 @@ class ProjectAmendmentsTest < ActionDispatch::IntegrationTest
     click_on('Amendments')
 
     click_link(href: edit_project_amendment_path(amendment))
+    assert has_no_field?('project_amendment[reference]')
 
     check('Data Flows')
     check('Duration')
