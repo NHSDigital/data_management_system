@@ -55,7 +55,7 @@ class ApplicationProjectTest < ActionDispatch::IntegrationTest
     assert has_text? 'DPIA Rejected'
     assert has_no_button?('Begin DPIA')
 
-    sign_in @user
+    change_sign_in @user
     visit project_path(@project)
     assert has_button?('Begin DPIA')
 
@@ -87,7 +87,7 @@ class ApplicationProjectTest < ActionDispatch::IntegrationTest
       end
     end
 
-    sign_in @senior
+    change_sign_in @senior
     visit project_path(@project)
 
     assert has_button? 'Reject DPIA'
@@ -111,7 +111,7 @@ class ApplicationProjectTest < ActionDispatch::IntegrationTest
     assert has_no_button? 'Start Contract Drafting'
     assert_equal workflow_states(:contract_draft), @project.reload.current_state
 
-    sign_in @odr
+    change_sign_in @odr
     visit project_path(@project)
 
     assert has_no_content? 'no contract document(s) attached'
@@ -191,7 +191,7 @@ class ApplicationProjectTest < ActionDispatch::IntegrationTest
     visit project_path(@project)
     assert has_no_content? 'Reset Approvals'
 
-    sign_in @odr
+    change_sign_in @odr
     visit project_path(@project)
     assert has_content? 'Reset Approvals'
   end
@@ -229,7 +229,7 @@ class ApplicationProjectTest < ActionDispatch::IntegrationTest
     project.transition_to!(workflow_states(:review))
     project.transition_to!(workflow_states(:submitted))
 
-    sign_in @odr
+    change_sign_in @odr
     visit project_path(project)
     click_on 'Legal / Ethical'
     assert has_no_content? 'Edit'
@@ -344,7 +344,7 @@ class ApplicationProjectTest < ActionDispatch::IntegrationTest
 
     assert has_no_button?('Send for Moderation')
 
-    sign_in user
+    change_sign_in user
     visit project_path(@project)
     assert has_button?('Send for Moderation')
   end
