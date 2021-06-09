@@ -545,6 +545,14 @@ class ProjectTest < ActiveSupport::TestCase
     assert_nil project.odr_application_log
   end
 
+  test 'next amendment reference for legacy ODR application' do
+    project = build_project(project_type: project_types(:application),
+                            first_contact_date: Date.parse('2021/04/01'),
+                            application_log: 'ODR_legacy_id').tap(&:save!)
+    assert_equal 'ODR_legacy_id', project.odr_application_log
+    assert_equal 'ODR_legacy_id/A1', project.next_amendment_reference
+  end
+
   private
 
   def assert_application_log(expected, options = {})
