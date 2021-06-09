@@ -263,6 +263,7 @@ class ProjectsController < ApplicationController
     params.require(:project).permit(:alternative_data_access_address,
                                     :alternative_data_access_postcode,
                                     :application_date,
+                                    :first_contact_date,
                                     :data_access_address,
                                     :data_access_postcode, :description, :end_data_date,
                                     :how_data_will_be_used, :name,

@@ -329,7 +329,8 @@ class ProjectTest < ActiveSupport::TestCase
                               owner: users(:application_manager_three),
                               sponsor_country_id: "",
                               funder_country_id: "",
-                              data_processor_country_id: "")
+                              data_processor_country_id: "",
+                              first_contact_date: Date.current - 1.month)
 
     # They'll be many more validations to add...
     assert application.valid?

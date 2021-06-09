@@ -116,6 +116,10 @@ class Project < ApplicationRecord
     validates :project_purpose, presence: true
   end
 
+  with_options if: -> { odr? } do
+    validates :first_contact_date, presence: true
+  end
+
   # Allow for auditing/version tracking of Project
   has_paper_trail
 
