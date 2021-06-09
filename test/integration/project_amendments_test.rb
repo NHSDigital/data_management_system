@@ -32,6 +32,7 @@ class ProjectAmendmentsTest < ActionDispatch::IntegrationTest
 
   test 'should be able to create an amendment' do
     project = projects(:test_application)
+    project.first_contact_date = Date.parse('2020/03/31')
 
     project.transition_to!(workflow_states(:submitted))
     project.transition_to!(workflow_states(:dpia_start))
@@ -52,10 +53,14 @@ class ProjectAmendmentsTest < ActionDispatch::IntegrationTest
       assert has_text?('Amendment created successfully')
       assert has_selector?('#projectAmendments', visible: true)
     end
+    assert_equal 1, project.reload.amendment_number
+    expected_amendment_reference = "ODR_2019_2020_#{project.id}_A1"
+    assert_equal expected_amendment_reference, project.project_amendments.first.reference
   end
 
   test 'should be able to update an amendment' do
     project = projects(:test_application)
+    project.first_contact_date = Date.parse('2020/03/31')
 
     project.transition_to!(workflow_states(:submitted))
     project.transition_to!(workflow_states(:dpia_start))
@@ -72,11 +77,13 @@ class ProjectAmendmentsTest < ActionDispatch::IntegrationTest
     check('Duration')
 
     assert_changes -> { amendment.reload.labels } do
-      click_button('Update Amendment')
+      assert_no_changes -> { amendment.reference } do
+        click_button('Update Amendment')
 
-      assert_equal project_path(project), current_path
-      assert has_text?('Amendment updated successfully')
-      assert has_selector?('#projectAmendments', visible: true)
+        assert_equal project_path(project), current_path
+        assert has_text?('Amendment updated successfully')
+        assert has_selector?('#projectAmendments', visible: true)
+      end
     end
   end
 
