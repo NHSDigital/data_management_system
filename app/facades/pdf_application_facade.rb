@@ -143,7 +143,7 @@ class PdfApplicationFacade
   def initialize(project, attrs = {})
     super(attrs)
     @project = project
-
+    @project.pdf_import = true
     # Be clear about usage/limitations. Right now this class is only intended as a
     # shim/helper for creating new projects from PDF application forms...
     raise 'Not for use with persisted projects!' if persisted?

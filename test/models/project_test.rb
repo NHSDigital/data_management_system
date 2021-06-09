@@ -554,6 +554,16 @@ class ProjectTest < ActiveSupport::TestCase
     assert_equal 'ODR_legacy_id/A1', project.next_amendment_reference
   end
 
+  test 'first_contact_date not required for pdf import' do
+    project = Project.new(project_type: project_types(:application)).tap(&:valid?)
+    assert_includes project.errors.messages.keys, :first_contact_date
+
+    team = teams(:team_one)
+    project = team.projects.build(project_type: project_types(:application))
+    facade = PdfApplicationFacade.new(project)
+    refute_includes facade.errors.messages.keys, :first_contact_date
+  end
+
   private
 
   def assert_application_log(expected, options = {})
