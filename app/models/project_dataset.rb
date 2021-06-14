@@ -45,7 +45,7 @@ class ProjectDataset < ApplicationRecord
   # TODO: TEST
   def terms_accepted_for_dataset
     return if dataset.nil?
-    return if dataset.dataset_type_name == 'cas'
+    return if dataset.cas_type
     return if terms_accepted
 
     errors.add(:project_dataset, "Terms accepted can't be blank")

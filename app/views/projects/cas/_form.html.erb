@@ -18,12 +18,13 @@
       <% end %>
       <%= form.fields_for :cas_application_fields do |cas| %>
         <%= render partial: 'projects/cas/form_account_details_section', locals: { form: cas } %>
-        <%= render partial: 'projects/cas/form_permissions_section',       locals: { form: cas } %>
       <% end %>
 
+      <%= render partial: 'projects/cas/form_default_datasets', locals: { form: form } %>
       <%= render partial: 'projects/cas/form_extra_datasets', locals: { form: form } %>
 
       <%= form.fields_for :cas_application_fields do |cas| %>
+        <%= render partial: 'projects/cas/form_permissions_section',       locals: { form: cas } %>
         <% if !@project.persisted? || @project.owner == current_user %>
           <%= render partial: 'projects/cas/form_declarations_section',    locals: { form: cas } %>
         <% end %>
