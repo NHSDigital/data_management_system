@@ -252,7 +252,7 @@ class Ability
     can :manage, [User, Organisation, Division, Directorate, Team]
 
     can :create, Project
-    cannot :create, Project, project_type_id: ProjectType.cas.pluck(:id) if Mbis.stack == 'live'
+    cannot :create, Project, project_type_id: ProjectType.cas.pluck(:id) if Mbis.stack.live?
     can :read, Project, project_type_id: ProjectType.odr_mbis.pluck(:id)
     can %i[create read], ProjectAttachment
     can %i[update destroy edit_data_source_items],
