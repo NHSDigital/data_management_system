@@ -1,0 +1,15 @@
+<h1>Dataset Level Approval Status Change</h1>
+<hr />
+
+<p>
+  CAS application <%= @project.id %> - Dataset <%= @load_project_dataset_level.project_dataset.dataset_name %>
+  has been updated to Approval status of '<%= @load_project_dataset_level.approved %>' for level
+  <%= @load_project_dataset_level.access_level_id %> access.
+</p>
+
+<%= render 'projects_mailer/project_details', project: @project %>
+
+<p>
+  Please <%= link_to 'log in', root_url %> and use the link above to view the
+  CAS application.
+</p>

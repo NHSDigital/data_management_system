@@ -47,6 +47,8 @@ class Project < ApplicationRecord
   validates_associated :project_datasets
   # validates_associated failing with non persisted children?
   # https://github.com/rails/rails/pull/32796
+  has_many :project_dataset_levels, -> { order(:project_dataset_id, :access_level_id) },
+           through: :project_datasets
 
   belongs_to :s251_exemption, class_name: 'Lookups::CommonLawExemption', optional: true
 
@@ -75,6 +77,7 @@ class Project < ApplicationRecord
 
   after_save :reset_project_data_items
   after_create :notify_cas_manager_new_cas_project_saved
+  after_save :destroy_project_datasets_without_any_levels
 
   # effectively belongs_to .. through: .. association
   # delegate :dataset,      to: :team_dataset, allow_nil: true
@@ -618,6 +621,15 @@ class Project < ApplicationRecord
     return if team
 
     errors.add(:project, 'Must belong to a Team!')
+  end
+
+  def destroy_project_datasets_without_any_levels
+    return unless cas?
+    return unless project_datasets.any?
+
+    project_datasets.each do |pd|
+      pd.destroy if pd.project_dataset_levels.none?
+    end
   end
 
   def financial_year(date)

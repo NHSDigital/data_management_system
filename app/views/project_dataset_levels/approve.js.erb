@@ -1,0 +1,10 @@
+<%
+  @project ||= @project_dataset_level.project # shallow routing means this may not have been set
+%>
+
+$('#<%= "project_dataset_level_#{@project_dataset_level.id}"%>').html("<%= escape_javascript(render partial: 'project_dataset_levels/approval', locals: { project_dataset_level: @project_dataset_level } ) %>");
+
+$('#dataset_approval_status').html("<%= escape_javascript approval_button_message(@project_dataset_level.approved) %>");
+$('#dataset_approval_status').removeClass().addClass('label label-<%= approval_button_style(@project_dataset_level.approved) %>');
+
+$('#status_label').html("<%= escape_javascript(render partial: 'projects/status_label', locals: { project: @project } ) %>");

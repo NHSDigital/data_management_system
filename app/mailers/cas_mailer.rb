@@ -1,8 +1,8 @@
 # Sends emails regarding CAS related activity
 class CasMailer < ApplicationMailer
   before_action :load_project
-  before_action :load_project_dataset, only: [:dataset_approved_status_updated,
-                                              :dataset_approved_status_updated_to_user]
+  before_action :load_project_dataset_level, only: %i[dataset_level_approved_status_updated
+                                                      dataset_level_approved_status_updated_to_user]
 
   def requires_dataset_approval
     recipient = Array.wrap(params[:user].email)
@@ -10,16 +10,16 @@ class CasMailer < ApplicationMailer
     mail(to: recipient, subject: 'CAS Application Requires Dataset Approval') if recipient.any?
   end
 
-  def dataset_approved_status_updated
+  def dataset_level_approved_status_updated
     recipients = User.cas_manager_and_access_approvers.pluck(:email)
 
-    mail(to: recipients, subject: 'Dataset Approval Status Change') if recipients.any?
+    mail(to: recipients, subject: 'Dataset Approval Level Status Change') if recipients.any?
   end
 
-  def dataset_approved_status_updated_to_user
+  def dataset_level_approved_status_updated_to_user
     recipient = Array.wrap(@project.owner.email)
 
-    mail(to: recipient, subject: 'Dataset Approval Updated') if recipient.any?
+    mail(to: recipient, subject: 'Dataset Approval Level Updated') if recipient.any?
   end
 
   def application_submitted
@@ -112,7 +112,7 @@ class CasMailer < ApplicationMailer
     @project ||= params[:project]
   end
 
-  def load_project_dataset
-    @project_dataset ||= params[:project_dataset]
+  def load_project_dataset_level
+    @load_project_dataset_level ||= params[:project_dataset_level]
   end
 end

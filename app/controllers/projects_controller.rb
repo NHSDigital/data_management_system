@@ -82,7 +82,7 @@ class ProjectsController < ApplicationController
   def cas_approvals
     @projects = Project.my_projects_search(search_params).accessible_by(current_ability, :read).
                 order(updated_at: :desc)
-    @my_dataset_approvals = @projects.cas_dataset_approval(current_user, nil).
+    @my_dataset_approvals = @projects.cas_dataset_approval(current_user, [nil]).
                             order(updated_at: :desc)
     @my_access_approvals = @projects.cas_access_approval.order(updated_at: :desc)
 
@@ -320,8 +320,12 @@ class ProjectsController < ApplicationController
                                     dataset_ids: [],
                                     owner_grant_attributes: %i[id user_id project_id
                                                                roleable_id roleable_type],
-                                    project_datasets_attributes: %i[id project_id dataset_id
-                                                                    terms_accepted _destroy],
+                                    project_datasets_attributes:
+                                      [:id, :project_id, :dataset_id,
+                                       :terms_accepted, :_destroy,
+                                       { project_dataset_levels_attributes:
+                                       %i[id project_dataset_id selected
+                                          access_level_id expiry_date ] }],
                                     project_attachments_attributes: %i[name attachment],
                                     # CAS
                                     cas_application_fields_attributes: cas_fields)
