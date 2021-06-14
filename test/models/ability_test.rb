@@ -919,8 +919,7 @@ class AbilityTest < ActiveSupport::TestCase
 
   test 'can create CAS application with no roles in beta' do
     Mbis.stubs(:stack).returns('beta')
-    assert_equal 'beta', Mbis.stack
-
+    Mbis.stack.stubs(:live?).returns(false)
     @no_roles_ability = Ability.new(@no_roles)
 
     mbis_application    = Project.new(project_type: ProjectType.find_by(name: 'Project'))
@@ -935,8 +934,7 @@ class AbilityTest < ActiveSupport::TestCase
 
   test 'cannot create CAS application with no roles in live' do
     Mbis.stubs(:stack).returns('live')
-    assert_equal 'live', Mbis.stack
-
+    Mbis.stack.stubs(:live?).returns(true)
     @no_roles_ability = Ability.new(@no_roles)
 
     mbis_application    = Project.new(project_type: ProjectType.find_by(name: 'Project'))
@@ -958,8 +956,7 @@ class AbilityTest < ActiveSupport::TestCase
 
   test 'a user with roles can create CAS application in beta' do
     Mbis.stubs(:stack).returns('beta')
-    assert_equal 'beta', Mbis.stack
-
+    Mbis.stack.stubs(:live?).returns(false)
     @application_manager_ability = Ability.new(@application_manager)
 
     cas_application = Project.new(project_type: ProjectType.find_by(name: 'CAS'))
@@ -968,8 +965,7 @@ class AbilityTest < ActiveSupport::TestCase
 
   test 'a user with roles cannot create CAS application in live' do
     Mbis.stubs(:stack).returns('live')
-    assert_equal 'live', Mbis.stack
-
+    Mbis.stack.stubs(:live?).returns(true)
     @application_manager_ability = Ability.new(@application_manager)
 
     cas_application = Project.new(project_type: ProjectType.find_by(name: 'CAS'))

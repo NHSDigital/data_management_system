@@ -50,8 +50,7 @@ class HomePageTest < ActionDispatch::IntegrationTest
 
   test 'should visit Cas application form when clicking CAS Application Form link if in beta' do
     Mbis.stubs(:stack).returns('beta')
-    assert_equal 'beta', Mbis.stack
-
+    Mbis.stack.stubs(:live?).returns(false)
     sign_in users(:no_roles)
 
     visit root_path
@@ -64,8 +63,7 @@ class HomePageTest < ActionDispatch::IntegrationTest
 
   test 'should not visit Cas application form when clicking CAS Application Form link if in live' do
     Mbis.stubs(:stack).returns('live')
-    assert_equal 'live', Mbis.stack
-
+    Mbis.stack.stubs(:live?).returns(true)
     sign_in users(:no_roles)
 
     visit root_path
