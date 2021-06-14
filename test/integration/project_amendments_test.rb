@@ -69,7 +69,8 @@ class ProjectAmendmentsTest < ActionDispatch::IntegrationTest
     project.transition_to!(workflow_states(:amend))
 
     amendment = create_amendment(project)
-
+    amendment_reference = "ODR_2019_2020_#{project.id}/A1"
+    assert_equal project.project_amendments.first.reference, amendment_reference
     visit project_path(project)
     click_on('Amendments')
 
@@ -88,6 +89,8 @@ class ProjectAmendmentsTest < ActionDispatch::IntegrationTest
         assert has_selector?('#projectAmendments', visible: true)
       end
     end
+    # should not have changed
+    assert_equal project.project_amendments.first.reference, amendment_reference
   end
 
   test 'should be able to destroy an amendment' do
