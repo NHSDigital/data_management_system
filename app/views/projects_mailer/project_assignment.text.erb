@@ -1,12 +1,21 @@
-##### Project Assignment #####
+<%
+  scope    = @project.current_state.to_lookup_key
+  title    = @project.name
+  state    = @project.current_state_name
+  assigner = @assigned_by&.full_name || t('system.name')
+%>
+##### <%= t(".#{scope}.heading", default: :'.heading', title: title, state: state) %> #####
 
-A project has been assigned to you by <%= @assigned_by || 'the MBIS system' %>.
+<%= t(".#{scope}.body", default: :'.body', assigner: assigner) %>
 
-Title: <%= @project.name %>
-Type: <%= @project.project_type %>
-Raised by: <%= @project.owner_full_name %>
-Team: <%= @project.team.try(:name) %>
-Organisation: <%= @project.team.try(:organisation).try(:name) %>
-Link: <%= project_url(@project) %>
+<% if @comments %>
+"<%= @comments %>"
+— <%= assigner %>
 
-Please log in and copy/paste the above link into your web browser to view the project.
+
+<% end %>
+Project Details:
+
+<%= render 'project_details', project: @project %>
+
+<%= render 'footer' %>

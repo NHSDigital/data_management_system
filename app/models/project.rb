@@ -128,10 +128,6 @@ class Project < ApplicationRecord
 
   scope :awaiting_sign_off, -> { joins(:current_state).merge(Workflow::State.awaiting_sign_off) }
 
-  scope :assigned,    -> { where.not(assigned_user_id: nil) }
-  scope :unassigned,  -> { where(assigned_user_id: nil) }
-  scope :assigned_to, ->(user) { where(assigned_user: user) }
-
   scope :of_type_eoi,         -> { joins(:project_type).merge(ProjectType.eoi) }
   scope :of_type_application, -> { joins(:project_type).merge(ProjectType.application) }
   scope :of_type_project,     -> { joins(:project_type).merge(ProjectType.project) }
@@ -165,6 +161,36 @@ class Project < ApplicationRecord
   before_save :nullify_blank_lookups
 
   DATA_SOURCE_ITEM_NO_CLONE_FIELDS = %w[id project_id project_data_source_item_id].freeze
+
+  class << self
+    def unassigned(check_temporal: false)
+      return where(assigned_user: nil) unless check_temporal
+
+      joins(:current_project_state).
+        where(
+          assigned_user: nil,
+          workflow_current_project_states: { assigned_user_id: nil }
+        )
+    end
+
+    def assigned(check_temporal: false)
+      return where.not(assigned_user: nil) unless check_temporal
+
+      base = joins(:current_project_state)
+      base.where.not(assigned_user: nil).or(
+        base.where.not(workflow_current_project_states: { assigned_user_id: nil })
+      )
+    end
+
+    def assigned_to(user, check_temporal: false)
+      return where(assigned_user: user) unless check_temporal
+
+      base = joins(:current_project_state)
+      base.where(assigned_user: user).or(
+        base.where(workflow_current_project_states: { assigned_user_id: user })
+      )
+    end
+  end
 
   def application_date
     super || created_at || Time.zone.now

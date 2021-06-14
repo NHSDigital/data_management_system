@@ -193,11 +193,3 @@ email_project_delegate_rejection:
   body: "%{project} has been rejected by the Delegate User and set to a status of %{status} \n\n
         The comment for the rejection - %{comment} \n\n
         - Please log in to review comments\n\n"
-
-email_application_manager_dpia_rejected:
-  body: "DPIA has been rejected for %{project} with the comments\n
-        %{comments}\n\n"
-
-email_senior_manager_dpia_moderation:
-  body: "%{project} has been sent for senior application manager moderation with the comments\n
-         %{comments}\n\n"

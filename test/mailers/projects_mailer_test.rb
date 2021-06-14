@@ -7,8 +7,9 @@ class ProjectsMailerTest < ActionMailer::TestCase
     project       = build_project(project_type: project_types(:eoi), assigned_user: assigned_user)
 
     project.save(validate: false)
+    project.reload_current_state
 
-    email = ProjectsMailer.with(project: project).project_assignment
+    email = ProjectsMailer.with(project: project, assigned_to: assigned_user).project_assignment
 
     assert_emails 1 do
       email.deliver_later
@@ -42,7 +43,7 @@ class ProjectsMailerTest < ActionMailer::TestCase
 
     project.save(validate: false)
 
-    email = ProjectsMailer.with(project: project).project_assignment
+    email = ProjectsMailer.with(project: project, assigned_to: assigned_user).project_assignment
 
     assert_emails 0 do
       email.deliver_later

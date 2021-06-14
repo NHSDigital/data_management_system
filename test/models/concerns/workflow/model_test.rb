@@ -27,6 +27,10 @@ module Workflow
       assert_instance_of State, @project.transitionable_states.first
     end
 
+    test 'should have a temporally_assigned_user delegate' do
+      assert_equal users(:standard_user1), @project.temporally_assigned_user
+    end
+
     test 'transitionable_states should be scoped to project type' do
       Transition.create(
         project_type: project_types(:project),
@@ -152,6 +156,27 @@ module Workflow
       end
     end
 
+    test 'refreshes cached workflow state information' do
+      @project.transition_to!(workflow_states(:step_one))
+
+      assert_changes -> { @project.current_state } do
+        assert_changes -> { @project.current_project_state } do
+          assert_changes -> { @project.transitionable_states.count } do
+            @project.project_states.create!(state: workflow_states(:step_two))
+
+            @project.refresh_workflow_state_information
+          end
+        end
+      end
+    end
+
+    test 'refreshes cached workflow state information on transition' do
+      state = workflow_states(:step_one)
+
+      @project.expects(:refresh_workflow_state_information)
+      @project.transition_to(state)
+    end
+
     test 'should publish state changes' do
       state   = workflow_states(:step_one)
       payload = { project: @project, transition: [@project.current_state, state] }
@@ -161,6 +186,7 @@ module Workflow
       @project.transition_to(state)
     end
 
+    # FIXME: This test is failing in isolation. Related to changes introduced in #22203 ?
     test 'returning to draft should reset approvals' do
       project = projects(:rejected_project)
       assert_equal 'DRAFT', project.previous_state_id, "Previous state should have been 'DRAFT'"

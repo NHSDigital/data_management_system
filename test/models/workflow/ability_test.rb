@@ -17,6 +17,7 @@ module Workflow
 
       refute @new_read_only_user.can?(:transition, @project)
       refute @new_read_only_user.can?(:read, @project.project_states.first)
+      refute @new_read_only_user.can?(:read, :temporally_assigned_user)
     end
 
     test 'workflows - as a project member' do
@@ -25,6 +26,7 @@ module Workflow
 
       refute user.can?(:transition, @project)
       assert user.can?(:read, @project.project_states.first)
+      refute user.can?(:read, :temporally_assigned_user)
     end
 
     test 'workflows - as a project contributor user' do
@@ -33,6 +35,7 @@ module Workflow
 
       refute user.can?(:transition, @project)
       assert user.can?(:read, @project.project_states.first)
+      refute user.can?(:read, :temporally_assigned_user)
     end
 
     test 'workflows - as a team delegate user' do
@@ -40,6 +43,7 @@ module Workflow
 
       assert user.can?(:transition, @project)
       assert user.can?(:read, @project.project_states.first)
+      refute user.can?(:read, :temporally_assigned_user)
     end
 
     test 'workflows - as an ODR user' do
@@ -47,6 +51,7 @@ module Workflow
 
       assert user.can?(:transition, @project)
       assert user.can?(:read, @project.project_states.first)
+      assert user.can?(:read, :temporally_assigned_user)
     end
 
     test 'workflows - as an admin user' do
@@ -54,6 +59,21 @@ module Workflow
 
       refute user.can?(:transition, @project)
       assert user.can?(:read, @project.project_states.first)
+      refute user.can?(:read, :temporally_assigned_user)
+    end
+
+    test 'assignments' do
+      project    = projects(:dummy_project)
+      user       = project.owner
+      assignment = project.current_project_state.
+                   assignments.
+                   build(assigned_user: users(:application_manager_two))
+
+      project.current_project_state.assign_to!(user: user)
+      assert user.can?(:create, assignment)
+
+      project.current_project_state.assign_to!(user: users(:application_manager_one))
+      refute user.can?(:create, assignment)
     end
   end
 end

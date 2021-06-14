@@ -94,11 +94,11 @@ module ProjectsHelper
     content_tag(:span, state.name(project), html_options.merge(default_options))
   end
 
-  def timeline_allocated_user_label(project, state = nil)
-    state ||= project.current_state
+  def timeline_allocated_user_label(project_state, user)
+    return project_state.assigned_user_full_name if user.can?(:read, :temporally_assigned_user)
 
-    i18n_scope = %i[helpers timeline state_allocated_user]
-    i18n_key     = state.id.downcase.to_sym
+    i18n_scope   = %i[helpers timeline state_allocated_user]
+    i18n_key     = project_state.state_id.downcase.to_sym
     i18n_default = ''
 
     t(i18n_key, scope: i18n_scope, default: i18n_default)

@@ -23,11 +23,7 @@
       </div>
       <% if application_manager_project_type?(project) %>
         <div class="panel-footer">
-          <% if current_user.can?(:assign, project) %>
-            <%= render 'projects/project_assignment_form', project: project %>
-          <% else %>
-            <strong>Application Manager:</strong> <%= project.assigned_user&.full_name || 'Not Assigned' %>
-          <% end %>
+          <%= render 'projects/assigned_users', project: project %>
         </div>
       <% end %>
     </div>

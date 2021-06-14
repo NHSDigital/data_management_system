@@ -248,16 +248,58 @@ class ProjectTest < ActiveSupport::TestCase
     refute_includes project.errors.details[:assigned_user], error: :invalid
   end
 
+  test 'assigned scope' do
+    project  = projects(:one)
+    user_one = users(:application_manager_one)
+    user_two = users(:application_manager_two)
+
+    refute_includes Project.assigned, project
+    refute_includes Project.assigned(check_temporal: true), project
+
+    project.update!(assigned_user: user_one)
+    assert_includes Project.assigned, project
+    assert_includes Project.assigned(check_temporal: true), project
+
+    project.update!(assigned_user: nil)
+    project.current_project_state.assign_to!(user: user_one, assigning_user: user_two)
+    refute_includes Project.assigned, project
+    assert_includes Project.assigned(check_temporal: true), project
+  end
+
+  test 'unassigned scope' do
+    project  = projects(:one)
+    user_one = users(:application_manager_one)
+    user_two = users(:application_manager_two)
+
+    assert_includes Project.unassigned, project
+    assert_includes Project.unassigned(check_temporal: true), project
+
+    project.update!(assigned_user: user_one)
+    refute_includes Project.unassigned, project
+    refute_includes Project.unassigned(check_temporal: true), project
+
+    project.update!(assigned_user: nil)
+    project.current_project_state.assign_to!(user: user_one, assigning_user: user_two)
+    assert_includes Project.unassigned, project
+    refute_includes Project.unassigned(check_temporal: true), project
+  end
+
   test 'assigned_to scope' do
-    project = projects(:one)
-    user    = users(:application_manager_one)
+    project  = projects(:one)
+    user_one = users(:application_manager_one)
+    user_two = users(:application_manager_two)
 
-    project.update(assigned_user: user)
+    refute_includes Project.assigned_to(user_one), project
+    refute_includes Project.assigned_to(user_one, check_temporal: true), project
 
-    scope = Project.assigned_to(user)
+    project.update!(assigned_user: user_one)
+    assert_includes Project.assigned_to(user_one), project
+    assert_includes Project.assigned_to(user_one, check_temporal: true), project
 
-    assert_includes scope, project
-    refute_includes scope, projects(:two)
+    project.update!(assigned_user: user_two)
+    project.current_project_state.assign_to!(user: user_one, assigning_user: user_two)
+    refute_includes Project.assigned_to(user_one), project
+    assert_includes Project.assigned_to(user_one, check_temporal: true), project
   end
 
   test 'of_type_project scope' do

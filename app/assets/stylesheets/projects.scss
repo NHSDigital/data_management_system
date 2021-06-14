@@ -1,0 +1,28 @@
+#project_header {
+  dl.dl-horizontal {
+    dt {
+      text-align: inherit;
+    }
+
+    dd {
+      margin-left: inherit;
+    }
+  }
+
+  dl:last-child {
+    margin-bottom: 0;
+  }
+
+  form {
+    margin-bottom: 10px;
+
+    label {
+      min-width: 150px;
+      max-width: 350px;
+    }
+
+    select.form-control {
+      width: 220px;
+    }
+  }
+}
