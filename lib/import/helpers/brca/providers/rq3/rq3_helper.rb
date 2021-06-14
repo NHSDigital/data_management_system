@@ -93,11 +93,11 @@ module Import
                   process_negative_genes(negativegenes, genotypes, genotype)
                 end
                 genotype.add_gene(unique_brca_genes_from(testresult).join)
-                genotype.add_gene_location(testresult.scan(CDNA_REGEX).join)
-                genotype.add_status(2)
-                if testresult.scan(PROTEIN_REGEX).size.positive?
-                  genotype.add_protein_impact(testresult.scan(PROTEIN_REGEX).join)
-                end
+                # genotype.add_gene_location(testresult.scan(CDNA_REGEX).join)
+                # genotype.add_status(2)
+                # if testresult.scan(PROTEIN_REGEX).size.positive?
+                #   genotype.add_protein_impact(testresult.scan(PROTEIN_REGEX).join)
+                # end
               else
                 if full_screen?(record)
                   if sometimes_tested?(record)
@@ -109,12 +109,17 @@ module Import
                   process_negative_genes(negativegenes, genotypes, genotype)
                 end
                 genotype.add_gene(unique_brca_genes_from(testresult)[0])
-                genotype.add_gene_location(testresult.scan(CDNA_REGEX).join)
-                genotype.add_status(2)
-                if testresult.scan(PROTEIN_REGEX).size.positive?
-                  genotype.add_protein_impact(testresult.scan(PROTEIN_REGEX).join)
-                end
+                # genotype.add_gene_location(testresult.scan(CDNA_REGEX).join)
+                # genotype.add_status(2)
+                # if testresult.scan(PROTEIN_REGEX).size.positive?
+                #   genotype.add_protein_impact(testresult.scan(PROTEIN_REGEX).join)
+                # end
               end
+              genotype.add_gene_location(testresult.scan(CDNA_REGEX).join)
+              if testresult.scan(PROTEIN_REGEX).size.positive?
+                genotype.add_protein_impact(testresult.scan(PROTEIN_REGEX).join)
+              end
+              genotype.add_status(2)
               genotypes.append(genotype)
             end
 
@@ -232,7 +237,7 @@ module Import
               @genotype.attribute_map['genetictestscope'] == 'Full screen BRCA1 and BRCA2'
             end
 
-            def process_negative_records(genelist, genotypes, testresult,
+            def process_negative_records(genelist, genotypes, _testresult,
                                          testreport, record, genotype)
               @logger.debug 'NORMAL TEST FOUND'
               if full_screen?(record)
@@ -242,7 +247,7 @@ module Import
                                   genelist
                                 end
               else
-                testresultgenes = unique_brca_genes_from(testresult)
+                # testresultgenes = unique_brca_genes_from(testresult)
                 testreportgenes = unique_brca_genes_from(testreport)
                 negativegenes = testreportgenes.flatten.uniq
               end

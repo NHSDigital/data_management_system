@@ -27,7 +27,7 @@ module Import
                                             previously reported in this family|
                                             previously found in an affected relative/ix.freeze
 
-            BRCA_REGEX = /(?<brca>BRCA(1|2)|PALB2|ATM|CHEK2|TP53|MLH1|
+            BRCA_REGEX = /(?<brca>BRCA1|BRCA2|PALB2|ATM|CHEK2|TP53|MLH1|
                           MSH2|MSH6|PMS2|STK11|PTEN|BRIP1|NBN|RAD51C|RAD51D)/ix.freeze
 
             CDNA_REGEX = /c\.(?<cdna>([0-9]+[+>_-][0-9][+>_-][0-9]+[+>_-][0-9][ACGTdelinsup]+)|
@@ -37,7 +37,7 @@ module Import
                          ([0-9]+[+>_-][0-9]+[+>_-][0-9]+[0-9]+[ACGTdelinsup]+)|
                          ([0-9]+[ACGTdelinsup]+))/x.freeze
 
-            NO_EVIDENCE_REGEX = /(no evidence|additional).+(?<wtgenes>BRCA(1|2)|PALB2|ATM|CHEK2|
+            NO_EVIDENCE_REGEX = /(no evidence|additional).+(BRCA1|BRCA2|PALB2|ATM|CHEK2|
                                   TP53|MLH1|MSH2|MSH6|PMS2|STK11|PTEN|BRIP1|
                                   NBN|RAD51C|RAD51D)+.+gene(s)?\./ix.freeze
             PROTEIN_REGEX = /p\.(\()?((?<impact>.([a-z]+[0-9]+[a-z]+([^[:alnum:]][0-9]+)?)|
