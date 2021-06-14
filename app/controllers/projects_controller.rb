@@ -33,7 +33,7 @@ class ProjectsController < ApplicationController
                                     through_grant_of(ProjectRole.fetch(:owner)).
                                     my_projects_search(search_params).
                                     order(updated_at: :desc)
-    @assigned_projects            = @projects.assigned_to(current_user)
+    @assigned_projects            = @projects.assigned_to(current_user, check_temporal: true)
     @unassigned_projects          = @projects.unassigned
 
     @projects = @projects.paginate(
@@ -196,11 +196,16 @@ class ProjectsController < ApplicationController
     previous_assignee = @project.assigned_user
 
     if @project.update(assign_params)
-      alert = @project.assigned_user ? :project_assignment : :project_awaiting_assignment
-      ProjectsNotifier.send(alert, project: @project, assigned_by: previous_assignee)
-      ProjectsMailer.with(project: @project, assigned_by: previous_assignee).
-        send(alert).
-        deliver_now
+      alert  = @project.assigned_user ? :project_assignment : :project_awaiting_assignment
+      kwargs = {
+        project: @project,
+        assigned_by: previous_assignee
+      }
+
+      kwargs[:assigned_to] = @project.assigned_user if alert == :project_assignment
+
+      ProjectsNotifier.send(alert, **kwargs)
+      ProjectsMailer.with(**kwargs).send(alert).deliver_now
 
       redirect_to @project, notice: "#{@project.project_type_name} was successfully assigned"
     else
@@ -346,7 +351,7 @@ class ProjectsController < ApplicationController
   end
 
   def assign_params
-    params.require(:project).permit(:assigned_user_id)
+    params.fetch(:project, {}).permit(:assigned_user_id)
   end
 
   def updating_data_source_items?

@@ -41,12 +41,12 @@ class ApplicationProjectTest < ActionDispatch::IntegrationTest
     create_dpia(@project)
     visit project_path(@project)
 
-    reassign_for_moderation_to @peer
+    reassign_for_moderation_to assignee: @peer, assigner: @user
 
     click_button 'Reject DPIA'
-    assert_emails 1 do
+    assert_assignment_email(assignee: @user, assigner: @peer, comments: 'not today!') do
       within_modal(selector: '#modal-dpia_rejected') do
-        select @user.full_name, from: 'project[assigned_user_id]'
+        select @user.full_name, from: 'project[project_state][assigned_user_id]'
         fill_in 'project_comments_attributes_0_body', with: 'not today!'
         click_button 'Save'
       end
@@ -76,12 +76,12 @@ class ApplicationProjectTest < ActionDispatch::IntegrationTest
 
     accept_confirm { click_button 'Begin DPIA' }
 
-    reassign_for_moderation_to @peer
+    reassign_for_moderation_to assignee: @peer, assigner: @user
 
     click_button('Send for Moderation')
-    assert_emails 1 do
+    assert_assignment_email(assignee: @senior, assigner: @peer, comments: 'looks good') do
       within_modal(selector: '#modal-dpia_moderation') do
-        select @senior.full_name, from: 'project[assigned_user_id]'
+        select @senior.full_name, from: 'project[project_state][assigned_user_id]'
         fill_in 'project_comments_attributes_0_body', with: 'looks good'
         click_button 'Save'
       end
@@ -314,6 +314,9 @@ class ApplicationProjectTest < ActionDispatch::IntegrationTest
     @project.transition_to!(workflow_states(:contract_draft))
     @project.transition_to!(workflow_states(:contract_completed))
 
+    sign_out(@user)
+    sign_in(@project.owner)
+
     visit project_path(@project)
     click_link 'Timeline'
 
@@ -338,17 +341,32 @@ class ApplicationProjectTest < ActionDispatch::IntegrationTest
 
   private
 
-  def reassign_for_moderation_to(user)
-    click_button 'Send for Peer Review'
-    within_modal(selector: '#modal-dpia_review') do
-      select user.full_name, from: 'project[assigned_user_id]'
-      click_button 'Save'
+  def reassign_for_moderation_to(assignee:, assigner:)
+    assert_assignment_email(assignee: assignee, assigner: assigner) do
+      click_button 'Send for Peer Review'
+      within_modal(selector: '#modal-dpia_review') do
+        select assignee.full_name, from: 'project[project_state][assigned_user_id]'
+        click_button 'Save'
+      end
     end
 
     assert has_no_button?('Send for Moderation')
 
-    change_sign_in user
+    sign_in assignee
     visit project_path(@project)
     assert has_button?('Send for Moderation')
+  end
+
+  def assert_assignment_email(assignee:, assigner:, comments: nil)
+    assert_enqueued_emails 1 do
+      yield
+
+      assert_enqueued_email_with ProjectsMailer, :project_assignment, args: {
+        project:     @project.reload,
+        assigned_to: assignee,
+        assigned_by: assigner,
+        comments:    comments
+      }
+    end
   end
 end

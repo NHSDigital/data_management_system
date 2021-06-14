@@ -213,6 +213,7 @@ Rails.application.routes.draw do
       namespace :workflow do
         resources :project_states, only: [] do
           concerns :commentable, controller: '/comments'
+          resources :assignments, only: %i[create]
         end
       end
 

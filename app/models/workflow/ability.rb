@@ -13,6 +13,12 @@ module Workflow
       as_odr_user
       as_administrator
 
+      can :create, Assignment, project: {
+        current_project_state: {
+          assigned_user_id: user.id
+        }
+      }
+
       merge(ProjectWorkflowAbility.new(user))
       merge(EoiWorkflowAbility.new(user))
       merge(ApplicationWorkflowAbility.new(user))
@@ -58,6 +64,7 @@ module Workflow
 
       can :read,       ProjectState
       can :transition, Project
+      can :read,       :temporally_assigned_user
     end
 
     def as_administrator; end
@@ -304,15 +311,19 @@ module Workflow
         can :create, ProjectState, state: { id: %w[DPIA_REJECTED] },
                                    project: {
                                      project_type: { name: 'Application' },
-                                     assigned_user_id: @user.id,
-                                     current_state: { id: 'DPIA_REVIEW' }
+                                     current_project_state: {
+                                       state_id: 'DPIA_REVIEW',
+                                       assigned_user_id: @user.id
+                                     }
                                    }
 
         can :create, ProjectState, state: { id: %w[DPIA_MODERATION] },
                                    project: {
                                      project_type: { name: 'Application' },
-                                     assigned_user_id: @user.id,
-                                     current_state: { id: 'DPIA_REVIEW' }
+                                     current_project_state: {
+                                       state_id: 'DPIA_REVIEW',
+                                       assigned_user_id: @user.id
+                                     }
                                    }
 
         can :create, ProjectState, state: { id: 'AMEND' },
@@ -392,15 +403,19 @@ module Workflow
         can :create, ProjectState, state: { id: %w[DPIA_REJECTED] },
                                    project: {
                                      project_type: { name: 'Application' },
-                                     assigned_user_id: @user.id,
-                                     current_state: { id: 'DPIA_MODERATION' }
+                                     current_project_state: {
+                                       state_id: 'DPIA_MODERATION',
+                                       assigned_user_id: @user.id
+                                     }
                                    }
 
         can :create, ProjectState, state: { id: %w[CONTRACT_DRAFT] },
                                    project: {
                                      project_type: { name: 'Application' },
-                                     assigned_user_id: @user.id,
-                                     current_state: { id: 'DPIA_MODERATION' }
+                                     current_project_state: {
+                                       state_id: 'DPIA_MODERATION',
+                                       assigned_user_id: @user.id
+                                     }
                                    }
         can :create, ProjectState, state: { id: %w[
                                                   DPIA_START
@@ -441,6 +456,86 @@ module Workflow
 
     def as_administrator; end
   end
+
+  # Temporary patch to support the move to temporal assignment, where live systems may still
+  # be using the project's assigned user (which should be the manager for the lifecycle of
+  # the project) for reassignment along the workflow.
+  # FIXME: Remove this once temporal assignment has bedded in across live systems.
+  ApplicationWorkflowAbility.prepend(
+    Module.new do
+      def as_odr_user
+        super
+
+        if @user.application_manager?
+          can :create, ProjectState, {
+            state: {
+              id: %w[DPIA_REJECTED]
+            },
+            project: {
+              project_type: {
+                name: 'Application'
+              },
+              current_project_state: {
+                state_id: 'DPIA_REVIEW',
+                assigned_user_id: nil
+              },
+              assigned_user_id: @user.id
+            }
+          }
+
+          can :create, ProjectState, {
+            state: {
+              id: %w[DPIA_MODERATION]
+            },
+            project: {
+              project_type: {
+                name: 'Application'
+              },
+              current_project_state: {
+                state_id: 'DPIA_REVIEW',
+                assigned_user_id: nil
+              },
+              assigned_user_id: @user.id
+            }
+          }
+        end
+
+        if @user.senior_application_manager?
+          can :create, ProjectState, {
+            state: {
+              id: %w[DPIA_REJECTED]
+            },
+            project: {
+              project_type: {
+                name: 'Application'
+              },
+              current_project_state: {
+                state_id: 'DPIA_MODERATION',
+                assigned_user_id: nil
+              },
+              assigned_user_id: @user.id
+            }
+          }
+
+          can :create, ProjectState, {
+            state: {
+              id: %w[CONTRACT_DRAFT]
+            },
+            project: {
+              project_type: {
+                name: 'Application'
+              },
+              current_project_state: {
+                state_id: 'DPIA_MODERATION',
+                assigned_user_id: nil
+              },
+              assigned_user_id: @user.id
+            }
+          }
+        end
+      end
+    end
+  )
 
   # Defines authorization rules relating to the project workflow.
   class CasWorkflowAbility

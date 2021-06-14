@@ -133,7 +133,6 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
     project.transition_to!(workflow_states(:submitted))
 
     visit project_path(project)
-
     click_link(href: '#datasets')
     assert has_content?('Extra CAS Dataset One')
     assert has_content?('Extra CAS Dataset Two')

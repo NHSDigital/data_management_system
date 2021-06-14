@@ -1,11 +1,27 @@
-<h1>Project Assignment</h1>
+<%
+  scope    = @project.current_state.to_lookup_key
+  title    = @project.name
+  state    = @project.current_state_name
+  assigner = @assigned_by&.full_name || t('system.name')
+%>
+
+<h1><%= t(".#{scope}.heading", default: :'.heading', title: title, state: state) %></h1>
 <hr />
 
-<p>A project has been assigned to you by <%= @assigned_by || 'the MBIS system' %>.</p>
+<p><%= t(".#{scope}.body", default: :'.body', assigner: assigner) %></p>
 
-<%= render 'project_details', project: @project %>
+<% if @comments %>
+  <blockquote>
+    <q><%= @comments %></q>
+    <footer>— <i><%= assigner %></i></footer>
+  </blockquote>
+  <br />
+<% end %>
 
-<p>
-  Please <%= link_to 'log in', root_url %> and use the link above to view the
-  project.
-</p>
+<section>
+  <h2 style="font-size: 1.2em;">Project Details:</h2>
+  <%= render 'project_details', project: @project %>
+</section>
+
+<br />
+<%= render 'footer' %>

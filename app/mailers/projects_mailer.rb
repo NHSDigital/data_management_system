@@ -3,14 +3,19 @@ class ProjectsMailer < ApplicationMailer
   before_action :load_project
 
   def project_assignment
-    return unless @project.assigned_user
-    return unless @project.odr? || @project.project?
-
+    @assigned_to = params[:assigned_to]
     @assigned_by = params[:assigned_by]
+    @comments    = params[:comments]
+
+    return if @assigned_to.blank?
+
+    return unless @project.odr? || @project.project?
+    return unless @assigned_to == @project.assigned_user ||
+                  @assigned_to == @project.temporally_assigned_user
 
     mail(
-      to: @project.assigned_user.email,
-      cc: User.odr_users.pluck(:email),
+      to: @assigned_to.email,
+      cc: params[:cc],
       subject: 'Project Assignment'
     )
   end

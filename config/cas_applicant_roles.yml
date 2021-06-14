@@ -1,0 +1,221 @@
+---
+ndrs_analyst:
+  datasets:
+    - name: "LUCADA"
+      levels:
+        - 1
+        - 2
+    - name: "PROMs pilot 2011-2012"
+      levels:
+        - 1
+        - 2
+    - name: "NLCA"
+      levels:
+        - 2
+        - 3
+    - name: "Linked HES OP"
+      levels:
+        - 1
+        - 2
+    - name: "Linked HES A&E"
+      levels:
+        - 1
+        - 2
+    - name: "CPES Wave 6"
+      levels:
+        - 1
+        - 2
+    - name: "CPES Wave 7"
+      levels:
+        - 1
+        - 2
+    - name: "NPCA"
+      levels:
+        - 1
+        - 2
+    - name: "DAHNO"
+      levels:
+        - 1
+        - 2
+    - name: "CPES Wave 5"
+      levels:
+        - 1
+        - 2
+    - name: "CPES Wave 8"
+      levels:
+        - 1
+        - 2
+    - name: "Linked HES Admitted Care (IP)"
+      levels:
+        - 1
+        - 2
+    - name: "Linked RTDS"
+      levels:
+        - 1
+        - 2
+    - name: "Linked CWT (treatments only)"
+      levels:
+        - 1
+        - 2
+    - name: "CPES Wave 1"
+      levels:
+        - 1
+        - 2
+    - name: "CPES Wave 2"
+      levels:
+        - 1
+        - 2
+    - name: "CPES Wave 3"
+      levels:
+        - 1
+        - 2
+    - name: "CPES Wave 4"
+      levels:
+        - 1
+        - 2
+ndrs_developer:
+  datasets:
+    - name: "LUCADA"
+      levels:
+        - 1
+        - 2
+    - name: "NBOCAP"
+      levels:
+        - 1
+        - 2
+    - name: "PROMs pilot 2011-2012"
+      levels:
+        - 1
+        - 2
+    - name: "NLCA"
+      levels:
+        - 2
+    - name: "ONS Mortality"
+      levels:
+        - 1
+        - 2
+    - name: "Cancer registry"
+      levels:
+        - 1
+        - 2
+    - name: "Linked HES OP"
+      levels:
+        - 1
+        - 2
+    - name: "Linked HES A&E"
+      levels:
+        - 1
+        - 2
+    - name: "CPES Wave 6"
+      levels:
+        - 1
+        - 2
+    - name: "CPES Wave 7"
+      levels:
+        - 1
+        - 2
+    - name: "BCCOM"
+      levels:
+        - 1
+        - 2
+    - name: "NPCA"
+      levels:
+        - 1
+        - 2
+    - name: "DAHNO"
+      levels:
+        - 1
+        - 2
+    - name: "SACT"
+      levels:
+        - 2
+        - 3
+    - name: "Linked HES Admitted Care (IP)"
+      levels:
+        - 1
+        - 2
+    - name: "Linked RTDS"
+      levels:
+        - 1
+        - 2
+    - name: "Linked DIDs"
+      levels:
+        - 1
+        - 2
+    - name: "Linked CWT (treatments only)"
+      levels:
+        - 1
+        - 2
+    - name: "Screening Programme - Bowel"
+      levels:
+        - 1
+        - 2
+    - name: "Screening Programme - Breast"
+      levels:
+        - 1
+        - 2
+    - name: "Screening Programme - Cervical"
+      levels:
+        - 1
+        - 2
+ndrs_qa:
+  datasets:
+    - name: "LUCADA"
+      levels:
+        - 1
+        - 2
+    - name: "NBOCAP"
+      levels:
+        - 1
+        - 2
+    - name: "PROMs pilot 2011-2012"
+      levels:
+        - 1
+        - 2
+    - name: "NLCA"
+      levels:
+        - 2
+    - name: "ONS Mortality"
+      levels:
+        - 1
+        - 2
+    - name: "Cancer registry"
+      levels:
+        - 1
+        - 2
+    - name: "Linked HES OP"
+      levels:
+        - 1
+        - 2
+    - name: "Linked HES A&E"
+      levels:
+        - 1
+        - 2
+    - name: "CPES Wave 6"
+      levels:
+        - 1
+        - 2
+    - name: "CPES Wave 7"
+      levels:
+        - 1
+        - 2
+    - name: "BCCOM"
+      levels:
+        - 1
+        - 2
+    - name: "NPCA"
+      levels:
+        - 1
+        - 2
+    - name: "DAHNO"
+      levels:
+        - 1
+        - 2
+    - name: "SACT"
+      levels:
+        - 2
+        - 3
+    - name: "CPES Wave 5"
+      levels:
+        - 1
+        - 2

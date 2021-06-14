@@ -25,6 +25,34 @@ module Workflow
       assert_instance_of User, @project_state.user
     end
 
+    test 'has many assignments' do
+      assert_instance_of Assignment, @project_state.assignments.first
+    end
+
+    test 'should fetch current assignment' do
+      assignment = workflow_assignments(:one)
+
+      assert_equal assignment, @project_state.current_assignment
+    end
+
+    test 'should fetch currently assigned user' do
+      user = users(:standard_user1)
+
+      assert_equal user, @project_state.assigned_user
+    end
+
+    test 'should assign a user' do
+      user_one = users(:application_manager_one)
+      user_two = users(:application_manager_two)
+
+      assert_difference -> { @project_state.assignments.count } do
+        assignment = @project_state.assign_to(user: user_two, assigning_user: user_one)
+
+        assert_equal user_one, assignment.assigning_user
+        assert_equal user_two, assignment.assigned_user
+      end
+    end
+
     test 'should be invalid without a project' do
       @project_state.stubs(ensure_state_is_transitionable: true)
 

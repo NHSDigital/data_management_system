@@ -80,13 +80,23 @@ class ProjectsHelperTest < ActionView::TestCase
   end
 
   test 'timeline_allocated_user_label' do
-    state = workflow_states(:submitted)
+    unprivileged_user = users(:standard_user1)
+    privileged_user   = users(:application_manager_one)
+    assigned_user     = users(:application_manager_two)
+    project_state     = @project.project_states.build
 
-    assert_equal '', timeline_allocated_user_label(@project, state)
+    project_state.state = workflow_states(:submitted)
+    project_state.save!(validate: false)
 
-    state = workflow_states(:dpia_review)
+    assert_equal '', timeline_allocated_user_label(project_state, unprivileged_user)
+    assert_nil timeline_allocated_user_label(project_state, privileged_user)
 
-    assert_equal 'with application manager', timeline_allocated_user_label(@project, state)
+    project_state.state = workflow_states(:dpia_review)
+    project_state.save!(validate: false)
+    project_state.assign_to!(user: assigned_user)
+
+    assert_equal 'with application manager', timeline_allocated_user_label(project_state, unprivileged_user)
+    assert_equal assigned_user.full_name,    timeline_allocated_user_label(project_state, privileged_user)
   end
 
   test 'project_sub_type_path_prefix' do
