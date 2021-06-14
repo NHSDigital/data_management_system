@@ -40,7 +40,7 @@ class ProjectAmendment < ApplicationRecord
   validate :ensure_valid_pdf
 
   before_validation :populate_reference
-  after_save :increment_amendment_number
+  after_create :increment_amendment_number
 
   def upload=(file)
     (attachment || build_attachment).upload = file
