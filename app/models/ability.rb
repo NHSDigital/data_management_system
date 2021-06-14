@@ -17,7 +17,7 @@ class Ability
     can %i[read update], User, id: user.id
     can :read, Grant, user_id: user.id
     can :read, [Category, Node]
-    can :create, Project, project_type_id: ProjectType.cas.pluck(:id)
+    can :create, Project, project_type_id: ProjectType.cas.pluck(:id) unless Mbis.stack.live?
     can :read, Project, project_type_id: ProjectType.cas.pluck(:id),
                         grants: { user_id: user.id, roleable: ProjectRole.owner }
     # TODO: do we still want them to be able to destroy?
@@ -252,6 +252,7 @@ class Ability
     can :manage, [User, Organisation, Division, Directorate, Team]
 
     can :create, Project
+    cannot :create, Project, project_type_id: ProjectType.cas.pluck(:id) if Mbis.stack.live?
     can :read, Project, project_type_id: ProjectType.odr_mbis.pluck(:id)
     can %i[create read], ProjectAttachment
     can %i[update destroy edit_data_source_items],
