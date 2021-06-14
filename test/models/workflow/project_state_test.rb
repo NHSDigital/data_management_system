@@ -25,6 +25,34 @@ module Workflow
       assert_instance_of User, @project_state.user
     end
 
+    test 'has many assignments' do
+      assert_instance_of Assignment, @project_state.assignments.first
+    end
+
+    test 'should fetch current assignment' do
+      assignment = workflow_assignments(:one)
+
+      assert_equal assignment, @project_state.current_assignment
+    end
+
+    test 'should fetch currently assigned user' do
+      user = users(:standard_user1)
+
+      assert_equal user, @project_state.assigned_user
+    end
+
+    test 'should assign a user' do
+      user_one = users(:application_manager_one)
+      user_two = users(:application_manager_two)
+
+      assert_difference -> { @project_state.assignments.count } do
+        assignment = @project_state.assign_to(user: user_two, assigning_user: user_one)
+
+        assert_equal user_one, assignment.assigning_user
+        assert_equal user_two, assignment.assigned_user
+      end
+    end
+
     test 'should be invalid without a project' do
       @project_state.stubs(ensure_state_is_transitionable: true)
 
@@ -221,9 +249,11 @@ module Workflow
 
     test 'should notify cas dataset approver if project with their dataset is renewed' do
       approved_with_grant_project = create_cas_project(owner: users(:no_roles))
-      approved_with_grant_project.project_datasets << ProjectDataset.new(dataset: dataset(83),
-                                                                         terms_accepted: true,
-                                                                         approved: true)
+      project_dataset = ProjectDataset.new(dataset: dataset(83), terms_accepted: true)
+      approved_with_grant_project.project_datasets << project_dataset
+      pdl = ProjectDatasetLevel.new(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
+                                    approved: true)
+      project_dataset.project_dataset_levels << pdl
       approved_with_grant_project.save!
       notifications = Notification.where(title: 'CAS Account Renewed With Access to Dataset')
 
@@ -243,9 +273,11 @@ module Workflow
                                             "more datasets that you are an approver for.\n\n"
 
       not_approved_with_grant_project = create_cas_project(owner: users(:no_roles))
-      not_approved_with_grant_project.project_datasets << ProjectDataset.new(dataset: dataset(83),
-                                                                             terms_accepted: true,
-                                                                             approved: nil)
+      project_dataset = ProjectDataset.new(dataset: dataset(83), terms_accepted: true)
+      not_approved_with_grant_project.project_datasets << project_dataset
+      pdl = ProjectDatasetLevel.new(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
+                                    approved: nil)
+      project_dataset.project_dataset_levels << pdl
       not_approved_with_grant_project.save!
 
       assert_no_difference 'notifications.count' do
@@ -264,9 +296,11 @@ module Workflow
                                             "more datasets that you are an approver for.\n\n"
 
       rejected_with_grant_project = create_cas_project(owner: users(:no_roles))
-      rejected_with_grant_project.project_datasets << ProjectDataset.new(dataset: dataset(83),
-                                                                         terms_accepted: true,
-                                                                         approved: false)
+      project_dataset = ProjectDataset.new(dataset: dataset(83), terms_accepted: true)
+      rejected_with_grant_project.project_datasets << project_dataset
+      pdl = ProjectDatasetLevel.new(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
+                                    approved: false)
+      project_dataset.project_dataset_levels << pdl
       rejected_with_grant_project.save!
 
       assert_no_difference 'notifications.count' do
@@ -285,9 +319,11 @@ module Workflow
                                             "more datasets that you are an approver for.\n\n"
 
       approved_no_grant_project = create_cas_project(owner: users(:no_roles))
-      approved_no_grant_project.project_datasets << ProjectDataset.new(dataset: dataset(85),
-                                                                       terms_accepted: true,
-                                                                       approved: true)
+      project_dataset = ProjectDataset.new(dataset: dataset(85), terms_accepted: true)
+      approved_no_grant_project.project_datasets << project_dataset
+      pdl = ProjectDatasetLevel.new(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
+                                    approved: true)
+      project_dataset.project_dataset_levels << pdl
       approved_no_grant_project.save!
 
       assert_no_difference 'notifications.count' do
@@ -299,12 +335,16 @@ module Workflow
       end
 
       approved_one_grant_project = create_cas_project(owner: users(:no_roles))
-      approved_one_grant_project.project_datasets << ProjectDataset.new(dataset: dataset(83),
-                                                                        terms_accepted: true,
-                                                                        approved: true)
-      approved_one_grant_project.project_datasets << ProjectDataset.new(dataset: dataset(84),
-                                                                        terms_accepted: true,
-                                                                        approved: true)
+      project_dataset = ProjectDataset.new(dataset: dataset(83), terms_accepted: true)
+      approved_one_grant_project.project_datasets << project_dataset
+      pdl = ProjectDatasetLevel.new(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
+                                    approved: true)
+      project_dataset.project_dataset_levels << pdl
+      project_dataset = ProjectDataset.new(dataset: dataset(84), terms_accepted: true)
+      approved_one_grant_project.project_datasets << project_dataset
+      pdl = ProjectDatasetLevel.new(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
+                                    approved: true)
+      project_dataset.project_dataset_levels << pdl
       approved_one_grant_project.save!
 
       assert_no_difference 'notifications.count' do
@@ -325,9 +365,11 @@ module Workflow
 
     test 'should notify cas dataset approver at submitted for project with their dataset' do
       one_dataset_project = create_cas_project(owner: users(:no_roles))
-      one_dataset_project.project_datasets << ProjectDataset.new(dataset: dataset(83),
-                                                                 terms_accepted: true,
-                                                                 approved: nil)
+      project_dataset = ProjectDataset.new(dataset: dataset(83), terms_accepted: true)
+      one_dataset_project.project_datasets << project_dataset
+      pdl = ProjectDatasetLevel.new(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
+                                    approved: nil)
+      project_dataset.project_dataset_levels << pdl
 
       notifications = Notification.where(title: 'CAS Application Requires Dataset Approval')
 
@@ -345,12 +387,16 @@ module Workflow
       end
 
       two_dataset_project = create_cas_project(owner: users(:no_roles))
-      two_dataset_project.project_datasets << ProjectDataset.new(dataset: dataset(83),
-                                                                 terms_accepted: true,
-                                                                 approved: nil)
-      two_dataset_project.project_datasets << ProjectDataset.new(dataset: dataset(84),
-                                                                 terms_accepted: true,
-                                                                 approved: nil)
+      project_dataset = ProjectDataset.new(dataset: dataset(83), terms_accepted: true)
+      two_dataset_project.project_datasets << project_dataset
+      pdl = ProjectDatasetLevel.new(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
+                                    approved: nil)
+      project_dataset.project_dataset_levels << pdl
+      project_dataset = ProjectDataset.new(dataset: dataset(84), terms_accepted: true)
+      two_dataset_project.project_datasets << project_dataset
+      pdl = ProjectDatasetLevel.new(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
+                                    approved: nil)
+      project_dataset.project_dataset_levels << pdl
 
       # should only send to dataset approvers with grant for either of these 2 datasets
       assert_difference 'notifications.count', 3 do

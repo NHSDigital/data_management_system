@@ -10,6 +10,8 @@ class ProjectDataset < ApplicationRecord
                                      roleable_id: DatasetRole.fetch(:approver).id }
   }, class_name: 'Grant'
   has_many :approvers, through: :approver_grants, class_name: 'User', source: :user
+  has_many :project_dataset_levels, dependent: :destroy
+  accepts_nested_attributes_for :project_dataset_levels
 
   # Allow for auditing/version tracking of TeamDataSource
   has_paper_trail
@@ -17,11 +19,11 @@ class ProjectDataset < ApplicationRecord
   # TODO: approved only applies to CAS so far
 
   scope :dataset_approval, lambda { |user, approved_values = [nil, true, false]|
-    joins(dataset: :grants).where(approved: approved_values).where(
+    joins(dataset: :grants).where(
       grants: { user_id: user.id,
                 roleable_type: 'DatasetRole',
                 roleable_id: DatasetRole.fetch(:approver).id }
-    )
+    ).joins(:project_dataset_levels).where(project_dataset_levels: { approved: approved_values })
   }
 
   # data_source_name
@@ -38,38 +40,25 @@ class ProjectDataset < ApplicationRecord
 
   validate :terms_accepted_for_dataset
 
-  after_update :notify_cas_approved_change
+  before_save :destroy_project_dataset_levels_without_selected
 
   # TODO: TEST
   def terms_accepted_for_dataset
     return if dataset.nil?
-    return if dataset.dataset_type_name == 'cas'
+    return if dataset.cas_type
     return if terms_accepted
 
     errors.add(:project_dataset, "Terms accepted can't be blank")
   end
 
-  def notify_cas_approved_change
+  def destroy_project_dataset_levels_without_selected
     return unless project.cas?
-    # Should only be approving after DRAFT
-    return if project.current_state&.id == 'DRAFT'
-    return if approved.nil?
+    return unless project_dataset_levels.any?
 
-    User.cas_manager_and_access_approvers.each do |user|
-      CasNotifier.dataset_approved_status_updated(project, self, user.id)
+    not_selected = project_dataset_levels.select do |pdl|
+      pdl.selected == false
     end
-    CasMailer.with(project: project, project_dataset: self).send(
-      :dataset_approved_status_updated
-    ).deliver_later
-    CasNotifier.dataset_approved_status_updated_to_user(project, self)
-    CasMailer.with(project: project, project_dataset: self).send(
-      :dataset_approved_status_updated_to_user
-    ).deliver_later
-  end
 
-  def readable_approved_status
-    return 'Undecided' if approved.nil?
-
-    approved ? 'Approved' : 'Rejected'
+    self.project_dataset_levels = (project_dataset_levels - not_selected)
   end
 end

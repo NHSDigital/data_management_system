@@ -12,7 +12,10 @@ module Workflow
     # Track who was responsible for putting `Project` into this `State`.
     belongs_to :user, optional: true
 
-    has_many :project_attachments, inverse_of: :project_state
+    with_options inverse_of: :project_state do
+      has_many :project_attachments
+      has_many :assignments, dependent: :destroy
+    end
 
     validate :ensure_state_is_transitionable, on: :create
     after_save :update_project_closure_date
@@ -26,6 +29,27 @@ module Workflow
     after_save :notify_account_renewed
     after_save :notify_account_closed
     after_save :auto_transition_access_approver_approved_to_access_granted
+
+    delegate :assigned_user, :assigning_user, to: :current_assignment, allow_nil: true
+    delegate :full_name, to: :assigned_user,  prefix: true, allow_nil: true
+    delegate :full_name, to: :assigning_user, prefix: true, allow_nil: true
+    delegate :assignable_users, to: :state
+
+    def current_assignment
+      assignments.order(id: :desc).limit(1).first
+    end
+
+    def assign_to!(user:, assigning_user: nil)
+      method = persisted? ? :create! : :build
+
+      assignments.public_send(method, assigned_user: user, assigning_user: assigning_user)
+    end
+
+    def assign_to(user:, assigning_user: nil)
+      assign_to!(user: user, assigning_user: assigning_user)
+    rescue ActiveRecord::RecordInvalid
+      false
+    end
 
     private
 
@@ -161,7 +185,7 @@ module Workflow
     def notify_and_mail_requires_dataset_approval(project)
       DatasetRole.fetch(:approver).users.each do |user|
         matching_datasets = project.project_datasets.any? do |pd|
-          ProjectDataset.dataset_approval(user, nil).include? pd
+          ProjectDataset.dataset_approval(user, [nil]).include? pd
         end
         next unless matching_datasets
 

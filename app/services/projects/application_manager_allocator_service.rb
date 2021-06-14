@@ -49,8 +49,12 @@ module Projects
     def notify_application_manager
       return unless project.assigned_user
 
-      ProjectsNotifier.project_assignment(project: project)
-      ProjectsMailer.with(project: project).project_assignment.deliver_later
+      ProjectsNotifier.project_assignment(project: project, assigned_to: project.assigned_user)
+      ProjectsMailer.with(
+        project: project,
+        assigned_to: project.assigned_user,
+        cc: User.odr_users.in_use.pluck(:email)
+      ).project_assignment.deliver_later
     end
 
     def notify_odr_managers

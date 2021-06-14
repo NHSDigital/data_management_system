@@ -74,17 +74,29 @@ class ProjectsHelperTest < ActionView::TestCase
     assert_nil odr_reference(@project)
 
     @project.project_type.stubs(name: 'Application')
-    assert_equal "<small>ODR Reference: #{@project.id}</small>", odr_reference(@project)
+    @project.stubs(first_contact_date: Date.parse('2021/03/03'))
+    expected = "<small>ODR Reference: ODR_2020_2021_#{@project.id}</small>"
+    assert_equal expected, odr_reference(@project)
   end
 
   test 'timeline_allocated_user_label' do
-    state = workflow_states(:submitted)
+    unprivileged_user = users(:standard_user1)
+    privileged_user   = users(:application_manager_one)
+    assigned_user     = users(:application_manager_two)
+    project_state     = @project.project_states.build
 
-    assert_equal '', timeline_allocated_user_label(@project, state)
+    project_state.state = workflow_states(:submitted)
+    project_state.save!(validate: false)
 
-    state = workflow_states(:dpia_review)
+    assert_equal '', timeline_allocated_user_label(project_state, unprivileged_user)
+    assert_nil timeline_allocated_user_label(project_state, privileged_user)
 
-    assert_equal 'with application manager', timeline_allocated_user_label(@project, state)
+    project_state.state = workflow_states(:dpia_review)
+    project_state.save!(validate: false)
+    project_state.assign_to!(user: assigned_user)
+
+    assert_equal 'with application manager', timeline_allocated_user_label(project_state, unprivileged_user)
+    assert_equal assigned_user.full_name,    timeline_allocated_user_label(project_state, privileged_user)
   end
 
   test 'project_sub_type_path_prefix' do
@@ -98,5 +110,14 @@ class ProjectsHelperTest < ActionView::TestCase
     project = projects(:dummy_project)
 
     assert_equal 'projects/dummy/form', project_form_path(project)
+  end
+
+  test 'display_level_date' do
+    pdl = ProjectDatasetLevel.new(expiry_date: Time.zone.today, approved: nil)
+    assert_equal "#{Time.zone.today.strftime('%d/%m/%Y')} (requested)", display_level_date(pdl)
+
+    pdl.update(approved: true)
+
+    assert_equal "#{Time.zone.today.strftime('%d/%m/%Y')} (expiry)", display_level_date(pdl)
   end
 end

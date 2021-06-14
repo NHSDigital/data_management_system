@@ -13,7 +13,8 @@ class CreateEoiProjectTest < ActionDispatch::IntegrationTest
     click_button 'New'
     click_link 'EOI'
 
-    assert has_field?('project_application_date', with: Time.zone.today.to_s(:ui))
+    assert has_field? 'project_first_contact_date'
+    fill_in 'project_first_contact_date', with: '01/01/2021'
 
     select 'Another User', from: 'project_owner_grant_attributes_user_id'
     assert page.has_text? 'Project Title'

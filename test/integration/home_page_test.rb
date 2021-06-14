@@ -37,7 +37,7 @@ class HomePageTest < ActionDispatch::IntegrationTest
     assert_equal home_index_path, current_path
   end
 
-  test 'should visit Cas application form when clicking CAS Application Form link' do
+  test 'should visit Cas application form when clicking CAS Application Form link if in test' do
     sign_in users(:no_roles)
 
     visit root_path
@@ -46,6 +46,30 @@ class HomePageTest < ActionDispatch::IntegrationTest
     click_link('CAS Application Form')
 
     assert has_content?('New CAS Application')
+  end
+
+  test 'should visit Cas application form when clicking CAS Application Form link if in beta' do
+    Mbis.stubs(:stack).returns('beta')
+    Mbis.stack.stubs(:live?).returns(false)
+    sign_in users(:no_roles)
+
+    visit root_path
+    assert has_content?('Welcome to Data Management System')
+
+    click_link('CAS Application Form')
+
+    assert has_content?('New CAS Application')
+  end
+
+  test 'should not visit Cas application form when clicking CAS Application Form link if in live' do
+    Mbis.stubs(:stack).returns('live')
+    Mbis.stack.stubs(:live?).returns(true)
+    sign_in users(:no_roles)
+
+    visit root_path
+    assert has_content?('Welcome to Data Management System')
+
+    assert has_no_content?('CAS Application Form')
   end
 
   test 'should visit projects page when clicking My Applications link' do

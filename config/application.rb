@@ -44,5 +44,7 @@ module Mbis
     end
 
     config.active_job.queue_adapter = :delayed_job
+
+    config.action_view.form_with_generates_ids = true
   end
 end

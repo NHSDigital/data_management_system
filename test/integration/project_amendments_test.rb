@@ -32,6 +32,7 @@ class ProjectAmendmentsTest < ActionDispatch::IntegrationTest
 
   test 'should be able to create an amendment' do
     project = projects(:test_application)
+    project.first_contact_date = Date.parse('2020/03/31')
 
     project.transition_to!(workflow_states(:submitted))
     project.transition_to!(workflow_states(:dpia_start))
@@ -41,6 +42,8 @@ class ProjectAmendmentsTest < ActionDispatch::IntegrationTest
     click_on('Amendments')
 
     click_link('New')
+    assert has_no_field?('project_amendment[reference]')
+
     fill_in('project_amendment[requested_at]', with: '27/03/2020')
     fill_in('project_amendment[amendment_approved_date]', with: '29/03/2020')
     attach_file('project_amendment[upload]', file_fixture('odr_amendment_request_form-1.0.pdf'))
@@ -52,32 +55,42 @@ class ProjectAmendmentsTest < ActionDispatch::IntegrationTest
       assert has_text?('Amendment created successfully')
       assert has_selector?('#projectAmendments', visible: true)
     end
+    assert_equal 1, project.reload.amendment_number
+    expected_amendment_reference = "ODR_2019_2020_#{project.id}/A1"
+    assert_equal expected_amendment_reference, project.project_amendments.first.reference
   end
 
   test 'should be able to update an amendment' do
     project = projects(:test_application)
+    project.first_contact_date = Date.parse('2020/03/31')
 
     project.transition_to!(workflow_states(:submitted))
     project.transition_to!(workflow_states(:dpia_start))
     project.transition_to!(workflow_states(:amend))
 
     amendment = create_amendment(project)
-
+    amendment_reference = "ODR_2019_2020_#{project.id}/A1"
+    assert_equal project.project_amendments.first.reference, amendment_reference
     visit project_path(project)
     click_on('Amendments')
 
     click_link(href: edit_project_amendment_path(amendment))
+    assert has_no_field?('project_amendment[reference]')
 
     check('Data Flows')
     check('Duration')
 
     assert_changes -> { amendment.reload.labels } do
-      click_button('Update Amendment')
+      assert_no_changes -> { amendment.reference } do
+        click_button('Update Amendment')
 
-      assert_equal project_path(project), current_path
-      assert has_text?('Amendment updated successfully')
-      assert has_selector?('#projectAmendments', visible: true)
+        assert_equal project_path(project), current_path
+        assert has_text?('Amendment updated successfully')
+        assert has_selector?('#projectAmendments', visible: true)
+      end
     end
+    # should not have changed
+    assert_equal project.project_amendments.first.reference, amendment_reference
   end
 
   test 'should be able to destroy an amendment' do

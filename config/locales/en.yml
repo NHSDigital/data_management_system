@@ -89,6 +89,13 @@ en:
         dpia_rejected: with application manager
         contract_draft: with senior application manager
         contract_completed: with ODR
+    workflow/assignment:
+      assigned_user:
+        default: Assigned User
+        dpia_review: Application Manager
+        dpia_rejected: Application Manager
+        contract_rejected: Application Manager
+        dpia_moderation: Approving Manager
   workflow/state:
     application:
       draft: New
@@ -352,6 +359,7 @@ en:
         extra_datasets_rationale: Please state rationale for the selected datasets
       project:
         name: Project Title
+        assigned_user: Application Manager
       data_privacy_impact_assessment:
         ig_toolkit_version: Year of IG assessment status
         ig_score: IG score
@@ -377,8 +385,24 @@ en:
         drr_no: DRR No
         individual_to_release: Name(s) of individuals releasing data
         release_date: Data Release date
+      workflow/project_state:
+        user: Initiating User
+        created_at: Date
+      workflow/assignment:
+        assigned_user: Assigned User
+        assigned_user_id: Assigned User
       communication:
         id: ID
         contacted_at: Contact Date
         medium: Method
         parent: Responding To
+  projects_mailer:
+    project_assignment:
+      heading: "%{title} - %{state}"
+      body: A project has been assigned to you by %{assigner}.
+      dpia_review:
+        body: A project has been sent to you for peer review by %{assigner}.
+      dpia_rejected:
+        body: A DPIA for this project has been rejected by %{assigner}.
+      dpia_moderation:
+        body: A project has been sent to you for senior application manager moderation by %{assigner}.

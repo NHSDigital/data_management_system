@@ -17,20 +17,23 @@ class Ability
     can %i[read update], User, id: user.id
     can :read, Grant, user_id: user.id
     can :read, [Category, Node]
-    can :create, Project, project_type_id: ProjectType.cas.pluck(:id)
+    can :create, Project, project_type_id: ProjectType.cas.pluck(:id) unless Mbis.stack.live?
     can :read, Project, project_type_id: ProjectType.cas.pluck(:id),
                         grants: { user_id: user.id, roleable: ProjectRole.owner }
     # TODO: do we still want them to be able to destroy?
     can %i[update destroy], Project, project_type_id: ProjectType.cas.pluck(:id),
                                      grants: { user_id: user.id, roleable: ProjectRole.owner },
                                      current_state: { id: 'DRAFT' }
-    can %i[reapply], ProjectDataset, approved: false,
-                                     project: { project_type_id: ProjectType.cas.pluck(:id),
-                                                current_state: {
-                                                  id: Workflow::State.reapply_dataset_states.pluck(:id)
-                                                },
-                                                grants: { user_id: user.id,
-                                                          roleable: ProjectRole.owner } }
+    can %i[reapply], ProjectDatasetLevel, approved: false, project_dataset: {
+      project:
+        { project_type_id: ProjectType.cas.pluck(:id),
+          current_state: {
+            id: Workflow::State.reapply_dataset_states.pluck(:id)
+          },
+          grants: { user_id: user.id,
+                    roleable: ProjectRole.owner } }
+    }
+
     team_grants(user)
     organisation_grants(user)
 
@@ -249,6 +252,7 @@ class Ability
     can :manage, [User, Organisation, Division, Directorate, Team]
 
     can :create, Project
+    cannot :create, Project, project_type_id: ProjectType.cas.pluck(:id) if Mbis.stack.live?
     can :read, Project, project_type_id: ProjectType.odr_mbis.pluck(:id)
     can %i[create read], ProjectAttachment
     can %i[update destroy edit_data_source_items],
@@ -347,11 +351,11 @@ class Ability
     return unless user.role?(DatasetRole.fetch(:approver))
 
     can %i[read], Project, project_type_id: ProjectType.cas.pluck(:id),
-                           id: Project.cas_dataset_approval(user).map(&:id)
-    can %i[update approve], ProjectDataset, dataset_id: user.datasets.pluck(:id),
-                                            project: {
-                                              id: Project.cas_dataset_approval(user).map(&:id)
-                                            }
+                           id: Project.cas_dataset_approval(user).pluck(:id)
+    can %i[update approve], ProjectDatasetLevel, project_dataset: {
+      dataset_id: user.datasets.pluck(:id),
+      project_id: Project.cas_dataset_approval(user).pluck(:id)
+    }
   end
 
   def cas_access_approver_grants(user)

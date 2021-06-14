@@ -33,5 +33,18 @@ module Workflow
       I18n.t(id.downcase.to_sym,
              scope: [model_name.i18n_key, project.project_type_name.downcase.to_sym], default: id)
     end
+
+    # TODO: Try to push this to an association tied to roles/grants.
+    def assignable_users
+      return User.application_managers.in_use        if id.in? %w[DPIA_REVIEW DPIA_REJECTED]
+      return User.application_managers.in_use        if id.in? %w[CONTRACT_REJECTED]
+      return User.senior_application_managers.in_use if id.in? %w[DPIA_MODERATION]
+
+      User.none
+    end
+
+    def to_lookup_key
+      id.parameterize(separator: '_').to_sym
+    end
   end
 end

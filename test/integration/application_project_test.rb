@@ -41,12 +41,12 @@ class ApplicationProjectTest < ActionDispatch::IntegrationTest
     create_dpia(@project)
     visit project_path(@project)
 
-    reassign_for_moderation_to @peer
+    reassign_for_moderation_to assignee: @peer, assigner: @user
 
     click_button 'Reject DPIA'
-    assert_emails 1 do
+    assert_assignment_email(assignee: @user, assigner: @peer, comments: 'not today!') do
       within_modal(selector: '#modal-dpia_rejected') do
-        select @user.full_name, from: 'project[assigned_user_id]'
+        select @user.full_name, from: 'project[project_state][assigned_user_id]'
         fill_in 'project_comments_attributes_0_body', with: 'not today!'
         click_button 'Save'
       end
@@ -55,7 +55,7 @@ class ApplicationProjectTest < ActionDispatch::IntegrationTest
     assert has_text? 'DPIA Rejected'
     assert has_no_button?('Begin DPIA')
 
-    sign_in @user
+    change_sign_in @user
     visit project_path(@project)
     assert has_button?('Begin DPIA')
 
@@ -76,18 +76,18 @@ class ApplicationProjectTest < ActionDispatch::IntegrationTest
 
     accept_confirm { click_button 'Begin DPIA' }
 
-    reassign_for_moderation_to @peer
+    reassign_for_moderation_to assignee: @peer, assigner: @user
 
     click_button('Send for Moderation')
-    assert_emails 1 do
+    assert_assignment_email(assignee: @senior, assigner: @peer, comments: 'looks good') do
       within_modal(selector: '#modal-dpia_moderation') do
-        select @senior.full_name, from: 'project[assigned_user_id]'
+        select @senior.full_name, from: 'project[project_state][assigned_user_id]'
         fill_in 'project_comments_attributes_0_body', with: 'looks good'
         click_button 'Save'
       end
     end
 
-    sign_in @senior
+    change_sign_in @senior
     visit project_path(@project)
 
     assert has_button? 'Reject DPIA'
@@ -111,7 +111,7 @@ class ApplicationProjectTest < ActionDispatch::IntegrationTest
     assert has_no_button? 'Start Contract Drafting'
     assert_equal workflow_states(:contract_draft), @project.reload.current_state
 
-    sign_in @odr
+    change_sign_in @odr
     visit project_path(@project)
 
     assert has_no_content? 'no contract document(s) attached'
@@ -191,7 +191,7 @@ class ApplicationProjectTest < ActionDispatch::IntegrationTest
     visit project_path(@project)
     assert has_no_content? 'Reset Approvals'
 
-    sign_in @odr
+    change_sign_in @odr
     visit project_path(@project)
     assert has_content? 'Reset Approvals'
   end
@@ -229,7 +229,7 @@ class ApplicationProjectTest < ActionDispatch::IntegrationTest
     project.transition_to!(workflow_states(:review))
     project.transition_to!(workflow_states(:submitted))
 
-    sign_in @odr
+    change_sign_in @odr
     visit project_path(project)
     click_on 'Legal / Ethical'
     assert has_no_content? 'Edit'
@@ -239,7 +239,8 @@ class ApplicationProjectTest < ActionDispatch::IntegrationTest
   test 'should show boolean dropdown options as Yes/No in show screen' do
     project = Project.create(project_type: project_types(:application), owner: @user,
                              name: 'Test yes/no', team: teams(:team_one),
-                             onwardly_share: true, data_already_held_for_project: false)
+                             onwardly_share: true, data_already_held_for_project: false,
+                             first_contact_date: Date.current - 1.month)
 
     visit project_path(project)
 
@@ -260,7 +261,8 @@ class ApplicationProjectTest < ActionDispatch::IntegrationTest
   test 'should show blank instead of unknown if there are no tick boxes filled in' do
     project = Project.create(project_type: project_types(:application), owner: @user,
                              name: 'Test tick boxes', team: teams(:team_one),
-                             onwardly_share: true, data_already_held_for_project: false)
+                             onwardly_share: true, data_already_held_for_project: false,
+                             first_contact_date: Date.current - 1.month)
 
     visit project_path(project)
 
@@ -289,7 +291,8 @@ class ApplicationProjectTest < ActionDispatch::IntegrationTest
   # testing that cas changes don't have a knock on effect to other project_types
   test 'should not disable submit button and show transition error if user details not complete' do
     project = Project.create(project_type: project_types(:application), owner: @user,
-                             name: 'Test yes/no', team: teams(:team_one))
+                             name: 'Test yes/no', team: teams(:team_one),
+                             first_contact_date: Date.current - 1.month)
 
     visit project_path(project)
 
@@ -310,6 +313,9 @@ class ApplicationProjectTest < ActionDispatch::IntegrationTest
     create_contract(@project)
     @project.transition_to!(workflow_states(:contract_draft))
     @project.transition_to!(workflow_states(:contract_completed))
+
+    sign_out(@user)
+    sign_in(@project.owner)
 
     visit project_path(@project)
     click_link 'Timeline'
@@ -335,17 +341,32 @@ class ApplicationProjectTest < ActionDispatch::IntegrationTest
 
   private
 
-  def reassign_for_moderation_to(user)
-    click_button 'Send for Peer Review'
-    within_modal(selector: '#modal-dpia_review') do
-      select user.full_name, from: 'project[assigned_user_id]'
-      click_button 'Save'
+  def reassign_for_moderation_to(assignee:, assigner:)
+    assert_assignment_email(assignee: assignee, assigner: assigner) do
+      click_button 'Send for Peer Review'
+      within_modal(selector: '#modal-dpia_review') do
+        select assignee.full_name, from: 'project[project_state][assigned_user_id]'
+        click_button 'Save'
+      end
     end
 
     assert has_no_button?('Send for Moderation')
 
-    sign_in user
+    sign_in assignee
     visit project_path(@project)
     assert has_button?('Send for Moderation')
+  end
+
+  def assert_assignment_email(assignee:, assigner:, comments: nil)
+    assert_enqueued_emails 1 do
+      yield
+
+      assert_enqueued_email_with ProjectsMailer, :project_assignment, args: {
+        project:     @project.reload,
+        assigned_to: assignee,
+        assigned_by: assigner,
+        comments:    comments
+      }
+    end
   end
 end

@@ -14,8 +14,9 @@ module Workflow
 
     test 'application workflow as basic user' do
       user = users(:standard_user1)
+      @project.project_states.destroy_all
 
-      @project.stubs current_state: workflow_states(:draft)
+      transition_to(@project, workflow_states(:draft))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -27,7 +28,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
-      @project.stubs current_state: workflow_states(:submitted)
+      transition_to(@project, workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:draft))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -39,7 +40,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
-      @project.stubs current_state: workflow_states(:dpia_start)
+      transition_to(@project, workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -51,7 +52,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
-      @project.stubs current_state: workflow_states(:dpia_review)
+      transition_to(@project, workflow_states(:dpia_review))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -63,7 +64,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
-      @project.stubs current_state: workflow_states(:dpia_moderation)
+      transition_to(@project, workflow_states(:dpia_moderation))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -75,7 +76,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
-      @project.stubs current_state: workflow_states(:dpia_rejected)
+      transition_to(@project, workflow_states(:dpia_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -87,7 +88,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
-      @project.stubs current_state: workflow_states(:contract_draft)
+      transition_to(@project, workflow_states(:contract_draft))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -99,7 +100,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
-      @project.stubs current_state: workflow_states(:contract_rejected)
+      transition_to(@project, workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -111,7 +112,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
-      @project.stubs current_state: workflow_states(:contract_completed)
+      transition_to(@project, workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -123,7 +124,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
-      @project.stubs current_state: workflow_states(:amend)
+      transition_to(@project, workflow_states(:amend))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:draft))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
@@ -139,8 +140,9 @@ module Workflow
 
     test 'application workflow as project member' do
       user = users(:standard_user1)
+      @project.project_states.destroy_all
 
-      @project.stubs current_state: workflow_states(:draft)
+      transition_to(@project, workflow_states(:draft))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -152,7 +154,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
-      @project.stubs current_state: workflow_states(:submitted)
+      transition_to(@project, workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:draft))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -164,7 +166,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
-      @project.stubs current_state: workflow_states(:dpia_start)
+      transition_to(@project, workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -176,7 +178,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
-      @project.stubs current_state: workflow_states(:dpia_review)
+      transition_to(@project, workflow_states(:dpia_review))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -188,7 +190,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
-      @project.stubs current_state: workflow_states(:dpia_moderation)
+      transition_to(@project, workflow_states(:dpia_moderation))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -200,7 +202,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
-      @project.stubs current_state: workflow_states(:dpia_rejected)
+      transition_to(@project, workflow_states(:dpia_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -212,7 +214,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
-      @project.stubs current_state: workflow_states(:contract_draft)
+      transition_to(@project, workflow_states(:contract_draft))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -224,7 +226,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
-      @project.stubs current_state: workflow_states(:contract_rejected)
+      transition_to(@project, workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -236,7 +238,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
-      @project.stubs current_state: workflow_states(:contract_completed)
+      transition_to(@project, workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -248,7 +250,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
-      @project.stubs current_state: workflow_states(:amend)
+      transition_to(@project, workflow_states(:amend))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:draft))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
@@ -264,8 +266,9 @@ module Workflow
 
     test 'application workflow as project senior' do
       user = users(:standard_user2)
+      @project.project_states.destroy_all
 
-      @project.stubs current_state: workflow_states(:draft)
+      transition_to(@project, workflow_states(:draft))
       assert user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -277,7 +280,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
-      @project.stubs current_state: workflow_states(:submitted)
+      transition_to(@project, workflow_states(:submitted))
       assert user.can? :create, @project.project_states.build(state: workflow_states(:draft))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -289,7 +292,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
-      @project.stubs current_state: workflow_states(:dpia_start)
+      transition_to(@project, workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -301,7 +304,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
-      @project.stubs current_state: workflow_states(:dpia_review)
+      transition_to(@project, workflow_states(:dpia_review))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -313,7 +316,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
-      @project.stubs current_state: workflow_states(:dpia_moderation)
+      transition_to(@project, workflow_states(:dpia_moderation))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -325,7 +328,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
-      @project.stubs current_state: workflow_states(:dpia_rejected)
+      transition_to(@project, workflow_states(:dpia_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -337,7 +340,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
-      @project.stubs current_state: workflow_states(:contract_draft)
+      transition_to(@project, workflow_states(:contract_draft))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -349,7 +352,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
-      @project.stubs current_state: workflow_states(:contract_rejected)
+      transition_to(@project, workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -361,7 +364,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
-      @project.stubs current_state: workflow_states(:contract_completed)
+      transition_to(@project, workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -373,7 +376,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
-      @project.stubs current_state: workflow_states(:amend)
+      transition_to(@project, workflow_states(:amend))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:draft))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
@@ -389,8 +392,9 @@ module Workflow
 
     test 'application workflow as team delegate' do
       user = users(:delegate_user1)
+      @project.project_states.destroy_all
 
-      @project.stubs current_state: workflow_states(:draft)
+      transition_to(@project, workflow_states(:draft))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -402,7 +406,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
-      @project.stubs current_state: workflow_states(:submitted)
+      transition_to(@project, workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:draft))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -414,7 +418,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
-      @project.stubs current_state: workflow_states(:dpia_start)
+      transition_to(@project, workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -426,7 +430,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
-      @project.stubs current_state: workflow_states(:dpia_review)
+      transition_to(@project, workflow_states(:dpia_review))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -438,7 +442,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
-      @project.stubs current_state: workflow_states(:dpia_moderation)
+      transition_to(@project, workflow_states(:dpia_moderation))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -450,7 +454,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
-      @project.stubs current_state: workflow_states(:dpia_rejected)
+      transition_to(@project, workflow_states(:dpia_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -462,7 +466,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
-      @project.stubs current_state: workflow_states(:contract_draft)
+      transition_to(@project, workflow_states(:contract_draft))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -474,7 +478,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
-      @project.stubs current_state: workflow_states(:contract_rejected)
+      transition_to(@project, workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -486,7 +490,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
-      @project.stubs current_state: workflow_states(:contract_completed)
+      transition_to(@project, workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -498,7 +502,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
-      @project.stubs current_state: workflow_states(:amend)
+      transition_to(@project, workflow_states(:amend))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:draft))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
@@ -514,8 +518,9 @@ module Workflow
 
     test 'application workflow as ODR user' do
       user = users(:odr_user)
+      @project.project_states.destroy_all
 
-      @project.stubs current_state: workflow_states(:draft), assigned_user_id: user.id
+      transition_to(@project, workflow_states(:draft))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -527,7 +532,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
-      @project.stubs current_state: workflow_states(:submitted), assigned_user_id: user.id
+      transition_to(@project, workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:draft))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -539,7 +544,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
-      @project.stubs current_state: workflow_states(:dpia_start), assigned_user_id: user.id
+      transition_to(@project, workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -551,7 +556,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
-      @project.stubs current_state: workflow_states(:dpia_review), assigned_user_id: user.id
+      transition_to(@project, workflow_states(:dpia_review))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -563,7 +568,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
-      @project.stubs current_state: workflow_states(:dpia_moderation), assigned_user_id: user.id
+      transition_to(@project, workflow_states(:dpia_moderation))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -575,7 +580,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
-      @project.stubs current_state: workflow_states(:dpia_rejected), assigned_user_id: user.id
+      transition_to(@project, workflow_states(:dpia_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -587,7 +592,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
-      @project.stubs current_state: workflow_states(:contract_draft), assigned_user_id: user.id
+      transition_to(@project, workflow_states(:contract_draft))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -599,7 +604,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
-      @project.stubs current_state: workflow_states(:contract_rejected), assigned_user_id: user.id
+      transition_to(@project, workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -611,7 +616,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
-      @project.stubs current_state: workflow_states(:contract_completed), assigned_user_id: user.id
+      transition_to(@project, workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -623,7 +628,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
-      @project.stubs current_state: workflow_states(:amend)
+      transition_to(@project, workflow_states(:amend))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:draft))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
@@ -639,8 +644,9 @@ module Workflow
 
     test 'application workflow as ODR application manager' do
       user = users(:application_manager_one)
+      @project.project_states.destroy_all
 
-      @project.stubs current_state: workflow_states(:draft), assigned_user_id: user.id
+      transition_to(@project, workflow_states(:draft))
       assert user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -652,7 +658,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
       assert user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
-      @project.stubs current_state: workflow_states(:submitted), assigned_user_id: user.id
+      transition_to(@project, workflow_states(:submitted))
       assert user.can? :create, @project.project_states.build(state: workflow_states(:draft))
       assert user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -664,7 +670,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
       assert user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
-      @project.stubs current_state: workflow_states(:dpia_start), assigned_user_id: user.id
+      transition_to(@project, workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       assert user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -676,19 +682,34 @@ module Workflow
       assert user.can? :create, @project.project_states.build(state: workflow_states(:amend))
       assert user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
-      @project.stubs current_state: workflow_states(:dpia_review), assigned_user_id: user.id
+      transition_to(@project, workflow_states(:dpia_review))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
+      # refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_moderation))
+      # refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_rejected))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_draft))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
+      assert user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      assert user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
+      with_temporal_assignment_to(user, @project) do
+        assert user.can? :create, @project.project_states.build(state: workflow_states(:dpia_moderation))
+        assert user.can? :create, @project.project_states.build(state: workflow_states(:dpia_rejected))
+      end
+      #####
+      # FIXME: This becomes redundant once support for the adoption of temporal assignment is
+      # removed (see the monkey patch in/for Workflow::Ability::ApplicationWorkflowAbility),
+      # at which point the behaviour should match that of L#689 & L#690 above.
+      with_temporal_assignment_to(users(:application_manager_two), @project) do
+        refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_moderation))
+        refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_rejected))
+      end
       assert user.can? :create, @project.project_states.build(state: workflow_states(:dpia_moderation))
       assert user.can? :create, @project.project_states.build(state: workflow_states(:dpia_rejected))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_draft))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
-      assert user.can? :create, @project.project_states.build(state: workflow_states(:amend))
-      assert user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
+      #####
 
-      @project.stubs current_state: workflow_states(:dpia_moderation), assigned_user_id: user.id
+      transition_to(@project, workflow_states(:dpia_moderation))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -700,7 +721,7 @@ module Workflow
       assert user.can? :create, @project.project_states.build(state: workflow_states(:amend))
       assert user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
-      @project.stubs current_state: workflow_states(:dpia_rejected), assigned_user_id: user.id
+      transition_to(@project, workflow_states(:dpia_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       assert user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -712,7 +733,7 @@ module Workflow
       assert user.can? :create, @project.project_states.build(state: workflow_states(:amend))
       assert user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
-      @project.stubs current_state: workflow_states(:contract_draft), assigned_user_id: user.id
+      transition_to(@project, workflow_states(:contract_draft))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -724,7 +745,7 @@ module Workflow
       assert user.can? :create, @project.project_states.build(state: workflow_states(:amend))
       assert user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
-      @project.stubs current_state: workflow_states(:contract_rejected), assigned_user_id: user.id
+      transition_to(@project, workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       assert user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -736,7 +757,7 @@ module Workflow
       assert user.can? :create, @project.project_states.build(state: workflow_states(:amend))
       assert user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
-      @project.stubs current_state: workflow_states(:contract_completed), assigned_user_id: user.id
+      transition_to(@project, workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -748,7 +769,7 @@ module Workflow
       assert user.can? :create, @project.project_states.build(state: workflow_states(:amend))
       assert user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
-      @project.stubs current_state: workflow_states(:amend)
+      transition_to(@project, workflow_states(:amend))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:draft))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       assert user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
@@ -764,8 +785,9 @@ module Workflow
 
     test 'application workflow as ODR senior application manager' do
       user = users(:senior_application_manager_one)
+      @project.project_states.destroy_all
 
-      @project.stubs current_state: workflow_states(:draft), assigned_user_id: user.id
+      transition_to(@project, workflow_states(:draft))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -777,7 +799,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
-      @project.stubs current_state: workflow_states(:submitted), assigned_user_id: user.id
+      transition_to(@project, workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:draft))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -789,7 +811,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
-      @project.stubs current_state: workflow_states(:dpia_start), assigned_user_id: user.id
+      transition_to(@project, workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -801,7 +823,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
-      @project.stubs current_state: workflow_states(:dpia_review), assigned_user_id: user.id
+      transition_to(@project, workflow_states(:dpia_review))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -812,20 +834,31 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
-      
-      @project.stubs current_state: workflow_states(:dpia_moderation), assigned_user_id: user.id
+
+      transition_to(@project, workflow_states(:dpia_moderation))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_moderation))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_rejected))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_draft))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
+      refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
+      with_temporal_assignment_to(user, @project) do
+        assert user.can? :create, @project.project_states.build(state: workflow_states(:dpia_rejected))
+        assert user.can? :create, @project.project_states.build(state: workflow_states(:contract_draft))
+      end
+      #####
+      # FIXME: This becomes redundant once support for the adoption of temporal assignment is
+      # removed (see the monkey patch in/for Workflow::Ability::ApplicationWorkflowAbility).
+      @project.update_column(:assigned_user_id, user.id)
       assert user.can? :create, @project.project_states.build(state: workflow_states(:dpia_rejected))
       assert user.can? :create, @project.project_states.build(state: workflow_states(:contract_draft))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_rejected))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
+      #####
 
-      @project.stubs current_state: workflow_states(:dpia_rejected), assigned_user_id: user.id
+      transition_to(@project, workflow_states(:dpia_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -837,7 +870,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
-      @project.stubs current_state: workflow_states(:contract_draft), assigned_user_id: user.id
+      transition_to(@project, workflow_states(:contract_draft))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -849,7 +882,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
-      @project.stubs current_state: workflow_states(:contract_rejected), assigned_user_id: user.id
+      transition_to(@project, workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -861,7 +894,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
-      @project.stubs current_state: workflow_states(:contract_completed), assigned_user_id: user.id
+      transition_to(@project, workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -873,7 +906,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
 
-      @project.stubs current_state: workflow_states(:amend)
+      transition_to(@project, workflow_states(:amend))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:draft))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
@@ -887,11 +920,11 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejected))
     end
 
-
     test 'application workflow as administrator' do
       user = users(:admin_user)
+      @project.project_states.destroy_all
 
-      @project.stubs current_state: workflow_states(:draft)
+      transition_to(@project, workflow_states(:draft))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -902,7 +935,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
 
-      @project.stubs current_state: workflow_states(:submitted)
+      transition_to(@project, workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:draft))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -913,7 +946,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
 
-      @project.stubs current_state: workflow_states(:dpia_start)
+      transition_to(@project, workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -924,7 +957,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
 
-      @project.stubs current_state: workflow_states(:dpia_review)
+      transition_to(@project, workflow_states(:dpia_review))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -935,7 +968,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
 
-      @project.stubs current_state: workflow_states(:dpia_moderation)
+      transition_to(@project, workflow_states(:dpia_moderation))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -946,7 +979,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
 
-      @project.stubs current_state: workflow_states(:dpia_rejected)
+      transition_to(@project, workflow_states(:dpia_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -957,7 +990,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
 
-      @project.stubs current_state: workflow_states(:contract_draft)
+      transition_to(@project, workflow_states(:contract_draft))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -968,7 +1001,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
 
-      @project.stubs current_state: workflow_states(:contract_rejected)
+      transition_to(@project, workflow_states(:contract_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -979,7 +1012,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
 
-      @project.stubs current_state: workflow_states(:contract_completed)
+      transition_to(@project, workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_review))
@@ -990,7 +1023,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:contract_completed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:amend))
 
-      @project.stubs current_state: workflow_states(:amend)
+      transition_to(@project, workflow_states(:amend))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:draft))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:dpia_start))
@@ -1012,9 +1045,27 @@ module Workflow
       @project.reload
       # close application
       @project.transition_to!(workflow_states(:rejected))
-      
+
       assert standard.can? :create, @project.project_states.build(state: next_state)
       assert senior.can? :create, @project.project_states.build(state: next_state)
+    end
+
+    private
+
+    def transition_to(project, state)
+      project.project_states.build(state: state).save(validate: false)
+      project.reload_current_state
+      project.reload_current_project_state
+    end
+
+    def with_temporal_assignment_to(user, project)
+      assignment = project.current_project_state.assign_to!(user: user)
+      project.reload_current_project_state
+
+      yield if block_given?
+    ensure
+      assignment.destroy!
+      project.reload_current_project_state
     end
   end
 end

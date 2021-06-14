@@ -12,14 +12,15 @@
     <thead>
       <tr>
         <th>Name</th>
-        <th>Description</th>
+        <th>Level</th>
+        <th>Date</th>
         <th>Status</th>
       </tr>
     </thead>
     <tbody>
-      <% project.project_datasets.each do |project_dataset| %>
-        <tr id="<%= dom_id(project_dataset) %>">
-          <%= render partial: '/project_datasets/approval', locals: { project_dataset: project_dataset } %>
+      <% project.project_dataset_levels.each do |project_dataset_level| %>
+        <tr id="<%= dom_id(project_dataset_level) %>">
+          <%= render partial: '/project_dataset_levels/approval', locals: { project_dataset_level: project_dataset_level } %>
         </tr>
       <% end %>
     </tbody>

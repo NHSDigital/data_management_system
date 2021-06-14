@@ -8,11 +8,6 @@ This is because the system could not find an available application manager to wh
 project could be assigned.
 <% end %>
 
-Title: <%= @project.name %>
-Type: <%= @project.project_type %>
-Raised by: <%= @project.owner_full_name %>
-Team: <%= @project.team.name %>
-Organisation: <%= @project.organisation.name %>
-Link: <%= project_url(@project) %>
+<%= render 'project_details', project: @project %>
 
-Please log in and copy/paste the above link into your web browser to view the project.
+<%= render 'footer' %>

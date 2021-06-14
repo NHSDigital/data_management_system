@@ -33,7 +33,7 @@ class ProjectsController < ApplicationController
                                     through_grant_of(ProjectRole.fetch(:owner)).
                                     my_projects_search(search_params).
                                     order(updated_at: :desc)
-    @assigned_projects            = @projects.assigned_to(current_user)
+    @assigned_projects            = @projects.assigned_to(current_user, check_temporal: true)
     @unassigned_projects          = @projects.unassigned
 
     @projects = @projects.paginate(
@@ -82,7 +82,7 @@ class ProjectsController < ApplicationController
   def cas_approvals
     @projects = Project.my_projects_search(search_params).accessible_by(current_ability, :read).
                 order(updated_at: :desc)
-    @my_dataset_approvals = @projects.cas_dataset_approval(current_user, nil).
+    @my_dataset_approvals = @projects.cas_dataset_approval(current_user, [nil]).
                             order(updated_at: :desc)
     @my_access_approvals = @projects.cas_access_approval.order(updated_at: :desc)
 
@@ -196,11 +196,16 @@ class ProjectsController < ApplicationController
     previous_assignee = @project.assigned_user
 
     if @project.update(assign_params)
-      alert = @project.assigned_user ? :project_assignment : :project_awaiting_assignment
-      ProjectsNotifier.send(alert, project: @project, assigned_by: previous_assignee)
-      ProjectsMailer.with(project: @project, assigned_by: previous_assignee).
-        send(alert).
-        deliver_now
+      alert  = @project.assigned_user ? :project_assignment : :project_awaiting_assignment
+      kwargs = {
+        project: @project,
+        assigned_by: previous_assignee
+      }
+
+      kwargs[:assigned_to] = @project.assigned_user if alert == :project_assignment
+
+      ProjectsNotifier.send(alert, **kwargs)
+      ProjectsMailer.with(**kwargs).send(alert).deliver_now
 
       redirect_to @project, notice: "#{@project.project_type_name} was successfully assigned"
     else
@@ -263,6 +268,7 @@ class ProjectsController < ApplicationController
     params.require(:project).permit(:alternative_data_access_address,
                                     :alternative_data_access_postcode,
                                     :application_date,
+                                    :first_contact_date,
                                     :data_access_address,
                                     :data_access_postcode, :description, :end_data_date,
                                     :how_data_will_be_used, :name,
@@ -319,8 +325,12 @@ class ProjectsController < ApplicationController
                                     dataset_ids: [],
                                     owner_grant_attributes: %i[id user_id project_id
                                                                roleable_id roleable_type],
-                                    project_datasets_attributes: %i[id project_id dataset_id
-                                                                    terms_accepted _destroy],
+                                    project_datasets_attributes:
+                                      [:id, :project_id, :dataset_id,
+                                       :terms_accepted, :_destroy,
+                                       { project_dataset_levels_attributes:
+                                       %i[id project_dataset_id selected
+                                          access_level_id expiry_date ] }],
                                     project_attachments_attributes: %i[name attachment],
                                     # CAS
                                     cas_application_fields_attributes: cas_fields)
@@ -341,7 +351,7 @@ class ProjectsController < ApplicationController
   end
 
   def assign_params
-    params.require(:project).permit(:assigned_user_id)
+    params.fetch(:project, {}).permit(:assigned_user_id)
   end
 
   def updating_data_source_items?

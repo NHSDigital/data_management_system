@@ -248,16 +248,58 @@ class ProjectTest < ActiveSupport::TestCase
     refute_includes project.errors.details[:assigned_user], error: :invalid
   end
 
+  test 'assigned scope' do
+    project  = projects(:one)
+    user_one = users(:application_manager_one)
+    user_two = users(:application_manager_two)
+
+    refute_includes Project.assigned, project
+    refute_includes Project.assigned(check_temporal: true), project
+
+    project.update!(assigned_user: user_one)
+    assert_includes Project.assigned, project
+    assert_includes Project.assigned(check_temporal: true), project
+
+    project.update!(assigned_user: nil)
+    project.current_project_state.assign_to!(user: user_one, assigning_user: user_two)
+    refute_includes Project.assigned, project
+    assert_includes Project.assigned(check_temporal: true), project
+  end
+
+  test 'unassigned scope' do
+    project  = projects(:one)
+    user_one = users(:application_manager_one)
+    user_two = users(:application_manager_two)
+
+    assert_includes Project.unassigned, project
+    assert_includes Project.unassigned(check_temporal: true), project
+
+    project.update!(assigned_user: user_one)
+    refute_includes Project.unassigned, project
+    refute_includes Project.unassigned(check_temporal: true), project
+
+    project.update!(assigned_user: nil)
+    project.current_project_state.assign_to!(user: user_one, assigning_user: user_two)
+    assert_includes Project.unassigned, project
+    refute_includes Project.unassigned(check_temporal: true), project
+  end
+
   test 'assigned_to scope' do
-    project = projects(:one)
-    user    = users(:application_manager_one)
+    project  = projects(:one)
+    user_one = users(:application_manager_one)
+    user_two = users(:application_manager_two)
 
-    project.update(assigned_user: user)
+    refute_includes Project.assigned_to(user_one), project
+    refute_includes Project.assigned_to(user_one, check_temporal: true), project
 
-    scope = Project.assigned_to(user)
+    project.update!(assigned_user: user_one)
+    assert_includes Project.assigned_to(user_one), project
+    assert_includes Project.assigned_to(user_one, check_temporal: true), project
 
-    assert_includes scope, project
-    refute_includes scope, projects(:two)
+    project.update!(assigned_user: user_two)
+    project.current_project_state.assign_to!(user: user_one, assigning_user: user_two)
+    refute_includes Project.assigned_to(user_one), project
+    assert_includes Project.assigned_to(user_one, check_temporal: true), project
   end
 
   test 'of_type_project scope' do
@@ -329,7 +371,8 @@ class ProjectTest < ActiveSupport::TestCase
                               owner: users(:application_manager_three),
                               sponsor_country_id: "",
                               funder_country_id: "",
-                              data_processor_country_id: "")
+                              data_processor_country_id: "",
+                              first_contact_date: Date.current - 1.month)
 
     # They'll be many more validations to add...
     assert application.valid?
@@ -392,8 +435,11 @@ class ProjectTest < ActiveSupport::TestCase
 
     cas_project = create_cas_project(owner: users(:standard_user1)).tap(&:valid?)
 
-    project_dataset = ProjectDataset.new(dataset: dataset, terms_accepted: true, approved: nil)
+    project_dataset = ProjectDataset.new(dataset: dataset, terms_accepted: true)
     cas_project.project_datasets << project_dataset
+    pdl = ProjectDatasetLevel.new(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
+                                  approved: nil)
+    project_dataset.project_dataset_levels << pdl
 
     # Should not be returned while at DRAFT state
     assert_equal 0, Project.cas_dataset_approval(user).count
@@ -402,21 +448,24 @@ class ProjectTest < ActiveSupport::TestCase
 
     assert_equal 1, Project.cas_dataset_approval(user).count
 
-    project_dataset.approved = true
-    project_dataset.save!(validate: false)
+    pdl.approved = true
+    pdl.save!(validate: false)
 
     # Test the use of the scope with and without approved = nil argument
-    assert_equal 0, Project.cas_dataset_approval(user, nil).count
+    assert_equal 0, Project.cas_dataset_approval(user, [nil]).count
     assert_equal 1, Project.cas_dataset_approval(user).count
 
     new_project = create_cas_project(owner: users(:standard_user1)).tap(&:valid?)
     new_project_dataset = ProjectDataset.new(dataset: Dataset.find_by(name: 'SACT'),
-                                             terms_accepted: true, approved: nil)
+                                             terms_accepted: true)
     new_project.project_datasets << new_project_dataset
+    pdl = ProjectDatasetLevel.new(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
+                                  approved: nil)
+    new_project_dataset.project_dataset_levels << pdl
 
     new_project.transition_to!(workflow_states(:submitted))
 
-    assert_equal 0, Project.cas_dataset_approval(user, nil).count
+    assert_equal 0, Project.cas_dataset_approval(user, [nil]).count
   end
 
   test 'should notify cas_manager on new project creation' do
@@ -514,5 +563,96 @@ class ProjectTest < ActiveSupport::TestCase
     timestamp = 2.days.ago
     project.application_date = timestamp
     assert_equal timestamp, project.application_date
+  end
+
+  test 'destroy_project_datasets_without_any_levels after_save callback' do
+    project = create_cas_project(owner: users(:standard_user2))
+    project_dataset = ProjectDataset.new(dataset: dataset(83), terms_accepted: true)
+    project.project_datasets << project_dataset
+    pdl1 = ProjectDatasetLevel.new(access_level_id: 1, expiry_date: Time.zone.today, selected: true)
+    pdl2 = ProjectDatasetLevel.new(access_level_id: 2, expiry_date: Time.zone.today, selected: true)
+    project_dataset.project_dataset_levels << pdl1
+    project_dataset.project_dataset_levels << pdl2
+    project.save!
+
+    pdl2.destroy
+    project.save!
+    project.reload
+
+    assert_equal project.project_datasets.size, 1
+
+    pdl1.destroy
+    project.save!
+    project.reload
+
+    assert_equal project.project_datasets.size, 0
+  end
+
+  test 'returns an ODR application_log based of financialy year and id if application_log is nil' do
+    %i[eoi application].each do |type|
+      assert_application_log('ODR_2020_2021_', name: 'application log test 1',
+                                               project_type: project_types(type),
+                                               first_contact_date: Date.parse('2021/03/31'))
+      assert_application_log('ODR_2021_2022_', name: 'application log test 2',
+                                               project_type: project_types(type),
+                                               first_contact_date: Date.parse('2021/04/01'))
+    end
+  end
+
+  test 'should not create an application log for an MBIS Application' do
+    project = build_project(project_type: project_types(:project))
+    project.save!
+    assert_nil project.application_log
+  end
+
+  test 'should not create an application log for a CAS Application' do
+    project = build_project(project_type: project_types(:cas))
+    project.save!
+    assert_nil project.application_log
+  end
+
+  test 'should return nil for application_log if no first_contact_date' do
+    project = build_project(project_type: project_types(:project))
+    project.save!
+    assert_nil project.application_log
+  end
+
+  test 'next amendment reference for legacy ODR application' do
+    project = build_project(project_type: project_types(:application),
+                            first_contact_date: Date.parse('2021/04/01'),
+                            application_log: 'ODR_legacy_id').tap(&:save!)
+    assert_equal 'ODR_legacy_id', project.application_log
+    assert_equal 'ODR_legacy_id/A1', project.next_amendment_reference
+  end
+
+  test 'first_contact_date not required for pdf import' do
+    project = Project.new(project_type: project_types(:application)).tap(&:valid?)
+    assert_includes project.errors.messages.keys, :first_contact_date
+
+    team = teams(:team_one)
+    project = team.projects.build(project_type: project_types(:application))
+    facade = PdfApplicationFacade.new(project)
+    refute_includes facade.errors.messages.keys, :first_contact_date
+  end
+
+  private
+
+  def assert_application_log(expected, options = {})
+    project = application_log_project(options)
+    project.save!
+    assert_equal "#{expected}#{project.id}", project.reload.application_log
+  end
+
+  def application_log_project(options = {})
+    default_options = {
+      project_type: project_types(:eoi),
+      name: 'test',
+      project_purpose: 'log',
+      team: teams(:team_one),
+      owner: users(:application_manager_three)
+    }
+    project = Project.new(default_options.merge(options))
+
+    project
   end
 end

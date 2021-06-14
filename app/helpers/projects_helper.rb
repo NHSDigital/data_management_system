@@ -94,11 +94,11 @@ module ProjectsHelper
     content_tag(:span, state.name(project), html_options.merge(default_options))
   end
 
-  def timeline_allocated_user_label(project, state = nil)
-    state ||= project.current_state
+  def timeline_allocated_user_label(project_state, user)
+    return project_state.assigned_user_full_name if user.can?(:read, :temporally_assigned_user)
 
-    i18n_scope = %i[helpers timeline state_allocated_user]
-    i18n_key     = state.id.downcase.to_sym
+    i18n_scope   = %i[helpers timeline state_allocated_user]
+    i18n_key     = project_state.state_id.downcase.to_sym
     i18n_default = ''
 
     t(i18n_key, scope: i18n_scope, default: i18n_default)
@@ -107,7 +107,7 @@ module ProjectsHelper
   def odr_reference(project)
     return unless project&.project_type&.name&.in? %w[Application EOI]
 
-    content_tag(:small, "ODR Reference: #{project.id}")
+    content_tag(:small, "ODR Reference: #{project.application_log}")
   end
 
   def transition_button(project, state, **options)
@@ -361,5 +361,57 @@ module ProjectsHelper
 
   def project_form_path(project)
     "#{project_sub_type_path_prefix(project)}/form"
+  end
+
+  def display_level_date(project_dataset_level)
+    return unless project_dataset_level.expiry_date
+
+    if project_dataset_level.approved
+      project_dataset_level.expiry_date.strftime('%d/%m/%Y (expiry)')
+    else
+      project_dataset_level.expiry_date.strftime('%d/%m/%Y (requested)')
+    end
+  end
+
+  def setup_project(project)
+    (Dataset.where.not(cas_type: nil).pluck(:id) -
+     project.project_datasets.pluck(:dataset_id)).each do |id|
+       # added to stop duplication in error screen
+       if project.project_datasets.select { |pd| pd.dataset_id == id }.none?
+         project.project_datasets.build(dataset_id: id)
+       end
+     end
+    project.project_datasets.each do |pd|
+      levels = Lookups::AccessLevel.pluck(:id) - pd.project_dataset_levels.pluck(:access_level_id)
+      levels.each do |level|
+        # added to stop duplication in error screen
+        if pd.project_dataset_levels.select { |pdl| pdl.access_level_id == level }.none?
+          pd.project_dataset_levels.build(access_level_id: level)
+        end
+      end
+    end
+    project
+  end
+
+  def check_icon(value)
+    return bootstrap_icon_tag('ok') if value
+
+    bootstrap_icon_tag('remove')
+  end
+
+  def check_box_class(dataset, level)
+    class_string = 'defaults_checkbox '
+    # TODO: update with real roles
+    class_string << 'ca_group ' if dataset_level_match(CANCER_ANALYST_DATASETS, dataset, level)
+    class_string << 'd_group ' if dataset_level_match(NDRS_DEVELOPER_DATASETS, dataset, level)
+    class_string << 'qa_group ' if dataset_level_match(NDRS_QA_DATASETS, dataset, level)
+
+    class_string.strip!
+  end
+
+  def dataset_level_match(role_datasets, dataset, level)
+    role_datasets.any? do |role_dataset|
+      role_dataset['name'] == dataset.name && (role_dataset['levels'].include? level)
+    end
   end
 end

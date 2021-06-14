@@ -1,0 +1,14 @@
+##### Dataset Level Approval Status Change #####
+
+CAS application <%= @project.id %> - Dataset <%= @load_project_dataset_level.project_dataset.dataset_name %>
+has been updated to Approval status of '<%= @load_project_dataset_level.approved %>' for level
+<%= @load_project_dataset_level.access_level_id %> access.
+
+Title: <%= @project.name %>
+Type: <%= @project.project_type_name %>
+Raised by: <%= @project.owner_full_name %>
+Team: <%= @project.team.try(:name) %>
+Organisation: <%= @project.team.try(:organisation).try(:name) %>
+Link: <%= project_url(@project) %>
+
+Please log in and copy/paste the above link into your web browser to view the project.

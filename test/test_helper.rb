@@ -220,6 +220,9 @@ module NdrDevSupport
   end
 end
 
+require 'integration_test_helper'
+ActionDispatch::IntegrationTest.include(IntegrationTestHelper)
+
 ActiveSupport::TestCase.include(PaperTrailHelper)
 ActionDispatch::IntegrationTest.include(PaperTrailHelper)
 

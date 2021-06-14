@@ -5,14 +5,20 @@ class MyCasApprovalsTest < ActionDispatch::IntegrationTest
     sign_in users(:cas_dataset_approver)
 
     grant_project = create_cas_project(owner: users(:standard_user2))
-    grant_dataset = Dataset.find_by(name: 'Extra CAS Dataset One')
-    grant_project.project_datasets << ProjectDataset.new(dataset: grant_dataset,
-                                                         terms_accepted: true)
+    grant_project_dataset = ProjectDataset.new(dataset: Dataset.find_by(name: 'Extra CAS Dataset One'),
+                                               terms_accepted: true)
+    grant_project.project_datasets << grant_project_dataset
+    grant_project_pdl = ProjectDatasetLevel.new(access_level_id: 1,
+                                                expiry_date: Time.zone.today + 1.week)
+    grant_project_dataset.project_dataset_levels << grant_project_pdl
 
     no_grant_project = create_cas_project(owner: users(:standard_user2))
-    no_grant_dataset = Dataset.find_by(name: 'Extra CAS Dataset Two')
-    no_grant_project.project_datasets << ProjectDataset.new(dataset: no_grant_dataset,
-                                                            terms_accepted: true)
+    no_grant_project_dataset = ProjectDataset.new(dataset: Dataset.find_by(name: 'Extra CAS Dataset Two'),
+                                                  terms_accepted: true)
+    no_grant_project.project_datasets << no_grant_project_dataset
+    no_grant_project_pdl = ProjectDatasetLevel.new(access_level_id: 1,
+                                                   expiry_date: Time.zone.today + 1.week)
+    no_grant_project_dataset.project_dataset_levels << no_grant_project_pdl
 
     grant_project.transition_to!(workflow_states(:submitted))
     no_grant_project.transition_to!(workflow_states(:submitted))

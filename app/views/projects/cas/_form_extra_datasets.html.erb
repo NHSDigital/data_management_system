@@ -1,10 +1,33 @@
 <fieldset>
-  <%= content_tag :p, t('.extra_datasets_note') %>
-  <%= form.label :extra_datasets %>
-  <% readonly_value = @project.dataset_names.any? ? safe_join(@project.dataset_names, raw('<br />')) : 'Unknown' %>
-  <%= form.collection_check_boxes(:dataset_ids, Dataset.cas, :id, :name, readonly_value: readonly_value) do |b| %>
-    <div class="checkbox">
-      <%= b.label { b.check_box + b.text } %>
-    </div>
-  <% end %>
+  <legend>Extra Datasets</legend>
+  <table id="extra_datasets" class="table table-hover">
+    <thead>
+      <tr>
+        <th colspan="6" style="text-align:center; border-top: 0px;">Dataset name</th>
+        <th colspan="2" style="text-align:center; border-top: 0px;">Level 1</th>
+        <th colspan="2" style="text-align:center; border-top: 0px;">Level 2</th>
+        <th colspan="2" style="text-align:center; border-top: 0px;">Level 3</th>
+      </tr>
+    </thead>
+    <tbody>
+      <%= form.fields_for :project_datasets, @project.project_datasets.select { |dataset| Dataset.cas_extras.pluck(:id).include? dataset.dataset_id }.sort_by(&:dataset_id) do |pd| %>
+        <tr id="dataset_<%=pd.object.dataset.id=%>_row">
+          <%= pd.hidden_field :dataset_id, value: pd.object.dataset_id %>
+          <td colspan="6" data-toggle="tooltip" data-placement="left" title="<%= pd.object.dataset.name %>">
+            <%= truncate(pd.object.dataset.name) %>
+          </td>
+          <%= pd.fields_for :project_dataset_levels, pd.object.project_dataset_levels.sort_by(&:access_level_id) do |pdl| %>
+            <% if pd.object.dataset.levels.include? pdl.object.access_level_id %>
+              <%= pdl.hidden_field :access_level_id, value: pdl.object.access_level_id %>
+              <td id="level_<%= pdl.object.access_level_id %>_selected" width="3%"><%= pdl.check_box :selected, id: "dataset_#{pd.object.dataset.id}_level_#{pdl.object.access_level_id}_check_box", readonly_value: check_icon(pdl.object.selected) %></td>
+              <td id="level_<%= pdl.object.access_level_id %>_expiry_date" width="20%"><%= pdl.datepicker_field :expiry_date, id: "dataset_#{pd.object.dataset.id}_level_#{pdl.object.access_level_id}_expiry_datepicker", placeholder: "Expiry date", readonly_value: display_level_date(pdl.object) %></td>
+            <% else %>
+              <td id="level_<%= pdl.object.access_level_id %>_selected"></td>
+              <td id="level_<%= pdl.object.access_level_id %>_expiry_date" style="text-align:center;">-</td>
+            <% end %>
+          <% end %>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
 </fieldset>

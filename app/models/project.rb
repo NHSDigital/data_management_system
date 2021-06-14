@@ -47,6 +47,8 @@ class Project < ApplicationRecord
   validates_associated :project_datasets
   # validates_associated failing with non persisted children?
   # https://github.com/rails/rails/pull/32796
+  has_many :project_dataset_levels, -> { order(:project_dataset_id, :access_level_id) },
+           through: :project_datasets
 
   belongs_to :s251_exemption, class_name: 'Lookups::CommonLawExemption', optional: true
 
@@ -75,6 +77,7 @@ class Project < ApplicationRecord
 
   after_save :reset_project_data_items
   after_create :notify_cas_manager_new_cas_project_saved
+  after_save :destroy_project_datasets_without_any_levels
 
   # effectively belongs_to .. through: .. association
   # delegate :dataset,      to: :team_dataset, allow_nil: true
@@ -116,6 +119,12 @@ class Project < ApplicationRecord
     validates :project_purpose, presence: true
   end
 
+  attr_accessor :pdf_import
+
+  with_options if: -> { odr? } do
+    validates :first_contact_date, presence: true, unless: :pdf_import
+  end
+
   # Allow for auditing/version tracking of Project
   has_paper_trail
 
@@ -124,10 +133,6 @@ class Project < ApplicationRecord
   scope :in_use,     -> { joins(:current_state).merge(Workflow::State.active) }
 
   scope :awaiting_sign_off, -> { joins(:current_state).merge(Workflow::State.awaiting_sign_off) }
-
-  scope :assigned,    -> { where.not(assigned_user_id: nil) }
-  scope :unassigned,  -> { where(assigned_user_id: nil) }
-  scope :assigned_to, ->(user) { where(assigned_user: user) }
 
   scope :of_type_eoi,         -> { joins(:project_type).merge(ProjectType.eoi) }
   scope :of_type_application, -> { joins(:project_type).merge(ProjectType.application) }
@@ -162,6 +167,36 @@ class Project < ApplicationRecord
   before_save :nullify_blank_lookups
 
   DATA_SOURCE_ITEM_NO_CLONE_FIELDS = %w[id project_id project_data_source_item_id].freeze
+
+  class << self
+    def unassigned(check_temporal: false)
+      return where(assigned_user: nil) unless check_temporal
+
+      joins(:current_project_state).
+        where(
+          assigned_user: nil,
+          workflow_current_project_states: { assigned_user_id: nil }
+        )
+    end
+
+    def assigned(check_temporal: false)
+      return where.not(assigned_user: nil) unless check_temporal
+
+      base = joins(:current_project_state)
+      base.where.not(assigned_user: nil).or(
+        base.where.not(workflow_current_project_states: { assigned_user_id: nil })
+      )
+    end
+
+    def assigned_to(user, check_temporal: false)
+      return where(assigned_user: user) unless check_temporal
+
+      base = joins(:current_project_state)
+      base.where(assigned_user: user).or(
+        base.where(workflow_current_project_states: { assigned_user_id: user })
+      )
+    end
+  end
 
   def application_date
     super || created_at || Time.zone.now
@@ -445,6 +480,24 @@ class Project < ApplicationRecord
     datasets.map(&:name)
   end
 
+  # display this but for all intent and purposes project.id is all that is needed to link
+  # eois and applications together
+  def application_log
+    return super if super.present?
+    return unless odr?
+    return unless first_contact_date
+
+    application_fyear = financial_year(first_contact_date)
+    "ODR_#{application_fyear.first.year}_#{application_fyear.last.year}_#{id}"
+  end
+
+  def next_amendment_reference
+    return unless odr?
+    return unless application_log
+
+    "#{application_log}/A#{amendment_number + 1}"
+  end
+
   private
 
   def project_type_inquirer
@@ -594,6 +647,21 @@ class Project < ApplicationRecord
     return if team
 
     errors.add(:project, 'Must belong to a Team!')
+  end
+
+  def destroy_project_datasets_without_any_levels
+    return unless cas?
+    return unless project_datasets.any?
+
+    project_datasets.each do |pd|
+      pd.destroy if pd.project_dataset_levels.none?
+    end
+  end
+
+  def financial_year(date)
+    start_year = date.month < 4 ? date.year - 1 : date.year
+
+    Date.new(start_year, 4, 1)..Date.new(start_year + 1, 3, 31)
   end
 
   class << self

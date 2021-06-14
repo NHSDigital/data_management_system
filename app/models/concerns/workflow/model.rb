@@ -39,6 +39,9 @@ module Workflow
       after_transition_to  :reset_approval_fields
 
       validate :ensure_ready_for_transition, on: :transition
+
+      delegate :assigned_user, to: :current_project_state,    prefix: 'temporally'
+      delegate :full_name,     to: :temporally_assigned_user, prefix: true, allow_nil: true
     end
 
     def initialize_workflow(user = nil)
@@ -84,11 +87,21 @@ module Workflow
     def previous_state
       return if project_states.blank?
 
-      project_states.order(:created_at)[-2]
+      project_states.order(:created_at, :id)[-2]
     end
 
     def previous_state_id
       previous_state&.state_id
+    end
+
+    def current_state_name
+      current_state&.name(self)
+    end
+
+    def refresh_workflow_state_information
+      reload_current_state
+      reload_current_project_state
+      transitionable_states.reset
     end
 
     private
@@ -109,8 +122,7 @@ module Workflow
 
     def refresh_current_state(*)
       yield
-      reload_current_state
-      transitionable_states.reset
+      refresh_workflow_state_information
     end
 
     # Use pub/sub to provide a means for any interested parties to respond to the change of state.

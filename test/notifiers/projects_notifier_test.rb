@@ -7,7 +7,7 @@ class ProjectsNotifierTest < ActiveSupport::TestCase
 
     assert_difference -> { Notification.where(title: 'Project Assignment').count } do
       assert_difference -> { UserNotification.count } do
-        ProjectsNotifier.project_assignment(project: project)
+        ProjectsNotifier.project_assignment(project: project, assigned_to: project.assigned_user)
       end
     end
 
