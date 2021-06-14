@@ -1,16 +1,20 @@
 require 'test_helper'
 
 class CasNotifierTest < ActiveSupport::TestCase
-  test 'should generate dataset_approved_status_updated Notifications' do
+  test 'should generate dataset_level_approved_status_updated Notifications' do
     project = create_cas_project(project_purpose: 'test')
     dataset = Dataset.find_by(name: 'Extra CAS Dataset One')
-    project_dataset = ProjectDataset.new(dataset: dataset, terms_accepted: true, approved: true)
+    project_dataset = ProjectDataset.new(dataset: dataset, terms_accepted: true)
     project.project_datasets << project_dataset
+    pdl = ProjectDatasetLevel.new(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
+                                  approved: true)
+    project_dataset.project_dataset_levels << pdl
+
     recipients = SystemRole.cas_manager_and_access_approvers.map(&:users).flatten
-    title = 'Dataset Approval Status Change'
+    title = 'Dataset Approval Level Status Change'
     assert_difference -> { Notification.by_title(title).count }, 4 do
       recipients.each do |user|
-        CasNotifier.dataset_approved_status_updated(project, project_dataset, user.id)
+        CasNotifier.dataset_level_approved_status_updated(project, pdl, user.id)
       end
     end
 
@@ -18,24 +22,28 @@ class CasNotifierTest < ActiveSupport::TestCase
 
     assert_equal Notification.last.body, "CAS application #{project.id} - Dataset 'Extra CAS " \
                                          "Dataset One' has been updated to Approval status of " \
-                                         "'Approved'.\n\n"
+                                         "'Approved' for level 1.\n\n"
   end
 
-  test 'should generate dataset_approved_status_updated_to_user Notifications' do
+  test 'should generate dataset_level_approved_status_updated_to_user Notifications' do
     project = create_cas_project(project_purpose: 'test',
                              owner: users(:no_roles))
     dataset = Dataset.find_by(name: 'Extra CAS Dataset One')
-    project_dataset = ProjectDataset.new(dataset: dataset, terms_accepted: true, approved: true)
+    project_dataset = ProjectDataset.new(dataset: dataset, terms_accepted: true)
     project.project_datasets << project_dataset
-    assert_difference -> { Notification.by_title('Dataset Approval Updated').count }, 1 do
-      CasNotifier.dataset_approved_status_updated_to_user(project, project_dataset)
+    pdl = ProjectDatasetLevel.new(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
+                                  approved: true)
+    project_dataset.project_dataset_levels << pdl
+
+    assert_difference -> { Notification.by_title('Dataset Approval Level Updated').count }, 1 do
+      CasNotifier.dataset_level_approved_status_updated_to_user(project, pdl)
     end
 
     # TODO: Should it be creating UserNotifications?
 
     assert_equal Notification.last.body, "Your CAS dataset access request for 'Extra CAS " \
                                          "Dataset One' has been updated to Approval status of " \
-                                         "'Approved'.\n\n"
+                                         "'Approved' for level 1.\n\n"
   end
 
   test 'should generate access_approval_status_updated Notifications' do
@@ -143,11 +151,10 @@ class CasNotifierTest < ActiveSupport::TestCase
       a.project_datasets << ProjectDataset.new(dataset: dataset(84), terms_accepted: true)
       a.save!
     end
-
     title = 'CAS Application Requires Dataset Approval'
     assert_difference -> { Notification.by_title(title).count }, 3 do
-      project.datasets.each do |dataset|
-        dataset.approvers.each do |approver|
+      project.project_datasets.each do |project_dataset|
+        project_dataset.dataset.approvers.each do |approver|
           CasNotifier.requires_dataset_approval(project, approver.id)
         end
       end
@@ -262,10 +269,14 @@ class CasNotifierTest < ActiveSupport::TestCase
 
   test 'should generate account_renewed_dataset_approver Notifications' do
     project = create_cas_project(owner: users(:no_roles))
-    project.project_datasets << ProjectDataset.new(dataset: dataset(83), terms_accepted: true,
-                                                   approved: true)
-    project.project_datasets << ProjectDataset.new(dataset: dataset(84), terms_accepted: true,
-                                                   approved: true)
+    pd1 = ProjectDataset.new(dataset: dataset(83), terms_accepted: true)
+    pd2 = ProjectDataset.new(dataset: dataset(84), terms_accepted: true)
+    project.project_datasets << pd1
+    project.project_datasets << pd2
+    pdl = ProjectDatasetLevel.new(access_level_id: 1, expiry_date: Time.zone.today + 1.week)
+    pd1.project_dataset_levels << pdl
+    pdl = ProjectDatasetLevel.new(access_level_id: 1, expiry_date: Time.zone.today + 1.week)
+    pd2.project_dataset_levels << pdl
     project.save!
 
     title = 'CAS Account Renewed With Access to Dataset'

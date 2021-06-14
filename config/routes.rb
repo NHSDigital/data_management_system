@@ -93,15 +93,17 @@ Rails.application.routes.draw do
   end
 
   resources :projects, shallow: true do
-    resources :project_datasets do
-      collection do
-        patch :update
-      end
-      member do
-        patch :approve
-        put :approve
-        patch :reapply
-        put :reapply
+    resources :project_datasets, shallow: true do
+      resources :project_dataset_levels do
+        collection do
+          patch :update
+        end
+        member do
+          patch :approve
+          put :approve
+          patch :reapply
+          put :reapply
+        end
       end
     end
   end

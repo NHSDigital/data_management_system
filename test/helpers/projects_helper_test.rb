@@ -99,4 +99,13 @@ class ProjectsHelperTest < ActionView::TestCase
 
     assert_equal 'projects/dummy/form', project_form_path(project)
   end
+
+  test 'display_level_date' do
+    pdl = ProjectDatasetLevel.new(expiry_date: Time.zone.today, approved: nil)
+    assert_equal "#{Time.zone.today.strftime('%d/%m/%Y')} (requested)", display_level_date(pdl)
+
+    pdl.update(approved: true)
+
+    assert_equal "#{Time.zone.today.strftime('%d/%m/%Y')} (expiry)", display_level_date(pdl)
+  end
 end

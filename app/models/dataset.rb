@@ -11,9 +11,10 @@ class Dataset < ApplicationRecord
     where grants: { roleable_type: 'DatasetRole', roleable_id: DatasetRole.fetch(:approver).id }
   }, class_name: 'Grant'
   has_many :approvers, through: :approver_grants, class_name: 'User', source: :user
-  
 
   delegate :name, to: :dataset_type, prefix: true, allow_nil: true
+
+  enum cas_type: { cas_defaults: 1, cas_extras: 2 }
 
   DATASET_BROWSER_TYPES = %w[xml non_xml].freeze
 
