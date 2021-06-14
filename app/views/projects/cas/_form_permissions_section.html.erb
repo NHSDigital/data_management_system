@@ -4,43 +4,6 @@
   <%= form.label :reason_justification %>
   <%= form.text_area :reason_justification, rows: 8 %>
 
-  <p>&nbsp;</p>
-  <div class="row">
-    <div class="col-md-10"><%= form.label :access_level %></div>
-    <div class="col-md-2">
-      <%= form.select(:access_level, ['Level 1', 'Level 2', 'Level 3'], include_blank: true ) %>
-    </div>
-  </div>
-  
-  <%= bootstrap_accordion_tag :level1 do |level1| %>
-    <%= level1.bootstrap_accordion_group t('.level1_heading'), open: true do %>
-      <ul>
-        <%= content_tag :li, t('.level1_1') %>
-        <%= content_tag :li, t('.level1_2') %>
-      </ul>
-    <% end %>
-  <% end %>
-
-  <%= bootstrap_accordion_tag :level2 do |level2| %>
-    <%= level2.bootstrap_accordion_group t('.level2_heading') do %>
-      <ul>
-        <% (1..18).each do |i| %>
-          <%= content_tag :li, t(".level2_#{i}") %>
-        <% end %>
-      </ul>
-    <% end %>
-  <% end %>
-
-  <%= bootstrap_accordion_tag :level3 do |level3| %>
-    <%= level3.bootstrap_accordion_group t('.level3_heading') do %>
-      <ul>
-        <% (1..6).each do |i| %>
-          <%= content_tag :li, t(".level2_#{i}") %>
-        <% end %>
-      </ul>
-    <% end %>
-  <% end %>
-
   <p><em><%= t('.level_access_note') %></em></p>
   <p>&nbsp;</p>
 

@@ -374,13 +374,20 @@ module ProjectsHelper
   end
 
   def setup_project(project)
-    (Dataset.cas_extras.pluck(:id) - project.project_datasets.pluck(:dataset_id)).each do |id|
-      project.project_datasets.build(dataset_id: id)
-    end
+    (Dataset.where.not(cas_type: nil).pluck(:id) -
+     project.project_datasets.pluck(:dataset_id)).each do |id|
+       # added to stop duplication in error screen
+       if project.project_datasets.select { |pd| pd.dataset_id == id }.none?
+         project.project_datasets.build(dataset_id: id)
+       end
+     end
     project.project_datasets.each do |pd|
       levels = Lookups::AccessLevel.pluck(:id) - pd.project_dataset_levels.pluck(:access_level_id)
       levels.each do |level|
-        pd.project_dataset_levels.build(access_level_id: level)
+        # added to stop duplication in error screen
+        if pd.project_dataset_levels.select { |pdl| pdl.access_level_id == level }.none?
+          pd.project_dataset_levels.build(access_level_id: level)
+        end
       end
     end
     project
@@ -390,5 +397,21 @@ module ProjectsHelper
     return bootstrap_icon_tag('ok') if value
 
     bootstrap_icon_tag('remove')
+  end
+
+  def check_box_class(dataset, level)
+    class_string = 'defaults_checkbox '
+    # TODO: update with real roles
+    class_string << 'ca_group ' if dataset_level_match(CANCER_ANALYST_DATASETS, dataset, level)
+    class_string << 'd_group ' if dataset_level_match(NDRS_DEVELOPER_DATASETS, dataset, level)
+    class_string << 'qa_group ' if dataset_level_match(NDRS_QA_DATASETS, dataset, level)
+
+    class_string.strip!
+  end
+
+  def dataset_level_match(role_datasets, dataset, level)
+    role_datasets.any? do |role_dataset|
+      role_dataset['name'] == dataset.name && (role_dataset['levels'].include? level)
+    end
   end
 end

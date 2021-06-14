@@ -1,0 +1,33 @@
+---
+ndrs_analyst:
+  datasets:
+    - name: "No grant dataset"
+      levels:
+        - 1
+    - name: "Cas Defaults Dataset"
+      levels:
+        - 2
+        - 3
+    - name: "Another Cas Defaults Dataset"
+      levels:
+        - 2
+ndrs_developer:
+  datasets:
+    - name: "No grant dataset"
+      levels:
+        - 2
+    - name: "Another Cas Defaults Dataset"
+      levels:
+        - 2
+ndrs_qa:
+  datasets:
+    - name: "No grant dataset"
+      levels:
+        - 1
+    - name: "Cas Defaults Dataset"
+      levels:
+        - 2
+        - 3
+    - name: "Another Cas Defaults Dataset"
+      levels:
+        - 2
