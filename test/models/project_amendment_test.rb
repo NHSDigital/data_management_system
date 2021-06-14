@@ -127,4 +127,33 @@ class ProjectAmendmentTest < ActiveSupport::TestCase
       assert_auditable amendment
     end
   end
+
+  test 'saving should increment project amendment number' do
+    project   = projects(:one)
+    amendment = project.project_amendments.build(requested_at: Time.zone.today)
+    fixture = file_fixture('odr_amendment_request_form-1.0.pdf')
+    upload  = ActionDispatch::Http::UploadedFile.new(
+      tempfile: File.new(fixture, 'rb'),
+      filename: fixture.basename.to_s,
+      type:     'application/pdf'
+    )
+    amendment.upload = upload
+    assert_changes -> { project.reload.amendment_number }, from: 0, to: 1 do
+      amendment.save!
+    end
+
+    amendment = project.project_amendments.build(requested_at: Time.zone.today)
+    amendment.upload = upload
+    assert_changes -> { project.reload.amendment_number }, from: 1, to: 2 do
+      amendment.save!
+    end
+
+    project.project_amendments.first.destroy
+
+    amendment = project.project_amendments.build(requested_at: Time.zone.today)
+    amendment.upload = upload
+    assert_changes -> { project.reload.amendment_number }, from: 2, to: 3 do
+      amendment.save!
+    end
+  end
 end

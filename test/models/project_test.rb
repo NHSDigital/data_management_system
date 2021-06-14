@@ -371,7 +371,8 @@ class ProjectTest < ActiveSupport::TestCase
                               owner: users(:application_manager_three),
                               sponsor_country_id: "",
                               funder_country_id: "",
-                              data_processor_country_id: "")
+                              data_processor_country_id: "",
+                              first_contact_date: Date.current - 1.month)
 
     # They'll be many more validations to add...
     assert application.valid?
@@ -585,5 +586,73 @@ class ProjectTest < ActiveSupport::TestCase
     project.reload
 
     assert_equal project.project_datasets.size, 0
+  end
+
+  test 'returns an ODR application_log based of financialy year and id if application_log is nil' do
+    %i[eoi application].each do |type|
+      assert_application_log('ODR_2020_2021_', name: 'application log test 1',
+                                               project_type: project_types(type),
+                                               first_contact_date: Date.parse('2021/03/31'))
+      assert_application_log('ODR_2021_2022_', name: 'application log test 2',
+                                               project_type: project_types(type),
+                                               first_contact_date: Date.parse('2021/04/01'))
+    end
+  end
+
+  test 'should not create an application log for an MBIS Application' do
+    project = build_project(project_type: project_types(:project))
+    project.save!
+    assert_nil project.application_log
+  end
+
+  test 'should not create an application log for a CAS Application' do
+    project = build_project(project_type: project_types(:cas))
+    project.save!
+    assert_nil project.application_log
+  end
+
+  test 'should return nil for application_log if no first_contact_date' do
+    project = build_project(project_type: project_types(:project))
+    project.save!
+    assert_nil project.application_log
+  end
+
+  test 'next amendment reference for legacy ODR application' do
+    project = build_project(project_type: project_types(:application),
+                            first_contact_date: Date.parse('2021/04/01'),
+                            application_log: 'ODR_legacy_id').tap(&:save!)
+    assert_equal 'ODR_legacy_id', project.application_log
+    assert_equal 'ODR_legacy_id/A1', project.next_amendment_reference
+  end
+
+  test 'first_contact_date not required for pdf import' do
+    project = Project.new(project_type: project_types(:application)).tap(&:valid?)
+    assert_includes project.errors.messages.keys, :first_contact_date
+
+    team = teams(:team_one)
+    project = team.projects.build(project_type: project_types(:application))
+    facade = PdfApplicationFacade.new(project)
+    refute_includes facade.errors.messages.keys, :first_contact_date
+  end
+
+  private
+
+  def assert_application_log(expected, options = {})
+    project = application_log_project(options)
+    project.save!
+    assert_equal "#{expected}#{project.id}", project.reload.application_log
+  end
+
+  def application_log_project(options = {})
+    default_options = {
+      project_type: project_types(:eoi),
+      name: 'test',
+      project_purpose: 'log',
+      team: teams(:team_one),
+      owner: users(:application_manager_three)
+    }
+    project = Project.new(default_options.merge(options))
+
+    project
   end
 end
