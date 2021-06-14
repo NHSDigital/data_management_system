@@ -19,7 +19,7 @@ gem 'mini_racer'
 # Turbolinks makes following links in your web application faster. Read more: https://github.com/rails/turbolinks
 gem 'turbolinks', '~> 5.x'
 
-gem 'webpacker', '~> 4.x'
+gem 'webpacker'
 
 gem 'daemons'
 gem 'delayed_job', '~> 4.1'
