@@ -453,20 +453,20 @@ class Project < ApplicationRecord
 
   # display this but for all intent and purposes project.id is all that is needed to link
   # eois and applications together
-  def odr_application_log
+  def application_log
+    return super if super.present?
     return unless odr?
-    return application_log if application_log.present?
     return unless first_contact_date
 
     application_fyear = financial_year(first_contact_date)
-    application_log || "ODR_#{application_fyear.first.year}_#{application_fyear.last.year}_#{id}"
+    "ODR_#{application_fyear.first.year}_#{application_fyear.last.year}_#{id}"
   end
 
   def next_amendment_reference
     return unless odr?
-    return unless odr_application_log
+    return unless application_log
 
-    "#{odr_application_log}/A#{amendment_number + 1}"
+    "#{application_log}/A#{amendment_number + 1}"
   end
 
   private

@@ -531,26 +531,26 @@ class ProjectTest < ActiveSupport::TestCase
   test 'should not create an application log for an MBIS Application' do
     project = build_project(project_type: project_types(:project))
     project.save!
-    assert_nil project.odr_application_log
+    assert_nil project.application_log
   end
 
   test 'should not create an application log for a CAS Application' do
     project = build_project(project_type: project_types(:cas))
     project.save!
-    assert_nil project.odr_application_log
+    assert_nil project.application_log
   end
 
-  test 'should return nil for odr_application_log if no first_contact_date' do
+  test 'should return nil for application_log if no first_contact_date' do
     project = build_project(project_type: project_types(:project))
     project.save!
-    assert_nil project.odr_application_log
+    assert_nil project.application_log
   end
 
   test 'next amendment reference for legacy ODR application' do
     project = build_project(project_type: project_types(:application),
                             first_contact_date: Date.parse('2021/04/01'),
                             application_log: 'ODR_legacy_id').tap(&:save!)
-    assert_equal 'ODR_legacy_id', project.odr_application_log
+    assert_equal 'ODR_legacy_id', project.application_log
     assert_equal 'ODR_legacy_id/A1', project.next_amendment_reference
   end
 
@@ -569,7 +569,7 @@ class ProjectTest < ActiveSupport::TestCase
   def assert_application_log(expected, options = {})
     project = application_log_project(options)
     project.save!
-    assert_equal "#{expected}#{project.id}", project.reload.odr_application_log
+    assert_equal "#{expected}#{project.id}", project.reload.application_log
   end
 
   def application_log_project(options = {})
