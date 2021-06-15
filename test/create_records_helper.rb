@@ -61,7 +61,8 @@ module CreateRecordsHelper
       project_type: project_types(:cas),
       name: 'NCRS',
       description: 'Example CAS Project',
-      owner: users(:standard_user2)
+      owner: users(:standard_user2),
+      cas_application_fields: CasApplicationFields.new(declaration: %w[1Yes 2Yes 3Yes 4Yes])
     }
     cas = Project.new(default_options.merge(options))
     cas.save!
