@@ -99,7 +99,7 @@ class CasApplicationFormTest < ActionDispatch::IntegrationTest
       extra_project_dataset.project_dataset_levels << pdl2
       default_project_dataset.project_dataset_levels << pdl3
       default_project_dataset.project_dataset_levels << pdl4
-      app.save!
+      app.save!(validate: false)
     end
 
     visit edit_project_path(application)
@@ -216,6 +216,9 @@ class CasApplicationFormTest < ActionDispatch::IntegrationTest
       find(:css, "#dataset_#{dataset(86).id}_level_2_check_box").set(true)
       find(:css, "#dataset_#{dataset(86).id}_level_2_expiry_datepicker").set('01/01/2022')
     end
+
+    fill_in('project_cas_application_fields_attributes_reason_justification', with: 'TESTING')
+    fill_in('project_cas_application_fields_attributes_extra_datasets_rationale', with: 'TESTING')
 
     click_button('Create Application')
 
