@@ -61,7 +61,8 @@ class CasApplicationFieldsTest < ActiveSupport::TestCase
 
     application.cas_application_fields.valid?
     refute application.cas_application_fields.errors.messages[:reason_justification].
-      include? 'Access level justification is required when selecting an access level'
+      include? 'Access level justification is required when selecting access level 1 for any ' \
+               'dataset'
 
     level1_pdl = ProjectDatasetLevel.new(access_level_id: 1, selected: nil)
     application.project_datasets.last.project_dataset_levels << level1_pdl
@@ -69,18 +70,21 @@ class CasApplicationFieldsTest < ActiveSupport::TestCase
 
     application.cas_application_fields.valid?
     refute application.cas_application_fields.errors.messages[:reason_justification].
-      include? 'Access level justification is required when selecting an access level'
+      include? 'Access level justification is required when selecting access level 1 for any ' \
+               'dataset'
 
     level1_pdl.update(selected: true)
 
     application.cas_application_fields.valid?
     assert application.cas_application_fields.errors.messages[:reason_justification].
-      include? 'Access level justification is required when selecting an access level'
+      include? 'Access level justification is required when selecting access level 1 for any ' \
+               'dataset'
 
     application.cas_application_fields.update(reason_justification: 'TESTING')
 
     application.cas_application_fields.valid?
     refute application.cas_application_fields.errors.messages[:reason_justification].
-      include? 'Access level justification is required when selecting an access level'
+      include? 'Access level justification is required when selecting access level 1 for any ' \
+               'dataset'
   end
 end

@@ -334,7 +334,7 @@ en:
         cas_application_fields:
           attributes:
             reason_justification:
-              must_be_present: Access level justification is required when selecting an access level
+              must_be_present_if_level_one: Access level justification is required when selecting access level 1 for any dataset
             extra_datasets_rationale:
               must_be_present_if_extra_dataset_selected: Dataset justification is required when selecting any datasets
     models:

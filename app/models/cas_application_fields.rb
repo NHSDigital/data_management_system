@@ -30,7 +30,7 @@ class CasApplicationFields < ApplicationRecord
                     end
                   end
 
-    errors.add :reason_justification, :must_be_present
+    errors.add :reason_justification, :must_be_present_if_level_one
   end
 
   def extra_datasets_rationale_must_be_populated_if_extra_datasets
