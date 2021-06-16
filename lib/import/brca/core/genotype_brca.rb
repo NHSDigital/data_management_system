@@ -43,7 +43,7 @@ module Import
                       (?<brip1>BRIP1)|
                       (?<nbn>NBN)|
                       (?<rad51c>RAD51C)|
-                      (?<rad51d>RAD51D)/ix .freeze # Added by Francesco
+                      (?<rad51d>RAD51D)/ix.freeze # Added by Francesco
 
         def other_gene
           gene = @attribute_map['gene']
@@ -60,40 +60,46 @@ module Import
         def add_gene(brca_input)
           case brca_input
           when Integer
-            if [7, 8, 79, 451, 865, 3186, 2744, 2804, 3394, 62, 76, 590, 2912, 3615, 3616].include? brca_input
-              @attribute_map['gene'] = brca_input
-              @logger.debug "SUCCESSFUL gene parse for #{brca_input}"
-            elsif (1..2).cover? brca_input
-              @attribute_map['gene'] = brca_input + 6
-            else
-              @logger.error "Invalid gene reference given to addGene; given: #{brca_input}"
-            end
-
+            process_integer_imput(brca_input)
           when String
-            return if brca_input.empty?
-
-            match_num = brca_input.strip.scan(BRCA_REGEX).size
-            if match_num > 1
-              @logger.debug 'Too many genes given for BRCA cancers extraction:' \
-                            "#{brca_input}"
-            elsif match_num.zero?
-              @logger.debug 'No detected genes given for BRCA cancers extraction: ' \
-                            "#{brca_input}"
-            else
-              if brca_input.include? '/'
-                @logger.debug 'WARNING: string provided for gene extraction contains a slash,'\
-                              "possible multi-gene error: #{brca_input}"
-              end
-              case variable = BRCA_REGEX.match(brca_input.strip)
-              when nil
-                @logger.debug 'Null input for BRCA genes'
-              else
-                @attribute_map['gene'] = BRCA_MAP[variable&.to_s]
-                @logger.debug "SUCCESSFUL gene parse for #{brca_input}"
-              end
-            end
+            process_string_imput(brca_input)
           else
             @logger.error "Bad input type given for BRCA extraction: #{brca_input}"
+          end
+        end
+
+        def process_integer_imput(brca_input)
+          if [7, 8, 79, 451, 865, 3186, 2744, 2804, 3394, 62, 76,
+              590, 2912, 3615, 3616].include? brca_input
+            @attribute_map['gene'] = brca_input
+            @logger.debug "SUCCESSFUL gene parse for #{brca_input}"
+          elsif (1..2).cover? brca_input
+            @attribute_map['gene'] = brca_input + 6
+          else
+            @logger.error "Invalid gene reference given to addGene; given: #{brca_input}"
+          end
+        end
+
+        def process_string_imput(brca_input)
+          return if brca_input.empty?
+
+          match_num = brca_input.strip.scan(BRCA_REGEX).size
+          if match_num > 1
+            @logger.debug "Too many genes given for BRCA cancers extraction: #{brca_input}"
+          elsif match_num.zero?
+            @logger.debug "No detected genes given for BRCA cancers extraction: #{brca_input}"
+          else
+            if brca_input.include? '/'
+              @logger.debug 'WARNING: string provided for gene extraction contains a slash,'\
+                            "possible multi-gene error: #{brca_input}"
+            end
+            case variable = BRCA_REGEX.match(brca_input.strip)
+            when nil
+              @logger.debug 'Null input for BRCA genes'
+            else
+              @attribute_map['gene'] = BRCA_MAP[variable&.to_s]
+              @logger.debug "SUCCESSFUL gene parse for #{brca_input}"
+            end
           end
         end
 
