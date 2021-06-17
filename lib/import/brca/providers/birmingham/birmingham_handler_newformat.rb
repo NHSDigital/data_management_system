@@ -14,7 +14,7 @@ module Import
             genotype = Import::Brca::Core::GenotypeBrca.new(record)
             genotype.add_passthrough_fields(record.mapped_fields,
                                             record.raw_fields,
-                                            PASS_THROUGH_FIELDS_COLO)
+                                            PASS_THROUGH_FIELDS_BRCA)
             process_genetictestscope(genotype, record)
             add_organisationcode_testresult(genotype)
             variant_processor = VariantProcessor.new(genotype, record, @logger)

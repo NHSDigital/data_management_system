@@ -4,19 +4,19 @@ module Import
       module Providers
         module Rq3
           module Rq3Constants
-            PASS_THROUGH_FIELDS_COLO = %w[age sex consultantcode servicereportidentifier
+            PASS_THROUGH_FIELDS_BRCA = %w[age sex consultantcode servicereportidentifier
                                           providercode authoriseddate receiveddate
                                           moleculartestingtype specimentype].freeze
 
-            TEST_SCOPE_MAP_COLO_COLO = { '100kgp confirmation' => :full_screen,
-                                         'confirmation' => :targeted_mutation,
-                                         'diagnosis' => :full_screen,
-                                         'family studies' => :targeted_mutation,
-                                         'indirect testing' => :full_screen,
-                                         'prenatal diagnosis' => :targeted_mutation,
-                                         'presymptomatic' => :targeted_mutation,
-                                         'ajp confirmation' => :aj_screen,
-                                         'ajp screen' => :aj_screen }.freeze
+            TEST_SCOPE_MAP_BRCA = { '100kgp confirmation' => :full_screen,
+                                    'confirmation' => :targeted_mutation,
+                                    'diagnosis' => :full_screen,
+                                    'family studies' => :targeted_mutation,
+                                    'indirect testing' => :full_screen,
+                                    'prenatal diagnosis' => :targeted_mutation,
+                                    'presymptomatic' => :targeted_mutation,
+                                    'ajp confirmation' => :aj_screen,
+                                    'ajp screen' => :aj_screen }.freeze
 
             BRCA_GENES_MAP = { 'AZOVCA' => %w[BRCA1 BRCA2],
                                'BROV' => %w[BRCA1 BRCA2],
