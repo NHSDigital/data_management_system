@@ -60,12 +60,7 @@ class ProjectsController < ApplicationController
   def show
     @readonly = true
     @team = @project.team
-    @sub_resource_counts = {
-      'communications': @project.communications.count,
-      'comments': @project.comments.count,
-      'project_nodes.comments': @project.project_nodes.joins(:comments).group(:id).count,
-      'workflow/project_states.comments': @project.project_states.joins(:comments).group(:id).count
-    }
+    load_sub_resource_counts
   end
 
   # TODO: plugin multiple datasets
@@ -205,11 +200,14 @@ class ProjectsController < ApplicationController
       kwargs[:assigned_to] = @project.assigned_user if alert == :project_assignment
 
       ProjectsNotifier.send(alert, **kwargs)
-      ProjectsMailer.with(**kwargs).send(alert).deliver_now
+      ProjectsMailer.with(**kwargs).send(alert).deliver_later
 
       redirect_to @project, notice: "#{@project.project_type_name} was successfully assigned"
     else
-      redirect_to @project, notice: "#{@project.project_type_name} could not be assigned!"
+      flash.now[:alert] = "#{@project.project_type_name} could not be assigned!"
+      load_sub_resource_counts
+
+      render :show
     end
   end
 
@@ -352,6 +350,16 @@ class ProjectsController < ApplicationController
 
   def assign_params
     params.fetch(:project, {}).permit(:assigned_user_id)
+  end
+
+  # TODO: Probably belongs as an instance method on a `project`
+  def load_sub_resource_counts
+    @sub_resource_counts = {
+      'communications': @project.communications.count,
+      'comments': @project.comments.count,
+      'project_nodes.comments': @project.project_nodes.joins(:comments).group(:id).count,
+      'workflow/project_states.comments': @project.project_states.joins(:comments).group(:id).count
+    }
   end
 
   def updating_data_source_items?

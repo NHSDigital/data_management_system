@@ -79,26 +79,6 @@ class ProjectsHelperTest < ActionView::TestCase
     assert_equal expected, odr_reference(@project)
   end
 
-  test 'timeline_allocated_user_label' do
-    unprivileged_user = users(:standard_user1)
-    privileged_user   = users(:application_manager_one)
-    assigned_user     = users(:application_manager_two)
-    project_state     = @project.project_states.build
-
-    project_state.state = workflow_states(:submitted)
-    project_state.save!(validate: false)
-
-    assert_equal '', timeline_allocated_user_label(project_state, unprivileged_user)
-    assert_nil timeline_allocated_user_label(project_state, privileged_user)
-
-    project_state.state = workflow_states(:dpia_review)
-    project_state.save!(validate: false)
-    project_state.assign_to!(user: assigned_user)
-
-    assert_equal 'with application manager', timeline_allocated_user_label(project_state, unprivileged_user)
-    assert_equal assigned_user.full_name,    timeline_allocated_user_label(project_state, privileged_user)
-  end
-
   test 'project_sub_type_path_prefix' do
     project = projects(:dummy_project)
     project.stubs(project_type_name: 'Dummy Project')

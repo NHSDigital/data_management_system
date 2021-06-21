@@ -13,12 +13,6 @@ module Workflow
       as_odr_user
       as_administrator
 
-      can :create, Assignment, project: {
-        current_project_state: {
-          assigned_user_id: user.id
-        }
-      }
-
       merge(ProjectWorkflowAbility.new(user))
       merge(EoiWorkflowAbility.new(user))
       merge(ApplicationWorkflowAbility.new(user))
@@ -34,6 +28,12 @@ module Workflow
       project_ids = @user.projects.active.through_grant_of(role).pluck('grants.project_id')
 
       can :read, ProjectState, project_id: project_ids
+
+      can :create, Assignment, project: {
+        current_project_state: {
+          assigned_user_id: @user.id
+        }
+      }
     end
 
     # TODO: disable a project contributor from transitioning
@@ -64,7 +64,7 @@ module Workflow
 
       can :read,       ProjectState
       can :transition, Project
-      can :read,       :temporally_assigned_user
+      can :create,     Assignment
     end
 
     def as_administrator; end
