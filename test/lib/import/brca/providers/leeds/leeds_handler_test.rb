@@ -26,6 +26,7 @@ class LeedsHandlerTest < ActiveSupport::TestCase
   end
 
   test 'add_gene_cdna_protein_from_report' do
+    @logger.expects(:debug).with('SUCCESSFUL gene parse for  BRCA1')
     @logger.expects(:debug).with('SUCCESSFUL cdna change parse for:  BRCA1, 5198A>G,')
     @handler.add_gene_cdna_protein_from_report(@genotype, @record)
     broken_record = build_raw_record('pseudo_id1' => 'bob')

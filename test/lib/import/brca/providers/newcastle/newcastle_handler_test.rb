@@ -1,6 +1,6 @@
 require 'test_helper'
-#require 'import/genotype.rb'
-#require 'import/brca/core/provider_handler'
+# require 'import/genotype.rb'
+# require 'import/brca/core/provider_handler'
 
 class NewcastleHandlerTest < ActiveSupport::TestCase
   def setup
@@ -65,8 +65,10 @@ class NewcastleHandlerTest < ActiveSupport::TestCase
   end
 
   test 'add_brca_from_raw_genotype' do
-    @handler.add_brca_from_raw_genotype(@genotype, @record)
-    assert_equal 7, @genotype.attribute_map['gene']
+    @importer_stdout, @importer_stderr = capture_io do
+      @handler.add_brca_from_raw_genotype(@genotype, @record)
+      assert_equal 7, @genotype.attribute_map['gene']
+    end
   end
 
   test 'add_cdna_change_from_report' do
