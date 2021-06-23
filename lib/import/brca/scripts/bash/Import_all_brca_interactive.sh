@@ -133,16 +133,15 @@ done
 }
 
 RQ3 () {
-MBIS=$1
 PROV='RQ3'
 IFS=$'\n'
-for x in $(find  $DIRPATH/$FILEPATH -type f -name "*.pseudo" -path "*/$PROV/*" \
-! -name "71a3463a26c52ed5e45128b516ef9b3f1813dc8c_11.2020_BRCA Challenge non BRCA to upload.xlsx.pseudo")
+for x in $(find  $DIRPATH/$FILEPATH  -type f  \( -name "a5a6c2470626d7c3b8e8e62380e30a02288a37f8_09.2020_BRCA Challenge AZOVCA 2015_2017.xlsx.pseudo" -o -name "9159d17e34ae13c12e8515f5ac930b49a3eb11a9_11.2020_BRCA Challenge BRCA to upload.xlsx.pseudo" \) -path "*/$PROV/*" )
 do
 IFS="$OIFS"
 $BRAKE import:brca fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
 done
 }
+
 
 RJ1 () {
 MBIS=$1

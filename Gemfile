@@ -92,7 +92,7 @@ group :development do
   gem 'terminal-notifier-guard', require: (mac_osx ? 'terminal-notifier-guard' : false)
 
   # Access an IRB console on exception pages or by using <%= console %> in views
-  gem 'web-console', '~> 3.0'
+  gem 'web-console'
 
   gem 'rack-mini-profiler'
 

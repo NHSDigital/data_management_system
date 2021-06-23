@@ -129,7 +129,6 @@ class CasApplicationFormTest < ActionDispatch::IntegrationTest
     assert has_field?('cas_application_declaration_2', with: '2No')
     assert has_field?('cas_application_declaration_3', with: '')
     assert has_field?('cas_application_declaration_4', with: '4Yes')
-    assert has_field?('cas_application_declaration_5', with: '')
 
     assert has_button?('Update Application')
   end
@@ -219,6 +218,11 @@ class CasApplicationFormTest < ActionDispatch::IntegrationTest
 
     fill_in('project_cas_application_fields_attributes_reason_justification', with: 'TESTING')
     fill_in('project_cas_application_fields_attributes_extra_datasets_rationale', with: 'TESTING')
+
+    select('Yes', from: 'cas_application_declaration_1')
+    select('Yes', from: 'cas_application_declaration_2')
+    select('Yes', from: 'cas_application_declaration_3')
+    select('Yes', from: 'cas_application_declaration_4')
 
     click_button('Create Application')
 
@@ -343,12 +347,15 @@ class CasApplicationFormTest < ActionDispatch::IntegrationTest
     assert has_content?('Preferred username')
     assert has_content?('Full physical addresses & postcodes CAS will be accessed from')
     assert has_content?('N3 IP address CAS will be accessed from')
-    assert has_content?('I have completed the relevant data access forms for the ONS incidence ' \
-                        'dataset')
+    assert has_content?('I confirm that I completed all the Information Governance training ' \
+                        'on as deemed appropriate by my manager. This includes completing ' \
+                        'appropriate e-learning modules and other training in the NCRAS ' \
+                        'Induction Pack. I agree to update my Information Governance training as ' \
+                        'directed by my manager.')
 
     application = create_cas_project(owner: users(:no_roles))
     application.build_cas_application_fields(address: 'Fake Street', organisation: 'PHE',
-                                             declaration: %w[1Yes 2No 4Yes])
+                                             declaration: %w[1Yes 2Yes 3Yes 4Yes])
     application.dataset_ids = Dataset.cas.pluck(:id)
     application.save!
 
@@ -359,8 +366,11 @@ class CasApplicationFormTest < ActionDispatch::IntegrationTest
     assert has_content?('Preferred username')
     assert has_content?('Full physical addresses & postcodes CAS will be accessed from')
     assert has_content?('N3 IP address CAS will be accessed from')
-    assert has_content?('I have completed the relevant data access forms for the ONS incidence ' \
-                        'dataset')
+    assert has_content?('I confirm that I completed all the Information Governance training ' \
+                        'on as deemed appropriate by my manager. This includes completing ' \
+                        'appropriate e-learning modules and other training in the NCRAS ' \
+                        'Induction Pack. I agree to update my Information Governance training ' \
+                        'as directed by my manager.')
 
     sign_out users(:no_roles)
 
@@ -375,8 +385,11 @@ class CasApplicationFormTest < ActionDispatch::IntegrationTest
     assert has_no_content?('Preferred username')
     assert has_no_content?('Full physical addresses & postcodes CAS will be accessed from')
     assert has_no_content?('N3 IP address CAS will be accessed from')
-    assert has_no_content?('I have completed the relevant data access forms for the ONS ' \
-                            'incidence dataset')
+    assert has_no_content?('I confirm that I completed all the Information Governance training ' \
+                           'on as deemed appropriate by my manager. This includes completing ' \
+                           'appropriate e-learning modules and other training in the NCRAS ' \
+                           'Induction Pack. I agree to update my Information Governance training ' \
+                           'as directed by my manager.')
   end
 
   test 'requestor details section should be readonly' do
@@ -401,7 +414,7 @@ class CasApplicationFormTest < ActionDispatch::IntegrationTest
 
     application = create_cas_project(owner: users(:no_roles))
     application.build_cas_application_fields(address: 'Fake Street', organisation: 'PHE',
-                                             declaration: %w[1Yes 2No 4Yes])
+                                             declaration: %w[1Yes 2Yes 3Yes 4Yes])
     application.dataset_ids = Dataset.cas.pluck(:id)
     application.save!
 
@@ -425,6 +438,11 @@ class CasApplicationFormTest < ActionDispatch::IntegrationTest
     sign_in users(:no_roles)
 
     visit new_project_path(project: { project_type_id: project_types(:cas).id })
+
+    select('Yes', from: 'cas_application_declaration_1')
+    select('Yes', from: 'cas_application_declaration_2')
+    select('Yes', from: 'cas_application_declaration_3')
+    select('Yes', from: 'cas_application_declaration_4')
 
     click_button('Create Application')
 

@@ -5,6 +5,7 @@ class CasApplicationFields < ApplicationRecord
 
   validate :reason_justification_must_be_populated_if_level_1_selected
   validate :extra_datasets_rationale_must_be_populated_if_extra_datasets
+  validate :all_declarations_must_be_agreed
 
   def declaration=(value)
     # store as a string seperated by comma
@@ -42,5 +43,12 @@ class CasApplicationFields < ApplicationRecord
                   end
 
     errors.add :extra_datasets_rationale, :must_be_present_if_extra_dataset_selected
+  end
+
+  def all_declarations_must_be_agreed
+    return if declaration_choices.size == Lookups::CasDeclaration.count &&
+              declaration_choices.values.all?('Yes')
+
+    errors.add :declaration, :must_all_be_yes
   end
 end

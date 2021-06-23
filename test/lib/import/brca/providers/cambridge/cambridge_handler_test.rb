@@ -55,6 +55,7 @@ class CambridgeHandlerTest < ActiveSupport::TestCase
     broken_record.mapped_fields['gene'] = 'Cabbage'
     @handler.process_gene(@genotype, broken_record)
     assert_nil @genotype.attribute_map['gene']
+    @logger.expects(:debug).with('SUCCESSFUL gene parse for 8')
     @logger.expects(:debug).with('SUCCESSFUL gene parse for: 8')
     @handler.process_gene(@genotype, @record)
     assert_equal 8, @genotype.attribute_map['gene']
