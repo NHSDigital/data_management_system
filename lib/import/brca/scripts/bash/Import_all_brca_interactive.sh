@@ -5,8 +5,8 @@ OIFS="$IFS"
 IFS=$'\n'
 DIRPATH=$1
 echo $DIRPATH
-#Dirpath was ~/work/mbis2_again
-#Filepath was "private/pseudonymised_data/updated_files/"
+#DIRPATH=~/work/data_management_system
+#FILEPATH="private/pseudonymised_data/updated_files/"
 FILEPATH=$2
 echo $FILEPATH
 
