@@ -12,7 +12,8 @@
         </tr>
       </thead>
       <tbody>
-        <% Dataset.cas.each do |dataset| %>
+        <!-- TODO: may need expanding to all datasets at some point -->
+        <% Dataset.cas_extras.each do |dataset| %>
           <%= content_tag(:tr, 'data-dataset-name' => dataset.try(:name)) do %>
             <td><%= dataset&.name %></td>
             <% DatasetRole.all.each do |role| %>
