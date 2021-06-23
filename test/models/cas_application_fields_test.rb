@@ -89,30 +89,37 @@ class CasApplicationFieldsTest < ActiveSupport::TestCase
   end
 
   test 'must have all declarations set to yes' do
-    ca = CasApplicationFields.new(declaration: [])
+    application = Project.new.tap do |app|
+      app.owner = users(:no_roles)
+      app.project_type = project_types(:cas)
+      default_project_dataset = ProjectDataset.create(dataset: dataset(86), terms_accepted: true)
+      app.project_datasets << default_project_dataset
+      app.build_cas_application_fields(declaration: [])
+      app.save!(validate: false)
+    end
 
-    ca.valid?
-    assert ca.errors.messages[:declaration].include? 'All declarations must be yes before an ' \
-                                                     'application can be submitted'
+    application.cas_application_fields.valid?
+    assert application.cas_application_fields.errors.messages[:declaration].
+      include? 'All declarations must be yes before an application can be submitted'
 
-    ca = CasApplicationFields.new(declaration: %w[1No 2No 3No 4No])
-    ca.valid?
-    assert ca.errors.messages[:declaration].include? 'All declarations must be yes before an ' \
-                                                     'application can be submitted'
+    application.cas_application_fields.update(declaration: %w[1No 2No 3No 4No])
+    application.cas_application_fields.valid?
+    assert application.cas_application_fields.errors.messages[:declaration].
+      include? 'All declarations must be yes before an application can be submitted'
 
-    ca = CasApplicationFields.new(declaration: %w[1Yes 2No 3No 4No])
-    ca.valid?
-    assert ca.errors.messages[:declaration].include? 'All declarations must be yes before an ' \
-                                                     'application can be submitted'
+    application.cas_application_fields.update(declaration: %w[1Yes 2No 3No 4No])
+    application.cas_application_fields.valid?
+    assert application.cas_application_fields.errors.messages[:declaration].
+      include? 'All declarations must be yes before an application can be submitted'
 
-    ca = CasApplicationFields.new(declaration: %w[1Yes 2Yes 4Yes])
-    ca.valid?
-    assert ca.errors.messages[:declaration].include? 'All declarations must be yes before an ' \
-                                                     'application can be submitted'
+    application.cas_application_fields.update(declaration: %w[1Yes 2Yes 4Yes])
+    application.cas_application_fields.valid?
+    assert application.cas_application_fields.errors.messages[:declaration].
+      include? 'All declarations must be yes before an application can be submitted'
 
-    ca = CasApplicationFields.new(declaration: %w[1Yes 2Yes 3Yes 4Yes])
-    ca.valid?
-    refute ca.errors.messages[:declaration].include? 'All declarations must be yes before an ' \
-                                                     'application can be submitted'
+    application.cas_application_fields.update(declaration: %w[1Yes 2Yes 3Yes 4Yes])
+    application.cas_application_fields.valid?
+    refute application.cas_application_fields.errors.messages[:declaration].
+      include? 'All declarations must be yes before an application can be submitted'
   end
 end
