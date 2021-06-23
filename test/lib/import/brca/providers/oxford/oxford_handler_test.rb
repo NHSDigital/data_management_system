@@ -36,12 +36,14 @@ class OxfordHandlerTest < ActiveSupport::TestCase
   end
 
   test 'process_gene' do
+    @logger.expects(:debug).with('SUCCESSFUL gene parse for 8')
     @logger.expects(:debug).with('SUCCESSFUL gene parse for:8')
     @handler.process_gene(@genotype, @record)
     assert_equal 8, @genotype.attribute_map['gene']
     synonym_record = build_raw_record('pseudo_id1' => 'bob')
     synonym_record.mapped_fields['gene'] = 'Cabbage'
     @logger.expects(:debug).with('SUCCESSFUL gene parse from A_BRCA2-17______')
+    @logger.expects(:debug).with('SUCCESSFUL gene parse for BRCA2')
     @handler.process_gene(@genotype, synonym_record)
     assert_equal 8, @genotype.attribute_map['gene']
     broken_record = build_raw_record('pseudo_id1' => 'bob')
@@ -49,6 +51,13 @@ class OxfordHandlerTest < ActiveSupport::TestCase
     broken_record.raw_fields['sinonym'] = 'Cabbage'
     @logger.expects(:debug).with('FAILED gene parse')
     @handler.process_gene(@genotype, broken_record)
+    atm_record = build_raw_record('pseudo_id1' => 'bob')
+    atm_record.mapped_fields['gene'] = '451'
+    atm_record.raw_fields['gene'] = 'ATM'
+    atm_record.raw_fields['sinonym'] = 'Cabbage'
+    @logger.expects(:debug).with('SUCCESSFUL gene parse for 451')
+    @logger.expects(:debug).with('SUCCESSFUL gene parse for:451')
+    @handler.process_gene(@genotype, atm_record)
   end
 
   test 'process_protein_impact' do
