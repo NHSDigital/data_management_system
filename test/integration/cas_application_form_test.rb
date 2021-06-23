@@ -216,6 +216,9 @@ class CasApplicationFormTest < ActionDispatch::IntegrationTest
       find(:css, "#dataset_#{dataset(86).id}_level_2_expiry_datepicker").set('01/01/2022')
     end
 
+    fill_in('project_cas_application_fields_attributes_reason_justification', with: 'TESTING')
+    fill_in('project_cas_application_fields_attributes_extra_datasets_rationale', with: 'TESTING')
+
     select('Yes', from: 'cas_application_declaration_1')
     select('Yes', from: 'cas_application_declaration_2')
     select('Yes', from: 'cas_application_declaration_3')
