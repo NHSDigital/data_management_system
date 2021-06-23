@@ -12,8 +12,8 @@
   sort: 1
 2:
   id: 2
-  value: " I confirm that I completed all the Information Governance training on ,
-    as deemed appropriate by my manager. This includes completing appropriate e-learning
+  value: "I confirm that I completed all the Information Governance training on as deemed
+    appropriate by my manager. This includes completing appropriate e-learning
     modules and other training in the NCRAS Induction Pack. I agree to update my Information
     Governance training as directed by my manager."
   sort: 2
@@ -32,8 +32,5 @@
     data are discussed with the Celtic registries and that enough time is given to
     allow them the opportunity to comment on any output produced prior to its publication.
   sort: 4
-5:
-  id: 5
-  value: I have completed the relevant data access forms for the ONS incidence dataset
-  sort: 5
+
 

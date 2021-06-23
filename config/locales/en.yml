@@ -331,6 +331,8 @@ en:
               user_details_not_complete: some user details are not complete - please visit the My Account page to update
             data_items:
               unjustified: require justification
+        cas_application_fields:
+          must_all_be_yes: All declarations must be yes before an application can be submitted
     models:
       project_amendment: Amendment
       data_privacy_impact_assessment:
