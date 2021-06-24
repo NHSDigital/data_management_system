@@ -2,6 +2,7 @@
 class ProjectDatasetLevel < ApplicationRecord
   belongs_to :project_dataset
   delegate :project, to: :project_dataset
+  before_update :set_decision_date_to_nil
   after_update :notify_cas_approved_change
 
   validates :access_level_id, uniqueness: { scope: :project_dataset_id }
@@ -35,5 +36,11 @@ class ProjectDatasetLevel < ApplicationRecord
     CasMailer.with(project: project, project_dataset_level: self).send(
       :dataset_level_approved_status_updated_to_user
     ).deliver_later
+  end
+
+  def set_decision_date_to_nil
+    return unless approved.nil?
+
+    self.decision_date = nil
   end
 end

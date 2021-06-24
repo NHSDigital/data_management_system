@@ -22,7 +22,7 @@ class ProjectDatasetLevelsController < ApplicationController
   private
 
   def project_dataset_level_params
-    params.fetch(:project_dataset_level, {}).permit(:id, :approved)
+    params.fetch(:project_dataset_level, {}).permit(:id, :approved, :decision_date)
   end
 
   def yubikey_protected_transition?
