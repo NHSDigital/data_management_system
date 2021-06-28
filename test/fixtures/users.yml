@@ -380,6 +380,14 @@ no_roles:
   username: nr
   directorate_id: 1
   division_id: 1
+  employment: Contract
+  contract_start_date: 2021-05-26
+  contract_end_date: 2050-05-26
+  line_manager_telephone: 01234567
+  line_manager_email: fake@madeup.com
+  line_manager_name: line manager
+  telephone: 98765432
+  job_title: no roler
 
 cas_access_approver:
   email: cas_access_approver@phe.gov.uk

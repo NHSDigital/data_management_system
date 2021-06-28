@@ -140,4 +140,38 @@ class ProjectAmendmentsTest < ActionDispatch::IntegrationTest
     refute_equal project_amendment_path(amendment), current_path
     assert has_text?('You are not authorized to access this page.')
   end
+
+  test 'amendments without attachments should block transition to DPIA_START' do
+    project = projects(:test_application)
+
+    project.transition_to!(workflow_states(:submitted))
+    project.transition_to!(workflow_states(:dpia_start))
+    project.update!(assigned_user: users(:application_manager_one))
+
+    visit project_path(project)
+
+    within('#project_header') do
+      accept_confirm do
+        click_button 'Amend'
+      end
+    end
+
+    assert has_text?('This project cannot move to "DPIA" for 1 reason')
+    assert has_text?('no amendment document attached')
+    assert has_button?('Begin DPIA', disabled: true)
+
+    click_link 'Amendments'
+    click_link 'New', href: new_project_project_amendment_path(project)
+
+    fill_in 'Requested at',            with: '15/06/2021'
+    fill_in 'Amendment approved date', with: '15/06/2021'
+    attach_file 'Upload', file_fixture('odr_amendment_request_form-1.0.pdf')
+    check 'Data Flows'
+
+    click_button 'Create Amendment'
+
+    assert has_no_text?('This project cannot move to "DPIA" for 1 reason')
+    assert has_no_text?('no amendment document attached')
+    assert has_button?('Begin DPIA', disabled: false)
+  end
 end

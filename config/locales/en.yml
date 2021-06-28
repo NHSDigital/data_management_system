@@ -329,6 +329,7 @@ en:
               no_attached_dpia: no DPIA document(s) attached
               no_attached_contract: no contract document(s) attached
               user_details_not_complete: some user details are not complete - please visit the My Account page to update
+              no_attached_amendment: no amendment document attached
             data_items:
               unjustified: require justification
         cas_application_fields:
