@@ -294,6 +294,15 @@ module Workflow
 
       create_dpia(project)
       assert project.transition_to(workflow_states(:dpia_review))
+
+      project.project_amendments.destroy_all
+      assert project.transition_to(workflow_states(:amend))
+      refute project.transition_to(workflow_states(:dpia_start))
+      assert_includes project.errors.details[:base], error: :no_attached_amendment
+
+      create_amendment(project)
+      assert project.transition_to(workflow_states(:dpia_start))
+      assert project.transition_to(workflow_states(:dpia_review))
       assert project.transition_to(workflow_states(:dpia_moderation))
 
       project.contracts.destroy_all

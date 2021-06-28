@@ -156,6 +156,17 @@ module Workflow
       unjustified_data_items.positive? ? { data_items: :unjustified } : {}
     end
 
+    def reasons_not_to_transition_to_dpia_start
+      return {} unless current_state.id == 'AMEND'
+      return {} if project_amendments.joins(:attachment).exists?(
+        project_amendments: {
+          project_state: current_project_state
+        }
+      )
+
+      { base: :no_attached_amendment }
+    end
+
     def reasons_not_to_transition_to_dpia_review
       return {} if dpias.joins(:attachment).exists?
 

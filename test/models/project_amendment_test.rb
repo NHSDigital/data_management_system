@@ -68,7 +68,16 @@ class ProjectAmendmentTest < ActiveSupport::TestCase
                                                                         no_future: true
   end
 
-  test 'should validate attachment' do
+  test 'should be valid without an attachment' do
+    project   = projects(:one)
+    amendment = project.project_amendments.build(requested_at: Time.zone.today)
+
+    amendment.valid?
+
+    refute_includes amendment.errors.details[:attachment], error: :blank
+  end
+
+  test 'should validate attachment when present' do
     project    = projects(:one)
     amendment  = project.project_amendments.build(requested_at: Time.zone.today)
 
@@ -88,12 +97,11 @@ class ProjectAmendmentTest < ActiveSupport::TestCase
     assert_includes amendment.errors.details[:attachment_file_size], expected
   end
 
-  test 'should require a valid PDF attachment' do
+  test 'should require attachment to be valid PDF' do
     project   = projects(:one)
     amendment = project.project_amendments.build(requested_at: Time.zone.today)
 
     amendment.valid?
-    assert_includes amendment.errors.details[:attachment], error: :blank
     refute_includes amendment.errors.details[:attachment], error: :bad_pdf
 
     fixture = file_fixture('fivemb.txt')
