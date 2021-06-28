@@ -97,4 +97,22 @@ class ProjectDatasetLevelTest < ActiveSupport::TestCase
       pdl.update(approved: nil)
     end
   end
+
+  test 'set_decided_at_to_nil' do
+    date_time_now = Time.zone.now
+    project_dataset = ProjectDataset.new(dataset: dataset(83), terms_accepted: true)
+    project = create_cas_project(owner: users(:no_roles))
+    project.project_datasets << project_dataset
+    pdl = ProjectDatasetLevel.new(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
+                                  approved: true, decided_at: date_time_now)
+    project_dataset.project_dataset_levels << pdl
+
+    project.transition_to!(workflow_states(:submitted))
+
+    assert_equal pdl.decided_at, date_time_now
+
+    pdl.update(approved: nil)
+
+    assert_nil pdl.decided_at
+  end
 end
