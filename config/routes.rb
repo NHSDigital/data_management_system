@@ -48,6 +48,8 @@ Rails.application.routes.draw do
   get '/reports/report1', to: 'reports#report1', as: 'report1'
   get '/reports/report2', to: 'reports#report2', as: 'report2'
 
+  resources :reports, only: %i[show]
+
   get '/downloads/data_access_agreement', to: 'downloads#data_access_agreement',
                                           as: 'data_access_agreement'
   get '/downloads/ons_declaration_of_use', to: 'downloads#ons_declaration_of_use',

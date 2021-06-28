@@ -83,9 +83,13 @@ class Project < ApplicationRecord
   # delegate :dataset,      to: :team_dataset, allow_nil: true
   delegate :organisation, to: :team
 
-  delegate :name,      to: :project_type, prefix: true, allow_nil: true
-  delegate :name,      to: :team,         prefix: true, allow_nil: true # team_name
-  delegate :full_name, to: :owner,        prefix: true, allow_nil: true
+  with_options prefix: true, allow_nil: true do
+    delegate :name,            to: :project_type
+    delegate :translated_name, to: :project_type
+    delegate :name,            to: :team
+    delegate :full_name,       to: :owner
+    delegate :full_name,       to: :assigned_user
+  end
 
   delegate :project?, :eoi?, :application?, :cas?, to: :project_type_inquirer
 
@@ -196,6 +200,10 @@ class Project < ApplicationRecord
         base.where(workflow_current_project_states: { assigned_user_id: user })
       )
     end
+  end
+
+  def organisation_name
+    super || organisation&.name
   end
 
   def application_date

@@ -44,15 +44,9 @@
               <% if current_user.cas_dataset_approver? || current_user.cas_access_approver?  %>
                 <%= bootstrap_list_link_to 'My Approvals', cas_approvals_projects_path %>
               <% end %>
-              <% if current_user.administrator? %>
-                <li class="dropdown">
-                  <%= bootstrap_dropdown_toggle_tag('Reports') %>
-                  <ul class="dropdown-menu">
-                    <%= bootstrap_list_link_to 'Report 1', report1_path %>
-                    <%= bootstrap_list_link_to 'Report 2', report2_path %>
-                  </ul>
-                </li>
-              <% end %>
+
+              <%= render 'shared/reports_menu' %>
+
               <% if super_user?(current_user) %>
                 <li class="dropdown">
                   <%= bootstrap_dropdown_toggle_tag('Admin') %>

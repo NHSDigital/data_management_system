@@ -1,0 +1,21 @@
+<%
+  reports = Report.find_each.reduce([]) do |collection, report|
+    current_user.can?(:read, report) ? collection.push(report) : collection
+  end
+%>
+
+<% if reports.any? || current_user.administrator? %>
+  <li class="dropdown">
+    <%= bootstrap_dropdown_toggle_tag('Reports') %>
+    <ul class="dropdown-menu">
+      <% if current_user.administrator? %>
+        <%= bootstrap_list_link_to 'Report 1', report1_path %>
+        <%= bootstrap_list_link_to 'Report 2', report2_path %>
+      <% end %>
+
+      <% reports.each do |report| %>
+        <%= bootstrap_list_link_to report.title, report_path(report), data: { turbolinks: !report.download_only } %>
+      <% end %>
+    </ul>
+  </li>
+<% end %>

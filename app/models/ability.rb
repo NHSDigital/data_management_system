@@ -283,6 +283,9 @@ class Ability
     can %i[create read destroy], Communication
 
     can :read, [ProjectEndUse, ProjectClassification, ProjectLawfulBasis]
+
+    can :read, Report::WorkloadReport
+    can :read, Report::OpenProjectReport if senior
   end
 
   def dataset_manager_grants(user)
@@ -374,6 +377,7 @@ class Ability
   def developer_grants(user)
     return unless user.role?(SystemRole.fetch(:developer))
 
+    can :read, :ndr_errors
     can %i[read destroy], Delayed::Job
   end
 

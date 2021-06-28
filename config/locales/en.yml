@@ -405,6 +405,20 @@ en:
         contacted_at: Contact Date
         medium: Method
         parent: Responding To
+  activemodel:
+    attributes:
+      report/open_project_report:
+        title: ODR - All Open Projects
+        description: Provides row level detail of all open projects assigned to the ODR team.
+        status: Current Status
+        data_end_use: Data End Use
+        data_asset_required: Data Assets
+      report/workload_report:
+        title: ODR - My Workload
+        description: Provides row level detail of all open projects assigned to a given user.
+        status: Current Status
+        data_end_use: Data End Use
+        data_asset_required: Data Assets
   projects_mailer:
     project_assignment:
       heading: "%{title} - %{state}"

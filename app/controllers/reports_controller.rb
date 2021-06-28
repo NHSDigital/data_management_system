@@ -10,7 +10,28 @@ class Array
   end
 end
 
+# Manages access to reports.
+# TODO: Index action/view of all reports
 class ReportsController < ApplicationController
+  load_and_authorize_resource only: :show # Will load correct report class, not an instance!
+
+  def show
+    @report = @report.new(user_context: current_user)
+
+    # TODO: Support alternative formats
+    respond_to do |format|
+      format.any do
+        headers['Cache-Control']       = 'no-cache'
+        headers['Content-Type']        = 'text/csv'
+        headers['Content-Disposition'] = %(attachment; filename="#{@report.filename}.csv")
+        headers.delete('Content-Length')
+
+        response.status    = 200
+        self.response_body = @report.to_csv_enum
+      end
+    end
+  end
+
   def report1
     @projects = []
     Project.of_type_project.order('team_id, name').find_each do |project|

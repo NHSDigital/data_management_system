@@ -13,6 +13,10 @@ class ProjectType < ApplicationRecord
   scope :bound_to_team, -> { where.not(name: 'CAS') }
   scope :odr_mbis, -> { where(name: %w[Project EOI Application]) }
 
+  def translated_name
+    I18n.t(name.parameterize(separator: '_'), scope: model_name.plural)
+  end
+
   def available_datasets
     datasets.empty? ? published_datasets : datasets
   end

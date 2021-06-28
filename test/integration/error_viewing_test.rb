@@ -7,22 +7,20 @@ class ErrorViewingTest < ActionDispatch::IntegrationTest
   end
 
   test 'should not be accessible to unauthorised users' do
-    sign_in users(:standard_user)
+    user = users(:standard_user)
+    user.grants.where(roleable: SystemRole.fetch(:developer)).destroy_all
 
-    User.any_instance.stubs(:can?).
-      with(:read, :ndr_errors).
-      returns(false)
+    sign_in user
 
     visit ndr_error.error_fingerprints_path
     assert_equal root_path, current_path
   end
 
   test 'should be accessible to authorised users' do
-    sign_in users(:standard_user)
+    user = users(:standard_user)
+    user.grants.create!(roleable: SystemRole.fetch(:developer))
 
-    User.any_instance.stubs(:can?).
-      with(:read, :ndr_errors).
-      returns(true)
+    sign_in user
 
     visit ndr_error.error_fingerprints_path
     assert_equal ndr_error.error_fingerprints_path, current_path

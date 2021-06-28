@@ -25,4 +25,38 @@ class ReportsTest < ActionDispatch::IntegrationTest
     wait_for_download
     assert_equal 1, downloads.count
   end
+
+  test 'user can download report they have been granted access to' do
+    sign_out @admin
+    sign_in users(:application_manager_one)
+
+    visit root_path
+
+    within('.navbar') do
+      click_link 'Reports'
+
+      assert has_link?('ODR - My Workload')
+      click_link('ODR - My Workload')
+
+      wait_for_download
+      assert_equal 1, downloads.count
+    end
+  end
+
+  test 'user cannot download report have not been granted access to' do
+    sign_out @admin
+    sign_in users(:application_manager_one)
+
+    visit root_path
+
+    within('.navbar') do
+      click_link 'Reports'
+      assert has_no_link?('ODR - All Open Projects')
+    end
+
+    visit report_path(id: 'open_project_report')
+
+    assert_equal root_path, current_path
+    assert has_text?(/not authorized/i)
+  end
 end
