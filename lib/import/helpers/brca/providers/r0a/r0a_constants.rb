@@ -9,15 +9,27 @@ module Import
                                           genomicchange specimentype].freeze
 
             BRCA_GENES_REGEX = /(?<brca>BRCA1|
+                                       BR1|
+                                       B1|
+                                       P002|
+                                       P002B|
+                                       P087|
                                        BRCA2|
+                                       BR2|
+                                       B2|
+                                       P045|
+                                       P077|
                                        ATM|
+                                       P041|
                                        CHEK2|
+                                       P190|
                                        PALB2|
                                        MLH1|
                                        MSH2|
                                        MSH6|
                                        MUTYH|
                                        SMAD4)/xi.freeze
+
             DO_NOT_IMPORT = ['CYSTIC FIBROSIS GENETIC ANALYSIS REPORT',
                              '**ANY TEXT** ANALYSIS REPORT',
                              'APC/MUTYH MUTATION SCREENING REPORT,',

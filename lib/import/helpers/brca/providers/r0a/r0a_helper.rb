@@ -128,16 +128,17 @@ module Import
               genotypes = []
               genes     = []
               if non_dosage_test?
-                # binding.pry
                 process_non_dosage_test_exons(genes)
                 tests = tests_from_non_dosage_record(genes)
                 grouped_tests = grouped_tests_from(tests)
                 process_grouped_non_dosage_tests(grouped_tests, genotype, genotypes)
+                #binding.pry
               elsif dosage_test?
                 process_dosage_test_exons(genes)
                 tests = tests_from_dosage_record(genes)
                 grouped_tests = grouped_tests_from(tests)
                 process_grouped_dosage_tests(grouped_tests, genotype, genotypes)
+                #binding.pry
               end
               genotypes
             end
@@ -219,7 +220,6 @@ module Import
             def process_non_dosage_cdna(gene, genetic_info, genotype, genotypes)
               genotype_dup = genotype.dup
               brca_genes   = brca_genes_from(genetic_info)
-              # binding.pry
               if brca_genes
                 process_brca_genes(brca_genes, genotype_dup, gene, genetic_info,
                                          genotypes)
@@ -271,6 +271,10 @@ module Import
               mutations = genetic_info.join(',').scan(CDNA_REGEX).flatten.compact.map do |s|
                 s.gsub(/\s+/, '')
               end.uniq
+              proteins = genetic_info.join(',').scan(PROT_REGEX).flatten.compact.map do |s|
+                s.gsub(/\s+/, '')
+              end.uniq
+              longest_protein = proteins.max_by(&:length)
               if mutations.size > 1
                 if mutations.size == 2
                   mutation_duplicate1 = mutations[0]
@@ -284,7 +288,7 @@ module Import
                         duplicated_geno = genotype.dup
                         duplicated_geno.add_gene(gene)
                         duplicated_geno.add_gene_location(CDNA_REGEX.match(genetic_info[index])[:cdna])
-                        if PROT_REGEX.match(genetic_info[index])
+                        if !longest_protein.nil? && info.match(longest_protein)
                           duplicated_geno.add_protein_impact(PROT_REGEX.match(genetic_info[index])[:impact])
                         end
                         duplicated_geno.add_status(2)
@@ -432,8 +436,9 @@ module Import
 
             def process_dosage_test_exons(genes)
               @dosage_record_map[:exon].map do |exons|
-                if exons.scan(BRCA_GENES_REGEX).count.positive? && mlpa?(exons)
+                if exons.scan(BRCA_GENES_REGEX).count.positive? #&& mlpa?(exons)
                   exons.scan(BRCA_GENES_REGEX).flatten.each { |gene| genes.append(gene) }
+#                  binding.pry
                 else
                   genes.append('No Gene')
                 end

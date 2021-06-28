@@ -12,9 +12,21 @@ module Import
       # level fields, so that the storage processor can match and create the appropriate tables
       class GenotypeBrca < Import::Genotype
         BRCA_MAP = { 'BRCA1' => 7,
+                     'BR1'   => 7,
+                     'B1'    => 7,
+                     'P002'  => 7,
+                     'P002B' => 7,
+                     'P087'  => 7,
                      'BRCA2' => 8,
+                     'BR2'   => 8,
+                     'B2'    => 8,
+                     'P045'  => 8,
+                     'P077'  => 8,
                      'ATM' => 451,
+                     'P041' => 451, 
+                     'P042' => 451,
                      'CHEK2' => 865,
+                     'P190' => 865,
                      'PALB2' => 3186,
                      'TP53' => 79,
                      'MLH1' => 2744,
@@ -26,24 +38,28 @@ module Import
                      'BRIP1' => 590,
                      'NBN' => 2912,
                      'RAD51C' => 3615,
-                     'RAD51D' => 3616 }.freeze
+                     'RAD51D' => 3616,
+                     'SMAD4' => 72,
+                     'MUTYH' => 2850 }.freeze
 
-        BRCA_REGEX = /(?<atm>ATM)|
-                      (?<chek2>CHEK2)|
+        BRCA_REGEX = /(?<atm>ATM|P041|P042)|
+                      (?<chek2>CHEK2|P190)|
                       (?<palb2>PALB2)|
-                      (?<brca1>BRCA1)|
-                      (?<brca2>BRCA2)|
+                      (?<brca1>BRCA1|B1|BR1|P002|P002B|P087)|
+                      (?<brca2>BRCA2|B2|BR2|P045|P077)|
                       (?<tp53>TP53)|
                       (?<mlh1>MLH1)|
                       (?<msh2>MSH2)|
                       (?<msh6>MSH6)|
                       (?<pms2>PMS2)|
                       (?<stk>STK11)|
+                      (?<mutyh>MUTYH)|
                       (?<pten>PTEN)|
                       (?<brip1>BRIP1)|
                       (?<nbn>NBN)|
                       (?<rad51c>RAD51C)|
-                      (?<rad51d>RAD51D)/ix.freeze # Added by Francesco
+                      (?<rad51d>RAD51D)|
+                      (?<smad>SMAD4)/ix.freeze # Added by Francesco
 
         def other_gene
           gene = @attribute_map['gene']
@@ -69,8 +85,8 @@ module Import
         end
 
         def process_integer_imput(brca_input)
-          if [7, 8, 79, 451, 865, 3186, 2744, 2804, 3394, 62, 76,
-              590, 2912, 3615, 3616].include? brca_input
+          if [7, 8, 72, 79, 451, 865, 3186, 2744, 2804, 3394, 62, 76,
+              590, 2912, 3615, 3616, 2850].include? brca_input
             @attribute_map['gene'] = brca_input
             @logger.debug "SUCCESSFUL gene parse for #{brca_input}"
           elsif (1..2).cover? brca_input
