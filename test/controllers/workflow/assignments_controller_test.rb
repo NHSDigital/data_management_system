@@ -7,14 +7,6 @@ module Workflow
       @user_one = users(:application_manager_one)
       @user_two = users(:application_manager_two)
 
-      # Force project into a state that is temporally reassignable...
-      @project.project_states.build do |project_state|
-        project_state.state = workflow_states(:dpia_review)
-        project_state.assignments.build(assigned_user: @user_one)
-
-        project_state.save!(validate: false)
-      end
-
       sign_in(@user_one)
     end
 
@@ -34,6 +26,9 @@ module Workflow
     end
 
     test 'should prevent unauthorized access' do
+      sign_out(@user_one)
+      sign_in(@project.owner)
+
       project_state = @project.current_project_state
       project_state.assign_to!(user: @user_two)
 
@@ -50,7 +45,13 @@ module Workflow
     end
 
     test 'should prevent assignment of a previous state' do
-      previous_state = @project.current_project_state
+      previous_state = @project.project_states.build do |project_state|
+        project_state.state = workflow_states(:dpia_review)
+        project_state.assignments.build(assigned_user: @user_one)
+
+        project_state.save!(validate: false)
+      end
+
       @project.transition_to!(workflow_states(:dpia_moderation)) do |_, project_state|
         project_state.assignments.build(assigned_user: @user_one)
       end
@@ -67,6 +68,14 @@ module Workflow
     end
 
     test 'should prevent assignment to an inappropriate user' do
+      # Force project into a state that has a restricted set of temporally assignable users...
+      @project.project_states.build do |project_state|
+        project_state.state = workflow_states(:dpia_review)
+        project_state.assignments.build(assigned_user: @user_one)
+
+        project_state.save!(validate: false)
+      end
+
       project_state = @project.current_project_state
 
       assert_no_difference -> { Assignment.count } do

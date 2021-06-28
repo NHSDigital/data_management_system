@@ -50,7 +50,7 @@ module ActionDispatch
     # Configure ActionMailer url helpers with test server details:
     setup do
       @capybara_server ||= Capybara.current_session.server
-      config = { host: @capybara_server.host, port: @capybara_server.port }
+      config = { host: @capybara_server.host, port: @capybara_server.port, protocol: 'http://' }
       ActionMailer::Base.default_url_options.merge!(config)
     end
 
@@ -220,11 +220,23 @@ module NdrDevSupport
   end
 end
 
+module ActionMailerHelper
+  # Override :assert_enqueued_email_with to be aware of our own mailer config injection
+  # (see ApplicationMailer), for convenience.
+  def assert_enqueued_email_with(mailer, method, args: nil, queue: 'mailers', &block)
+    args.merge!(url_options: ActionMailer::Base.default_url_options) if args.is_a?(Hash)
+
+    super
+  end
+end
+
 require 'integration_test_helper'
 ActionDispatch::IntegrationTest.include(IntegrationTestHelper)
 
 ActiveSupport::TestCase.include(PaperTrailHelper)
 ActionDispatch::IntegrationTest.include(PaperTrailHelper)
+ActionDispatch::IntegrationTest.include(ActionMailerHelper)
+ActionMailer::TestCase.include(ActionMailerHelper)
 
 # Ensure NdrUi::Bootstrap helper methods are available in helper tests.
 ActionView::TestCase.helper NdrUi::BootstrapHelper

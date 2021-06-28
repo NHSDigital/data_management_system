@@ -53,6 +53,26 @@ module Workflow
       end
     end
 
+    test 'assignable_users' do
+      user_one = users(:application_manager_one)
+      user_two = users(:application_manager_two)
+
+      # Default case - project users + application managers...
+      assert_includes @project_state.assignable_users, @project_state.project.owner
+      assert_includes @project_state.assignable_users, user_one
+      assert_includes @project_state.assignable_users, user_two
+
+      # With state mandated subset of users/roles...
+      @project_state.state.stubs(assignable_users: [user_one])
+      refute_includes @project_state.assignable_users, @project_state.project.owner
+      assert_includes @project_state.assignable_users, user_one
+      refute_includes @project_state.assignable_users, user_two
+
+      # Guard...
+      @project_state.state = nil
+      assert_empty @project_state.assignable_users
+    end
+
     test 'should be invalid without a project' do
       @project_state.stubs(ensure_state_is_transitionable: true)
 

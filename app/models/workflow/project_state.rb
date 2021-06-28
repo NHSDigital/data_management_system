@@ -33,7 +33,13 @@ module Workflow
     delegate :assigned_user, :assigning_user, to: :current_assignment, allow_nil: true
     delegate :full_name, to: :assigned_user,  prefix: true, allow_nil: true
     delegate :full_name, to: :assigning_user, prefix: true, allow_nil: true
-    delegate :assignable_users, to: :state
+
+    def assignable_users
+      return User.none unless state && project
+      return state.assignable_users if state.assignable_users.any?
+
+      User.where(id: project.users).or(User.all_application_managers).in_use
+    end
 
     def current_assignment
       assignments.order(id: :desc).limit(1).first
