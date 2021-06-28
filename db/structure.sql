@@ -2972,7 +2972,7 @@ CREATE TABLE public.project_dataset_levels (
     expiry_date date,
     approved boolean,
     selected boolean,
-    decision_date date
+    decided_at timestamp without time zone
 );
 
 

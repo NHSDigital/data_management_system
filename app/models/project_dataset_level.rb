@@ -2,7 +2,7 @@
 class ProjectDatasetLevel < ApplicationRecord
   belongs_to :project_dataset
   delegate :project, to: :project_dataset
-  before_update :set_decision_date_to_nil
+  before_update :set_decided_at_to_nil
   after_update :notify_cas_approved_change
 
   validates :access_level_id, uniqueness: { scope: :project_dataset_id }
@@ -38,9 +38,9 @@ class ProjectDatasetLevel < ApplicationRecord
     ).deliver_later
   end
 
-  def set_decision_date_to_nil
+  def set_decided_at_to_nil
     return unless approved.nil?
 
-    self.decision_date = nil
+    self.decided_at = nil
   end
 end

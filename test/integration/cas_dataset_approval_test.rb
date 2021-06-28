@@ -34,7 +34,7 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
       end
       within "#project_dataset_level_#{pdl.id}" do
         within '#decision_date' do
-          assert has_content?(Time.zone.today.to_s)
+          assert has_content?(Time.zone.now.strftime('%d/%m/%Y'))
         end
         assert has_content?('APPROVED')
       end
@@ -55,7 +55,7 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
       end
       within "#project_dataset_level_#{pdl.id}" do
         within '#decision_date' do
-          assert has_content?(Time.zone.today.to_s)
+          assert has_content?(Time.zone.now.strftime('%d/%m/%Y'))
         end
         assert has_content?('DECLINED')
       end
@@ -77,8 +77,10 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
 
     project.transition_to!(workflow_states(:submitted))
 
+    date_time_now = Time.zone.now
+
     pdl.approved = true
-    pdl.decision_date = Time.zone.today
+    pdl.decided_at = date_time_now
     pdl.save!(validate: false)
 
     visit project_path(project)
@@ -89,7 +91,7 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
     assert has_no_content?('Reapply')
 
     pdl.approved = false
-    pdl.decision_date = Time.zone.today
+    pdl.decided_at = date_time_now
     project_dataset.save!(validate: false)
 
     visit project_path(project)
@@ -108,7 +110,7 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
       assert has_no_css?('.btn-success')
     end
 
-    assert_equal pdl.decision_date, Time.zone.today
+    assert_equal pdl.decided_at, date_time_now
     assert_nil pdl.reload.approved
   end
 
