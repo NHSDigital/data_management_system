@@ -32,7 +32,12 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
         fill_in 'ndr_authenticate[otp]', with: 'defo a yubikey'
         click_button 'Submit'
       end
-      assert has_content?('APPROVED')
+      within "#project_dataset_level_#{pdl.id}" do
+        within '#decision_date' do
+          assert has_content?(Time.zone.now.strftime('%d/%m/%Y'))
+        end
+        assert has_content?('APPROVED')
+      end
     end
 
     assert_equal find('#project_status').text, 'Pending'
@@ -48,7 +53,12 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
       within "#approvals_project_dataset_level_#{pdl.id}" do
         find('.btn-danger').click
       end
-      assert has_content?('DECLINED')
+      within "#project_dataset_level_#{pdl.id}" do
+        within '#decision_date' do
+          assert has_content?(Time.zone.now.strftime('%d/%m/%Y'))
+        end
+        assert has_content?('DECLINED')
+      end
     end
 
     assert_equal find('#project_status').text, 'Pending'
@@ -87,9 +97,15 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
     assert_equal find('#dataset_level_status').text, 'DECLINED'
     click_link('Reapply')
 
-    assert has_content?('PENDING')
-    assert has_no_css?('.btn-danger')
-    assert has_no_css?('.btn-success')
+    within "#project_dataset_level_#{pdl.id}" do
+      within '#decision_date' do
+        assert has_no_content?
+      end
+      assert has_content?('PENDING')
+      assert has_no_css?('.btn-danger')
+      assert has_no_css?('.btn-success')
+    end
+
     assert_nil pdl.reload.approved
   end
 
@@ -112,6 +128,9 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
     click_link(href: '#datasets')
     assert has_content?('Extra CAS Dataset One')
     assert_equal find('#dataset_level_status').text, 'PENDING'
+    within '#decision_date' do
+      assert has_no_content?
+    end
   end
 
   test 'should show cas_dataset approver correct dataset statuses' do
@@ -141,12 +160,18 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
       assert has_css?('.btn-danger')
       assert has_css?('.btn-success')
       assert has_no_content?('PENDING')
+      within '#decision_date' do
+        assert has_no_content?
+      end
     end
 
     within("#project_dataset_level_#{non_grant_pdl.id}") do
       assert has_no_css?('.btn-danger')
       assert has_no_css?('.btn-success')
       assert_equal find('#dataset_level_status').text, 'PENDING'
+      within '#decision_date' do
+        assert has_no_content?
+      end
     end
 
     non_grant_pdl.approved = true

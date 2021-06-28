@@ -2971,7 +2971,8 @@ CREATE TABLE public.project_dataset_levels (
     access_level_id integer,
     expiry_date date,
     approved boolean,
-    selected boolean
+    selected boolean,
+    decided_at timestamp without time zone
 );
 
 
@@ -8273,6 +8274,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20210603155912'),
 ('20210604102124'),
 ('20210615101111'),
-('20210615104916');
+('20210615104916'),
+('20210617140742');
 
 
