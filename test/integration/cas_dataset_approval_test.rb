@@ -77,10 +77,7 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
 
     project.transition_to!(workflow_states(:submitted))
 
-    date_time_now = Time.zone.now
-
     pdl.approved = true
-    pdl.decided_at = date_time_now
     pdl.save!(validate: false)
 
     visit project_path(project)
@@ -91,7 +88,6 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
     assert has_no_content?('Reapply')
 
     pdl.approved = false
-    pdl.decided_at = date_time_now
     project_dataset.save!(validate: false)
 
     visit project_path(project)
@@ -110,7 +106,6 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
       assert has_no_css?('.btn-success')
     end
 
-    assert_equal pdl.decided_at, date_time_now
     assert_nil pdl.reload.approved
   end
 
