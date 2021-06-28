@@ -98,8 +98,10 @@ class ProjectCoreTest < ActionDispatch::IntegrationTest
     assert_changes -> { @eoi.reload.assigned_user } do
       assert_difference 'Notification.count' do
         assert_emails 1 do
-          select 'Application Manager Two', from: 'project[assigned_user_id]'
-          click_button 'Apply'
+          within('#new_project_assignment') do
+            select 'Application Manager Two', from: 'Application Manager'
+            click_button 'Apply'
+          end
         end
       end
     end
@@ -126,13 +128,14 @@ class ProjectCoreTest < ActionDispatch::IntegrationTest
     assert_no_changes -> { @eoi.reload.assigned_user } do
       assert_no_difference 'Notification.count' do
         assert_emails 0 do
-          select 'Application Manager Two', from: 'project[assigned_user_id]'
-          click_button 'Apply'
+          within('#new_project_assignment') do
+            select 'Application Manager Two', from: 'Application Manager'
+            click_button 'Apply'
+          end
         end
       end
     end
 
-    assert_equal project_path(@eoi), current_path
     assert page.has_text? 'EOI could not be assigned!'
   end
 

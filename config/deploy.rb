@@ -42,6 +42,7 @@ set :shared_paths, %w(
   config/secrets.yml
   config/smtp_settings.yml
   config/master.key
+  config/certificates
   log
   private/mbis_data
   private/pseudonymised_data

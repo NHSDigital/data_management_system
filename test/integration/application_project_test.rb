@@ -30,8 +30,11 @@ class ApplicationProjectTest < ActionDispatch::IntegrationTest
     visit project_path(@project)
     assert has_no_button?('Begin DPIA')
 
-    select @user.full_name, from: 'Application Manager'
-    click_button 'Apply'
+    within('#new_project_assignment') do
+      select @user.full_name, from: 'Application Manager'
+      click_button 'Apply'
+    end
+
     accept_confirm { click_button 'Begin DPIA' }
 
     assert has_button?('Send for Peer Review', disabled: true)
@@ -302,41 +305,16 @@ class ApplicationProjectTest < ActionDispatch::IntegrationTest
   end
 
   test 'should show allocated user text in timeline' do
-    @project.transition_to!(workflow_states(:submitted))
-    @project.transition_to!(workflow_states(:dpia_start))
-    create_dpia(@project)
-    @project.transition_to!(workflow_states(:dpia_review))
-    @project.transition_to!(workflow_states(:dpia_rejected))
-    @project.transition_to!(workflow_states(:dpia_start))
-    @project.transition_to!(workflow_states(:dpia_review))
-    @project.transition_to!(workflow_states(:dpia_moderation))
-    create_contract(@project)
-    @project.transition_to!(workflow_states(:contract_draft))
-    @project.transition_to!(workflow_states(:contract_completed))
+    assignee = users(:application_manager_two)
 
-    sign_out(@user)
-    sign_in(@project.owner)
+    @project.current_project_state.assign_to!(user: assignee)
 
     visit project_path(@project)
     click_link 'Timeline'
 
-    timeline_row = page.find('#timeline').find('tr', text: 'Contract Completed')
-    within(timeline_row) { assert has_text?('with ODR') }
-
-    timeline_row = page.find('#timeline').find('tr', text: 'Contract Draft')
-    within(timeline_row) { assert has_text?('with senior application manager') }
-
-    timeline_row = page.find('#timeline').find('tr', text: 'DPIA Moderation')
-    within(timeline_row) { assert has_text?('with senior application manager') }
-
-    timeline_row = page.find('#timeline').find('tr', text: 'Pending')
-    within(timeline_row) { assert has_text?('') }
-
-    timeline_row = page.find('#timeline').find('tr', text: 'DPIA Rejected')
-    within(timeline_row) { assert has_text?('with application manager') }
-
-    timeline_row = page.find('#timeline').find('tr', text: 'DPIA Peer Review', match: :first)
-    within(timeline_row) { assert has_text?('with application manager') }
+    within("tr#workflow_project_state_#{@project.current_project_state.id}") do
+      assert has_selector?('td', text: assignee.full_name)
+    end
   end
 
   private

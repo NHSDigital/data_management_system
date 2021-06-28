@@ -17,7 +17,6 @@ module Workflow
 
       refute @new_read_only_user.can?(:transition, @project)
       refute @new_read_only_user.can?(:read, @project.project_states.first)
-      refute @new_read_only_user.can?(:read, :temporally_assigned_user)
     end
 
     test 'workflows - as a project member' do
@@ -26,7 +25,6 @@ module Workflow
 
       refute user.can?(:transition, @project)
       assert user.can?(:read, @project.project_states.first)
-      refute user.can?(:read, :temporally_assigned_user)
     end
 
     test 'workflows - as a project contributor user' do
@@ -35,7 +33,6 @@ module Workflow
 
       refute user.can?(:transition, @project)
       assert user.can?(:read, @project.project_states.first)
-      refute user.can?(:read, :temporally_assigned_user)
     end
 
     test 'workflows - as a team delegate user' do
@@ -43,7 +40,6 @@ module Workflow
 
       assert user.can?(:transition, @project)
       assert user.can?(:read, @project.project_states.first)
-      refute user.can?(:read, :temporally_assigned_user)
     end
 
     test 'workflows - as an ODR user' do
@@ -51,7 +47,6 @@ module Workflow
 
       assert user.can?(:transition, @project)
       assert user.can?(:read, @project.project_states.first)
-      assert user.can?(:read, :temporally_assigned_user)
     end
 
     test 'workflows - as an admin user' do
@@ -59,7 +54,6 @@ module Workflow
 
       refute user.can?(:transition, @project)
       assert user.can?(:read, @project.project_states.first)
-      refute user.can?(:read, :temporally_assigned_user)
     end
 
     test 'assignments' do

@@ -7,13 +7,11 @@
   </dl>
 <% end %>
 
-<% if current_user.can?(:read, :temporally_assigned_user) %>
-  <% if current_user.can?(:create, project.current_project_state.assignments.build) %>
-    <%= render 'projects/project_state_assignment_form', project: project %>
-  <% else %>
-    <dl class="dl-horizontal">
-      <dt><%= Workflow::Assignment.human_attribute_name(:assigned_user) %></dt>
-      <dd><%= project.temporally_assigned_user_full_name || 'Not Assigned' %></dd>
-    </dl>
-  <% end %>
+<% if current_user.can?(:create, project.current_project_state.assignments.build) %>
+  <%= render 'projects/project_state_assignment_form', project: project %>
+<% else %>
+  <dl class="dl-horizontal">
+    <dt><%= Workflow::Assignment.human_attribute_name(:assigned_user) %></dt>
+    <dd><%= project.temporally_assigned_user_full_name || 'Not Assigned' %></dd>
+  </dl>
 <% end %>
