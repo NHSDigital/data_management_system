@@ -327,7 +327,7 @@ module Workflow
     end
 
     test 'should not be able to submit cas applications without user details' do
-      project = create_project(project_type: project_types(:cas), owner: users(:no_roles))
+      project = create_project(project_type: project_types(:cas), owner: users(:standard_user))
       project.reload_current_state
       # give all cas user details except job_title
       project.owner.update(telephone: '01234 5678910', line_manager_name: 'Line Manager',

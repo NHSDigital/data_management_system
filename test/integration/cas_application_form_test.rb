@@ -435,7 +435,7 @@ class CasApplicationFormTest < ActionDispatch::IntegrationTest
   end
 
   test 'should disable submit button and show transition error if user details not complete' do
-    sign_in users(:no_roles)
+    sign_in users(:standard_user)
 
     visit new_project_path(project: { project_type_id: project_types(:cas).id })
 
@@ -449,5 +449,44 @@ class CasApplicationFormTest < ActionDispatch::IntegrationTest
     assert has_button?('Submit', disabled: true)
     assert has_content?('some user details are not complete - please visit the My Account page ' \
                         'to update')
+  end
+
+  test 'should show correct user details in the form' do
+    sign_in users(:no_roles)
+
+    visit new_project_path(project: { project_type_id: project_types(:cas).id })
+
+    within('#email') do
+      assert has_content?('no_roles@phe.gov.uk')
+    end
+
+    fill_in('project_cas_application_fields_attributes_reason_justification', with: 'TESTING')
+    fill_in('project_cas_application_fields_attributes_extra_datasets_rationale', with: 'TESTING')
+
+    select('Yes', from: 'cas_application_declaration_1')
+    select('Yes', from: 'cas_application_declaration_2')
+    select('Yes', from: 'cas_application_declaration_3')
+    select('Yes', from: 'cas_application_declaration_4')
+
+    find(:css, "#dataset_#{dataset(83).id}_level_1_check_box").set(true)
+
+    click_button('Create Application')
+
+    within('#email') do
+      assert has_content?('no_roles@phe.gov.uk')
+    end
+
+    application = Project.last
+    application.transition_to!(workflow_states(:submitted))
+
+    sign_out users(:no_roles)
+
+    sign_in users(:cas_dataset_approver)
+
+    visit project_path(application)
+
+    within('#email') do
+      assert has_content?('no_roles@phe.gov.uk')
+    end
   end
 end
