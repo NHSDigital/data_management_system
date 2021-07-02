@@ -1,43 +1,42 @@
 <fieldset>
   <legend>Requester Details</legend>
-
-  <%= form.control_group :first_name, 'First name', id: 'first_name' do %>
+  <%= form.control_group :first_name, 'First name', id: 'first_name', style: 'margin-left: 0px; display: inline-block' do %>
     <%= form.text_field(:first_name) %>
   <% end %>
-  <%= form.control_group :last_name, 'Last name', id: 'last_name' do %>
+  <%= form.control_group :last_name, 'Last name', id: 'last_name', style: 'margin-left: 0px;' do %>
     <%= form.text_field :last_name %>
   <% end %>
 <% if !@project.persisted? || @project.owner == current_user %>
-  <%= form.control_group :username, 'Preferred username', id: 'username' do %>
+  <%= form.control_group :username, 'Preferred username', id: 'username', style: 'margin-left: 0px;' do %>
     <%= form.text_field :username %>
   <% end %>
 <% end %>
-  <%= form.control_group :job_title, 'Job title', id: 'job_title' do %>
+  <%= form.control_group :job_title, 'Job title', id: 'job_title', style: 'margin-left: 0px;' do %>
     <%= form.text_field :job_title %>
   <% end %>
-  <%= form.control_group :email, 'Email', id: 'email' do %>
+  <%= form.control_group :email, 'Email', id: 'email', style: 'margin-left: 0px;' do %>
     <%= form.text_field :email %>
   <% end %>
-  <%= form.control_group :telephone, 'Work number', id: 'telephone' do %>
+  <%= form.control_group :telephone, 'Work number', id: 'telephone', style: 'margin-left: 0px;' do %>
     <%= form.text_field :telephone %>
   <% end %>
-  <%= form.control_group :line_manager_name, 'Line manager name' do %>
+  <%= form.control_group :line_manager_name, 'Line manager name', style: 'margin-left: 0px;' do %>
     <%= form.text_field :line_manager_name %>
   <% end %>
-  <%= form.control_group :line_manager_email, 'Line manager email' do %>
+  <%= form.control_group :line_manager_email, 'Line manager email', style: 'margin-left: 0px;' do %>
     <%= form.text_field :line_manager_email %>
   <% end %>
-  <%= form.control_group :line_manager_telephone, 'Line manager number' do %>
+  <%= form.control_group :line_manager_telephone, 'Line manager number', style: 'margin-left: 0px;' do %>
     <%= form.text_field :line_manager_telephone %>
   <% end %>
-  <%= form.control_group :employment, 'Employment' do %>
+  <%= form.control_group :employment, 'Employment', style: 'margin-left: 0px;' do %>
     <%= form.text_field :employment %>
   <% end %>
   <% if !@project.persisted? || @project.owner == current_user %>
-    <%= form.control_group :contract_start_date, 'Contract start date' do %>
+    <%= form.control_group :contract_start_date, 'Contract start date', style: 'margin-left: 0px;' do %>
       <%= form.datepicker_field :contract_start_date %>
     <% end %>
-    <%= form.control_group :contract_end_date, 'Contract end date' do %>
+    <%= form.control_group :contract_end_date, 'Contract end date', style: 'margin-left: 0px;' do %>
       <%= form.datepicker_field :contract_end_date %>
     <% end %>
     <% if !@project.persisted? %>
