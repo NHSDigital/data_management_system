@@ -33,7 +33,7 @@ module Import
             record.raw_fields.each do |raw_record|
               # if mlpa?(raw_record['exon']) && !control_sample?(raw_record) &&
               #    relevant_consultant?(raw_record)
-              if raw_record['moleculartestingtype'].scan(/dosage/i).size.positive? &&
+              if !raw_record.nil? && raw_record['moleculartestingtype'].scan(/dosage/i).size.positive? &&
                  !control_sample?(raw_record) && relevant_consultant?(raw_record)
                 dosage_genus_col.append(raw_record['genus'])
                 dosage_moltesttype_col.append(raw_record['moleculartestingtype'])
@@ -41,7 +41,7 @@ module Import
                 dosage_genotype_col.append(raw_record['genotype'])
                 dosage_genotype2_col.append(raw_record['genotype2'])
               end
-              next unless !control_sample?(raw_record) && relevant_consultant?(raw_record)
+              next unless relevant_consultant?(raw_record) # !control_sample?(raw_record) && relevant_consultant?(raw_record)
 
               non_dosage_genus_col.append(raw_record['genus'])
               non_dosage_moltesttype_col.append(raw_record['moleculartestingtype'])
@@ -54,9 +54,9 @@ module Import
                                        exon: non_dosage_exon_col,
                                        genotype: non_dosage_genotype_col,
                                        genotype2: non_dosage_genotype2_col }
-
+            restructure_oddlynamed_nondosage_exons
             split_multiplegenes_nondosage_map(@non_dosage_record_map)
-
+            
             @dosage_record_map = { genus: dosage_genus_col,
                                    moleculartestingtype: dosage_moltesttype_col,
                                    exon: dosage_exon_col,
