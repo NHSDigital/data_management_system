@@ -6,7 +6,7 @@ module Import
           module R0aHelper
             include Import::Helpers::Brca::Providers::R0a::R0aConstants
 
-            def split_multiplegenes_nondosage_map(_non_dosage_map)
+            def split_multiplegenes_nondosage_map
               @non_dosage_record_map[:exon].each.with_index do |exon, index|
                 next unless exon.scan(BRCA_GENES_REGEX).size.positive?
                 if exon.scan(BRCA_GENES_REGEX).uniq.size > 1
@@ -41,7 +41,7 @@ module Import
                     end
                   @non_dosage_record_map[:genotype2][index] =
                     if !@non_dosage_record_map[:genotype2][index].nil? &&
-                       @non_dosage_record_map[:genotype2][index].scan(/100% coverage at 100X/).size.positive?
+                       @non_dosage_record_map[:genotype2][index].scan(/coverage at 100X/).size.positive?
                       @non_dosage_record_map[:genotype2][index] = ['NGS Normal'] * 2
                       @non_dosage_record_map[:genotype2][index] =
                         @non_dosage_record_map[:genotype2][index].flatten
@@ -85,7 +85,7 @@ module Import
               @non_dosage_record_map[:genotype2] = @non_dosage_record_map[:genotype2].flatten
             end
 
-            def split_multiplegenes_dosage_map(_dosage_map)
+            def split_multiplegenes_dosage_map
               @dosage_record_map[:exon].each.with_index do |exon, index|
                 if exon.scan(BRCA_GENES_REGEX).size > 1
                   @dosage_record_map[:exon][index] =
@@ -251,9 +251,8 @@ module Import
               #   process_brca_genes(brca_genes, genotype_dup, gene, genetic_info,
               #                            genotypes)
               # else
-                process_non_brca_genes(genotype_dup, gene, genetic_info, genotypes,
+              process_non_brca_genes(genotype_dup, gene, genetic_info, genotypes,
                                              genotype)
-              # end
             end
 
             def process_non_cdna_normal(gene, genetic_info, genotype, genotypes)
@@ -302,73 +301,90 @@ module Import
                 s.gsub(/\s+/, '')
               end.uniq
               longest_protein = proteins.max_by(&:length)
-              if mutations.size > 1
-                if mutations.size == 2
-                  mutation_duplicate1 = mutations[0].upcase
-                  mutation_duplicate2 = mutations[1].upcase
-                  longest_mutation = mutations.max_by(&:length)
-                  if mutation_duplicate1.include?(mutation_duplicate2) || mutation_duplicate2.include?(mutation_duplicate1)
+              if !genetic_info.join(',').scan(BRCA_GENES_REGEX).flatten.join.empty? && genetic_info.join(',').scan(BRCA_GENES_REGEX).flatten.join != gene
+                genotype_dup.add_gene(gene)
+                genotype_dup.add_status(1)
+                genotypes.append(genotype_dup)
+              else
+                if mutations.size > 1
+                  if mutations.size == 2
+                    mutation_duplicate1 = mutations[0].upcase
+                    mutation_duplicate2 = mutations[1].upcase
+                    longest_mutation = mutations.max_by(&:length)
+                    if mutation_duplicate1.include?(mutation_duplicate2) || mutation_duplicate2.include?(mutation_duplicate1)
+                        if genetic_info.join(',').match(longest_mutation)
+                          duplicated_geno = genotype.dup
+                          duplicated_geno.add_gene(gene)
+                          duplicated_geno.add_gene_location(CDNA_REGEX.match(genetic_info.join(','))[:cdna])
+                          if !longest_protein.nil? && genetic_info.join(',').match(longest_protein)
+                            duplicated_geno.add_protein_impact(PROT_REGEX.match(genetic_info.join(','))[:impact])
+                          end
+                          duplicated_geno.add_status(2)
+                          genotypes.append(duplicated_geno)
+                        else
+                          duplicated_geno = genotype.dup
+                          duplicated_geno.add_gene(gene)
+                          duplicated_geno.add_gene_location(mutations.min_by(&:length))
+                          if !longest_protein.nil? && genetic_info.join(',').match(longest_protein)
+                            duplicated_geno.add_protein_impact(PROT_REGEX.match(genetic_info.join(','))[:impact])
+                          end
+                          duplicated_geno.add_status(2)
+                          genotypes.append(duplicated_geno)
+                        end
+                      # end
                     # Possibly refactor this
-                    # genetic_info.each.with_index do |info, index|
-                    #   next unless !info.nil?
-                      if genetic_info.join(',').match(longest_mutation)
+                  elsif mutations.size > 1 # && genetic_info.join(',').scan(PROT_REGEX).blank?
+                      mutations.each do |mutation|
                         duplicated_geno = genotype.dup
                         duplicated_geno.add_gene(gene)
-                        duplicated_geno.add_gene_location(CDNA_REGEX.match(genetic_info.join(','))[:cdna])
-                        if !longest_protein.nil? && genetic_info.join(',').match(longest_protein)
-                          duplicated_geno.add_protein_impact(PROT_REGEX.match(genetic_info.join(','))[:impact])
-                        end
-                        duplicated_geno.add_status(2)
-                        genotypes.append(duplicated_geno)
-                      else
-                        duplicated_geno = genotype.dup
-                        duplicated_geno.add_gene(gene)
-                        duplicated_geno.add_gene_location(mutations.min_by(&:length))
-                        if !longest_protein.nil? && genetic_info.join(',').match(longest_protein)
-                          duplicated_geno.add_protein_impact(PROT_REGEX.match(genetic_info.join(','))[:impact])
-                        end
+                        duplicated_geno.add_gene_location(mutation)
                         duplicated_geno.add_status(2)
                         genotypes.append(duplicated_geno)
                       end
-                    # end
-                  # Possibly refactor this
-                  elsif mutations.size > 1 && genetic_info.join(',').scan(PROT_REGEX).blank?
-                    mutations.each do |mutation|
-                      duplicated_geno = genotype.dup
-                      duplicated_geno.add_gene(gene)
-                      duplicated_geno.add_gene_location(mutation)
-                      duplicated_geno.add_status(2)
-                      genotypes.append(duplicated_geno)
+                    # Possibly refactor this
+                      # binding.pry
+                      #binding.pry
+                      # variants = mutations.zip( ([longest_protein] + [proteins[-1]]).uniq) # mutations.zip(genetic_info.join(',').scan(PROT_REGEX).flatten)
+                      # variants.each do |cdna, protein|
+                      #   duplicated_geno = genotype.dup
+                      #   duplicated_geno.add_gene(gene)
+                      #   duplicated_geno.add_gene_location(cdna)
+                      #   # duplicated_geno.add_protein_impact(protein)
+                      #   duplicated_geno.add_status(2)
+                      #   genotypes.append(duplicated_geno)
+                      # end
                     end
-                  # Possibly refactor this
-                  elsif mutations.size > 1 && genetic_info.join(',').scan(PROT_REGEX).size.positive?
-                    # binding.pry
-                    #binding.pry
-                    variants = mutations.zip( ([longest_protein] + [proteins[-1]]).uniq) # mutations.zip(genetic_info.join(',').scan(PROT_REGEX).flatten)
-                    variants.each do |cdna, protein|
-                      duplicated_geno = genotype.dup
-                      duplicated_geno.add_gene(gene)
-                      duplicated_geno.add_gene_location(cdna)
-                      # duplicated_geno.add_protein_impact(protein)
-                      duplicated_geno.add_status(2)
-                      genotypes.append(duplicated_geno)
-                    end
+                    genotypes
+                  end
+                elsif  mutations.join().split(',').size == 1
+                  genotype_dup.add_gene_location(cdna_from(genetic_info))
+                  genotype_dup.add_gene(gene)
+                  genotype_dup.add_status(2)
+                  genotypes.append(genotype_dup)
+                  if PROT_REGEX.match(genetic_info.join(','))
+                    @logger.debug("IDENTIFIED #{protien_from(genetic_info)} from #{genetic_info}")
+                    genotype_dup.add_protein_impact(protien_from(genetic_info))
                   end
                   genotypes
+                elsif mutations.join().split(',').size >1
+                  variants = []
+                  mutations.join().gsub('het','').split(',') do |mutation|
+                    if mutation.gsub('het','').match(CDNA_REGEX)
+                      variants.append(mutation.match(CDNA_REGEX)[:cdna])
+                    end
+                  end  
+                  variants.uniq.each do |cdna, protein|
+                    duplicated_geno = genotype.dup
+                    duplicated_geno.add_gene(gene)
+                    duplicated_geno.add_gene_location(cdna)
+                    # duplicated_geno.add_protein_impact(protein)
+                    duplicated_geno.add_status(2)
+                    genotypes.append(duplicated_geno)
+                  end
                 end
-              elsif mutations.size == 1
-                genotype_dup.add_gene_location(cdna_from(genetic_info))
-                genotype_dup.add_gene(gene)
-                genotype_dup.add_status(2)
-                genotypes.append(genotype_dup)
-                if PROT_REGEX.match(genetic_info.join(','))
-                  @logger.debug("IDENTIFIED #{protien_from(genetic_info)} from #{genetic_info}")
-                  genotype_dup.add_protein_impact(protien_from(genetic_info))
-                end
-                genotypes
+                # add_gene_and_status_to(genotype_dup, gene, 2, genotypes)
+                @logger.debug("IDENTIFIED #{gene}, POSITIVE TEST from #{genetic_info}")
               end
-              # add_gene_and_status_to(genotype_dup, gene, 2, genotypes)
-              @logger.debug("IDENTIFIED #{gene}, POSITIVE TEST from #{genetic_info}")
             end
 
             # TODO: Boyscout
@@ -576,22 +592,22 @@ module Import
               genotypes.append(genotype_dup)
             end
 
-            def restructure_oddlynamed_nondosage_exons
-              @non_dosage_record_map[:exon] = @non_dosage_record_map[:exon].flatten
-              @non_dosage_record_map[:exon] = 
-              @non_dosage_record_map[:exon].map  do |exons|
+            def restructure_oddlynamed_nondosage_exons(dosage_nondosage)
+              dosage_nondosage[:exon] = dosage_nondosage[:exon].flatten
+              dosage_nondosage[:exon] = 
+              dosage_nondosage[:exon].map  do |exons|
                 exons.gsub(/BRCA2|B2|BR2|P045|P077/, 'BRCA2')
               end
-              @non_dosage_record_map[:exon] = 
-              @non_dosage_record_map[:exon].map  do |exons|
+              dosage_nondosage[:exon] = 
+              dosage_nondosage[:exon].map  do |exons|
                 exons.gsub(/BRCA1|B1|BR1|P002|P002B|P087/, 'BRCA1')
               end
-              @non_dosage_record_map[:exon] = 
-              @non_dosage_record_map[:exon].map  do |exons|
+              dosage_nondosage[:exon] = 
+              dosage_nondosage[:exon].map  do |exons|
                 exons.gsub(/ATM|P041|P042/, 'ATM')
               end
-              @non_dosage_record_map[:exon] = 
-              @non_dosage_record_map[:exon].map  do |exons|
+              dosage_nondosage[:exon] = 
+              dosage_nondosage[:exon].map  do |exons|
                 exons.gsub(/CHEK2|CKEK2|P190/, 'CHEK2')
               end
             end

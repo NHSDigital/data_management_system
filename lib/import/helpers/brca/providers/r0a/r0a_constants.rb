@@ -102,6 +102,7 @@ module Import
             }.freeze
 
             CDNA_REGEX = /c\.(?<cdna>[0-9]+[a-z]+>[a-z]+)|
+                         c\.(?<cdna>[0-9]+-[0-9]+[A-Z]+>[A-Z]+)|
                          c\.(?<cdna>[0-9]+.[0-9]+[a-z]+>[a-z]+)|
                          c\.(?<cdna>[0-9]+_[0-9]+[a-z]+)|
                          c\.(?<cdna>[0-9]+[a-z]+)|
