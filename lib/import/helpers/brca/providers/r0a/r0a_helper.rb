@@ -71,14 +71,14 @@ module Import
               # @non_dosage_record_map[:exon] = @non_dosage_record_map[:exon].each do |exons|
                 
             # elsif @non_dosage_record_map[:genotype][index].scan(/BRCA2|B2|BR2|P045|P077/i).size.positive?
-            #   binding.pry
+            #   #binding.pry
             #   @non_dosage_record_map[:genotype][index] =
             #     @non_dosage_record_map[:genotype][index].split(',').map do |genotypes|
             #       genotypes.gsub(/BRCA2|B2|BR2|P045|P077/, 'BRCA2')
             #     end
             #   @non_dosage_record_map[:genotype][index] =
             #     @non_dosage_record_map[:genotype][index].flatten
-            #     binding.pry
+            #     #binding.pry
             #
               @non_dosage_record_map[:exon] = @non_dosage_record_map[:exon].flatten
               @non_dosage_record_map[:genotype] = @non_dosage_record_map[:genotype].flatten
@@ -159,13 +159,14 @@ module Import
                 tests = tests_from_non_dosage_record(genes)
                 grouped_tests = grouped_tests_from(tests)
                 process_grouped_non_dosage_tests(grouped_tests, genotype, genotypes)
-                #binding.pry
+                ##binding.pry
               elsif dosage_test?
+                #binding.pry
                 process_dosage_test_exons(genes)
                 tests = tests_from_dosage_record(genes)
                 grouped_tests = grouped_tests_from(tests)
                 process_grouped_dosage_tests(grouped_tests, genotype, genotypes)
-                #binding.pry
+                ##binding.pry
               end
               genotypes
             end
@@ -185,7 +186,7 @@ module Import
 
             # TODO: Boyscout
             def add_test_scope_to(genotype, moltesttypes, genera, exons)
-              # # binding.pry
+              # # #binding.pry
               stringed_moltesttypes = moltesttypes.flatten.join(',')
               stringed_exons = exons.flatten.join(',')
               if stringed_moltesttypes =~ /^100,000 GENOMES/i
@@ -210,6 +211,8 @@ module Import
                 genotype.add_test_scope(:full_screen)
               elsif moltesttypes.include?('BRCA1/BRCA2 GENETIC TESTING REPORT')
                 genotype.add_test_scope(:full_screen)
+              elsif stringed_moltesttypes =~ /dosage/i
+                genotype.add_test_scope(:full_screen)
               end
             end
 
@@ -228,7 +231,7 @@ module Import
                     process_non_dosage_cdna(gene, genetic_info, genotype, genotypes)
                   elsif genetic_info.join(',').match(EXON_LOCATION_REGEX) &&
                         exon_match?(genetic_info)
-                    process_brca_gene_and_exon_match(genotype, genetic_info, genotypes)
+                    process_brca_gene_and_exon_match(genotype, gene, genetic_info, genotypes)
                   elsif !cdna_match?(genetic_info) &&
                         !exon_match?(genetic_info) &&
                         normal?(genetic_info)
@@ -238,7 +241,7 @@ module Import
                         !normal?(genetic_info) &&
                         fail?(genetic_info)
                     process_non_cdna_fail(gene, genetic_info, genotype, genotypes)
-                    # else # binding.pry
+                    # else # #binding.pry
                   end
                 end
               end
@@ -246,11 +249,6 @@ module Import
 
             def process_non_dosage_cdna(gene, genetic_info, genotype, genotypes)
               genotype_dup = genotype.dup
-              #brca_genes   = brca_genes_from(genetic_info)
-              # if brca_genes
-              #   process_brca_genes(brca_genes, genotype_dup, gene, genetic_info,
-              #                            genotypes)
-              # else
               process_non_brca_genes(genotype_dup, gene, genetic_info, genotypes,
                                              genotype)
             end
@@ -302,7 +300,7 @@ module Import
               end.uniq
               longest_protein = proteins.max_by(&:length)
               if !genetic_info.join(',').scan(BRCA_GENES_REGEX).flatten.join.empty? && genetic_info.join(',').scan(BRCA_GENES_REGEX).flatten.join != gene
-                genotype_dup.add_gene(gene)
+                genotype_dup.add_gene(gene.upcase)
                 genotype_dup.add_status(1)
                 genotypes.append(genotype_dup)
               else
@@ -342,8 +340,8 @@ module Import
                         genotypes.append(duplicated_geno)
                       end
                     # Possibly refactor this
-                      # binding.pry
-                      #binding.pry
+                      # #binding.pry
+                      ##binding.pry
                       # variants = mutations.zip( ([longest_protein] + [proteins[-1]]).uniq) # mutations.zip(genetic_info.join(',').scan(PROT_REGEX).flatten)
                       # variants.each do |cdna, protein|
                       #   duplicated_geno = genotype.dup
@@ -358,7 +356,7 @@ module Import
                   end
                 elsif  mutations.join().split(',').size == 1
                   genotype_dup.add_gene_location(cdna_from(genetic_info))
-                  genotype_dup.add_gene(gene)
+                  genotype_dup.add_gene(gene.upcase)
                   genotype_dup.add_status(2)
                   genotypes.append(genotype_dup)
                   if PROT_REGEX.match(genetic_info.join(','))
@@ -389,9 +387,6 @@ module Import
 
             # TODO: Boyscout
             def process_grouped_dosage_tests(grouped_tests, genotype, genotypes)
-              # selected_genes = (@dosage_record_map[:moleculartestingtype].uniq &
-              #                   MOLTEST_MAP_DOSAGE.keys).join
-              # return @logger.debug("No gene for dosage #{@dosage_record_map[:moleculartestingtype].uniq.join}") if selected_genes.to_s.blank?
               if !(@non_dosage_record_map[:moleculartestingtype].uniq & DO_NOT_IMPORT).empty?
                 @logger.debug('Nothing to do') 
               else
@@ -406,22 +401,51 @@ module Import
 
             def process_dosage_gene(gene, genetic_info, genotype, genotypes)
               if !brca_gene_match?(genetic_info)
-                genotype_dup = genotype.dup
-                add_gene_and_status_to(genotype_dup, gene, 1, genotypes)
-                @logger.debug("IDENTIFIED #{gene} in NORMAL TEST from #{genetic_info}")
+                if gene == 'No Gene'
+                  @logger.debug("Nothing to do for #{gene} and #{genetic_info}") 
+                elsif !cdna_match?(genetic_info) &&
+                    !exon_match?(genetic_info) &&
+                    normal?(genetic_info)
+                    genotype_dup = genotype.dup
+                  process_non_cdna_normal(gene, genetic_info, genotype, genotypes)
+                elsif cdna_match?(genetic_info)
+                  process_non_dosage_cdna(gene, genetic_info, genotype, genotypes)
+                  @logger.debug("IDENTIFIED #{gene}, #{cdna_from(genetic_info)} from #{genetic_info}")
+                elsif genetic_info.join(',').match(EXON_LOCATION_REGEX) && exon_match?(genetic_info)
+                    process_brca_gene_and_exon_match(genotype, gene, genetic_info, genotypes)
+                elsif !genetic_info.join(',').match(EXON_LOCATION_REGEX) && exon_match?(genetic_info)
+                  if genetic_info.join(',').match(/normal/i) || genetic_info.join(',').match(/evidence/i)
+                    process_non_cdna_normal(gene, genetic_info, genotype, genotypes)
+                  elsif genetic_info.join(',').match(/control/i)
+                    @logger.debug("IDENTIFIED FALSE POSITIVE #{gene} #{genetic_info}, skipping entry")  
+                  end
+                elsif genetic_info.join(',').empty?
+                  @logger.debug("IDENTIFIED FALSE POSITIVE #{gene} #{genetic_info}, skipping entry")  
+                elsif genetic_info.join(',').match(/evidence/i)
+                    process_non_cdna_normal(gene, genetic_info, genotype, genotypes)
+                end
               elsif brca_gene_match?(genetic_info) && !exon_match?(genetic_info)
-                genotype_dup = genotype.dup
-                add_gene_and_status_to(genotype_dup, gene, 1, genotypes)
-                @logger.debug("IDENTIFIED #{gene} in NORMAL TEST from #{genetic_info}")
+                if genetic_info.join(',').match(BRCA_GENES_REGEX)[:brca] != gene
+                  @logger.debug("IDENTIFIED FALSE POSITIVE #{gene} #{genetic_info}, skipping entry")
+                else
+                  genotype_dup = genotype.dup
+                  add_gene_and_status_to(genotype_dup, gene, 1, genotypes)
+                end
               elsif brca_gene_match?(genetic_info) && exon_match?(genetic_info)
-                process_brca_gene_and_exon_match(genotype, genetic_info, genotypes)
+                if genetic_info.join(',').match(BRCA_GENES_REGEX)[:brca] != gene
+                  @logger.debug("IDENTIFIED FALSE POSITIVE #{gene} #{genetic_info}, skipping entry")
+                else
+                  process_brca_gene_and_exon_match(genotype, gene, genetic_info, genotypes)
+                end
               end
             end
 
-            def process_brca_gene_and_exon_match(genotype, genetic_info, genotypes)
+            def process_brca_gene_and_exon_match(genotype, gene, genetic_info, genotypes)
               genotype_dup = genotype.dup
-              brca_gene    = brca_genes_from(genetic_info)[:brca] unless
+              brca_gene    = brca_genes_from(genetic_info)[:brca].upcase unless
                                    [nil, 0].include?(brca_genes_from(genetic_info))
+              brca_gene = gene if brca_gene.nil?
+              #binding.pry
               genotype_dup.add_gene(brca_gene)
               genotype_dup.add_variant_type(exon_from(genetic_info))
               if EXON_LOCATION_REGEX.match(genetic_info.join(','))
@@ -472,8 +496,7 @@ module Import
             def tests_from_dosage_record(genes)
               return if genes.nil?
               genes.zip(@dosage_record_map[:genotype],
-                        @dosage_record_map[:genotype2],
-                        @dosage_record_map[:moleculartestingtype]).uniq
+                        @dosage_record_map[:genotype2]).uniq
             end
 
             def process_non_dosage_test_exons(genes)
@@ -490,7 +513,7 @@ module Import
               @dosage_record_map[:exon].map do |exons|
                 if exons.scan(BRCA_GENES_REGEX).count.positive? #&& mlpa?(exons)
                   exons.scan(BRCA_GENES_REGEX).flatten.each { |gene| genes.append(gene) }
-#                  binding.pry
+#                  #binding.pry
                 else
                   genes.append('No Gene')
                 end
