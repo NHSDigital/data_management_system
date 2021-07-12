@@ -1,146 +1,91 @@
-<%= bootstrap_form_for @user, horizontal: 2, readonly: @readonly do |form| %>
-  <div class="row">
-    <div class=" col-md-12">
-      <% if @readonly %>
-        <div class="panel panel-default" id="user_details_panel">
-          <div class="panel-body">
-            <div class="row">
-              <div class="col-md-12">
-                <div class="pull-left" style="font-size:1.5em">
-                  User: <%= @user.full_name %>
-                </div>
-                <div class="btn-toolbar pull-right">
-                  <% if can?(:destroy, form.object) && !@user.flagged_as_deleted? %>
-                    <div class="btn-group" style="padding-right:8px">
-                      <%= link_to bootstrap_icon_tag('trash icon-white') + ' Delete', @user, class: 'btn btn-danger', method: :delete, data: { confirm: "Are you sure you want to delete User: #{@user.full_name}" } %></td>
-                    </div>
-                  <% end %>
-                  <div class="btn-group">
-                    <% if can?(:update, form.object) %>
-                      <%= link_to bootstrap_icon_tag('pencil') + ' Edit', edit_user_path(@user), remote: true, class: 'btn btn-default' %>
-                    <% end %>
-                    <%= versions_link(@user) %>
-                    <%= link_to 'Back to Users', users_path, class: 'btn btn-default' %>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        <% end %>
-        <div class="panel-footer">
-          <% if @readonly %>
-            <div class="row">
-              <div class="col-md-1 text-right"><strong>Job title:</strong></div>
-              <div class="col-md-2"><%= @user.job_title %></div>
-              <div class="col-md-2 text-right"><strong>Email:</strong></div>
-              <div class="col-md-2"><%= @user.email %></div>
-              <div class="col-md-2 text-right"><strong>Telephone:</strong></div>
-              <div class="col-md-2"><%= @user.telephone %></div>
-            </div>
-            <div class="row">
-              <div class="col-md-1 text-right"><strong>Grade:</strong></div>
-              <div class="col-md-2"><%= @user.grade %></div>
-              <div class="col-md-2 text-right"><strong>Notes:</strong></div>
-              <div class="col-md-2" style="white-space:pre"><%= @user.notes %></div>
-              <div class="col-md-2 text-right"><strong>Status:</strong></div>
-              <div class="col-md-2"><%= @user.z_user_status.name %></div>
-            </div>
-          <% else %>
-            <%= bootstrap_form_for @user, horizontal: 2, readonly: @readonly do |form| %>
-              <%= form.control_group :first_name, 'First name', id: 'first_name' do %>
-                <%= form.text_field :first_name, class: 'mandatory', readonly: @admin_readonly %>
-              <% end %>
-              <%= form.control_group :last_name, 'Last name' do %>
-                <%= form.text_field :last_name, class: 'mandatory', readonly: @admin_readonly %>
-              <% end %>
-              <%= form.control_group :username, 'Username' do %>
-                <%= form.text_field :username, class: 'mandatory', readonly: @admin_readonly %>
-              <% end %>
-              <%= form.control_group :email, 'Email' do %>
-              <%= form.text_field :email, class: 'mandatory', readonly: @admin_readonly %>
-              <% end %>
-              <%= form.control_group :job_title, 'Job title' do %>
-                <%= form.text_field :job_title %>
-              <% end %>
-              <%= form.control_group :line_manager_name, 'Name of line manager' do %>
-                <%= form.text_field :line_manager_name %>
-              <% end %>
-              <%= form.control_group :line_manager_email, 'Email address of line manager' do %>
-                <%= form.text_field :line_manager_email %>
-              <% end %>
-              <%= form.control_group :line_manager_telephone, 'Telephone number of line manager' do %>
-                <%= form.text_field :line_manager_telephone %>
-              <% end %>
+<%
+  extended_view = user == current_user || !current_user.application_manager?
+%>
 
-              <div class='row form-group'>
-                <label class="control-label col-md-2" for="grade">Grade</label>
-                <div class='col-md-3'>
-                  <%= form.select :grade, ['AA','AO','EO','HEO','SEO','Grade 7','Grade 6'], {include_blank: true} %>
-                </div>
-              </div>
-<!--new-->
-              <div class='row form-group'>
-                <label class="control-label col-md-2" for="directorate_id">Directorate</label>
-                <div class='col-md-9'>
-                  <%= form.collection_select :directorate_id, Directorate.active.order(:name), :id, :name, { include_blank: true }, class: 'form-control' %>
-                </div>
-              </div>
+<%= bootstrap_form_for user, horizontal: 2, readonly: readonly, remote: request.xhr? do |form| %>
+  <%= form.error_and_warning_alert_boxes %>
 
-              <div class='row form-group'>
-                <label class="control-label col-md-2" for="division_id">Division</label>
-                <div class='col-md-9'>
-                  <%= form.grouped_collection_select :division_id, Directorate.order(:name), :divisions, :name, :id, :name_and_head, { include_blank: true} , class: 'form-control' %>
-                </div>
-              </div>
+  <div class="well">
+    <%= form.control_group :first_name, 'First name', id: 'first_name' do %>
+      <%= form.text_field :first_name, class: 'mandatory', readonly: admin_readonly %>
+    <% end %>
 
-              <div class='row form-group'>
-                <label class="control-label col-md-2" for="grade">Employment</label>
-                <div class='col-md-6'>
-                  <%= form.select :employment, ['Contract','Permanent'], {include_blank: true} %>
-                </div>
-              </div>
+    <%= form.control_group :last_name, 'Last name' do %>
+      <%= form.text_field :last_name, class: 'mandatory', readonly: admin_readonly %>
+    <% end %>
 
-              <div class='row form-group', data-depends-on="#user_employment", data-depends-on-value="Contract">
-                <label class="control-label col-md-2" for="project_frequenct">Contract start date</label>
-                <div class='col-md-3'>
-                  <%= form.text_field :contract_start_date, "data-depends-on" => "#user_employment", "data-depends-on-value" => "Contract", data: { provide: 'datepicker' } %>
-                </div>
-              </div>
+    <%= form.control_group :email, 'Email' do %>
+      <%= form.text_field :email, class: 'mandatory', readonly: admin_readonly %>
+    <% end %>
 
-              <div class='row form-group', data-depends-on="#user_employment", data-depends-on-value="Contract">
-                <label class="control-label col-md-2" for="project_frequenct">Contract end date</label>
-                <div class='col-md-3'>
-                  <%= form.text_field :contract_end_date, "data-depends-on" => "#user_employment", "data-depends-on-value" => "Contract", data: { provide: 'datepicker' } %>
-                </div>
-              </div>
-<!--end-->
+    <%= form.control_group :job_title, 'Job title' do %>
+      <%= form.text_field :job_title %>
+    <% end %>
 
-              <%= form.control_group :telephone, 'Telephone' do %>
-                <%= form.text_field :telephone %>
-              <% end %>
-              <%# form.control_group :mobile, 'Mobile' do %>
-                <%# form.text_field :mobile %>
-              <%# end %>
-              <%= form.control_group :location, 'Location' do %>
-                <%= form.text_field :location %>
-              <% end %>
-              <% if current_user.administrator? %>
-                <%= form.control_group :z_user_status_id, 'Status' do %>
-                  <%= form.select(:z_user_status_id, ZUserStatus.all.map { |status| [status.name, status.id] }) %>
-                <% end %>
-                <%= form.control_group :notes, 'Notes' do %>
-                  <%= form.text_area :notes %>
-                <% end %>
-              <% end %>
-              <%= form.control_group nil do %>
-                <div class='pull-right'>
-                  <%= cancel_submit @user %>
-                </div>
-              <% end %>
-            <% end %>
-          <% end %>
+    <%= form.control_group :telephone, 'Telephone' do %>
+      <%= form.text_field :telephone %>
+    <% end %>
+
+    <%= content_tag :div, class: extended_view ? nil : 'hidden' do %>
+      <%= form.control_group :line_manager_name, 'Name of line manager' do %>
+        <%= form.text_field :line_manager_name %>
+      <% end %>
+
+      <%= form.control_group :line_manager_email, 'Email address of line manager' do %>
+        <%= form.text_field :line_manager_email %>
+      <% end %>
+
+      <%= form.control_group :line_manager_telephone, 'Telephone number of line manager' do %>
+        <%= form.text_field :line_manager_telephone %>
+      <% end %>
+
+      <%= form.control_group :grade, nil, {}, { class: 'col-md-3' } do %>
+        <%= form.select :grade, ['AA','AO','EO','HEO','SEO','Grade 7','Grade 6'], { include_blank: true } %>
+      <% end %>
+
+      <%= form.control_group :directorate_id, nil, {}, { class: 'col-md-9' } do %>
+        <%= form.collection_select :directorate_id, Directorate.active.order(:name), :id, :name, { include_blank: true }, class: 'form-control' %>
+      <% end %>
+
+      <%= form.control_group :division_id, nil, {}, { class: 'col-md-9' } do %>
+        <%= form.grouped_collection_select :division_id, Directorate.order(:name), :divisions, :name, :id, :name_and_head, { include_blank: true} , class: 'form-control' %>
+      <% end %>
+
+      <%= form.control_group :employment, nil, {}, { class: 'col-md-6' } do %>
+        <%= form.select :employment, ['Contract','Permanent'], { include_blank: true } %>
+      <% end %>
+
+      <div class='row form-group', data-depends-on="#user_employment", data-depends-on-value="Contract">
+        <label class="control-label col-md-2" for="project_frequenct">Contract start date</label>
+        <div class='col-md-3'>
+          <%= form.text_field :contract_start_date, "data-depends-on" => "#user_employment", "data-depends-on-value" => "Contract", data: { provide: 'datepicker' } %>
         </div>
       </div>
+
+      <div class='row form-group', data-depends-on="#user_employment", data-depends-on-value="Contract">
+        <label class="control-label col-md-2" for="project_frequenct">Contract end date</label>
+        <div class='col-md-3'>
+          <%= form.text_field :contract_end_date, "data-depends-on" => "#user_employment", "data-depends-on-value" => "Contract", data: { provide: 'datepicker' } %>
+        </div>
+      </div>
+
+      <%= form.control_group :location, 'Location' do %>
+        <%= form.text_field :location %>
+      <% end %>
+    <% end %>
+
+    <% if current_user.administrator? %>
+      <%= form.control_group :z_user_status_id, 'Status' do %>
+        <%= form.collection_select(:z_user_status_id, ZUserStatus.all, :id, :name, class: 'form-control') %>
+      <% end %>
+
+      <%= form.control_group :notes, 'Notes' do %>
+        <%= form.text_area :notes %>
+      <% end %>
+    <% end %>
+
+    <div class="text-right">
+      <%= cancel_submit user %>
     </div>
   </div>
 <% end %>

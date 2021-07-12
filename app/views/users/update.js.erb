@@ -1,6 +1,0 @@
-<%
-  @readonly = true # ensure the buttons draw!
-%>
-
-jQuery('#modal').modal('hide');
-jQuery('#user_details_panel').replaceWith('<%= escape_javascript(render 'users/form') %>');

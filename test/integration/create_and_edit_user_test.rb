@@ -12,7 +12,6 @@ class CreateAndEditUserTest < ActionDispatch::IntegrationTest
 
     fill_in 'user_first_name', with: 'MICKEY'
     fill_in 'user_last_name',  with: ''
-    fill_in 'user_username',  with: 'testname'
     fill_in 'user_email',      with: 'test_email@phe.gov.uk'
 
     fill_in 'user_telephone',  with: '01234567890'
@@ -107,7 +106,6 @@ class CreateAndEditUserTest < ActionDispatch::IntegrationTest
 
     assert has_field?('user[first_name]', readonly: true)
     assert has_field?('user[last_name]', readonly: true)
-    assert has_field?('user[username]', readonly: true)
     assert has_field?('user[email]', readonly: true)
     assert has_field?('user[job_title]', readonly: false)
 
@@ -128,7 +126,6 @@ class CreateAndEditUserTest < ActionDispatch::IntegrationTest
 
     assert has_field?('user[first_name]', readonly: false)
     assert has_field?('user[last_name]', readonly: false)
-    assert has_field?('user[username]', readonly: false)
     assert has_field?('user[email]', readonly: false)
     assert has_field?('user[job_title]', readonly: false)
 
@@ -148,7 +145,6 @@ class CreateAndEditUserTest < ActionDispatch::IntegrationTest
 
     assert has_field?('user[first_name]', readonly: false)
     assert has_field?('user[last_name]', readonly: false)
-    assert has_field?('user[username]', readonly: false)
     assert has_field?('user[email]', readonly: false)
     assert has_field?('user[job_title]', readonly: false)
 
@@ -164,7 +160,6 @@ class CreateAndEditUserTest < ActionDispatch::IntegrationTest
 
     assert has_field?('user[first_name]', readonly: false)
     assert has_field?('user[last_name]', readonly: false)
-    assert has_field?('user[username]', readonly: false)
     assert has_field?('user[email]', readonly: false)
     assert has_field?('user[job_title]', readonly: false)
   end

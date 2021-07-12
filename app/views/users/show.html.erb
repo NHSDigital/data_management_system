@@ -1,3 +1,39 @@
 <%= render layout: @user.to_partial_path do %>
-  <%= render 'form', readonly: true %>
+  <div class="panel panel-default" id="user_details_panel">
+    <div class="panel-body">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="pull-left" style="font-size: 1.5em;">
+            User: <%= @user.full_name %>
+          </div>
+          <div class="btn-toolbar pull-right">
+            <%= delete_link(@user, text: true, class: 'btn btn-danger') unless @user.flagged_as_deleted? %>
+            <div class="btn-group">
+              <%= edit_link(@user, text: true, class: 'btn btn-default', remote: true) %>
+              <%= versions_link(@user) %>
+              <%= link_to 'Back to Users', users_path, class: 'btn btn-default' %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="panel-footer">
+      <div class="row">
+        <div class="col-md-1 text-right"><strong>Job title:</strong></div>
+        <div class="col-md-2"><%= @user.job_title %></div>
+        <div class="col-md-2 text-right"><strong>Email:</strong></div>
+        <div class="col-md-2"><%= @user.email %></div>
+        <div class="col-md-2 text-right"><strong>Telephone:</strong></div>
+        <div class="col-md-2"><%= @user.telephone %></div>
+      </div>
+      <div class="row">
+        <div class="col-md-1 text-right"><strong>Grade:</strong></div>
+        <div class="col-md-2"><%= @user.grade %></div>
+        <div class="col-md-2 text-right"><strong>Notes:</strong></div>
+        <div class="col-md-2" style="white-space:pre"><%= @user.notes %></div>
+        <div class="col-md-2 text-right"><strong>Status:</strong></div>
+        <div class="col-md-2"><%= @user.z_user_status.name %></div>
+      </div>
+    </div>
+  </div>
 <% end %>

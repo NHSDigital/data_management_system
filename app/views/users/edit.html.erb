@@ -1,2 +1,3 @@
 <h1>Edit User: <%= @user.full_name %></h1>
-<%= render :partial => 'form' %>
+
+<%= render 'form', user: @user, readonly: @readonly, admin_readonly: @admin_readonly %>
