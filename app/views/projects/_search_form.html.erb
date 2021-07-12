@@ -1,0 +1,125 @@
+<%
+  project_types ||= ProjectType.all
+  workflow_states = Workflow::State.applicable_to(project_types).sort_by do |state|
+    state.name(*project_types)
+  end
+%>
+
+<%= form_with url: url, scope: :search, method: :get, id: 'project_search_form' do |form| %>
+  <fieldset>
+    <legend>
+      <a href="#project_filters" class="btn btn-default btn-xs" data-toggle="collapse">
+        <%= bootstrap_icon_tag('eye-open') %>
+        <%= bootstrap_icon_tag('eye-close') %>
+      </a>
+      <%= Project.model_name.human %>
+    </legend>
+
+    <div class="collapse in" id="project_filters">
+      <div class="form-group">
+        <%= form.label :name, Project.human_attribute_name(:name) %>
+        <%= form.text_field :name, class: 'form-control', value: params.dig(:search, :name) %>
+      </div>
+
+      <div class="form-group">
+        <%= form.label :application_log, Project.human_attribute_name(:application_log) %>
+        <%= form.text_field :application_log, class: 'form-control', value: params.dig(:search, :application_log) %>
+      </div>
+    </div>
+  </fieldset>
+
+  <%= form.fields_for :owner do |sub_form| %>
+    <fieldset>
+      <legend>
+        <a href="#project_owner_filters" class="btn btn-default btn-xs" data-toggle="collapse">
+          <%= bootstrap_icon_tag('eye-open') %>
+          <%= bootstrap_icon_tag('eye-close') %>
+        </a>
+        Project Owner
+      </legend>
+
+      <div class="collapse" id="project_owner_filters">
+        <div class="form-group">
+          <%= sub_form.label :first_name, User.human_attribute_name(:first_name) %>
+          <%= sub_form.text_field :first_name, class: 'form-control', value: params.dig(:search, :owner, :first_name) %>
+        </div>
+
+        <div class="form-group">
+          <%= sub_form.label :last_name, User.human_attribute_name(:last_name) %>
+          <%= sub_form.text_field :last_name, class: 'form-control', value: params.dig(:search, :owner, :last_name) %>
+        </div>
+      </div>
+    </fieldset>
+  <% end %>
+
+  <fieldset data-controller="checkbox-select-all">
+    <legend>
+      <a href="#project_type_filters" class="btn btn-default btn-xs" data-toggle="collapse">
+        <%= bootstrap_icon_tag('eye-open') %>
+        <%= bootstrap_icon_tag('eye-close') %>
+      </a>
+      <%= ProjectType.model_name.human %>
+    </legend>
+
+    <div class="collapse" id="project_type_filters">
+      <div class="checkbox">
+        <label>
+          <input type="checkbox" data-target="checkbox-select-all.checkboxAll"></input>
+          <b class="all">Select All</b>
+        </label>
+      </div>
+
+      <%= form.collection_check_boxes :project_type_id, project_types, :id, :translated_name, { include_hidden: false } do |builder| %>
+        <% checked = params.dig(:search, :project_type_id) ? params[:search][:project_type_id].include?(builder.value.to_s) : true %>
+        <div class="checkbox">
+          <%= builder.label do %>
+            <%= builder.check_box checked: checked, data: { target: :'checkbox-select-all.checkbox' } %>
+            <%= builder.text %>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </fieldset>
+
+  <%= form.fields_for :current_project_state do |sub_form| %>
+    <fieldset data-controller="checkbox-select-all">
+      <legend>
+        <a href="#project_state_filters" class="btn btn-default btn-xs" data-toggle="collapse">
+          <%= bootstrap_icon_tag('eye-open') %>
+          <%= bootstrap_icon_tag('eye-close') %>
+        </a>
+        <%= Workflow::State.model_name.human %>
+      </legend>
+
+      <div class="collapse" id="project_state_filters">
+        <div class="checkbox">
+          <label>
+            <input type="checkbox" data-target="checkbox-select-all.checkboxAll"></input>
+            <b class="all">Select All</b>
+          </label>
+        </div>
+
+        <%= sub_form.collection_check_boxes :state_id, workflow_states, :id, :id, { include_hidden: false } do |builder| %>
+          <% checked = params.dig(:search, :current_project_state) ? params.dig(:search, :current_project_state, :state_id).include?(builder.value.to_s) : builder.object.open? %>
+          <div class="checkbox">
+            <%= builder.label do %>
+              <%= builder.check_box checked: checked, data: { target: :'checkbox-select-all.checkbox' } %>
+              <%= builder.object.name(*project_types) %>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </fieldset>
+  <% end %>
+
+  <%= yield(form) %>
+
+  <hr />
+
+  <button type="submit" name="submit" class="btn btn-primary" data-disable="true">
+    <%= bootstrap_icon_tag('search') %>
+    Search
+  </button>
+
+  <%= link_to 'Clear', url, class: 'btn btn-danger' %>
+<% end %>

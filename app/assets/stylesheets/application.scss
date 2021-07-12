@@ -192,3 +192,23 @@ $phe-secondary: #00b092;
   color: limegreen;
   font-family: monospace;
 }
+
+[data-toggle="collapse"] {
+  .glyphicon-eye-open {
+    display: none;
+  }
+
+  .glyphicon-eye-close {
+    display: inherit;
+  }
+}
+
+[data-toggle="collapse"].collapsed {
+  .glyphicon-eye-open {
+    display: inherit;
+  }
+
+  .glyphicon-eye-close {
+    display: none;
+  }
+}

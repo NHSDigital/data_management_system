@@ -486,21 +486,6 @@ class ProjectTest < ActiveSupport::TestCase
     end
   end
 
-  test 'by_project_type scope should return correct projects' do
-    projects = %w[CAS EOI Project Application].map do |project_type|
-      project = build_project(project_type: ProjectType.find_by(name: project_type))
-      project.save!(validate: false)
-      project
-    end
-
-    projects = Project.where(id: projects.pluck(:id))
-
-    assert_equal 4, projects.by_project_type(:all).count
-    assert_equal %w[Application EOI], projects.by_project_type(:odr).map(&:project_type_name).sort
-    assert_equal %w[Project], projects.by_project_type(:project).map(&:project_type_name)
-    assert_equal %w[CAS], projects.by_project_type(:cas).map(&:project_type_name)
-  end
-
   test 'do not email non phe emails on odr transitions' do
     project = build_project(project_type: ProjectType.find_by(name: 'Application'))
     project.save!(validate: false)

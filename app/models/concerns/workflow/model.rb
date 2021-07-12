@@ -95,7 +95,7 @@ module Workflow
     end
 
     def current_state_name
-      current_state&.name(self)
+      current_state&.name(project_type)
     end
 
     def refresh_workflow_state_information

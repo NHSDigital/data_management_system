@@ -15,7 +15,7 @@ class ProjectsController < ApplicationController
 
   def index
     @projects = current_user.projects.active
-    @projects = @projects.my_projects_search(search_params).order(updated_at: :desc)
+    @projects = @projects.search(search_params).order(updated_at: :desc)
     @projects = @projects.paginate(
       page: params[:assigned_projects_page],
       per_page: 10
@@ -26,12 +26,12 @@ class ProjectsController < ApplicationController
     # all tables apart from my_projects are currently scoped to only return mbis and odr
     @projects                     = Project.search(search_params).
                                     accessible_by(current_ability, :read).
-                                    send(dashboard_projects_by_role(current_user)).
-                                    by_project_type(type_filter).
+                                    joins(:project_type).
+                                    merge(ProjectType.pertinent_to_user_role(current_user)).
                                     order(updated_at: :desc)
     @my_projects                  = current_user.projects.
                                     through_grant_of(ProjectRole.fetch(:owner)).
-                                    my_projects_search(search_params).
+                                    search(search_params).
                                     order(updated_at: :desc)
     @assigned_projects            = @projects.assigned_to(current_user, check_temporal: true)
     @unassigned_projects          = @projects.unassigned
@@ -75,7 +75,7 @@ class ProjectsController < ApplicationController
   end
 
   def cas_approvals
-    @projects = Project.my_projects_search(search_params).accessible_by(current_ability, :read).
+    @projects = Project.search(search_params).accessible_by(current_ability, :read).
                 order(updated_at: :desc)
     @my_dataset_approvals = @projects.cas_dataset_approval(current_user, [nil]).
                             order(updated_at: :desc)
@@ -379,14 +379,27 @@ class ProjectsController < ApplicationController
   end
 
   def search_params
-    params.fetch(:search, {}).permit(:name)
+    params.fetch(:search, default_search_params).permit(
+      :name,
+      :application_log,
+      project_type_id: [],
+      owner: %i[
+        first_name
+        last_name
+      ],
+      current_project_state: {
+        state_id: []
+      }
+    )
   end
 
-  def type_filter
-    return :all if search_params[:name].present?
-    return :odr if current_user.odr? && params[:project_type].blank?
-    return :all if params[:project_type].blank?
+  def default_search_params
+    return {} unless current_user.application_manager?
 
-    params[:project_type].to_sym
+    {
+      current_project_state: {
+        state_id: Workflow::State.open.pluck(:id)
+      }
+    }
   end
 end

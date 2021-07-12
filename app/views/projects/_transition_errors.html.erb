@@ -5,7 +5,7 @@
     <% reasons = project.textual_reasons_not_to_transition_to(state) %>
     <% if reasons.any? %>
       <div class="alert alert-danger">
-        <strong>This project cannot move to "<%= state.name(project) %>" for <%= pluralize(reasons.length, 'reason') %>:</strong>
+        <strong>This project cannot move to "<%= state.name(project.project_type) %>" for <%= pluralize(reasons.length, 'reason') %>:</strong>
         <ul>
         <% reasons.each do |reason| %>
           <li><%= reason %></li>

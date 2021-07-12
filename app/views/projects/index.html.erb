@@ -1,8 +1,12 @@
-<%= render 'projects/search', url: projects_path %>
-<%= bootstrap_panel_tag panel_heading_segments(
-  center: content_tag(:h4) { 'Listing Projects' },
-) do %>
-  <%= render 'projects_table', projects: @projects %>
-  <%= will_paginate @projects, class: 'pagination center-block text-center' %>
+<% content_for(:search) do %>
+  <%= render 'search_form', url: projects_path %>
 <% end %>
 
+<%= render layout: 'projects/search_layout' do %>
+  <%= bootstrap_panel_tag panel_heading_segments(
+    center: content_tag(:h4) { 'Listing Projects' },
+  ) do %>
+    <%= render 'projects_table', projects: @projects %>
+    <%= will_paginate @projects, class: 'pagination center-block text-center' %>
+  <% end %>
+<% end %>

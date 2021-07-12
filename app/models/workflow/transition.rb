@@ -11,8 +11,8 @@ module Workflow
     # then a `Transition` should be treated as applicable to any `ProjectType`.
     belongs_to :project_type, optional: true
 
-    scope :applicable_to, ->(project_type) {
-      where(project_type: project_type).
+    scope :applicable_to, ->(*project_types) {
+      where(project_type: project_types).
         or(where(project_type: nil))
     }
 

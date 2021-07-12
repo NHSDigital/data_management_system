@@ -1,0 +1,15 @@
+<div class="row">
+  <div class="col-md-3">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h4 class="panel-title">Search</h4>
+      </div>
+      <div class="panel-body">
+        <%= content_for(:search) %>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-9">
+    <%= yield %>
+  </div>
+</div>

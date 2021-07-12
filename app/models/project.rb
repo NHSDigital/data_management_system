@@ -2,6 +2,7 @@
 class Project < ApplicationRecord
   include Workflow::Model
   include Commentable
+  include Searchable
 
   has_many :project_attachments, as: :attachable, dependent: :destroy
   has_many :project_nodes, dependent: :destroy
@@ -159,10 +160,6 @@ class Project < ApplicationRecord
       joins(:project_type).merge(ProjectType.cas)
   }
 
-  scope :by_project_type, lambda { |type = :all|
-    joins(:project_type).where(project_type: ProjectType.send(type))
-  }
-
   accepts_nested_attributes_for :project_attachments
 
   after_transition_to :status_change_notifier
@@ -171,6 +168,12 @@ class Project < ApplicationRecord
   before_save :nullify_blank_lookups
 
   DATA_SOURCE_ITEM_NO_CLONE_FIELDS = %w[id project_id project_data_source_item_id].freeze
+
+  attr_searchable :name,                  :text_filter
+  attr_searchable :application_log,       :text_filter
+  attr_searchable :project_type_id,       :default_filter
+  attr_searchable :owner,                 :association_filter, kwargs: true # FIXME: See Searchable
+  attr_searchable :current_project_state, :association_filter
 
   class << self
     def unassigned(check_temporal: false)
@@ -670,109 +673,5 @@ class Project < ApplicationRecord
     start_year = date.month < 4 ? date.year - 1 : date.year
 
     Date.new(start_year, 4, 1)..Date.new(start_year + 1, 3, 31)
-  end
-
-  class << self
-    def search(params)
-      return all if params.blank?
-
-      scope = search_filters(all, params)
-      scope = scope.joins(arel_grant(scope)).joins(arel_user).where(grant_filter)
-
-      scope
-    end
-
-    def my_projects_search(params)
-      return all if params.blank?
-
-      scope = search_filters(all, params)
-      scope = scope.joins(additional_grants_join).joins(arel_user_grants_alias_join)
-
-      scope
-    end
-
-    def search_filters(scope, params)
-      filters = []
-      filters << id_filter(params[:name])
-      # project table
-      %i[name application_log].each do |field|
-        filters << field_filter(field, params[:name])
-      end
-      # user table
-      %i[first_name last_name].each do |field|
-        filters << applicant_filter(field, params[:name])
-      end
-
-      filters.compact!
-
-      filters.each_with_index do |filter, i|
-        scope = i.zero? ? scope.where(filter) : scope.or(where(filter))
-      end
-
-      scope
-    end
-
-    private
-
-    def id_filter(text)
-      id_as_string = Arel::Nodes::NamedFunction.new('CAST', [arel_table[:id].as('VARCHAR')])
-      id_as_string.matches("%#{text.strip}%") if text.present?
-    end
-
-    def applicant_filter(field, text)
-      User.arel_table[field].matches("%#{text.strip}%") if text.present?
-    end
-
-    def grant_filter
-      owner_role = ProjectRole.fetch(:owner)
-      { grants: { roleable_type: 'ProjectRole', roleable_id: owner_role.id } }
-    end
-
-    def field_filter(field, text)
-      arel_table[field].matches("%#{text.strip}%") if text.present?
-    end
-
-    def addtional_grants_filter(field, text)
-      Grant.arel_table.alias('grants2')[field].matches("%#{text.strip}%") if text.present?
-    end
-
-    def project_join(scope, join_table, scope_key, join_table_key = nil)
-      # default same field name if not provided
-      join_table_key = scope_key if join_table_key.nil?
-      join_table = join_table.arel_table
-      projects_table = scope.arel_table
-
-      constraints = join_table.create_on(
-        join_table[join_table_key].eq(projects_table[scope_key])
-      )
-      join_table.create_join(join_table, constraints, Arel::Nodes::OuterJoin)
-    end
-
-    def arel_grant(scope)
-      project_join(scope, Grant, :id, :project_id)
-    end
-
-    def arel_user
-      project_join(Grant, User, :user_id, :id)
-    end
-
-    def arel_user_grants_alias_join
-      join_table = User.arel_table
-      grants_table = Grant.arel_table.alias('grants2')
-      constraints = join_table.create_on(
-        join_table[:id].eq(grants_table[:user_id])
-      )
-      join_table.create_join(join_table, constraints, Arel::Nodes::OuterJoin)
-    end
-
-    # for @my_projects
-    def additional_grants_join
-      join_table = Grant.arel_table.alias('grants2')
-      projects_table = Project.arel_table
-      constraints = join_table.create_on(
-        join_table[:project_id].eq(projects_table[:id])
-      )
-      join_table.create_join(join_table, constraints, Arel::Nodes::OuterJoin)
-    end
   end
 end

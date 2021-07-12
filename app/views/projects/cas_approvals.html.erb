@@ -1,17 +1,24 @@
 <h3 class="center-block text-center">My CAS Approvals</h3>
 <hr />
-<%= render 'projects/search', url: cas_approvals_projects_path %>
 
-<% if current_user.cas_dataset_approver? %>
-  <%= bootstrap_panel_tag 'My Dataset Approvals', id: 'my_dataset_approvals' do %>
-    <%= render 'cas_projects_table', projects: @my_dataset_approvals, dataset_link: true %>
-    <%= will_paginate @my_dataset_approvals, class: 'pagination center-block text-center' %>
-  <% end %>
+<% content_for(:search) do %>
+  <%= render 'projects/search_form', url: cas_approvals_projects_path, project_types: ProjectType.cas %>
 <% end %>
 
-<% if current_user.cas_access_approver? %>
-  <%= bootstrap_panel_tag 'My Account Approvals', id: 'my_access_approvals' do %>
-    <%= render 'cas_projects_table', projects: @my_access_approvals %>
-    <%= will_paginate @my_access_approvals, class: 'pagination center-block text-center' %>
+<div id="cas_approvals">
+  <%= render layout: 'projects/search_layout' do %>
+    <% if current_user.cas_dataset_approver? %>
+      <%= bootstrap_panel_tag 'My Dataset Approvals', id: 'my_dataset_approvals' do %>
+        <%= render 'cas_projects_table', projects: @my_dataset_approvals, dataset_link: true %>
+        <%= will_paginate @my_dataset_approvals, class: 'pagination center-block text-center' %>
+      <% end %>
+    <% end %>
+
+    <% if current_user.cas_access_approver? %>
+      <%= bootstrap_panel_tag 'My Account Approvals', id: 'my_access_approvals' do %>
+        <%= render 'cas_projects_table', projects: @my_access_approvals %>
+        <%= will_paginate @my_access_approvals, class: 'pagination center-block text-center' %>
+      <% end %>
+    <% end %>
   <% end %>
-<% end %>
+</div>

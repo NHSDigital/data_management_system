@@ -5,6 +5,10 @@ module Workflow
   class CurrentProjectState < ProjectState
     self.table_name = 'workflow_current_project_states'
 
+    include Searchable
+
+    attr_searchable :state_id, :default_filter
+
     with_options class_name: 'User' do
       belongs_to :assigned_user
       belongs_to :assigning_user

@@ -13,8 +13,25 @@ class ProjectType < ApplicationRecord
   scope :bound_to_team, -> { where.not(name: 'CAS') }
   scope :odr_mbis, -> { where(name: %w[Project EOI Application]) }
 
+  class << self
+    # Scopes `ProjectType` to those most relevant to a given user, in certain use cases (e.g. for
+    # the projects dashboard page).
+    # TODO: Given changes/improvements(?) to project filtering, is this still required?
+    def pertinent_to_user_role(user)
+      return odr_mbis if user.odr? || user.application_manager? || user.senior_application_manager?
+      return project  if user.mbis_delegate? || user.mbis_applicant?
+
+      all
+    end
+  end
+
   def translated_name
-    I18n.t(name.parameterize(separator: '_'), scope: model_name.plural)
+    I18n.t(to_lookup_key, scope: model_name.plural)
+  end
+
+  # TODO: Extract to a concern?
+  def to_lookup_key
+    name.parameterize(separator: '_').to_sym
   end
 
   def available_datasets
