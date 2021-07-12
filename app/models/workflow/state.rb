@@ -43,8 +43,9 @@ module Workflow
       context_keys = project_types.map do |project_type|
         :"#{project_type.to_lookup_key}.#{lookup_key}"
       end
-
+      puts context_keys
       translations = I18n.t(context_keys, scope: model_name.i18n_key, default: '')
+
       translations.uniq!
       translations.reject!(&:blank?)
 
