@@ -22,9 +22,7 @@ class PdfApplicationFacade
 
   delegate_missing_to :project
 
-  define_model_callbacks :validate, :save
-
-  after_validate -> { errors.merge!(project.errors) }
+  define_model_callbacks :save
 
   # Leverage dirty attribute tracking to provide a psuedo :attr_readonly and ensure
   # undesirable changes are not persisted on the update path.
@@ -182,7 +180,9 @@ class PdfApplicationFacade
   end
 
   def valid?
-    super && project.valid?
+    (super && project.valid?).tap do
+      errors.merge!(project.errors)
+    end
   end
 
   def save(validate: true)
