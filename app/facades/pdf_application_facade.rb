@@ -185,7 +185,7 @@ class PdfApplicationFacade
     super && project.valid?
   end
 
-  def save
+  def save(validate: true)
     run_callbacks :save do
       project.transaction do
         create_or_update_applicant!
@@ -199,7 +199,7 @@ class PdfApplicationFacade
         project.lawful_bases.replace(lawful_bases)
         project.classifications.replace(classifications)
 
-        project.save!
+        project.save!(validate: validate)
       end
     end
   rescue ActiveRecord::RecordInvalid => e
