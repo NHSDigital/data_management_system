@@ -126,6 +126,9 @@ en:
           <strong>Note:</strong> Uploading an additional form will not update the applicant,
           organisation or team details.
     import:
+      success: File uploaded successfully!
+      success_with_validity_warning: >
+        File uploaded successfully but project is invalid. Please scroll down and see errors below.
       unpermitted_file_type: 'Unpermitted file type! Expected: "%{expected}" but got "%{got}"'
       ndr_error:
         message_html: >

@@ -6,6 +6,12 @@ class ProjectsController < ApplicationController
 
   before_action -> { authorize! :read, Project }, only: %i[dashboard cas_approvals]
 
+  # If PDF import has accepted invalid data, it will redirect to the edit action here and the
+  # the validation errors/warnings that led to this dance will have been stored in the flash.
+  # These will need merging back into the project instance as if to simulate a failed update
+  # flow. See Projects::ImportsController for more.
+  before_action :rehydrate_errors_and_warnings, only: %i[edit]
+
   # include late to ensure correct callback order
   include Workflow::Controller
   include ProjectsHelper
@@ -212,6 +218,16 @@ class ProjectsController < ApplicationController
   end
 
   private
+
+  def rehydrate_errors_and_warnings
+    return unless hash ||= flash[:validation]
+
+    %w[errors warnings].each do |type|
+      next unless issues ||= hash[type]
+
+      @project.public_send(type).marshal_load([@project, *issues])
+    end
+  end
 
   def data_source_params
     params.permit(:data_source_id)

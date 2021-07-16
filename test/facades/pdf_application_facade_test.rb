@@ -4,8 +4,12 @@ class PDFApplicationFacadeTest < ActiveSupport::TestCase
   def setup
     @team      = teams(:team_one)
     @applicant = users(:standard_user2)
-    @project   = @team.projects.build(project_type: project_types(:application))
-    @facade    = PdfApplicationFacade.new(@project)
+    @project   = @team.projects.build(
+      project_type: project_types(:application),
+      first_contact_date: Time.zone.today
+    )
+
+    @facade = PdfApplicationFacade.new(@project)
   end
 
   test 'should create a new project' do

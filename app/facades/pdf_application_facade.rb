@@ -170,7 +170,6 @@ class PdfApplicationFacade
   def initialize(project, attrs = {})
     super(attrs)
     @project = project
-    @project.pdf_import = true
 
     self.end_uses        = project.end_uses.to_set
     self.lawful_bases    = project.lawful_bases.to_set
@@ -188,7 +187,7 @@ class PdfApplicationFacade
   def save(validate: true)
     run_callbacks :save do
       project.transaction do
-        create_or_update_applicant!
+        create_or_update_applicant
 
         # Changes to sub resource collections are deferred until they can be performed as part of
         # this save transaction. Mutating those collections outside of this transaction can be
@@ -319,7 +318,7 @@ class PdfApplicationFacade
   # TODO: This doesn't feel like the right thing to do...
   # QUESTION: Business logic dictates that we do nothing to the applicant on the update path,
   # but why? We can/do update the applicant details on a subsequent _new_ project/import...
-  def create_or_update_applicant!
+  def create_or_update_applicant
     return if persisted?
 
     User.find_or_initialize_by(email: applicant_email&.strip&.downcase).tap do |user|
@@ -330,7 +329,7 @@ class PdfApplicationFacade
 
       user.grants.find_or_initialize_by(roleable: TeamRole.fetch(:mbis_applicant), team: team)
 
-      user.save!
+      user.save
 
       build_owner_grant(user: user)
     end

@@ -22,6 +22,19 @@ module Projects
     before_action -> { authorize!(:import, @project) }
     before_action :validate_content_type
 
+    # If the project is valid, it saves and redirects to the resource as in a conventional flow.
+    # If the upload is invalid, save it anyway and redirect to the edit page for any issues to
+    # be resolved (any errors/warnings will be marshaled so they can be displayed on the edit
+    # page without having to re-run validation). It would be nice to do a conventional call to
+    # e.g. `render 'projects/edit'` but:
+    # a) The jQuery file upload library is expecting a JSON payload to be returned.
+    # b) I've not found a way to wrangle Turbolinks (client-side) to do what is does under the
+    #    hood to replace page content if I do send HTML back via that payload.
+    # c) Not a blocker, but some massaging of `lookup_context.prefixes` needs to be done to
+    #    even get `render` to not thow exceptions due to missing templates.
+    #
+    # ... so a bit of a redirect dance feels like the easiest approach at this time, even if
+    # it's not the neatest of solutions.
     def create
       begin
         project = PdfApplicationFacade.new(@project)
@@ -37,8 +50,12 @@ module Projects
 
         if project.save
           response_payload[:location] = project_path(project)
+          flash[:notice] = t('projects.import.success')
         else
-          response_payload[:errors] = project.errors.full_messages
+          marshal_errors_and_warnings_for(project)
+          project.save(validate: false)
+          response_payload[:location] = edit_project_path(project)
+          flash[:warning] = t('projects.import.success_with_validity_warning')
         end
       rescue => e # rubocop:disable Style/RescueStandardError
         fingerprint,  = capture_exception(e)
@@ -90,6 +107,23 @@ module Projects
         coerce_utf8!(value) if value.is_a?(String)
 
         yield(attribute, value)
+      end
+    end
+
+    # Store validation errors/warnings in the flash so they can be reapplied after redirection to
+    # the edit page (saves having to run validation multiple times).
+    def marshal_errors_and_warnings_for(project)
+      flash[:validation] = {}
+
+      %w[errors warnings].each do |type|
+        issues = project.public_send(type)
+
+        next if issues.none?
+
+        dump = issues.marshal_dump
+        dump.shift # we don't care about the base object
+
+        flash[:validation][type] = dump
       end
     end
   end

@@ -40,12 +40,14 @@
           </tr>
         </thead>
         <tbody>
-          <tr class="bg-info" id="<%= dom_id(@project.owner) %>">
-            <td><%= @project.owner.full_name %></td>
-            <td><%= "#{@project.owner.email} #{project_owner_text}" %></td>
-            <td></td>
-            <td></td>
-          </tr>
+          <% if @project.owner %>
+            <tr class="bg-info" id="<%= dom_id(@project.owner) %>">
+              <td><%= @project.owner.full_name %></td>
+              <td><%= "#{@project.owner.email} #{project_owner_text}" %></td>
+              <td></td>
+              <td></td>
+            </tr>
+          <% end %>
           <% @project.grants.without_project_owner.each do |grant| %>
             <tr class='project_members_table' id="<%= dom_id(grant.user) %>">
               <% if grant.user.flagged_as_deleted? %>

@@ -24,6 +24,9 @@ class ProjectImportTest < ActionDispatch::IntegrationTest
   test 'should be able to import application PDF forms as an :application_manager role' do
     team = teams(:team_two)
 
+    # because right now a project is complete invalid without it...
+    Project.any_instance.stubs(first_contact_date: Time.zone.today)
+
     visit team_path(team)
     assert_equal team_path(team), current_path
 
@@ -40,6 +43,31 @@ class ProjectImportTest < ActionDispatch::IntegrationTest
         within '#project_header' do
           assert has_text? 'My Test Import Project'
         end
+
+        assert has_text?('File uploaded successfully!')
+        assert has_no_text?(/\d+ errors prevented this record from being saved/)
+      end
+    end
+  end
+
+  test 'should import even if project is invalid' do
+    team = teams(:team_two)
+
+    visit team_path(team)
+    assert_equal team_path(team), current_path
+
+    click_button 'Import'
+
+    assert_difference -> { team.projects.count } do
+      assert_difference -> { ProjectAttachment.count } do
+        file = Pathname.new(fixture_path).join('files', 'odr_data_request_form_v5-alpha.6.pdf')
+
+        attach_file(file) do
+          find('.glyphicon-inbox').click
+        end
+
+        assert has_text?(/File uploaded successfully but project is invalid/)
+        assert has_text?(/\d+ errors prevented this record from being saved/)
       end
     end
   end
@@ -51,22 +79,6 @@ class ProjectImportTest < ActionDispatch::IntegrationTest
     assert_equal team_path(team), current_path
 
     click_button 'Import'
-
-    # Invalid record(s)...
-    assert_no_difference -> { team.projects.count } do
-      file = Pathname.new(fixture_path).join('files', 'odr_data_request_form_v6-alpha.blank.pdf')
-
-      attach_file(file) do
-        find('.glyphicon-inbox').click
-      end
-
-      within_modal do
-        assert has_text? 'Could not import file!'
-        assert has_text? "Email can't be blank"
-
-        click_button 'OK'
-      end
-    end
 
     # Wrong file type...
     assert_no_difference -> { team.projects.count } do
