@@ -180,7 +180,7 @@ class PdfApplicationFacade
   end
 
   def valid?
-    (super && project.valid?).tap do
+    (super & project.valid?).tap do
       errors.merge!(project.errors)
     end
   end
