@@ -75,7 +75,7 @@ class ProjectsHelperTest < ActionView::TestCase
 
     @project.project_type.stubs(name: 'Application')
     @project.stubs(first_contact_date: Date.parse('2021/03/03'))
-    expected = "<small>ODR Reference: ODR_2020_2021_#{@project.id}</small>"
+    expected = "<small>ODR Reference: ODR_2021_#{@project.id}</small>"
     assert_equal expected, odr_reference(@project)
   end
 

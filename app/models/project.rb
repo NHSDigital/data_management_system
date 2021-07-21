@@ -498,8 +498,11 @@ class Project < ApplicationRecord
     return unless odr?
     return unless first_contact_date
 
-    application_fyear = financial_year(first_contact_date)
-    "ODR_#{application_fyear.first.year}_#{application_fyear.last.year}_#{id}"
+    fy_start, fy_end = financial_year(first_contact_date).minmax.map! do |date|
+      date.strftime('%y')
+    end
+
+    "ODR_#{fy_start}#{fy_end}_#{id}"
   end
 
   def next_amendment_reference

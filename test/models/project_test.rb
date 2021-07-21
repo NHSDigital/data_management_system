@@ -524,7 +524,7 @@ class ProjectTest < ActiveSupport::TestCase
     # 1 owner of application
     assert_difference 'Notification.count', 1 do
       assert_emails 3 do
-        project.odr_approval_needed_notification 
+        project.odr_approval_needed_notification
       end
     end
   end
@@ -575,12 +575,12 @@ class ProjectTest < ActiveSupport::TestCase
 
   test 'returns an ODR application_log based of financialy year and id if application_log is nil' do
     %i[eoi application].each do |type|
-      assert_application_log('ODR_2020_2021_', name: 'application log test 1',
-                                               project_type: project_types(type),
-                                               first_contact_date: Date.parse('2021/03/31'))
-      assert_application_log('ODR_2021_2022_', name: 'application log test 2',
-                                               project_type: project_types(type),
-                                               first_contact_date: Date.parse('2021/04/01'))
+      assert_application_log('ODR_2021_', name: 'application log test 1',
+                                          project_type: project_types(type),
+                                          first_contact_date: Date.parse('2021/03/31'))
+      assert_application_log('ODR_2122_', name: 'application log test 2',
+                                          project_type: project_types(type),
+                                          first_contact_date: Date.parse('2021/04/01'))
     end
   end
 
