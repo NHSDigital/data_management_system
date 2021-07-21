@@ -44,7 +44,7 @@ module Workflow
         :"#{project_type.to_lookup_key}.#{lookup_key}"
       end
 
-      translations = I18n.t(context_keys, scope: model_name.i18n_key, default: '')
+      translations = context_keys.map { |key| I18n.t(key, scope: model_name.i18n_key, default: '') }
       translations.uniq!
       translations.reject!(&:blank?)
 
