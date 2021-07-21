@@ -28,7 +28,9 @@ module Import
 
           CDNA_REGEX_PROT = /c\.(?<cdna>.+)(?=(_|;.)p\.(?<impact>.+))/i.freeze
           CDNA_REGEX_NOPROT = /c\.(?<cdna>.+)/i.freeze
-          DEL_DUP_REGEX = /(?<deldup>(Deletion|Duplication)) exon(s)? (?<exon>\d+(-\d+)?)|exon(s)? (?<exon>\d+(-\d+)?) (?<deldup>(Deletion|Duplication))/i.freeze
+          DEL_DUP_REGEX = /(?<deldup>(Deletion|Duplication))\sexon(s)?\s(?<exon>\d+(-\d+)?)|
+                           exon(s)?\s(?<exon>\d+(-\d+)?)
+                           \s(?<deldup>(Deletion|Duplication))/ix.freeze
 
           def initialize(batch)
             @failed_genotype_counter = 0
@@ -107,10 +109,7 @@ module Import
           end
 
           def process_variant(genotype, record)
-            if record.raw_fields['teststatus'].nil?
-              @logger.debug 'NO VARIANT DETECTED'
-              return
-            end
+            return @logger.debug('NO VARIANT DETECTED') if record.raw_fields['teststatus'].nil?
 
             variant = record.raw_fields['teststatus']
             if CDNA_REGEX_PROT.match(variant)
