@@ -379,7 +379,7 @@ class ProjectsController < ApplicationController
   end
 
   def search_params
-    params.fetch(:search, default_search_params).permit(
+    params.fetch(:search, {}).permit(
       :name,
       :application_log,
       project_type_id: [],
@@ -391,15 +391,5 @@ class ProjectsController < ApplicationController
         state_id: []
       }
     )
-  end
-
-  def default_search_params
-    return {} unless current_user.application_manager?
-
-    {
-      current_project_state: {
-        state_id: Workflow::State.open.pluck(:id)
-      }
-    }
   end
 end
