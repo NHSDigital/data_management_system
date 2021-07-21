@@ -211,50 +211,6 @@ class ProjectsController < ApplicationController
     end
   end
 
-  # POST /team/:id/import
-  # Endpoint to support (drag/drop) upload of PDF data applications.
-  # TODO: Diet!
-  def import
-    upload  = params[:file]
-    payload = { name: upload.original_filename, size: upload.size, location: nil, errors: [] }
-
-    if upload.content_type.in? %w[application/pdf]
-      begin
-        reader  = PDF::Reader.new(upload.tempfile)
-        project = PdfApplicationFacade.new(@project) do |resource|
-          resource.project_type  = ProjectType.find_by(name: 'Application')
-          resource.assigned_user = current_user # should only be ODR application managers doing this
-          acroform_data          = reader.acroform_data.transform_values(&:presence)
-
-          acroform_data.transform_keys(&:underscore).each do |attribute, value|
-            attribute = "article_#{attribute}" if attribute =~ /\A\d\w\z/
-            coerce_utf8!(value) if value.is_a?(String)
-            resource.try("#{attribute}=", value)
-          end
-
-          resource.project_attachments.build(name: 'Application Form', upload: upload)
-        end
-
-        if project.save
-          payload[:location] = project_path(@project)
-        else
-          payload[:errors] = project.errors.full_messages
-        end
-      rescue => e
-        fingerprint, _log = capture_exception(e)
-        payload[:errors] << t('projects.import.ndr_error.message_html', fingerprint: fingerprint.id)
-      end
-    else
-      payload[:errors] << 'Unpermitted file type'
-    end
-
-    respond_to do |format|
-      format.json do
-        render json: { files: [payload] }
-      end
-    end
-  end
-
   private
 
   def data_source_params

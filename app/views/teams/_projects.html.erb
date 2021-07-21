@@ -28,7 +28,7 @@
         <% if true || current_user.can?(:import, Project) %>
           <div class="collapse" id="pdfImport">
             <div class="panel-body">
-              <%= render 'projects/import' %>
+              <%= render 'projects/import', url: import_team_projects_path(@team) %>
             </div>
           </div>
         <% end %>

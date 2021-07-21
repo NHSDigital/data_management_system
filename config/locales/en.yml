@@ -120,7 +120,13 @@ en:
       submitted: Pending
       rejected: Closed
   projects:
+    edit:
+      upload:
+        guidance_html: >
+          <strong>Note:</strong> Uploading an additional form will not update the applicant,
+          organisation or team details.
     import:
+      unpermitted_file_type: 'Unpermitted file type! Expected: "%{expected}" but got "%{got}"'
       ndr_error:
         message_html: >
           An unexpected error prevented the system from processing this file.

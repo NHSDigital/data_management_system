@@ -92,6 +92,7 @@ class Project < ApplicationRecord
     delegate :full_name,       to: :assigned_user
   end
 
+  delegate :supports_pdf_import?, to: :project_type
   delegate :project?, :eoi?, :application?, :cas?, to: :project_type_inquirer
 
   with_options reject_if: :all_blank, allow_destroy: true do

@@ -1,5 +1,5 @@
-<div class="well" data-controller="pdf-import" style="margin-bottom: 0px;">
-  <%= form_with url: import_team_projects_path(@team), scope: :project, multipart: true do |form| %>
+<div class="well" data-controller="pdf-import">
+  <%= form_with url: url, scope: :project, multipart: true do |form| %>
     <div class="dropzone" data-target="pdf-import.dropzone" style="height: 150px;">
       <div class="dropzone-content-center text-center">
         <div class="dropzone-input">

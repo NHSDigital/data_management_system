@@ -220,8 +220,10 @@ Rails.application.routes.draw do
       end
 
       collection do
-        post :import
+        post :import, controller: 'projects/imports', action: :create
       end
+
+      resources :imports, only: :create, controller: 'projects/imports'
 
       resource :details, only: [], concerns: %i[approvable], module: 'projects/details'
       resource :legal,   only: [], concerns: %i[approvable], module: 'projects/legal'

@@ -2,31 +2,155 @@ require 'test_helper'
 
 class PDFApplicationFacadeTest < ActiveSupport::TestCase
   def setup
-    team = teams(:team_one)
-    @project = team.projects.build(project_type: project_types(:application))
-    @facade = PdfApplicationFacade.new(@project)
-  end
-
-  test 'should only be used with new projects' do
-    assert_raises do
-      PdfApplicationFacade.new(projects(:one))
-    end
+    @team      = teams(:team_one)
+    @applicant = users(:standard_user2)
+    @project   = @team.projects.build(project_type: project_types(:application))
+    @facade    = PdfApplicationFacade.new(@project)
   end
 
   test 'should create a new project' do
-    team = teams(:team_one)
-    user = team.users.first
+    assert_difference -> { @team.projects.count } do
+      with_minimal_viable_data(@facade, @applicant) do
+        @facade.save
+      end
+    end
+  end
 
-    # Realistically, an application would have a lot more data items, but I'm lazy...
-    @facade.applicant_first_name = user.first_name
-    @facade.applicant_surname    = user.last_name
-    @facade.applicant_email      = user.email
-    @facade.project_title        = 'PDF Application Test'
-    @facade.project_purpose      = 'To challenge my sanity'
-    @facade.project_start_date   = Time.zone.today
+  test 'should update an existing project' do
+    project = projects(:one)
+    facade  = PdfApplicationFacade.new(project)
 
-    assert_difference -> { team.projects.count } do
-      @facade.save
+    assert_no_difference -> { @team.projects.count } do
+      assert_changes -> { project.updated_at } do
+        facade.project_title = 'Updated PDF Project Test'
+        facade.save
+
+        assert_equal 'Updated PDF Project Test', project.name
+      end
+    end
+  end
+
+  test 'updating a project should not create new applicant' do
+    project = projects(:one)
+    facade  = PdfApplicationFacade.new(project)
+
+    assert_no_difference -> { User.count } do
+      facade.applicant_email = 'scooby.doo@example.com'
+      facade.save
+    end
+  end
+
+  test 'updating a project should not change applicant details' do
+    project = projects(:one)
+    owner   = project.owner
+    facade  = PdfApplicationFacade.new(project)
+
+    assert_no_changes -> { owner.reload.first_name } do
+      facade.applicant_first_name = owner.first_name.reverse
+      facade.save
+    end
+  end
+
+  test 'updating a project should not change organisation details' do
+    project = projects(:one)
+    facade  = PdfApplicationFacade.new(project)
+
+    facade.organisation_department = 'New Dept.'
+    facade.organisation_name       = 'New Inc.'
+    facade.organisation_add1       = 'New Addy 1'
+    facade.organisation_add2       = 'New Addy 2'
+    facade.organisation_city       = 'New Jack City'
+    facade.organisation_postcode   = 'AA11 1AA'
+    facade.organisation_country    = 'ABW'
+    facade.organisation_country_id = 'ABW'
+
+    facade.save
+    project.reload
+
+    refute_equal 'New Dept.',     project.organisation_department
+    refute_equal 'New Inc.',      project.organisation_name
+    refute_equal 'New Addy 1',    project.organisation_add1
+    refute_equal 'New Addy 2',    project.organisation_add2
+    refute_equal 'New Jack City', project.organisation_city
+    refute_equal 'AA11 1AA',      project.organisation_postcode
+    refute_equal 'ABW',           project.organisation_country
+    refute_equal 'ABW',           project.organisation_country_id
+  end
+
+  test 'updating a project should allow changes to sponsor/funder organisation' do
+    project = projects(:one)
+
+    project.update!(
+      organisation_add1:       project.organisation.add1,
+      organisation_add2:       project.organisation.add2,
+      organisation_city:       project.organisation.city,
+      organisation_postcode:   project.organisation.postcode,
+      organisation_country:    project.organisation.country.value,
+      organisation_country_id: project.organisation.country_id,
+      sponsor_name:            'Previous Sponsor Inc.',
+      sponsor_add1:            'Previous Sponsor Addy 1',
+      sponsor_add2:            'Previous Sponsor Addy 2',
+      sponsor_city:            'Previous Sponsor City',
+      sponsor_postcode:        'BB22 2BB',
+      sponsor_country_id:      'AFG',
+      funder_name:             'Previous Funder Inc.',
+      funder_add1:             'Previous Funder Addy 1',
+      funder_add2:             'Previous Funder Addy 2',
+      funder_city:             'Previous Funder City',
+      funder_postcode:         'BB22 2BB',
+      funder_country_id:       'AFG'
+    )
+
+    facade = PdfApplicationFacade.new(project)
+
+    facade.organisation_name        = 'New Inc.'
+    facade.organisation_add1        = 'New Addy 1'
+    facade.organisation_add2        = 'New Addy 2'
+    facade.organisation_city        = 'New Jack City'
+    facade.organisation_postcode    = 'AA11 1AA'
+    facade.organisation_country     = 'ABW'
+    facade.organisation_country_id  = 'ABW'
+
+    facade.sponsor_name             = 'New Sponsor Inc.'
+    facade.sponsor_add1             = 'New Sponsor Addy 1'
+    facade.sponsor_add2             = 'New Sponsor Addy 2'
+    facade.sponsor_city             = 'New Sponsor City'
+    facade.sponsor_postcode         = 'CC33 3CC'
+    facade.sponsor_country          = 'AGO'
+
+    facade.funder_same_as_applicant = true
+
+    facade.save
+
+    assert_equal 'New Sponsor Inc.',              project.sponsor_name
+    assert_equal 'New Sponsor Addy 1',            project.sponsor_add1
+    assert_equal 'New Sponsor Addy 2',            project.sponsor_add2
+    assert_equal 'New Sponsor City',              project.sponsor_city
+    assert_equal 'CC33 3CC',                      project.sponsor_postcode
+    assert_equal 'AGO',                           project.sponsor_country_id
+
+    refute_equal 'New Inc.',                      project.funder_name
+    refute_equal 'New Addy 1',                    project.funder_add1
+    refute_equal 'New Addy 2',                    project.funder_add2
+    refute_equal 'New Jack City',                 project.funder_city
+    refute_equal 'AA11 1AA',                      project.funder_postcode
+    refute_equal 'ABW',                           project.funder_country_id
+
+    assert_equal project.organisation_name,       project.funder_name
+    assert_equal project.organisation_add1,       project.funder_add1
+    assert_equal project.organisation_add2,       project.funder_add2
+    assert_equal project.organisation_city,       project.funder_city
+    assert_equal project.organisation_postcode,   project.funder_postcode
+    assert_equal project.organisation_country_id, project.funder_country_id
+  end
+
+  test 'updating a project should not change attributes marked as read-only' do
+    project = projects(:one)
+    facade  = PdfApplicationFacade.new(project)
+
+    assert_no_changes -> { project[:application_log] } do
+      facade.application_log = SecureRandom.hex
+      facade.save
     end
   end
 
@@ -47,47 +171,71 @@ class PDFApplicationFacadeTest < ActiveSupport::TestCase
 
   test 'should assign associated end uses' do
     project = @facade.project
+    end_use = end_uses(:one)
 
-    assert_no_difference -> { project.end_uses.count } do
-      assert_difference -> { project.end_uses.size } do
-        @facade.research = :Yes
-        assert_includes project.end_uses, end_uses(:one)
+    with_minimal_viable_data(@facade, @applicant) do
+      @facade.research = :Yes
+
+      assert_includes @facade.end_uses, end_use
+      refute_includes project.end_uses, end_use
+
+      assert_difference -> { project.end_uses.count } do
+        @facade.save
+        assert_includes project.end_uses, end_use
       end
-    end
 
-    assert_no_difference -> { project.end_uses.count } do
-      assert_no_difference -> { project.end_uses.size } do
-        @facade.service_evaluation = :Off
-        refute_includes project.end_uses, end_uses(:two)
+      @facade.research = :Off
+
+      refute_includes @facade.end_uses, end_use
+      assert_includes project.end_uses, end_use
+
+      assert_difference -> { project.end_uses.count }, -1 do
+        @facade.save
+        refute_includes project.end_uses, end_use
       end
     end
   end
 
   test 'should assign associated classifications' do
     project = @facade.project
+    classification = classifications(:three)
 
-    assert_no_difference -> { project.classifications.count } do
-      assert_difference -> { project.classifications.size } do
-        @facade.level_of_identifiability = :PersonallyIdentifiable
-        assert_includes project.classifications, classifications(:three)
+    with_minimal_viable_data(@facade, @applicant) do
+      @facade.level_of_identifiability = :PersonallyIdentifiable
+
+      assert_includes @facade.classifications, classification
+      refute_includes project.classifications, classification
+
+      assert_difference -> { project.classifications.count } do
+        @facade.save
+        assert_includes project.classifications, classification
       end
     end
   end
 
   test 'should assign associated lawful bases' do
     project = @facade.project
+    basis   = lookups_lawful_basis(:'6.1a')
 
-    assert_no_difference -> { project.lawful_bases.count } do
-      assert_difference -> { project.lawful_bases.size } do
-        @facade.article_6a = :Yes
-        assert_includes project.lawful_bases, lookups_lawful_basis(:'6.1a')
+    with_minimal_viable_data(@facade, @applicant) do
+      @facade.article_6a = :Yes
+
+      assert_includes @facade.lawful_bases, basis
+      refute_includes project.lawful_bases, basis
+
+      assert_difference -> { project.lawful_bases.count } do
+        @facade.save
+        assert_includes project.lawful_bases, basis
       end
-    end
 
-    assert_no_difference -> { project.lawful_bases.count } do
-      assert_no_difference -> { project.lawful_bases.size } do
-        @facade.article_9b = :Off
-        refute_includes project.lawful_bases, lookups_lawful_basis(:'9.2b')
+      @facade.article_6a = :Off
+
+      refute_includes @facade.lawful_bases, basis
+      assert_includes project.lawful_bases, basis
+
+      assert_difference -> { project.lawful_bases.count }, -1 do
+        @facade.save
+        refute_includes project.lawful_bases, basis
       end
     end
   end
@@ -190,83 +338,111 @@ class PDFApplicationFacadeTest < ActiveSupport::TestCase
   end
 
   test 'should complete sponsor organisation fields when same as applicant organisation' do
-    @facade.update(name: 'blah', owner: users(:standard_user), organisation_add1: '134',
-                   organisation_add2: 'Test Lane', organisation_city: 'Testville',
-                   organisation_postcode: 'T3ST 1NG', organisation_country: 'UNITED KINGDOM')
-    @facade.sponsor_same_as_applicant = true
-    @facade.organisation_name = 'Test Org Name'
-    @facade.save
+    with_minimal_viable_data(@facade, @applicant) do
+      @facade.assign_attributes(
+        organisation_name:     'Test Org Name',
+        organisation_add1:     '134',
+        organisation_add2:     'Test Lane',
+        organisation_city:     'Testville',
+        organisation_postcode: 'T3ST 1NG',
+        organisation_country:  'UNITED KINGDOM'
+      )
 
-    assert_equal @facade.sponsor_name,       'Test Org Name'
-    assert_equal @facade.sponsor_add1,       '134'
-    assert_equal @facade.sponsor_add2,       'Test Lane'
-    assert_equal @facade.sponsor_city,       'Testville'
-    assert_equal @facade.sponsor_postcode,   'T3ST 1NG'
-    assert_equal @facade.sponsor_country_id, 'XKU'
+      @facade.sponsor_same_as_applicant = true
+      @facade.save
+
+      assert_equal 'Test Org Name', @facade.sponsor_name
+      assert_equal '134',           @facade.sponsor_add1
+      assert_equal 'Test Lane',     @facade.sponsor_add2
+      assert_equal 'Testville',     @facade.sponsor_city
+      assert_equal 'T3ST 1NG',      @facade.sponsor_postcode
+      assert_equal 'XKU',           @facade.sponsor_country_id
+    end
   end
 
   test 'should not complete sponsor organisation fields when not same as applicant organisation' do
-    @facade.update(name: 'blah', owner: users(:standard_user), organisation_add1: '134',
-                   organisation_add2: 'Test Lane', organisation_city: 'Testville',
-                   organisation_postcode: 'T3ST 1NG', organisation_country: 'UNITED KINGDOM')
-    @facade.sponsor_same_as_applicant = false
-    @facade.organisation_name = 'Test Org Name'
-    @facade.save
+    with_minimal_viable_data(@facade, @applicant) do
+      @facade.assign_attributes(
+        organisation_name:     'Test Org Name',
+        organisation_add1:     '134',
+        organisation_add2:     'Test Lane',
+        organisation_city:     'Testville',
+        organisation_postcode: 'T3ST 1NG',
+        organisation_country:  'UNITED KINGDOM'
+      )
 
-    refute_equal @facade.sponsor_name,       'Test Org Name'
-    refute_equal @facade.sponsor_add1,       '134'
-    refute_equal @facade.sponsor_add2,       'Test Lane'
-    refute_equal @facade.sponsor_city,       'Testville'
-    refute_equal @facade.sponsor_postcode,   'T3ST 1NG'
-    refute_equal @facade.sponsor_country_id, 'XKU'
+      @facade.sponsor_same_as_applicant = false
+      @facade.save
+
+      refute_equal 'Test Org Name', @facade.sponsor_name
+      refute_equal '134',           @facade.sponsor_add1
+      refute_equal 'Test Lane',     @facade.sponsor_add2
+      refute_equal 'Testville',     @facade.sponsor_city
+      refute_equal 'T3ST 1NG',      @facade.sponsor_postcode
+      refute_equal 'XKU',           @facade.sponsor_country_id
+    end
   end
 
   test 'should complete funder organisation fields when same as applicant organisation' do
-    @facade.update(name: 'blah', owner: users(:standard_user), organisation_add1: '134',
-                   organisation_add2: 'Test Lane', organisation_city: 'Testville',
-                   organisation_postcode: 'T3ST 1NG', organisation_country: 'UNITED KINGDOM')
-    @facade.funder_same_as_applicant = true
-    @facade.organisation_name = 'Test Org Name'
-    @facade.save
+    with_minimal_viable_data(@facade, @applicant) do
+      @facade.assign_attributes(
+        organisation_name:     'Test Org Name',
+        organisation_add1:     '134',
+        organisation_add2:     'Test Lane',
+        organisation_city:     'Testville',
+        organisation_postcode: 'T3ST 1NG',
+        organisation_country:  'UNITED KINGDOM'
+      )
 
-    assert_equal @facade.funder_name,       'Test Org Name'
-    assert_equal @facade.funder_add1,       '134'
-    assert_equal @facade.funder_add2,       'Test Lane'
-    assert_equal @facade.funder_city,       'Testville'
-    assert_equal @facade.funder_postcode,   'T3ST 1NG'
-    assert_equal @facade.funder_country_id, 'XKU'
+      @facade.funder_same_as_applicant = true
+      @facade.save
+
+      assert_equal 'Test Org Name', @facade.funder_name
+      assert_equal '134',           @facade.funder_add1
+      assert_equal 'Test Lane',     @facade.funder_add2
+      assert_equal 'Testville',     @facade.funder_city
+      assert_equal 'T3ST 1NG',      @facade.funder_postcode
+      assert_equal 'XKU',           @facade.funder_country_id
+    end
   end
 
   test 'should not complete funder organisation fields when not same as applicant organisation' do
-    @facade.update(name: 'blah', owner: users(:standard_user), organisation_add1: '134',
-                   organisation_add2: 'Test Lane', organisation_city: 'Testville',
-                   organisation_postcode: 'T3ST 1NG', organisation_country: 'UNITED KINGDOM')
-    @facade.funder_same_as_applicant = false
-    @facade.organisation_name = 'Test Org Name'
-    @facade.save
+    with_minimal_viable_data(@facade, @applicant) do
+      @facade.assign_attributes(
+        organisation_name:     'Test Org Name',
+        organisation_add1:     '134',
+        organisation_add2:     'Test Lane',
+        organisation_city:     'Testville',
+        organisation_postcode: 'T3ST 1NG',
+        organisation_country:  'UNITED KINGDOM'
+      )
 
-    refute_equal @facade.funder_name,       'Test Org Name'
-    refute_equal @facade.funder_add1,       '134'
-    refute_equal @facade.funder_add2,       'Test Lane'
-    refute_equal @facade.funder_city,       'Testville'
-    refute_equal @facade.funder_postcode,   'T3ST 1NG'
-    refute_equal @facade.funder_country_id, 'XKU'
+      @facade.funder_same_as_applicant = false
+      @facade.save
+
+      refute_equal 'Test Org Name', @facade.funder_name
+      refute_equal '134',           @facade.funder_add1
+      refute_equal 'Test Lane',     @facade.funder_add2
+      refute_equal 'Testville',     @facade.funder_city
+      refute_equal 'T3ST 1NG',      @facade.funder_postcode
+      refute_equal 'XKU',           @facade.funder_country_id
+    end
   end
 
   test 'should set sponsor country if id provided instead of country name' do
-    @facade.update(organisation_country: 'XKU')
+    @facade.organisation_country      = 'XKU'
     @facade.sponsor_same_as_applicant = true
     @facade.save
 
-    assert_equal @facade.sponsor_country_id, 'XKU'
+    assert_equal 'XKU', @facade.sponsor_country_id
   end
 
   test 'should set country if id provided instead of country name' do
-    @facade.update(organisation_country: 'XKU')
+    @facade.organisation_country     = 'XKU'
     @facade.funder_same_as_applicant = true
     @facade.save
 
-    assert_equal @facade.funder_country_id, 'XKU'
+    assert_equal 'XKU', @facade.funder_country_id
   end
 
   test 'should map incoming pdf level_of_identifiability symbol into correct mapped string' do
@@ -318,5 +494,21 @@ class PDFApplicationFacadeTest < ActiveSupport::TestCase
     @facade.programme_support_id = 'Not applicable'
 
     assert_equal 3, @project.programme_support_id
+  end
+
+  private
+
+  def with_minimal_viable_data(facade, user)
+    # Realistically, an application would have a lot more data items, but I'm lazy...
+    facade.assign_attributes(
+      applicant_first_name: user.first_name,
+      applicant_surname:    user.last_name,
+      applicant_email:      user.email,
+      project_title:        'PDF Application Test',
+      project_purpose:      'To challenge my sanity',
+      project_start_date:   Time.zone.today
+    )
+
+    yield
   end
 end

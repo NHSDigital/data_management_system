@@ -34,6 +34,10 @@ class ProjectType < ApplicationRecord
     name.parameterize(separator: '_').to_sym
   end
 
+  def supports_pdf_import?
+    name == 'Application'
+  end
+
   def available_datasets
     datasets.empty? ? published_datasets : datasets
   end

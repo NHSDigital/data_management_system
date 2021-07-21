@@ -4,6 +4,18 @@ class PdfApplicationFacade
   include ActiveModel::Attributes
   extend  ActiveModel::Callbacks
 
+  READ_ONLY_ATTRIBUTES = %i[
+    application_log
+    organisation_name
+    organisation_department
+    organisation_add1
+    organisation_add2
+    organisation_city
+    organisation_postcode
+    organisation_country
+    organisation_country_id
+  ].freeze
+
   attr_reader :project
 
   delegate :persisted?, :new_record?, to: :project
@@ -13,6 +25,10 @@ class PdfApplicationFacade
   define_model_callbacks :validate, :save
 
   after_validate -> { errors.merge!(project.errors) }
+
+  # Leverage dirty attribute tracking to provide a psuedo :attr_readonly and ensure
+  # undesirable changes are not persisted on the update path.
+  before_save -> { project.restore_attributes(READ_ONLY_ATTRIBUTES) if persisted? }
 
   before_save :assign_project_end_date
   before_save -> { copy_organisation_details(:sponsor) }
@@ -43,6 +59,10 @@ class PdfApplicationFacade
 
   attribute :security_assurance_applicant
   attribute :security_assurance_outsourced
+
+  attribute :end_uses
+  attribute :lawful_bases
+  attribute :classifications
 
   alias_attribute :org_department,              :organisation_department
   alias_attribute :org_add1,                    :organisation_add1
@@ -114,8 +134,12 @@ class PdfApplicationFacade
         attribute name, :boolean, default: false
 
         define_method("#{name}=") do |value|
-          value = cast_acroform_boolean(value)
-          project.end_uses << end_use if value
+          if (value = cast_acroform_boolean(value))
+            end_uses.add(end_use)
+          else
+            end_uses.delete(end_use)
+          end
+
           super(value)
         end
       end
@@ -130,8 +154,12 @@ class PdfApplicationFacade
         attribute name, :boolean, default: false
 
         define_method("#{name}=") do |value|
-          value = cast_acroform_boolean(value)
-          project.lawful_bases << lawful_basis if value
+          if (value = cast_acroform_boolean(value))
+            lawful_bases.add(lawful_basis)
+          else
+            lawful_bases.delete(lawful_basis)
+          end
+
           super(value)
         end
       end
@@ -144,9 +172,10 @@ class PdfApplicationFacade
     super(attrs)
     @project = project
     @project.pdf_import = true
-    # Be clear about usage/limitations. Right now this class is only intended as a
-    # shim/helper for creating new projects from PDF application forms...
-    raise 'Not for use with persisted projects!' if persisted?
+
+    self.end_uses        = project.end_uses.to_set
+    self.lawful_bases    = project.lawful_bases.to_set
+    self.classifications = project.classifications.to_set
 
     yield(self) if block_given?
   end
@@ -158,8 +187,17 @@ class PdfApplicationFacade
   def save
     run_callbacks :save do
       project.transaction do
-        user = create_or_update_applicant!
-        project.build_owner_grant(user: user)
+        create_or_update_applicant!
+
+        # Changes to sub resource collections are deferred until they can be performed as part of
+        # this save transaction. Mutating those collections outside of this transaction can be
+        # risky if it leads to those changes being persisted prematurely; if those changes are
+        # committed but this save operation fails, then the data could be left in a bit of an
+        # inconsistent/corrupted state.
+        project.end_uses.replace(end_uses)
+        project.lawful_bases.replace(lawful_bases)
+        project.classifications.replace(classifications)
+
         project.save!
       end
     end
@@ -169,8 +207,7 @@ class PdfApplicationFacade
   end
 
   def level_of_identifiability=(value)
-    classification = fetch_classification(value)
-    project.classifications.replace(Array.wrap(classification))
+    classifications.replace([fetch_classification(value)])
     project.level_of_identifiability = fetch_level_of_identifiability(value)
   end
 
@@ -279,7 +316,11 @@ class PdfApplicationFacade
   end
 
   # TODO: This doesn't feel like the right thing to do...
+  # QUESTION: Business logic dictates that we do nothing to the applicant on the update path,
+  # but why? We can/do update the applicant details on a subsequent _new_ project/import...
   def create_or_update_applicant!
+    return if persisted?
+
     User.find_or_initialize_by(email: applicant_email&.strip&.downcase).tap do |user|
       user.first_name = applicant_first_name
       user.last_name  = applicant_surname
@@ -289,6 +330,8 @@ class PdfApplicationFacade
       user.grants.find_or_initialize_by(roleable: TeamRole.fetch(:mbis_applicant), team: team)
 
       user.save!
+
+      build_owner_grant(user: user)
     end
   end
 
@@ -302,7 +345,7 @@ class PdfApplicationFacade
     return unless send("#{target}_same_as_applicant")
 
     project.assign_attributes(
-      "#{target}_name":       organisation_name,
+      "#{target}_name":       persisted? ? project.organisation_name : organisation_name,
       "#{target}_add1":       organisation_add1,
       "#{target}_add2":       organisation_add2,
       "#{target}_city":       organisation_city,

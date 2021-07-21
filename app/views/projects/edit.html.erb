@@ -1,3 +1,8 @@
 <%= render layout: 'projects/layout' do %>
+  <% if current_user.can?(:import, @project) && @project.supports_pdf_import? %>
+    <%= bootstrap_alert_tag(:info, t('projects.edit.upload.guidance_html')) %>
+    <%= render 'projects/import', url: project_imports_path(@project) %>
+  <% end %>
+
   <%= render project_form_path(@project), project: @project, readonly: false  %>
 <% end %>
