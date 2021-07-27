@@ -298,13 +298,11 @@ module Import
                   process_single_mutation(genotype_dup, genetic_info, gene, genotypes)
                   genotypes
                 elsif mutations.join.split(',').size > 1
-                  malformed_mutations = genetic_info.compact.map do |s|
-                    s.gsub(/\s+/, '')
-                  end.uniq
                   variants = []
+                  malformed_mutations = genetic_info.compact
                   malformed_mutations.split(',') do |mutation|
                     if mutation.gsub('het', '').match(CDNA_REGEX)
-                      variants.append(mutation.gsub('het', '').match(CDNA_REGEX)[:cdna])
+                      variants.append(mutation.gsub('het', '').sub(/\s+/, '').match(CDNA_REGEX)[:cdna])
                       # elsif mutation.gsub('het', '').match(CDNA_REGEX)
                       #   variants.append(mutation.match(CDNA_REGEX)[:cdna])
                     end

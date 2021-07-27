@@ -28,7 +28,11 @@ module Import
                                        MSH2|
                                        MSH6|
                                        MUTYH|
-                                       SMAD4)/xi.freeze
+                                       SMAD4|
+                                       NF1|
+                                       NF2|
+                                       SMARCB1|
+                                       LZTR1)/xi.freeze
 
             DO_NOT_IMPORT = ['CYSTIC FIBROSIS GENETIC ANALYSIS REPORT',
                              '**ANY TEXT** ANALYSIS REPORT',

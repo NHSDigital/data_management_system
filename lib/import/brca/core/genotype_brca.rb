@@ -28,7 +28,12 @@ module Import
                      'RAD51C' => 3615,
                      'RAD51D' => 3616,
                      'SMAD4' => 72,
-                     'MUTYH' => 2850 }.freeze
+                     'MUTYH' => 2850,
+                     'NF1' => 54,
+                     'NF2' => 55,
+                     'SMARCB1' => 74,
+                     'LZTR1' => 4952
+                   }.freeze
 
         BRCA_REGEX = /(?<atm>ATM|P041|P042)|
                       (?<chek2>CHEK2|P190)|
@@ -47,7 +52,11 @@ module Import
                       (?<nbn>NBN)|
                       (?<rad51c>RAD51C)|
                       (?<rad51d>RAD51D)|
-                      (?<smad>SMAD4)/ix.freeze # Added by Francesco
+                      (?<smad>SMAD4)|
+                      (?<nf1>NF1)|
+                      (?<nf2>NF2)|
+                      (?<smarcb1>SMARCB1)|
+                      (?<lztr1>LZTR1)/ix.freeze # Added by Francesco
 
         def other_gene
           gene = @attribute_map['gene']
@@ -74,7 +83,7 @@ module Import
 
         def process_integer_imput(brca_input)
           if [7, 8, 72, 79, 451, 865, 3186, 2744, 2804, 3394, 62, 76,
-              590, 2912, 3615, 3616, 2850].include? brca_input
+              590, 2912, 3615, 3616, 2850, 54, 55, 74, 4952].include? brca_input
             @attribute_map['gene'] = brca_input
             @logger.debug "SUCCESSFUL gene parse for #{brca_input}"
           elsif (1..2).cover? brca_input
