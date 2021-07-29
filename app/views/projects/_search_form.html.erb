@@ -8,7 +8,7 @@
 <%= form_with url: url, scope: :search, method: :get, id: 'project_search_form' do |form| %>
   <fieldset>
     <legend>
-      <a href="#project_filters" class="btn btn-default btn-xs" data-toggle="collapse">
+      <a href="#project_filters" class="btn btn-default btn-xs" data-toggle="collapse" expanded="true" aria-controls="project_filters">
         <%= bootstrap_icon_tag('eye-open') %>
         <%= bootstrap_icon_tag('eye-close') %>
       </a>
@@ -31,11 +31,11 @@
   <%= form.fields_for :owner do |sub_form| %>
     <fieldset>
       <legend>
-        <a href="#project_owner_filters" class="btn btn-default btn-xs" data-toggle="collapse">
+        <a href="#project_owner_filters" class="btn btn-default btn-xs collapsed" data-toggle="collapse" expanded="false" aria-controls="project_owner_filters">
           <%= bootstrap_icon_tag('eye-open') %>
           <%= bootstrap_icon_tag('eye-close') %>
         </a>
-        Project Owner
+        <%= Project.human_attribute_name(:owner) %>
       </legend>
 
       <div class="collapse" id="project_owner_filters">
@@ -54,7 +54,7 @@
 
   <fieldset data-controller="checkbox-select-all">
     <legend>
-      <a href="#project_type_filters" class="btn btn-default btn-xs" data-toggle="collapse">
+      <a href="#project_type_filters" class="btn btn-default btn-xs collapsed" data-toggle="collapse" expanded="false" aria-controls="project_type_filters">
         <%= bootstrap_icon_tag('eye-open') %>
         <%= bootstrap_icon_tag('eye-close') %>
       </a>
@@ -84,7 +84,7 @@
   <%= form.fields_for :current_project_state do |sub_form| %>
     <fieldset data-controller="checkbox-select-all">
       <legend>
-        <a href="#project_state_filters" class="btn btn-default btn-xs" data-toggle="collapse">
+        <a href="#project_state_filters" class="btn btn-default btn-xs collapsed" data-toggle="collapse" expanded="false" aria-controls="project_state_filters">
           <%= bootstrap_icon_tag('eye-open') %>
           <%= bootstrap_icon_tag('eye-close') %>
         </a>
@@ -100,7 +100,7 @@
         </div>
 
         <%= sub_form.collection_check_boxes :state_id, workflow_states, :id, :id, { include_hidden: false } do |builder| %>
-          <% checked = params.dig(:search, :current_project_state) ? params.dig(:search, :current_project_state, :state_id).include?(builder.value.to_s) : builder.object.open? %>
+          <% checked = params.dig(:search, :current_project_state) ? params.dig(:search, :current_project_state, :state_id).include?(builder.value.to_s) : true %>
           <div class="checkbox">
             <%= builder.label do %>
               <%= builder.check_box checked: checked, data: { target: :'checkbox-select-all.checkbox' } %>

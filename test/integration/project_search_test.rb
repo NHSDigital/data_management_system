@@ -12,6 +12,8 @@ class ProjectSearchTest < ActionDispatch::IntegrationTest
   end
 
   test 'can search by project name' do
+    expand_search_form
+
     within('#project_search_form') do
       fill_in 'search[name]', with: 'YARP'
       click_button 'Search'
@@ -26,6 +28,8 @@ class ProjectSearchTest < ActionDispatch::IntegrationTest
   end
 
   test 'can search by application_ref' do
+    expand_search_form
+
     within('#project_search_form') do
       fill_in 'search[application_log]', with: 'search.ref.2'
       click_button 'Search'
@@ -38,6 +42,8 @@ class ProjectSearchTest < ActionDispatch::IntegrationTest
   end
 
   test 'can search by project type' do
+    expand_search_form
+
     within('#project_search_form') do
       click_link(href: '#project_type_filters')
 
@@ -57,6 +63,8 @@ class ProjectSearchTest < ActionDispatch::IntegrationTest
 
   test 'can search by project owner' do
     user = users(:standard_user1)
+
+    expand_search_form
 
     within('#project_search_form') do
       click_link(href: '#project_owner_filters')
@@ -80,6 +88,8 @@ class ProjectSearchTest < ActionDispatch::IntegrationTest
       project_state.save!(validate: false)
     end
 
+    expand_search_form
+
     within('#project_search_form') do
       click_link(href: '#project_state_filters')
 
@@ -98,6 +108,8 @@ class ProjectSearchTest < ActionDispatch::IntegrationTest
   end
 
   test 'filters are applied cumulatively' do
+    expand_search_form
+
     within('#project_search_form') do
       fill_in 'Project Title', with: 'YARP'
 
@@ -119,6 +131,8 @@ class ProjectSearchTest < ActionDispatch::IntegrationTest
 
   test 'filters can be a little fuzzy and case insensitive' do
     user = users(:standard_user1)
+
+    expand_search_form
 
     within('#project_search_form') do
       fill_in 'search[name]', with: 'ar'
@@ -142,6 +156,8 @@ class ProjectSearchTest < ActionDispatch::IntegrationTest
     sign_in users(:application_manager_one)
 
     visit dashboard_projects_path
+
+    expand_search_form
 
     within('#project_search_form') do
       fill_in 'search[name]', with: 'narp'
@@ -176,6 +192,8 @@ class ProjectSearchTest < ActionDispatch::IntegrationTest
 
     visit dashboard_projects_path
 
+    expand_search_form
+
     assert has_no_content? 'My Projects'
     assert has_content? 'Assigned Projects'
     assert has_content? 'Unassigned Projects'
@@ -194,6 +212,10 @@ class ProjectSearchTest < ActionDispatch::IntegrationTest
   end
 
   private
+
+  def expand_search_form
+    find('[data-target="#project_search_content"].collapsed').click
+  end
 
   def uncheck_all
     all('input[type="checkbox"]').each(&:uncheck)

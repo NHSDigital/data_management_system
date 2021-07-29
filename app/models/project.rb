@@ -171,7 +171,7 @@ class Project < ApplicationRecord
   DATA_SOURCE_ITEM_NO_CLONE_FIELDS = %w[id project_id project_data_source_item_id].freeze
 
   attr_searchable :name,                  :text_filter
-  attr_searchable :application_log,       :text_filter
+  attr_searchable :application_log,       :application_log_filter # Meh.
   attr_searchable :project_type_id,       :default_filter
   attr_searchable :owner,                 :association_filter, kwargs: true # FIXME: See Searchable
   attr_searchable :current_project_state, :association_filter
@@ -202,6 +202,34 @@ class Project < ApplicationRecord
       base = joins(:current_project_state)
       base.where(assigned_user: user).or(
         base.where(workflow_current_project_states: { assigned_user_id: user })
+      )
+    end
+
+    private
+
+    # Custom search filter.
+    # Legacy data... computed fields... desire to search on magic strings rather than the actual
+    # underyling data...
+    # NOTE: Expect edge cases where this may not produce the anticipated results.
+    def application_log_filter(_field, value)
+      return if value.blank?
+
+      string = value.to_s.strip
+      filter = arel_table[:application_log].matches("%#{string}%")
+
+      return filter unless match ||= string.match(
+        %r(\A(?<head>ODR_(?<fy_start>\d{2})(?<fy_end>\d{2})_?)?(?<id>\d+)?(?<tail>/.*)?\z)i
+      )
+
+      chain = []
+      chain << arel_table[:first_contact_date].gteq("20#{match[:fy_start]}-04-01") if match[:fy_start]
+      chain << arel_table[:first_contact_date].lteq("20#{match[:fy_end]}-03-31")   if match[:fy_end]
+      chain << arel_table[:id].eq(match[:id].to_i) if match[:id]
+
+      filter.or(
+        Arel::Nodes::Grouping.new(
+          chain.reduce(chain.shift) { |node, predicate| node.and(predicate) }
+        )
       )
     end
   end

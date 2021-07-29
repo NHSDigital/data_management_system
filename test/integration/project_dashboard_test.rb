@@ -24,7 +24,7 @@ class ProjectDashboardTest < ActionDispatch::IntegrationTest
     assert has_content?('All Projects')
     assert has_no_content?('Assigned Projects')
 
-    assert has_selector?('#project_search_form')
+    assert has_selector?('#project_search_form', visible: false)
 
     within('#my-projects') do
       assert has_content?(eoi_project.id.to_s)
@@ -64,7 +64,7 @@ class ProjectDashboardTest < ActionDispatch::IntegrationTest
     assert has_content?('All Projects')
     assert has_no_content?('Assigned Projects')
 
-    assert has_selector?('#project_search_form')
+    assert has_selector?('#project_search_form', visible: false)
 
     within('#my-projects') do
       assert has_content?(mbis_project.id.to_s)
