@@ -125,10 +125,8 @@ class Project < ApplicationRecord
     validates :project_purpose, presence: true
   end
 
-  attr_accessor :pdf_import
-
   with_options if: -> { odr? } do
-    validates :first_contact_date, presence: true, unless: :pdf_import
+    validates :first_contact_date, presence: true
   end
 
   # Allow for auditing/version tracking of Project
