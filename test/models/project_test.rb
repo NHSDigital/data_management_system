@@ -3,6 +3,21 @@ require 'test_helper'
 class ProjectTest < ActiveSupport::TestCase
   include ActionMailer::TestHelper
 
+  test 'has many project_edges' do
+    project = projects(:dummy_project)
+
+    assert Project.reflect_on_association(:project_edges)
+    assert_instance_of ProjectEdge, project.project_edges.first
+  end
+
+  test 'has many related projects' do
+    project = projects(:dummy_project)
+
+    assert Project.reflect_on_association(:related_projects)
+    assert_instance_of Project, project.related_projects.first
+    assert_includes project.related_projects, projects(:test_application)
+  end
+
   test 'should remove project data items when data source changed' do
     project = build_and_validate_project
     dataset = Dataset.find_by(name: 'Births Gold Standard')

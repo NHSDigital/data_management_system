@@ -78,6 +78,12 @@ class Project < ApplicationRecord
     has_many :right_relationships, foreign_key: :right_project_id, inverse_of: :right_project
   end
 
+  has_many :project_edges, inverse_of: :project # rubocop:disable Rails/HasManyOrHasOneDependent
+  has_many :related_projects, through: :project_edges, source: :related_project
+
+  # If you really want them... :shrug:
+  has_many :project_relationships, through: :project_edges
+
   # The `assigned_user` will generally be an ODR representative responsible for the project
   belongs_to :assigned_user, class_name: 'User', inverse_of: :assigned_projects, optional: true
 
