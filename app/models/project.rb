@@ -70,14 +70,21 @@ class Project < ApplicationRecord
   belongs_to :team, optional: true
   belongs_to :closure_reason, class_name: 'Lookups::ClosureReason', optional: true
 
+  # These two relationships are merely used to track the source of a cloned project.
+  # Actual relationships between projects are tracked via other sets of associations.
   belongs_to :parent,   class_name: 'Project', foreign_key: :clone_of, optional: true
   has_many   :children, class_name: 'Project', foreign_key: :clone_of
 
+  # Contrary to the above, projects may actually be arbitrarily related to other projects.
+  # This takes the form of an undirected graph and the following associations are the underlying
+  # records/models for linking projects together.
   with_options class_name: 'ProjectRelationship', dependent: :destroy do
     has_many :left_relationships,  foreign_key: :left_project_id,  inverse_of: :left_project
     has_many :right_relationships, foreign_key: :right_project_id, inverse_of: :right_project
   end
 
+  # These associations make navigating related projects easier. They should not be used to
+  # actually link projects together; that's down to the `ProjectRelationship` based associations.
   has_many :project_edges, inverse_of: :project # rubocop:disable Rails/HasManyOrHasOneDependent
   has_many :related_projects, through: :project_edges, source: :related_project
 
