@@ -73,6 +73,11 @@ class Project < ApplicationRecord
   belongs_to :parent,   class_name: 'Project', foreign_key: :clone_of, optional: true
   has_many   :children, class_name: 'Project', foreign_key: :clone_of
 
+  with_options class_name: 'ProjectRelationship', dependent: :destroy do
+    has_many :left_relationships,  foreign_key: :left_project_id,  inverse_of: :left_project
+    has_many :right_relationships, foreign_key: :right_project_id, inverse_of: :right_project
+  end
+
   # The `assigned_user` will generally be an ODR representative responsible for the project
   belongs_to :assigned_user, class_name: 'User', inverse_of: :assigned_projects, optional: true
 
