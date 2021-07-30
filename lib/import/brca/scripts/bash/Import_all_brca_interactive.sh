@@ -5,8 +5,8 @@ OIFS="$IFS"
 IFS=$'\n'
 DIRPATH=$1
 echo $DIRPATH
-#Dirpath was ~/work/mbis2_again
-#Filepath was "private/pseudonymised_data/updated_files/"
+#DIRPATH=~/work/data_management_system
+#FILEPATH="private/pseudonymised_data/updated_files/"
 FILEPATH=$2
 echo $FILEPATH
 
@@ -203,10 +203,12 @@ RJ7 () {
 MBIS=$1
 PROV='RJ7'
 IFS=$'\n'
-for x in $(find  $DIRPATH/$FILEPATH -type f -name "*.pseudo" -path "*/$PROV/*")
+for x in $(find  $DIRPATH/$FILEPATH -type f -name "*.pseudo" -path "*/$PROV/*" \
+-not -path "*/2021/*" \
+! -name "c466c80823235315f4df98bb4a14c4937ee5cbc4_08.2020_STG HBOC PHE reported till 28082020.xlsx.pseudo")
 do
 IFS="$OIFS"
-$BRAKE import:brca fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
+bundle exec rake import:brca fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
 done
 }
 
