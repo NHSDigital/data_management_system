@@ -339,6 +339,10 @@ en:
               must_be_present_if_extra_dataset_selected: Dataset justification is required when selecting any datasets
             declaration:
               must_all_be_yes: All declarations must be yes before an application can be submitted
+        project_relationship:
+          attributes:
+            base:
+              self_referential: can't link the same project
     models:
       project_amendment: Amendment
       data_privacy_impact_assessment:

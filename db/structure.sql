@@ -165,8 +165,8 @@ ALTER SEQUENCE public.amendment_types_id_seq OWNED BY public.amendment_types.id;
 CREATE TABLE public.ar_internal_metadata (
     key character varying NOT NULL,
     value character varying,
-    created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
 );
 
 
@@ -276,6 +276,19 @@ CREATE TABLE public.cas_application_fields (
     id bigint NOT NULL,
     project_id bigint,
     status character varying,
+    firstname character varying,
+    surname character varying,
+    jobtitle character varying,
+    phe_email character varying,
+    work_number character varying,
+    organisation character varying,
+    line_manager_name character varying,
+    line_manager_email character varying,
+    line_manager_number character varying,
+    employee_type character varying,
+    contract_startdate date,
+    contract_enddate date,
+    username character varying,
     address text,
     n3_ip_address text,
     reason_justification text,
@@ -284,20 +297,7 @@ CREATE TABLE public.cas_application_fields (
     extra_datasets_rationale character varying,
     declaration character varying,
     created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL,
-    organisation character varying,
-    username character varying,
-    contract_enddate date,
-    contract_startdate date,
-    employee_type character varying,
-    line_manager_number character varying,
-    line_manager_email character varying,
-    line_manager_name character varying,
-    work_number character varying,
-    phe_email character varying,
-    jobtitle character varying,
-    surname character varying,
-    firstname character varying
+    updated_at timestamp(6) without time zone NOT NULL
 );
 
 
@@ -2180,13 +2180,13 @@ CREATE TABLE public.molecular_data (
     providercode text,
     practitionercode text,
     patienttype text,
+    moleculartestingtype integer,
     requesteddate date,
     collecteddate date,
     receiveddate date,
     authoriseddate date,
     indicationcategory integer,
     clinicalindication text,
-    moleculartestingtype integer,
     organisationcode_testresult text,
     servicereportidentifier text,
     specimentype integer,
@@ -2760,12 +2760,12 @@ CREATE TABLE public.project_attachments (
     comments character varying,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
+    attachment_contents bytea,
+    digest character varying,
     attachment_file_name character varying,
     attachment_content_type character varying,
     attachment_file_size integer,
     attachment_updated_at timestamp without time zone,
-    attachment_contents bytea,
-    digest character varying,
     workflow_project_state_id bigint,
     attachable_type character varying,
     attachable_id bigint
@@ -3217,6 +3217,39 @@ CREATE SEQUENCE public.project_purposes_id_seq
 --
 
 ALTER SEQUENCE public.project_purposes_id_seq OWNED BY public.project_purposes.id;
+
+
+--
+-- Name: project_relationships; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.project_relationships (
+    id bigint NOT NULL,
+    left_project_id bigint NOT NULL,
+    right_project_id bigint NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
+    CONSTRAINT chk_rails_b7cab0758f CHECK ((left_project_id <> right_project_id))
+);
+
+
+--
+-- Name: project_relationships_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.project_relationships_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: project_relationships_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.project_relationships_id_seq OWNED BY public.project_relationships.id;
 
 
 --
@@ -5026,6 +5059,13 @@ ALTER TABLE ONLY public.project_purposes ALTER COLUMN id SET DEFAULT nextval('pu
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY public.project_relationships ALTER COLUMN id SET DEFAULT nextval('public.project_relationships_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.project_roles ALTER COLUMN id SET DEFAULT nextval('public.project_roles_id_seq'::regclass);
 
 
@@ -5875,6 +5915,14 @@ ALTER TABLE ONLY public.project_purposes
 
 
 --
+-- Name: project_relationships_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.project_relationships
+    ADD CONSTRAINT project_relationships_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: project_roles_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -6708,6 +6756,27 @@ CREATE INDEX index_project_outputs_on_project_id ON public.project_outputs USING
 
 
 --
+-- Name: index_project_relationships_on_left_project_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_project_relationships_on_left_project_id ON public.project_relationships USING btree (left_project_id);
+
+
+--
+-- Name: index_project_relationships_on_left_project_id_right_project_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_project_relationships_on_left_project_id_right_project_id ON public.project_relationships USING btree ((LEAST(left_project_id, right_project_id)), (GREATEST(left_project_id, right_project_id)));
+
+
+--
+-- Name: index_project_relationships_on_right_project_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_project_relationships_on_right_project_id ON public.project_relationships USING btree (right_project_id);
+
+
+--
 -- Name: index_project_type_datasets_on_dataset_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -7256,6 +7325,14 @@ ALTER TABLE ONLY public.releases
 
 
 --
+-- Name: fk_rails_4d63e64586; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.project_relationships
+    ADD CONSTRAINT fk_rails_4d63e64586 FOREIGN KEY (right_project_id) REFERENCES public.projects(id);
+
+
+--
 -- Name: fk_rails_4db7b1360c; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -7437,6 +7514,14 @@ ALTER TABLE ONLY public.project_outputs
 
 ALTER TABLE ONLY public.organisations
     ADD CONSTRAINT fk_rails_7b7111c3a1 FOREIGN KEY (organisation_type_id) REFERENCES public.organisation_types(id);
+
+
+--
+-- Name: fk_rails_7dcc851597; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.project_relationships
+    ADD CONSTRAINT fk_rails_7dcc851597 FOREIGN KEY (left_project_id) REFERENCES public.projects(id);
 
 
 --
@@ -8276,6 +8361,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20210615101111'),
 ('20210615104916'),
 ('20210617140742'),
-('20210628103955');
+('20210628103955'),
+('20210730080619');
 
 
