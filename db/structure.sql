@@ -3029,6 +3029,40 @@ ALTER SEQUENCE public.project_datasets_id_seq OWNED BY public.project_datasets.i
 
 
 --
+-- Name: project_relationships; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.project_relationships (
+    id bigint NOT NULL,
+    left_project_id bigint NOT NULL,
+    right_project_id bigint NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
+    CONSTRAINT chk_rails_b7cab0758f CHECK ((left_project_id <> right_project_id))
+);
+
+
+--
+-- Name: project_edges; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW public.project_edges AS
+ SELECT project_relationships.id AS project_relationship_id,
+    project_relationships.left_project_id AS project_id,
+    project_relationships.right_project_id AS related_project_id,
+    project_relationships.created_at,
+    project_relationships.updated_at
+   FROM public.project_relationships
+UNION
+ SELECT project_relationships.id AS project_relationship_id,
+    project_relationships.right_project_id AS project_id,
+    project_relationships.left_project_id AS related_project_id,
+    project_relationships.created_at,
+    project_relationships.updated_at
+   FROM public.project_relationships;
+
+
+--
 -- Name: project_end_uses; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -3217,20 +3251,6 @@ CREATE SEQUENCE public.project_purposes_id_seq
 --
 
 ALTER SEQUENCE public.project_purposes_id_seq OWNED BY public.project_purposes.id;
-
-
---
--- Name: project_relationships; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.project_relationships (
-    id bigint NOT NULL,
-    left_project_id bigint NOT NULL,
-    right_project_id bigint NOT NULL,
-    created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL,
-    CONSTRAINT chk_rails_b7cab0758f CHECK ((left_project_id <> right_project_id))
-);
 
 
 --
@@ -8362,6 +8382,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20210615104916'),
 ('20210617140742'),
 ('20210628103955'),
-('20210730080619');
+('20210730080619'),
+('20210730103014');
 
 
