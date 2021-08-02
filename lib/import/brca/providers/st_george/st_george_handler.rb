@@ -9,19 +9,18 @@ module Import
         class StGeorgeHandler < Import::Brca::Core::ProviderHandler
           PASS_THROUGH_FIELDS = %w[age sex consultantcode collecteddate
                                    receiveddate authoriseddate servicereportidentifier
-                                   providercode receiveddate sampletype] .freeze
+                                   providercode receiveddate sampletype].freeze
           CDNA_REGEX = /c\.(?<cdna>[0-9]+[^\s]+)|c\.\[(?<cdna>(.*?))\]/i.freeze
 
           PROTEIN_REGEX = /p\.(?<impact>[a-z]+[0-9]+[a-z]+)|
-                           p\.(\[)?(\()?(?<impact>[a-z]+[0-9]+[a-z]+)(\))?(\])?/ix
+                           p\.(\[)?(\()?(?<impact>[a-z]+[0-9]+[a-z]+)(\))?(\])?/ix.freeze
 
           DEPRECATED_BRCA_NAMES_MAP = { 'BR1'    => 'BRCA1',
                                         'B1'     => 'BRCA1',
                                         'BRCA 1' => 'BRCA1',
                                         'BR2'    => 'BRCA2',
                                         'B2'     => 'BRCA2',
-                                        'BRCA 2' => 'BRCA2'
-                                      }.freeze
+                                        'BRCA 2' => 'BRCA2' }.freeze
 
           BRCA_GENES_REGEX = /(?<brca>BRCA1|
                                      BRCA2|
@@ -37,16 +36,15 @@ module Import
                                      NF2|
                                      SMARCB1|
                                      LZTR1)/xi.freeze
-                                     
 
           EXON_VARIANT_REGEX = /(?<variant>del|dup|ins).+ex(on)?(s)?\s(?<exons>[0-9]+(-[0-9]+)?)|
                               ex(on)?(s)?\s(?<exons>[0-9]+(-[0-9]+)?)\s(?<variant>del|dup|ins)|
                               (?<variant>del|dup|ins)\sexon(s)?\s(?<exons>[0-9]+(\sto\s[0-9]+))|
                               (?<variant>del|dup|ins)(\s)?(?<exons>[0-9]+(-[0-9]+)?)|
                               ex(on)?(s)?\s(?<exons>[0-9]+(\sto\s[0-9]+))\s(?<variant>del|dup|ins)
-                              /ix
+                              /ix.freeze
 
-          DEPRECATED_BRCA_NAMES_REGEX = /B1|BR1|BRCA\s1|B2|BR2|BRCA\s2/i
+          DEPRECATED_BRCA_NAMES_REGEX = /B1|BR1|BRCA\s1|B2|BR2|BRCA\s2/i.freeze
 
           # EXON_VARIANT_REGEX = /ex(on)?(s)?\s(?<exons>[0-9]+(-[0-9]+)?)\s(?<variant>del|dup|ins)|
           #                      (?<variant>del|dup|ins)\sexon(s)?\s[0-9]+(\sto\s[0-9]+)?|
@@ -76,6 +74,7 @@ module Import
 
           def add_moleculartestingtype(genotype, record)
             return if record.raw_fields['moleculartestingtype'].nil?
+
             moltesttype = record.raw_fields['moleculartestingtype']
             if moltesttype.scan(/unaf|pred/i).size.positive?
               genotype.add_molecular_testing_type_strict(:predictive)
@@ -94,7 +93,7 @@ module Import
             elsif full_screen?(record)
               genotype.add_test_scope(:full_screen)
             elsif void_genetictestscope?(record)
-              @logger.debug "Unknown moleculartestingtype"
+              @logger.debug 'Unknown moleculartestingtype'
             end
           end
 
@@ -104,7 +103,7 @@ module Import
             if ashkenazi?(record) || polish?(record) || full_screen?(record)
               process_fullscreen_records(genotype, record, positive_gene, genotypes)
             elsif targeted_test?(record) || void_genetictestscope?(record)
-              process_targeted_records(positive_gene, genotype,record, genotypes)
+              process_targeted_records(positive_gene, genotype, record, genotypes)
             end
             genotypes
           end
@@ -122,15 +121,13 @@ module Import
             if deprecated_gene.present?
               if deprecated_gene.size == 1
                 positive_gene.append(DEPRECATED_BRCA_NAMES_MAP[deprecated_gene.join])
-              else 
-                deprecated_gene.each do |gene| 
+              else
+                deprecated_gene.each do |gene|
                   positive_gene.append(DEPRECATED_BRCA_NAMES_MAP[gene])
                 end
               end
             end
-            if gene.empty? && deprecated_gene.empty?
-              @logger.debug "Unable to extract gene"
-            end
+            @logger.debug 'Unable to extract gene' if gene.empty? && deprecated_gene.empty?
             positive_gene
           end
 
@@ -179,7 +176,7 @@ module Import
             genotypes.append(genotype)
           end
 
-          def process_targeted_records(positive_gene, genotype,record, genotypes)
+          def process_targeted_records(positive_gene, genotype, record, genotypes)
             if normal?(record)
               process_single_gene(genotype, record)
               genotype.add_status(1)
@@ -202,7 +199,7 @@ module Import
           end
 
           def process_single_gene(genotype, record)
-            if record.raw_fields['genotype'].scan(BRCA_GENES_REGEX).size.positive? 
+            if record.raw_fields['genotype'].scan(BRCA_GENES_REGEX).size.positive?
               genotype.add_gene($LAST_MATCH_INFO[:brca])
               @logger.debug "SUCCESSFUL gene parse for: #{$LAST_MATCH_INFO[:brca]}"
             elsif deprecated_brca_genenames?(record)
@@ -218,7 +215,7 @@ module Import
           end
 
           def process_single_protein(genotype, record)
-            if record.raw_fields['genotype'].scan(PROTEIN_REGEX).size.positive? 
+            if record.raw_fields['genotype'].scan(PROTEIN_REGEX).size.positive?
               genotype.add_protein_impact($LAST_MATCH_INFO[:impact])
               @logger.debug "SUCCESSFUL gene parse for: #{$LAST_MATCH_INFO[:impact]}"
             else
@@ -254,8 +251,8 @@ module Import
               variants = positive_gene.uniq.zip(mutation.flatten.compact, protein.flatten.compact)
               add_variants_multiple_results(variants, genotype, genotypes)
             elsif positive_gene.flatten.uniq.size == 1
-              positive_gene = positive_gene * record.raw_fields['genotype'].
-                         scan(CDNA_REGEX).flatten.compact.size
+              positive_gene *= record.raw_fields['genotype'].
+                               scan(CDNA_REGEX).flatten.compact.size
               variants = positive_gene.zip(record.raw_fields['genotype'].
                          scan(CDNA_REGEX).flatten.compact)
               add_variants_multiple_results(variants, genotype, genotypes)
@@ -275,7 +272,7 @@ module Import
 
           def deprecated_brca_genenames_moleculartestingtype?(record)
             genename = record.raw_fields['moleculartestingtype'].
-                        scan(DEPRECATED_BRCA_NAMES_REGEX).flatten.join
+                       scan(DEPRECATED_BRCA_NAMES_REGEX).flatten.join
             DEPRECATED_BRCA_NAMES_MAP[genename].present?
           end
 
@@ -286,32 +283,36 @@ module Import
           end
 
           def process_exonic_variant(genotype, record)
-            if record.raw_fields['genotype'].scan(EXON_VARIANT_REGEX).size.positive?
+            return unless record.raw_fields['genotype'].scan(EXON_VARIANT_REGEX).size.positive?
+
+            # if record.raw_fields['genotype'].scan(EXON_VARIANT_REGEX).size.positive?
               genotype.add_exon_location($LAST_MATCH_INFO[:exons])
               genotype.add_variant_type($LAST_MATCH_INFO[:variant])
               genotype.add_status(2)
               @logger.debug "SUCCESSFUL exon variant parse for: #{record.raw_fields['genotype']}"
-            end
+            # end
           end
 
           def process_cdna_variant(genotype, record)
-            if record.raw_fields['genotype'].scan(CDNA_REGEX).size.positive?
+            return unless record.raw_fields['genotype'].scan(CDNA_REGEX).size.positive?
+            
+            # if record.raw_fields['genotype'].scan(CDNA_REGEX).size.positive?
               genotype.add_gene_location($LAST_MATCH_INFO[:cdna])
               genotype.add_status(2)
               @logger.debug "SUCCESSFUL cdna change parse for: #{$LAST_MATCH_INFO[:cdna]}"
-            end
+            # end
           end
 
           def process_normal_record(genotype, record)
-              genotype.add_status(1)
-              @logger.debug "SUCCESSFUL cdna change parse for: #{record.raw_fields['genotype']}"
+            genotype.add_status(1)
+            @logger.debug "SUCCESSFUL cdna change parse for: #{record.raw_fields['genotype']}"
           end
 
           def normal?(record)
             variant = record.raw_fields['genotype']
             moltesttype = record.raw_fields['moleculartestingtype']
-            variant.scan(/NO PATHOGENIC|Normal|N\/N|NOT DETECTED/i).size.positive? ||
-            variant == 'N' || moltesttype.scan(/unaffected/i).size.positive?
+            variant.scan(%r{NO PATHOGENIC|Normal|N/N|NOT DETECTED}i).size.positive? ||
+              variant == 'N' || moltesttype.scan(/unaffected/i).size.positive?
           end
 
           def positive_cdna?(record)
@@ -326,26 +327,30 @@ module Import
 
           def targeted_test?(record)
             return if record.raw_fields['moleculartestingtype'].nil?
+
             moltesttype = record.raw_fields['moleculartestingtype']
             moltesttype.scan(/pred|conf|targeted|c\.|6174delT/i).size.positive? ||
-            moltesttype.scan(/BRCA(1|2) exon deletion\/duplication/i).size.positive?
+              moltesttype.scan(%r{BRCA(1|2) exon deletion/duplication}i).size.positive?
           end
 
           def full_screen?(record)
             return if record.raw_fields['moleculartestingtype'].nil?
+
             moltesttype = record.raw_fields['moleculartestingtype']
             moltesttype.scan(/screen/i).size.positive? ||
-            moltesttype == 'BRCA1 & 2 exon deletion & duplication analysis'
+              moltesttype == 'BRCA1 & 2 exon deletion & duplication analysis'
           end
 
           def ashkenazi?(record)
             return if record.raw_fields['moleculartestingtype'].nil?
+
             moltesttype = record.raw_fields['moleculartestingtype']
             moltesttype.scan(/ash/i).size.positive?
           end
 
           def polish?(record)
             return if record.raw_fields['moleculartestingtype'].nil?
+
             moltesttype = record.raw_fields['moleculartestingtype']
             moltesttype.scan(/polish/i).size.positive?
           end
@@ -356,8 +361,9 @@ module Import
 
           def void_genetictestscope?(record)
             return if record.raw_fields['moleculartestingtype'].nil?
+
             record.raw_fields['moleculartestingtype'].empty? ||
-            record.raw_fields['moleculartestingtype'] == 'Store'
+              record.raw_fields['moleculartestingtype'] == 'Store'
           end
         end
       end
