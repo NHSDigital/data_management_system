@@ -136,35 +136,47 @@ module Import
 
           def process_fullscreen_records(genotype, record, positive_gene, genotypes)
             if normal?(record)
-              ["BRCA1","BRCA2"].each do |negative_gene|
-                genotype_dup = genotype.dup
-                genotype_dup.add_gene(negative_gene)
-                genotype_dup.add_status(1)
-                genotypes.append(genotype_dup)
-              end
+              normal_full_screen(genotype, genotypes)
             elsif failed_test?(record)
-              ["BRCA1","BRCA2"].each do |negative_gene|
-                genotype_dup = genotype.dup
-                genotype_dup.add_gene(negative_gene)
-                genotype_dup.add_status(9)
-                genotypes.append(genotype_dup)
-              end
+              failed_full_screen(genotype, genotypes)
             elsif positive_cdna?(record) || positive_exonvariant?(record)
               if record.raw_fields['genotype'].scan(CDNA_REGEX).size > 1
                 process_multiple_positive_variants(positive_gene, genotype, record, genotypes)
               else
-                negative_gene = ["BRCA1","BRCA2"] - positive_gene
-                genotype_dup = genotype.dup
-                genotype_dup.add_gene(negative_gene.join)
-                genotype_dup.add_status(1)
-                genotypes.append(genotype_dup)
-                genotype.add_gene(positive_gene.join)
-                process_single_positive_variants(genotype, record)
-                process_single_protein(genotype, record)
-                genotypes.append(genotype)
+                single_variant_full_screen(genotype, genotypes, positive_gene, record)
               end
             end
             genotypes
+          end
+
+          def normal_full_screen(genotype, genotypes)
+            %w[BRCA1 BRCA2].each do |negative_gene|
+              genotype_dup = genotype.dup
+              genotype_dup.add_gene(negative_gene)
+              genotype_dup.add_status(1)
+              genotypes.append(genotype_dup)
+            end
+          end
+
+          def failed_full_screen(genotype, genotypes)
+            %w[BRCA1 BRCA2].each do |negative_gene|
+              genotype_dup = genotype.dup
+              genotype_dup.add_gene(negative_gene)
+              genotype_dup.add_status(9)
+              genotypes.append(genotype_dup)
+            end
+          end
+
+          def single_variant_full_screen(genotype, genotypes, positive_gene, record)
+            negative_gene = %w[BRCA1 BRCA2] - positive_gene
+            genotype_dup = genotype.dup
+            genotype_dup.add_gene(negative_gene.join)
+            genotype_dup.add_status(1)
+            genotypes.append(genotype_dup)
+            genotype.add_gene(positive_gene.join)
+            process_single_positive_variants(genotype, record)
+            process_single_protein(genotype, record)
+            genotypes.append(genotype)
           end
 
           def process_targeted_records(positive_gene, genotype,record, genotypes)
@@ -224,31 +236,29 @@ module Import
             end
           end
 
+          def add_variants_multiple_results(variants, genotype, genotypes)
+            variants.each do |gene, mutation, protein|
+              genotype_dup = genotype.dup
+              genotype_dup.add_gene(gene)
+              genotype_dup.add_gene_location(mutation)
+              genotype_dup.add_protein_impact(protein)
+              genotype_dup.add_status(2)
+              genotypes.append(genotype_dup)
+            end
+          end
+
           def process_multiple_positive_variants(positive_gene, genotype, record, genotypes)
             if positive_gene.flatten.uniq.size > 1
               mutation = record.raw_fields['genotype'].scan(CDNA_REGEX).flatten.compact
               protein = record.raw_fields['genotype'].scan(PROTEIN_REGEX).flatten.compact
               variants = positive_gene.uniq.zip(mutation.flatten.compact, protein.flatten.compact)
-              variants.each do |gene,mutation,protein|
-                genotype_dup = genotype.dup
-                genotype_dup.add_gene(gene)
-                genotype_dup.add_gene_location(mutation)
-                genotype_dup.add_protein_impact(protein)
-                genotype_dup.add_status(2)
-                genotypes.append(genotype_dup)
-              end
+              add_variants_multiple_results(variants, genotype, genotypes)
             elsif positive_gene.flatten.uniq.size == 1
               positive_gene = positive_gene * record.raw_fields['genotype'].
                          scan(CDNA_REGEX).flatten.compact.size
               variants = positive_gene.zip(record.raw_fields['genotype'].
                          scan(CDNA_REGEX).flatten.compact)
-              variants.each do |gene,variant|
-                genotype_dup = genotype.dup
-                genotype_dup.add_gene(gene)
-                genotype_dup.add_gene_location(variant)
-                genotype_dup.add_status(2)
-                genotypes.append(genotype_dup)
-              end
+              add_variants_multiple_results(variants, genotype, genotypes)
             end
             genotypes
           end
