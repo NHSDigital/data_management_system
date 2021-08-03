@@ -86,8 +86,8 @@ class Project < ApplicationRecord
   # These associations make navigating related projects easier. They should not be used to
   # actually link projects together; that's down to the `ProjectRelationship` based associations.
   has_many :project_edges, inverse_of: :project do # rubocop:disable Rails/HasManyOrHasOneDependent
-    def transitive_closure
-      transitive_closure_for(proxy_association.owner)
+    def transitive_closure(**options)
+      transitive_closure_for(proxy_association.owner, **options)
     end
   end
 

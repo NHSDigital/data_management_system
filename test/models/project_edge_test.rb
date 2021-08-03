@@ -51,4 +51,35 @@ class ProjectEdgeTest < ActiveSupport::TestCase
     assert_equal 2, edge.distance
     assert_equal path, edge.path
   end
+
+  test 'transitive_closure_for scope with distinct modifier' do
+    project                    = projects(:dummy_project)    # A
+    directly_related_project   = projects(:test_application) # B
+    indirectly_related_project = projects(:one)              # C
+    multiple_path_project      = projects(:two)              # D
+
+    directly_related_project.left_relationships.create!(right_project: multiple_path_project)
+    indirectly_related_project.left_relationships.create!(right_project: multiple_path_project)
+
+    scope = ProjectEdge.transitive_closure_for(project)
+
+    # Sanity check...
+    # A -> B
+    # A -> B -> C
+    # A -> B -> D
+    # A -> B -> C -> D
+    # A -> B -> D -> C
+    assert_equal 5, scope.count
+    assert_equal 2, scope.where(related_project: multiple_path_project).count
+
+    scope = ProjectEdge.transitive_closure_for(project, distinct: true)
+
+    assert_equal 3, scope.count
+    assert_equal 1, scope.where(related_project: multiple_path_project).count
+
+    edge = scope.find_by(related_project: multiple_path_project)
+    path = [project.id, directly_related_project.id, multiple_path_project.id]
+    assert_equal 2, edge.distance
+    assert_equal path, edge.path
+  end
 end
