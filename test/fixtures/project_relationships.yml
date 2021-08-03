@@ -3,3 +3,7 @@
 dummy_project_test_application:
   left_project: dummy_project
   right_project: test_application
+
+test_application_one:
+  left_project: test_application
+  right_project: one

@@ -29,4 +29,26 @@ class ProjectEdgeTest < ActiveSupport::TestCase
       edge.save(validate: false)
     end
   end
+
+  test 'transitive_closure_for scope' do
+    project                    = projects(:dummy_project)
+    directly_related_project   = projects(:test_application)
+    indirectly_related_project = projects(:one)
+
+    scope = ProjectEdge.transitive_closure_for(project)
+
+    assert_equal 2, scope.count
+    assert_equal 1, scope.where(related_project: directly_related_project).count
+    assert_equal 1, scope.where(related_project: indirectly_related_project).count
+
+    edge = scope.find_by(related_project: directly_related_project)
+    path = [project.id, directly_related_project.id]
+    assert_equal 1, edge.distance
+    assert_equal path, edge.path
+
+    edge = scope.find_by(related_project: indirectly_related_project)
+    path = [project.id, directly_related_project.id, indirectly_related_project.id]
+    assert_equal 2, edge.distance
+    assert_equal path, edge.path
+  end
 end
