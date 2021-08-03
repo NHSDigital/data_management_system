@@ -122,8 +122,8 @@ module Import
               if deprecated_gene.size == 1
                 positive_gene.append(DEPRECATED_BRCA_NAMES_MAP[deprecated_gene.join])
               else
-                deprecated_gene.each do |gene|
-                  positive_gene.append(DEPRECATED_BRCA_NAMES_MAP[gene])
+                deprecated_gene.each do |dg|
+                  positive_gene.append(DEPRECATED_BRCA_NAMES_MAP[dg])
                 end
               end
             end
@@ -285,21 +285,19 @@ module Import
           def process_exonic_variant(genotype, record)
             return unless record.raw_fields['genotype'].scan(EXON_VARIANT_REGEX).size.positive?
 
-            # if record.raw_fields['genotype'].scan(EXON_VARIANT_REGEX).size.positive?
-              genotype.add_exon_location($LAST_MATCH_INFO[:exons])
-              genotype.add_variant_type($LAST_MATCH_INFO[:variant])
-              genotype.add_status(2)
-              @logger.debug "SUCCESSFUL exon variant parse for: #{record.raw_fields['genotype']}"
+            genotype.add_exon_location($LAST_MATCH_INFO[:exons])
+            genotype.add_variant_type($LAST_MATCH_INFO[:variant])
+            genotype.add_status(2)
+            @logger.debug "SUCCESSFUL exon variant parse for: #{record.raw_fields['genotype']}"
             # end
           end
 
           def process_cdna_variant(genotype, record)
             return unless record.raw_fields['genotype'].scan(CDNA_REGEX).size.positive?
-            
-            # if record.raw_fields['genotype'].scan(CDNA_REGEX).size.positive?
-              genotype.add_gene_location($LAST_MATCH_INFO[:cdna])
-              genotype.add_status(2)
-              @logger.debug "SUCCESSFUL cdna change parse for: #{$LAST_MATCH_INFO[:cdna]}"
+
+            genotype.add_gene_location($LAST_MATCH_INFO[:cdna])
+            genotype.add_status(2)
+            @logger.debug "SUCCESSFUL cdna change parse for: #{$LAST_MATCH_INFO[:cdna]}"
             # end
           end
 
