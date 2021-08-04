@@ -20,6 +20,7 @@ module Import
                                    variantpathclass
                                    sampletype
                                    referencetranscriptid].freeze
+
           BRCA_REGEX = /(?<brca>BRCA1|
                                 BRCA2|
                                 BRIP1|
@@ -36,6 +37,7 @@ module Import
                                 RAD51D|
                                 STK11|
                                 TP53)/ix.freeze
+
           RECORD_EXEMPTIONS = ['c.[-835C>T]+[=]', 'Deletion of whole PTEN gene',
                                'c.[-904_-883dup ]+[=]', 'whole gene deletion',
                                'Deletion partial exon 11 and exons 12-15',
@@ -49,8 +51,8 @@ module Import
           CDNA_REGEX = /c\.\[?(?<cdna>[0-9]+.+[a-z]+)\]?/i.freeze
 
           EXON_REGEX = /(?<variant>del|inv|dup).+ion\s(?<of>of\s)?
-                        exon(?<s>s)?\s?(?<location>([0-9]+(?<moreexon>-[0-9]+)?))|
-                        exon(?<s>s)?\s?(?<location>([0-9]+(?<moreexon>-[0-9]+)?))
+                        exon(?<s>s)?\s?(?<location>[0-9]+(?<moreexon>-[0-9]+)?)|
+                        exon(?<s>s)?\s?(?<location>[0-9]+(?<moreexon>-[0-9]+)?)
                         \s(?<variant>del|inv|dup).+ion/ix.freeze
 
           GENOMICCHANGE_REGEX = /Chr(?<chromosome>\d+)\.hg
