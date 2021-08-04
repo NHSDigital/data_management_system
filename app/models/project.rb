@@ -425,7 +425,7 @@ class Project < ApplicationRecord
   def odr_rejected_notification
     return unless template ||= CONTENT_TEMPLATES.dig('email_project_odr_approval_decision', 'body')
 
-    Notification.create! do |notification|
+    Notification.create!(generate_mail: false) do |notification|
       notification.title      = "#{name} - Rejected"
       notification.body       = format(template, project: name, status: current_state.id)
       notification.project_id = id

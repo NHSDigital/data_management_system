@@ -1,0 +1,24 @@
+<%
+  interpolations = @interpolations.merge(scope: :projects_mailer)
+%>
+
+<h1><%= t(:"#{@i18n_prefix}.heading", **interpolations.merge(default: :'transitioned.heading')) %></h1>
+<hr />
+
+<%= t(:"#{@i18n_prefix}.body_html", **interpolations.merge(default: [:"#{@i18n_prefix}.body", :'transitioned.body_html', :'transitioned.body'])) %>
+
+<% if @comments %>
+  <blockquote>
+    <q><%= @comments %></q>
+    <footer>— <i><%= @current_user.full_name %></i></footer>
+  </blockquote>
+  <br />
+<% end %>
+
+<section>
+  <h2 style="font-size: 1.2em;">Project Details:</h2>
+  <%= render 'project_details', project: @project %>
+</section>
+
+<br />
+<%= render 'footer' %>

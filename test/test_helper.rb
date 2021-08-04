@@ -228,6 +228,50 @@ module ActionMailerHelper
 
     super
   end
+
+  # Inverse of :assert_enqueued_email_with. Not present in Rails (<= 6.0.3.7).
+  def refute_enqueued_email_with(mailer, method, args: nil, queue: 'mailers', &block)
+    args =
+      if args.is_a?(Hash)
+        args.merge!(url_options: ActionMailer::Base.default_url_options)
+        [mailer.to_s, method.to_s, 'deliver_now', { params: args, args: [] }]
+      else
+        [mailer.to_s, method.to_s, 'deliver_now', { args: Array(args) }]
+      end
+
+    refute_enqueued_with(job: mailer.delivery_job, args: args, queue: queue, &block)
+  end
+
+  # Inverse of :assert_enqueued_with from ActiveJob::TestHelper. Not present in Rails (<= 6.0.3.7).
+  def refute_enqueued_with(job: nil, args: nil, at: nil, queue: nil)
+    expected = { job: job, args: args, at: at, queue: queue }.compact
+    expected_args = prepare_args_for_assertion(expected)
+
+    if block_given?
+      original_enqueued_jobs_count = enqueued_jobs.count
+
+      yield
+
+      jobs = enqueued_jobs.drop(original_enqueued_jobs_count)
+    else
+      jobs = enqueued_jobs
+    end
+
+    matching_job = jobs.find do |enqueued_job|
+      deserialized_job = deserialize_args_for_assertion(enqueued_job)
+
+      expected_args.all? do |key, value|
+        if value.respond_to?(:call)
+          value.call(deserialized_job[key])
+        else
+          value == deserialized_job[key]
+        end
+      end
+    end
+
+    refute matching_job, "Enqueued job found with #{expected}"
+    instantiate_job(matching_job) if matching_job
+  end
 end
 
 require 'integration_test_helper'

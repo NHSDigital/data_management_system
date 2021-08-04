@@ -492,9 +492,9 @@ class ProjectTest < ActiveSupport::TestCase
     project.reload
 
     assert_difference 'Notification.count', 3 do
-      assert_emails 3 do
+      assert_emails 2 do
         project.odr_approval_needed_notification
-        project.odr_rejected_notification
+        project.odr_rejected_notification # Does not generate mail via Notification; now handled by a mailer
         project.odr_approved_notification
       end
     end

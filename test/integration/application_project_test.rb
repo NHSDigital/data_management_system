@@ -336,15 +336,13 @@ class ApplicationProjectTest < ActionDispatch::IntegrationTest
   end
 
   def assert_assignment_email(assignee:, assigner:, comments: nil)
-    assert_enqueued_emails 1 do
-      yield
+    yield
 
-      assert_enqueued_email_with ProjectsMailer, :project_assignment, args: {
-        project:     @project.reload,
-        assigned_to: assignee,
-        assigned_by: assigner,
-        comments:    comments
-      }
-    end
+    assert_enqueued_email_with ProjectsMailer, :project_assignment, args: {
+      project:     @project.reload,
+      assigned_to: assignee,
+      assigned_by: assigner,
+      comments:    comments
+    }
   end
 end
