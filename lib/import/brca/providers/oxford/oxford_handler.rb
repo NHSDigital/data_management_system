@@ -48,9 +48,9 @@ module Import
 
           CDNA_REGEX = /c\.\[?(?<cdna>[0-9]+.+[a-z]+)\]?/i.freeze
 
-          EXON_REGEX = /(?<variant>del|inv|dup).+ion\s(of\s)?
-                        exon(s)?\s?(?<location>([0-9]+(-[0-9]+)?))|
-                        exon(s)?\s?(?<location>([0-9]+(-[0-9]+)?))
+          EXON_REGEX = /(?<variant>del|inv|dup).+ion\s(?<of>of\s)?
+                        exon(?<s>s)?\s?(?<location>([0-9]+(?<moreexon>-[0-9]+)?))|
+                        exon(?<s>s)?\s?(?<location>([0-9]+(?<moreexon>-[0-9]+)?))
                         \s(?<variant>del|inv|dup).+ion/ix.freeze
 
           GENOMICCHANGE_REGEX = /Chr(?<chromosome>\d+)\.hg
