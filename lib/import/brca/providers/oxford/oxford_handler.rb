@@ -20,10 +20,39 @@ module Import
                                    variantpathclass
                                    sampletype
                                    referencetranscriptid].freeze
+          BRCA_REGEX = /(?<brca>BRCA1|
+                                BRCA2|
+                                BRIP1|
+                                CDK4|
+                                CDKN2A|
+                                CHEK2|
+                                MLH1|
+                                MSH2|
+                                MSH6|
+                                PALB2|
+                                PMS2|
+                                PTEN|
+                                RAD51C|
+                                RAD51D|
+                                STK11|
+                                TP53)/ix.freeze
+          RECORD_EXEMPTIONS = ['c.[-835C>T]+[=]', 'Deletion of whole PTEN gene',
+                               'c.[-904_-883dup ]+[=]', 'whole gene deletion',
+                               'Deletion partial exon 11 and exons 12-15',
+                               'deletion BRCA1 exons 21-24', 'deletion BRCA1 exons 21-24',
+                               'deletion BRCA1 exons 1-17', 'whole gene duplication'].freeze
 
-          BRCA_REGEX = /(?<brca>BRCA(1|2))/i.freeze
-          PROTEIN_REGEX = /p\.\[(?<impact>(.*?))\]|p\..+/i.freeze
-          CDNA_REGEX = /c\.\[?(?<cdna>[0-9]+.+[a-z])\]?/i.freeze
+          PROTEIN_REGEX = /p\.\[?\(?(?<impact>.+)(?:\))|
+                           p\.\[(?<impact>[a-z0-9*]+)\]|
+                           p\.(?<impact>[a-z]+[0-9]+[a-z]+)/ix.freeze
+
+          CDNA_REGEX = /c\.\[?(?<cdna>[0-9]+.+[a-z]+)\]?/i.freeze
+
+          EXON_REGEX = /(?<variant>del|inv|dup).+ion\s(of\s)?
+                        exon(s)?\s?(?<location>([0-9]+(-[0-9]+)?))|
+                        exon(s)?\s?(?<location>([0-9]+(-[0-9]+)?))
+                        \s(?<variant>del|inv|dup).+ion/ix.freeze
+
           GENOMICCHANGE_REGEX = /Chr(?<chromosome>\d+)\.hg
                                  (?<genome_build>\d+):g\.(?<effect>.+)/ix.freeze
           def process_fields(record)
@@ -31,10 +60,10 @@ module Import
             genotype.add_passthrough_fields(record.mapped_fields,
                                             record.raw_fields,
                                             PASS_THROUGH_FIELDS)
-            assign_method(genotype, record)
             assign_test_scope(genotype, record)
+            extract_variantpathclass(genotype, record)
             assign_test_type(genotype, record)
-            process_cdna_change(genotype, record)
+            process_variants(genotype, record)
             process_protein_impact(genotype, record)
             assign_genomic_change(genotype, record)
             assign_servicereportidentifier(genotype, record)
@@ -47,25 +76,12 @@ module Import
             genotype.attribute_map['organisationcode_testresult'] = '698C0'
           end
 
-          def assign_method(genotype, record)
-            Maybe(record.raw_fields['karyotypingmethod']).each do |raw_method|
-              method = TEST_METHOD_MAP[raw_method]
-              if method
-                genotype.add_method(method)
-              else
-                @logger.warn "Unknown method: #{raw_method}; possibly need to update map"
-              end
-            end
-          end
-
           def assign_test_type(genotype, record)
-            Maybe(record.raw_fields['moleculartestingtype']).each do |ttype|
-              if ttype.downcase != 'diagnostic'
-                @logger.warn "Oxford provided test type: #{ttype}; expected" \
-                             'diagnostic only'
-              end
-              # TODO: check that 'diagnostic' is exactly how it comes through
-              genotype.add_molecular_testing_type_strict(ttype)
+            return if record.raw_fields['moleculartestingtype'].nil?
+
+            if record.raw_fields['moleculartestingtype'] == 'pre-symptomatic'
+              genotype.add_molecular_testing_type('predictive')
+            else genotype.add_molecular_testing_type('diagnostic')
             end
           end
 
@@ -79,18 +95,35 @@ module Import
           end
 
           def assign_test_scope(genotype, record)
-            Maybe(record.raw_fields['scope / limitations of test']).each do |ttype|
-              scope = TEST_SCOPE_MAP[ttype.downcase.strip]
-              genotype.add_test_scope(scope) if scope
+            if ashkenazi?(record)
+              genotype.add_test_scope(:aj_screen)
+            elsif polish?(record)
+              genotype.add_test_scope(:polish_screen)
+            elsif targeted?(record)
+              genotype.add_test_scope(:targeted_mutation)
+            elsif full_screen?(record)
+              genotype.add_test_scope(:full_screen)
+            elsif null_testscope?(record)
+              targeted_scope_from_nullscope(genotype, record)
+            else @logger.debug 'Unable to determine genetic test scope'
             end
           end
 
-          def process_cdna_change(genotype, record)
+          def process_variants(genotype, record)
+            return if record.mapped_fields['codingdnasequencechange'].nil?
+
             if CDNA_REGEX.match(record.mapped_fields['codingdnasequencechange'])
               genotype.add_gene_location($LAST_MATCH_INFO[:cdna])
+              genotype.add_status(2)
               @logger.debug "SUCCESSFUL cdna change parse for: #{$LAST_MATCH_INFO[:cdna]}"
-            elsif /Normal/i.match(record.raw_fields['codingdnasequencechange'])
+            elsif EXON_REGEX.match(record.mapped_fields['codingdnasequencechange'])
+              genotype.add_variant_type($LAST_MATCH_INFO[:variant])
+              genotype.add_exon_location($LAST_MATCH_INFO[:location])
+              genotype.add_status(2)
+            elsif normal?(record)
               genotype.add_status(1)
+            elsif RECORD_EXEMPTIONS.include? record.mapped_fields['codingdnasequencechange']
+              extract_exemptions_from_record(genotype, record)
             else
               @logger.debug 'FAILED cdna change parse'
             end
@@ -110,7 +143,8 @@ module Import
             genotypes = []
             gene      = record.mapped_fields['gene'].to_i
             synonym   = record.raw_fields['sinonym'].to_s
-            if [7, 8, 79, 451, 3186].include? gene
+            if [7, 8, 79, 865, 3186, 2744, 2804, 3394, 62, 76,
+                590, 3615, 3616, 20, 18].include? gene
               genotype.add_gene(gene)
               @logger.debug "SUCCESSFUL gene parse for:#{record.mapped_fields['gene'].to_i}"
               genotypes << genotype
@@ -136,6 +170,96 @@ module Import
                 @logger.warn "Could not process, so adding raw genomic change: #{raw_change}"
               end
             end
+          end
+
+          def normal?(record)
+            return if record.mapped_fields['codingdnasequencechange'].nil?
+
+            record.mapped_fields['codingdnasequencechange'].scan(%r{N/A|normal}i).size.positive?
+          end
+
+          def full_screen?(record)
+            return if record.raw_fields['scope / limitations of test'].nil?
+
+            geneticscope = record.raw_fields['scope / limitations of test']
+            geneticscope.scan(/panel|scree(n|m)|brca|hcs|panel/i).size.positive?
+          end
+
+          def targeted?(record)
+            return if record.raw_fields['scope / limitations of test'].nil?
+
+            geneticscope = record.raw_fields['scope / limitations of test']
+            geneticscope.scan(/targeted|proband/i).size.positive?
+          end
+
+          def ashkenazi?(record)
+            return if record.raw_fields['scope / limitations of test'].nil?
+
+            geneticscope = record.raw_fields['scope / limitations of test']
+            geneticscope.scan(/ashkenazi/i).size.positive?
+          end
+
+          def polish?(record)
+            return if record.raw_fields['scope / limitations of test'].nil?
+
+            geneticscope = record.raw_fields['scope / limitations of test']
+            geneticscope.scan(/polish/i).size.positive?
+          end
+
+          def null_testscope?(record)
+            geneticscope = record.raw_fields['scope / limitations of test']
+            geneticscope.nil?
+          end
+
+          def targeted_scope_from_nullscope(genotype, record)
+            return if record.raw_fields['scope / limitations of test'].nil?
+
+            testtype = record.raw_fields['scope / limitations of test']
+            if testtype.scan(/symptomatic/i)
+              genotype.add_test_scope(:targeted_mutation)
+            elsif testtype.scan(/diagnostic/i)
+              genotype.add_test_scope(:full_screen)
+            end
+          end
+
+          def extract_exemptions_from_record(genotype, record)
+            return if record.mapped_fields['codingdnasequencechange'].nil?
+
+            exemptions = record.mapped_fields['codingdnasequencechange']
+            case exemptions
+            when 'c.[-835C>T]+[=]'
+              genotype.add_gene_location('c.-835C>T')
+              genotype.add_status(2)
+            when 'c.[-904_-883dup ]+[=]'
+              genotype.add_gene_location('c.-904_-883dup')
+              genotype.add_status(2)
+            when 'Deletion partial exon 11 and exons 12-15'
+              genotype.add_variant_type('Deletion')
+              genotype.add_exon_location('12-15')
+              genotype.add_status(2)
+            when 'deletion BRCA1 exons 21-24'
+              genotype.add_variant_type('Deletion')
+              genotype.add_exon_location('21-24')
+              genotype.add_status(2)
+            when 'deletion BRCA1 exons 1-17'
+              genotype.add_variant_type('Deletion')
+              genotype.add_exon_location('1-17')
+              genotype.add_status(2)
+            when 'Deletion of whole PTEN gene', 'whole gene deletion'
+              genotype.add_variant_type('Deletion')
+              genotype.add_status(2)
+            when 'whole gene duplication'
+              genotype.add_variant_type('Duplication')
+              genotype.add_status(2)
+            end
+          end
+
+          def extract_variantpathclass(genotype, record)
+            return if record.mapped_fields['variantpathclass'].nil? ||
+                      record.mapped_fields['variantpathclass'].to_i.zero?
+
+            varpathclass = record.mapped_fields['variantpathclass'].to_i
+            genotype.add_variant_class(varpathclass)
           end
         end
       end
