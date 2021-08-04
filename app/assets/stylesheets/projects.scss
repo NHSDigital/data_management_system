@@ -27,6 +27,26 @@
   }
 }
 
+.related_project {
+  summary {
+    margin-bottom: 8px;
+  }
+
+  dl {
+    dt {
+      display: inline;
+    }
+
+    dt::after {
+      content: ':'
+    }
+
+    dd {
+      display: inline;
+    }
+  }
+}
+
 .project [data-controller="pdf-import"] {
   margin-bottom: 20px;
 }

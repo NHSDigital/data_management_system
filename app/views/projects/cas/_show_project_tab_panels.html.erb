@@ -17,6 +17,6 @@
     <%= render 'project_comments', project: project, comments_count: sub_resource_counts.fetch(:comments, 0) %>
   </div>
 
-  <%= render 'project_timeline',  project: @project, comments_count: sub_resource_counts.fetch(:'workflow/project_states.comments', {}) %>
-  <%= render 'project_heirarchy', project: @project %>
+  <%= render 'project_timeline', project: @project, comments_count: sub_resource_counts.fetch(:'workflow/project_states.comments', {}) %>
+  <%= render 'related_projects', project: @project %>
 </div>

@@ -1,0 +1,22 @@
+<%= content_tag(:div, class: dom_class(project, :related), id: dom_id(project, :related)) do %>
+  <details open>
+    <summary>
+      <h4>
+        <%= details_link(project, class: 'btn btn-default btn-xs') %>
+        <%= content_tag(:cite, project.name, url: project_path(project)) %><br />
+
+        <small>
+          <%= project_type_label(project) %>
+          <%= project_status_label(project) %>
+        </small>
+      </h4>
+    </summary>
+
+    <dl>
+      <dt><%= Project.human_attribute_name(:application_log) %></dt>
+      <dd><%= project.application_log %></dd>
+    </dl>
+
+    <p><%= project.description || project.project_purpose %></p>
+  </details>
+<% end %>
