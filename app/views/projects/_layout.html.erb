@@ -1,6 +1,6 @@
 <%= content_tag :div, class: dom_class(@project), id: dom_id(@project) do %>
-  <%= render 'transition_errors', project: @project %>
-  <%= render 'header', project: @project %>
+  <%= render 'projects/transition_errors', project: @project %>
+  <%= render 'projects/header', project: @project %>
 
   <div id="project-details">
     <div id="project_show_tabs">
