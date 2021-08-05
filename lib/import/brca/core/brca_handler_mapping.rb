@@ -20,7 +20,8 @@ module Import
           'RJ7' => Import::Brca::Providers::StGeorge::StGeorgeHandler,
           'RPY' => Import::Brca::Providers::RoyalMarsden::RoyalMarsdenHandler,
           'R1K' => Import::Brca::Providers::LondonKgc::LondonKgcHandler,
-          'RQ3' => Import::Brca::Providers::Birmingham::BirminghamHandlerNewformat
+          'RQ3' => Import::Brca::Providers::Birmingham::BirminghamHandlerNewformat,
+          'RP4' => Import::Brca::Providers::LondonGosh::LondonGoshHandler,
         }.freeze
 
         def self.get_handler(provider_code)
