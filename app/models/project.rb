@@ -184,6 +184,19 @@ class Project < ApplicationRecord
       joins(:project_type).merge(ProjectType.cas)
   }
 
+  scope :order_by_reference, lambda {
+    year, month = %i[year month].map do |part|
+      Arel::Nodes::NamedFunction.new(
+        'date_part', [Arel::Nodes.build_quoted(part), arel_table[:first_contact_date]]
+      )
+    end
+
+    offset = Arel::Nodes::Case.new.when(month.gt(3)).then(1).else(0)
+
+    # TODO: `.nulls_last` added to Arel in Rails 6.1
+    order(Arel.sql((year + offset).desc.to_sql << ' NULLS LAST'), id: :desc)
+  }
+
   accepts_nested_attributes_for :project_attachments
 
   after_transition_to :status_change_notifier

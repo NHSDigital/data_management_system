@@ -4,8 +4,9 @@ class RelatedProjectsController < ApplicationController
 
   def index
     edges    = @project.project_edges.transitive_closure
-    projects = Project.where(id: edges.select(:related_project_id)).
-               accessible_by(current_user.current_ability)
+    projects = Project.from(Project.accessible_by(current_ability), :projects).
+               where(id: edges.select(:related_project_id)).
+               order_by_reference
 
     locals = {
       projects: projects
