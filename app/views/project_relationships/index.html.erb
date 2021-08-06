@@ -1,0 +1,36 @@
+<% content_for(:search) do %>
+  <%= render 'projects/search_form', url: project_project_relationships_path(@project) %>
+<% end %>
+
+<%= render layout: 'projects/layout' do %>
+  <%= render layout: 'projects/search_layout' do %>
+    <ol class="breadcrumb">
+      <li><%= link_to @project.name, project_path(@project, anchor: '!related') %></li>
+      <li>Related Projects</li>
+    </ol>
+
+    <div class="table-responsive">
+      <table class="table table-condensed table-hover" id="projects_table">
+        <thead>
+          <tr>
+            <th><%= ProjectType.model_name.human %></th>
+            <th><%= Project.human_attribute_name(:application_log) %></th>
+            <th><%= Project.human_attribute_name(:name) %></th>
+            <th><%= Project.human_attribute_name(:owner) %></th>
+            <th><%= Workflow::State.model_name.human %></th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @projects.each do |project| %>
+            <%= render 'project', project: project, subject: @project %>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="text-center">
+      <%= will_paginate(@projects, params: { search: search_params }) %>
+    </div>
+  <% end %>
+<% end %>

@@ -172,39 +172,7 @@ class ProjectCoreTest < ActionDispatch::IntegrationTest
     assert_equal dashboard_projects_path, current_path
   end
 
-  test 'should be able to see linked projects' do
-    project                    = projects(:one)
-    directly_related_project   = projects(:test_application)
-    indirectly_related_project = projects(:two)
-    other_project              = projects(:dummy_project)
-
-    # Ensure user has visibility of these...
-    [project, directly_related_project, indirectly_related_project].each do |resource|
-      resource.grants.create!(user: @user, roleable: project_roles(:contributor))
-    end
-
-    # Ensure projects are sufficiently related...
-    directly_related_project.left_relationships.create!(right_project: indirectly_related_project)
-
-    sign_in @user
-
-    visit project_path(project)
-
-    click_link('Related')
-
-    within('#related') do
-      assert has_text?(directly_related_project.name)
-      assert has_link?(href: project_path(directly_related_project))
-
-      assert has_text?(indirectly_related_project.name)
-      assert has_link?(href: project_path(indirectly_related_project))
-
-      # `other_project` is related through :test_application (see fixtures) but user has no
-      # grant so shouldn't see it...
-      assert has_no_text?(other_project.name)
-      assert has_no_link?(href: project_path(other_project))
-    end
-  end
+  private
 
   def create_eoi
     eoi = Project.new(project_type: project_types(:eoi),

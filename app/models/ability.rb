@@ -206,6 +206,7 @@ class Ability
     ]
 
     can %i[assign import], Project
+    can :manage, ProjectRelationship
 
     # Senior ODR users have additonal powers...
     return unless user.odr?

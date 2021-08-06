@@ -1,0 +1,24 @@
+<%
+  relationship = subject.relationship_to(project)
+%>
+
+<%= content_tag(:tr, class: dom_class(project), id: dom_id(project)) do %>
+  <td><%= project_type_label(project) %></td>
+  <td><%= project.application_log %></td>
+  <%= tag.td(project.name, class: :'no-overflow', title: project.name) %>
+  <%= tag.td(project.owner_full_name, class: :'no-overflow', title: project.owner_full_name) %>
+  <td><%= project_status_label(project) %></td>
+  <td>
+    <% if relationship %>
+      <%= delete_link(relationship, path: polymorphic_path([subject, relationship], search: search_params), title: 'Remove', text: true, icon: :'minus-sign', class: 'btn btn-danger btn-xs btn-block') %>
+    <% else %>
+      <%= form_with(url: project_project_relationships_path(subject, search: search_params), scope: :project_relationship) do |form| %>
+        <%= form.hidden_field(:right_project_id, value: project.id) %>
+        <button type="submit" class="btn btn-primary btn-xs btn-block">
+          <%= bootstrap_icon_tag(:'plus-sign') %>
+          Add
+        </button>
+      <% end %>
+    <% end %>
+  </td>
+<% end %>

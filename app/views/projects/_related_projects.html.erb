@@ -1,7 +1,16 @@
 <div class="tab-pane" id="related">
   <div class="panel panel-default" style="border-top: 0px;">
-    <div class="panel-heading" style="font-size: 1.5em;">
-      Related Projects
+    <div class="panel-heading">
+      <span style="font-size: 1.5em;">Related Projects</span>
+
+      <% if can?(:manage, ProjectRelationship) %>
+        <div class="pull-right">
+          <%= link_to project_project_relationships_path(project), class: 'btn btn-default' do %>
+            <%= bootstrap_icon_tag(:pencil) %>
+            Edit
+          <% end %>
+        </div>
+      <% end %>
     </div>
   </div>
 

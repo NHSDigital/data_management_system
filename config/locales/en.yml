@@ -316,6 +316,13 @@ en:
   project_amendments:
     form:
       file_type_guidance: File must be a pdf. Convert a Word doc using File then 'Save as Adobe pdf'
+  project_relationships:
+    create:
+      success: Projects successfully linked
+      failure: Could not link projects!
+    destroy:
+      success: Projects successfully unlinked
+      failure: Could not unlink projects!
   activerecord:
     errors:
       models:

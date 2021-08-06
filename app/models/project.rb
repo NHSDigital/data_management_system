@@ -270,6 +270,15 @@ class Project < ApplicationRecord
     end
   end
 
+  # NOTE: Taking the not-so-obvious route here so that we take advantage of using in-memory
+  # associations rather than hitting the db each time.
+  def relationship_to(other)
+    project_relationships.find do |relationship|
+      (relationship.left_project_id == id && relationship.right_project_id == other.id) ||
+        (relationship.right_project_id == id && relationship.left_project_id == other.id)
+    end
+  end
+
   def organisation_name
     super || organisation&.name
   end

@@ -51,6 +51,15 @@
   margin-bottom: 20px;
 }
 
+.project {
+  td.no-overflow {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    max-width: 200px;
+  }
+}
+
 #projects-panel [data-controller="pdf-import"] {
   margin-bottom: 0px;
 }

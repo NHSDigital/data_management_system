@@ -635,6 +635,16 @@ class ProjectTest < ActiveSupport::TestCase
     refute_includes facade.errors.messages.keys, :first_contact_date
   end
 
+  test 'finds/returns relevant ProjectRelationship linking other project' do
+    project      = projects(:dummy_project)
+    related      = projects(:test_application)
+    relationship = project_relationships(:dummy_project_test_application)
+
+    assert_equal relationship, project.relationship_to(related)
+    assert_equal relationship, related.relationship_to(project)
+    assert_nil project.relationship_to(projects(:one))
+  end
+
   private
 
   def assert_application_log(expected, options = {})
