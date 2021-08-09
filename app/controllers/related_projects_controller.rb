@@ -6,7 +6,8 @@ class RelatedProjectsController < ApplicationController
     edges    = @project.project_edges.transitive_closure
     projects = Project.from(Project.accessible_by(current_ability), :projects).
                where(id: edges.select(:related_project_id)).
-               order_by_reference
+               order_by_reference.
+               includes(:project_type, :current_state)
 
     locals = {
       projects: projects
