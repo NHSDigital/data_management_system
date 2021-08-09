@@ -461,3 +461,13 @@ en-odr:
         A project you are managing has been closed by %{current_user}.
 
         Closure reason: %{closure_reason}
+    application_transitioned_to_contract_completed:
+      body_html: >
+        <p>A project you are managing has had the contract approved by %{current_user}.</p>
+      body: |
+        A project you are managing has had the contract approved by %{current_user}.
+    application_transitioned_to_contract_rejected:
+      body_html: >
+        <p>A project you are managing has had the contract rejected by %{current_user}.</p>
+      body: |
+        A project you are managing has had the contract rejected by %{current_user}.
