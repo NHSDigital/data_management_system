@@ -38,6 +38,33 @@ namespace :xsd do
       build_diff(dataset, dv1, dv2, print_output)
     end
 
+    desc 'v8/v9 differences'
+    task cosd_v8_v9_diffs_rawtext: :environment do
+      filename = ENV['FILE']
+      require 'csv'
+      rows = []
+      CSV.open(filename, "r+") do |csv|
+        csv.each_with_index do |row, i|
+          next if i == 0
+          rows << [row[0], row[1], row[2], row[3], row[4], row[5], row[6]]
+        end
+        etype_row = []
+        rows.each do |row|
+          row_etype = EraFields.find_by(ebr_rawtext_name: row[4])&.ebr
+          row_etype.nil? ? row_etype = '' : row_etype = row_etype[0]
+          etype_row << [row[0], row[1], row[2], row[3], row[4], row[5], row_etype, row[6]]
+        end
+
+        csv = CSV.new('v8_v9_diffs_rawtext.csv')
+        CSV.open('v8_v9_diffs_rawtext.csv', "wb") do |csv|
+          csv << ["V8 only rawtext_name", "V8 only code", "V8 only fieldname", "Same item number?", "V9 only rawtext_name", "V9 only code", "V9 only record type", "Same item number?"]
+          etype_row.each do |item|
+            csv << [item[0], item[1], item[2], item[3], item[4], item[5], item[6], item[7]]
+          end
+        end
+      end
+    end
+
     def build_diff(dataset, dv1, dv2, print_output)
       change_log = Nodes::ChangeLog.new(dataset, dv1, dv2, print_output)
       change_log.save_file
