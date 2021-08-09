@@ -62,7 +62,7 @@ namespace :xsd do
                       'Same item number?', 'V9 only rawtext_name', 'V9 only code',
                       'V9 only record type', 'Same item number?']
           etype_row.each do |item|
-            out_csv << [item[0], item[1], item[2], item[3], item[4], item[5], item[6], item[7]]
+            out_csv << item
           end
         end
       end
