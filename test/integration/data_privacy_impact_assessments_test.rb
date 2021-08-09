@@ -40,18 +40,21 @@ class DataPrivacyImpactAssessmentsTest < ActionDispatch::IntegrationTest
 
     click_link('New')
 
-    select 'Standards met', from: 'data_privacy_impact_assessment[ig_assessment_status_id]'
+    select project.reference,  from: 'Associated With'
+    select 'Standards met',    from: 'data_privacy_impact_assessment[ig_assessment_status_id]'
     fill_in 'data_privacy_impact_assessment[ig_toolkit_version]',  with: '2019/20'
     fill_in 'data_privacy_impact_assessment[review_meeting_date]', with: '07/04/2020'
     fill_in 'data_privacy_impact_assessment[dpia_decision_date]',  with: '14/04/2020'
     attach_file('data_privacy_impact_assessment[upload]', file_fixture('dpia.txt'))
 
-    assert_difference -> { project.dpias.count } do
-      click_button('Create DPIA')
+    assert_difference -> { project.global_dpias.count } do
+      assert_difference -> { project.dpias.count } do
+        click_button('Create DPIA')
 
-      assert_equal project_path(project), current_path
-      assert has_text?('DPIA created successfully')
-      # assert has_selector?('#projectAmendments', visible: true)
+        assert_equal project_path(project), current_path
+        assert has_text?('DPIA created successfully')
+        # assert has_selector?('#projectAmendments', visible: true)
+      end
     end
   end
 
@@ -90,12 +93,14 @@ class DataPrivacyImpactAssessmentsTest < ActionDispatch::IntegrationTest
     visit project_path(project)
     click_on('DPIAs')
 
-    assert_difference -> { project.dpias.count }, -1 do
-      accept_prompt do
-        click_link(href: data_privacy_impact_assessment_path(dpia), title: 'Delete')
-      end
+    assert_difference -> { project.global_dpias.count }, -1 do
+      assert_difference -> { project.dpias.count }, -1 do
+        accept_prompt do
+          click_link(href: data_privacy_impact_assessment_path(dpia), title: 'Delete')
+        end
 
-      assert_equal project_path(project), current_path
+        assert_equal project_path(project), current_path
+      end
     end
 
     assert has_text?('DPIA destroyed successfully')

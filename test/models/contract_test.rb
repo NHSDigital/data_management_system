@@ -13,10 +13,10 @@ class ContractTest < ActiveSupport::TestCase
 
   test 'should belong to a project' do
     project  = projects(:one)
-    contract = project.contracts.build
+    contract = project.global_contracts.build
 
     assert_equal project, contract.project
-    assert_includes project.contracts, contract
+    assert_includes project.global_contracts, contract
   end
 
   test 'should be invalid without a project' do
@@ -29,6 +29,10 @@ class ContractTest < ActiveSupport::TestCase
     contract.valid?
 
     refute_includes contract.errors.details[:project], error: :blank
+  end
+
+  test 'should include BelongsToReferent' do
+    assert_includes Contract.included_modules, BelongsToReferent
   end
 
   test 'should be associated with a project state' do
@@ -47,7 +51,7 @@ class ContractTest < ActiveSupport::TestCase
 
   test 'should be auditable' do
     project  = projects(:one)
-    contract = project.contracts.build
+    contract = project.global_contracts.build
 
     with_versioning do
       assert_auditable contract
@@ -56,15 +60,13 @@ class ContractTest < ActiveSupport::TestCase
 
   test 'should not auto transition to data destroyed if a destruction date is not present' do
     assert_no_changes -> { @data_released_project.current_state } do
-      @data_released_project.contracts.build.tap do |contract|
-        contract.save!
-      end
+      build_contract(@data_released_project).save!
     end
   end
 
   test 'should auto transition to data destroyed if a any destruction date is present' do
     assert_changes -> { @data_released_project.current_state.id }, 'DATA_DESTROYED' do
-      @data_released_project.contracts.build.tap do |contract|
+      build_contract(@data_released_project) do |contract|
         contract.destruction_form_received_date = Date.current
         contract.save!
       end
@@ -74,10 +76,18 @@ class ContractTest < ActiveSupport::TestCase
   test 'should not auto transition to data destroyed if not in correct previous state' do
     @data_released_project.transition_to!(Workflow::State.find_by(id: 'AMEND'))
     assert_no_changes -> { @data_released_project.current_state } do
-      @data_released_project.contracts.build.tap do |contract|
+      build_contract(@data_released_project) do |contract|
         contract.destruction_form_received_date = Date.current
         contract.save!
       end
+    end
+  end
+
+  private
+
+  def build_contract(project, **attributes)
+    project.global_contracts.build(referent: project, **attributes) do |contract|
+      yield(contract) if block_given?
     end
   end
 end

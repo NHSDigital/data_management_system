@@ -21,6 +21,10 @@ class ProjectAmendmentTest < ActiveSupport::TestCase
     refute_includes amendment.errors.details[:project], error: :blank
   end
 
+  test 'should include HasManyReferers' do
+    assert_includes ProjectAmendment.included_modules, HasManyReferers
+  end
+
   test 'should be associated with a project state' do
     project   = projects(:one)
     amendment = create_amendment(project)

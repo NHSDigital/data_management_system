@@ -3,6 +3,10 @@ require 'test_helper'
 class ProjectTest < ActiveSupport::TestCase
   include ActionMailer::TestHelper
 
+  test 'should include HasManyReferers' do
+    assert_includes ProjectAmendment.included_modules, HasManyReferers
+  end
+
   test 'should remove project data items when data source changed' do
     project = build_and_validate_project
     dataset = Dataset.find_by(name: 'Births Gold Standard')

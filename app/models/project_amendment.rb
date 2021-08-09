@@ -1,6 +1,8 @@
 # An `amendment` represents a formal request to change a `project` in some way, usually late in
 # the lifecycle.
 class ProjectAmendment < ApplicationRecord
+  include HasManyReferers
+
   has_paper_trail
 
   # Quick/dirty categorization for an `amendment`

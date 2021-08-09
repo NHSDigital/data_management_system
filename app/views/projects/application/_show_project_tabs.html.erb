@@ -13,13 +13,13 @@
   </li>
   <%= tab_to ProjectAmendment.model_name.human.pluralize, '#amendments', count: @project.project_amendments.count, data: { toggle: :tab } %>
   <% if can?(:read, DataPrivacyImpactAssessment) %>
-    <%= tab_to DataPrivacyImpactAssessment.model_name.human(count: 2), '#dpias', count: @project.dpias.count, data: { toggle: :tab } %>
+    <%= tab_to DataPrivacyImpactAssessment.model_name.human(count: 2), '#dpias', count: @project.global_dpias.count, data: { toggle: :tab } %>
   <% end %>
   <% if can?(:read, Contract) %>
-    <%= tab_to Contract.model_name.human.pluralize, '#contracts', count: @project.contracts.count, data: { toggle: :tab } %>
+    <%= tab_to Contract.model_name.human.pluralize, '#contracts', count: @project.global_contracts.count, data: { toggle: :tab } %>
   <% end %>
 
-  <%= tab_to(Release.model_name.human.pluralize, '#releases', count: @project.releases.count, data: { toggle: :tab }) %>
+  <%= tab_to(Release.model_name.human.pluralize, '#releases', count: @project.global_releases.count, data: { toggle: :tab }) %>
 
   <li>
     <a href="#uploads" data-toggle='tab'>

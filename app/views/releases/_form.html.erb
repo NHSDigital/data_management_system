@@ -8,6 +8,8 @@
 <%= bootstrap_form_with model: release, url: url, readonly: readonly, horizontal: true, html: { id: dom_id(release) } do |form| %>
   <%= form.error_and_warning_alert_boxes %>
 
+  <%= render 'projects/shared/referent_form_fields', project: form.object.project, form: form %>
+
   <%= form.control_group(:invoice_requested_date, nil, {}, class: 'col-md-3') do %>
     <%= form.datepicker_field(:invoice_requested_date) %>
   <% end %>

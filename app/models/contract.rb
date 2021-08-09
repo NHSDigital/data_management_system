@@ -1,4 +1,6 @@
 class Contract < ApplicationRecord
+  include BelongsToReferent
+
   has_paper_trail
 
   belongs_to :project

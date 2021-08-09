@@ -372,6 +372,8 @@ en:
         owner: Applicant
         application_log: ODR Ref
       data_privacy_impact_assessment:
+        referent: Associated With
+        referent_reference: Associated Reference
         ig_toolkit_version: Year of IG assessment status
         ig_score: IG score
         ig_assessment_status_id: IG assessment status
@@ -379,6 +381,8 @@ en:
         dpia_decision_date: DPIA decision date
         upload: DPIA document
       contract:
+        referent: Associated With
+        referent_reference: Associated Reference
         contract_sent_date: Date contract sent to applicant
         contract_returned_date: Date contract returned by applicant
         contract_start_date: Contract start date
@@ -388,6 +392,8 @@ en:
         advisory_letter_date: Advisory letter sent
         destruction_form_received_date: Destruction form received
       release:
+        referent: Associated With
+        referent_reference: Associated Reference
         phe_invoice_number: PHE Invoice number
         po_number: PO number
         ndg_opt_out_processed_date: National processing data opt outs completed
