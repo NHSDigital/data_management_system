@@ -5,6 +5,9 @@ class ProjectRelationship < ApplicationRecord
     belongs_to :right_project
   end
 
+  has_many :project_edges, inverse_of: :project_relationship # rubocop:disable Rails/HasManyOrHasOneDependent
+  has_many :projects, through: :project_edges, source: :related_project
+
   validate :no_inverse_pairs
   validate :no_self_referential_relationships
 

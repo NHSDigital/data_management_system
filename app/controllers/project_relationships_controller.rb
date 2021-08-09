@@ -17,34 +17,40 @@ class ProjectRelationshipsController < ApplicationController
   end
 
   def create
+    @other_project = @team.projects.find_by(id: resource_params[:right_project_id])
+
     @project_relationship.assign_attributes(
       left_project:  @project,
-      right_project: @team.projects.find_by(id: resource_params[:right_project_id])
+      right_project: @other_project
     )
 
-    @project_relationship.save
-
-    options =
-      if @project_relationship.persisted?
-        { notice: t('.success') }
-      else
-        { alert: t('.failure') }
+    if @project_relationship.save
+      respond_to do |format|
+        format.html { redirect_to after_action_path, notice: t('.success') }
+        format.js
       end
-
-    redirect_to after_action_path, options
+    else
+      respond_to do |format|
+        format.html { redirect_to after_action_path, alert: t('.failure') }
+        format.js
+      end
+    end
   end
 
   def destroy
-    @project_relationship.destroy
+    @other_project = @project_relationship.projects.detect { |project| project != @project }
 
-    options =
-      if @project_relationship.destroyed?
-        { notice: t('.success') }
-      else
-        { alert: t('.failure') }
+    if @project_relationship.destroy
+      respond_to do |format|
+        format.html { redirect_to after_action_path, notice: t('.success') }
+        format.js
       end
-
-    redirect_to after_action_path, options
+    else
+      respond_to do |format|
+        format.html { redirect_to after_action_path, alert: t('.failure') }
+        format.js
+      end
+    end
   end
 
   private

@@ -10,11 +10,11 @@
   <td><%= project_status_label(project) %></td>
   <td>
     <% if relationship %>
-      <%= delete_link(relationship, path: polymorphic_path([subject, relationship], search: search_params), title: 'Remove', text: true, icon: :'minus-sign', class: 'btn btn-danger btn-xs btn-block') %>
+      <%= delete_link(relationship, path: polymorphic_path([subject, relationship], search: search_params), title: 'Remove', text: true, icon: :'minus-sign', class: 'btn btn-danger btn-xs btn-block', remote: true, data: { disable: true }) %>
     <% else %>
-      <%= form_with(url: project_project_relationships_path(subject, search: search_params), scope: :project_relationship) do |form| %>
+      <%= form_with(url: project_project_relationships_path(subject, search: search_params), scope: :project_relationship, local: false) do |form| %>
         <%= form.hidden_field(:right_project_id, value: project.id) %>
-        <button type="submit" class="btn btn-primary btn-xs btn-block">
+        <button type="submit" class="btn btn-primary btn-xs btn-block" data-disable="true">
           <%= bootstrap_icon_tag(:'plus-sign') %>
           Add
         </button>

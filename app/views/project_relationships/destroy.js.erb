@@ -1,0 +1,5 @@
+<%
+  html = render 'project', project: @other_project, subject: @project
+%>
+
+$('tr#<%= j(dom_id(@other_project)) %>').replaceWith('<%= j(html) %>');
