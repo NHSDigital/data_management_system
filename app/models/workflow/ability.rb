@@ -568,10 +568,6 @@ module Workflow
                                  project: { current_state: { id: 'DRAFT' },
                                             project_type: { name: 'CAS' },
                                             id: project_ids }
-      can :create, ProjectState, state: { id: 'ACCESS_GRANTED' },
-                                 project: { current_state: { id: 'RENEWAL' },
-                                            project_type: { name: 'CAS' },
-                                            id: project_ids }
       can :create, ProjectState, state: { id: %w[ACCOUNT_CLOSED DRAFT] },
                                  project: { current_state: { id: 'ACCESS_GRANTED' },
                                             project_type: { name: 'CAS' },

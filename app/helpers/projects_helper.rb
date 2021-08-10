@@ -53,8 +53,7 @@ module ProjectsHelper
     'ACCESS_APPROVER_REJECTED' => 'label-danger',
     'REJECTION_REVIEWED' => 'label-danger',
     'ACCESS_GRANTED' => 'label-success',
-    'ACCOUNT_CLOSED' => 'label-danger',
-    'RENEWAL' => 'label-warning'
+    'ACCOUNT_CLOSED' => 'label-danger'
   }.freeze
 
   def new_project_dropdown_button(team, **html_options)

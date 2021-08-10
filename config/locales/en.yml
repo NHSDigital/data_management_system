@@ -64,7 +64,6 @@ en:
           access_approver_rejected: Reject Access
           rejection_reviewed: Rejection Confirmed
           account_closed: Close Account
-          access_granted: Renew Account
         project:
           review: Submit for Delegate Approval
           draft: Return to draft
