@@ -546,6 +546,3 @@ DEPENDENCIES
   webpacker
   will_paginate
   zip-zip
-
-BUNDLED WITH
-   1.17.3
