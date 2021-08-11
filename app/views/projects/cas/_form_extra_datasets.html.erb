@@ -22,8 +22,7 @@
               <td id="level_<%= pdl.object.access_level_id %>_selected" width="3%"><%= pdl.check_box :selected, id: "dataset_#{pd.object.dataset.id}_level_#{pdl.object.access_level_id}_check_box", readonly_value: check_icon(pdl.object.selected) %></td>
               <td id="level_<%= pdl.object.access_level_id %>_expiry_date" width="20%"><%= pdl.datepicker_field :expiry_date, id: "dataset_#{pd.object.dataset.id}_level_#{pdl.object.access_level_id}_expiry_datepicker", placeholder: "Expiry date", readonly_value: display_level_date(pdl.object) %></td>
             <% else %>
-              <td id="level_<%= pdl.object.access_level_id %>_selected"></td>
-              <td id="level_<%= pdl.object.access_level_id %>_expiry_date" style="text-align:center;">-</td>
+              <td id="level_<%= pdl.object.access_level_id %>_selected" width="23%" style="text-align:center;">-</td>
             <% end %>
           <% end %>
         </tr>
