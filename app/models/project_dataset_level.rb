@@ -29,7 +29,6 @@ class ProjectDatasetLevel < ApplicationRecord
     return unless project.cas?
     return unless project_dataset.dataset.cas_defaults?
     return unless [2, 3].include? access_level_id
-
     update_column(:expiry_date, 1.year.from_now)
   end
 
@@ -37,9 +36,9 @@ class ProjectDatasetLevel < ApplicationRecord
     return unless project.cas?
     return unless selected == true
     return if project_dataset.dataset.cas_extras? || [2, 3].include?(access_level_id)
+    return if expiry_date.present?
 
-    errors.add :project_datasets, 'expiry date must be present for all selected extra datasets ' \
-                                  'and any selected level 1 default datasets'
+    errors.add :expiry_date, :must_have_expiry_date
   end
 
   def readable_approved_status

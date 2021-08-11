@@ -51,7 +51,7 @@ class CasApplicationFormTest < ActionDispatch::IntegrationTest
       assert has_selector?("#dataset_#{dataset(85).id}_level_1_check_box")
       assert has_selector?("#dataset_#{dataset(85).id}_level_1_expiry_datepicker")
       assert has_selector?("#dataset_#{dataset(85).id}_level_2_check_box")
-      assert has_selector?("#dataset_#{dataset(85).id}_level_2_expiry_datepicker")
+      assert has_no_selector?("#dataset_#{dataset(85).id}_level_2_expiry_datepicker")
       # level 3 not in datasets levels
       assert has_no_selector?("#dataset_#{dataset(85).id}_level_3_check_box")
       assert has_no_selector?("#dataset_#{dataset(85).id}_level_3_expiry_datepicker")
@@ -62,9 +62,9 @@ class CasApplicationFormTest < ActionDispatch::IntegrationTest
       assert has_no_selector?("#dataset_#{dataset(86).id}_level_1_check_box")
       assert has_no_selector?("#dataset_#{dataset(86).id}_level_1_expiry_datepicker")
       assert has_selector?("#dataset_#{dataset(86).id}_level_2_check_box")
-      assert has_selector?("#dataset_#{dataset(86).id}_level_2_expiry_datepicker")
+      assert has_no_selector?("#dataset_#{dataset(86).id}_level_2_expiry_datepicker")
       assert has_selector?("#dataset_#{dataset(86).id}_level_3_check_box")
-      assert has_selector?("#dataset_#{dataset(86).id}_level_3_expiry_datepicker")
+      assert has_no_selector?("#dataset_#{dataset(86).id}_level_3_expiry_datepicker")
     end
 
     within "#dataset_#{dataset(87).id}_row" do
@@ -72,7 +72,7 @@ class CasApplicationFormTest < ActionDispatch::IntegrationTest
       assert has_no_selector?("#dataset_#{dataset(87).id}_level_1_check_box")
       assert has_no_selector?("#dataset_#{dataset(87).id}_level_1_expiry_datepicker")
       assert has_selector?("#dataset_#{dataset(87).id}_level_2_check_box")
-      assert has_selector?("#dataset_#{dataset(87).id}_level_2_expiry_datepicker")
+      assert has_no_selector?("#dataset_#{dataset(87).id}_level_2_expiry_datepicker")
       assert has_no_selector?("#dataset_#{dataset(87).id}_level_3_check_box")
       assert has_no_selector?("#dataset_#{dataset(87).id}_level_3_expiry_datepicker")
     end
@@ -120,8 +120,6 @@ class CasApplicationFormTest < ActionDispatch::IntegrationTest
     within "#dataset_#{application.project_datasets.find_by(dataset_id: 86).dataset.id}_row" do
       assert has_no_checked_field?("dataset_#{dataset(86).id}_level_1_check_box")
       assert has_checked_field?("dataset_#{dataset(86).id}_level_2_check_box")
-      assert_equal find("#dataset_#{dataset(86).id}_level_2_expiry_datepicker").value,
-                   (Time.zone.today + 1.week).strftime('%d/%m/%Y')
       assert has_checked_field?("dataset_#{dataset(86).id}_level_3_check_box")
     end
 
@@ -199,7 +197,6 @@ class CasApplicationFormTest < ActionDispatch::IntegrationTest
   test 'ensure that project_datasets and levels are built correctly from the form' do
     sign_in users(:no_roles)
     visit new_project_path(project: { project_type_id: project_types(:cas).id })
-
     within "#dataset_#{dataset(83).id}_row" do
       find(:css, "#dataset_#{dataset(83).id}_level_1_check_box").set(true)
       find(:css, "#dataset_#{dataset(83).id}_level_1_expiry_datepicker").set('01/01/2022')
@@ -213,7 +210,6 @@ class CasApplicationFormTest < ActionDispatch::IntegrationTest
 
     within "#dataset_#{dataset(86).id}_row" do
       find(:css, "#dataset_#{dataset(86).id}_level_2_check_box").set(true)
-      find(:css, "#dataset_#{dataset(86).id}_level_2_expiry_datepicker").set('01/01/2022')
     end
 
     fill_in('project_cas_application_fields_attributes_reason_justification', with: 'TESTING')
@@ -225,6 +221,7 @@ class CasApplicationFormTest < ActionDispatch::IntegrationTest
     select('Yes', from: 'cas_application_declaration_4')
 
     click_button('Create Application')
+    binding.pry
 
     project_datasets = Project.last.project_datasets
 
@@ -300,9 +297,7 @@ class CasApplicationFormTest < ActionDispatch::IntegrationTest
     within '#dataset_86_row' do
       assert has_no_checked_field?('dataset_86_level_1_check_box')
       assert has_checked_field?('dataset_86_level_2_check_box')
-      assert_equal find('#dataset_86_level_2_expiry_datepicker').value, ''
       assert has_checked_field?('dataset_86_level_3_check_box')
-      assert_equal find('#dataset_86_level_3_expiry_datepicker').value, ''
     end
 
     within '#dataset_87_row' do

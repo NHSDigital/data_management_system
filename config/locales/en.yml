@@ -338,6 +338,10 @@ en:
               must_be_present_if_extra_dataset_selected: Dataset justification is required when selecting any datasets
             declaration:
               must_all_be_yes: All declarations must be yes before an application can be submitted
+        project_dataset_level:
+          attributes:
+            expiry_date:
+              must_have_expiry_date: expiry date must be present for all selected extra datasets and any selected level 1 default datasets
     models:
       project_amendment: Amendment
       data_privacy_impact_assessment:
