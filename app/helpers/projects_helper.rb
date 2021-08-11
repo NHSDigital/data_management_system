@@ -332,7 +332,6 @@ module ProjectsHelper
   end
 
   def setup_project(project)
-    binding.pry
     (Dataset.where.not(cas_type: nil).pluck(:id) -
      project.project_datasets.pluck(:dataset_id)).each do |id|
        # added to stop duplication in error screen

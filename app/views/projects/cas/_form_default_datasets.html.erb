@@ -29,6 +29,7 @@
             </td>
             <%= pd.fields_for :project_dataset_levels, pd.object.project_dataset_levels.sort_by(&:access_level_id) do |pdl| %>
               <% if [2, 3].include?(pdl.object.access_level_id) && pd.object.dataset.levels.include?(pdl.object.access_level_id) %>
+                <%= pdl.hidden_field :access_level_id, value: pdl.object.access_level_id %>
                 <td colspan="2" id="level_<%= pdl.object.access_level_id %>_selected" width="23%" style="text-align:center;"><%= pdl.check_box :selected, class: check_box_class(pd.object.dataset, pdl.object.access_level_id), id: "dataset_#{pd.object.dataset.id}_level_#{pdl.object.access_level_id}_check_box", readonly_value: check_icon(pdl.object.selected), "data-target": "cas-form.level cas-form.default_checkbox" %></td>
               <% elsif pd.object.dataset.levels.include?(pdl.object.access_level_id) %>
                 <%= pdl.hidden_field :access_level_id, value: pdl.object.access_level_id %>

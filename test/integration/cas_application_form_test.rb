@@ -142,8 +142,7 @@ class CasApplicationFormTest < ActionDispatch::IntegrationTest
       app.project_datasets << default_project_dataset
       pdl1 = ProjectDatasetLevel.new(access_level_id: 1, expiry_date: Time.zone.today,
                                      selected: true)
-      pdl2 = ProjectDatasetLevel.new(access_level_id: 2, expiry_date: Time.zone.today,
-                                     selected: true)
+      pdl2 = ProjectDatasetLevel.new(access_level_id: 2, selected: true)
       extra_project_dataset.project_dataset_levels << pdl1
       default_project_dataset.project_dataset_levels << pdl2
       app.save!
@@ -167,9 +166,6 @@ class CasApplicationFormTest < ActionDispatch::IntegrationTest
       within '#level_2_expiry_date' do
         assert has_no_content?
       end
-      within '#level_3_expiry_date' do
-        assert has_no_content?
-      end
     end
 
     within "#dataset_#{application.project_datasets.find_by(dataset_id: 86).dataset.id}_row" do
@@ -181,15 +177,6 @@ class CasApplicationFormTest < ActionDispatch::IntegrationTest
       end
       within '#level_3_selected' do
         assert find('.glyphicon-remove')
-      end
-      within '#level_1_expiry_date' do
-        assert has_no_content?
-      end
-      within '#level_2_expiry_date' do
-        assert has_content?("#{Time.zone.today.strftime('%d/%m/%Y')} (requested)")
-      end
-      within '#level_3_expiry_date' do
-        assert has_no_content?
       end
     end
   end
@@ -221,7 +208,6 @@ class CasApplicationFormTest < ActionDispatch::IntegrationTest
     select('Yes', from: 'cas_application_declaration_4')
 
     click_button('Create Application')
-    binding.pry
 
     project_datasets = Project.last.project_datasets
 
