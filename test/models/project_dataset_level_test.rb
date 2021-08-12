@@ -189,4 +189,20 @@ class ProjectDatasetLevelTest < ActiveSupport::TestCase
       include?('expiry date must be present for all selected extra datasets and any selected ' \
                'level 1 default datasets')
   end
+
+  test 'should set previous project_dataset_level current status to false' do
+    project_dataset = ProjectDataset.new(dataset: dataset(85), terms_accepted: true)
+    project = create_cas_project(owner: users(:no_roles))
+    project.project_datasets << project_dataset
+    original_pdl = ProjectDatasetLevel.create(access_level_id: 2, selected: true,
+                                              project_dataset_id: project_dataset.id)
+
+    assert_equal true, original_pdl.current
+
+    new_pdl = ProjectDatasetLevel.create(access_level_id: 2, selected: true,
+                                         project_dataset_id: project_dataset.id)
+
+    assert_equal false, original_pdl.reload.current
+    assert_equal true, new_pdl.reload.current
+  end
 end

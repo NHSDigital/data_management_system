@@ -5,9 +5,9 @@ class ProjectDatasetLevel < ApplicationRecord
   before_update :set_decided_at_to_nil
   after_update :notify_cas_approved_change
   after_create :set_expiry_date_to_one_year
+  after_create :set_previous_level_current_to_false
 
   validate :expiry_date_must_be_present_for_level_one_or_extra_datasets
-  validates :access_level_id, uniqueness: { scope: :project_dataset_id }
 
   def notify_cas_approved_change
     return unless project.cas?
@@ -39,6 +39,17 @@ class ProjectDatasetLevel < ApplicationRecord
     return if expiry_date.present?
 
     errors.add :expiry_date, :must_have_expiry_date
+  end
+
+  def set_previous_level_current_to_false
+    return if current == false
+
+    project_dataset.project_dataset_levels.each do |pdl|
+      next if pdl == self
+      next unless access_level_id == pdl.access_level_id && pdl.current == true
+
+      pdl.update(current: false)
+    end
   end
 
   def readable_approved_status

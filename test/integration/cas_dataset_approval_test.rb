@@ -88,9 +88,10 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
     assert has_no_content?('Reapply')
 
     pdl.approved = false
-    project_dataset.save!(validate: false)
+    pdl.save!(validate: false)
 
     visit project_path(project)
+
     click_link(href: '#datasets')
     assert has_content?('Extra CAS Dataset One')
 

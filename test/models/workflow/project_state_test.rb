@@ -402,10 +402,13 @@ module Workflow
       extras_dataset = ProjectDataset.new(dataset: dataset(83), terms_accepted: true)
       project.project_datasets.push(defaults_dataset, extras_dataset)
       default_level1_pdl = ProjectDatasetLevel.new(access_level_id: 1, selected: true,
-                                            expiry_date: Time.zone.today + 1.month)
+                                                   expiry_date: Time.zone.today + 1.month)
+      default_level2_current_false_pdl = ProjectDatasetLevel.new(access_level_id: 2, selected: true,
+                                                                 current: false)
       default_level2_pdl = ProjectDatasetLevel.new(access_level_id: 2, selected: true,
-                                            expiry_date: Time.zone.today + 1.year)
-      defaults_dataset.project_dataset_levels.push(default_level1_pdl, default_level2_pdl)
+                                                   expiry_date: Time.zone.today + 1.year)
+      defaults_dataset.project_dataset_levels.
+        push(default_level1_pdl, default_level2_pdl, default_level2_current_false_pdl)
       extras_pdl = ProjectDatasetLevel.new(access_level_id: 2, selected: true,
                                            expiry_date: Time.zone.today + 1.week)
       extras_dataset.project_dataset_levels.push(extras_pdl)
@@ -414,6 +417,7 @@ module Workflow
 
       assert_nil default_level1_pdl.approved
       assert_nil default_level2_pdl.approved
+      assert_nil default_level2_current_false_pdl.approved 
       assert_nil extras_pdl.approved
 
       project.transition_to!(workflow_states(:access_approver_approved))
@@ -422,6 +426,7 @@ module Workflow
       assert_equal project.current_state, workflow_states(:access_granted)
       assert_equal true, default_level1_pdl.reload.approved
       assert_equal true, default_level2_pdl.reload.approved
+      assert_nil default_level2_current_false_pdl.reload.approved 
       assert_nil extras_pdl.reload.approved
     end
   end
