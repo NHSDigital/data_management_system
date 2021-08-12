@@ -18,6 +18,7 @@ module Workflow
     end
 
     validate :ensure_state_is_transitionable, on: :create
+    before_create :approve_all_default_levels_access_approver_approved
     after_save :update_project_closure_date
     after_save :remove_project_closure_date
     after_save :submitted_state_notifiers
@@ -26,7 +27,7 @@ module Workflow
     after_save :notify_user_cas_application_rejected
     after_save :notify_cas_access_granted
     after_save :notify_account_closed
-    after_save :auto_transition_access_approver_approved_to_access_granted
+    after_commit :auto_transition_access_approver_approved_to_access_granted
 
     delegate :assigned_user, :assigning_user, to: :current_assignment, allow_nil: true
     delegate :full_name, to: :assigned_user,  prefix: true, allow_nil: true
@@ -153,12 +154,9 @@ module Workflow
     def auto_transition_access_approver_approved_to_access_granted
       return unless project.cas?
       return unless state_id == 'ACCESS_APPROVER_APPROVED'
-
       # TODO: this is a stopgap and will need script to generate access adding here
 
-      self.project_id = project_id
-      self.state_id = 'ACCESS_GRANTED'
-      save!
+      project.transition_to!(Workflow::State.find('ACCESS_GRANTED'))
     end
 
     def notify_and_mail_requires_dataset_approval(project)
@@ -171,6 +169,16 @@ module Workflow
         CasNotifier.requires_dataset_approval(project, user.id)
         CasMailer.with(project: project, user: user).send(:requires_dataset_approval).deliver_later
       end
+    end
+
+    def approve_all_default_levels_access_approver_approved
+      return unless project.cas?
+      return unless state_id == 'ACCESS_APPROVER_APPROVED'
+
+      cas_default_levels = project.project_dataset_levels.select do |pdl|
+                             pdl.project_dataset.dataset.cas_defaults?
+                           end
+      cas_default_levels.each { |cdl| cdl.update(approved: true) if cdl.selected == true }
     end
   end
 end
