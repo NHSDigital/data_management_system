@@ -9,6 +9,20 @@ class ProjectDatasetLevel < ApplicationRecord
 
   validate :expiry_date_must_be_present_for_level_one_or_extra_datasets
 
+  def level_2_3_default?
+    project_dataset.dataset.cas_defaults? && [2, 3].include?(access_level_id)
+  end
+
+  def level_1_default?
+    project_dataset.dataset.cas_defaults? && access_level_id == 1
+  end
+
+  # TODO: ensure this covers every situation
+  def level_1_at_initial_access_request?
+    level_1_default? && project.current_state.id == 'SUBMITTED' &&
+      project.states.pluck(:id).count('SUBMITTED') == 1
+  end
+
   def notify_cas_approved_change
     return unless project.cas?
     # Should only be approving after DRAFT
