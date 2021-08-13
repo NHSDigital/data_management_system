@@ -552,6 +552,14 @@ class Project < ApplicationRecord
     "#{application_log}/A#{amendment_number + 1}"
   end
 
+  def current_project_dataset_levels
+    project_dataset_levels.select { |pdl| pdl.current == true }
+  end
+
+  def previous_project_dataset_levels
+    project_dataset_levels.select { |pdl| pdl.current == false }
+  end
+
   private
 
   def project_type_inquirer
