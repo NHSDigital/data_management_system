@@ -228,7 +228,7 @@ class Project < ApplicationRecord
       filter = arel_table[:application_log].matches("%#{string}%")
 
       return filter unless match ||= string.match(
-        %r(\A(?<head>ODR_(?<fy_start>\d{2})(?<fy_end>\d{2})_?)?(?<id>\d+)?(?<tail>/.*)?\z)i
+        %r(\A(?<head>ODR_?(?<fy_start>\d{2})(?<fy_end>\d{2})_?)?(?<id>\d+)?(?<tail>/.*)?\z)i
       )
 
       chain = []
