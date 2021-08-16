@@ -56,7 +56,7 @@ class ProjectDataset < ApplicationRecord
     return unless project_dataset_levels.any?
 
     not_selected = project_dataset_levels.select do |pdl|
-      pdl.selected == false
+      !pdl.selected?
     end
 
     self.project_dataset_levels = (project_dataset_levels - not_selected)

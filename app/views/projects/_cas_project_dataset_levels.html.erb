@@ -1,0 +1,55 @@
+<div id='current_project_dataset_levels_table'>
+  <% if project.current_project_dataset_levels.any? %>
+    <fieldset>
+      <legend>Current datasets</legend>
+        <div id="current_project_dataset_levels">
+          <table class="table table-condensed">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Level</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Decision Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% project.current_project_dataset_levels.each do |level| %>
+                <tr id="<%= dom_id(level) %>">
+                  <%= render partial: '/project_dataset_levels/approval', locals: { project_dataset_level: level } %>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+    </fieldset>
+  <% end %>
+</div>
+
+<div id='previous_project_dataset_levels_table'>
+  <% if project.previous_project_dataset_levels.any? %>
+    <fieldset>
+      <legend>Previous datasets</legend>
+        <div id="previous_project_dataset_levels">
+          <table class="table table-condensed">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Level</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Decision Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% project.previous_project_dataset_levels.each do |level| %>
+                <tr id="<%= dom_id(level) %>">
+                  <%= render partial: '/project_dataset_levels/approval', locals: { project_dataset_level: level } %>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+    </fieldset>
+  <% end %>
+</div>

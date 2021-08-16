@@ -105,6 +105,8 @@ Rails.application.routes.draw do
           put :approve
           patch :reapply
           put :reapply
+          patch :renew
+          put :renew
         end
       end
     end

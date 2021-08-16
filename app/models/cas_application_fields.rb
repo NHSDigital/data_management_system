@@ -27,7 +27,7 @@ class CasApplicationFields < ApplicationRecord
     return if reason_justification.present?
     return unless project.project_datasets.any? do |pd|
                     pd.project_dataset_levels.any? do |pdl|
-                      pdl.access_level_id == 1 && pdl.selected == true
+                      pdl.access_level_id == 1 && pdl.selected?
                     end
                   end
 
@@ -38,7 +38,7 @@ class CasApplicationFields < ApplicationRecord
     return if extra_datasets_rationale.present?
     return unless project.project_datasets.any? do |pd|
                     pd.dataset.cas_extras? && pd.project_dataset_levels.any? do |pdl|
-                      pdl.selected == true
+                      pdl.selected?
                     end
                   end
 

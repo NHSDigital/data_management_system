@@ -24,12 +24,20 @@ class Ability
     can %i[update destroy], Project, project_type_id: ProjectType.cas.pluck(:id),
                                      grants: { user_id: user.id, roleable: ProjectRole.owner },
                                      current_state: { id: 'DRAFT' }
-    can %i[reapply], ProjectDatasetLevel, approved: false, project_dataset: {
+    can %i[reapply], ProjectDatasetLevel, approved: false, current: true, project_dataset: {
       project:
         { project_type_id: ProjectType.cas.pluck(:id),
           current_state: {
             id: Workflow::State.reapply_dataset_states.pluck(:id)
           },
+          grants: { user_id: user.id,
+                    roleable: ProjectRole.owner } }
+    }
+    # TODO: need to make this include expiry_date being in last month too!
+    can %i[renew], ProjectDatasetLevel, approved: true, current: true, selected: true,
+     project_dataset: {
+      project:
+        { project_type_id: ProjectType.cas.pluck(:id),
           grants: { user_id: user.id,
                     roleable: ProjectRole.owner } }
     }

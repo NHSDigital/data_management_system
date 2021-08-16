@@ -416,18 +416,26 @@ module Workflow
       project.transition_to!(workflow_states(:submitted))
 
       assert_nil default_level1_pdl.approved
+      assert_nil default_level1_pdl.decided_at
       assert_nil default_level2_pdl.approved
-      assert_nil default_level2_current_false_pdl.approved 
+      assert_nil default_level2_pdl.decided_at
+      assert_nil default_level2_current_false_pdl.approved
+      assert_nil default_level2_current_false_pdl.decided_at
       assert_nil extras_pdl.approved
+      assert_nil extras_pdl.decided_at
 
       project.transition_to!(workflow_states(:access_approver_approved))
 
       # auto_transition
       assert_equal project.current_state, workflow_states(:access_granted)
       assert_equal true, default_level1_pdl.reload.approved
+      assert_equal Time.zone.now.to_date, default_level1_pdl.reload.decided_at.to_date
       assert_equal true, default_level2_pdl.reload.approved
-      assert_nil default_level2_current_false_pdl.reload.approved 
+      assert_equal Time.zone.now.to_date, default_level2_pdl.reload.decided_at.to_date
+      assert_nil default_level2_current_false_pdl.reload.approved
+      assert_nil default_level2_current_false_pdl.reload.decided_at
       assert_nil extras_pdl.reload.approved
+      assert_nil extras_pdl.reload.decided_at
     end
   end
 end

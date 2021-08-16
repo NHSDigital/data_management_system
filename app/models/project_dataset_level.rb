@@ -9,6 +9,18 @@ class ProjectDatasetLevel < ApplicationRecord
 
   validate :expiry_date_must_be_present_for_level_one_or_extra_datasets
 
+  def current?
+    current
+  end
+
+  def selected?
+    selected
+  end
+
+  def approved?
+    approved
+  end
+
   def level_2_3_default?
     project_dataset.dataset.cas_defaults? && [2, 3].include?(access_level_id)
   end
@@ -21,6 +33,10 @@ class ProjectDatasetLevel < ApplicationRecord
   def level_1_at_initial_access_request?
     level_1_default? && project.current_state.id == 'SUBMITTED' &&
       project.states.pluck(:id).count('SUBMITTED') == 1
+  end
+
+  def renewable?
+    current? && selected? && approved? && expiry_date <= 1.month.from_now.to_date
   end
 
   def notify_cas_approved_change
@@ -48,7 +64,7 @@ class ProjectDatasetLevel < ApplicationRecord
 
   def expiry_date_must_be_present_for_level_one_or_extra_datasets
     return unless project.cas?
-    return unless selected == true
+    return unless selected?
     return if project_dataset.dataset.cas_extras? || [2, 3].include?(access_level_id)
     return if expiry_date.present?
 
@@ -56,11 +72,11 @@ class ProjectDatasetLevel < ApplicationRecord
   end
 
   def set_previous_level_current_to_false
-    return if current == false
+    return if !current?
 
     project_dataset.project_dataset_levels.each do |pdl|
       next if pdl == self
-      next unless access_level_id == pdl.access_level_id && pdl.current == true
+      next unless access_level_id == pdl.access_level_id && pdl.current?
 
       pdl.update(current: false)
     end

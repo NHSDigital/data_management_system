@@ -553,11 +553,11 @@ class Project < ApplicationRecord
   end
 
   def current_project_dataset_levels
-    project_dataset_levels.select { |pdl| pdl.current == true }
+    project_dataset_levels.select { |pdl| pdl.current? }
   end
 
   def previous_project_dataset_levels
-    project_dataset_levels.select { |pdl| pdl.current == false }
+    project_dataset_levels.select { |pdl| !pdl.current? }
   end
 
   private

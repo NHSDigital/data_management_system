@@ -88,6 +88,7 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
     assert has_no_content?('Reapply')
 
     pdl.approved = false
+    pdl.decided_at = Time.zone.now
     pdl.save!(validate: false)
 
     visit project_path(project)
@@ -98,16 +99,95 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
     assert_equal find('#dataset_level_status').text, 'DECLINED'
     click_link('Reapply')
 
-    within "#project_dataset_level_#{pdl.id}" do
+    assert has_content?('Previous datasets')
+
+    within "#project_dataset_level_#{ProjectDatasetLevel.last.id}" do
       within '#decision_date' do
         assert has_no_content?
       end
       assert has_content?('PENDING')
       assert has_no_css?('.btn-danger')
       assert has_no_css?('.btn-success')
+      assert has_no_content?('Reapply')
     end
 
-    assert_nil pdl.reload.approved
+    within "#project_dataset_level_#{pdl.id}" do
+      within '#decision_date' do
+        assert has_content?(Time.zone.now.strftime('%d/%m/%Y'))
+      end
+      assert has_content?('DECLINED')
+      assert has_no_css?('.btn-danger')
+      assert has_no_css?('.btn-success')
+      assert has_no_content?('Reapply')
+    end
+
+    assert_equal false, pdl.reload.approved
+    assert_equal false, pdl.reload.current
+    assert_nil ProjectDatasetLevel.last.reload.approved
+    assert_equal true, ProjectDatasetLevel.last.reload.current
+  end
+
+  test 'should be able to apply for renewal of a dataset if within expiry period' do
+    user = users(:no_roles)
+    sign_in user
+
+    project = create_cas_project(owner: users(:no_roles))
+    project_dataset = ProjectDataset.new(dataset: Dataset.find_by(name: 'Extra CAS Dataset One'),
+                                         terms_accepted: true)
+    project.project_datasets << project_dataset
+    pdl = ProjectDatasetLevel.new(access_level_id: 1, expiry_date: Time.zone.today + 2.months,
+                                  selected: true)
+    project_dataset.project_dataset_levels << pdl
+
+    project.transition_to!(workflow_states(:submitted))
+
+    pdl.approved = true
+    pdl.decided_at = Time.zone.now
+    pdl.save!(validate: false)
+
+    visit project_path(project)
+
+    click_link(href: '#datasets')
+    assert has_content?('Extra CAS Dataset One')
+    assert_equal find('#dataset_level_status').text, 'APPROVED'
+    assert has_no_content?('Renew')
+
+    pdl.expiry_date = Time.zone.today + 1.week
+    pdl.save!(validate: false)
+
+    visit project_path(project)
+
+    click_link(href: '#datasets')
+    assert has_content?('Extra CAS Dataset One')
+
+    click_link('Renew')
+
+    assert has_content?('Previous datasets')
+
+    within "#project_dataset_level_#{ProjectDatasetLevel.last.id}" do
+      within '#decision_date' do
+        assert has_no_content?
+      end
+      assert has_content?('PENDING')
+      assert has_no_css?('.btn-danger')
+      assert has_no_css?('.btn-success')
+      assert has_no_content?('Renew')
+    end
+
+    within "#project_dataset_level_#{pdl.id}" do
+      within '#decision_date' do
+        assert has_content?(Time.zone.now.strftime('%d/%m/%Y'))
+      end
+      assert has_content?('APPROVED')
+      assert has_no_css?('.btn-danger')
+      assert has_no_css?('.btn-success')
+      assert has_no_content?('Renew')
+    end
+
+    assert_equal true, pdl.reload.approved
+    assert_equal false, pdl.reload.current
+    assert_nil ProjectDatasetLevel.last.reload.approved
+    assert_equal true, ProjectDatasetLevel.last.reload.current
   end
 
   test 'should show applicant correct pending dataset status' do

@@ -11,7 +11,10 @@
     <span id="dataset_level_status" class="label label-<%= approval_button_style(project_dataset_level.approved) %>"><%= approval_button_message(project_dataset_level.approved) %></span>
     <%= link_to 'X', project_dataset_level_path(:id => project_dataset_level.id, "project_dataset_level[approved]" => ''), method: :patch, remote: true, class: 'btn btn-default btn-xs', title: 'Undo', rel: 'tooltip', "data-placement" => "left" %>
   <% end %>
-<% elsif project_dataset_level.project.owner == current_user && project_dataset_level.approved == false %>
+<% elsif project_dataset_level.project.owner == current_user && project_dataset_level.renewable? %>
+  <span id="dataset_level_status" class="label label-<%= approval_button_style(project_dataset_level.approved) %>"><%= approval_button_message(project_dataset_level.approved) %></span>
+  <%= link_to 'Renew', renew_project_dataset_level_path(:id => project_dataset_level.id), method: :patch, remote: true, class: 'btn btn-default btn-xs', title: 'Renew', rel: 'tooltip', "data-placement" => "left" %>
+<% elsif project_dataset_level.project.owner == current_user && project_dataset_level.approved == false && project_dataset_level.current? %>
   <span id="dataset_level_status" class="label label-<%= approval_button_style(project_dataset_level.approved) %>"><%= approval_button_message(project_dataset_level.approved) %></span>
   <%= link_to 'Reapply', reapply_project_dataset_level_path(:id => project_dataset_level.id, "project_dataset_level[approved]" => ''), method: :patch, remote: true, class: 'btn btn-default btn-xs', title: 'Reapply', rel: 'tooltip', "data-placement" => "left" %>
 <% else %>
@@ -19,4 +22,3 @@
 <% end %>
 <td id='decision_date'><%= project_dataset_level.decided_at&.strftime('%d/%m/%Y') %></td>
 </td>
-

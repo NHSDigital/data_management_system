@@ -176,11 +176,11 @@ module Workflow
       return unless state_id == 'ACCESS_APPROVER_APPROVED'
 
       cas_default_levels = project.project_dataset_levels.select do |pdl|
-                             next unless pdl.selected == true && pdl.current == true
+                             next unless pdl.selected? && pdl.current?
 
                              pdl.project_dataset.dataset.cas_defaults?
                            end
-      cas_default_levels.each { |cdl| cdl.update(approved: true) }
+      cas_default_levels.each { |cdl| cdl.update(approved: true, decided_at: Time.zone.now) }
     end
   end
 end

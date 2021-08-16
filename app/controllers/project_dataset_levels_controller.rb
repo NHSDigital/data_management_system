@@ -16,7 +16,21 @@ class ProjectDatasetLevelsController < ApplicationController
   end
 
   def reapply
-    @project_dataset_level.update(project_dataset_level_params)
+    # TODO: expiry_date definitely needs to be input by user for level 1 and extra datasets
+    # added as a stop gap for now
+    ProjectDatasetLevel.create(project_dataset_id: @project_dataset_level.project_dataset_id,
+                               access_level_id: @project_dataset_level.access_level_id,
+                               expiry_date: 1.year.from_now,
+                               selected: true, current: true)
+  end
+
+  def renew
+    # TODO: expiry_date definitely needs to be input by user for level 1 and extra datasets
+    # added as a stop gap for now
+    ProjectDatasetLevel.create(project_dataset_id: @project_dataset_level.project_dataset_id,
+                               access_level_id: @project_dataset_level.access_level_id,
+                               expiry_date: 1.year.from_now,
+                               selected: true, current: true)
   end
 
   private
