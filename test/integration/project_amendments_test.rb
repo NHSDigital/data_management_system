@@ -56,7 +56,7 @@ class ProjectAmendmentsTest < ActionDispatch::IntegrationTest
       assert has_selector?('#projectAmendments', visible: true)
     end
     assert_equal 1, project.reload.amendment_number
-    expected_amendment_reference = "ODR_1920_#{project.id}/A1"
+    expected_amendment_reference = "ODR1920_#{project.id}/A1"
     assert_equal expected_amendment_reference, project.project_amendments.first.reference
   end
 

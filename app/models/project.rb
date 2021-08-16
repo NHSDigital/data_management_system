@@ -541,7 +541,7 @@ class Project < ApplicationRecord
       date.strftime('%y')
     end
 
-    "ODR_#{fy_start}#{fy_end}_#{id}"
+    "ODR#{fy_start}#{fy_end}_#{id}"
   end
   alias reference application_log
 
