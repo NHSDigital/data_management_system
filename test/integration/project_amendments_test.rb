@@ -69,7 +69,7 @@ class ProjectAmendmentsTest < ActionDispatch::IntegrationTest
     project.transition_to!(workflow_states(:amend))
 
     amendment = create_amendment(project)
-    amendment_reference = "ODR_1920_#{project.id}/A1"
+    amendment_reference = "ODR1920_#{project.id}/A1"
     assert_equal project.project_amendments.first.reference, amendment_reference
     visit project_path(project)
     click_on('Amendments')
