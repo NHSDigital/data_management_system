@@ -1,0 +1,4 @@
+$('#cas_project_dataset_levels_tables').html("<%= escape_javascript(render partial: 'projects/cas_project_dataset_levels', locals: { project: @project } ) %>");
+$("#approve_unactioned_datasets").load(" #approve_unactioned_datasets > *")
+
+$('#status_label').html("<%= escape_javascript(render partial: 'projects/status_label', locals: { project: @project } ) %>");

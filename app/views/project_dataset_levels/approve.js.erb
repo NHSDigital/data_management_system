@@ -3,6 +3,7 @@
 %>
 
 $('#<%= "project_dataset_level_#{@project_dataset_level.id}"%>').html("<%= escape_javascript(render partial: 'project_dataset_levels/approval', locals: { project_dataset_level: @project_dataset_level } ) %>");
+$("#approve_unactioned_datasets").load(" #approve_unactioned_datasets > *")
 
 $('#dataset_approval_status').html("<%= escape_javascript approval_button_message(@project_dataset_level.approved) %>");
 $('#dataset_approval_status').removeClass().addClass('label label-<%= approval_button_style(@project_dataset_level.approved) %>');

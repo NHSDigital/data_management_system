@@ -211,6 +211,18 @@ class ProjectsController < ApplicationController
     end
   end
 
+  def project_dataset_levels_bulk_approvals
+    @project.transaction do
+      @project.project_dataset_levels.each do |pdl|
+        next unless pdl.approved == nil && pdl.current? && pdl.selected?
+        next unless current_user.can?(:approve, pdl)
+
+        pdl.approved = true
+        pdl.save!
+      end
+    end
+  end
+
   private
 
   def data_source_params

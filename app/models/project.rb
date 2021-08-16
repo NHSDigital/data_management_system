@@ -560,6 +560,12 @@ class Project < ApplicationRecord
     project_dataset_levels.select { |pdl| !pdl.current? }
   end
 
+  def user_approvable_levels_pending?(current_user)
+    project_dataset_levels.any? do |pdl|
+      pdl.approved == nil && pdl.current? && pdl.selected? && current_user.can?(:approve, pdl)
+    end
+  end
+
   private
 
   def project_type_inquirer

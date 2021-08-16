@@ -2,6 +2,11 @@
   <div class="panel panel-default" style="border-top: 0px;">
     <div class="panel-heading">
       <span style="font-size: 1.5em;">Datasets</span>
+      <div id="approve_unactioned_datasets" class="pull-right">
+        <% if project.user_approvable_levels_pending?(current_user) %>
+          <%= button_to 'Approve unactioned datasets', project_dataset_levels_bulk_approvals_project_path(project), method: :patch, remote: true, class: 'btn btn-success' %>
+        <% end %>
+      </div>
       <div class="pull-right">
         <%= edit_link project, class: 'btn btn-default', text: true, path: edit_project_path(project, anchor: 'multi_project_datasets') %>
       </div>

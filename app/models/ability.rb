@@ -361,7 +361,8 @@ class Ability
   def cas_dataset_approver_grants(user)
     return unless user.role?(DatasetRole.fetch(:approver))
 
-    can %i[read], Project, project_type_id: ProjectType.cas.pluck(:id),
+    can %i[read project_dataset_levels_bulk_approvals], Project,
+                           project_type_id: ProjectType.cas.pluck(:id),
                            id: Project.cas_dataset_approval(user).pluck(:id)
     can %i[update approve], ProjectDatasetLevel, project_dataset: {
       dataset_id: user.datasets.pluck(:id),
