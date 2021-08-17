@@ -15,7 +15,7 @@
             </thead>
             <tbody>
               <% project.current_project_dataset_levels.each do |level| %>
-                <tr id="<%= dom_id(level) %>">
+                <tr id="<%= dom_id(level) %>" class="<%= approval_highlight_class(level) %>">
                   <%= render partial: '/project_dataset_levels/approval', locals: { project_dataset_level: level } %>
                 </tr>
               <% end %>

@@ -214,7 +214,7 @@ class ProjectsController < ApplicationController
   def project_dataset_levels_bulk_approvals
     @project.transaction do
       @project.project_dataset_levels.each do |pdl|
-        next unless pdl.approved == nil && pdl.current? && pdl.selected?
+        next unless pdl.approved.nil? && pdl.current? && pdl.selected?
         next unless current_user.can?(:approve, pdl)
 
         pdl.approved = true

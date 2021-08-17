@@ -372,4 +372,11 @@ module ProjectsHelper
       role_dataset['name'] == dataset.name && (role_dataset['levels'].include? level)
     end
   end
+
+  def approval_highlight_class(level)
+    if ProjectDataset.dataset_approval(current_user).include?(level.project_dataset) &&
+       level.approved.nil?
+      "dataset_highlight"
+    end
+  end
 end
