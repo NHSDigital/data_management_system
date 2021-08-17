@@ -281,4 +281,126 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
       assert_equal find('#dataset_level_status').text, 'DECLINED'
     end
   end
+
+  test 'bulk approve button and highlighting of pending datasets should behave correctly' do
+    project = create_cas_project(owner: users(:standard_user2))
+    grant_extra_dataset = ProjectDataset.new(dataset: dataset(83), terms_accepted: true)
+    nogrant_extra_dataset = ProjectDataset.new(dataset: dataset(84), terms_accepted: true)
+    project.project_datasets.push(grant_extra_dataset, nogrant_extra_dataset)
+    rejected_extra_pdl = ProjectDatasetLevel.new(access_level_id: 1, selected: true,
+                                                 expiry_date: Time.zone.today + 1.week,
+                                                 approved: false, decided_at: Time.zone.now - 1.day)
+    grant_extra_l2_pdl = ProjectDatasetLevel.new(access_level_id: 2, selected: true,
+                                                 expiry_date: Time.zone.today + 1.week)
+    grant_extra_l3_pdl = ProjectDatasetLevel.new(access_level_id: 3, selected: true,
+                                                 expiry_date: Time.zone.today + 1.week)
+    nogrant_extra_pdl = ProjectDatasetLevel.new(access_level_id: 1, selected: true,
+                                                expiry_date: Time.zone.today + 1.week)
+    grant_extra_dataset.project_dataset_levels.push(grant_extra_l2_pdl, grant_extra_l3_pdl,
+                                                    rejected_extra_pdl)
+    nogrant_extra_dataset.project_dataset_levels << nogrant_extra_pdl
+
+    project.transition_to!(workflow_states(:submitted))
+
+    sign_in users(:standard_user2)
+
+    visit project_path(project)
+    click_link(href: '#datasets')
+    assert has_content?('Extra CAS Dataset One', count: 3)
+    assert has_content?('Extra CAS Dataset Two')
+    assert has_no_content?('Approve unactioned datasets')
+
+    assert find("#project_dataset_level_#{rejected_extra_pdl.id}")[:class].
+      exclude?('dataset_highlight')
+    assert find("#project_dataset_level_#{grant_extra_l2_pdl.id}")[:class].
+      exclude?('dataset_highlight')
+    assert find("#project_dataset_level_#{grant_extra_l3_pdl.id}")[:class].
+      exclude?('dataset_highlight')
+    assert find("#project_dataset_level_#{nogrant_extra_pdl.id}")[:class].
+      exclude?('dataset_highlight')
+
+    sign_out users(:standard_user2)
+    sign_in users(:cas_dataset_approver)
+
+    visit project_path(project)
+    click_link(href: '#datasets')
+    assert has_content?('Extra CAS Dataset One', count: 3)
+    assert has_content?('Extra CAS Dataset Two')
+    assert has_button?('Approve unactioned datasets')
+
+    assert find("#project_dataset_level_#{rejected_extra_pdl.id}")[:class].
+      exclude?('dataset_highlight')
+    assert find("#project_dataset_level_#{grant_extra_l2_pdl.id}")[:class].
+      include?('dataset_highlight')
+    assert find("#project_dataset_level_#{grant_extra_l3_pdl.id}")[:class].
+      include?('dataset_highlight')
+    assert find("#project_dataset_level_#{nogrant_extra_pdl.id}")[:class].
+      exclude?('dataset_highlight')
+
+    assert_equal false, rejected_extra_pdl.reload.approved
+    assert_nil grant_extra_l2_pdl.reload.approved
+    assert_nil grant_extra_l3_pdl.reload.approved
+    assert_nil nogrant_extra_pdl.reload.approved
+
+    click_button('Approve unactioned datasets')
+
+    assert has_no_button?('Approve unactioned datasets')
+
+    within "#project_dataset_level_#{rejected_extra_pdl.id}" do
+      within '#decision_date' do
+        assert has_content?((Time.zone.now - 1.day).strftime('%d/%m/%Y'))
+      end
+      assert has_content?('DECLINED')
+    end
+
+    within "#project_dataset_level_#{grant_extra_l2_pdl.id}" do
+      within '#decision_date' do
+        assert has_content?(Time.zone.now.strftime('%d/%m/%Y'))
+      end
+      assert has_content?('APPROVED')
+    end
+
+    within "#project_dataset_level_#{grant_extra_l3_pdl.id}" do
+      within '#decision_date' do
+        assert has_content?(Time.zone.now.strftime('%d/%m/%Y'))
+      end
+      assert has_content?('APPROVED')
+    end
+
+    within "#project_dataset_level_#{nogrant_extra_pdl.id}" do
+      within '#decision_date' do
+        assert has_no_content?
+      end
+      assert has_content?('PENDING')
+    end
+
+    assert find("#project_dataset_level_#{rejected_extra_pdl.id}")[:class].
+      exclude?('dataset_highlight')
+    assert find("#project_dataset_level_#{grant_extra_l2_pdl.id}")[:class].
+      exclude?('dataset_highlight')
+    assert find("#project_dataset_level_#{grant_extra_l3_pdl.id}")[:class].
+      exclude?('dataset_highlight')
+    assert find("#project_dataset_level_#{nogrant_extra_pdl.id}")[:class].
+    exclude?('dataset_highlight')
+
+    assert_equal false, rejected_extra_pdl.reload.approved
+    assert_equal true, grant_extra_l2_pdl.reload.approved
+    assert_equal true, grant_extra_l3_pdl.reload.approved
+    assert_nil nogrant_extra_pdl.reload.approved
+
+    within "#project_dataset_level_#{rejected_extra_pdl.id}" do
+      click_link('X')
+    end
+
+    assert has_button?('Approve unactioned datasets')
+
+    assert find("#project_dataset_level_#{rejected_extra_pdl.id}")[:class].
+      include?('dataset_highlight')
+    assert find("#project_dataset_level_#{grant_extra_l2_pdl.id}")[:class].
+      exclude?('dataset_highlight')
+    assert find("#project_dataset_level_#{grant_extra_l3_pdl.id}")[:class].
+      exclude?('dataset_highlight')
+    assert find("#project_dataset_level_#{nogrant_extra_pdl.id}")[:class].
+      exclude?('dataset_highlight')
+  end
 end
