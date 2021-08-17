@@ -218,6 +218,7 @@ class ProjectsController < ApplicationController
         next unless current_user.can?(:approve, pdl)
 
         pdl.approved = true
+        pdl.decided_at = Time.zone.now
         pdl.save!
       end
     end
