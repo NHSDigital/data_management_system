@@ -89,6 +89,14 @@ class ProjectDatasetLevel < ApplicationRecord
     approved ? 'Approved' : 'Rejected'
   end
 
+  def previous_levels
+    return [] unless current?
+
+    (project_dataset.project_dataset_levels - [self]).select do |pdl|
+      access_level_id == pdl.access_level_id && !pdl.current?
+    end.sort_by(&:created_at)
+  end
+
   private
 
   def approved_change_to_user

@@ -331,6 +331,16 @@ module ProjectsHelper
     end
   end
 
+  def display_request_type(level)
+    if level.previous_levels.any? && level.previous_levels.last.approved?
+      'Renewal'
+    elsif level.previous_levels.any? && !level.previous_levels.last.approved?
+      'Reapplication'
+    else
+      'New'
+    end
+  end
+
   def setup_project(project)
     (Dataset.where.not(cas_type: nil).pluck(:id) -
      project.project_datasets.pluck(:dataset_id)).each do |id|

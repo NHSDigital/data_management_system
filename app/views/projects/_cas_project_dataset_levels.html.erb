@@ -9,6 +9,7 @@
                 <th>Name</th>
                 <th>Level</th>
                 <th>Date</th>
+                <th>Request Type</th>
                 <th>Status</th>
                 <th>Decision Date</th>
               </tr>
@@ -16,7 +17,7 @@
             <tbody>
               <% project.current_project_dataset_levels.each do |level| %>
                 <tr id="<%= dom_id(level) %>" class="<%= approval_highlight_class(level) %>">
-                  <%= render partial: '/project_dataset_levels/approval', locals: { project_dataset_level: level } %>
+                  <%= render partial: '/project_dataset_levels/approval', locals: { project_dataset_level: level, current_projects: true } %>
                 </tr>
               <% end %>
             </tbody>
@@ -44,7 +45,7 @@
             <tbody>
               <% project.previous_project_dataset_levels.each do |level| %>
                 <tr id="<%= dom_id(level) %>">
-                  <%= render partial: '/project_dataset_levels/approval', locals: { project_dataset_level: level } %>
+                  <%= render partial: '/project_dataset_levels/approval', locals: { project_dataset_level: level, current_projects: false } %>
                 </tr>
               <% end %>
             </tbody>

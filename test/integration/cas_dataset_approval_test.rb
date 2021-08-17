@@ -36,6 +36,9 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
         within '#decision_date' do
           assert has_content?(Time.zone.now.strftime('%d/%m/%Y'))
         end
+        within '#request_type' do
+          assert has_content?('New')
+        end
         assert has_content?('APPROVED')
       end
     end
@@ -56,6 +59,9 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
       within "#project_dataset_level_#{pdl.id}" do
         within '#decision_date' do
           assert has_content?(Time.zone.now.strftime('%d/%m/%Y'))
+        end
+        within '#request_type' do
+          assert has_content?('New')
         end
         assert has_content?('DECLINED')
       end
@@ -105,10 +111,13 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
       within '#decision_date' do
         assert has_no_content?
       end
+      within '#request_type' do
+        assert has_content?('Reapplication')
+      end
       assert has_content?('PENDING')
       assert has_no_css?('.btn-danger')
       assert has_no_css?('.btn-success')
-      assert has_no_content?('Reapply')
+      assert has_no_link?('Reapply')
     end
 
     within "#project_dataset_level_#{pdl.id}" do
@@ -118,7 +127,7 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
       assert has_content?('DECLINED')
       assert has_no_css?('.btn-danger')
       assert has_no_css?('.btn-success')
-      assert has_no_content?('Reapply')
+      assert has_no_link?('Reapply')
     end
 
     assert_equal false, pdl.reload.approved
@@ -168,10 +177,13 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
       within '#decision_date' do
         assert has_no_content?
       end
+      within '#request_type' do
+        assert has_content?('Renewal')
+      end
       assert has_content?('PENDING')
       assert has_no_css?('.btn-danger')
       assert has_no_css?('.btn-success')
-      assert has_no_content?('Renew')
+      assert has_no_link?('Renew')
     end
 
     within "#project_dataset_level_#{pdl.id}" do
@@ -181,7 +193,7 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
       assert has_content?('APPROVED')
       assert has_no_css?('.btn-danger')
       assert has_no_css?('.btn-success')
-      assert has_no_content?('Renew')
+      assert has_no_link?('Renew')
     end
 
     assert_equal true, pdl.reload.approved
