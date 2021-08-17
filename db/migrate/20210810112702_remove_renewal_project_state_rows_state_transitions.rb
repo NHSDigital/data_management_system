@@ -1,3 +1,4 @@
+# Remove Renewal related state and transitions for CAS
 class RemoveRenewalProjectStateRowsStateTransitions < ActiveRecord::Migration[6.0]
   include MigrationHelper
 

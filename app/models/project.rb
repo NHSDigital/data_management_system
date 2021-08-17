@@ -553,11 +553,11 @@ class Project < ApplicationRecord
   end
 
   def current_project_dataset_levels
-    project_dataset_levels.select { |pdl| pdl.current? }
+    project_dataset_levels.select(&:current?)
   end
 
   def previous_project_dataset_levels
-    project_dataset_levels.select { |pdl| !pdl.current? }
+    project_dataset_levels.reject(&:current?)
   end
 
   def user_approvable_levels_pending?(current_user)

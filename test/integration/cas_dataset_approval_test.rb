@@ -381,7 +381,7 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
     assert find("#project_dataset_level_#{grant_extra_l3_pdl.id}")[:class].
       exclude?('dataset_highlight')
     assert find("#project_dataset_level_#{nogrant_extra_pdl.id}")[:class].
-    exclude?('dataset_highlight')
+      exclude?('dataset_highlight')
 
     assert_equal false, rejected_extra_pdl.reload.approved
     assert_equal true, grant_extra_l2_pdl.reload.approved

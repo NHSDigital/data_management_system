@@ -154,6 +154,7 @@ module Workflow
     def auto_transition_access_approver_approved_to_access_granted
       return unless project.cas?
       return unless state_id == 'ACCESS_APPROVER_APPROVED'
+
       # TODO: this is a stopgap and will need script to generate access adding here
 
       project.transition_to!(Workflow::State.find('ACCESS_GRANTED'))
@@ -176,10 +177,10 @@ module Workflow
       return unless state_id == 'ACCESS_APPROVER_APPROVED'
 
       cas_default_levels = project.project_dataset_levels.select do |pdl|
-                             next unless pdl.selected? && pdl.current?
+        next unless pdl.selected? && pdl.current?
 
-                             pdl.project_dataset.dataset.cas_defaults?
-                           end
+        pdl.project_dataset.dataset.cas_defaults?
+      end
       cas_default_levels.each { |cdl| cdl.update(approved: true, decided_at: Time.zone.now) }
     end
   end

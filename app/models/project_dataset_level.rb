@@ -2,10 +2,10 @@
 class ProjectDatasetLevel < ApplicationRecord
   belongs_to :project_dataset
   delegate :project, to: :project_dataset
-  before_update :set_decided_at_to_nil
-  after_update :notify_cas_approved_change
   after_create :set_expiry_date_to_one_year
   after_create :set_previous_level_current_to_false
+  before_update :set_decided_at_to_nil
+  after_update :notify_cas_approved_change
 
   validate :expiry_date_must_be_present_for_level_one_or_extra_datasets
 
@@ -59,6 +59,7 @@ class ProjectDatasetLevel < ApplicationRecord
     return unless project.cas?
     return unless project_dataset.dataset.cas_defaults?
     return unless [2, 3].include? access_level_id
+
     update_column(:expiry_date, 1.year.from_now)
   end
 
@@ -72,7 +73,7 @@ class ProjectDatasetLevel < ApplicationRecord
   end
 
   def set_previous_level_current_to_false
-    return if !current?
+    return unless current?
 
     project_dataset.project_dataset_levels.each do |pdl|
       next if pdl == self

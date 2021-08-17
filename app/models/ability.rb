@@ -35,12 +35,12 @@ class Ability
     }
     # TODO: need to make this include expiry_date being in last month too!
     can %i[renew], ProjectDatasetLevel, approved: true, current: true, selected: true,
-     project_dataset: {
-      project:
-        { project_type_id: ProjectType.cas.pluck(:id),
-          grants: { user_id: user.id,
-                    roleable: ProjectRole.owner } }
-    }
+                                        project_dataset: {
+                                          project:
+                                            { project_type_id: ProjectType.cas.pluck(:id),
+                                              grants: { user_id: user.id,
+                                                        roleable: ProjectRole.owner } }
+                                        }
 
     team_grants(user)
     organisation_grants(user)
@@ -362,8 +362,8 @@ class Ability
     return unless user.role?(DatasetRole.fetch(:approver))
 
     can %i[read project_dataset_levels_bulk_approvals], Project,
-                           project_type_id: ProjectType.cas.pluck(:id),
-                           id: Project.cas_dataset_approval(user).pluck(:id)
+        project_type_id: ProjectType.cas.pluck(:id),
+        id: Project.cas_dataset_approval(user).pluck(:id)
     can %i[update approve], ProjectDatasetLevel, project_dataset: {
       dataset_id: user.datasets.pluck(:id),
       project_id: Project.cas_dataset_approval(user).pluck(:id)

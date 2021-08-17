@@ -37,9 +37,7 @@ class CasApplicationFields < ApplicationRecord
   def extra_datasets_rationale_must_be_populated_if_extra_datasets
     return if extra_datasets_rationale.present?
     return unless project.project_datasets.any? do |pd|
-                    pd.dataset.cas_extras? && pd.project_dataset_levels.any? do |pdl|
-                      pdl.selected?
-                    end
+                    pd.dataset.cas_extras? && pd.project_dataset_levels.any?(&:selected?)
                   end
 
     errors.add :extra_datasets_rationale, :must_be_present_if_extra_dataset_selected
