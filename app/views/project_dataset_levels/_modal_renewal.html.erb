@@ -1,0 +1,26 @@
+<div id="modal-renewal" class="modal fade">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <%= bootstrap_form_with(model: project_dataset_level, url: renew_project_dataset_level_path(project_dataset_level), method: :patch, remote: true, local: false) do |form| %>
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h4 class="modal-title"><%= "Renew #{project_dataset_level.project_dataset.dataset.name}" + " level #{project_dataset_level.access_level_id}" %></h4>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <%= form.label :expiry_date, 'Expiry Date' %>
+            <%= form.datepicker_field(:expiry_date) %>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <div class="pull-right">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            <%= form.submit 'Save', class: 'btn btn-primary' %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

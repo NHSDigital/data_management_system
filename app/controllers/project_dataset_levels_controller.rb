@@ -25,18 +25,17 @@ class ProjectDatasetLevelsController < ApplicationController
   end
 
   def renew
-    # TODO: expiry_date definitely needs to be input by user for level 1 and extra datasets
-    # added as a stop gap for now
+    expiry_date = project_dataset_level_params["expiry_date"].presence || 1.year.from_now
+
     ProjectDatasetLevel.create(project_dataset_id: @project_dataset_level.project_dataset_id,
                                access_level_id: @project_dataset_level.access_level_id,
-                               expiry_date: 1.year.from_now,
-                               selected: true, current: true)
+                               expiry_date: expiry_date, selected: true, current: true)
   end
 
   private
 
   def project_dataset_level_params
-    params.fetch(:project_dataset_level, {}).permit(:id, :approved, :decided_at)
+    params.fetch(:project_dataset_level, {}).permit(:id, :approved, :decided_at, :expiry_date)
   end
 
   def yubikey_protected_transition?
