@@ -33,14 +33,10 @@ class Ability
           grants: { user_id: user.id,
                     roleable: ProjectRole.owner } }
     }
-    # TODO: need to make this include expiry_date being in last month too!
-    can %i[renew], ProjectDatasetLevel, approved: true, current: true, selected: true,
-                                        project_dataset: {
-                                          project:
-                                            { project_type_id: ProjectType.cas.pluck(:id),
-                                              grants: { user_id: user.id,
-                                                        roleable: ProjectRole.owner } }
-                                        }
+    can %i[renew], ProjectDatasetLevel do |pdl|
+      pdl.expiry_date <= 1.month.from_now.to_date &&
+        pdl.approved? && pdl.current? && pdl.selected? && pdl.project.owner == user
+    end
 
     team_grants(user)
     organisation_grants(user)
