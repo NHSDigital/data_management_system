@@ -18,7 +18,6 @@ module Workflow
     end
 
     validate :ensure_state_is_transitionable, on: :create
-    before_create :approve_all_default_levels_access_approver_approved
     after_save :update_project_closure_date
     after_save :remove_project_closure_date
     after_save :submitted_state_notifiers
@@ -170,18 +169,6 @@ module Workflow
         CasNotifier.requires_dataset_approval(project, user.id)
         CasMailer.with(project: project, user: user).send(:requires_dataset_approval).deliver_later
       end
-    end
-
-    def approve_all_default_levels_access_approver_approved
-      return unless project.cas?
-      return unless state_id == 'ACCESS_APPROVER_APPROVED'
-
-      cas_default_levels = project.project_dataset_levels.select do |pdl|
-        next unless pdl.selected? && pdl.current?
-
-        pdl.project_dataset.dataset.cas_defaults?
-      end
-      cas_default_levels.each { |cdl| cdl.update(approved: true, decided_at: Time.zone.now) }
     end
   end
 end

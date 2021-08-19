@@ -215,6 +215,7 @@ class ProjectsController < ApplicationController
     @project.transaction do
       @project.project_dataset_levels.each do |pdl|
         next unless pdl.approved.nil? && pdl.current? && pdl.selected?
+        next unless [2, 3].include?(pdl.access_level_id) && pdl.project_dataset.dataset.cas_defaults?
         next unless current_user.can?(:approve, pdl)
 
         pdl.approved = true
@@ -223,11 +224,10 @@ class ProjectsController < ApplicationController
       end
     end
   end
-  
+
   def project_dataset_levels_bulk_renewal_requests
     @project.transaction do
       @project.project_dataset_levels.each do |pdl|
-
         next unless [2, 3].include?(pdl.access_level_id) && pdl.project_dataset.dataset.cas_defaults?
         next unless pdl.approved? && pdl.current? && pdl.selected?
         next unless pdl.expiry_date <= 1.month.from_now && current_user.can?(:renew, pdl)

@@ -2,9 +2,9 @@
   <div class="panel panel-default" style="border-top: 0px;">
     <div class="panel-heading">
       <span style="font-size: 1.5em;">Datasets</span>
-      <div id="approve_unactioned_datasets" class="pull-right">
+      <div id="approve_level_2_3_default_datasets" class="pull-right">
         <% if project.user_approvable_levels_pending?(current_user) %>
-          <%= button_to 'Approve unactioned datasets', project_dataset_levels_bulk_approvals_project_path(project), method: :patch, remote: true, class: 'btn btn-success' %>
+          <%= button_to 'Approve level 2 and 3 default datasets', project_dataset_levels_bulk_approvals_project_path(project), method: :patch, remote: true, class: 'btn btn-success' %>
         <% end %>
       </div>
       <div id="request_renewal_level_2_3_defaults" class="pull-right">

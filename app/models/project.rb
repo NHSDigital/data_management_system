@@ -562,16 +562,24 @@ class Project < ApplicationRecord
 
   def user_approvable_levels_pending?(current_user)
     project_dataset_levels.any? do |pdl|
-      pdl.approved.nil? && pdl.current? && pdl.selected? && current_user.can?(:approve, pdl)
+      pdl.approved.nil? && pdl.current? && pdl.selected? && current_user.can?(:approve, pdl) &&
+        [2, 3].include?(pdl.access_level_id) && pdl.project_dataset.dataset.cas_defaults?
     end
   end
 
   def level_2_3_defaults_expiring?(current_user)
     project_dataset_levels.any? do |pdl|
       [2, 3].include?(pdl.access_level_id) && pdl.project_dataset.dataset.cas_defaults? &&
-      pdl.approved? && pdl.current? && pdl.selected? && pdl.expiry_date <= 1.month.from_now &&
-      current_user.can?(:renew, pdl)
+        pdl.approved? && pdl.current? && pdl.selected? && pdl.expiry_date <= 1.month.from_now &&
+        current_user.can?(:renew, pdl)
     end
+  end
+
+  def default_levels_all_approved
+    cas_default_levels = project_dataset_levels.select do |pdl|
+      pdl.project_dataset.dataset.cas_defaults?
+    end
+    cas_default_levels.none? { |pdl| pdl.approved.nil? if pdl.selected? }
   end
 
   private

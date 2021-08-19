@@ -25,7 +25,7 @@ class ProjectDatasetLevelsController < ApplicationController
   end
 
   def renew
-    expiry_date = project_dataset_level_params["expiry_date"].presence || 1.year.from_now
+    expiry_date = project_dataset_level_params['expiry_date'].presence || 1.year.from_now
 
     ProjectDatasetLevel.create(project_dataset_id: @project_dataset_level.project_dataset_id,
                                access_level_id: @project_dataset_level.access_level_id,

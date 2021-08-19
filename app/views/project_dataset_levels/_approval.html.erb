@@ -6,7 +6,7 @@
 <% end %>
 <td id="approvals_<%=dom_id(project_dataset_level)%>">
   <!-- TODO clean this up -->
-<% if ProjectDataset.dataset_approval(current_user).include?(project_dataset_level.project_dataset) && !project_dataset_level.level_2_3_default? && !project_dataset_level.level_1_at_initial_access_request? %>
+<% if ProjectDataset.dataset_approval(current_user).include?(project_dataset_level.project_dataset) && !project_dataset_level.level_2_3_default? %>
   <% if project_dataset_level.approved.nil? %>
     <%= link_to bootstrap_icon_tag('ok'), approve_project_dataset_level_path(id: project_dataset_level.id, "project_dataset_level[decided_at]" => Time.zone.now, "project_dataset_level[approved]" => 'true'), :method => :patch, remote: true, id: "approval_#{dom_id(project_dataset_level)}", class: 'btn btn-success btn-sm  rce_item' %>
     <%= link_to bootstrap_icon_tag('remove'), project_dataset_level_path(id: project_dataset_level.id, "project_dataset_level[decided_at]" => Time.zone.now, "project_dataset_level[approved]" => 'false'), :method => :patch, remote: true, class: 'btn btn-danger btn-sm reject_data_source_item' %>

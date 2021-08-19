@@ -29,12 +29,6 @@ class ProjectDatasetLevel < ApplicationRecord
     project_dataset.dataset.cas_defaults? && access_level_id == 1
   end
 
-  # TODO: ensure this covers every situation
-  def level_1_at_initial_access_request?
-    level_1_default? && project.current_state.id == 'SUBMITTED' &&
-      project.states.pluck(:id).count('SUBMITTED') == 1
-  end
-
   def renewable?
     current? && selected? && approved? && expiry_date <= 1.month.from_now.to_date
   end
