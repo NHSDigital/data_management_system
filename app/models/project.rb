@@ -566,6 +566,14 @@ class Project < ApplicationRecord
     end
   end
 
+  def level_2_3_defaults_expiring?(current_user)
+    project_dataset_levels.any? do |pdl|
+      [2, 3].include?(pdl.access_level_id) && pdl.project_dataset.dataset.cas_defaults? &&
+      pdl.approved? && pdl.current? && pdl.selected? && pdl.expiry_date <= 1.month.from_now &&
+      current_user.can?(:renew, pdl)
+    end
+  end
+
   private
 
   def project_type_inquirer

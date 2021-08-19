@@ -7,6 +7,11 @@
           <%= button_to 'Approve unactioned datasets', project_dataset_levels_bulk_approvals_project_path(project), method: :patch, remote: true, class: 'btn btn-success' %>
         <% end %>
       </div>
+      <div id="request_renewal_level_2_3_defaults" class="pull-right">
+        <% if project.level_2_3_defaults_expiring?(current_user) %>
+          <%= button_to 'Renew level 2 and 3 defaults datasets', project_dataset_levels_bulk_renewal_requests_project_path(project), method: :patch, remote: true %>
+        <% end %>
+      </div>
       <div class="pull-right">
         <%= edit_link project, class: 'btn btn-default', text: true, path: edit_project_path(project, anchor: 'multi_project_datasets') %>
       </div>

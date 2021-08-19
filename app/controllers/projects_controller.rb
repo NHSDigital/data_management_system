@@ -223,6 +223,22 @@ class ProjectsController < ApplicationController
       end
     end
   end
+  
+  def project_dataset_levels_bulk_renewal_requests
+    @project.transaction do
+      @project.project_dataset_levels.each do |pdl|
+
+        next unless [2, 3].include?(pdl.access_level_id) && pdl.project_dataset.dataset.cas_defaults?
+        next unless pdl.approved? && pdl.current? && pdl.selected?
+        next unless pdl.expiry_date <= 1.month.from_now && current_user.can?(:renew, pdl)
+
+        ProjectDatasetLevel.create(project_dataset_id: pdl.project_dataset_id,
+                                   access_level_id: pdl.access_level_id,
+                                   expiry_date: 1.year.from_now,
+                                   selected: true, current: true)
+      end
+    end
+  end
 
   private
 
