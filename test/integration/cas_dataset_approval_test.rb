@@ -45,12 +45,10 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
 
     assert_equal find('#project_status').text, 'Pending'
 
-    click_link('X')
-    within "#approvals_project_dataset_level_#{pdl.id}" do
-      assert find('.btn-danger')
-      assert find('.btn-success')
-    end
-    assert_nil pdl.reload.approved
+    pdl.update(approved: nil, decided_at: nil)
+
+    visit project_path(project)
+    click_link(href: '#datasets')
 
     assert_changes -> { pdl.reload.approved }, from: nil, to: false do
       within "#approvals_project_dataset_level_#{pdl.id}" do

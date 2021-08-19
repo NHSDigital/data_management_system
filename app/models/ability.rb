@@ -361,7 +361,7 @@ class Ability
     can %i[read project_dataset_levels_bulk_approvals], Project,
         project_type_id: ProjectType.cas.pluck(:id),
         id: Project.cas_dataset_approval(user).pluck(:id)
-    can %i[update approve], ProjectDatasetLevel, project_dataset: {
+    can %i[approve reject], ProjectDatasetLevel, approved: nil, project_dataset: {
       dataset_id: user.datasets.pluck(:id),
       project_id: Project.cas_dataset_approval(user).pluck(:id)
     }

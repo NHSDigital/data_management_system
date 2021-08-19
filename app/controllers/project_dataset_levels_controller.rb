@@ -7,11 +7,11 @@ class ProjectDatasetLevelsController < ApplicationController
 
   respond_to :js, :html
 
-  def update
+  def approve
     @project_dataset_level.update(project_dataset_level_params)
   end
 
-  def approve
+  def reject
     @project_dataset_level.update(project_dataset_level_params)
   end
 

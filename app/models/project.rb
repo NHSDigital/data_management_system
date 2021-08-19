@@ -562,8 +562,9 @@ class Project < ApplicationRecord
 
   def user_approvable_levels_pending?(current_user)
     project_dataset_levels.any? do |pdl|
-      pdl.approved.nil? && pdl.current? && pdl.selected? && current_user.can?(:approve, pdl) &&
-        [2, 3].include?(pdl.access_level_id) && pdl.project_dataset.dataset.cas_defaults?
+      pdl.approved.nil? && pdl.current? && pdl.selected? &&
+        current_user.can?(:approve, pdl) && [2, 3].include?(pdl.access_level_id) &&
+        pdl.project_dataset.dataset.cas_defaults?
     end
   end
 
