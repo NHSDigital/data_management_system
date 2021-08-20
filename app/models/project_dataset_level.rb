@@ -52,8 +52,7 @@ class ProjectDatasetLevel < ApplicationRecord
 
   def set_expiry_date_to_one_year
     return unless project.cas?
-    return unless project_dataset.dataset.cas_defaults?
-    return unless [2, 3].include? access_level_id
+    return unless level_2_3_default?
 
     update_column(:expiry_date, 1.year.from_now)
   end
@@ -96,7 +95,7 @@ class ProjectDatasetLevel < ApplicationRecord
     return if expiry_date.blank?
     return unless expiry_date < Time.zone.today
 
-    errors.add(:expiry_date, "Must be in the future")
+    errors.add(:expiry_date, 'Must be in the future')
   end
 
   private

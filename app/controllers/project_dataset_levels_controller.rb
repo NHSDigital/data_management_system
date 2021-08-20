@@ -16,47 +16,19 @@ class ProjectDatasetLevelsController < ApplicationController
   end
 
   def reapply
-    expiry_date = project_dataset_level_params['expiry_date'] ? project_dataset_level_params['expiry_date'] : 1.year.from_now
-
     new_pdl = ProjectDatasetLevel.new(project_dataset_id: @project_dataset_level.project_dataset_id,
                                       access_level_id: @project_dataset_level.access_level_id,
                                       expiry_date: expiry_date, selected: true, current: true)
 
-    if new_pdl.save
-      respond_to do |format|
-        msg = 'Dataset Level Successfully Renewed'
-        format.html { redirect_to project_path(new_pdl.project, anchor: '!datasets'), notice: msg }
-        format.js { redirect_to project_path(new_pdl.project, anchor: '!datasets'), notice: msg }
-      end
-    else
-      respond_to do |format|
-        msg = 'Renewal failed - please provide a valid expiry date in the future'
-        format.html { redirect_to project_path(new_pdl.project, anchor: '!datasets'), alert: msg }
-        format.js { redirect_to project_path(new_pdl.project, anchor: '!datasets'), alert: msg }
-      end
-    end
+    respond_response('Reapplication', new_pdl)
   end
 
   def renew
-    expiry_date = project_dataset_level_params['expiry_date'] ? project_dataset_level_params['expiry_date'] : 1.year.from_now
-
     new_pdl = ProjectDatasetLevel.new(project_dataset_id: @project_dataset_level.project_dataset_id,
                                       access_level_id: @project_dataset_level.access_level_id,
                                       expiry_date: expiry_date, selected: true, current: true)
 
-    if new_pdl.save
-      respond_to do |format|
-        msg = 'Dataset Level Successfully Renewed'
-        format.html { redirect_to project_path(new_pdl.project, anchor: '!datasets'), notice: msg }
-        format.js { redirect_to project_path(new_pdl.project, anchor: '!datasets'), notice: msg }
-      end
-    else
-      respond_to do |format|
-        msg = 'Renewal failed - please provide a valid expiry date in the future'
-        format.html { redirect_to project_path(new_pdl.project, anchor: '!datasets'), alert: msg }
-        format.js { redirect_to project_path(new_pdl.project, anchor: '!datasets'), alert: msg }
-      end
-    end
+    respond_response('Renewal', new_pdl)
   end
 
   private
@@ -67,5 +39,28 @@ class ProjectDatasetLevelsController < ApplicationController
 
   def yubikey_protected_transition?
     Rails.env.development? ? false : true
+  end
+
+  def expiry_date
+    if project_dataset_level_params['expiry_date']
+      project_dataset_level_params['expiry_date']
+    else 1.year.from_now
+    end
+  end
+
+  def respond_response(type, new_pdl)
+    if new_pdl.save
+      respond_to do |format|
+        msg = "#{type} request created succesfully"
+        format.html { redirect_to project_path(new_pdl.project, anchor: '!datasets'), notice: msg }
+        format.js { redirect_to project_path(new_pdl.project, anchor: '!datasets'), notice: msg }
+      end
+    else
+      respond_to do |format|
+        msg = "#{type} failed - please provide a valid expiry date in the future"
+        format.html { redirect_to project_path(new_pdl.project, anchor: '!datasets'), alert: msg }
+        format.js { redirect_to project_path(new_pdl.project, anchor: '!datasets'), alert: msg }
+      end
+    end
   end
 end
