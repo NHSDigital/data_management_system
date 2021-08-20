@@ -109,7 +109,7 @@ Rails.application.routes.draw do
           patch :reapply
           put :reapply
           patch :renew
-          put :renew
+          get :renew
         end
       end
     end

@@ -13,6 +13,9 @@
   <% else %>
     <span id="dataset_level_status" class="label label-<%= approval_button_style(project_dataset_level.approved) %>"><%= approval_button_message(project_dataset_level.approved) %></span>
   <% end %>
+<% elsif project_dataset_level.project.owner == current_user && project_dataset_level.renewable? && project_dataset_level.level_2_3_default? %>
+    <span id="dataset_level_status" class="label label-<%= approval_button_style(project_dataset_level.approved) %>"><%= approval_button_message(project_dataset_level.approved) %></span>
+    <%= link_to 'Renew', renew_project_dataset_level_path(:id => project_dataset_level.id), method: :patch, remote: true, class: 'btn btn-default btn-xs', title: 'Renew', rel: 'tooltip', "data-placement" => "left" %>
 <% elsif project_dataset_level.project.owner == current_user && project_dataset_level.renewable? %>
   <span id="dataset_level_status" class="label label-<%= approval_button_style(project_dataset_level.approved) %>"><%= approval_button_message(project_dataset_level.approved) %></span>
   <%= button_tag 'Renew', class: 'btn btn-default btn-xs', rel: 'tooltip', "data-placement" => "left", data: { toggle: 'modal', target: "\#modal-renewal" } %>
@@ -23,7 +26,7 @@
     <% end %>
 <% elsif project_dataset_level.project.owner == current_user && project_dataset_level.approved == false && project_dataset_level.current? %>
   <span id="dataset_level_status" class="label label-<%= approval_button_style(project_dataset_level.approved) %>"><%= approval_button_message(project_dataset_level.approved) %></span>
-  <%= link_to 'Reapply', reapply_project_dataset_level_path(:id => project_dataset_level.id, "project_dataset_level[approved]" => ''), method: :patch, remote: true, class: 'btn btn-default btn-xs', title: 'Reapply', rel: 'tooltip', "data-placement" => "left" %>
+  <%= link_to 'Reapply', reapply_project_dataset_level_path(:id => project_dataset_level.id), method: :patch, remote: true, class: 'btn btn-default btn-xs', title: 'Reapply', rel: 'tooltip', "data-placement" => "left" %>
 <% else %>
   <span id="dataset_level_status" class="label label-<%= approval_button_style(project_dataset_level.approved) %>"><%= approval_button_message(project_dataset_level.approved) %></span>
 <% end %>

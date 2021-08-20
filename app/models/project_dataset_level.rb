@@ -8,6 +8,7 @@ class ProjectDatasetLevel < ApplicationRecord
   after_update :notify_cas_approved_change
 
   validate :expiry_date_must_be_present_for_level_one_or_extra_datasets
+  validate :must_be_future_expiry_date
 
   def current?
     current
@@ -89,6 +90,13 @@ class ProjectDatasetLevel < ApplicationRecord
     (project_dataset.project_dataset_levels - [self]).select do |pdl|
       access_level_id == pdl.access_level_id && !pdl.current?
     end.sort_by(&:created_at)
+  end
+
+  def must_be_future_expiry_date
+    return if expiry_date.blank?
+    return unless expiry_date < Time.zone.today
+
+    errors.add(:expiry_date, "Must be in the future")
   end
 
   private

@@ -12,13 +12,13 @@
         <div class="modal-body">
           <div class="form-group">
             <%= form.label :expiry_date, 'Expiry Date' %>
-            <%= form.datepicker_field(:expiry_date) %>
+            <%= form.datepicker_field(:expiry_date, id: 'renewal_datepicker', value: '') %>
           </div>
         </div>
         <div class="modal-footer">
           <div class="pull-right">
             <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-            <%= form.submit 'Save', class: 'btn btn-primary' %>
+            <%= form.submit 'Renew', class: 'btn btn-primary' %>
           </div>
         </div>
       <% end %>

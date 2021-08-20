@@ -139,37 +139,40 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
     sign_in user
 
     project = create_cas_project(owner: users(:no_roles))
-    project_dataset = ProjectDataset.new(dataset: Dataset.find_by(name: 'Extra CAS Dataset One'),
-                                         terms_accepted: true)
+    project_dataset = ProjectDataset.new(dataset: dataset(86), terms_accepted: true)
     project.project_datasets << project_dataset
-    pdl = ProjectDatasetLevel.new(access_level_id: 1, expiry_date: Time.zone.today + 2.months,
-                                  selected: true)
-    project_dataset.project_dataset_levels << pdl
+    l1_pdl = ProjectDatasetLevel.new(access_level_id: 1, expiry_date: Time.zone.today + 2.months,
+                                     selected: true)
+    l2_pdl = ProjectDatasetLevel.new(access_level_id: 2, expiry_date: Time.zone.today + 2.months,
+                                     selected: true)
+    project_dataset.project_dataset_levels.push(l1_pdl, l2_pdl)
 
     project.transition_to!(workflow_states(:submitted))
 
-    pdl.approved = true
-    pdl.decided_at = Time.zone.now
-    pdl.save!(validate: false)
+    l1_pdl.update(approved: true, decided_at: Time.zone.now)
+    l2_pdl.update(approved: true, decided_at: Time.zone.now)
 
     visit project_path(project)
 
     click_link(href: '#datasets')
-    assert has_content?('Extra CAS Dataset One')
-    assert_equal find('#dataset_level_status').text, 'APPROVED'
+    assert has_content?('Cas Defaults Dataset', count: 2)
+    assert has_content?('APPROVED', count: 2)
     assert has_no_content?('Renew')
 
-    pdl.expiry_date = Time.zone.today + 1.week
-    pdl.save!(validate: false)
+    l1_pdl.update(expiry_date: Time.zone.today + 1.week)
+    l2_pdl.update(expiry_date: Time.zone.today + 1.week)
 
     visit project_path(project)
 
     click_link(href: '#datasets')
-    assert has_content?('Extra CAS Dataset One')
+    assert has_content?('Cas Defaults Dataset')
 
-    click_link('Renew')
+    within "#project_dataset_level_#{l2_pdl.id}" do
+      click_link('Renew')
+    end
 
     assert has_content?('Previous datasets')
+    assert_equal 2, ProjectDatasetLevel.last.reload.access_level_id
 
     within "#project_dataset_level_#{ProjectDatasetLevel.last.id}" do
       within '#decision_date' do
@@ -184,7 +187,7 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
       assert has_no_link?('Renew')
     end
 
-    within "#project_dataset_level_#{pdl.id}" do
+    within "#project_dataset_level_#{l2_pdl.id}" do
       within '#decision_date' do
         assert has_content?(Time.zone.now.strftime('%d/%m/%Y'))
       end
@@ -194,8 +197,63 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
       assert has_no_link?('Renew')
     end
 
-    assert_equal true, pdl.reload.approved
-    assert_equal false, pdl.reload.current
+    assert_equal true, l2_pdl.reload.approved
+    assert_equal false, l2_pdl.reload.current
+    assert_nil ProjectDatasetLevel.last.reload.approved
+    assert_equal true, ProjectDatasetLevel.last.reload.current
+
+    within "#project_dataset_level_#{l1_pdl.id}" do
+      click_button('Renew')
+    end
+
+    within_modal(selector: '#modal-renewal') do
+      assert has_content?('Renew Cas Defaults Dataset level 1')
+      fill_in('renewal_datepicker', with: '')
+      click_button('Renew')
+    end
+
+    assert has_content?('Renewal failed - please provide a valid expiry date in the future')
+    assert has_content?('Renew')
+    assert_equal 2, ProjectDatasetLevel.last.reload.access_level_id
+
+    within "#project_dataset_level_#{l1_pdl.id}" do
+      click_button('Renew')
+    end
+
+    within_modal(selector: '#modal-renewal') do
+      fill_in('renewal_datepicker', with: (Time.zone.now + 1.year).strftime('%d/%m/%Y)'))
+      click_button('Renew')
+    end
+
+    assert has_content?('Dataset Level Successfully Renewed')
+    assert has_no_button?('Renew')
+    assert_equal 1, ProjectDatasetLevel.last.reload.access_level_id
+
+    within "#project_dataset_level_#{ProjectDatasetLevel.last.id}" do
+      within '#decision_date' do
+        assert has_no_content?
+      end
+      within '#request_type' do
+        assert has_content?('Renewal')
+      end
+      assert has_content?('PENDING')
+      assert has_no_css?('.btn-danger')
+      assert has_no_css?('.btn-success')
+      assert has_no_link?('Renew')
+    end
+
+    within "#project_dataset_level_#{l1_pdl.id}" do
+      within '#decision_date' do
+        assert has_content?(Time.zone.now.strftime('%d/%m/%Y'))
+      end
+      assert has_content?('APPROVED')
+      assert has_no_css?('.btn-danger')
+      assert has_no_css?('.btn-success')
+      assert has_no_link?('Renew')
+    end
+
+    assert_equal true, l1_pdl.reload.approved
+    assert_equal false, l1_pdl.reload.current
     assert_nil ProjectDatasetLevel.last.reload.approved
     assert_equal true, ProjectDatasetLevel.last.reload.current
   end
