@@ -366,7 +366,7 @@ en:
         access_level: Please select level of access using the table below as a guide (select one only)
         extra_datasets: Datasets requiring special permission Please select those that you require access to and provide extra details as to why you need them below. When requesting these datasets (except the ONS datasets) please reference an agreed project proposal.
         extra_datasets_rationale: Please state rationale for the selected datasets
-      project:
+      project: &project_attributes
         name: Project Title
         assigned_user: Application Manager
         owner: Applicant
@@ -415,6 +415,8 @@ en:
         parent: Responding To
   activemodel:
     attributes:
+      pdf_application_facade:
+        <<: *project_attributes
       report/open_project_report:
         title: ODR - All Open Projects
         description: Provides row level detail of all open projects assigned to the ODR team.
