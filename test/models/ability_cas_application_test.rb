@@ -77,7 +77,8 @@ class AbilityCasApplicationTest < ActiveSupport::TestCase
     refute applicant_ablity.can? :destroy, matched_dataset_project
     refute applicant_ablity.can? :read, matched_dataset_project
     refute applicant_ablity.can? :update, matched_dataset_project
-    refute applicant_ablity.can? :update, pdl
+    refute applicant_ablity.can? :approve, pdl
+    refute applicant_ablity.can? :reject, pdl
 
     matched_dataset_project.transition_to(Workflow::State.find('SUBMITTED'))
     matched_dataset_project.reload_current_state
@@ -86,7 +87,8 @@ class AbilityCasApplicationTest < ActiveSupport::TestCase
     refute applicant_ablity.can? :destroy, matched_dataset_project
     assert applicant_ablity.can? :read, matched_dataset_project
     refute applicant_ablity.can? :update, matched_dataset_project
-    assert applicant_ablity.can? :update, pdl
+    assert applicant_ablity.can? :approve, pdl
+    assert applicant_ablity.can? :reject, pdl
 
     pdl.update(approved: true)
     matched_dataset_project.transition_to(Workflow::State.find('ACCESS_APPROVER_APPROVED'))
@@ -96,17 +98,20 @@ class AbilityCasApplicationTest < ActiveSupport::TestCase
     refute applicant_ablity.can? :destroy, matched_dataset_project
     assert applicant_ablity.can? :read, matched_dataset_project
     refute applicant_ablity.can? :update, matched_dataset_project
-    assert applicant_ablity.can? :update, pdl
+    refute applicant_ablity.can? :approve, pdl
+    refute applicant_ablity.can? :reject, pdl
     # Shouldn't be able to access a project that doesn't require their dataset
     refute applicant_ablity.can? :destroy, non_matched_dataset_project
     refute applicant_ablity.can? :read, non_matched_dataset_project
     refute applicant_ablity.can? :update, non_matched_dataset_project
-    refute applicant_ablity.can? :update, non_matched_dataset_project.project_datasets.first.project_dataset_levels.first
+    refute applicant_ablity.can? :approve, non_matched_dataset_project.project_datasets.first.project_dataset_levels.first
+    refute applicant_ablity.can? :reject, non_matched_dataset_project.project_datasets.first.project_dataset_levels.first
     # Shouldn't be able to crud non-cas projects where they aren't owner
     refute applicant_ablity.can? :destroy, non_cas_project
     refute applicant_ablity.can? :read, non_cas_project
     refute applicant_ablity.can? :update, non_cas_project
-    refute applicant_ablity.can? :update, non_cas_project.project_datasets.first.project_dataset_levels.first
+    refute applicant_ablity.can? :approve, non_cas_project.project_datasets.first.project_dataset_levels.first
+    refute applicant_ablity.can? :reject, non_cas_project.project_datasets.first.project_dataset_levels.first
   end
 
   test 'cas_access_approver ability' do

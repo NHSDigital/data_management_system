@@ -92,19 +92,24 @@ Rails.application.routes.draw do
   resources :projects do
     get :dashboard, on: :collection
     get :cas_approvals, on: :collection
+    patch :project_dataset_levels_bulk_approvals, on: :member
+    put :project_dataset_levels_bulk_approvals, on: :member
+    patch :project_dataset_levels_bulk_renewal_requests, on: :member
+    put :project_dataset_levels_bulk_renewal_requests, on: :member
   end
 
   resources :projects, shallow: true do
     resources :project_datasets, shallow: true do
       resources :project_dataset_levels do
-        collection do
-          patch :update
-        end
         member do
           patch :approve
           put :approve
+          patch :reject
+          put :reject
           patch :reapply
           put :reapply
+          patch :renew
+          get :renew
         end
       end
     end

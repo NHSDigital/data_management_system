@@ -25,16 +25,17 @@ class CasApplicationFieldsTest < ActiveSupport::TestCase
       include? 'Dataset justification is required when selecting any datasets'
 
     extra_project_dataset = ProjectDataset.create(dataset: dataset(83), terms_accepted: true)
-    pdl2 = ProjectDatasetLevel.new(access_level_id: 2, selected: nil)
-    extra_project_dataset.project_dataset_levels << pdl2
     application.project_datasets << extra_project_dataset
-    application.save!(validate: false)
+    pdl2 = ProjectDatasetLevel.new(access_level_id: 2, selected: nil,
+                                   expiry_date: Time.zone.today + 2.months)
+    extra_project_dataset.project_dataset_levels << pdl2
 
     application.cas_application_fields.valid?
     refute application.cas_application_fields.errors.messages[:extra_datasets_rationale].
       include? 'Dataset justification is required when selecting any datasets'
 
     pdl2.update(selected: true)
+    extra_project_dataset.project_dataset_levels.reload
 
     application.cas_application_fields.valid?
     assert application.cas_application_fields.errors.messages[:extra_datasets_rationale].

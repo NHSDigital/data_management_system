@@ -115,4 +115,94 @@ class ProjectDatasetLevelTest < ActiveSupport::TestCase
 
     assert_nil pdl.decided_at
   end
+
+  test 'level 2 and 3 default datasets should have expiry date set to 1 year on creation' do
+    project_dataset = ProjectDataset.new(dataset: dataset(85), terms_accepted: true)
+    assert project_dataset.dataset.cas_defaults?
+    project = create_cas_project(owner: users(:no_roles))
+    project.project_datasets << project_dataset
+    no_expiry_pdl = ProjectDatasetLevel.create(access_level_id: 2,
+                                               project_dataset_id: project_dataset.id)
+
+    assert_equal 1.year.from_now.to_date, no_expiry_pdl.expiry_date
+
+    expiry_pdl = ProjectDatasetLevel.create(access_level_id: 3, expiry_date: 2.years.from_now,
+                                            project_dataset_id: project_dataset.id)
+    assert_equal 1.year.from_now.to_date, expiry_pdl.expiry_date
+
+    wrong_access_level = ProjectDatasetLevel.create(access_level_id: 1,
+                                                    project_dataset_id: project_dataset.id)
+
+    refute_equal 1.year.from_now.to_date, wrong_access_level.expiry_date
+
+    project_dataset = ProjectDataset.new(dataset: dataset(83), terms_accepted: true)
+    assert project_dataset.dataset.cas_extras?
+    project.project_datasets << project_dataset
+    wrong_dataset_type_and_date = ProjectDatasetLevel.create(access_level_id: 2,
+                                                             expiry_date: 2.years.from_now,
+                                                             project_dataset_id: project_dataset.id)
+
+    refute_equal 1.year.from_now.to_date, wrong_dataset_type_and_date.expiry_date
+
+    wrong_dataset_type_no_date = ProjectDatasetLevel.create(access_level_id: 3,
+                                                            project_dataset_id: project_dataset.id)
+
+    refute_equal 1.year.from_now.to_date, wrong_dataset_type_no_date.expiry_date
+  end
+
+  test 'expiry date must be present for level 1 and extra datasets' do
+    project_dataset = ProjectDataset.new(dataset: dataset(85), terms_accepted: true)
+    assert project_dataset.dataset.cas_defaults?
+    project = create_cas_project(owner: users(:no_roles))
+    project.project_datasets << project_dataset
+    level_1_default_pdl = ProjectDatasetLevel.new(access_level_id: 1, selected: true)
+    project_dataset.project_dataset_levels << level_1_default_pdl
+
+    level_1_default_pdl.valid?
+    assert level_1_default_pdl.errors.messages[:expiry_date].
+      include?('expiry date must be present for all selected extra datasets and any selected ' \
+               'level 1 default datasets')
+
+    level_1_default_pdl.update(expiry_date: 1.month.from_now.to_date)
+    level_1_default_pdl.valid?
+    refute level_1_default_pdl.errors.messages[:expiry_date].
+      include?('expiry date must be present for all selected extra datasets and any selected ' \
+               'level 1 default datasets')
+
+    level_2_default_pdl = ProjectDatasetLevel.new(access_level_id: 2, selected: true)
+    project_dataset.project_dataset_levels << level_2_default_pdl
+
+    level_2_default_pdl.valid?
+    refute level_2_default_pdl.errors.messages[:expiry_date].
+      include?('expiry date must be present for all selected extra datasets and any selected ' \
+               'level 1 default datasets')
+
+    project_dataset = ProjectDataset.new(dataset: dataset(83), terms_accepted: true)
+    assert project_dataset.dataset.cas_extras?
+    project.project_datasets << project_dataset
+
+    level_2_extra_pdl = ProjectDatasetLevel.new(access_level_id: 2, selected: true)
+    project_dataset.project_dataset_levels << level_2_extra_pdl
+
+    level_2_extra_pdl.valid?
+    refute level_2_default_pdl.errors.messages[:expiry_date].
+      include?('expiry date must be present for all selected extra datasets and any selected ' \
+               'level 1 default datasets')
+  end
+
+  test 'should set previous project_dataset_level current status to false' do
+    project_dataset = ProjectDataset.new(dataset: dataset(85), terms_accepted: true)
+    project = create_cas_project(owner: users(:no_roles))
+    project.project_datasets << project_dataset
+    original_pdl = ProjectDatasetLevel.create(access_level_id: 2, selected: true,
+                                              project_dataset_id: project_dataset.id)
+
+    assert_equal true, original_pdl.current
+
+    new_pdl = ProjectDatasetLevel.create(access_level_id: 2, selected: true,
+                                         project_dataset_id: project_dataset.id)
+
+    assert_equal false, original_pdl.reload.current
+    assert_equal true, new_pdl.reload.current
+  end
 end

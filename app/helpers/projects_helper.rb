@@ -53,8 +53,7 @@ module ProjectsHelper
     'ACCESS_APPROVER_REJECTED' => 'label-danger',
     'REJECTION_REVIEWED' => 'label-danger',
     'ACCESS_GRANTED' => 'label-success',
-    'ACCOUNT_CLOSED' => 'label-danger',
-    'RENEWAL' => 'label-warning'
+    'ACCOUNT_CLOSED' => 'label-danger'
   }.freeze
 
   def new_project_dropdown_button(team, **html_options)
@@ -332,6 +331,16 @@ module ProjectsHelper
     end
   end
 
+  def display_request_type(level)
+    if level.previous_levels.any? && level.previous_levels.last.approved?
+      'Renewal'
+    elsif level.previous_levels.any? && !level.previous_levels.last.approved?
+      'Reapplication'
+    else
+      'New'
+    end
+  end
+
   def setup_project(project)
     (Dataset.where.not(cas_type: nil).pluck(:id) -
      project.project_datasets.pluck(:dataset_id)).each do |id|
@@ -371,6 +380,13 @@ module ProjectsHelper
   def dataset_level_match(role_datasets, dataset, level)
     role_datasets.any? do |role_dataset|
       role_dataset['name'] == dataset.name && (role_dataset['levels'].include? level)
+    end
+  end
+
+  def approval_highlight_class(level)
+    if ProjectDataset.dataset_approval(current_user).include?(level.project_dataset) &&
+       level.approved.nil?
+      'dataset_highlight'
     end
   end
 end

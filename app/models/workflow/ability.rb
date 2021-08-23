@@ -568,10 +568,6 @@ module Workflow
                                  project: { current_state: { id: 'DRAFT' },
                                             project_type: { name: 'CAS' },
                                             id: project_ids }
-      can :create, ProjectState, state: { id: 'ACCESS_GRANTED' },
-                                 project: { current_state: { id: 'RENEWAL' },
-                                            project_type: { name: 'CAS' },
-                                            id: project_ids }
       can :create, ProjectState, state: { id: %w[ACCOUNT_CLOSED DRAFT] },
                                  project: { current_state: { id: 'ACCESS_GRANTED' },
                                             project_type: { name: 'CAS' },
@@ -589,10 +585,13 @@ module Workflow
       role = ProjectRole.fetch(:owner)
       project_ids = @user.projects.active.through_grant_of(role).pluck('grants.project_id')
 
-      can :create, ProjectState, state: { id: %w[ACCESS_APPROVER_APPROVED
-                                                 ACCESS_APPROVER_REJECTED] },
+      can :create, ProjectState, state: { id: 'ACCESS_APPROVER_REJECTED' },
                                  project: { current_state: { id: 'SUBMITTED' },
                                             project_type: { name: 'CAS' } }
+      can :create, ProjectState, state: { id: 'ACCESS_APPROVER_APPROVED' },
+                                 project: { current_state: { id: 'SUBMITTED' },
+                                            project_type: { name: 'CAS' },
+                                            default_levels_all_approved: true }
       cannot :create, ProjectState, state: { id: %w[ACCESS_APPROVER_APPROVED
                                                     ACCESS_APPROVER_REJECTED] },
                                     project: { current_state: { id: 'SUBMITTED' },

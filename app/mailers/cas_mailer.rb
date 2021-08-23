@@ -64,18 +64,6 @@ class CasMailer < ApplicationMailer
     mail(to: recipient, subject: 'CAS Access Granted') if recipient.any?
   end
 
-  def requires_renewal_to_user
-    recipient = Array.wrap(@project.owner.email)
-
-    mail(to: recipient, subject: 'CAS Access Requires Renewal') if recipient.any?
-  end
-
-  def requires_renewal_midpoint_to_user
-    recipient = Array.wrap(@project.owner.email)
-
-    mail(to: recipient, subject: 'CAS Access Urgently Requires Renewal') if recipient.any?
-  end
-
   def account_closed_to_user
     recipient = Array.wrap(@project.owner.email)
 
@@ -86,18 +74,6 @@ class CasMailer < ApplicationMailer
     recipients = User.cas_managers.pluck(:email)
 
     mail(to: recipients, subject: 'CAS Account Has Closed') if recipients.any?
-  end
-
-  def account_renewed
-    recipients = User.cas_manager_and_access_approvers.pluck(:email)
-
-    mail(to: recipients, subject: 'CAS Account Renewed') if recipients.any?
-  end
-
-  def account_renewed_dataset_approver
-    recipient = Array.wrap(params[:user].email)
-
-    mail(to: recipient, subject: 'CAS Account Renewed With Access to Dataset') if recipient.any?
   end
 
   def new_cas_project_saved

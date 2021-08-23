@@ -18,13 +18,14 @@ class Ability
     can :read, Grant, user_id: user.id
     can :read, [Category, Node]
     can :create, Project, project_type_id: ProjectType.cas.pluck(:id) unless Mbis.stack.live?
-    can :read, Project, project_type_id: ProjectType.cas.pluck(:id),
-                        grants: { user_id: user.id, roleable: ProjectRole.owner }
+    can %i[read project_dataset_levels_bulk_renewal_requests], Project,
+        project_type_id: ProjectType.cas.pluck(:id),
+        grants: { user_id: user.id, roleable: ProjectRole.owner }
     # TODO: do we still want them to be able to destroy?
     can %i[update destroy], Project, project_type_id: ProjectType.cas.pluck(:id),
                                      grants: { user_id: user.id, roleable: ProjectRole.owner },
                                      current_state: { id: 'DRAFT' }
-    can %i[reapply], ProjectDatasetLevel, approved: false, project_dataset: {
+    can %i[reapply], ProjectDatasetLevel, approved: false, current: true, project_dataset: {
       project:
         { project_type_id: ProjectType.cas.pluck(:id),
           current_state: {
@@ -33,6 +34,10 @@ class Ability
           grants: { user_id: user.id,
                     roleable: ProjectRole.owner } }
     }
+    can %i[renew], ProjectDatasetLevel do |pdl|
+      pdl.expiry_date <= 1.month.from_now.to_date &&
+        pdl.approved? && pdl.current? && pdl.selected? && pdl.project.owner == user
+    end
 
     team_grants(user)
     organisation_grants(user)
@@ -366,9 +371,10 @@ class Ability
   def cas_dataset_approver_grants(user)
     return unless user.role?(DatasetRole.fetch(:approver))
 
-    can %i[read], Project, project_type_id: ProjectType.cas.pluck(:id),
-                           id: Project.cas_dataset_approval(user).pluck(:id)
-    can %i[update approve], ProjectDatasetLevel, project_dataset: {
+    can %i[read project_dataset_levels_bulk_approvals], Project,
+        project_type_id: ProjectType.cas.pluck(:id),
+        id: Project.cas_dataset_approval(user).pluck(:id)
+    can %i[approve reject], ProjectDatasetLevel, approved: nil, project_dataset: {
       dataset_id: user.datasets.pluck(:id),
       project_id: Project.cas_dataset_approval(user).pluck(:id)
     }

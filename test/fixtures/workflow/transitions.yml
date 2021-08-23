@@ -419,21 +419,6 @@ access_approver_approved_access_granted:
   from_state_id: ACCESS_APPROVER_APPROVED
   next_state_id: ACCESS_GRANTED
 
-access_granted_renewal:
-  project_type: cas
-  from_state_id: ACCESS_GRANTED
-  next_state_id: RENEWAL
-
-renewal_access_granted:
-  project_type: cas
-  from_state_id: RENEWAL
-  next_state_id: ACCESS_GRANTED
-
-renewal_account_closed:
-  project_type: cas
-  from_state_id: RENEWAL
-  next_state_id: ACCOUNT_CLOSED
-
 access_granted_account_closed:
   project_type: cas
   from_state_id: ACCESS_GRANTED

@@ -553,6 +553,35 @@ class Project < ApplicationRecord
     "#{application_log}/A#{amendment_number + 1}"
   end
 
+  def current_project_dataset_levels
+    project_dataset_levels.select(&:current?)
+  end
+
+  def previous_project_dataset_levels
+    project_dataset_levels.reject(&:current?)
+  end
+
+  def user_approvable_levels_pending?(current_user)
+    project_dataset_levels.any? do |pdl|
+      pdl.approved.nil? && pdl.current? && pdl.selected? &&
+        current_user.can?(:approve, pdl) && pdl.level_2_3_default?
+    end
+  end
+
+  def level_2_3_defaults_expiring?(current_user)
+    project_dataset_levels.any? do |pdl|
+      pdl.level_2_3_default? && pdl.approved? && pdl.current? && pdl.selected? &&
+        pdl.expiry_date <= 1.month.from_now && current_user.can?(:renew, pdl)
+    end
+  end
+
+  def default_levels_all_approved
+    cas_default_levels = project_dataset_levels.select do |pdl|
+      pdl.project_dataset.dataset.cas_defaults?
+    end
+    cas_default_levels.none? { |pdl| pdl.approved.nil? if pdl.selected? }
+  end
+
   private
 
   def project_type_inquirer

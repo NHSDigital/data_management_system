@@ -211,6 +211,35 @@ class ProjectsController < ApplicationController
     end
   end
 
+  def project_dataset_levels_bulk_approvals
+    @project.transaction do
+      @project.project_dataset_levels.each do |pdl|
+        next unless pdl.approved.nil? && pdl.current? && pdl.selected?
+        next unless pdl.level_2_3_default?
+        next unless current_user.can?(:approve, pdl)
+
+        pdl.approved = true
+        pdl.decided_at = Time.zone.now
+        pdl.save!
+      end
+    end
+  end
+
+  def project_dataset_levels_bulk_renewal_requests
+    @project.transaction do
+      @project.project_dataset_levels.each do |pdl|
+        next unless pdl.level_2_3_default?
+        next unless pdl.approved? && pdl.current? && pdl.selected?
+        next unless pdl.expiry_date <= 1.month.from_now && current_user.can?(:renew, pdl)
+
+        ProjectDatasetLevel.create(project_dataset_id: pdl.project_dataset_id,
+                                   access_level_id: pdl.access_level_id,
+                                   expiry_date: 1.year.from_now,
+                                   selected: true, current: true)
+      end
+    end
+  end
+
   private
 
   def data_source_params
