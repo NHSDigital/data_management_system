@@ -367,6 +367,7 @@ class ProjectsController < ApplicationController
     params.fetch(:search, {}).permit(
       :name,
       :application_log,
+      :assigned_user_id,
       project_type_id: [],
       owner: %i[
         first_name
@@ -377,4 +378,5 @@ class ProjectsController < ApplicationController
       }
     )
   end
+  helper_method :search_params
 end

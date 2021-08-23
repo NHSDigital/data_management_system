@@ -183,6 +183,7 @@ class Project < ApplicationRecord
   attr_searchable :name,                  :text_filter
   attr_searchable :application_log,       :application_log_filter # Meh.
   attr_searchable :project_type_id,       :default_filter
+  attr_searchable :assigned_user_id,      :default_filter
   attr_searchable :owner,                 :association_filter, kwargs: true # FIXME: See Searchable
   attr_searchable :current_project_state, :association_filter
 
