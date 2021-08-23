@@ -135,19 +135,32 @@ class Ability
   end
 
   def project_attachment_grants(user)
-    can %i[create read destroy], ProjectAttachment, project: {
-      grants: { user_id: user.id, project_id: project_ids_for(user),
-                roleable: ProjectRole.can_edit },
-      current_state: { id: 'DRAFT' },
-      project_type_id: ProjectType.where(name: %w[EOI Application]).pluck(:id)
+    base_conditions = {
+      project: {
+        grants: {
+          user_id:    user.id,
+          project_id: project_ids_for(user)
+        }
+      }
     }
 
-    can %i[create read destroy], ProjectAttachment, project: {
-      grants: { user_id: user.id, project_id: project_ids_for(user),
-                roleable: ProjectRole.can_edit },
-      current_state: { id: Workflow::State.not_submitted_for_sign_off.map(&:id) },
-      project_type_id: ProjectType.find_by(name: 'Project').id
-    }
+    can :read, ProjectAttachment, base_conditions
+
+    can %i[create destroy], ProjectAttachment, base_conditions.deep_merge(
+      project: {
+        grants:        { roleable: ProjectRole.can_edit },
+        current_state: { id: 'DRAFT' },
+        project_type:  { name: %w[EOI Application] }
+      }
+    )
+
+    can %i[create destroy], ProjectAttachment, base_conditions.deep_merge(
+      project: {
+        grants:        { roleable: ProjectRole.can_edit },
+        current_state: { id: Workflow::State.not_submitted_for_sign_off.pluck(:id) },
+        project_type:  { name: 'Project' }
+      }
+    )
   end
 
   def project_data_source_item_grants(user)
