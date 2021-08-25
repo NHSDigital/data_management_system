@@ -15,6 +15,7 @@ module Workflow
       with_options only: :transition do
         after_action :allocate_project
         around_action :notify_temporally_assigned_user
+        after_action  :send_transition_email
       end
     end
 
@@ -62,6 +63,40 @@ module Workflow
         @state.assignable_users.where.not(id: current_user).find_by(id: id)
     end
 
+    def send_transition_email
+      return unless @project.current_state == @state
+
+      notifiable_users.find_each do |user|
+        kwargs = { project: @project, user: user, current_user: current_user }
+
+        # TODO: Is there a more elegant way of handling this? Like determining the correct locale
+        # from a project role?
+        if user == @project.assigned_user
+          kwargs[:comments] = extract_comment_from_params
+          kwargs[:locale]   = :'en-odr'
+        elsif user == @project.temporally_assigned_user
+          kwargs[:comments] = extract_comment_from_params
+        end
+
+        # NOTE: Returns NullMail if `state_changed` returns via guard clause, so no need for
+        # safe navigation operator...
+        ProjectsMailer.with(**kwargs).state_changed.deliver_later
+      end
+    end
+
+    # Who should receive emails about changes to a `project`s workflow position.
+    # In lieu of a subscription based model where users can manage their own desired status updates.
+    # NOTE: yuk.
+    def notifiable_users
+      # Does the user performing the transition need notifying?
+      scope = @project.users.where.not(id: current_user)
+
+      # Copied from original project rejected notification...
+      scope = scope.where.not(id: @project.users.odr_users) if @project.application?
+
+      scope
+    end
+
     def notify_temporally_assigned_user
       initial_project_state = @project.current_project_state
       yield
@@ -74,7 +109,7 @@ module Workflow
         project:     @project,
         assigned_to: temporally_assigned_user,
         assigned_by: current_user,
-        comments:    comment_params.dig(:comments_attributes, '0', :body)
+        comments:    extract_comment_from_params
       ).project_assignment.deliver_later
     end
 
@@ -92,6 +127,10 @@ module Workflow
         applicable_to(@project.project_type).
         find_by(next_state: @state)&.
         requires_yubikey?
+    end
+
+    def extract_comment_from_params
+      comment_params.dig(:comments_attributes, '0', :body)
     end
   end
 end

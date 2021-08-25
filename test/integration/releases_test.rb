@@ -32,6 +32,7 @@ class ReleasesTest < ActionDispatch::IntegrationTest
 
     click_link('New')
 
+    select  project.reference,                     from: 'Associated With'
     fill_in 'release[invoice_requested_date]',     with: '15/04/2020'
     fill_in 'release[invoice_sent_date]',          with: '15/04/2020'
     fill_in 'release[phe_invoice_number]',         with: 'PHE-1234'
@@ -46,12 +47,14 @@ class ReleasesTest < ActionDispatch::IntegrationTest
     fill_in 'release[individual_to_release]',      with: 'Yogi Bear'
     fill_in 'release[release_date]',               with: '15/04/2020'
 
-    assert_difference -> { project.releases.count } do
-      click_button('Create Release')
+    assert_difference -> { project.global_releases.count } do
+      assert_difference -> { project.releases.count } do
+        click_button('Create Release')
 
-      assert_equal project_path(project), current_path
-      assert has_text?('Release created successfully')
-      assert has_selector?('#releasesTable', visible: true)
+        assert_equal project_path(project), current_path
+        assert has_text?('Release created successfully')
+        assert has_selector?('#releasesTable', visible: true)
+      end
     end
   end
 
@@ -84,13 +87,15 @@ class ReleasesTest < ActionDispatch::IntegrationTest
     visit project_path(project)
     click_on('Releases')
 
-    assert_difference -> { project.releases.count }, -1 do
-      accept_prompt do
-        click_link(href: release_path(release), title: 'Delete')
-      end
+    assert_difference -> { project.global_releases.count }, -1 do
+      assert_difference -> { project.releases.count }, -1 do
+        accept_prompt do
+          click_link(href: release_path(release), title: 'Delete')
+        end
 
-      assert_equal project_path(project), current_path
-      assert has_selector?('#releasesTable', visible: true)
+        assert_equal project_path(project), current_path
+        assert has_selector?('#releasesTable', visible: true)
+      end
     end
 
     assert has_text?('Release destroyed successfully')

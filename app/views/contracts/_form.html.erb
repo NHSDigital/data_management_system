@@ -8,6 +8,8 @@
 <%= bootstrap_form_with model: contract, url: url, readonly: readonly, horizontal: true, html: { id: dom_id(contract) } do |form| %>
   <%= form.error_and_warning_alert_boxes %>
 
+  <%= render 'projects/shared/referent_form_fields', project: form.object.project, form: form %>
+
   <%= form.control_group(:contract_version, nil, {}, class: 'col-md-3') do %>
     <%= form.text_field(:contract_version) %>
   <% end %>

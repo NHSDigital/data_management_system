@@ -83,7 +83,7 @@ module Projects
 
     def each_acroform_attribute
       pdf_file.acroform_data.each do |attribute, value|
-        attribute = attribute.dup.to_s.underscore
+        attribute = attribute.dup.to_s.underscore.tr(' ', '_')
         attribute.prepend('article_') if attribute =~ /\A\d\w\z/
 
         value = value.dup.presence

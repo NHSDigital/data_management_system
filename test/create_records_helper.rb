@@ -190,6 +190,7 @@ module CreateRecordsHelper
     )
 
     attributes.reverse_merge!(
+      referent: project,
       ig_toolkit_version: '2019/20',
       ig_score: 100,
       ig_assessment_status: lookups_ig_assessment_statuses(:standards_met),
@@ -197,7 +198,7 @@ module CreateRecordsHelper
       upload: upload
     )
 
-    project.dpias.create!(attributes)
+    project.global_dpias.create!(attributes)
   end
 
   def create_contract(project, **attributes)
@@ -210,6 +211,7 @@ module CreateRecordsHelper
     )
 
     attributes.reverse_merge!(
+      referent:               project,
       contract_start_date:    Time.zone.today + 1.week,
       contract_end_date:      Time.zone.today + 1.year,
       contract_sent_date:     Time.zone.today - 2.weeks,
@@ -219,11 +221,12 @@ module CreateRecordsHelper
       upload:                 upload
     )
 
-    project.contracts.create!(attributes)
+    project.global_contracts.create!(attributes)
   end
 
   def create_release(project, **attributes)
     attributes.reverse_merge!(
+      referent:               project,
       invoice_requested_date: 1.week.ago,
       invoice_sent_date:      1.day.ago,
       phe_invoice_number:     'PHE-1234',
@@ -236,6 +239,6 @@ module CreateRecordsHelper
       cost_recovery_applied:  'N'
     )
 
-    project.releases.create!(attributes)
+    project.global_releases.create!(attributes)
   end
 end

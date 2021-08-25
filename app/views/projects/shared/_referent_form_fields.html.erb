@@ -1,0 +1,12 @@
+<%
+  referents = {
+    Project.model_name.human => [[project.reference, project.to_global_id]],
+    ProjectAmendment.model_name.human => project.project_amendments.order(:reference).map do |amendment|
+      [amendment.reference, amendment.to_global_id]
+    end
+  }
+%>
+
+<%= form.control_group(:referent_gid, form.object.class.human_attribute_name(:referent), {}, class: 'col-md-3') do %>
+  <%= form.select :referent_gid, grouped_options_for_select(referents, selected: form.object.referent_gid), include_blank: true, readonly_value: form.object.referent&.reference %>
+<% end %>

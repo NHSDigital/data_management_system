@@ -18,6 +18,10 @@ class ProjectTest < ActiveSupport::TestCase
     assert_includes project.related_projects, projects(:test_application)
   end
 
+  test 'should include HasManyReferers' do
+    assert_includes ProjectAmendment.included_modules, HasManyReferers
+  end
+
   test 'should remove project data items when data source changed' do
     project = build_and_validate_project
     dataset = Dataset.find_by(name: 'Births Gold Standard')
@@ -507,9 +511,9 @@ class ProjectTest < ActiveSupport::TestCase
     project.reload
 
     assert_difference 'Notification.count', 3 do
-      assert_emails 3 do
+      assert_emails 2 do
         project.odr_approval_needed_notification
-        project.odr_rejected_notification
+        project.odr_rejected_notification # Does not generate mail via Notification; now handled by a mailer
         project.odr_approved_notification
       end
     end
@@ -590,12 +594,12 @@ class ProjectTest < ActiveSupport::TestCase
 
   test 'returns an ODR application_log based of financialy year and id if application_log is nil' do
     %i[eoi application].each do |type|
-      assert_application_log('ODR_2021_', name: 'application log test 1',
-                                          project_type: project_types(type),
-                                          first_contact_date: Date.parse('2021/03/31'))
-      assert_application_log('ODR_2122_', name: 'application log test 2',
-                                          project_type: project_types(type),
-                                          first_contact_date: Date.parse('2021/04/01'))
+      assert_application_log('ODR2021_', name: 'application log test 1',
+                                         project_type: project_types(type),
+                                         first_contact_date: Date.parse('2021/03/31'))
+      assert_application_log('ODR2122_', name: 'application log test 2',
+                                         project_type: project_types(type),
+                                         first_contact_date: Date.parse('2021/04/01'))
     end
   end
 

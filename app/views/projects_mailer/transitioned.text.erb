@@ -1,0 +1,18 @@
+<%
+  interpolations = @interpolations.merge(scope: :projects_mailer)
+%>
+
+##### <%= t(:"#{@i18n_prefix}.heading", **interpolations.merge(default: :'transitioned.heading')) %> #####
+
+<%= t(:"#{@i18n_prefix}.body", **interpolations.merge(default: [:"#{@i18n_prefix}.body", :'transitioned.body'])) %>
+
+<% if @comments %>
+"<%= @comments %>"
+— <%= @current_user.full_name %>
+<% end %>
+
+### Project Details ###
+
+<%= render 'project_details', project: @project %>
+
+<%= render 'footer' %>

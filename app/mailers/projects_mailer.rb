@@ -1,5 +1,7 @@
 # Sends emails regarding Project related activity
 class ProjectsMailer < ApplicationMailer
+  include Workflow::Mail
+
   before_action :load_project
 
   def project_assignment

@@ -3,6 +3,7 @@ class Project < ApplicationRecord
   include Workflow::Model
   include Commentable
   include Searchable
+  include HasManyReferers
 
   has_many :project_attachments, as: :attachable, dependent: :destroy
   has_many :project_nodes, dependent: :destroy
@@ -21,10 +22,19 @@ class Project < ApplicationRecord
   has_many :grants, foreign_key: :project_id, dependent: :destroy
   has_many :users, -> { extending(GrantedBy).distinct }, through: :grants
   has_many :project_amendments, dependent: :destroy
-  has_many :dpias, class_name: 'DataPrivacyImpactAssessment', dependent: :destroy
-  has_many :contracts, dependent: :destroy
-  has_many :releases,  dependent: :destroy
   has_many :communications, dependent: :destroy
+
+  # The following associations are somewhat deprecated (and slightly confusing) now.
+  # These resources should have a polymorphic parent (either a project or an amendment;
+  # see `BelongsToReferent` and `HasManyReferers`).
+  # That said, these associations (and their inverse counterparts) are kind of useful as a means
+  # of accessing _all_ the relevant resources within the scope of a project, irrespective of the
+  # true parent resource.
+  with_options dependent: :destroy do
+    has_many :global_dpias,     class_name: 'DataPrivacyImpactAssessment'
+    has_many :global_contracts, class_name: 'Contract'
+    has_many :global_releases,  class_name: 'Release'
+  end
 
   has_many :project_lawful_bases, dependent: :destroy
   has_many :lawful_bases, through: :project_lawful_bases
@@ -209,6 +219,7 @@ class Project < ApplicationRecord
   attr_searchable :name,                  :text_filter
   attr_searchable :application_log,       :application_log_filter # Meh.
   attr_searchable :project_type_id,       :default_filter
+  attr_searchable :assigned_user_id,      :default_filter
   attr_searchable :owner,                 :association_filter, kwargs: true # FIXME: See Searchable
   attr_searchable :current_project_state, :association_filter
 
@@ -254,7 +265,7 @@ class Project < ApplicationRecord
       filter = arel_table[:application_log].matches("%#{string}%")
 
       return filter unless match ||= string.match(
-        %r(\A(?<head>ODR_(?<fy_start>\d{2})(?<fy_end>\d{2})_?)?(?<id>\d+)?(?<tail>/.*)?\z)i
+        %r(\A(?<head>ODR_?(?<fy_start>\d{2})(?<fy_end>\d{2})_?)?(?<id>\d+)?(?<tail>/.*)?\z)i
       )
 
       chain = []
@@ -470,7 +481,7 @@ class Project < ApplicationRecord
   def odr_rejected_notification
     return unless template ||= CONTENT_TEMPLATES.dig('email_project_odr_approval_decision', 'body')
 
-    Notification.create! do |notification|
+    Notification.create!(generate_mail: false) do |notification|
       notification.title      = "#{name} - Rejected"
       notification.body       = format(template, project: name, status: current_state.id)
       notification.project_id = id
@@ -576,8 +587,9 @@ class Project < ApplicationRecord
       date.strftime('%y')
     end
 
-    "ODR_#{fy_start}#{fy_end}_#{id}"
+    "ODR#{fy_start}#{fy_end}_#{id}"
   end
+  alias reference application_log
 
   def next_amendment_reference
     return unless odr?

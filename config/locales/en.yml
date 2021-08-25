@@ -377,12 +377,14 @@ en:
         access_level: Please select level of access using the table below as a guide (select one only)
         extra_datasets: Datasets requiring special permission Please select those that you require access to and provide extra details as to why you need them below. When requesting these datasets (except the ONS datasets) please reference an agreed project proposal.
         extra_datasets_rationale: Please state rationale for the selected datasets
-      project:
+      project: &project_attributes
         name: Project Title
         assigned_user: Application Manager
         owner: Applicant
         application_log: ODR Ref
       data_privacy_impact_assessment:
+        referent: Associated With
+        referent_reference: Associated Reference
         ig_toolkit_version: Year of IG assessment status
         ig_score: IG score
         ig_assessment_status_id: IG assessment status
@@ -390,6 +392,8 @@ en:
         dpia_decision_date: DPIA decision date
         upload: DPIA document
       contract:
+        referent: Associated With
+        referent_reference: Associated Reference
         contract_sent_date: Date contract sent to applicant
         contract_returned_date: Date contract returned by applicant
         contract_start_date: Contract start date
@@ -399,6 +403,8 @@ en:
         advisory_letter_date: Advisory letter sent
         destruction_form_received_date: Destruction form received
       release:
+        referent: Associated With
+        referent_reference: Associated Reference
         phe_invoice_number: PHE Invoice number
         po_number: PO number
         ndg_opt_out_processed_date: National processing data opt outs completed
@@ -420,6 +426,8 @@ en:
         parent: Responding To
   activemodel:
     attributes:
+      pdf_application_facade:
+        <<: *project_attributes
       report/open_project_report:
         title: ODR - All Open Projects
         description: Provides row level detail of all open projects assigned to the ODR team.
@@ -442,3 +450,37 @@ en:
         body: A DPIA for this project has been rejected by %{assigner}.
       dpia_moderation:
         body: A project has been sent to you for senior application manager moderation by %{assigner}.
+    transitioned:
+      subject: "%{type} Status Update"
+      heading: "%{type} Status Update"
+      body_html: >
+        <p>The status for the project entitled <q><cite>%{title}</cite></q> has changed to <b><q>%{state}</q></b>.</p>
+      body: The status for the project entitled "%{title}" has changed to "%{state}".
+    transitioned_to_rejected: &transitioned_to_rejected
+      body_html: >
+        <p><q><cite>%{title}</cite></q> has been reviewed by ODR and set to a status of <q>%{state}</q></p>
+      body: >
+        "%{title}" has been reviewed by ODR and set to a status of "%{state}"
+    application_transitioned_to_rejected:
+      <<: *transitioned_to_rejected
+
+en-odr:
+  projects_mailer:
+    application_transitioned_to_rejected:
+      body_html: >
+        <p>A project you are managing has been closed by %{current_user}.</p>
+        <p><b>Closure reason:</b> %{closure_reason}</p>
+      body: |
+        A project you are managing has been closed by %{current_user}.
+
+        Closure reason: %{closure_reason}
+    application_transitioned_to_contract_completed:
+      body_html: >
+        <p>A project you are managing has had the contract approved by %{current_user}.</p>
+      body: |
+        A project you are managing has had the contract approved by %{current_user}.
+    application_transitioned_to_contract_rejected:
+      body_html: >
+        <p>A project you are managing has had the contract rejected by %{current_user}.</p>
+      body: |
+        A project you are managing has had the contract rejected by %{current_user}.

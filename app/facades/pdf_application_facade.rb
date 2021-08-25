@@ -100,6 +100,7 @@ class PdfApplicationFacade
   alias_attribute :rec_reference,               :ethics_approval_nrec_ref
   alias_attribute :rec_name,                    :ethics_approval_nrec_name
   alias_attribute :informed_consent_attach,     :informed_patient_consent
+  alias_attribute :project_duration,            :duration
 
   class << self
     def perform_metaprogamming

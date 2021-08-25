@@ -632,7 +632,10 @@ CREATE TABLE public.contracts (
     contract_executed_date timestamp without time zone,
     advisory_letter_date timestamp without time zone,
     destruction_form_received_date timestamp without time zone,
-    reference character varying
+    reference character varying,
+    referent_type character varying NOT NULL,
+    referent_id bigint NOT NULL,
+    referent_reference character varying
 );
 
 
@@ -830,7 +833,10 @@ CREATE TABLE public.data_privacy_impact_assessments (
     dpia_decision_date timestamp without time zone,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL,
-    reference character varying
+    reference character varying,
+    referent_type character varying NOT NULL,
+    referent_id bigint NOT NULL,
+    referent_reference character varying
 );
 
 
@@ -3653,7 +3659,10 @@ CREATE TABLE public.releases (
     release_date timestamp without time zone,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL,
-    reference character varying
+    reference character varying,
+    referent_type character varying NOT NULL,
+    referent_id bigint NOT NULL,
+    referent_reference character varying
 );
 
 
@@ -6321,6 +6330,13 @@ CREATE INDEX index_contracts_on_project_state_id ON public.contracts USING btree
 
 
 --
+-- Name: index_contracts_on_referent_type_and_referent_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_contracts_on_referent_type_and_referent_id ON public.contracts USING btree (referent_type, referent_id);
+
+
+--
 -- Name: index_cost_recoveries_on_project_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -6381,6 +6397,13 @@ CREATE INDEX index_death_data_on_ppatient_id ON public.death_data USING btree (p
 --
 
 CREATE INDEX index_dpias_on_ig_assessment_status_id ON public.data_privacy_impact_assessments USING btree (ig_assessment_status_id);
+
+
+--
+-- Name: index_dpias_on_referent_type_and_referent_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_dpias_on_referent_type_and_referent_id ON public.data_privacy_impact_assessments USING btree (referent_type, referent_id);
 
 
 --
@@ -6857,6 +6880,13 @@ CREATE INDEX index_releases_on_project_id ON public.releases USING btree (projec
 --
 
 CREATE INDEX index_releases_on_project_state_id ON public.releases USING btree (project_state_id);
+
+
+--
+-- Name: index_releases_on_referent_type_and_referent_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_releases_on_referent_type_and_referent_id ON public.releases USING btree (referent_type, referent_id);
 
 
 --
@@ -8382,8 +8412,24 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20210615104916'),
 ('20210617140742'),
 ('20210628103955'),
+('20210727121915'),
+('20210727121924'),
+('20210727121941'),
+('20210728114812'),
+('20210728114817'),
+('20210728114821'),
+('20210728115617'),
+('20210728115621'),
+('20210728115625'),
+('20210728140133'),
+('20210728140140'),
+('20210728140147'),
+('20210728140306'),
+('20210728140310'),
+('20210728140313'),
 ('20210730080619'),
 ('20210730103014'),
-('20210730115722');
+('20210730115722'),
+('20210811081605');
 
 

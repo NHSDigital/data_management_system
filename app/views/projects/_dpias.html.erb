@@ -8,6 +8,7 @@
   <table class="table table-condensed">
     <thead>
       <tr>
+        <th><%= DataPrivacyImpactAssessment.human_attribute_name(:referent) %></th>
         <th><%= DataPrivacyImpactAssessment.human_attribute_name(:reference) %></th>
         <th><%= DataPrivacyImpactAssessment.human_attribute_name(:ig_toolkit_version) %></th>
         <th><%= DataPrivacyImpactAssessment.human_attribute_name(:ig_assessment_status_id) %></th>
@@ -24,8 +25,9 @@
       </tr>
     </thead>
     <tbody>
-      <% project.dpias.accessible_by(current_ability).find_each do |dpia| %>
+      <% project.global_dpias.accessible_by(current_ability).find_each do |dpia| %>
         <%= content_tag(:tr, id: dom_id(dpia)) do %>
+          <td><%= dpia.referent_reference %></td>
           <td><%= dpia.reference %></td>
           <td><%= dpia.ig_toolkit_version %></td>
           <td><%= dpia.ig_assessment_status_value %></td>

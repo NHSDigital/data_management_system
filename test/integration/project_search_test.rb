@@ -107,6 +107,23 @@ class ProjectSearchTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test 'can search by application manager' do
+    expand_search_form
+
+    within('#project_search_form') do
+      click_link(href: '#project_assigned_user_filters')
+
+      select 'Application Manager One', from: 'search[assigned_user_id]'
+      click_button 'Search'
+    end
+
+    within('#projects-table') do
+      assert has_selector?('tbody tr', count: 2)
+      assert has_selector?('tbody tr', text: 'search.ref.2')
+      assert has_selector?('tbody tr', text: 'search.ref.3')
+    end
+  end
+
   test 'filters are applied cumulatively' do
     expand_search_form
 
@@ -227,7 +244,8 @@ class ProjectSearchTest < ActionDispatch::IntegrationTest
       name: 'YARP',
       project_purpose: 'For testing of search behaviour',
       application_log: 'search.ref.1',
-      owner: users(:dummy_project_owner)
+      owner: users(:dummy_project_owner),
+      assigned_user: users(:application_manager_two)
     )
 
     create_project(
@@ -235,7 +253,8 @@ class ProjectSearchTest < ActionDispatch::IntegrationTest
       name: 'YARP',
       project_purpose: 'For testing of search behaviour',
       application_log: 'search.ref.2',
-      owner: users(:dummy_project_owner)
+      owner: users(:dummy_project_owner),
+      assigned_user: users(:application_manager_one)
     )
 
     create_project(
@@ -243,7 +262,8 @@ class ProjectSearchTest < ActionDispatch::IntegrationTest
       name: 'YARP',
       project_purpose: 'For testing of search behaviour',
       application_log: 'search.ref.3',
-      owner: users(:dummy_project_owner)
+      owner: users(:dummy_project_owner),
+      assigned_user: users(:application_manager_one)
     )
 
     create_project(

@@ -8,6 +8,7 @@
   <table class="table table-condensed" id="contractsTable">
     <thead>
       <tr>
+        <th><%= Contract.human_attribute_name(:referent) %></th>
         <th><%= Contract.human_attribute_name(:reference) %></th>
         <th><%= Contract.human_attribute_name(:contract_version) %></th>
         <th><%= Contract.human_attribute_name(:contract_start_date) %></th>
@@ -22,8 +23,9 @@
       </tr>
     </thead>
     <tbody>
-      <% project.contracts.accessible_by(current_ability).find_each do |contract| %>
+      <% project.global_contracts.accessible_by(current_ability).find_each do |contract| %>
         <%= content_tag(:tr, id: dom_id(contract)) do %>
+          <td><%= contract.referent_reference %></td>
           <td><%= contract.reference %></td>
           <td><%= contract.contract_version %></td>
           <td><%= contract.contract_start_date&.to_s(:ui) %></td>

@@ -1,7 +1,6 @@
 # Created by `bin/rails lookup:create_fixture[ClosureReason]` at 2019-08-09 12:13:20 UTC
 ---
-1:
-  id: 1
+unresponsive:
   value: Unresponsive
   created_at: !ruby/object:ActiveSupport::TimeWithZone
     utc: &1 2019-08-06 12:56:41.533118000 Z
@@ -122,4 +121,3 @@
     utc: &23 2019-08-06 12:56:41.547593000 Z
     zone: *2
     time: *23
-

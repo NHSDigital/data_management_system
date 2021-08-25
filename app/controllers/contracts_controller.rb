@@ -1,7 +1,7 @@
 # RESTfully manages `Contract`s
 class ContractsController < ApplicationController
   load_and_authorize_resource :project
-  load_and_authorize_resource through: :project, shallow: true
+  load_and_authorize_resource through: :project, shallow: true, through_association: :global_contracts
 
   # We'll handle this one manually...
   skip_authorize_resource only: %i[download]
@@ -55,6 +55,7 @@ class ContractsController < ApplicationController
   def resource_params
     params.require(:contract).permit(
       %i[
+        referent_gid
         contract_version
         contract_sent_date
         contract_received_date
