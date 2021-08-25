@@ -50,12 +50,6 @@
           <%= form.text_field :name, class: 'mandatory' %>
         <% end %>
 
-        <% unless form.readonly? %>
-          <%= form.control_group(:clone_of) do %>
-            <%= form.collection_select(:clone_of, @team.projects.of_type_eoi, :id, :name, { include_blank: true }, class: 'form-control') %>
-          <% end %>
-        <% end %>
-
         <%= form.control_group(:description, t('description', scope: i18n_scope)) do %>
           <%= form.text_area :description, rows: 5 %>
         <% end %>
