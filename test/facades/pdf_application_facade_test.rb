@@ -210,6 +210,11 @@ class PDFApplicationFacadeTest < ActiveSupport::TestCase
         @facade.save
         assert_includes project.classifications, classification
       end
+
+      assert_nothing_raised do
+        @facade.level_of_identifiability = :Fail
+        @facade.save
+      end
     end
   end
 

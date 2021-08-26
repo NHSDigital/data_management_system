@@ -208,7 +208,7 @@ class PdfApplicationFacade
   end
 
   def level_of_identifiability=(value)
-    classifications.replace([fetch_classification(value)])
+    classifications.replace(Array.wrap(fetch_classification(value)))
     project.level_of_identifiability = fetch_level_of_identifiability(value)
   end
 
