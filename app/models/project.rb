@@ -229,7 +229,7 @@ class Project < ApplicationRecord
       filter = arel_table[:application_log].matches("%#{string}%")
 
       return filter unless match ||= string.match(
-        %r(\A(?<head>ODR_(?<fy_start>\d{2})(?<fy_end>\d{2})_?)?(?<id>\d+)?(?<tail>/.*)?\z)i
+        %r(\A(?<head>ODR_?(?<fy_start>\d{2})(?<fy_end>\d{2})_?)?(?<id>\d+)?(?<tail>/.*)?\z)i
       )
 
       chain = []
@@ -542,7 +542,7 @@ class Project < ApplicationRecord
       date.strftime('%y')
     end
 
-    "ODR_#{fy_start}#{fy_end}_#{id}"
+    "ODR#{fy_start}#{fy_end}_#{id}"
   end
   alias reference application_log
 
