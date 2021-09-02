@@ -144,13 +144,7 @@ module Import
             mut_gene = BRCA_REGEX.match(mutated_gene)[:brca]
             mut_cdna = CDNA_REGEX.match(dna_variant.flatten.compact.uniq[0])[:cdna]
             mut_protein = PROT_REGEX.match(protein_variant.flatten.compact.uniq[0])[:impact]
-            genotype.add_gene(mut_gene)
-            genotype.add_gene_location(mut_cdna)
-            genotype.add_protein_impact(mut_protein)
-            if varpathclass_present?(record)
-              genotype.add_variant_class(record.raw_fields['acmg_classification'].to_i)
-            end
-            extract_reference_transcript(record, genotype) if reference_transcript_present?(record)
+            add_variants_to_genotype(genotype, record, mut_gene, mut_cdna, mut_protein)
             genotypes.append(genotype)
           end
 
@@ -192,6 +186,16 @@ module Import
               genotype.add_referencetranscriptid(TRANSCRIPT_REGEX.match(transcript2)[:transcript])
             end
             genotype
+          end
+
+          def add_variants_to_genotype(genotype, record, mut_gene, mut_cdna, mut_protein)
+            genotype.add_gene(mut_gene)
+            genotype.add_gene_location(mut_cdna)
+            genotype.add_protein_impact(mut_protein)
+            if varpathclass_present?(record)
+              genotype.add_variant_class(record.raw_fields['acmg_classification'].to_i)
+            end
+            extract_reference_transcript(record, genotype) if reference_transcript_present?(record)
           end
         end
       end
