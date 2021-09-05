@@ -42,8 +42,8 @@ class OxfordHandlerTest < ActiveSupport::TestCase
     assert_equal 8, @genotype.attribute_map['gene']
     synonym_record = build_raw_record('pseudo_id1' => 'bob')
     synonym_record.mapped_fields['gene'] = 'Cabbage'
-    @logger.expects(:debug).with('SUCCESSFUL gene parse from A_BRCA2-17______')
     @logger.expects(:debug).with('SUCCESSFUL gene parse for BRCA2')
+    @logger.expects(:debug).with('SUCCESSFUL gene parse for:BRCA2')
     @handler.process_gene(@genotype, synonym_record)
     assert_equal 8, @genotype.attribute_map['gene']
     broken_record = build_raw_record('pseudo_id1' => 'bob')
