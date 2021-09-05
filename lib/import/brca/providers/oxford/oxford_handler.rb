@@ -119,9 +119,10 @@ module Import
               genotype.add_status(2)
               @logger.debug "SUCCESSFUL cdna change parse for: #{$LAST_MATCH_INFO[:cdna]}"
             elsif EXON_REGEX.match(record.mapped_fields['codingdnasequencechange'])
-              genotype.add_variant_type($LAST_MATCH_INFO[:variant])
-              genotype.add_exon_location($LAST_MATCH_INFO[:location])
-              genotype.add_status(2)
+              # genotype.add_variant_type($LAST_MATCH_INFO[:variant])
+              # genotype.add_exon_location($LAST_MATCH_INFO[:location])
+              # genotype.add_status(2)
+              add_exonic_variant(record, genotype)
             elsif normal?(record)
               genotype.add_status(1)
             elsif RECORD_EXEMPTIONS.include? record.mapped_fields['codingdnasequencechange']
@@ -147,13 +148,9 @@ module Import
             synonym   = record.raw_fields['sinonym'].to_s
             if [7, 8, 79, 865, 3186, 2744, 2804, 3394, 62, 76,
                 590, 3615, 3616, 20, 18].include? gene
-              genotype.add_gene(gene)
-              @logger.debug "SUCCESSFUL gene parse for:#{record.mapped_fields['gene'].to_i}"
-              genotypes << genotype
+              add_oxford_gene(gene, genotype, genotypes)
             elsif BRCA_REGEX.match(synonym)
-              @logger.debug "SUCCESSFUL gene parse from #{synonym}"
-              genotype.add_gene($LAST_MATCH_INFO[:brca])
-              genotypes << genotype
+              add_oxford_gene(BRCA_REGEX.match(synonym)[:brca], genotype, genotypes)
             else
               @logger.debug 'FAILED gene parse'
             end
@@ -213,6 +210,15 @@ module Import
             geneticscope.nil?
           end
 
+          def add_exonic_variant(record, genotype)
+            return if record.raw_fields['scope / limitations of test'].nil?
+
+            exon_info = record.mapped_fields['codingdnasequencechange']
+            genotype.add_variant_type(EXON_REGEX.match(exon_info)[:variant])
+            genotype.add_exon_location(EXON_REGEX.match(exon_info)[:location])
+            genotype.add_status(2)
+          end
+
           def targeted_scope_from_nullscope(genotype, record)
             return if record.raw_fields['scope / limitations of test'].nil?
 
@@ -228,32 +234,23 @@ module Import
             return if record.mapped_fields['codingdnasequencechange'].nil?
 
             exemptions = record.mapped_fields['codingdnasequencechange']
-            case exemptions
-            when 'c.[-835C>T]+[=]'
-              genotype.add_gene_location('c.-835C>T')
+            if exemptions.scan(/c\./).size.positive?
+              genotype.add_gene_location(exemptions.gsub(/[\[\]+=]+/, ''))
               genotype.add_status(2)
-            when 'c.[-904_-883dup ]+[=]'
-              genotype.add_gene_location('c.-904_-883dup')
-              genotype.add_status(2)
-            when 'Deletion partial exon 11 and exons 12-15'
-              genotype.add_variant_type('Deletion')
-              genotype.add_exon_location('12-15')
-              genotype.add_status(2)
-            when 'deletion BRCA1 exons 21-24'
-              genotype.add_variant_type('Deletion')
-              genotype.add_exon_location('21-24')
-              genotype.add_status(2)
-            when 'deletion BRCA1 exons 1-17'
-              genotype.add_variant_type('Deletion')
-              genotype.add_exon_location('1-17')
-              genotype.add_status(2)
-            when 'Deletion of whole PTEN gene', 'whole gene deletion'
-              genotype.add_variant_type('Deletion')
-              genotype.add_status(2)
-            when 'whole gene duplication'
-              genotype.add_variant_type('Duplication')
+            elsif exemptions.scan(/(?<delinsdup>del|ins|dup)/i).size.positive?
+              genotype.add_variant_type($LAST_MATCH_INFO[:delinsdup])
+              if exemptions.scan(/(?<exno>[0-9]+-[0-9]+)/i).size.positive?
+                genotype.add_exon_location($LAST_MATCH_INFO[:exno])
+              end
               genotype.add_status(2)
             end
+            genotype
+          end
+
+          def add_oxford_gene(genevalue, genotype, genotypes)
+            genotype.add_gene(genevalue)
+            @logger.debug "SUCCESSFUL gene parse for:#{genevalue}"
+            genotypes << genotype
           end
 
           def extract_variantpathclass(genotype, record)
