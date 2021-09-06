@@ -2966,6 +2966,38 @@ ALTER SEQUENCE public.project_data_source_items_id_seq OWNED BY public.project_d
 
 
 --
+-- Name: project_dataset_level_statuses; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.project_dataset_level_statuses (
+    id bigint NOT NULL,
+    value character varying,
+    description character varying,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: project_dataset_level_statuses_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.project_dataset_level_statuses_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: project_dataset_level_statuses_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.project_dataset_level_statuses_id_seq OWNED BY public.project_dataset_level_statuses.id;
+
+
+--
 -- Name: project_dataset_levels; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -2976,10 +3008,9 @@ CREATE TABLE public.project_dataset_levels (
     project_dataset_id bigint,
     access_level_id integer,
     expiry_date date,
-    approved boolean,
     selected boolean,
     decided_at timestamp without time zone,
-    current boolean DEFAULT true
+    status_id integer
 );
 
 
@@ -4980,6 +5011,13 @@ ALTER TABLE ONLY public.project_data_source_items ALTER COLUMN id SET DEFAULT ne
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY public.project_dataset_level_statuses ALTER COLUMN id SET DEFAULT nextval('public.project_dataset_level_statuses_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.project_dataset_levels ALTER COLUMN id SET DEFAULT nextval('public.project_dataset_levels_id_seq'::regclass);
 
 
@@ -5818,6 +5856,14 @@ ALTER TABLE ONLY public.project_data_passwords
 
 ALTER TABLE ONLY public.project_data_source_items
     ADD CONSTRAINT project_data_source_items_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: project_dataset_level_statuses_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.project_dataset_level_statuses
+    ADD CONSTRAINT project_dataset_level_statuses_pkey PRIMARY KEY (id);
 
 
 --
@@ -8325,5 +8371,11 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20210728140313'),
 ('20210810112702'),
 ('20210811081605'),
-('20210812154107');
+('20210812154107'),
+('20210820155754'),
+('20210820155824'),
+('20210820162108'),
+('20210824150840'),
+('20210827111539');
+
 

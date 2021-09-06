@@ -15,14 +15,15 @@ class AbilityCasApplicationTest < ActiveSupport::TestCase
 
     not_owner_project.project_datasets << project_dataset1
     owner_project.project_datasets << project_dataset2
-    project_dataset1_pdl = ProjectDatasetLevel.new(access_level_id: 1,
-                                                   expiry_date: Time.zone.today + 1.week,
-                                                   approved: false)
-    project_dataset1.project_dataset_levels << project_dataset1_pdl
-    project_dataset2_pdl = ProjectDatasetLevel.new(access_level_id: 1,
-                                                   expiry_date: Time.zone.today + 1.week,
-                                                   approved: false)
-    project_dataset2.project_dataset_levels << project_dataset2_pdl
+    project_dataset1_pdl = ProjectDatasetLevel.create(access_level_id: 1,
+                                                      expiry_date: Time.zone.today + 1.week,
+                                                      project_dataset_id: project_dataset1.id)
+    project_dataset2_pdl = ProjectDatasetLevel.create(access_level_id: 1,
+                                                      expiry_date: Time.zone.today + 1.week,
+                                                      project_dataset_id: project_dataset2.id)
+
+    project_dataset1_pdl.update(status_id: 3)
+    project_dataset2_pdl.update(status_id: 3)
 
     applicant_ablity = Ability.new(applicant)
 
@@ -90,7 +91,7 @@ class AbilityCasApplicationTest < ActiveSupport::TestCase
     assert applicant_ablity.can? :approve, pdl
     assert applicant_ablity.can? :reject, pdl
 
-    pdl.update(approved: true)
+    pdl.update(status_id: 2)
     matched_dataset_project.transition_to(Workflow::State.find('ACCESS_APPROVER_APPROVED'))
     applicant_ablity = Ability.new(applicant)
 

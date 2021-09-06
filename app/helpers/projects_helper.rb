@@ -149,6 +149,23 @@ module ProjectsHelper
     end
   end
 
+  def cas_approval_button_message(status)
+    case status
+    when 'request' then 'PENDING'
+    when 'rejected' then 'DECLINED'
+    when 'closed' then 'CLOSED'
+    else 'APPROVED'
+    end
+  end
+
+  def cas_approval_button_style(status)
+    case status
+    when 'request' then 'warning'
+    when 'rejected', 'closed' then 'danger'
+    else 'success'
+    end
+  end
+
   def complete_approval_button_style(status)
     case status
     when 'Approved'
@@ -324,17 +341,20 @@ module ProjectsHelper
   def display_level_date(project_dataset_level)
     return unless project_dataset_level.expiry_date
 
-    if project_dataset_level.approved
+    if project_dataset_level.approved? || project_dataset_level.renewable?
       project_dataset_level.expiry_date.strftime('%d/%m/%Y (expiry)')
+    elsif project_dataset_level.closed?
+      project_dataset_level.expiry_date.strftime('%d/%m/%Y (closed)')
     else
       project_dataset_level.expiry_date.strftime('%d/%m/%Y (requested)')
     end
   end
 
   def display_request_type(level)
-    if level.previous_levels.any? && level.previous_levels.last.approved?
+    matching_levels = ProjectDatasetLevel.same_access_level_levels(level)
+    if matching_levels.any? && matching_levels.max_by(&:created_at).approved?
       'Renewal'
-    elsif level.previous_levels.any? && !level.previous_levels.last.approved?
+    elsif matching_levels.any? && matching_levels.max_by(&:created_at).rejected?
       'Reapplication'
     else
       'New'
@@ -345,7 +365,7 @@ module ProjectsHelper
     (Dataset.where.not(cas_type: nil).pluck(:id) -
      project.project_datasets.pluck(:dataset_id)).each do |id|
        # added to stop duplication in error screen
-       if project.project_datasets.select { |pd| pd.dataset_id == id }.none?
+       if project.project_datasets.where(dataset_id: id).none?
          project.project_datasets.build(dataset_id: id)
        end
      end
@@ -353,7 +373,7 @@ module ProjectsHelper
       levels = Lookups::AccessLevel.pluck(:id) - pd.project_dataset_levels.pluck(:access_level_id)
       levels.each do |level|
         # added to stop duplication in error screen
-        if pd.project_dataset_levels.select { |pdl| pdl.access_level_id == level }.none?
+        if pd.project_dataset_levels.where(access_level_id: level).none?
           pd.project_dataset_levels.build(access_level_id: level)
         end
       end
@@ -385,7 +405,7 @@ module ProjectsHelper
 
   def approval_highlight_class(level)
     if ProjectDataset.dataset_approval(current_user).include?(level.project_dataset) &&
-       level.approved.nil?
+       level.request?
       'dataset_highlight'
     end
   end

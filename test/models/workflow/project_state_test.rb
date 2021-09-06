@@ -271,9 +271,8 @@ module Workflow
       one_dataset_project = create_cas_project(owner: users(:no_roles))
       project_dataset = ProjectDataset.new(dataset: dataset(83), terms_accepted: true)
       one_dataset_project.project_datasets << project_dataset
-      pdl = ProjectDatasetLevel.new(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
-                                    approved: nil)
-      project_dataset.project_dataset_levels << pdl
+      ProjectDatasetLevel.create(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
+                                 project_dataset_id: project_dataset.id)
 
       notifications = Notification.where(title: 'CAS Application Requires Dataset Approval')
 
@@ -293,14 +292,12 @@ module Workflow
       two_dataset_project = create_cas_project(owner: users(:no_roles))
       project_dataset = ProjectDataset.new(dataset: dataset(83), terms_accepted: true)
       two_dataset_project.project_datasets << project_dataset
-      pdl = ProjectDatasetLevel.new(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
-                                    approved: nil)
-      project_dataset.project_dataset_levels << pdl
+      ProjectDatasetLevel.create(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
+                                 project_dataset_id: project_dataset.id)
       project_dataset = ProjectDataset.new(dataset: dataset(84), terms_accepted: true)
       two_dataset_project.project_datasets << project_dataset
-      pdl = ProjectDatasetLevel.new(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
-                                    approved: nil)
-      project_dataset.project_dataset_levels << pdl
+      ProjectDatasetLevel.create(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
+                                 project_dataset_id: project_dataset.id)
 
       # should only send to dataset approvers with grant for either of these 2 datasets
       assert_difference 'notifications.count', 3 do

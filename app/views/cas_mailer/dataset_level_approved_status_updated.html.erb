@@ -3,7 +3,7 @@
 
 <p>
   CAS application <%= @project.id %> - Dataset <%= @load_project_dataset_level.project_dataset.dataset_name %>
-  has been updated to Approval status of '<%= @load_project_dataset_level.approved %>' for level
+  has been updated to Approval status of '<%= @load_project_dataset_level.status_id.capitalize %>' for level
   <%= @load_project_dataset_level.access_level_id %> access.
 </p>
 

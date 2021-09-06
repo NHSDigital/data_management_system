@@ -32,18 +32,17 @@ class ProjectDatasetTest < ActiveSupport::TestCase
     project = create_cas_project(owner: users(:standard_user2))
     project_dataset = ProjectDataset.new(dataset: Dataset.find_by(name: 'Extra CAS Dataset One'))
     project.project_datasets << project_dataset
-    pdl = ProjectDatasetLevel.new(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
-                                  approved: nil)
-    project_dataset.project_dataset_levels << pdl
+    pdl = ProjectDatasetLevel.create(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
+                                     project_dataset_id: project_dataset.id)
 
     assert_equal 1, ProjectDataset.dataset_approval(users(:cas_dataset_approver)).count
 
-    pdl.approved = true
+    pdl.status_id = 2
     pdl.save!
 
     assert_equal 1, ProjectDataset.dataset_approval(users(:cas_dataset_approver)).count
 
-    pdl.approved = true
+    pdl.status_id = 2
     pdl.save!
 
     assert_equal 1, ProjectDataset.dataset_approval(users(:cas_dataset_approver)).count
@@ -53,16 +52,15 @@ class ProjectDatasetTest < ActiveSupport::TestCase
     project = create_cas_project(owner: users(:standard_user2))
     project_dataset = ProjectDataset.new(dataset: Dataset.find_by(name: 'Extra CAS Dataset One'))
     project.project_datasets << project_dataset
-    pdl = ProjectDatasetLevel.new(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
-                                  approved: nil)
-    project_dataset.project_dataset_levels << pdl
+    pdl = ProjectDatasetLevel.create(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
+                                     project_dataset_id: project_dataset.id)
 
-    assert_equal 1, ProjectDataset.dataset_approval(users(:cas_dataset_approver), [nil]).count
+    assert_equal 1, ProjectDataset.dataset_approval(users(:cas_dataset_approver), [1]).count
 
-    pdl.approved = true
+    pdl.status_id = 2
     pdl.save!
 
-    assert_equal 0, ProjectDataset.dataset_approval(users(:cas_dataset_approver), [nil]).count
+    assert_equal 0, ProjectDataset.dataset_approval(users(:cas_dataset_approver), [1]).count
   end
 
   test 'destroy_project_dataset_levels_without_selected before_save callback' do

@@ -10,9 +10,10 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
     dataset = Dataset.find_by(name: 'Extra CAS Dataset One')
     pd = ProjectDataset.create(dataset: dataset, terms_accepted: true)
     project.project_datasets << pd
-    pdl = ProjectDatasetLevel.new(access_level_id: 1, expiry_date: Time.zone.today + 1.week)
-    pd.project_dataset_levels << pdl
-    pd.project_dataset_levels << ProjectDatasetLevel.new(access_level_id: 2, expiry_date: Time.zone.today + 2.weeks)
+    pdl = ProjectDatasetLevel.create(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
+                                     project_dataset_id: pd.id)
+    ProjectDatasetLevel.create(access_level_id: 2, expiry_date: Time.zone.today + 2.weeks,
+                               project_dataset_id: pd.id)
 
     project.transition_to!(workflow_states(:submitted))
     visit cas_approvals_projects_path
@@ -22,46 +23,54 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
       click_link(href: "/projects/#{project.id}#!datasets", title: 'Details')
     end
 
-    assert has_content?('Extra CAS Dataset One')
+    within '#requested_project_dataset_levels_table' do
+      assert has_content?('Extra CAS Dataset One', count: 2)
+    end
 
-    assert_nil pdl.approved
+    assert_equal 'request', pdl.status_id
 
-    assert_changes -> { pdl.reload.approved }, from: nil, to: true do
+    assert_changes -> { pdl.reload.status_id }, from: 'request', to: 'approved' do
       find("#approval_project_dataset_level_#{pdl.id}").click
       within_modal(selector: '#yubikey-challenge') do
         fill_in 'ndr_authenticate[otp]', with: 'defo a yubikey'
         click_button 'Submit'
       end
-      within "#project_dataset_level_#{pdl.id}" do
-        within '#decision_date' do
-          assert has_content?(Time.zone.now.strftime('%d/%m/%Y'))
+      within '#approved_project_dataset_levels_table' do
+        within "#project_dataset_level_#{pdl.id}" do
+          within '#decision_date' do
+            assert has_content?(Time.zone.now.strftime('%d/%m/%Y'))
+          end
+          assert has_content?('APPROVED')
         end
-        within '#request_type' do
-          assert has_content?('New')
-        end
-        assert has_content?('APPROVED')
       end
+    end
+
+    within '#requested_project_dataset_levels_table' do
+      assert has_content?('Extra CAS Dataset One', count: 1)
     end
 
     assert_equal find('#project_status').text, 'Pending'
 
-    pdl.update(approved: nil, decided_at: nil)
+    pdl.update(status_id: 1, decided_at: nil)
 
     visit project_path(project)
     click_link(href: '#datasets')
 
-    assert_changes -> { pdl.reload.approved }, from: nil, to: false do
+    within '#requested_project_dataset_levels_table' do
+      assert has_content?('Extra CAS Dataset One', count: 2)
+    end
+
+    assert_changes -> { pdl.reload.status_id }, from: 'request', to: 'rejected' do
       within "#approvals_project_dataset_level_#{pdl.id}" do
         find('.btn-danger').click
       end
-      within "#project_dataset_level_#{pdl.id}" do
-        within '#decision_date' do
-          assert has_content?(Time.zone.now.strftime('%d/%m/%Y'))
+      within '#rejected_project_dataset_levels_table' do
+        within "#project_dataset_level_#{pdl.id}" do
+          within '#decision_date' do
+            assert has_content?(Time.zone.now.strftime('%d/%m/%Y'))
+          end
+          assert has_content?('DECLINED')
         end
-        within '#request_type' do
-          assert has_content?('New')
-        end
-        assert has_content?('DECLINED')
       end
     end
 
@@ -75,26 +84,25 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
     project = create_cas_project(owner: users(:no_roles))
     project_dataset = ProjectDataset.new(dataset: dataset(86), terms_accepted: true)
     project.project_datasets << project_dataset
-    l1_pdl = ProjectDatasetLevel.new(access_level_id: 1, expiry_date: Time.zone.today + 2.months,
-                                     selected: true)
-    l2_pdl = ProjectDatasetLevel.new(access_level_id: 2, expiry_date: Time.zone.today + 2.months,
-                                     selected: true)
-    project_dataset.project_dataset_levels.push(l1_pdl, l2_pdl)
+    l1_pdl = ProjectDatasetLevel.create(access_level_id: 1, expiry_date: Time.zone.today + 2.months,
+                                        selected: true, project_dataset_id: project_dataset.id)
+    l2_pdl = ProjectDatasetLevel.create(access_level_id: 2, expiry_date: Time.zone.today + 2.months,
+                                        selected: true, project_dataset_id: project_dataset.id)
 
     project.transition_to!(workflow_states(:submitted))
 
-    l1_pdl.update(approved: true, decided_at: Time.zone.now)
-    l2_pdl.update(approved: true, decided_at: Time.zone.now)
+    l1_pdl.update(status_id: 2, decided_at: Time.zone.now)
+    l2_pdl.update(status_id: 2, decided_at: Time.zone.now)
 
     visit project_path(project)
 
     click_link(href: '#datasets')
     assert has_content?('Cas Defaults Dataset', count: 2)
     assert has_content?('APPROVED', count: 2)
-    assert has_no_content?('Reapply')
+    assert has_no_button?('Reapply')
 
-    l1_pdl.update(approved: false, decided_at: Time.zone.now)
-    l2_pdl.update(approved: false, decided_at: Time.zone.now)
+    l1_pdl.update(status_id: 3, decided_at: Time.zone.now)
+    l2_pdl.update(status_id: 3, decided_at: Time.zone.now)
 
     visit project_path(project)
 
@@ -104,24 +112,21 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
     assert has_content?('DECLINED', count: 2)
 
     within "#project_dataset_level_#{l2_pdl.id}" do
-      click_link('Reapply')
+      click_button('Reapply')
     end
 
     assert_equal 2, ProjectDatasetLevel.last.reload.access_level_id
-    assert has_content?('Previous datasets')
+    assert has_content?('Rejected datasets')
     assert has_content?('Reapplication request created succesfully')
 
     within "#project_dataset_level_#{ProjectDatasetLevel.last.id}" do
-      within '#decision_date' do
-        assert has_no_content?
-      end
       within '#request_type' do
         assert has_content?('Reapplication')
       end
       assert has_content?('PENDING')
       assert has_no_css?('.btn-danger')
       assert has_no_css?('.btn-success')
-      assert has_no_link?('Reapply')
+      assert has_no_button?('Reapply')
     end
 
     within "#project_dataset_level_#{l2_pdl.id}" do
@@ -131,13 +136,11 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
       assert has_content?('DECLINED')
       assert has_no_css?('.btn-danger')
       assert has_no_css?('.btn-success')
-      assert has_no_link?('Reapply')
+      assert has_no_button?('Reapply')
     end
 
-    assert_equal false, l2_pdl.reload.approved
-    assert_equal false, l2_pdl.reload.current
-    assert_nil ProjectDatasetLevel.last.reload.approved
-    assert_equal true, ProjectDatasetLevel.last.reload.current
+    assert_equal 'rejected', l2_pdl.reload.status_id
+    assert_equal 'request', ProjectDatasetLevel.last.reload.status_id
 
     within "#project_dataset_level_#{l1_pdl.id}" do
       click_button('Reapply')
@@ -164,19 +167,17 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
 
     assert has_content?('Reapplication request created succesfully')
     assert has_no_button?('Reapply')
-    assert_equal 1, ProjectDatasetLevel.last.reload.access_level_id
+    l1_reapplication = ProjectDatasetLevel.last
+    assert_equal 1, l1_reapplication.reload.access_level_id
 
-    within "#project_dataset_level_#{ProjectDatasetLevel.last.id}" do
-      within '#decision_date' do
-        assert has_no_content?
-      end
+    within "#project_dataset_level_#{l1_reapplication.id}" do
       within '#request_type' do
         assert has_content?('Reapplication')
       end
       assert has_content?('PENDING')
       assert has_no_css?('.btn-danger')
       assert has_no_css?('.btn-success')
-      assert has_no_link?('Reapply')
+      assert has_no_button?('Reapply')
     end
 
     within "#project_dataset_level_#{l1_pdl.id}" do
@@ -186,13 +187,24 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
       assert has_content?('DECLINED')
       assert has_no_css?('.btn-danger')
       assert has_no_css?('.btn-success')
-      assert has_no_link?('Reapply')
+      assert has_no_button?('Reapply')
     end
 
-    assert_equal false, l1_pdl.reload.approved
-    assert_equal false, l1_pdl.reload.current
-    assert_nil ProjectDatasetLevel.last.reload.approved
-    assert_equal true, ProjectDatasetLevel.last.reload.current
+    assert_equal 'rejected', l1_pdl.reload.status_id
+    assert_equal 'request', l1_reapplication.reload.status_id
+
+    l1_reapplication.update(status_id: 3)
+
+    visit project_path(project)
+    click_link(href: '#datasets')
+
+    within "#project_dataset_level_#{l1_reapplication.id}" do
+      assert has_button?('Reapply')
+    end
+
+    within "#project_dataset_level_#{l1_pdl.id}" do
+      assert has_no_button?('Reapply')
+    end
   end
 
   test 'should be able to apply for renewal of a dataset if within expiry period' do
@@ -202,51 +214,54 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
     project = create_cas_project(owner: users(:no_roles))
     project_dataset = ProjectDataset.new(dataset: dataset(86), terms_accepted: true)
     project.project_datasets << project_dataset
-    l1_pdl = ProjectDatasetLevel.new(access_level_id: 1, expiry_date: Time.zone.today + 2.months,
-                                     selected: true)
-    l2_pdl = ProjectDatasetLevel.new(access_level_id: 2, expiry_date: Time.zone.today + 2.months,
-                                     selected: true)
-    project_dataset.project_dataset_levels.push(l1_pdl, l2_pdl)
+    l1_pdl = ProjectDatasetLevel.create(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
+                                        selected: true, project_dataset_id: project_dataset.id)
+    l2_pdl = ProjectDatasetLevel.create(access_level_id: 2, expiry_date: Time.zone.today + 1.week,
+                                        selected: true, project_dataset_id: project_dataset.id)
 
     project.transition_to!(workflow_states(:submitted))
 
-    l1_pdl.update(approved: true, decided_at: Time.zone.now)
-    l2_pdl.update(approved: true, decided_at: Time.zone.now)
+    l1_pdl.update(status_id: 2, decided_at: Time.zone.now)
+    l2_pdl.update(status_id: 2, decided_at: Time.zone.now)
 
     visit project_path(project)
 
     click_link(href: '#datasets')
     assert has_content?('Cas Defaults Dataset', count: 2)
     assert has_content?('APPROVED', count: 2)
-    assert has_no_content?('Renew')
+    assert has_no_button?('Renew')
 
-    l1_pdl.update(expiry_date: Time.zone.today + 1.week)
-    l2_pdl.update(expiry_date: Time.zone.today + 1.week)
+    l1_pdl.update(status_id: 4)
+    l2_pdl.update(status_id: 4)
 
     visit project_path(project)
 
     click_link(href: '#datasets')
     assert has_content?('Cas Defaults Dataset')
-
+    assert has_content?('Approved datasets')
+    assert has_no_content?('Requested datasets')
     within "#project_dataset_level_#{l2_pdl.id}" do
-      click_link('Renew')
+      click_button('Renew')
     end
 
-    assert has_content?('Previous datasets')
+    assert has_content?('Requested datasets')
     assert has_content?('Renewal request created succesfully')
     assert_equal 2, ProjectDatasetLevel.last.reload.access_level_id
+    within '#requested_project_dataset_levels_table' do
+      assert has_content?('Cas Defaults Dataset', count: 1)
+    end
+    within '#approved_project_dataset_levels_table' do
+      assert has_content?('Cas Defaults Dataset', count: 2)
+    end
 
     within "#project_dataset_level_#{ProjectDatasetLevel.last.id}" do
-      within '#decision_date' do
-        assert has_no_content?
-      end
       within '#request_type' do
         assert has_content?('Renewal')
       end
       assert has_content?('PENDING')
       assert has_no_css?('.btn-danger')
       assert has_no_css?('.btn-success')
-      assert has_no_link?('Renew')
+      assert has_no_button?('Renew')
     end
 
     within "#project_dataset_level_#{l2_pdl.id}" do
@@ -256,13 +271,11 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
       assert has_content?('APPROVED')
       assert has_no_css?('.btn-danger')
       assert has_no_css?('.btn-success')
-      assert has_no_link?('Renew')
+      assert has_no_button?('Renew')
     end
 
-    assert_equal true, l2_pdl.reload.approved
-    assert_equal false, l2_pdl.reload.current
-    assert_nil ProjectDatasetLevel.last.reload.approved
-    assert_equal true, ProjectDatasetLevel.last.reload.current
+    assert_equal 'approved', l2_pdl.reload.status_id
+    assert_equal 'request', ProjectDatasetLevel.last.reload.status_id
 
     within "#project_dataset_level_#{l1_pdl.id}" do
       click_button('Renew')
@@ -272,6 +285,13 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
       assert has_content?('Renewal for Cas Defaults Dataset level 1')
       fill_in('renewal_datepicker', with: '')
       click_button('Save')
+    end
+
+    within '#requested_project_dataset_levels_table' do
+      assert has_content?('Cas Defaults Dataset', count: 1)
+    end
+    within '#approved_project_dataset_levels_table' do
+      assert has_content?('Cas Defaults Dataset', count: 2)
     end
 
     assert has_content?('Renewal failed - please provide a valid expiry date in the future')
@@ -287,21 +307,24 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
       click_button('Save')
     end
 
+    within '#requested_project_dataset_levels_table' do
+      assert has_content?('Cas Defaults Dataset', count: 2)
+    end
+    within '#approved_project_dataset_levels_table' do
+      assert has_content?('Cas Defaults Dataset', count: 2)
+    end
+
     assert has_content?('Renewal request created succesfully')
-    assert has_no_button?('Renew')
     assert_equal 1, ProjectDatasetLevel.last.reload.access_level_id
 
     within "#project_dataset_level_#{ProjectDatasetLevel.last.id}" do
-      within '#decision_date' do
-        assert has_no_content?
-      end
       within '#request_type' do
         assert has_content?('Renewal')
       end
       assert has_content?('PENDING')
       assert has_no_css?('.btn-danger')
       assert has_no_css?('.btn-success')
-      assert has_no_link?('Renew')
+      assert has_no_button?('Renew')
     end
 
     within "#project_dataset_level_#{l1_pdl.id}" do
@@ -311,13 +334,27 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
       assert has_content?('APPROVED')
       assert has_no_css?('.btn-danger')
       assert has_no_css?('.btn-success')
-      assert has_no_link?('Renew')
+      assert has_no_button?('Renew')
     end
 
-    assert_equal true, l1_pdl.reload.approved
-    assert_equal false, l1_pdl.reload.current
-    assert_nil ProjectDatasetLevel.last.reload.approved
-    assert_equal true, ProjectDatasetLevel.last.reload.current
+    assert_equal 'approved', l1_pdl.reload.status_id
+    assert_equal 'request', ProjectDatasetLevel.last.reload.status_id
+
+    sign_out user
+    sign_in users(:cas_access_and_dataset_approver)
+
+    visit project_path(project)
+    click_link(href: '#datasets')
+
+    ProjectDatasetLevelsController.any_instance.expects(:valid_otp?).twice.returns(false).then.returns(true)
+    find("#approval_project_dataset_level_#{ProjectDatasetLevel.last.id}").click
+    within_modal(selector: '#yubikey-challenge') do
+      fill_in 'ndr_authenticate[otp]', with: 'defo a yubikey'
+      click_button 'Submit'
+    end
+
+    assert_equal 'closed', l1_pdl.reload.status_id
+    assert_equal 'approved', ProjectDatasetLevel.last.reload.status_id
   end
 
   test 'should show applicant correct pending dataset status' do
@@ -335,12 +372,11 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
     project.transition_to!(workflow_states(:submitted))
 
     visit project_path(project)
-
     click_link(href: '#datasets')
     assert has_content?('Extra CAS Dataset One')
     assert_equal find('#dataset_level_status').text, 'PENDING'
-    within '#decision_date' do
-      assert has_no_content?
+    within '#request_type' do
+      assert has_content?('New')
     end
   end
 
@@ -371,8 +407,8 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
       assert has_css?('.btn-danger')
       assert has_css?('.btn-success')
       assert has_no_content?('PENDING')
-      within '#decision_date' do
-        assert has_no_content?
+      within '#request_type' do
+        assert has_content?('New')
       end
     end
 
@@ -380,12 +416,12 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
       assert has_no_css?('.btn-danger')
       assert has_no_css?('.btn-success')
       assert_equal find('#dataset_level_status').text, 'PENDING'
-      within '#decision_date' do
-        assert has_no_content?
+      within '#request_type' do
+        assert has_content?('New')
       end
     end
 
-    non_grant_pdl.approved = true
+    non_grant_pdl.status_id = 2
     non_grant_pdl.save!(validate: false)
 
     visit project_path(project)
@@ -398,7 +434,7 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
       assert_equal find('#dataset_level_status').text, 'APPROVED'
     end
 
-    non_grant_pdl.approved = false
+    non_grant_pdl.status_id = 3
     non_grant_pdl.save!(validate: false)
 
     visit project_path(project)
@@ -418,9 +454,7 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
     nogrant_extra_dataset = ProjectDataset.new(dataset: dataset(84), terms_accepted: true)
     project.project_datasets.push(grant_default_dataset, nogrant_extra_dataset)
     rejected_default_l1_pdl = ProjectDatasetLevel.new(access_level_id: 1, selected: true,
-                                                      expiry_date: Time.zone.today + 1.week,
-                                                      approved: false,
-                                                      decided_at: Time.zone.now - 1.day)
+                                                      expiry_date: Time.zone.today + 1.week)
     grant_default_l1_pdl = ProjectDatasetLevel.new(access_level_id: 1, selected: true,
                                                    expiry_date: Time.zone.today + 1.week)
     grant_default_l2_pdl = ProjectDatasetLevel.new(access_level_id: 2, selected: true,
@@ -433,14 +467,21 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
                                                       grant_default_l2_pdl, grant_default_l3_pdl)
     nogrant_extra_dataset.project_dataset_levels << no_grant_extra_l2_pdl
 
+    rejected_default_l1_pdl.update(status_id: 3, decided_at: Time.zone.now - 1.day)
+
     project.transition_to!(workflow_states(:submitted))
 
     sign_in users(:standard_user2)
 
     visit project_path(project)
     click_link(href: '#datasets')
-    assert has_content?('Cas Defaults Dataset', count: 4)
-    assert has_content?('Extra CAS Dataset Two', count: 1)
+    within '#requested_project_dataset_levels_table' do
+      assert has_content?('Cas Defaults Dataset', count: 3)
+      assert has_content?('Extra CAS Dataset Two', count: 1)
+    end
+    within '#rejected_project_dataset_levels_table' do
+      assert has_content?('Cas Defaults Dataset', count: 1)
+    end
     assert has_no_content?('Approve level 2 and 3 default datasets')
 
     assert find("#project_dataset_level_#{rejected_default_l1_pdl.id}")[:class].
@@ -459,8 +500,13 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
 
     visit project_path(project)
     click_link(href: '#datasets')
-    assert has_content?('Cas Defaults Dataset', count: 4)
-    assert has_content?('Extra CAS Dataset Two', count: 1)
+    within '#requested_project_dataset_levels_table' do
+      assert has_content?('Cas Defaults Dataset', count: 3)
+      assert has_content?('Extra CAS Dataset Two', count: 1)
+    end
+    within '#rejected_project_dataset_levels_table' do
+      assert has_content?('Cas Defaults Dataset', count: 1)
+    end
     assert has_button?('Approve level 2 and 3 default datasets')
 
     assert find("#project_dataset_level_#{rejected_default_l1_pdl.id}")[:class].
@@ -474,11 +520,11 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
     assert find("#project_dataset_level_#{no_grant_extra_l2_pdl.id}")[:class].
       exclude?('dataset_highlight')
 
-    assert_equal false, rejected_default_l1_pdl.reload.approved
-    assert_nil grant_default_l1_pdl.reload.approved
-    assert_nil grant_default_l2_pdl.reload.approved
-    assert_nil grant_default_l3_pdl.reload.approved
-    assert_nil no_grant_extra_l2_pdl.reload.approved
+    assert_equal 'rejected', rejected_default_l1_pdl.reload.status_id
+    assert_equal 'request', grant_default_l1_pdl.reload.status_id
+    assert_equal 'request', grant_default_l2_pdl.reload.status_id
+    assert_equal 'request', grant_default_l3_pdl.reload.status_id
+    assert_equal 'request', no_grant_extra_l2_pdl.reload.status_id
 
     click_button('Approve level 2 and 3 default datasets')
 
@@ -492,8 +538,9 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
     end
 
     within "#project_dataset_level_#{grant_default_l1_pdl.id}" do
-      within '#decision_date' do
-        assert has_no_content?
+      within '#request_type' do
+        # because there has already been a rejected default l1
+        assert has_content?('Reapplication')
       end
       assert find('.btn-danger')
       assert find('.btn-success')
@@ -515,8 +562,8 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
     end
 
     within "#project_dataset_level_#{no_grant_extra_l2_pdl.id}" do
-      within '#decision_date' do
-        assert has_no_content?
+      within '#request_type' do
+        assert has_content?('New')
       end
       assert has_content?('PENDING')
     end
@@ -532,11 +579,11 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
     assert find("#project_dataset_level_#{no_grant_extra_l2_pdl.id}")[:class].
       exclude?('dataset_highlight')
 
-    assert_equal false, rejected_default_l1_pdl.reload.approved
-    assert_nil grant_default_l1_pdl.reload.approved
-    assert_equal true, grant_default_l2_pdl.reload.approved
-    assert_equal true, grant_default_l3_pdl.reload.approved
-    assert_nil no_grant_extra_l2_pdl.reload.approved
+    assert_equal 'rejected', rejected_default_l1_pdl.reload.status_id
+    assert_equal 'request', grant_default_l1_pdl.reload.status_id
+    assert_equal 'approved', grant_default_l2_pdl.reload.status_id
+    assert_equal 'approved', grant_default_l3_pdl.reload.status_id
+    assert_equal 'request', no_grant_extra_l2_pdl.reload.status_id
 
     assert has_no_content?('Approve Access')
 
@@ -546,5 +593,32 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
     end
 
     assert has_content?('Approve Access')
+  end
+
+  test 'ensure expired project_dataset_levels display in closed table' do
+    project = create_cas_project(owner: users(:standard_user2))
+    default_dataset = ProjectDataset.create(dataset: dataset(86), terms_accepted: true)
+    project.project_datasets << default_dataset
+    default_l2_pdl = ProjectDatasetLevel.create(access_level_id: 2, selected: true,
+                                                decided_at: Time.zone.today - 1.year,
+                                                project_dataset_id: default_dataset.id)
+
+    default_l2_pdl.status_id = 5
+    default_l2_pdl.expiry_date = Time.zone.today - 1.week
+    default_l2_pdl.save!(validate: false)
+
+    user = users(:standard_user2)
+    sign_in user
+
+    visit project_path(project)
+    click_link(href: '#datasets')
+    within '#closed_project_dataset_levels_table' do
+      within "#project_dataset_level_#{default_l2_pdl.id}" do
+        within '#decision_date' do
+          assert has_content?((Time.zone.now - 1.year).strftime('%d/%m/%Y'))
+        end
+        assert has_content?('CLOSED')
+      end
+    end
   end
 end

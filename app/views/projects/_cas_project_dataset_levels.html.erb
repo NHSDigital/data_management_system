@@ -1,56 +1,22 @@
-<div id='current_project_dataset_levels_table'>
-  <% if project.current_project_dataset_levels.any? %>
-    <fieldset>
-      <legend>Current datasets</legend>
-        <div id="current_project_dataset_levels">
-          <table class="table table-condensed">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Level</th>
-                <th>Date</th>
-                <th>Request Type</th>
-                <th>Status</th>
-                <th>Decision Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              <% project.current_project_dataset_levels.each do |level| %>
-                <tr id="<%= dom_id(level) %>" class="<%= approval_highlight_class(level) %>">
-                  <%= render partial: '/project_dataset_levels/approval', locals: { project_dataset_level: level, current_projects: true } %>
-                </tr>
-              <% end %>
-            </tbody>
-          </table>
-        </div>
-    </fieldset>
+<div id='requested_project_dataset_levels_table'>
+  <% if ProjectDatasetLevel.by_status_id(project, 1).any? %>
+    <%= render partial: '/project_dataset_levels/approval_table', locals: { project_dataset_levels: ProjectDatasetLevel.by_status_id(project, 1), status: 'Requested' } %>
+  <% end %>
+</div>
+<div id='approved_project_dataset_levels_table'>
+  <% if ProjectDatasetLevel.by_status_id(project, [2, 4]).any? %>
+    <%= render partial: '/project_dataset_levels/approval_table', locals: { project_dataset_levels: ProjectDatasetLevel.by_status_id(project, [2, 4]), status: 'Approved' } %>
   <% end %>
 </div>
 
-<div id='previous_project_dataset_levels_table'>
-  <% if project.previous_project_dataset_levels.any? %>
-    <fieldset>
-      <legend>Previous datasets</legend>
-        <div id="previous_project_dataset_levels">
-          <table class="table table-condensed">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Level</th>
-                <th>Date</th>
-                <th>Status</th>
-                <th>Decision Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              <% project.previous_project_dataset_levels.each do |level| %>
-                <tr id="<%= dom_id(level) %>">
-                  <%= render partial: '/project_dataset_levels/approval', locals: { project_dataset_level: level, current_projects: false } %>
-                </tr>
-              <% end %>
-            </tbody>
-          </table>
-        </div>
-    </fieldset>
+<div id='rejected_project_dataset_levels_table'>
+  <% if ProjectDatasetLevel.by_status_id(project, 3).any? %>
+    <%= render partial: '/project_dataset_levels/approval_table', locals: { project_dataset_levels: ProjectDatasetLevel.by_status_id(project, 3), status: 'Rejected' } %>
+  <% end %>
+</div>
+
+<div id='closed_project_dataset_levels_table'>
+  <% if ProjectDatasetLevel.by_status_id(project, 5).any? %>
+    <%= render partial: '/project_dataset_levels/approval_table', locals: { project_dataset_levels: ProjectDatasetLevel.by_status_id(project, 5), status: 'Closed' } %>
   <% end %>
 </div>

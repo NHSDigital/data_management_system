@@ -3,23 +3,67 @@ class ProjectDatasetLevel < ApplicationRecord
   belongs_to :project_dataset
   delegate :project, to: :project_dataset
   after_create :set_expiry_date_to_one_year
-  after_create :set_previous_level_current_to_false
+  after_create :set_status_id_to_requested_on_create
   before_update :set_decided_at_to_nil
   after_update :notify_cas_approved_change
 
   validate :expiry_date_must_be_present_for_level_one_or_extra_datasets
   validate :must_be_future_expiry_date
+  validates :status_id, uniqueness: { scope: %i[access_level_id project_dataset_id] },
+                        if: proc { |pdl| %w[request approved renewable].include?(pdl.status_id) }
 
-  def current?
-    current
-  end
+  enum status_id: { request: 1, approved: 2, rejected: 3, renewable: 4, closed: 5 }
+
+  scope :same_access_level_levels, lambda { |pdl|
+    where(project_dataset_id: pdl.project_dataset_id, access_level_id: pdl.access_level_id).
+      where.not(id: pdl.id)
+  }
+
+  scope :status_by_access_level, lambda { |pdl, status_id|
+    where(project_dataset_id: pdl.project_dataset_id, access_level_id: pdl.access_level_id,
+          status_id: status_id)
+  }
+
+  scope :by_status_id, lambda { |project, status_id|
+    joins(:project_dataset).where(project_datasets: { project_id: project.id }).
+      where(status_id: status_id)
+  }
+
+  scope :cas_type_levels, lambda { |project, cas_type|
+    joins(:project_dataset).where(project_datasets: { project_id: project.id }).
+      joins(project_dataset: :dataset).where(datasets: { cas_type: cas_type })
+  }
+
+  scope :default_level_2_3_bulk_approvable, lambda { |project, user|
+    where(status_id: 1, access_level_id: [2, 3]).
+      joins(:project_dataset).where(project_datasets: { project_id: project.id }).
+      joins(project_dataset: :dataset).where(datasets: { cas_type: 1 }).
+      joins(project_dataset: { dataset: :grants }).where(
+        grants: { user_id: user.id,
+                  roleable_type: 'DatasetRole',
+                  roleable_id: DatasetRole.fetch(:approver).id }
+      )
+  }
+
+  scope :default_level_2_3_bulk_renew_request, lambda { |project, user|
+    where(status_id: 4, access_level_id: [2, 3]).
+      joins(:project_dataset).where(project_datasets: { project_id: project.id }).
+      joins(project_dataset: :dataset).where(datasets: { cas_type: 1 }).
+      joins(project_dataset: { project: :grants }).where(
+        grants: { user_id: user.id,
+                  roleable_type: 'ProjectRole',
+                  roleable_id: ProjectRole.fetch(:owner).id }
+      )
+  }
 
   def selected?
     selected
   end
 
-  def approved?
-    approved
+  # show if last rejected and none in requested
+  def reappliable?
+    ProjectDatasetLevel.status_by_access_level(self, 3).max_by(&:created_at) == self &&
+      ProjectDatasetLevel.same_access_level_levels(self).none?(&:request?)
   end
 
   def level_2_3_default?
@@ -30,15 +74,11 @@ class ProjectDatasetLevel < ApplicationRecord
     project_dataset.dataset.cas_defaults? && access_level_id == 1
   end
 
-  def renewable?
-    current? && selected? && approved? && expiry_date <= 1.month.from_now.to_date
-  end
-
   def notify_cas_approved_change
     return unless project.cas?
     # Should only be approving after DRAFT
-    return if project.current_state&.id == 'DRAFT'
-    return if approved.nil?
+    return if project.reload.current_state&.id == 'DRAFT'
+    return if request?
 
     User.cas_manager_and_access_approvers.each do |user|
       CasNotifier.dataset_level_approved_status_updated(project, self, user.id)
@@ -57,6 +97,10 @@ class ProjectDatasetLevel < ApplicationRecord
     update_column(:expiry_date, 1.year.from_now)
   end
 
+  def set_status_id_to_requested_on_create
+    update_column(:status_id, Lookups::ProjectDatasetLevelStatus.find_by(value: '1').id)
+  end
+
   def expiry_date_must_be_present_for_level_one_or_extra_datasets
     return unless project.cas?
     return unless selected?
@@ -66,29 +110,11 @@ class ProjectDatasetLevel < ApplicationRecord
     errors.add :expiry_date, :must_have_expiry_date
   end
 
-  def set_previous_level_current_to_false
-    return unless current?
-
-    project_dataset.project_dataset_levels.each do |pdl|
-      next if pdl == self
-      next unless access_level_id == pdl.access_level_id && pdl.current?
-
-      pdl.update(current: false)
-    end
-  end
-
   def readable_approved_status
-    return 'Undecided' if approved.nil?
+    return 'Undecided' if request?
+    return 'Approved' if approved?
 
-    approved ? 'Approved' : 'Rejected'
-  end
-
-  def previous_levels
-    return [] unless current?
-
-    (project_dataset.project_dataset_levels - [self]).select do |pdl|
-      access_level_id == pdl.access_level_id && !pdl.current?
-    end.sort_by(&:created_at)
+    'Rejected'
   end
 
   def must_be_future_expiry_date
@@ -108,7 +134,7 @@ class ProjectDatasetLevel < ApplicationRecord
   end
 
   def set_decided_at_to_nil
-    return unless approved.nil?
+    return unless request?
 
     self.decided_at = nil
   end

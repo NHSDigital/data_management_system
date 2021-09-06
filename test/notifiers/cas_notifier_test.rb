@@ -6,9 +6,10 @@ class CasNotifierTest < ActiveSupport::TestCase
     dataset = Dataset.find_by(name: 'Extra CAS Dataset One')
     project_dataset = ProjectDataset.new(dataset: dataset, terms_accepted: true)
     project.project_datasets << project_dataset
-    pdl = ProjectDatasetLevel.new(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
-                                  approved: true)
-    project_dataset.project_dataset_levels << pdl
+    pdl = ProjectDatasetLevel.create(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
+                                     project_dataset_id: project_dataset.id)
+
+    pdl.update(status_id: 2)
 
     recipients = SystemRole.cas_manager_and_access_approvers.map(&:users).flatten
     title = 'Dataset Approval Level Status Change'
@@ -31,9 +32,10 @@ class CasNotifierTest < ActiveSupport::TestCase
     dataset = Dataset.find_by(name: 'Extra CAS Dataset One')
     project_dataset = ProjectDataset.new(dataset: dataset, terms_accepted: true)
     project.project_datasets << project_dataset
-    pdl = ProjectDatasetLevel.new(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
-                                  approved: true)
-    project_dataset.project_dataset_levels << pdl
+    pdl = ProjectDatasetLevel.create(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
+                                     project_dataset_id: project_dataset.id)
+
+    pdl.update(status_id: 2)
 
     assert_difference -> { Notification.by_title('Dataset Approval Level Updated').count }, 1 do
       CasNotifier.dataset_level_approved_status_updated_to_user(project, pdl)

@@ -6,23 +6,24 @@ class ProjectDatasetLevelTest < ActiveSupport::TestCase
     dataset = Dataset.find_by(name: 'Extra CAS Dataset One')
     project_dataset = ProjectDataset.new(dataset: dataset, terms_accepted: nil)
     project.project_datasets << project_dataset
-    pdl = ProjectDatasetLevel.new(access_level_id: 1, expiry_date: Time.zone.today + 1.week, approved: nil)
-    project_dataset.project_dataset_levels << pdl
+    pdl = ProjectDatasetLevel.create(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
+                                     project_dataset_id: project_dataset.id)
     project.reload_current_state
 
     notifications = Notification.where(title: 'Dataset Approval Level Status Change')
 
     # Should not send out notifications for changes when at Draft
     assert_no_difference 'notifications.count' do
-      pdl.update(approved: true)
-      pdl.update(approved: nil)
+      pdl.update(status_id: 2)
+      pdl.update(status_id: 1)
     end
 
     project.transition_to!(workflow_states(:submitted))
     project.reload_current_state
+    assert_equal 'SUBMITTED', project.current_state&.id
 
     assert_difference 'notifications.count', 4 do
-      pdl.update(approved: true)
+      pdl.update(status_id: 2)
     end
 
     assert_equal notifications.last.body, "CAS application #{project.id} - Dataset 'Extra CAS " \
@@ -30,7 +31,7 @@ class ProjectDatasetLevelTest < ActiveSupport::TestCase
                                           "'Approved' for level 1.\n\n"
 
     assert_difference 'notifications.count', 4 do
-      pdl.update(approved: false)
+      pdl.update(status_id: 3)
     end
 
     assert_equal notifications.last.body, "CAS application #{project.id} - Dataset 'Extra CAS " \
@@ -38,7 +39,7 @@ class ProjectDatasetLevelTest < ActiveSupport::TestCase
                                           "'Rejected' for level 1.\n\n"
 
     assert_no_difference 'notifications.count' do
-      pdl.update(approved: nil)
+      pdl.update(status_id: 1)
     end
   end
 
@@ -47,23 +48,23 @@ class ProjectDatasetLevelTest < ActiveSupport::TestCase
     dataset = Dataset.find_by(name: 'Extra CAS Dataset One')
     project_dataset = ProjectDataset.new(dataset: dataset, terms_accepted: nil)
     project.project_datasets << project_dataset
-    pdl = ProjectDatasetLevel.new(access_level_id: 1, expiry_date: Time.zone.today + 1.week, approved: nil)
-    project_dataset.project_dataset_levels << pdl
+    pdl = ProjectDatasetLevel.create(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
+                                     project_dataset_id: project_dataset.id)
     project.reload_current_state
 
     notifications = Notification.where(title: 'Dataset Approval Level Updated')
 
     # Should not send out notifications for changes when at Draft
     assert_no_difference 'notifications.count' do
-      pdl.update(approved: true)
-      pdl.update(approved: nil)
+      pdl.update(status_id: 2)
+      pdl.update(status_id: 1)
     end
 
     project.transition_to!(workflow_states(:submitted))
     project.reload_current_state
 
     assert_difference 'notifications.count', 1 do
-      pdl.update(approved: true)
+      pdl.update(status_id: 2)
     end
 
     assert_equal notifications.last.body, "Your CAS dataset access request for 'Extra CAS " \
@@ -71,7 +72,7 @@ class ProjectDatasetLevelTest < ActiveSupport::TestCase
                                           "'Approved' for level 1.\n\n"
 
     assert_difference 'notifications.count', 1 do
-      pdl.update(approved: false)
+      pdl.update(status_id: 3)
     end
 
     assert_equal notifications.last.body, "Your CAS dataset access request for 'Extra CAS " \
@@ -79,7 +80,7 @@ class ProjectDatasetLevelTest < ActiveSupport::TestCase
                                           "'Rejected' for level 1.\n\n"
 
     assert_no_difference 'notifications.count' do
-      pdl.update(approved: nil)
+      pdl.update(status_id: 1)
     end
   end
 
@@ -87,14 +88,13 @@ class ProjectDatasetLevelTest < ActiveSupport::TestCase
     project_dataset = ProjectDataset.new(dataset: dataset(83), terms_accepted: true)
     project = create_cas_project(owner: users(:no_roles))
     project.project_datasets << project_dataset
-    pdl = ProjectDatasetLevel.new(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
-                                  approved: true)
-    project_dataset.project_dataset_levels << pdl
-
+    pdl = ProjectDatasetLevel.create(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
+                                     project_dataset_id: project_dataset.id)
+    pdl.update(status_id: 2)
     project.transition_to!(workflow_states(:submitted))
 
     assert_no_difference 'notifications.count' do
-      pdl.update(approved: nil)
+      pdl.update(status_id: 1)
     end
   end
 
@@ -103,15 +103,14 @@ class ProjectDatasetLevelTest < ActiveSupport::TestCase
     project_dataset = ProjectDataset.new(dataset: dataset(83), terms_accepted: true)
     project = create_cas_project(owner: users(:no_roles))
     project.project_datasets << project_dataset
-    pdl = ProjectDatasetLevel.new(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
-                                  approved: true, decided_at: date_time_now)
-    project_dataset.project_dataset_levels << pdl
-
+    pdl = ProjectDatasetLevel.create(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
+                                     project_dataset_id: project_dataset.id)
+    pdl.update(status_id: 2, decided_at: date_time_now)
     project.transition_to!(workflow_states(:submitted))
 
     assert_equal pdl.decided_at, date_time_now
 
-    pdl.update(approved: nil)
+    pdl.update(status_id: 1)
 
     assert_nil pdl.decided_at
   end
@@ -190,19 +189,50 @@ class ProjectDatasetLevelTest < ActiveSupport::TestCase
                'level 1 default datasets')
   end
 
-  test 'should set previous project_dataset_level current status to false' do
-    project_dataset = ProjectDataset.new(dataset: dataset(85), terms_accepted: true)
+  test 'should validate uniqueness of status_id for requested approved and renewable' do
+    project_dataset = ProjectDataset.new(dataset: dataset(86), terms_accepted: true)
     project = create_cas_project(owner: users(:no_roles))
     project.project_datasets << project_dataset
-    original_pdl = ProjectDatasetLevel.create(access_level_id: 2, selected: true,
-                                              project_dataset_id: project_dataset.id)
+    status_1_l2_pdl = ProjectDatasetLevel.create(access_level_id: 2, selected: true,
+                                                 project_dataset_id: project_dataset.id)
+    status_1_l2_pdl_duplicate = ProjectDatasetLevel.create(access_level_id: 2, selected: true,
+                                                           project_dataset_id: project_dataset.id)
 
-    assert_equal true, original_pdl.current
+    status_1_l2_pdl_duplicate.valid?
+    assert status_1_l2_pdl_duplicate.errors.messages[:status_id].include?('has already been taken')
 
-    new_pdl = ProjectDatasetLevel.create(access_level_id: 2, selected: true,
-                                         project_dataset_id: project_dataset.id)
+    status_1_l2_pdl_duplicate.update(access_level_id: 3)
+    status_1_l2_pdl_duplicate.valid?
+    refute status_1_l2_pdl_duplicate.errors.messages[:status_id].include?('has already been taken')
 
-    assert_equal false, original_pdl.reload.current
-    assert_equal true, new_pdl.reload.current
+    project_dataset2 = ProjectDataset.new(dataset: dataset(85), terms_accepted: true)
+    project.project_datasets << project_dataset2
+    status_1_l2_pdl_duplicate.update(access_level_id: 2, project_dataset_id: project_dataset2.id)
+    status_1_l2_pdl_duplicate.valid?
+    refute status_1_l2_pdl_duplicate.errors.messages[:status_id].include?('has already been taken')
+
+    status_1_l2_pdl_duplicate.update(project_dataset_id: project_dataset.id, status_id: 2)
+    status_1_l2_pdl_duplicate.valid?
+    refute status_1_l2_pdl_duplicate.errors.messages[:status_id].include?('has already been taken')
+
+    status_1_l2_pdl.update(status_id: 2)
+    status_1_l2_pdl.valid?
+    assert status_1_l2_pdl.errors.messages[:status_id].include?('has already been taken')
+
+    status_1_l2_pdl.update(status_id: 3)
+    status_1_l2_pdl.valid?
+    refute status_1_l2_pdl.errors.messages[:status_id].include?('has already been taken')
+
+    status_1_l2_pdl_duplicate.update(status_id: 3)
+    status_1_l2_pdl_duplicate.valid?
+    refute status_1_l2_pdl_duplicate.errors.messages[:status_id].include?('has already been taken')
+
+    status_1_l2_pdl_duplicate.update(status_id: 4)
+    status_1_l2_pdl_duplicate.valid?
+    refute status_1_l2_pdl_duplicate.errors.messages[:status_id].include?('has already been taken')
+
+    status_1_l2_pdl.update(status_id: 4)
+    status_1_l2_pdl.valid?
+    assert status_1_l2_pdl.errors.messages[:status_id].include?('has already been taken')
   end
 end

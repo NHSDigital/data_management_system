@@ -591,7 +591,7 @@ module Workflow
       can :create, ProjectState, state: { id: 'ACCESS_APPROVER_APPROVED' },
                                  project: { current_state: { id: 'SUBMITTED' },
                                             project_type: { name: 'CAS' },
-                                            default_levels_all_approved: true }
+                                            default_levels_all_decided: true }
       cannot :create, ProjectState, state: { id: %w[ACCESS_APPROVER_APPROVED
                                                     ACCESS_APPROVER_REJECTED] },
                                     project: { current_state: { id: 'SUBMITTED' },

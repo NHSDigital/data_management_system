@@ -7,9 +7,11 @@ class ProjectsMailerTest < ActionMailer::TestCase
     dataset = Dataset.find_by(name: 'Extra CAS Dataset One')
     project_dataset = ProjectDataset.new(dataset: dataset, terms_accepted: true)
     project.project_datasets << project_dataset
-    pdl = ProjectDatasetLevel.new(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
-                                  approved: true)
+    pdl = ProjectDatasetLevel.create(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
+                                     project_dataset_id: project_dataset.id)
     project_dataset.project_dataset_levels << pdl
+
+    pdl.update(status_id: 3)
 
     email = CasMailer.with(project: project, project_dataset_level: pdl).dataset_level_approved_status_updated
 
@@ -28,9 +30,11 @@ class ProjectsMailerTest < ActionMailer::TestCase
     dataset = Dataset.find_by(name: 'Extra CAS Dataset One')
     project_dataset = ProjectDataset.new(dataset: dataset, terms_accepted: true)
     project.project_datasets << project_dataset
-    pdl = ProjectDatasetLevel.new(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
-                                  approved: true)
+    pdl = ProjectDatasetLevel.create(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
+                                     project_dataset_id: project_dataset.id)
     project_dataset.project_dataset_levels << pdl
+
+    pdl.update(status_id: 3)
 
     email = CasMailer.with(project: project, project_dataset_level: pdl).dataset_level_approved_status_updated_to_user
 
@@ -153,9 +157,8 @@ class ProjectsMailerTest < ActionMailer::TestCase
     dataset = Dataset.find_by(name: 'Extra CAS Dataset One')
     project_dataset = ProjectDataset.new(dataset: dataset, terms_accepted: true)
     project.project_datasets << project_dataset
-    pdl = ProjectDatasetLevel.new(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
-                                  approved: nil)
-    project_dataset.project_dataset_levels << pdl
+    ProjectDatasetLevel.create(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
+                               project_dataset_id: project_dataset.id)
 
     project.transition_to!(workflow_states(:submitted))
 
