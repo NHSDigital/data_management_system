@@ -161,8 +161,8 @@ class Project < ApplicationRecord
   scope :contributors, ->(user) { joins(:grants).where(
                                   grants: { roleable: ProjectRole.can_edit, user_id: user.id }) }
 
-  scope :cas_dataset_approval, lambda { |user, status_ids = [1, 2, 3]|
-    where(id: ProjectDataset.dataset_approval(user, status_ids).pluck(:project_id)).order(:id).
+  scope :cas_dataset_approval, lambda { |user, statuses = %i[request approved rejected]|
+    where(id: ProjectDataset.dataset_approval(user, statuses).pluck(:project_id)).order(:id).
       joins(:current_state).merge(Workflow::State.dataset_approval_states)
   }
 

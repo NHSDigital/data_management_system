@@ -14,8 +14,8 @@ class ProjectDatasetLevelTest < ActiveSupport::TestCase
 
     # Should not send out notifications for changes when at Draft
     assert_no_difference 'notifications.count' do
-      pdl.update(status_id: 2)
-      pdl.update(status_id: 1)
+      pdl.update(status: :approved)
+      pdl.update(status: :request)
     end
 
     project.transition_to!(workflow_states(:submitted))
@@ -23,7 +23,7 @@ class ProjectDatasetLevelTest < ActiveSupport::TestCase
     assert_equal 'SUBMITTED', project.current_state&.id
 
     assert_difference 'notifications.count', 4 do
-      pdl.update(status_id: 2)
+      pdl.update(status: :approved)
     end
 
     assert_equal notifications.last.body, "CAS application #{project.id} - Dataset 'Extra CAS " \
@@ -31,7 +31,7 @@ class ProjectDatasetLevelTest < ActiveSupport::TestCase
                                           "'Approved' for level 1.\n\n"
 
     assert_difference 'notifications.count', 4 do
-      pdl.update(status_id: 3)
+      pdl.update(status: :rejected)
     end
 
     assert_equal notifications.last.body, "CAS application #{project.id} - Dataset 'Extra CAS " \
@@ -39,7 +39,7 @@ class ProjectDatasetLevelTest < ActiveSupport::TestCase
                                           "'Rejected' for level 1.\n\n"
 
     assert_no_difference 'notifications.count' do
-      pdl.update(status_id: 1)
+      pdl.update(status: :request)
     end
   end
 
@@ -56,15 +56,15 @@ class ProjectDatasetLevelTest < ActiveSupport::TestCase
 
     # Should not send out notifications for changes when at Draft
     assert_no_difference 'notifications.count' do
-      pdl.update(status_id: 2)
-      pdl.update(status_id: 1)
+      pdl.update(status: :approved)
+      pdl.update(status: :request)
     end
 
     project.transition_to!(workflow_states(:submitted))
     project.reload_current_state
 
     assert_difference 'notifications.count', 1 do
-      pdl.update(status_id: 2)
+      pdl.update(status: :approved)
     end
 
     assert_equal notifications.last.body, "Your CAS dataset access request for 'Extra CAS " \
@@ -72,7 +72,7 @@ class ProjectDatasetLevelTest < ActiveSupport::TestCase
                                           "'Approved' for level 1.\n\n"
 
     assert_difference 'notifications.count', 1 do
-      pdl.update(status_id: 3)
+      pdl.update(status: :rejected)
     end
 
     assert_equal notifications.last.body, "Your CAS dataset access request for 'Extra CAS " \
@@ -80,7 +80,7 @@ class ProjectDatasetLevelTest < ActiveSupport::TestCase
                                           "'Rejected' for level 1.\n\n"
 
     assert_no_difference 'notifications.count' do
-      pdl.update(status_id: 1)
+      pdl.update(status: :request)
     end
   end
 
@@ -90,11 +90,11 @@ class ProjectDatasetLevelTest < ActiveSupport::TestCase
     project.project_datasets << project_dataset
     pdl = ProjectDatasetLevel.create(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
                                      project_dataset_id: project_dataset.id)
-    pdl.update(status_id: 2)
+    pdl.update(status: :approved)
     project.transition_to!(workflow_states(:submitted))
 
     assert_no_difference 'notifications.count' do
-      pdl.update(status_id: 1)
+      pdl.update(status: :request)
     end
   end
 
@@ -105,12 +105,12 @@ class ProjectDatasetLevelTest < ActiveSupport::TestCase
     project.project_datasets << project_dataset
     pdl = ProjectDatasetLevel.create(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
                                      project_dataset_id: project_dataset.id)
-    pdl.update(status_id: 2, decided_at: date_time_now)
+    pdl.update(status: :approved, decided_at: date_time_now)
     project.transition_to!(workflow_states(:submitted))
 
     assert_equal pdl.decided_at, date_time_now
 
-    pdl.update(status_id: 1)
+    pdl.update(status: :request)
 
     assert_nil pdl.decided_at
   end
@@ -189,50 +189,59 @@ class ProjectDatasetLevelTest < ActiveSupport::TestCase
                'level 1 default datasets')
   end
 
-  test 'should validate uniqueness of status_id for requested approved and renewable' do
-    project_dataset = ProjectDataset.new(dataset: dataset(86), terms_accepted: true)
+  test 'should validate uniqueness of status for requested approved and renewable' do
     project = create_cas_project(owner: users(:no_roles))
-    project.project_datasets << project_dataset
+    project_dataset = ProjectDataset.create(dataset: dataset(86), terms_accepted: true,
+                                            project_id: project.id)
     status_1_l2_pdl = ProjectDatasetLevel.create(access_level_id: 2, selected: true,
                                                  project_dataset_id: project_dataset.id)
-    status_1_l2_pdl_duplicate = ProjectDatasetLevel.create(access_level_id: 2, selected: true,
-                                                           project_dataset_id: project_dataset.id)
+    status_1_duplicate = ProjectDatasetLevel.create(access_level_id: 3, selected: true,
+                                                    project_dataset_id: project_dataset.id)
 
-    status_1_l2_pdl_duplicate.valid?
-    assert status_1_l2_pdl_duplicate.errors.messages[:status_id].include?('has already been taken')
+    # same status and project_dataset but different access_level_id so should not error
+    status_1_duplicate.valid?
+    refute status_1_duplicate.errors.messages[:status].include?('has already been taken')
 
-    status_1_l2_pdl_duplicate.update(access_level_id: 3)
-    status_1_l2_pdl_duplicate.valid?
-    refute status_1_l2_pdl_duplicate.errors.messages[:status_id].include?('has already been taken')
+    # same access_level_id, status of request and project_dataset so should error
+    status_1_duplicate.update(access_level_id: 2)
+    status_1_duplicate.valid?
+    assert status_1_duplicate.errors.messages[:status].include?('has already been taken')
 
-    project_dataset2 = ProjectDataset.new(dataset: dataset(85), terms_accepted: true)
-    project.project_datasets << project_dataset2
-    status_1_l2_pdl_duplicate.update(access_level_id: 2, project_dataset_id: project_dataset2.id)
-    status_1_l2_pdl_duplicate.valid?
-    refute status_1_l2_pdl_duplicate.errors.messages[:status_id].include?('has already been taken')
+    # same status and access_level_id but different project_dataset so should not error
+    project_dataset2 = ProjectDataset.create(dataset: dataset(85), terms_accepted: true,
+                                             project_id: project.id)
+    status_1_duplicate.update(project_dataset_id: project_dataset2.id)
+    status_1_duplicate.valid?
+    refute status_1_duplicate.errors.messages[:status].include?('has already been taken')
 
-    status_1_l2_pdl_duplicate.update(project_dataset_id: project_dataset.id, status_id: 2)
-    status_1_l2_pdl_duplicate.valid?
-    refute status_1_l2_pdl_duplicate.errors.messages[:status_id].include?('has already been taken')
+    # same project_dataset and access_level_id but different status so should not error
+    status_1_duplicate.update(project_dataset_id: project_dataset.id, status: :approved)
+    status_1_duplicate.valid?
+    refute status_1_duplicate.errors.messages[:status].include?('has already been taken')
 
-    status_1_l2_pdl.update(status_id: 2)
+    # same access_level_id, status of approved and project_dataset so should error
+    status_1_l2_pdl.update(status: :approved)
     status_1_l2_pdl.valid?
-    assert status_1_l2_pdl.errors.messages[:status_id].include?('has already been taken')
+    assert status_1_l2_pdl.errors.messages[:status].include?('has already been taken')
 
-    status_1_l2_pdl.update(status_id: 3)
+    # same project_dataset and access_level_id but different status so should not error
+    status_1_l2_pdl.update(status: :rejected)
     status_1_l2_pdl.valid?
-    refute status_1_l2_pdl.errors.messages[:status_id].include?('has already been taken')
+    refute status_1_l2_pdl.errors.messages[:status].include?('has already been taken')
 
-    status_1_l2_pdl_duplicate.update(status_id: 3)
-    status_1_l2_pdl_duplicate.valid?
-    refute status_1_l2_pdl_duplicate.errors.messages[:status_id].include?('has already been taken')
+    # same project_dataset, status and access_level_id but status is rejected so should not error
+    status_1_duplicate.update(status: :rejected)
+    status_1_duplicate.valid?
+    refute status_1_duplicate.errors.messages[:status].include?('has already been taken')
 
-    status_1_l2_pdl_duplicate.update(status_id: 4)
-    status_1_l2_pdl_duplicate.valid?
-    refute status_1_l2_pdl_duplicate.errors.messages[:status_id].include?('has already been taken')
+    # same project_dataset and access_level_id but different status so should not error
+    status_1_duplicate.update(status: :renewable)
+    status_1_duplicate.valid?
+    refute status_1_duplicate.errors.messages[:status].include?('has already been taken')
 
-    status_1_l2_pdl.update(status_id: 4)
+    # same access_level_id, status of renewable and project_dataset so should error
+    status_1_l2_pdl.update(status: :renewable)
     status_1_l2_pdl.valid?
-    assert status_1_l2_pdl.errors.messages[:status_id].include?('has already been taken')
+    assert status_1_l2_pdl.errors.messages[:status].include?('has already been taken')
   end
 end

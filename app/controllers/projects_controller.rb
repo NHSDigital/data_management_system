@@ -77,7 +77,7 @@ class ProjectsController < ApplicationController
   def cas_approvals
     @projects = Project.search(search_params).accessible_by(current_ability, :read).
                 order(updated_at: :desc)
-    @my_dataset_approvals = @projects.cas_dataset_approval(current_user, [1]).
+    @my_dataset_approvals = @projects.cas_dataset_approval(current_user, [:request]).
                             order(updated_at: :desc)
     @my_access_approvals = @projects.cas_access_approval.order(updated_at: :desc)
 
@@ -214,8 +214,7 @@ class ProjectsController < ApplicationController
   def project_dataset_levels_bulk_approvals
     @project.transaction do
       ProjectDatasetLevel.default_level_2_3_bulk_approvable(@project, current_user).
-        update_all(status_id: Lookups::ProjectDatasetLevelStatus.find_by(value: '2').id,
-                   decided_at: Time.zone.now)
+        update_all(status: :approved, decided_at: Time.zone.now)
     end
   end
 

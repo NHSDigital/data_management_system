@@ -25,7 +25,7 @@ class Ability
     can %i[update destroy], Project, project_type_id: ProjectType.cas.pluck(:id),
                                      grants: { user_id: user.id, roleable: ProjectRole.owner },
                                      current_state: { id: 'DRAFT' }
-    can %i[reapply], ProjectDatasetLevel, status_id: 'rejected', project_dataset: {
+    can %i[reapply], ProjectDatasetLevel, status: :rejected, project_dataset: {
       project:
         { project_type_id: ProjectType.cas.pluck(:id),
           current_state: {
@@ -34,7 +34,7 @@ class Ability
           grants: { user_id: user.id,
                     roleable: ProjectRole.owner } }
     }
-    can %i[renew], ProjectDatasetLevel, status_id: 'renewable', project_dataset: {
+    can %i[renew], ProjectDatasetLevel, status: :renewable, project_dataset: {
       project:
         { grants: { user_id: user.id, roleable: ProjectRole.owner } }
     }
@@ -374,7 +374,7 @@ class Ability
     can %i[read project_dataset_levels_bulk_approvals], Project,
         project_type_id: ProjectType.cas.pluck(:id),
         id: Project.cas_dataset_approval(user).pluck(:id)
-    can %i[approve reject], ProjectDatasetLevel, status_id: 'request', project_dataset: {
+    can %i[approve reject], ProjectDatasetLevel, status: :request, project_dataset: {
       dataset_id: user.datasets.pluck(:id),
       project_id: Project.cas_dataset_approval(user).pluck(:id)
     }

@@ -98,12 +98,12 @@ class ProjectsHelperTest < ActionView::TestCase
     project.project_datasets << project_dataset
     pdl = ProjectDatasetLevel.create(expiry_date: Time.zone.today,
                                      project_dataset_id: project_dataset.id)
-    assert_equal 'request', pdl.status_id
+    assert_equal 'request', pdl.status
     assert_equal "#{Time.zone.today.strftime('%d/%m/%Y')} (requested)", display_level_date(pdl)
 
-    pdl.update(status_id: 2)
+    pdl.update(status: :approved)
 
-    assert_equal 'approved', pdl.status_id
+    assert_equal 'approved', pdl.status
     assert_equal "#{Time.zone.today.strftime('%d/%m/%Y')} (expiry)", display_level_date(pdl)
   end
 end

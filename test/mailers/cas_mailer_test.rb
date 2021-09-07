@@ -11,7 +11,7 @@ class ProjectsMailerTest < ActionMailer::TestCase
                                      project_dataset_id: project_dataset.id)
     project_dataset.project_dataset_levels << pdl
 
-    pdl.update(status_id: 3)
+    pdl.update(status: :rejected)
 
     email = CasMailer.with(project: project, project_dataset_level: pdl).dataset_level_approved_status_updated
 
@@ -34,7 +34,7 @@ class ProjectsMailerTest < ActionMailer::TestCase
                                      project_dataset_id: project_dataset.id)
     project_dataset.project_dataset_levels << pdl
 
-    pdl.update(status_id: 3)
+    pdl.update(status: :rejected)
 
     email = CasMailer.with(project: project, project_dataset_level: pdl).dataset_level_approved_status_updated_to_user
 

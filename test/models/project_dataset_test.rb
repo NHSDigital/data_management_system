@@ -37,12 +37,12 @@ class ProjectDatasetTest < ActiveSupport::TestCase
 
     assert_equal 1, ProjectDataset.dataset_approval(users(:cas_dataset_approver)).count
 
-    pdl.status_id = 2
+    pdl.status = :approved
     pdl.save!
 
     assert_equal 1, ProjectDataset.dataset_approval(users(:cas_dataset_approver)).count
 
-    pdl.status_id = 2
+    pdl.status = :approved
     pdl.save!
 
     assert_equal 1, ProjectDataset.dataset_approval(users(:cas_dataset_approver)).count
@@ -57,7 +57,7 @@ class ProjectDatasetTest < ActiveSupport::TestCase
 
     assert_equal 1, ProjectDataset.dataset_approval(users(:cas_dataset_approver), [1]).count
 
-    pdl.status_id = 2
+    pdl.status = :approved
     pdl.save!
 
     assert_equal 0, ProjectDataset.dataset_approval(users(:cas_dataset_approver), [1]).count

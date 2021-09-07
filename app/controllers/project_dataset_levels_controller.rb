@@ -9,11 +9,11 @@ class ProjectDatasetLevelsController < ApplicationController
   respond_to :js, :html
 
   def approve
-    @project_dataset_level.update(status_id: 'approved', decided_at: Time.zone.now)
+    @project_dataset_level.update(status: :approved, decided_at: Time.zone.now)
   end
 
   def reject
-    @project_dataset_level.update(status_id: 'rejected', decided_at: Time.zone.now)
+    @project_dataset_level.update(status: :rejected, decided_at: Time.zone.now)
   end
 
   def reapply
@@ -56,7 +56,7 @@ class ProjectDatasetLevelsController < ApplicationController
         format.html { redirect_to project_path(new_pdl.project, anchor: '!datasets'), notice: msg }
         format.js { redirect_to project_path(new_pdl.project, anchor: '!datasets'), notice: msg }
       end
-      @project_dataset_level.update(status_id: 2) if type == 'Renewal'
+      @project_dataset_level.approved! if type == 'Renewal'
     else
       respond_to do |format|
         msg = "#{type} failed - please provide a valid expiry date in the future"
@@ -67,7 +67,7 @@ class ProjectDatasetLevelsController < ApplicationController
   end
 
   def close_existing_approved_levels
-    ProjectDatasetLevel.same_access_level_levels(@project_dataset_level).where(status_id: [2, 4]).
-      update_all(status_id: 5)
+    ProjectDatasetLevel.same_access_level_levels(@project_dataset_level).
+      where(status: %i[approved renewable]).update_all(status: :closed)
   end
 end

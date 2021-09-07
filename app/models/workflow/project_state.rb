@@ -162,7 +162,7 @@ module Workflow
     def notify_and_mail_requires_dataset_approval(project)
       DatasetRole.fetch(:approver).users.each do |user|
         matching_datasets = project.project_datasets.any? do |pd|
-          ProjectDataset.dataset_approval(user, [1]).include? pd
+          ProjectDataset.dataset_approval(user, [:request]).include? pd
         end
         next unless matching_datasets
 

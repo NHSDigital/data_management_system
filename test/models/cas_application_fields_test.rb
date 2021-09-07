@@ -12,13 +12,14 @@ class CasApplicationFieldsTest < ActiveSupport::TestCase
     application = Project.new.tap do |app|
       app.owner = users(:no_roles)
       app.project_type = project_types(:cas)
-      default_project_dataset = ProjectDataset.create(dataset: dataset(86), terms_accepted: true)
-      app.project_datasets << default_project_dataset
-      pdl = ProjectDatasetLevel.new(access_level_id: 1, selected: true)
-      default_project_dataset.project_dataset_levels << pdl
       app.build_cas_application_fields(extra_datasets_rationale: nil)
       app.save!(validate: false)
     end
+    default_project_dataset = ProjectDataset.new(dataset: dataset(86), terms_accepted: true)
+    application.project_datasets << default_project_dataset
+    pdl = ProjectDatasetLevel.new(access_level_id: 1, selected: true,
+                                  expiry_date: Time.zone.today + 2.months)
+    default_project_dataset.project_dataset_levels << pdl
 
     application.cas_application_fields.valid?
     refute application.cas_application_fields.errors.messages[:extra_datasets_rationale].
@@ -52,22 +53,23 @@ class CasApplicationFieldsTest < ActiveSupport::TestCase
     application = Project.new.tap do |app|
       app.owner = users(:no_roles)
       app.project_type = project_types(:cas)
-      default_project_dataset = ProjectDataset.create(dataset: dataset(86), terms_accepted: true)
-      app.project_datasets << default_project_dataset
-      level_2_pdl = ProjectDatasetLevel.new(access_level_id: 2, selected: true)
-      default_project_dataset.project_dataset_levels << level_2_pdl
       app.build_cas_application_fields(reason_justification: nil)
       app.save!(validate: false)
     end
+
+    default_project_dataset = ProjectDataset.new(dataset: dataset(86), terms_accepted: true)
+    application.project_datasets << default_project_dataset
+    level_2_pdl = ProjectDatasetLevel.new(access_level_id: 2, selected: true)
+    default_project_dataset.project_dataset_levels << level_2_pdl
 
     application.cas_application_fields.valid?
     refute application.cas_application_fields.errors.messages[:reason_justification].
       include? 'Access level justification is required when selecting access level 1 for any ' \
                'dataset'
 
-    level1_pdl = ProjectDatasetLevel.new(access_level_id: 1, selected: nil)
-    application.project_datasets.last.project_dataset_levels << level1_pdl
-    application.save!(validate: false)
+    level1_pdl = ProjectDatasetLevel.create(access_level_id: 1, selected: nil,
+                                            expiry_date: Time.zone.now + 1.month,
+                                            project_dataset_id: default_project_dataset.id)
 
     application.cas_application_fields.valid?
     refute application.cas_application_fields.errors.messages[:reason_justification].
@@ -75,6 +77,7 @@ class CasApplicationFieldsTest < ActiveSupport::TestCase
                'dataset'
 
     level1_pdl.update(selected: true)
+    application.reload
 
     application.cas_application_fields.valid?
     assert application.cas_application_fields.errors.messages[:reason_justification].

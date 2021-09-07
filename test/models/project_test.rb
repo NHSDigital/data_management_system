@@ -451,7 +451,7 @@ class ProjectTest < ActiveSupport::TestCase
 
     assert_equal 1, Project.cas_dataset_approval(user).count
 
-    pdl.status_id = 2
+    pdl.status = :approved
     pdl.save!(validate: false)
 
     # Test the use of the scope with and without approved = nil argument

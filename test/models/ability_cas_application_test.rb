@@ -22,8 +22,8 @@ class AbilityCasApplicationTest < ActiveSupport::TestCase
                                                       expiry_date: Time.zone.today + 1.week,
                                                       project_dataset_id: project_dataset2.id)
 
-    project_dataset1_pdl.update(status_id: 3)
-    project_dataset2_pdl.update(status_id: 3)
+    project_dataset1_pdl.update(status: :rejected)
+    project_dataset2_pdl.update(status: :rejected)
 
     applicant_ablity = Ability.new(applicant)
 
@@ -91,7 +91,7 @@ class AbilityCasApplicationTest < ActiveSupport::TestCase
     assert applicant_ablity.can? :approve, pdl
     assert applicant_ablity.can? :reject, pdl
 
-    pdl.update(status_id: 2)
+    pdl.update(status: :approved)
     matched_dataset_project.transition_to(Workflow::State.find('ACCESS_APPROVER_APPROVED'))
     applicant_ablity = Ability.new(applicant)
 
