@@ -6,8 +6,6 @@
     "stimulus": "^1.1.1",
     "stimulus-checkbox-select-all": "^4.0.0"
   },
-  "devDependencies": {
-    "webpack-dev-server": "^3.7.2"
-  },
+  "devDependencies": {},
   "private": true
 }
