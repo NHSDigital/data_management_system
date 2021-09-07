@@ -269,7 +269,8 @@ module Workflow
 
     test 'should notify cas dataset approver at submitted for project with their dataset' do
       one_dataset_project = create_cas_project(owner: users(:no_roles))
-      project_dataset = ProjectDataset.new(dataset: dataset(83), terms_accepted: true)
+      project_dataset = ProjectDataset.new(dataset: Dataset.find_by(name: 'Extra CAS Dataset One'),
+                                           terms_accepted: true)
       one_dataset_project.project_datasets << project_dataset
       ProjectDatasetLevel.create(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
                                  project_dataset_id: project_dataset.id)
@@ -290,11 +291,13 @@ module Workflow
       end
 
       two_dataset_project = create_cas_project(owner: users(:no_roles))
-      project_dataset = ProjectDataset.new(dataset: dataset(83), terms_accepted: true)
+      project_dataset = ProjectDataset.new(dataset: Dataset.find_by(name: 'Extra CAS Dataset One'),
+                                           terms_accepted: true)
       two_dataset_project.project_datasets << project_dataset
       ProjectDatasetLevel.create(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
                                  project_dataset_id: project_dataset.id)
-      project_dataset = ProjectDataset.new(dataset: dataset(84), terms_accepted: true)
+      project_dataset = ProjectDataset.new(dataset: Dataset.find_by(name: 'Extra CAS Dataset Two'),
+                                           terms_accepted: true)
       two_dataset_project.project_datasets << project_dataset
       ProjectDatasetLevel.create(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
                                  project_dataset_id: project_dataset.id)

@@ -149,8 +149,12 @@ class CasNotifierTest < ActiveSupport::TestCase
   test 'should generate requires_dataset_approval Notifications' do
     project = Project.new(project_type: ProjectType.find_by(name: 'CAS')).tap do |a|
       a.owner = users(:no_roles)
-      a.project_datasets << ProjectDataset.new(dataset: dataset(83), terms_accepted: true)
-      a.project_datasets << ProjectDataset.new(dataset: dataset(84), terms_accepted: true)
+      a.project_datasets << ProjectDataset.new(dataset: Dataset.
+                                                          find_by(name: 'Extra CAS Dataset One'),
+                                               terms_accepted: true)
+      a.project_datasets << ProjectDataset.new(dataset: Dataset.
+                                                          find_by(name: 'Extra CAS Dataset Two'),
+                                               terms_accepted: true)
       a.save!
     end
     title = 'CAS Application Requires Dataset Approval'

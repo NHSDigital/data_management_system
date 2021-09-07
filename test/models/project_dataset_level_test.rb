@@ -85,7 +85,8 @@ class ProjectDatasetLevelTest < ActiveSupport::TestCase
   end
 
   test 'should not notify dataset approver on dataset level approved update to nil' do
-    project_dataset = ProjectDataset.new(dataset: dataset(83), terms_accepted: true)
+    project_dataset = ProjectDataset.new(dataset: Dataset.find_by(name: 'Extra CAS Dataset One'),
+                                         terms_accepted: true)
     project = create_cas_project(owner: users(:no_roles))
     project.project_datasets << project_dataset
     pdl = ProjectDatasetLevel.create(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
@@ -100,7 +101,8 @@ class ProjectDatasetLevelTest < ActiveSupport::TestCase
 
   test 'set_decided_at_to_nil' do
     date_time_now = Time.zone.now
-    project_dataset = ProjectDataset.new(dataset: dataset(83), terms_accepted: true)
+    project_dataset = ProjectDataset.new(dataset: Dataset.find_by(name: 'Extra CAS Dataset One'),
+                                         terms_accepted: true)
     project = create_cas_project(owner: users(:no_roles))
     project.project_datasets << project_dataset
     pdl = ProjectDatasetLevel.create(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
@@ -116,7 +118,8 @@ class ProjectDatasetLevelTest < ActiveSupport::TestCase
   end
 
   test 'level 2 and 3 default datasets should have expiry date set to 1 year on creation' do
-    project_dataset = ProjectDataset.new(dataset: dataset(85), terms_accepted: true)
+    project_dataset = ProjectDataset.new(dataset: Dataset.find_by(name: 'No grant dataset'),
+                                         terms_accepted: true)
     assert project_dataset.dataset.cas_defaults?
     project = create_cas_project(owner: users(:no_roles))
     project.project_datasets << project_dataset
@@ -134,7 +137,8 @@ class ProjectDatasetLevelTest < ActiveSupport::TestCase
 
     refute_equal 1.year.from_now.to_date, wrong_access_level.expiry_date
 
-    project_dataset = ProjectDataset.new(dataset: dataset(83), terms_accepted: true)
+    project_dataset = ProjectDataset.new(dataset: Dataset.find_by(name: 'Extra CAS Dataset One'),
+                                         terms_accepted: true)
     assert project_dataset.dataset.cas_extras?
     project.project_datasets << project_dataset
     wrong_dataset_type_and_date = ProjectDatasetLevel.create(access_level_id: 2,
@@ -150,7 +154,8 @@ class ProjectDatasetLevelTest < ActiveSupport::TestCase
   end
 
   test 'expiry date must be present for level 1 and extra datasets' do
-    project_dataset = ProjectDataset.new(dataset: dataset(85), terms_accepted: true)
+    project_dataset = ProjectDataset.new(dataset: Dataset.find_by(name: 'No grant dataset'),
+                                         terms_accepted: true)
     assert project_dataset.dataset.cas_defaults?
     project = create_cas_project(owner: users(:no_roles))
     project.project_datasets << project_dataset
@@ -176,7 +181,8 @@ class ProjectDatasetLevelTest < ActiveSupport::TestCase
       include?('expiry date must be present for all selected extra datasets and any selected ' \
                'level 1 default datasets')
 
-    project_dataset = ProjectDataset.new(dataset: dataset(83), terms_accepted: true)
+    project_dataset = ProjectDataset.new(dataset: Dataset.find_by(name: 'Extra CAS Dataset One'),
+                                         terms_accepted: true)
     assert project_dataset.dataset.cas_extras?
     project.project_datasets << project_dataset
 
@@ -184,14 +190,15 @@ class ProjectDatasetLevelTest < ActiveSupport::TestCase
     project_dataset.project_dataset_levels << level_2_extra_pdl
 
     level_2_extra_pdl.valid?
-    refute level_2_default_pdl.errors.messages[:expiry_date].
+    assert level_2_extra_pdl.errors.messages[:expiry_date].
       include?('expiry date must be present for all selected extra datasets and any selected ' \
                'level 1 default datasets')
   end
 
   test 'should validate uniqueness of status for requested approved and renewable' do
     project = create_cas_project(owner: users(:no_roles))
-    project_dataset = ProjectDataset.create(dataset: dataset(86), terms_accepted: true,
+    project_dataset = ProjectDataset.create(dataset: Dataset.find_by(name: 'Cas Defaults Dataset'),
+                                            terms_accepted: true,
                                             project_id: project.id)
     status_1_l2_pdl = ProjectDatasetLevel.create(access_level_id: 2, selected: true,
                                                  project_dataset_id: project_dataset.id)
@@ -208,7 +215,8 @@ class ProjectDatasetLevelTest < ActiveSupport::TestCase
     assert status_1_duplicate.errors.messages[:status].include?('has already been taken')
 
     # same status and access_level_id but different project_dataset so should not error
-    project_dataset2 = ProjectDataset.create(dataset: dataset(85), terms_accepted: true,
+    project_dataset2 = ProjectDataset.create(dataset: Dataset.find_by(name: 'No grant dataset'),
+                                             terms_accepted: true,
                                              project_id: project.id)
     status_1_duplicate.update(project_dataset_id: project_dataset2.id)
     status_1_duplicate.valid?

@@ -554,7 +554,8 @@ class ProjectTest < ActiveSupport::TestCase
 
   test 'destroy_project_datasets_without_any_levels after_save callback' do
     project = create_cas_project(owner: users(:standard_user2))
-    project_dataset = ProjectDataset.new(dataset: dataset(83), terms_accepted: true)
+    project_dataset = ProjectDataset.new(dataset: Dataset.find_by(name: 'Extra CAS Dataset One'),
+                                         terms_accepted: true)
     project.project_datasets << project_dataset
     pdl1 = ProjectDatasetLevel.new(access_level_id: 1, expiry_date: Time.zone.today, selected: true)
     pdl2 = ProjectDatasetLevel.new(access_level_id: 2, expiry_date: Time.zone.today, selected: true)

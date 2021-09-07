@@ -100,7 +100,7 @@ class ProjectDatasetLevel < ApplicationRecord
   def expiry_date_must_be_present_for_level_one_or_extra_datasets
     return unless project.cas?
     return unless selected?
-    return if project_dataset.dataset.cas_extras? || [2, 3].include?(access_level_id)
+    return unless access_level_id == 1 || project_dataset.dataset.cas_extras?
     return if expiry_date.present?
 
     errors.add :expiry_date, :must_have_expiry_date

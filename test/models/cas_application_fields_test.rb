@@ -15,7 +15,8 @@ class CasApplicationFieldsTest < ActiveSupport::TestCase
       app.build_cas_application_fields(extra_datasets_rationale: nil)
       app.save!(validate: false)
     end
-    default_project_dataset = ProjectDataset.new(dataset: dataset(86), terms_accepted: true)
+    default_project_dataset = ProjectDataset.new(dataset: Dataset.find_by(name: 'Cas Defaults Dataset'),
+                                                 terms_accepted: true)
     application.project_datasets << default_project_dataset
     pdl = ProjectDatasetLevel.new(access_level_id: 1, selected: true,
                                   expiry_date: Time.zone.today + 2.months)
@@ -25,7 +26,9 @@ class CasApplicationFieldsTest < ActiveSupport::TestCase
     refute application.cas_application_fields.errors.messages[:extra_datasets_rationale].
       include? 'Dataset justification is required when selecting any datasets'
 
-    extra_project_dataset = ProjectDataset.create(dataset: dataset(83), terms_accepted: true)
+    extra_project_dataset = ProjectDataset.create(dataset: Dataset.
+                                                             find_by(name: 'Extra CAS Dataset One'),
+                                                  terms_accepted: true)
     application.project_datasets << extra_project_dataset
     pdl2 = ProjectDatasetLevel.new(access_level_id: 2, selected: nil,
                                    expiry_date: Time.zone.today + 2.months)
@@ -57,7 +60,8 @@ class CasApplicationFieldsTest < ActiveSupport::TestCase
       app.save!(validate: false)
     end
 
-    default_project_dataset = ProjectDataset.new(dataset: dataset(86), terms_accepted: true)
+    default_project_dataset = ProjectDataset.new(dataset: Dataset.find_by(name: 'Cas Defaults Dataset'),
+                                                 terms_accepted: true)
     application.project_datasets << default_project_dataset
     level_2_pdl = ProjectDatasetLevel.new(access_level_id: 2, selected: true)
     default_project_dataset.project_dataset_levels << level_2_pdl
@@ -96,7 +100,8 @@ class CasApplicationFieldsTest < ActiveSupport::TestCase
     application = Project.new.tap do |app|
       app.owner = users(:no_roles)
       app.project_type = project_types(:cas)
-      default_project_dataset = ProjectDataset.create(dataset: dataset(86), terms_accepted: true)
+      default_project_dataset = ProjectDataset.create(dataset: Dataset.find_by(name: 'Cas Defaults Dataset'),
+                                                      terms_accepted: true)
       app.project_datasets << default_project_dataset
       app.build_cas_application_fields(declaration: [])
       app.save!(validate: false)

@@ -93,7 +93,8 @@ class ProjectsHelperTest < ActionView::TestCase
   end
 
   test 'display_level_date' do
-    project_dataset = ProjectDataset.new(dataset: dataset(83), terms_accepted: true)
+    project_dataset = ProjectDataset.new(dataset: Dataset.find_by(name: 'Extra CAS Dataset One'),
+                                         terms_accepted: true)
     project = create_cas_project(owner: users(:no_roles))
     project.project_datasets << project_dataset
     pdl = ProjectDatasetLevel.create(expiry_date: Time.zone.today,

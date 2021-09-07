@@ -82,7 +82,8 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
     sign_in user
 
     project = create_cas_project(owner: users(:no_roles))
-    project_dataset = ProjectDataset.new(dataset: dataset(86), terms_accepted: true)
+    project_dataset = ProjectDataset.new(dataset: Dataset.find_by(name: 'Cas Defaults Dataset'),
+                                         terms_accepted: true)
     project.project_datasets << project_dataset
     l1_pdl = ProjectDatasetLevel.create(access_level_id: 1, expiry_date: Time.zone.today + 2.months,
                                         selected: true, project_dataset_id: project_dataset.id)
@@ -212,7 +213,8 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
     sign_in user
 
     project = create_cas_project(owner: users(:no_roles))
-    project_dataset = ProjectDataset.new(dataset: dataset(86), terms_accepted: true)
+    project_dataset = ProjectDataset.new(dataset: Dataset.find_by(name: 'Cas Defaults Dataset'),
+                                         terms_accepted: true)
     project.project_datasets << project_dataset
     l1_pdl = ProjectDatasetLevel.create(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
                                         selected: true, project_dataset_id: project_dataset.id)
@@ -450,9 +452,13 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
 
   test 'bulk approve button and highlighting of pending datasets should behave correctly' do
     project = create_cas_project(owner: users(:standard_user2))
-    grant_default_dataset = ProjectDataset.create(dataset: dataset(86), terms_accepted: true,
+    grant_default_dataset = ProjectDataset.create(dataset: Dataset.
+                                                             find_by(name: 'Cas Defaults Dataset'),
+                                                  terms_accepted: true,
                                                   project_id: project.id)
-    nogrant_extra_dataset = ProjectDataset.create(dataset: dataset(84), terms_accepted: true,
+    nogrant_extra_dataset = ProjectDataset.create(dataset: Dataset.
+                                                             find_by(name: 'Extra CAS Dataset Two'),
+                                                  terms_accepted: true,
                                                   project_id: project.id)
     project.project_datasets.push(grant_default_dataset, nogrant_extra_dataset)
     rejected_default_l1_pdl = ProjectDatasetLevel.create(access_level_id: 1, selected: true,
@@ -603,7 +609,8 @@ class CasDatasetApprovalTest < ActionDispatch::IntegrationTest
 
   test 'ensure expired project_dataset_levels display in closed table' do
     project = create_cas_project(owner: users(:standard_user2))
-    default_dataset = ProjectDataset.create(dataset: dataset(86), terms_accepted: true)
+    default_dataset = ProjectDataset.create(dataset: Dataset.find_by(name: 'Cas Defaults Dataset'),
+                                            terms_accepted: true)
     project.project_datasets << default_dataset
     default_l2_pdl = ProjectDatasetLevel.create(access_level_id: 2, selected: true,
                                                 project_dataset_id: default_dataset.id)
