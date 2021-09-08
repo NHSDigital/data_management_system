@@ -8,7 +8,7 @@ class ProjectDatasetLevel < ApplicationRecord
   after_update :notify_cas_approved_change
 
   validate :expiry_date_must_be_present_for_level_one_or_extra_datasets
-  validate :must_be_future_expiry_date
+  validate :must_be_future_expiry_date, on: %i[create update]
   validates :status, uniqueness: { scope: %i[access_level_id project_dataset_id] },
                      if: proc { |pdl| %w[request approved renewable].include?(pdl.status) }
 
