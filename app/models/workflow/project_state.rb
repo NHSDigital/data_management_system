@@ -25,10 +25,8 @@ module Workflow
     after_save :notify_user_cas_application_approved
     after_save :notify_user_cas_application_rejected
     after_save :notify_cas_access_granted
-    after_save :notify_requires_renewal
-    after_save :notify_account_renewed
     after_save :notify_account_closed
-    after_save :auto_transition_access_approver_approved_to_access_granted
+    after_commit :auto_transition_access_approver_approved_to_access_granted
 
     delegate :assigned_user, :assigning_user, to: :current_assignment, allow_nil: true
     delegate :full_name, to: :assigned_user,  prefix: true, allow_nil: true
@@ -140,36 +138,6 @@ module Workflow
       CasMailer.with(project: project).send(:account_access_granted_to_user).deliver_later
     end
 
-    def notify_requires_renewal
-      return unless project.cas?
-      return unless state_id == 'RENEWAL'
-
-      CasNotifier.requires_renewal_to_user(project)
-      CasMailer.with(project: project).send(:requires_renewal_to_user).deliver_later
-    end
-
-    def notify_account_renewed
-      return unless project.cas?
-      return unless state_id == 'ACCESS_GRANTED'
-      return unless project.current_state.id == 'RENEWAL'
-
-      DatasetRole.fetch(:approver).users.each do |user|
-        matching_datasets = project.project_datasets.any? do |pd|
-          ProjectDataset.dataset_approval(user).include? pd
-        end
-        next unless matching_datasets
-
-        CasNotifier.account_renewed_dataset_approver(project, user)
-        CasMailer.with(project: project, user: user).send(:account_renewed_dataset_approver).
-          deliver_later
-      end
-
-      User.cas_manager_and_access_approvers.each do |user|
-        CasNotifier.account_renewed(project, user)
-      end
-      CasMailer.with(project: project).send(:account_renewed).deliver_later
-    end
-
     def notify_account_closed
       return unless project.cas?
       return unless state_id == 'ACCOUNT_CLOSED'
@@ -188,15 +156,13 @@ module Workflow
 
       # TODO: this is a stopgap and will need script to generate access adding here
 
-      self.project_id = project_id
-      self.state_id = 'ACCESS_GRANTED'
-      save!
+      project.transition_to!(Workflow::State.find('ACCESS_GRANTED'))
     end
 
     def notify_and_mail_requires_dataset_approval(project)
       DatasetRole.fetch(:approver).users.each do |user|
         matching_datasets = project.project_datasets.any? do |pd|
-          ProjectDataset.dataset_approval(user, [nil]).include? pd
+          ProjectDataset.dataset_approval(user, [:request]).include? pd
         end
         next unless matching_datasets
 

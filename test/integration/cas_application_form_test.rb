@@ -51,7 +51,7 @@ class CasApplicationFormTest < ActionDispatch::IntegrationTest
       assert has_selector?("#dataset_#{dataset(85).id}_level_1_check_box")
       assert has_selector?("#dataset_#{dataset(85).id}_level_1_expiry_datepicker")
       assert has_selector?("#dataset_#{dataset(85).id}_level_2_check_box")
-      assert has_selector?("#dataset_#{dataset(85).id}_level_2_expiry_datepicker")
+      assert has_no_selector?("#dataset_#{dataset(85).id}_level_2_expiry_datepicker")
       # level 3 not in datasets levels
       assert has_no_selector?("#dataset_#{dataset(85).id}_level_3_check_box")
       assert has_no_selector?("#dataset_#{dataset(85).id}_level_3_expiry_datepicker")
@@ -62,9 +62,9 @@ class CasApplicationFormTest < ActionDispatch::IntegrationTest
       assert has_no_selector?("#dataset_#{dataset(86).id}_level_1_check_box")
       assert has_no_selector?("#dataset_#{dataset(86).id}_level_1_expiry_datepicker")
       assert has_selector?("#dataset_#{dataset(86).id}_level_2_check_box")
-      assert has_selector?("#dataset_#{dataset(86).id}_level_2_expiry_datepicker")
+      assert has_no_selector?("#dataset_#{dataset(86).id}_level_2_expiry_datepicker")
       assert has_selector?("#dataset_#{dataset(86).id}_level_3_check_box")
-      assert has_selector?("#dataset_#{dataset(86).id}_level_3_expiry_datepicker")
+      assert has_no_selector?("#dataset_#{dataset(86).id}_level_3_expiry_datepicker")
     end
 
     within "#dataset_#{dataset(87).id}_row" do
@@ -72,7 +72,7 @@ class CasApplicationFormTest < ActionDispatch::IntegrationTest
       assert has_no_selector?("#dataset_#{dataset(87).id}_level_1_check_box")
       assert has_no_selector?("#dataset_#{dataset(87).id}_level_1_expiry_datepicker")
       assert has_selector?("#dataset_#{dataset(87).id}_level_2_check_box")
-      assert has_selector?("#dataset_#{dataset(87).id}_level_2_expiry_datepicker")
+      assert has_no_selector?("#dataset_#{dataset(87).id}_level_2_expiry_datepicker")
       assert has_no_selector?("#dataset_#{dataset(87).id}_level_3_check_box")
       assert has_no_selector?("#dataset_#{dataset(87).id}_level_3_expiry_datepicker")
     end
@@ -87,8 +87,12 @@ class CasApplicationFormTest < ActionDispatch::IntegrationTest
       app.project_type = project_types(:cas)
       app.build_cas_application_fields(address: 'Fake Street', organisation: 'PHE',
                                        declaration: %w[1Yes 2No 4Yes])
-      extra_project_dataset = ProjectDataset.create(dataset: dataset(83), terms_accepted: true)
-      default_project_dataset = ProjectDataset.create(dataset: dataset(86), terms_accepted: true)
+      extra_project_dataset = ProjectDataset.create(dataset: Dataset.
+                                                               find_by(name: 'Extra CAS Dataset One'),
+                                                    terms_accepted: true)
+      default_project_dataset = ProjectDataset.create(dataset: Dataset.
+                                                               find_by(name: 'Cas Defaults Dataset'),
+                                                      terms_accepted: true)
       app.project_datasets << extra_project_dataset
       app.project_datasets << default_project_dataset
       pdl1 = ProjectDatasetLevel.new(access_level_id: 1, expiry_date: Time.zone.today + 1.week, selected: true)
@@ -120,8 +124,6 @@ class CasApplicationFormTest < ActionDispatch::IntegrationTest
     within "#dataset_#{application.project_datasets.find_by(dataset_id: 86).dataset.id}_row" do
       assert has_no_checked_field?("dataset_#{dataset(86).id}_level_1_check_box")
       assert has_checked_field?("dataset_#{dataset(86).id}_level_2_check_box")
-      assert_equal find("#dataset_#{dataset(86).id}_level_2_expiry_datepicker").value,
-                   (Time.zone.today + 1.week).strftime('%d/%m/%Y')
       assert has_checked_field?("dataset_#{dataset(86).id}_level_3_check_box")
     end
 
@@ -138,14 +140,17 @@ class CasApplicationFormTest < ActionDispatch::IntegrationTest
     application = Project.new.tap do |app|
       app.owner = users(:no_roles)
       app.project_type = project_types(:cas)
-      extra_project_dataset = ProjectDataset.create(dataset: dataset(83), terms_accepted: true)
-      default_project_dataset = ProjectDataset.create(dataset: dataset(86), terms_accepted: true)
+      extra_project_dataset = ProjectDataset.create(dataset: Dataset.
+                                                               find_by(name: 'Extra CAS Dataset One'),
+                                                    terms_accepted: true)
+      default_project_dataset = ProjectDataset.create(dataset: Dataset.
+                                                                 find_by(name: 'Cas Defaults Dataset'),
+                                                      terms_accepted: true)
       app.project_datasets << extra_project_dataset
       app.project_datasets << default_project_dataset
       pdl1 = ProjectDatasetLevel.new(access_level_id: 1, expiry_date: Time.zone.today,
                                      selected: true)
-      pdl2 = ProjectDatasetLevel.new(access_level_id: 2, expiry_date: Time.zone.today,
-                                     selected: true)
+      pdl2 = ProjectDatasetLevel.new(access_level_id: 2, selected: true)
       extra_project_dataset.project_dataset_levels << pdl1
       default_project_dataset.project_dataset_levels << pdl2
       app.save!
@@ -169,9 +174,6 @@ class CasApplicationFormTest < ActionDispatch::IntegrationTest
       within '#level_2_expiry_date' do
         assert has_no_content?
       end
-      within '#level_3_expiry_date' do
-        assert has_no_content?
-      end
     end
 
     within "#dataset_#{application.project_datasets.find_by(dataset_id: 86).dataset.id}_row" do
@@ -184,36 +186,28 @@ class CasApplicationFormTest < ActionDispatch::IntegrationTest
       within '#level_3_selected' do
         assert find('.glyphicon-remove')
       end
-      within '#level_1_expiry_date' do
-        assert has_no_content?
-      end
-      within '#level_2_expiry_date' do
-        assert has_content?("#{Time.zone.today.strftime('%d/%m/%Y')} (requested)")
-      end
-      within '#level_3_expiry_date' do
-        assert has_no_content?
-      end
     end
   end
 
   test 'ensure that project_datasets and levels are built correctly from the form' do
     sign_in users(:no_roles)
     visit new_project_path(project: { project_type_id: project_types(:cas).id })
-
     within "#dataset_#{dataset(83).id}_row" do
       find(:css, "#dataset_#{dataset(83).id}_level_1_check_box").set(true)
-      find(:css, "#dataset_#{dataset(83).id}_level_1_expiry_datepicker").set('01/01/2022')
+      find(:css, "#dataset_#{dataset(83).id}_level_1_expiry_datepicker").
+        set((Time.zone.now + 1.year).strftime('%d/%m/%Y'))
     end
     within "#dataset_#{dataset(84).id}_row" do
       find(:css, "#dataset_#{dataset(84).id}_level_2_check_box").set(true)
-      find(:css, "#dataset_#{dataset(84).id}_level_2_expiry_datepicker").set('01/01/2022')
+      find(:css, "#dataset_#{dataset(84).id}_level_2_expiry_datepicker").
+        set((Time.zone.now + 1.year).strftime('%d/%m/%Y'))
       find(:css, "#dataset_#{dataset(84).id}_level_3_check_box").set(true)
-      find(:css, "#dataset_#{dataset(84).id}_level_3_expiry_datepicker").set('01/01/2022')
+      find(:css, "#dataset_#{dataset(84).id}_level_3_expiry_datepicker").
+        set((Time.zone.now + 1.year).strftime('%d/%m/%Y'))
     end
 
     within "#dataset_#{dataset(86).id}_row" do
       find(:css, "#dataset_#{dataset(86).id}_level_2_check_box").set(true)
-      find(:css, "#dataset_#{dataset(86).id}_level_2_expiry_datepicker").set('01/01/2022')
     end
 
     fill_in('project_cas_application_fields_attributes_reason_justification', with: 'TESTING')
@@ -252,6 +246,8 @@ class CasApplicationFormTest < ActionDispatch::IntegrationTest
 
     within "#dataset_#{dataset(83).id}_row" do
       find(:css, "#dataset_#{dataset(83).id}_level_2_check_box").set(true)
+      find(:css, "#dataset_#{dataset(83).id}_level_2_expiry_datepicker").
+        set((Time.zone.now + 1.year).strftime('%d/%m/%Y'))
     end
 
     click_button('Update Application')
@@ -300,9 +296,7 @@ class CasApplicationFormTest < ActionDispatch::IntegrationTest
     within '#dataset_86_row' do
       assert has_no_checked_field?('dataset_86_level_1_check_box')
       assert has_checked_field?('dataset_86_level_2_check_box')
-      assert_equal find('#dataset_86_level_2_expiry_datepicker').value, ''
       assert has_checked_field?('dataset_86_level_3_check_box')
-      assert_equal find('#dataset_86_level_3_expiry_datepicker').value, ''
     end
 
     within '#dataset_87_row' do
@@ -469,6 +463,8 @@ class CasApplicationFormTest < ActionDispatch::IntegrationTest
     select('Yes', from: 'cas_application_declaration_4')
 
     find(:css, "#dataset_#{dataset(83).id}_level_1_check_box").set(true)
+    find(:css, "#dataset_#{dataset(83).id}_level_1_expiry_datepicker").
+      set((Time.zone.now + 1.year).strftime('%d/%m/%Y'))
 
     click_button('Create Application')
 

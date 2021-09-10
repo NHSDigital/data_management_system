@@ -95,26 +95,6 @@ class CasNotifier
       )
     end
 
-    def requires_renewal_to_user(project)
-      create_notification(
-        user_id: project.owner,
-        title: 'CAS Access Requires Renewal',
-        body: 'Your access to CAS needs to be renewed, please visit your application to confirm ' \
-              'renewal. If you have not renewed within 30 days your access will be removed and ' \
-              "you will need to contact Beatrice Coker to reapply\n\n"
-      )
-    end
-
-    def requires_renewal_midpoint_to_user(project)
-      create_notification(
-        user_id: project.owner,
-        title: 'CAS Access Urgently Requires Renewal',
-        body: 'Your access to CAS needs to be renewed, please visit your application to confirm ' \
-              'renewal. If you have not renewed within 15 days your access will be removed and ' \
-              "you will need to contact Beatrice Coker to reapply\n\n"
-      )
-    end
-
     def account_closed_to_user(project)
       create_notification(
         user_id: project.owner,
@@ -129,23 +109,6 @@ class CasNotifier
         user_id: user_id,
         title: 'CAS Account Has Closed',
         body: "CAS account #{project.id} has been closed.\n\n"
-      )
-    end
-
-    def account_renewed(project, user_id)
-      create_notification(
-        user_id: user_id,
-        title: 'CAS Account Renewed',
-        body: "CAS Account #{project.id} has been renewed.\n\n"
-      )
-    end
-
-    def account_renewed_dataset_approver(project, user_id)
-      create_notification(
-        user_id: user_id,
-        title: 'CAS Account Renewed With Access to Dataset',
-        body: "CAS account #{project.id} has been renewed. This account has access to one or " \
-              "more datasets that you are an approver for.\n\n"
       )
     end
 

@@ -93,11 +93,18 @@ class ProjectsHelperTest < ActionView::TestCase
   end
 
   test 'display_level_date' do
-    pdl = ProjectDatasetLevel.new(expiry_date: Time.zone.today, approved: nil)
+    project_dataset = ProjectDataset.new(dataset: Dataset.find_by(name: 'Extra CAS Dataset One'),
+                                         terms_accepted: true)
+    project = create_cas_project(owner: users(:no_roles))
+    project.project_datasets << project_dataset
+    pdl = ProjectDatasetLevel.create(expiry_date: Time.zone.today,
+                                     project_dataset_id: project_dataset.id)
+    assert_equal 'request', pdl.status
     assert_equal "#{Time.zone.today.strftime('%d/%m/%Y')} (requested)", display_level_date(pdl)
 
-    pdl.update(approved: true)
+    pdl.update(status: :approved)
 
+    assert_equal 'approved', pdl.status
     assert_equal "#{Time.zone.today.strftime('%d/%m/%Y')} (expiry)", display_level_date(pdl)
   end
 end

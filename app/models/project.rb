@@ -161,8 +161,8 @@ class Project < ApplicationRecord
   scope :contributors, ->(user) { joins(:grants).where(
                                   grants: { roleable: ProjectRole.can_edit, user_id: user.id }) }
 
-  scope :cas_dataset_approval, lambda { |user, approved_values = [nil, true, false]|
-    where(id: ProjectDataset.dataset_approval(user, approved_values).pluck(:project_id)).order(:id).
+  scope :cas_dataset_approval, lambda { |user, statuses = %i[request approved rejected]|
+    where(id: ProjectDataset.dataset_approval(user, statuses).pluck(:project_id)).order(:id).
       joins(:current_state).merge(Workflow::State.dataset_approval_states)
   }
 
@@ -551,6 +551,18 @@ class Project < ApplicationRecord
     return unless application_log
 
     "#{application_log}/A#{amendment_number + 1}"
+  end
+
+  def user_approvable_levels_pending?(current_user)
+    ProjectDatasetLevel.default_level_2_3_bulk_approvable(self, current_user).any?
+  end
+
+  def level_2_3_defaults_expiring?(current_user)
+    ProjectDatasetLevel.default_level_2_3_bulk_renew_request(self, current_user).any?
+  end
+
+  def default_levels_all_decided
+    ProjectDatasetLevel.cas_type_levels(self, 1).none?(&:request?)
   end
 
   private
