@@ -1,7 +1,7 @@
 require 'fileutils'
 
 namespace :export do
-  desc 'Export CDSC weekly files interactively'
+  desc 'Export AIDS monthly files interactively'
   task aids: [:environment, 'pseudo:keys:load'] do
     # Check keys are correctly configured
     pdp = Export::Helpers::RakeHelper::EncryptOutput.find_project_data_password(
