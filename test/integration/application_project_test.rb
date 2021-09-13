@@ -162,22 +162,6 @@ class ApplicationProjectTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test 'Project Duration updates correctly' do
-    visit project_path(@project)
-    click_on 'Edit'
-    assert page.has_text?('Unable to calculate duration')
-
-    # Test Days
-    fill_in 'project_start_data_date', with: '01/01/2018'
-    fill_in('project_end_data_date', with: '10/01/2018').send_keys :tab
-    assert page.has_text?('9 Days')
-
-    # Test Months
-    fill_in 'project_start_data_date', with: '01/01/2018'
-    fill_in('project_end_data_date', with: '10/01/2019').send_keys :tab
-    assert page.has_text?('12 Months')
-  end
-
   test 'Project closure_date displays correctly' do
     closure_date = '01/01/2018'
     @project.update(closure_date: closure_date)
