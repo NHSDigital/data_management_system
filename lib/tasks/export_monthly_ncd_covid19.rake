@@ -1,7 +1,7 @@
 require 'fileutils'
 
 namespace :export do
-  desc 'Export CDSC weekly files interactively'
+  desc 'Export Non-Communicable Disease monthly with COVID-related fields (NCDEXTRA) interactively'
   task ncd_covid19: [:environment, 'pseudo:keys:load'] do
     # Check keys are correctly configured
     pdp = Export::Helpers::RakeHelper::EncryptOutput.find_project_data_password(
