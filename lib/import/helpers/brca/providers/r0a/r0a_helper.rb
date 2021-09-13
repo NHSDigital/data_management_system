@@ -237,12 +237,6 @@ module Import
               genotype_dup.add_variant_type(exon_from(genetic_info))
               if EXON_LOCATION_REGEX.match(genetic_info.join(','))
                 extract_exon_location(genetic_info, genotype_dup)
-                # exon_locations = exon_locations_from(genetic_info)
-                # if exon_locations.one?
-                #   genotype_dup.add_exon_location(exon_locations.flatten.first)
-                # elsif exon_locations.size == 2
-                #   genotype_dup.add_exon_location(exon_locations.flatten.compact.join('-'))
-                # end
               end
               genotype_dup.add_status(2)
               genotypes.append(genotype_dup)
@@ -252,10 +246,10 @@ module Import
 
             def extract_exon_location(genetic_info, genotype_dup)
               exon_locations = exon_locations_from(genetic_info)
-              if exon_locations.one?
-                genotype_dup.add_exon_location(exon_locations.flatten.first)
-              elsif exon_locations.size == 2
-                genotype_dup.add_exon_location(exon_locations.flatten.compact.join('-'))
+              if exon_locations.flatten.compact.uniq.one?
+                genotype_dup.add_exon_location(exon_locations.flatten.compact.uniq.first)
+              elsif exon_locations.flatten.compact.uniq.size == 2
+                genotype_dup.add_exon_location(exon_locations.flatten.compact.uniq.join('-'))
               end
             end
 

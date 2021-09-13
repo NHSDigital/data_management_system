@@ -68,7 +68,8 @@ module Import
                              'SOMATIC CANCER NGS PANEL TESTING REPORT',
                              'TUMOUR BRCA1/BRCA2 MUTATION ANALYSIS',
                              'ZYGOSITY TESTING REPORT',
-                             'BRCA 1 Unclassified Variant Loss of Heterozygosity Studies from Archive Material'].freeze
+                             'BRCA 1 Unclassified Variant Loss of Heterozygosity Studies '\
+                             'from Archive Material'].freeze
 
             CDNA_REGEX = /c\.(?<cdna>[0-9]+[a-z]+>[a-z]+)|
                          c\.(?<cdna>[0-9]+-[0-9]+[A-Z]+>[A-Z]+)|
@@ -82,9 +83,9 @@ module Import
                          c\.(?<cdna>-[0-9]+[a-z]+>[a-z]+)|
                          c\.(?<cdna>[0-9]+-[0-9]+_[0-9]+-[0-9]+[a-z]+)/ix.freeze
 
-            PROT_REGEX = /p\.(\()?(?<impact>[a-z]+[0-9]+[a-z]+)(\))?/i.freeze
+            PROT_REGEX = /p\.(?<brackets>\()?(?<impact>[a-z]+[0-9]+[a-z]+)(?<brackets>\))?/i.freeze
             EXON_REGEX = /(?<insdeldup>ins|del|dup)/i.freeze
-            EXON_LOCATION_REGEX = /ex(?<exon>\d+)(.\d+)?(\sto\s)?(ex(?<exon2>\d+))?/i.freeze
+            EXON_LOCATION_REGEX = /ex(?<exo>[0-9]+)_(?<exo2>[0-9]+)|ex(?<exo>[0-9]+)/xi.freeze
             NORMAL_REGEX = /normal|wild type|No pathogenic variant identified|No evidence/i.freeze
           end
         end
