@@ -26,7 +26,7 @@ module Import
             end
 
             def edit_dosage_genotype_field(exon, index)
-            case @dosage_record_map[:genotype][index]
+              case @dosage_record_map[:genotype][index]
               when 'Normal'
                 @dosage_record_map[:genotype][index] =
                   ['Normal'] * exon.scan(BRCA_GENES_REGEX).size
@@ -39,14 +39,16 @@ module Import
               end
             end
 
-            def edit_dosage_genotype2_field(exon, index)
+            def edit_dosage_genotype2_field(_exon, index)
               if !@dosage_record_map[:genotype2][index].nil? &&
                  @dosage_record_map[:genotype2][index].empty?
                 @dosage_record_map[:genotype2][index] = ['MLPA Normal'] * 2
                 @dosage_record_map[:genotype2][index] =
                   @dosage_record_map[:genotype2][index].flatten
               elsif !@dosage_record_map[:genotype2][index].nil? &&
-                    @dosage_record_map[:genotype2][index].scan(/100% coverage at 100X/).size.positive?
+                    @dosage_record_map[:genotype2][index].scan(
+                      /100% coverage at 100X/
+                    ).size.positive?
                 @dosage_record_map[:genotype2][index] = ['NGS Normal'] * 2
                 @dosage_record_map[:genotype2][index] =
                   @dosage_record_map[:genotype2][index].flatten
@@ -87,46 +89,58 @@ module Import
 
             def process_dosage_gene(gene, genetic_info, genotype, genotypes)
               if !brca_gene_match?(genetic_info)
-                if gene == 'No Gene'
-                  @logger.debug("Nothing to do for #{gene} and #{genetic_info}")
-                elsif !cdna_match?(genetic_info) &&
-                      !exon_match?(genetic_info) &&
-                      normal?(genetic_info)
-                  genotype_dup = genotype.dup
-                  process_non_cdna_normal(gene, genetic_info, genotype, genotypes)
-                elsif cdna_match?(genetic_info)
-                  process_non_dosage_cdna(gene, genetic_info, genotype, genotypes)
-                  @logger.debug("IDENTIFIED #{gene}, #{cdna_from(genetic_info)} from #{genetic_info}")
-                elsif genetic_info.join(',').match(EXON_LOCATION_REGEX) && exon_match?(genetic_info)
-                  process_brca_gene_and_exon_match(genotype, gene, genetic_info, genotypes)
-                elsif !genetic_info.join(',').match(EXON_LOCATION_REGEX) && exon_match?(genetic_info)
-                  case genetic_info.join(',')
-                  when /normal/i, /evidence/i
-                    process_non_cdna_normal(gene, genetic_info, genotype, genotypes)
-                  when /control/i
-                    @logger.debug("IDENTIFIED FALSE POSITIVE #{gene} #{genetic_info}, skipping entry")
-                  end
-                elsif genetic_info.join(',').empty?
-                  @logger.debug("IDENTIFIED FALSE POSITIVE #{gene} #{genetic_info}, skipping entry")
-                elsif genetic_info.join(',').match(/evidence/i)
-                  process_non_cdna_normal(gene, genetic_info, genotype, genotypes)
-                end
+                non_brca_gene_record(gene, genetic_info, genotype, genotypes)
               elsif brca_gene_match?(genetic_info) && !exon_match?(genetic_info)
-                if genetic_info.join(',').match(BRCA_GENES_REGEX)[:brca] == gene
-                  genotype_dup = genotype.dup
-                  add_gene_and_status_to(genotype_dup, gene, 1, genotypes)
-                else
-                  @logger.debug("IDENTIFIED FALSE POSITIVE #{gene} #{genetic_info}, skipping entry")
-                end
+                brca_gene_record_noexon(genetic_info, gene, genotype, genotypes)
               elsif brca_gene_match?(genetic_info) && exon_match?(genetic_info)
-                if genetic_info.join(',').match(BRCA_GENES_REGEX)[:brca] == gene
-                  process_brca_gene_and_exon_match(genotype, gene, genetic_info, genotypes)
-                else
-                  @logger.debug("IDENTIFIED FALSE POSITIVE #{gene} #{genetic_info}, skipping entry")
-                end
+                brca_gene_record_withexon(genetic_info, gene, genotype, genotypes)
               end
             end
 
+            def non_brca_gene_record(gene, genetic_info, genotype, genotypes)
+              if gene == 'No Gene'
+                @logger.debug("Nothing to do for #{gene} and #{genetic_info}")
+              elsif !cdna_match?(genetic_info) && !exon_match?(genetic_info) &&
+                    normal?(genetic_info)
+                # genotype_dup = genotype.dup
+                process_non_cdna_normal(gene, genetic_info, genotype, genotypes)
+              elsif cdna_match?(genetic_info)
+                process_non_dosage_cdna(gene, genetic_info, genotype, genotypes)
+                @logger.debug("IDENTIFIED #{gene}," \
+                              "#{cdna_from(genetic_info)} from #{genetic_info}")
+              elsif genetic_info.join(',').match(EXON_LOCATION_REGEX) && exon_match?(genetic_info)
+                process_brca_gene_and_exon_match(genotype, gene, genetic_info, genotypes)
+              elsif !genetic_info.join(',').match(EXON_LOCATION_REGEX) && exon_match?(genetic_info)
+                case genetic_info.join(',')
+                when /normal/i, /evidence/i
+                  process_non_cdna_normal(gene, genetic_info, genotype, genotypes)
+                when /control/i
+                  @logger.debug("IDENTIFIED FALSE POSITIVE #{gene}"\
+                  " #{genetic_info}, skipping entry")
+                end
+              elsif genetic_info.join(',').empty?
+                @logger.debug("IDENTIFIED FALSE POSITIVE #{gene} #{genetic_info}, skipping entry")
+              elsif genetic_info.join(',').match(/evidence/i)
+                process_non_cdna_normal(gene, genetic_info, genotype, genotypes)
+              end
+            end
+
+            def brca_gene_record_noexon(genetic_info, gene, genotype, genotypes)
+              if genetic_info.join(',').match(BRCA_GENES_REGEX)[:brca] == gene
+                genotype_dup = genotype.dup
+                add_gene_and_status_to(genotype_dup, gene, 1, genotypes)
+              else
+                @logger.debug("IDENTIFIED FALSE POSITIVE #{gene} #{genetic_info}, skipping entry")
+              end
+            end
+
+            def brca_gene_record_withexon(genetic_info, gene, genotype, genotypes)
+              if genetic_info.join(',').match(BRCA_GENES_REGEX)[:brca] == gene
+                process_brca_gene_and_exon_match(genotype, gene, genetic_info, genotypes)
+              else
+                @logger.debug("IDENTIFIED FALSE POSITIVE #{gene} #{genetic_info}, skipping entry")
+              end
+            end
           end
         end
       end

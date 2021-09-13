@@ -3,112 +3,11 @@ module Import
     module Brca
       module Providers
         module R0a
+          # Helper methods for R0A germline extractor
           module R0aHelper
             include Import::Helpers::Brca::Providers::R0a::R0aConstants
-
-            def split_multiplegenes_nondosage_map
-              @non_dosage_record_map[:exon].each.with_index do |exon, index|
-                next unless exon.scan(BRCA_GENES_REGEX).size.positive?
-
-                if exon.scan(BRCA_GENES_REGEX).uniq.size > 1
-                  @non_dosage_record_map[:exon][index] =
-                    @non_dosage_record_map[:exon][index].scan(BRCA_GENES_REGEX).uniq
-                  @non_dosage_record_map[:exon][index].flatten
-                  @non_dosage_record_map[:genotype][index] =
-                    if @non_dosage_record_map[:genotype][index] == 'BRCA1 Normal, BRCA2 Normal'
-                      @non_dosage_record_map[:genotype][index] = ['NGS Normal'] * 2
-                      @non_dosage_record_map[:genotype][index] =
-                        @non_dosage_record_map[:genotype][index].flatten
-                    elsif @non_dosage_record_map[:genotype][index].scan(/Normal, /i).size.positive?
-                      @non_dosage_record_map[:genotype][index] =
-                        @non_dosage_record_map[:genotype][index] = ['NGS Normal'] * 2
-                    elsif @non_dosage_record_map[:genotype][index].scan(/,.+Normal/i).size.positive?
-                      @non_dosage_record_map[:genotype][index] =
-                        @non_dosage_record_map[:genotype][index] = ['NGS Normal'] * 2
-                    elsif @non_dosage_record_map[:genotype][index] == 'Normal'
-                      @non_dosage_record_map[:genotype][index] =
-                        ['Normal'] * exon.scan(BRCA_GENES_REGEX).uniq.size
-                      @non_dosage_record_map[:genotype][index] =
-                        @non_dosage_record_map[:genotype][index].flatten
-                    else
-                      @non_dosage_record_map[:genotype][index] =
-                        @non_dosage_record_map[:genotype][index]
-                    end
-                  @non_dosage_record_map[:genotype2][index] =
-                    if !@non_dosage_record_map[:genotype2][index].nil? &&
-                       @non_dosage_record_map[:genotype2][index].scan(/coverage at 100X/).size.positive?
-                      @non_dosage_record_map[:genotype2][index] = ['NGS Normal'] * 2
-                      @non_dosage_record_map[:genotype2][index] =
-                        @non_dosage_record_map[:genotype2][index].flatten
-                    elsif !@non_dosage_record_map[:genotype2][index].nil? &&
-                          @non_dosage_record_map[:genotype2][index].empty?
-                      @non_dosage_record_map[:genotype2][index] = ['MLPA Normal'] * 2
-                      @non_dosage_record_map[:genotype2][index] =
-                        @non_dosage_record_map[:genotype2][index].flatten
-                    elsif @non_dosage_record_map[:genotype2][index].nil? &&
-                          @non_dosage_record_map[:genotype][index].is_a?(String) &&
-                          @non_dosage_record_map[:genotype][index].scan(/MSH2/).size.positive?
-                      @non_dosage_record_map[:genotype2][index] =
-                        [''] * exon.scan(BRCA_GENES_REGEX).size
-                      @non_dosage_record_map[:genotype2][index] =
-                        @non_dosage_record_map[:genotype2][index].flatten
-                    elsif @non_dosage_record_map[:genotype2][index] == 'Normal' ||
-                          @non_dosage_record_map[:genotype2][index].nil? ||
-                          @non_dosage_record_map[:genotype2][index] == 'Fail'
-                      @non_dosage_record_map[:genotype2][index] =
-                        ['Normal'] * exon.scan(BRCA_GENES_REGEX).uniq.size
-                      @non_dosage_record_map[:genotype2][index] =
-                        @non_dosage_record_map[:genotype2][index].flatten
-
-                    end
-                end
-              end
-
-              @non_dosage_record_map[:exon] = @non_dosage_record_map[:exon].flatten
-              @non_dosage_record_map[:genotype] = @non_dosage_record_map[:genotype].flatten
-              @non_dosage_record_map[:genotype2] = @non_dosage_record_map[:genotype2].flatten
-            end
-
-            def split_multiplegenes_dosage_map
-              @dosage_record_map[:exon].each.with_index do |exon, index|
-                if exon.scan(BRCA_GENES_REGEX).size > 1
-                  @dosage_record_map[:exon][index] =
-                    @dosage_record_map[:exon][index].scan(BRCA_GENES_REGEX).flatten.each do |gene|
-                      gene.concat('_MLPA')
-                    end
-                  @dosage_record_map[:genotype][index] =
-                    case @dosage_record_map[:genotype][index]
-                    when 'Normal'
-                      @dosage_record_map[:genotype][index] =
-                        ['Normal'] * exon.scan(BRCA_GENES_REGEX).size
-                      @dosage_record_map[:genotype][index] =
-                        @dosage_record_map[:genotype][index].flatten
-                    when 'BRCA1 Normal, BRCA2 Normal'
-                      @dosage_record_map[:genotype][index] = ['NGS Normal'] * 2
-                      @dosage_record_map[:genotype][index] =
-                        @dosage_record_map[:genotype][index].flatten
-                    else
-                      @dosage_record_map[:genotype][index] =
-                        @dosage_record_map[:genotype][index]
-                    end
-                  @dosage_record_map[:genotype2][index] =
-                    if !@dosage_record_map[:genotype2][index].nil? &&
-                       @dosage_record_map[:genotype2][index].empty?
-                      @dosage_record_map[:genotype2][index] = ['MLPA Normal'] * 2
-                      @dosage_record_map[:genotype2][index] =
-                        @dosage_record_map[:genotype2][index].flatten
-                    elsif !@dosage_record_map[:genotype2][index].nil? &&
-                          @dosage_record_map[:genotype2][index].scan(/100% coverage at 100X/).size.positive?
-                      @dosage_record_map[:genotype2][index] = ['NGS Normal'] * 2
-                      @dosage_record_map[:genotype2][index] =
-                        @dosage_record_map[:genotype2][index].flatten
-                    end
-                end
-              end
-              @dosage_record_map[:exon] = @dosage_record_map[:exon].flatten
-              @dosage_record_map[:genotype] = @dosage_record_map[:genotype].flatten
-              @dosage_record_map[:genotype2] = @dosage_record_map[:genotype2].flatten
-            end
+            include Import::Helpers::Brca::Providers::R0a::R0aNondosageHelper
+            include Import::Helpers::Brca::Providers::R0a::R0aDosageHelper
 
             def assign_and_populate_results_for(record)
               genotype = Import::Brca::Core::GenotypeBrca.new(record)
@@ -135,14 +34,11 @@ module Import
                 tests = tests_from_non_dosage_record(genes)
                 grouped_tests = grouped_tests_from(tests)
                 process_grouped_non_dosage_tests(grouped_tests, genotype, genotypes)
-                # #binding.pry
               elsif dosage_test?
-                # binding.pry
                 process_dosage_test_exons(genes)
                 tests = tests_from_dosage_record(genes)
                 grouped_tests = grouped_tests_from(tests)
                 process_grouped_dosage_tests(grouped_tests, genotype, genotypes)
-                # #binding.pry
               end
               genotypes
             end
@@ -162,10 +58,9 @@ module Import
 
             # TODO: Boyscout
             def add_test_scope_to(genotype, moltesttypes, genera, exons)
-              # # #binding.pry
               stringed_moltesttypes = moltesttypes.flatten.join(',')
               stringed_exons = exons.flatten.join(',')
-              if stringed_moltesttypes =~ /^100,000 GENOMES/i || stringed_moltesttypes =~ /dosage/i
+              if stringed_moltesttypes =~ /^100,000 GENOMES/i
                 genotype.add_test_scope(:full_screen)
               elsif stringed_moltesttypes =~ /predictive|confirm/i
                 genotype.add_test_scope(:targeted_mutation)
@@ -173,9 +68,8 @@ module Import
                 genotype.add_test_scope(:aj_screen)
               elsif stringed_moltesttypes =~ /^Polish/i
                 genotype.add_test_scope(:polish_screen)
-              elsif genera.include?('G') || genera.include?('F') || genera.include?('H')
-                genotype.add_test_scope(:full_screen)
-              elsif ngs?(stringed_exons) || screen?(stringed_moltesttypes)
+              elsif (genera & %w[G F H]).any? ||
+                    ngs?(stringed_exons) || screen?(stringed_moltesttypes)
                 genotype.add_test_scope(:full_screen)
               elsif mutation_analysis?(stringed_moltesttypes) || non_brca?(stringed_moltesttypes)
                 if seven_tests_or_less?(moltesttypes)
@@ -185,41 +79,9 @@ module Import
                 end
               elsif moltesttypes.include?('BRCA1/BRCA2 GENETIC TESTING REPORT')
                 genotype.add_test_scope(:full_screen)
+              elsif stringed_moltesttypes =~ /dosage/i
+                genotype.add_test_scope(:full_screen)
               end
-            end
-
-            def process_grouped_non_dosage_tests(grouped_tests, genotype, genotypes)
-              if (@non_dosage_record_map[:moleculartestingtype].uniq & DO_NOT_IMPORT).empty?
-                grouped_tests.each do |gene, genetic_info|
-                  # next unless MOLTEST_MAP[selected_genes].include? gene
-                  if gene == 'No Gene'
-                    @logger.debug("Nothing to do for #{gene} and #{genetic_info}")
-                  elsif cdna_match?(genetic_info)
-                    process_cdna(gene, genetic_info, genotype, genotypes)
-                  elsif genetic_info.join(',').match(EXON_LOCATION_REGEX) &&
-                        exon_match?(genetic_info)
-                    process_brca_gene_and_exon_match(genotype, gene, genetic_info, genotypes)
-                  elsif !cdna_match?(genetic_info) &&
-                        !exon_match?(genetic_info) &&
-                        normal?(genetic_info)
-                    process_non_cdna_normal(gene, genetic_info, genotype, genotypes)
-                  elsif !cdna_match?(genetic_info) &&
-                        !exon_match?(genetic_info) &&
-                        !normal?(genetic_info) &&
-                        fail?(genetic_info)
-                    process_non_cdna_fail(gene, genetic_info, genotype, genotypes)
-                    # else # #binding.pry
-                  end
-                end
-              else
-                @logger.debug('Nothing to do')
-              end
-            end
-
-            def process_cdna(gene, genetic_info, genotype, genotypes)
-              genotype_dup = genotype.dup
-              process_non_brca_genes(genotype_dup, gene, genetic_info, genotypes,
-                                     genotype)
             end
 
             def process_non_cdna_normal(gene, genetic_info, genotype, genotypes)
@@ -261,115 +123,109 @@ module Import
             def process_non_brca_genes(genotype_dup, gene, genetic_info, genotypes,
                                        genotype)
               @logger.debug("IDENTIFIED #{gene}, #{cdna_from(genetic_info)} from #{genetic_info}")
-              mutations = genetic_info.join(',').scan(CDNA_REGEX).flatten.compact.map do |s|
-                s.gsub(/\s+/, '')
-              end.uniq
-              proteins = genetic_info.join(',').scan(PROT_REGEX).flatten.compact.map do |s|
-                s.gsub(/\s+/, '')
-              end.uniq
+              mutations = list_mutations(genetic_info)
+              proteins = list_proteins(genetic_info)
               longest_protein = proteins.max_by(&:length)
               if !genetic_info.join(',').scan(BRCA_GENES_REGEX).flatten.join.empty? &&
                  genetic_info.join(',').scan(BRCA_GENES_REGEX).flatten.join != gene
-                genotype_dup.add_gene(gene.upcase)
-                genotype_dup.add_status(1)
-                genotypes.append(genotype_dup)
+                extract_normal_badlyformatted_genotypes(genotype_dup, gene, genotypes)
               else
                 if mutations.size > 1
-                  if mutations.size == 2
-                    mutation_duplicate1 = mutations[0].upcase
-                    mutation_duplicate2 = mutations[1].upcase
-                    longest_mutation = mutations.max_by(&:length)
-                    if mutation_duplicate1.include?(mutation_duplicate2) ||
-                       mutation_duplicate2.include?(mutation_duplicate1)
-                      if genetic_info.join(',').match(longest_mutation)
-                        process_overlapping_variants(genotype, gene,
-                                                     CDNA_REGEX.match(genetic_info.join(','))[:cdna],
-                                                     genotypes, longest_protein, genetic_info)
-                      else
-                        process_overlapping_variants(genotype, gene, mutations.min_by(&:length),
-                                                     genotypes, longest_protein, genetic_info)
-                      end
-                    elsif mutations.size > 1
-                      process_multiple_variants(mutations, gene, genotype, genotypes)
-                    end
-                    genotypes
-                  end
+                  multiple_mutations(mutations, longest_protein, gene, genetic_info,
+                                     genotype, genotypes)
                 elsif mutations.join.split(',').size == 1
-                  process_single_mutation(genotype_dup, genetic_info, gene, genotypes)
+                  single_badformat_variant(genotype_dup, genetic_info, gene, genotypes)
                   genotypes
                 elsif mutations.join.split(',').size > 1
-                  variants = []
-                  malformed_mutations = genetic_info.compact
-                  malformed_mutations.split(',') do |mutation|
-                    if mutation.gsub('het', '').match(CDNA_REGEX)
-                      variants.append(mutation.gsub('het', '').sub(/\s+/, '').match(CDNA_REGEX)[:cdna])
-                      # elsif mutation.gsub('het', '').match(CDNA_REGEX)
-                      #   variants.append(mutation.match(CDNA_REGEX)[:cdna])
-                    end
-                  end
-                  process_multiple_variants(variants, gene, genotype, genotypes)
-
+                  multiple_badformatted_variants(mutations, genotype, gene, genotypes)
                 end
                 @logger.debug("IDENTIFIED #{gene}, POSITIVE TEST from #{genetic_info}")
               end
             end
 
-            # TODO: Boyscout
-            def process_grouped_dosage_tests(grouped_tests, genotype, genotypes)
-              if (@non_dosage_record_map[:moleculartestingtype].uniq & DO_NOT_IMPORT).empty?
-                grouped_tests.compact.select do |gene, genetic_info|
-                  process_dosage_gene(gene, genetic_info, genotype, genotypes)
+            def extract_normal_badlyformatted_genotypes(genotype_dup, gene, genotypes)
+              genotype_dup.add_gene(gene.upcase)
+              genotype_dup.add_status(1)
+              genotypes.append(genotype_dup)
+            end
+
+            def multiple_mutations(mutations, longest_protein, gene, genetic_info,
+                                   genotype, genotypes)
+              if mutations.size == 2
+                mutation_duplicate1 = mutations[0].upcase
+                mutation_duplicate2 = mutations[1].upcase
+                longest_mutation = mutations.max_by(&:length)
+                if mutation_duplicate1.include?(mutation_duplicate2) ||
+                   mutation_duplicate2.include?(mutation_duplicate1)
+                  duplicated_variants(genetic_info, longest_mutation, genotype, gene,
+                                      mutations, longest_protein, genotypes)
+                else
+                  different_mutations(mutations, genotype, gene, genotypes)
                 end
+                genotypes
               else
-                @logger.debug('Nothing to do')
+                mutations = mutations.split(',').flatten.map { |mutation| mutation.gsub('het', '') }
+                mutations = mutations.uniq
+                different_mutations(mutations, genotype, gene, genotypes)
               end
             end
 
-            def process_dosage_gene(gene, genetic_info, genotype, genotypes)
-              if !brca_gene_match?(genetic_info)
-                if gene == 'No Gene'
-                  @logger.debug("Nothing to do for #{gene} and #{genetic_info}")
-                elsif !cdna_match?(genetic_info) &&
-                      !exon_match?(genetic_info) &&
-                      normal?(genetic_info)
-                  # genotype_dup = genotype.dup
-                  process_non_cdna_normal(gene, genetic_info, genotype, genotypes)
-                elsif cdna_match?(genetic_info)
-                  process_cdna(gene, genetic_info, genotype, genotypes)
-                  @logger.debug("IDENTIFIED #{gene}, #{cdna_from(genetic_info)} from #{genetic_info}")
-                elsif genetic_info.join(',').match(EXON_LOCATION_REGEX) && exon_match?(genetic_info)
-                  process_brca_gene_and_exon_match(genotype, gene, genetic_info, genotypes)
-                elsif !genetic_info.join(',').match(EXON_LOCATION_REGEX) && exon_match?(genetic_info)
-                  case genetic_info.join(',')
-                  when /normal/i, /evidence/i
-                    process_non_cdna_normal(gene, genetic_info, genotype, genotypes)
-                  when /control/i
-                    @logger.debug("IDENTIFIED FALSE POSITIVE #{gene} #{genetic_info}, skipping entry")
-                  end
-                  # elsif genetic_info.join(',').match(/evidence/i)
-                  #   process_non_cdna_normal(gene, genetic_info, genotype, genotypes)
-                end
-              elsif brca_gene_match?(genetic_info) && !exon_match?(genetic_info)
-                if genetic_info.join(',').match(BRCA_GENES_REGEX)[:brca] == gene
-                  genotype_dup = genotype.dup
-                  add_gene_and_status_to(genotype_dup, gene, 1, genotypes)
-                else
-                  @logger.debug("IDENTIFIED FALSE POSITIVE #{gene} #{genetic_info}, skipping entry")
-                end
-              elsif brca_gene_match?(genetic_info) && exon_match?(genetic_info)
-                if genetic_info.join(',').match(BRCA_GENES_REGEX)[:brca] == gene
-                  process_brca_gene_and_exon_match(genotype, gene, genetic_info, genotypes)
-                else
-                  @logger.debug("IDENTIFIED FALSE POSITIVE #{gene} #{genetic_info}, skipping entry")
-                end
-              elsif !cdna_match?(genetic_info) &&
-                    !exon_match?(genetic_info) &&
-                    !normal?(genetic_info) &&
-                    fail?(genetic_info)
-                process_non_cdna_fail(gene, genetic_info, genotype, genotypes)
+            def duplicated_variants(genetic_info, longest_mutation, genotype, gene,
+                                    mutations, longest_protein, genotypes)
+              duplicated_geno = genotype.dup
+              duplicated_geno.add_gene(gene)
+              if genetic_info.join(',').match(longest_mutation)
+                duplicated_geno.add_gene_location(CDNA_REGEX.match(genetic_info.join(','))[:cdna])
               else
-                @logger.debug('Nothing to do')
+                duplicated_geno.add_gene_location(mutations.min_by(&:length))
               end
+              if !longest_protein.nil? && genetic_info.join(',').match(longest_protein)
+                duplicated_geno.add_protein_impact(
+                  PROT_REGEX.match(genetic_info.join(','))[:impact]
+                )
+              end
+              duplicated_geno.add_status(2)
+              genotypes.append(duplicated_geno)
+            end
+
+            def different_mutations(mutations, genotype, gene, genotypes)
+              mutations.each do |mutation|
+                duplicated_geno = genotype.dup
+                duplicated_geno.add_gene(gene)
+                duplicated_geno.add_gene_location(mutation)
+                duplicated_geno.add_status(2)
+                genotypes.append(duplicated_geno)
+              end
+            end
+
+            def single_badformat_variant(genotype_dup, genetic_info, gene, genotypes)
+              genotype_dup.add_gene_location(cdna_from(genetic_info))
+              genotype_dup.add_gene(gene.upcase)
+              genotype_dup.add_status(2)
+              genotypes.append(genotype_dup)
+              if PROT_REGEX.match(genetic_info.join(','))
+                @logger.debug("IDENTIFIED #{protien_from(genetic_info)} from #{genetic_info}")
+                genotype_dup.add_protein_impact(protien_from(genetic_info))
+                genotypes.append(genotype_dup)
+              end
+              genotypes
+            end
+
+            def multiple_badformatted_variants(mutations, genotype, gene, genotypes)
+              variants = []
+              mutations.join.gsub('het', '').split(',') do |mutation|
+                if mutation.gsub('het', '').match(CDNA_REGEX)
+                  variants.append(mutation.match(CDNA_REGEX)[:cdna])
+                end
+              end
+              variants.uniq.each do |cdna, _protein|
+                duplicated_geno = genotype.dup
+                duplicated_geno.add_gene(gene)
+                duplicated_geno.add_gene_location(cdna)
+                duplicated_geno.add_status(2)
+                genotypes.append(duplicated_geno)
+              end
+              genotypes
             end
 
             def process_brca_gene_and_exon_match(genotype, gene, genetic_info, genotypes)
@@ -380,17 +236,27 @@ module Import
               genotype_dup.add_gene(brca_gene)
               genotype_dup.add_variant_type(exon_from(genetic_info))
               if EXON_LOCATION_REGEX.match(genetic_info.join(','))
-                exon_locations = exon_locations_from(genetic_info)
-                if exon_locations.one?
-                  genotype_dup.add_exon_location(exon_locations.flatten.first)
-                elsif exon_locations.size == 2
-                  genotype_dup.add_exon_location(exon_locations.flatten.compact.join('-'))
-                end
+                extract_exon_location(genetic_info, genotype_dup)
+                # exon_locations = exon_locations_from(genetic_info)
+                # if exon_locations.one?
+                #   genotype_dup.add_exon_location(exon_locations.flatten.first)
+                # elsif exon_locations.size == 2
+                #   genotype_dup.add_exon_location(exon_locations.flatten.compact.join('-'))
+                # end
               end
               genotype_dup.add_status(2)
               genotypes.append(genotype_dup)
               @logger.debug("IDENTIFIED #{brca_gene} for exonic variant " \
                             "#{EXON_REGEX.match(genetic_info.join(','))} from #{genetic_info}")
+            end
+
+            def extract_exon_location(genetic_info, genotype_dup)
+              exon_locations = exon_locations_from(genetic_info)
+              if exon_locations.one?
+                genotype_dup.add_exon_location(exon_locations.flatten.first)
+              elsif exon_locations.size == 2
+                genotype_dup.add_exon_location(exon_locations.flatten.compact.join('-'))
+              end
             end
 
             def add_servicereportidentifier(genotype, record)
@@ -416,85 +282,6 @@ module Import
               end
 
               grouped_tests.transform_values!(&:uniq)
-            end
-
-            def tests_from_non_dosage_record(genes)
-              return if genes.nil?
-
-              genes.zip(@non_dosage_record_map[:genotype],
-                        @non_dosage_record_map[:genotype2]).uniq
-            end
-
-            def tests_from_dosage_record(genes)
-              return if genes.nil?
-
-              genes.zip(@dosage_record_map[:genotype],
-                        @dosage_record_map[:genotype2]).uniq
-            end
-
-            def process_non_dosage_test_exons(genes)
-              @non_dosage_record_map[:exon].each do |exons|
-                if exons =~ BRCA_GENES_REGEX
-                  genes.append(BRCA_GENES_REGEX.match(exons.upcase)[:brca])
-                else
-                  genes.append('No Gene')
-                end
-              end
-            end
-
-            def process_multiple_variants(variantlist, gene, genotype, genotypes)
-              variantlist.uniq.each do |mutation|
-                duplicated_geno = genotype.dup
-                duplicated_geno.add_gene(gene)
-                duplicated_geno.add_gene_location(mutation)
-                duplicated_geno.add_status(2)
-                genotypes.append(duplicated_geno)
-              end
-            end
-
-            def process_overlapping_variants(genotype, gene, variant, genotypes,
-                                             longest_protein, genetic_info)
-              duplicated_geno = genotype.dup
-              duplicated_geno.add_gene(gene)
-              duplicated_geno.add_gene_location(variant)
-              process_longest_protein(longest_protein, genetic_info, duplicated_geno)
-              duplicated_geno.add_status(2)
-              genotypes.append(duplicated_geno)
-            end
-
-            def process_single_mutation(genotype_dup, genetic_info, gene, genotypes)
-              genotype_dup.add_gene_location(cdna_from(genetic_info))
-              genotype_dup.add_gene(gene.upcase)
-              genotype_dup.add_status(2)
-              genotypes.append(genotype_dup)
-              process_single_protein(genetic_info, genotype_dup)
-            end
-
-            def process_single_protein(genetic_info, genotype_dup)
-              return unless PROT_REGEX.match(genetic_info.join(','))
-
-              # if PROT_REGEX.match(genetic_info.join(','))
-              @logger.debug("IDENTIFIED #{protien_from(genetic_info)} from #{genetic_info}")
-              genotype_dup.add_protein_impact(protien_from(genetic_info))
-              # end
-            end
-
-            def process_longest_protein(longest_protein, genetic_info, duplicated_geno)
-              return unless !longest_protein.nil? && genetic_info.join(',').match(longest_protein)
-
-              # if !longest_protein.nil? && genetic_info.join(',').match(longest_protein)
-              duplicated_geno.add_protein_impact(PROT_REGEX.match(genetic_info.join(','))[:impact])
-              # end
-            end
-
-            def process_dosage_test_exons(genes)
-              @dosage_record_map[:exon].map do |exons|
-                if exons.scan(BRCA_GENES_REGEX).count.positive? # && mlpa?(exons)
-                  exons.scan(BRCA_GENES_REGEX).flatten.each { |gene| genes.append(gene) }
-                else
-                  genes.append('No Gene')
-                end
-              end
             end
 
             def relevant_consultant?(raw_record)
@@ -533,14 +320,6 @@ module Import
               !moltesttypes.scan(/brca/i).size.positive?
             end
 
-            def non_dosage_test?
-              @non_dosage_record_map[:moleculartestingtype].uniq.join.scan(/dosage/i).size.zero?
-            end
-
-            def dosage_test?
-              @dosage_record_map[:moleculartestingtype].uniq.join.scan(/dosage/i).size.positive?
-            end
-
             def brca_gene_match?(genetic_info)
               genetic_info.join(',') =~ BRCA_GENES_REGEX
             end
@@ -554,7 +333,7 @@ module Import
             end
 
             def normal?(genetic_info)
-              genetic_info.join(',') =~ /normal|wild type|No pathogenic variant identified|No evidence/i
+              genetic_info.join(',') =~ NORMAL_REGEX
             end
 
             def fail?(genetic_info)
@@ -610,6 +389,18 @@ module Import
                 dosage_nondosage[:exon].map do |exons|
                   exons.gsub(/CHEK2|CKEK2|P190/, 'CHEK2')
                 end
+            end
+
+            def list_mutations(genetic_info)
+              genetic_info.join(',').scan(CDNA_REGEX).flatten.compact.map do |s|
+                s.gsub(/\s+/, '')
+              end.uniq
+            end
+
+            def list_proteins(genetic_info)
+              genetic_info.join(',').scan(PROT_REGEX).flatten.compact.map do |s|
+                s.gsub(/\s+/, '')
+              end.uniq
             end
 
             def normal_test_logging_for(selected_genes, gene, genetic_info)

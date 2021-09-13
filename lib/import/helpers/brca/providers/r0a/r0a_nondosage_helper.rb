@@ -6,7 +6,7 @@ module Import
           # Helper methods for R0A germline extractor
           module R0aNondosageHelper
             include Import::Helpers::Brca::Providers::R0a::R0aConstants
-            
+
             def non_dosage_test?
               @non_dosage_record_map[:moleculartestingtype].uniq.join.scan(/dosage/i).size.zero?
             end
@@ -19,9 +19,9 @@ module Import
                   @non_dosage_record_map[:exon][index] =
                     @non_dosage_record_map[:exon][index].scan(BRCA_GENES_REGEX).uniq
                   @non_dosage_record_map[:exon][index].flatten
-                  @non_dosage_record_map[:genotype][index] = 
+                  @non_dosage_record_map[:genotype][index] =
                     edit_nondosage_genotype_field(exon, index)
-                  @non_dosage_record_map[:genotype2][index] = 
+                  @non_dosage_record_map[:genotype2][index] =
                     edit_nondosage_genotype2_field(exon, index)
                 end
               end
@@ -35,10 +35,8 @@ module Import
                 @non_dosage_record_map[:genotype][index] = ['NGS Normal'] * 2
                 @non_dosage_record_map[:genotype][index] =
                   @non_dosage_record_map[:genotype][index].flatten
-              elsif @non_dosage_record_map[:genotype][index].scan(/Normal, /i).size.positive?
-                @non_dosage_record_map[:genotype][index] =
-                  @non_dosage_record_map[:genotype][index] = ['NGS Normal'] * 2
-              elsif @non_dosage_record_map[:genotype][index].scan(/,.+Normal/i).size.positive?
+              elsif @non_dosage_record_map[:genotype][index].scan(/Normal, /i).size.positive? ||
+                    @non_dosage_record_map[:genotype][index].scan(/,.+Normal/i).size.positive?
                 @non_dosage_record_map[:genotype][index] =
                   @non_dosage_record_map[:genotype][index] = ['NGS Normal'] * 2
               elsif @non_dosage_record_map[:genotype][index] == 'Normal'
@@ -92,14 +90,11 @@ module Import
                   elsif genetic_info.join(',').match(EXON_LOCATION_REGEX) &&
                         exon_match?(genetic_info)
                     process_brca_gene_and_exon_match(genotype, gene, genetic_info, genotypes)
-                  elsif !cdna_match?(genetic_info) &&
-                        !exon_match?(genetic_info) &&
+                  elsif !cdna_match?(genetic_info) && !exon_match?(genetic_info) &&
                         normal?(genetic_info)
                     process_non_cdna_normal(gene, genetic_info, genotype, genotypes)
-                  elsif !cdna_match?(genetic_info) &&
-                        !exon_match?(genetic_info) &&
-                        !normal?(genetic_info) &&
-                        fail?(genetic_info)
+                  elsif !cdna_match?(genetic_info) && !exon_match?(genetic_info) &&
+                        !normal?(genetic_info) && fail?(genetic_info)
                     process_non_cdna_fail(gene, genetic_info, genotype, genotypes)
                   end
                 end
@@ -130,27 +125,6 @@ module Import
                 end
               end
             end
-
-            # def restructure_oddlynamed_nondosage_exons(dosage_nondosage)
-            #   dosage_nondosage[:exon] = dosage_nondosage[:exon].flatten
-            #   dosage_nondosage[:exon] =
-            #     dosage_nondosage[:exon].map do |exons|
-            #       exons.gsub(/BRCA2|B2|BR2|P045|P077/, 'BRCA2')
-            #     end
-            #   dosage_nondosage[:exon] =
-            #     dosage_nondosage[:exon].map do |exons|
-            #       exons.gsub(/BRCA1|B1|BR1|P002|P002B|P087/, 'BRCA1')
-            #     end
-            #   dosage_nondosage[:exon] =
-            #     dosage_nondosage[:exon].map do |exons|
-            #       exons.gsub(/ATM|P041|P042/, 'ATM')
-            #     end
-            #   dosage_nondosage[:exon] =
-            #     dosage_nondosage[:exon].map do |exons|
-            #       exons.gsub(/CHEK2|CKEK2|P190/, 'CHEK2')
-            #     end
-            # end
-
           end
         end
       end

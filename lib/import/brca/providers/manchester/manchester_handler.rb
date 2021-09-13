@@ -6,6 +6,11 @@ module Import
         class ManchesterHandler < Import::Brca::Core::ProviderHandler
           include Import::Helpers::Brca::Providers::R0a::R0aConstants
           include Import::Helpers::Brca::Providers::R0a::R0aHelper
+          include Import::Helpers::Brca::Providers::R0a::R0aNondosageHelper
+          include Import::Helpers::Brca::Providers::R0a::R0aDosageHelper
+          # include Import::Helpers::Brca::Providers::R0a::R0aNondosageHelper
+          # include Import::Helpers::Brca::Providers::R0a::R0aDosageHelper
+
           def initialize(batch)
             @failed_genocolorectal_counter = 0
             @successful_gene_counter = 0
@@ -29,11 +34,12 @@ module Import
             dosage_genus_col       = []
             dosage_moltesttype_col = []
             dosage_exon_col        = []
-            
+
             record.raw_fields.each do |raw_record|
               # if mlpa?(raw_record['exon']) && !control_sample?(raw_record) &&
               #    relevant_consultant?(raw_record)
-              if !raw_record.nil? && !raw_record['moleculartestingtype'].nil? && raw_record['moleculartestingtype'].scan(/dosage/i).size.positive? &&
+              if !raw_record.nil? && !raw_record['moleculartestingtype'].nil? &&
+                 raw_record['moleculartestingtype'].scan(/dosage/i).size.positive? &&
                  !control_sample?(raw_record) && relevant_consultant?(raw_record)
                 dosage_genus_col.append(raw_record['genus'])
                 dosage_moltesttype_col.append(raw_record['moleculartestingtype'])
@@ -41,7 +47,7 @@ module Import
                 dosage_genotype_col.append(raw_record['genotype'])
                 dosage_genotype2_col.append(raw_record['genotype2'])
               end
-              next unless relevant_consultant?(raw_record) # !control_sample?(raw_record) && relevant_consultant?(raw_record)
+              next unless relevant_consultant?(raw_record)
 
               non_dosage_genus_col.append(raw_record['genus'])
               non_dosage_moltesttype_col.append(raw_record['moleculartestingtype'])
@@ -49,6 +55,7 @@ module Import
               non_dosage_genotype_col.append(raw_record['genotype'])
               non_dosage_genotype2_col.append(raw_record['genotype2'])
             end
+
             @non_dosage_record_map = { genus: non_dosage_genus_col,
                                        moleculartestingtype: non_dosage_moltesttype_col,
                                        exon: non_dosage_exon_col,
@@ -56,7 +63,7 @@ module Import
                                        genotype2: non_dosage_genotype2_col }
             restructure_oddlynamed_nondosage_exons(@non_dosage_record_map)
             split_multiplegenes_nondosage_map
-            
+
             @dosage_record_map = { genus: dosage_genus_col,
                                    moleculartestingtype: dosage_moltesttype_col,
                                    exon: dosage_exon_col,

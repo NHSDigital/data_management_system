@@ -283,17 +283,17 @@ class ManchesterHandlerTest < ActiveSupport::TestCase
       genotype.add_passthrough_fields(record.mapped_fields,
                                       record.raw_fields,
                                       Import::Helpers::Brca::Providers::R0a::R0aConstants::PASS_THROUGH_FIELDS_COLO)
-      @handler.process_fields(record)
+      mutazioni = @handler.process_fields(record)
       @handler.testscope_from_rawfields(genotype, record)
       mutations = @handler.assign_gene_mutation(genotype, record)
       assert_equal 'Full screen BRCA1 and BRCA2', genotype.attribute_map['genetictestscope']
-      assert_equal 8, mutations[0].attribute_map['gene']
-      assert_equal 7, mutations[1].attribute_map['gene']
-      assert_equal 'c.1257A>G', mutations[0].attribute_map['codingdnasequencechange']
-      assert_equal 'c.10110G>A', mutations[1].attribute_map['codingdnasequencechange']
-      assert_equal 2, mutations.size
-      assert_equal 2, mutations[0].attribute_map['teststatus']
-      assert_equal 2, mutations[1].attribute_map['teststatus']
+      assert_equal 8, mutations.uniq[0].attribute_map['gene']
+      assert_equal 7, mutations.uniq[1].attribute_map['gene']
+      assert_equal 'c.1257A>G', mutations.uniq[0].attribute_map['codingdnasequencechange']
+      assert_equal 'c.10110G>A', mutations.uniq[1].attribute_map['codingdnasequencechange']
+      assert_equal 2, mutations.uniq.size
+      assert_equal 2, mutations.uniq[0].attribute_map['teststatus']
+      assert_equal 2, mutations.uniq[1].attribute_map['teststatus']
     end
   end
 
@@ -381,7 +381,7 @@ class ManchesterHandlerTest < ActiveSupport::TestCase
       @handler.process_fields(record)
       @handler.testscope_from_rawfields(genotype, record)
       mutations = @handler.assign_gene_mutation(genotype, record)
-      assert_equal 'Full screen BRCA1 and BRCA2', genotype.attribute_map['genetictestscope']
+      assert_equal 'Targeted BRCA mutation test', genotype.attribute_map['genetictestscope']
       assert mutations.one?
       assert_equal 8, mutations[0].attribute_map['gene']
       assert_equal 1, mutations[0].attribute_map['teststatus']
