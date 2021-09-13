@@ -623,6 +623,80 @@ class ProjectTest < ActiveSupport::TestCase
     refute_includes facade.errors.messages.keys, :first_contact_date
   end
 
+  test 'should calculate duration' do
+    project = Project.new
+
+    # insufficient data to calculate duration...
+    project.assign_attributes(
+      start_data_date: Date.new(2021, 9, 1),
+      end_data_date:   nil
+    )
+    assert_nil project.duration
+
+    # insufficient data to calculate duration...
+    project.assign_attributes(
+      start_data_date: nil,
+      end_data_date:   Date.new(2021, 10, 1)
+    )
+    assert_nil project.duration
+
+    # sufficient data to calculate duration...
+    project.assign_attributes(
+      start_data_date: Date.new(2021, 9, 1),
+      end_data_date:   Date.new(2021, 10, 1)
+    )
+    assert_equal 1, project.duration
+
+    # watch out for miscalcualtions based on calendar months...
+    project.assign_attributes(
+      start_data_date: Date.new(2021, 9, 30),
+      end_data_date:   Date.new(2021, 10, 1)
+    )
+    assert_equal 0, project.duration
+
+    # watch out for rounding errors...
+    project.assign_attributes(
+      start_data_date: Date.new(2021, 9, 1),
+      end_data_date:   Date.new(2021, 10, 30)
+    )
+    assert_equal 1, project.duration
+
+    # no calculation needed...
+    project.assign_attributes(
+      duration: 3
+    )
+    assert_equal 3, project.duration
+  end
+
+  test 'should update duration on save' do
+    project = projects(:test_application)
+
+    project.update!(duration: 1)
+
+    assert_no_changes -> { project[:duration] } do
+      project.description = 'Test'
+      project.save!
+    end
+
+    assert_no_changes -> { project[:duration] } do
+      project.start_data_date = Time.zone.today
+      project.save!
+    end
+
+    assert_changes -> { project[:duration] } do
+      project.start_data_date = Time.zone.today
+      project.end_data_date   = 2.months.from_now
+      project.save!
+    end
+
+    # Don't attempt to recalculate/sync if the duration has been explicitly set...
+    project.duration = 6
+    assert_no_changes -> { project[:duration] } do
+      project.end_data_date = 5.months.from_now
+      project.save!
+    end
+  end
+
   private
 
   def assert_application_log(expected, options = {})
