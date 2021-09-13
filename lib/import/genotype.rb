@@ -527,6 +527,12 @@ module Import
       end
     end
 
+    def add_referencetranscriptid(referencetranscriptid)
+      return if referencetranscriptid.blank?
+
+      @attribute_map['referencetranscriptid'] = referencetranscriptid
+    end
+
     def add_servicereportidentifier(identifier)
       return if identifier.blank?
 
