@@ -82,7 +82,7 @@ module Import
         end
 
         def process_integer_imput(brca_input)
-          if [7, 8, 72, 79, 451, 865, 3186, 2744, 2804, 3394, 62, 76,
+          if [7, 8, 72, 79, 451, 865, 3186, 2744, 2804, 2808, 3394, 62, 76,
               590, 2912, 3615, 3616, 2850, 54, 55, 74, 4952].include? brca_input
             @attribute_map['gene'] = brca_input
             @logger.debug "SUCCESSFUL gene parse for #{brca_input}"
