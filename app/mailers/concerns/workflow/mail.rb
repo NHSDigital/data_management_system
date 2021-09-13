@@ -46,10 +46,11 @@ module Workflow
       end
     end
     alias transitioned_to_rejected transitioned
+    alias application_transitioned_to_contract_completed transitioned
+    alias application_transitioned_to_contract_rejected  transitioned
 
     def application_transitioned_to_rejected
       @interpolations = default_interpolations.merge!(
-        current_user:   @current_user.full_name,
         closure_reason: @project.closure_reason.value
       )
 
@@ -75,9 +76,10 @@ module Workflow
 
     def default_interpolations
       {
-        type:  @project.project_type_name,
-        state: @project.current_state_name,
-        title: @project.name
+        current_user: @current_user.full_name,
+        type:         @project.project_type_name,
+        state:        @project.current_state_name,
+        title:        @project.name
       }
     end
 

@@ -12,10 +12,10 @@ class ReleaseTest < ActiveSupport::TestCase
 
   test 'should belong to a project' do
     project = projects(:one)
-    release = project.releases.build
+    release = project.global_releases.build
 
     assert_equal project, release.project
-    assert_includes project.releases, release
+    assert_includes project.global_releases, release
   end
 
   test 'should be invalid without a project' do
@@ -30,9 +30,13 @@ class ReleaseTest < ActiveSupport::TestCase
     refute_includes release.errors.details[:project], error: :blank
   end
 
+  test 'should include BelongsToReferent' do
+    assert_includes Release.included_modules, BelongsToReferent
+  end
+
   test 'should be associated with a project state' do
     project = projects(:one)
-    release = project.releases.build
+    release = project.global_releases.build
 
     release.valid?
 
@@ -48,7 +52,7 @@ class ReleaseTest < ActiveSupport::TestCase
 
   test 'should be auditable' do
     project = projects(:one)
-    release = project.releases.build
+    release = project.global_releases.build
 
     with_versioning do
       assert_auditable release
@@ -57,7 +61,7 @@ class ReleaseTest < ActiveSupport::TestCase
 
   test 'should validate numericality of actual_cost' do
     project = projects(:one)
-    release = project.releases.build
+    release = project.global_releases.build
 
     release.actual_cost = 'not a number'
     release.valid?
@@ -74,7 +78,7 @@ class ReleaseTest < ActiveSupport::TestCase
 
   test 'should not auto transition to data released if a release date is not present' do
     assert_no_changes -> { @contract_completed_project.current_state } do
-      @contract_completed_project.releases.build.tap do |release|
+      build_release(@contract_completed_project) do |release|
         release.save!
       end
     end
@@ -82,7 +86,7 @@ class ReleaseTest < ActiveSupport::TestCase
 
   test 'should auto transition to data released if a any release date is present' do
     assert_changes -> { @contract_completed_project.current_state.id }, 'DATA_RELEASED' do
-      @contract_completed_project.releases.build.tap do |release|
+      build_release(@contract_completed_project) do |release|
         release.release_date = Date.current
         release.save!
       end
@@ -92,10 +96,18 @@ class ReleaseTest < ActiveSupport::TestCase
   test 'should not auto transition to data released if not in correct previous state' do
     @contract_completed_project.transition_to!(Workflow::State.find_by(id: 'AMEND'))
     assert_no_changes -> { @contract_completed_project.current_state } do
-      @contract_completed_project.releases.build.tap do |release|
+      build_release(@contract_completed_project) do |release|
         release.release_date = Date.current
         release.save!
       end
+    end
+  end
+
+  private
+
+  def build_release(project, **attributes)
+    project.global_releases.build(referent: project, **attributes) do |release|
+      yield(release) if block_given?
     end
   end
 end

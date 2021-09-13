@@ -3,6 +3,7 @@ class Project < ApplicationRecord
   include Workflow::Model
   include Commentable
   include Searchable
+  include HasManyReferers
 
   has_many :project_attachments, as: :attachable, dependent: :destroy
   has_many :project_nodes, dependent: :destroy
@@ -21,10 +22,19 @@ class Project < ApplicationRecord
   has_many :grants, foreign_key: :project_id, dependent: :destroy
   has_many :users, -> { extending(GrantedBy).distinct }, through: :grants
   has_many :project_amendments, dependent: :destroy
-  has_many :dpias, class_name: 'DataPrivacyImpactAssessment', dependent: :destroy
-  has_many :contracts, dependent: :destroy
-  has_many :releases,  dependent: :destroy
   has_many :communications, dependent: :destroy
+
+  # The following associations are somewhat deprecated (and slightly confusing) now.
+  # These resources should have a polymorphic parent (either a project or an amendment;
+  # see `BelongsToReferent` and `HasManyReferers`).
+  # That said, these associations (and their inverse counterparts) are kind of useful as a means
+  # of accessing _all_ the relevant resources within the scope of a project, irrespective of the
+  # true parent resource.
+  with_options dependent: :destroy do
+    has_many :global_dpias,     class_name: 'DataPrivacyImpactAssessment'
+    has_many :global_contracts, class_name: 'Contract'
+    has_many :global_releases,  class_name: 'Release'
+  end
 
   has_many :project_lawful_bases, dependent: :destroy
   has_many :lawful_bases, through: :project_lawful_bases
@@ -151,8 +161,8 @@ class Project < ApplicationRecord
   scope :contributors, ->(user) { joins(:grants).where(
                                   grants: { roleable: ProjectRole.can_edit, user_id: user.id }) }
 
-  scope :cas_dataset_approval, lambda { |user, approved_values = [nil, true, false]|
-    where(id: ProjectDataset.dataset_approval(user, approved_values).pluck(:project_id)).order(:id).
+  scope :cas_dataset_approval, lambda { |user, statuses = %i[request approved rejected]|
+    where(id: ProjectDataset.dataset_approval(user, statuses).pluck(:project_id)).order(:id).
       joins(:current_state).merge(Workflow::State.dataset_approval_states)
   }
 
@@ -173,6 +183,7 @@ class Project < ApplicationRecord
   attr_searchable :name,                  :text_filter
   attr_searchable :application_log,       :application_log_filter # Meh.
   attr_searchable :project_type_id,       :default_filter
+  attr_searchable :assigned_user_id,      :default_filter
   attr_searchable :owner,                 :association_filter, kwargs: true # FIXME: See Searchable
   attr_searchable :current_project_state, :association_filter
 
@@ -218,7 +229,7 @@ class Project < ApplicationRecord
       filter = arel_table[:application_log].matches("%#{string}%")
 
       return filter unless match ||= string.match(
-        %r(\A(?<head>ODR_(?<fy_start>\d{2})(?<fy_end>\d{2})_?)?(?<id>\d+)?(?<tail>/.*)?\z)i
+        %r(\A(?<head>ODR_?(?<fy_start>\d{2})(?<fy_end>\d{2})_?)?(?<id>\d+)?(?<tail>/.*)?\z)i
       )
 
       chain = []
@@ -531,14 +542,27 @@ class Project < ApplicationRecord
       date.strftime('%y')
     end
 
-    "ODR_#{fy_start}#{fy_end}_#{id}"
+    "ODR#{fy_start}#{fy_end}_#{id}"
   end
+  alias reference application_log
 
   def next_amendment_reference
     return unless odr?
     return unless application_log
 
     "#{application_log}/A#{amendment_number + 1}"
+  end
+
+  def user_approvable_levels_pending?(current_user)
+    ProjectDatasetLevel.default_level_2_3_bulk_approvable(self, current_user).any?
+  end
+
+  def level_2_3_defaults_expiring?(current_user)
+    ProjectDatasetLevel.default_level_2_3_bulk_renew_request(self, current_user).any?
+  end
+
+  def default_levels_all_decided
+    ProjectDatasetLevel.cas_type_levels(self, 1).none?(&:request?)
   end
 
   private

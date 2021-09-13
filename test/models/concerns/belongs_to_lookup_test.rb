@@ -3,7 +3,10 @@ require 'test_helper'
 # Tests the BelongsToLookup concern
 class BelongsToLookupTest < ActiveSupport::TestCase
   def setup
-    @release = Release.new(project: projects(:dummy_project))
+    @release = Release.new(
+      project:  projects(:dummy_project),
+      referent: projects(:dummy_project)
+    )
   end
 
   test 'belongs_to_lookup should allow valid value' do

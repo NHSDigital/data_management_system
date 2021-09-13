@@ -15,7 +15,6 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_approved))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejection_reviewed))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:renewal))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_granted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:account_closed))
 
@@ -24,7 +23,6 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_approved))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejection_reviewed))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:renewal))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_granted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:account_closed))
 
@@ -33,7 +31,6 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejection_reviewed))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:renewal))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_granted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:account_closed))
 
@@ -42,7 +39,6 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_approved))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejection_reviewed))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:renewal))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_granted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:account_closed))
 
@@ -51,16 +47,6 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_approved))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_rejected))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:renewal))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:access_granted))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:account_closed))
-
-      @project.stubs current_state: workflow_states(:renewal)
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:draft))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_approved))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_rejected))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:rejection_reviewed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_granted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:account_closed))
 
@@ -70,7 +56,6 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_approved))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejection_reviewed))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:renewal))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:account_closed))
 
       @project.stubs current_state: workflow_states(:account_closed)
@@ -79,7 +64,6 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_approved))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejection_reviewed))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:renewal))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_granted))
     end
 
@@ -92,7 +76,6 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_approved))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejection_reviewed))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:renewal))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_granted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:account_closed))
 
@@ -101,7 +84,6 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_approved))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejection_reviewed))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:renewal))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_granted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:account_closed))
 
@@ -110,7 +92,6 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejection_reviewed))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:renewal))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_granted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:account_closed))
 
@@ -119,7 +100,6 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_approved))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejection_reviewed))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:renewal))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_granted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:account_closed))
 
@@ -128,17 +108,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_approved))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_rejected))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:renewal))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_granted))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:account_closed))
-
-      @project.stubs current_state: workflow_states(:renewal)
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:draft))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_approved))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_rejected))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:rejection_reviewed))
-      assert user.can? :create, @project.project_states.build(state: workflow_states(:access_granted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:account_closed))
 
       @project.stubs current_state: workflow_states(:access_granted)
@@ -147,7 +117,6 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_approved))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejection_reviewed))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:renewal))
       assert user.can? :create, @project.project_states.build(state: workflow_states(:account_closed))
 
       @project.stubs current_state: workflow_states(:account_closed)
@@ -156,7 +125,6 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_approved))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejection_reviewed))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:renewal))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_granted))
     end
 
@@ -168,7 +136,6 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_approved))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejection_reviewed))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:renewal))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_granted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:account_closed))
 
@@ -177,7 +144,6 @@ module Workflow
       assert user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_approved))
       assert user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejection_reviewed))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:renewal))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_granted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:account_closed))
 
@@ -186,7 +152,6 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejection_reviewed))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:renewal))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_granted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:account_closed))
 
@@ -195,7 +160,6 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_approved))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejection_reviewed))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:renewal))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_granted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:account_closed))
 
@@ -204,16 +168,6 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_approved))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_rejected))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:renewal))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:access_granted))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:account_closed))
-
-      @project.stubs current_state: workflow_states(:renewal)
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:draft))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_approved))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_rejected))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:rejection_reviewed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_granted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:account_closed))
 
@@ -223,7 +177,6 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_approved))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejection_reviewed))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:renewal))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:account_closed))
 
       @project.stubs current_state: workflow_states(:account_closed)
@@ -232,7 +185,6 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_approved))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejection_reviewed))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:renewal))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_granted))
     end
 
@@ -245,7 +197,6 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_approved))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejection_reviewed))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:renewal))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_granted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:account_closed))
 
@@ -255,7 +206,6 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_approved))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejection_reviewed))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:renewal))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_granted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:account_closed))
 
@@ -264,7 +214,6 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejection_reviewed))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:renewal))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_granted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:account_closed))
 
@@ -273,7 +222,6 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_approved))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejection_reviewed))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:renewal))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_granted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:account_closed))
 
@@ -282,17 +230,7 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_approved))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_rejected))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:renewal))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_granted))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:account_closed))
-
-      @project.stubs current_state: workflow_states(:renewal)
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:draft))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_approved))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_rejected))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:rejection_reviewed))
-      assert user.can? :create, @project.project_states.build(state: workflow_states(:access_granted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:account_closed))
 
       @project.stubs current_state: workflow_states(:access_granted)
@@ -301,7 +239,6 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_approved))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejection_reviewed))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:renewal))
       assert user.can? :create, @project.project_states.build(state: workflow_states(:account_closed))
 
       @project.stubs current_state: workflow_states(:account_closed)
@@ -310,7 +247,6 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_approved))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejection_reviewed))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:renewal))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_granted))
     end
 
@@ -321,7 +257,6 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_approved))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejection_reviewed))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:renewal))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_granted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:account_closed))
 
@@ -330,7 +265,6 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_approved))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejection_reviewed))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:renewal))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_granted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:account_closed))
 
@@ -339,7 +273,6 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejection_reviewed))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:renewal))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_granted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:account_closed))
 
@@ -348,7 +281,6 @@ module Workflow
       assert user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_approved))
       assert user.can? :create, @project.project_states.build(state: workflow_states(:rejection_reviewed))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:renewal))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_granted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:account_closed))
 
@@ -357,16 +289,6 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_approved))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_rejected))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:renewal))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:access_granted))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:account_closed))
-
-      @project.stubs current_state: workflow_states(:renewal)
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:draft))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:submitted))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_approved))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_rejected))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:rejection_reviewed))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_granted))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:account_closed))
 
@@ -376,7 +298,6 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_approved))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejection_reviewed))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:renewal))
       assert user.can? :create, @project.project_states.build(state: workflow_states(:account_closed))
 
       @project.stubs current_state: workflow_states(:account_closed)
@@ -385,7 +306,6 @@ module Workflow
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_approved))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_approver_rejected))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:rejection_reviewed))
-      refute user.can? :create, @project.project_states.build(state: workflow_states(:renewal))
       refute user.can? :create, @project.project_states.build(state: workflow_states(:access_granted))
     end
   end

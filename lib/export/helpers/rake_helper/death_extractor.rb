@@ -5,30 +5,54 @@ module Export
       # Helpers to extract death records
       module DeathExtractor
         # Interactively pick a weekly batch of death data
-        def self.pick_mbis_weekly_death_batch(desc, fname_patterns, weeks_ago: 4)
+        # If optional week parameter is supplied (in YYYY-MM-DD format), then this runs in
+        # batch mode, and returns the latest data for that week, or raises an exception if no
+        # batch for that month is available.
+        def self.pick_mbis_weekly_death_batch(desc, fname_patterns, weeks_ago: 4,
+                                                                    week: nil)
+          if week && !/\A[0-9]{4}-[0-9]{2}-[0-9]{2}\z/.match?(week)
+            raise(ArgumentError, "Invalid week #{week}, expected YYYY-MM-DD")
+          end
+
+          date0 = if week
+                    Date.strptime(week, '%Y-%m-%d')
+                  else
+                    Date.current - weeks_ago * 7
+                  end
           weekly_death_re = /MBIS(WEEKLY_Deaths_D|_20)([0-9]{6}).txt/ # TODO: Refactor
-          dated_batches = EBatch.imported.where(e_type: 'PSDEATH').collect do |eb|
+          batch_scope = EBatch.imported.where(e_type: 'PSDEATH')
+
+          dated_batches = batch_scope.all.collect do |eb|
             next unless weekly_death_re =~ eb.original_filename
 
             date = Date.strptime(Regexp.last_match(2), '%y%m%d')
+            next if date < date0
+
             [date, fname_patterns.collect { |s| date.strftime(s) }, eb]
           end.compact.sort
-          puts "e_batchid: original MBIS filename -> #{desc} files"
-          dated_batches.each do |date, fnames, eb|
-            next unless date >= weeks_ago.weeks.ago
+          if week
+            date, fnames, eb = dated_batches.reverse.find do |date, _, _|
+              date.strftime('%Y-%m-%d') == week
+            end
+            raise "No batch found for week #{week}" unless date
 
-            puts format('%-9d: %s -> %s', eb.id, Pathname.new(eb.original_filename).basename.to_s,
-                        fnames[0..1].collect { |s| File.basename(s) }.join(', '))
-          end
-          print 'Choose e_batchid to export, or enter "older" to show older batches: '
-          answer = STDIN.readline.chomp
-          if answer == 'older'
-            return pick_mbis_weekly_death_batch(desc, fname_patterns,
-                                                weeks_ago: weeks_ago + 4)
-          end
+            puts "Extracting week #{week} with e_batchid #{eb.id}"
+          else
+            puts "e_batchid: original MBIS filename -> #{desc} files"
+            dated_batches.each do |_date, fnames, eb|
+              puts format('%-9d: %s -> %s', eb.id, Pathname.new(eb.original_filename).basename,
+                          fnames[0..1].collect { |s| File.basename(s) }.join(', '))
+            end
+            print 'Choose e_batchid to export, or enter "older" to show older batches: '
+            answer = STDIN.readline.chomp
+            if answer == 'older'
+              return pick_mbis_weekly_death_batch(desc, fname_patterns,
+                                                  weeks_ago: weeks_ago + 4)
+            end
 
-          e_batchid = answer.to_i
-          date, fnames, eb = dated_batches.find { |_, _, eb2| eb2.id == e_batchid }
+            e_batchid = answer.to_i
+            date, fnames, eb = dated_batches.find { |_, _, eb2| eb2.id == e_batchid }
+          end
           fnames&.each do |fname|
             raise "Not overwriting existing #{fname}" if File.exist?(SafePath.new('mbis_data').
                                                                       join(fname))

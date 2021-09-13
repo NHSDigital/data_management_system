@@ -6,9 +6,10 @@ class CasNotifierTest < ActiveSupport::TestCase
     dataset = Dataset.find_by(name: 'Extra CAS Dataset One')
     project_dataset = ProjectDataset.new(dataset: dataset, terms_accepted: true)
     project.project_datasets << project_dataset
-    pdl = ProjectDatasetLevel.new(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
-                                  approved: true)
-    project_dataset.project_dataset_levels << pdl
+    pdl = ProjectDatasetLevel.create(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
+                                     project_dataset_id: project_dataset.id)
+
+    pdl.update(status: :approved)
 
     recipients = SystemRole.cas_manager_and_access_approvers.map(&:users).flatten
     title = 'Dataset Approval Level Status Change'
@@ -31,9 +32,10 @@ class CasNotifierTest < ActiveSupport::TestCase
     dataset = Dataset.find_by(name: 'Extra CAS Dataset One')
     project_dataset = ProjectDataset.new(dataset: dataset, terms_accepted: true)
     project.project_datasets << project_dataset
-    pdl = ProjectDatasetLevel.new(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
-                                  approved: true)
-    project_dataset.project_dataset_levels << pdl
+    pdl = ProjectDatasetLevel.create(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
+                                     project_dataset_id: project_dataset.id)
+
+    pdl.update(status: :approved)
 
     assert_difference -> { Notification.by_title('Dataset Approval Level Updated').count }, 1 do
       CasNotifier.dataset_level_approved_status_updated_to_user(project, pdl)
@@ -147,8 +149,12 @@ class CasNotifierTest < ActiveSupport::TestCase
   test 'should generate requires_dataset_approval Notifications' do
     project = Project.new(project_type: ProjectType.find_by(name: 'CAS')).tap do |a|
       a.owner = users(:no_roles)
-      a.project_datasets << ProjectDataset.new(dataset: dataset(83), terms_accepted: true)
-      a.project_datasets << ProjectDataset.new(dataset: dataset(84), terms_accepted: true)
+      a.project_datasets << ProjectDataset.new(dataset: Dataset.
+                                                          find_by(name: 'Extra CAS Dataset One'),
+                                               terms_accepted: true)
+      a.project_datasets << ProjectDataset.new(dataset: Dataset.
+                                                          find_by(name: 'Extra CAS Dataset Two'),
+                                               terms_accepted: true)
       a.save!
     end
     title = 'CAS Application Requires Dataset Approval'
@@ -180,40 +186,6 @@ class CasNotifierTest < ActiveSupport::TestCase
     # TODO: Should it be creating UserNotifications?
 
     assert_equal Notification.last.body, "CAS project #{project.id} has been submitted.\n\n"
-  end
-
-  test 'should generate requires_renewal_to_user Notifications' do
-    user = users(:no_roles)
-    project = create_cas_project(project_purpose: 'test',
-                             owner: user)
-
-    assert_difference -> { Notification.by_title('CAS Access Requires Renewal').count }, 1 do
-      CasNotifier.requires_renewal_to_user(project)
-    end
-
-    # TODO: Should it be creating UserNotifications?
-
-    assert_equal Notification.last.body, 'Your access to CAS needs to be renewed, please visit ' \
-                                         'your application to confirm renewal. If you have not ' \
-                                         'renewed within 30 days your access will be removed and ' \
-                                         "you will need to contact Beatrice Coker to reapply\n\n"
-  end
-
-  test 'should generate requires_renewal_midway_to_user Notifications' do
-    user = users(:no_roles)
-    project = create_cas_project(project_purpose: 'test',
-                             owner: user)
-
-    assert_difference -> { Notification.by_title('CAS Access Urgently Requires Renewal').count }, 1 do
-      CasNotifier.requires_renewal_midpoint_to_user(project)
-    end
-
-    # TODO: Should it be creating UserNotifications?
-
-    assert_equal Notification.last.body, 'Your access to CAS needs to be renewed, please visit ' \
-                                         'your application to confirm renewal. If you have not ' \
-                                         'renewed within 15 days your access will be removed and ' \
-                                         "you will need to contact Beatrice Coker to reapply\n\n"
   end
 
   test 'should generate account_closed_to_user Notifications' do
@@ -248,50 +220,6 @@ class CasNotifierTest < ActiveSupport::TestCase
     # TODO: Should it be creating UserNotifications?
 
     assert_equal Notification.last.body, "CAS account #{project.id} has been closed.\n\n"
-  end
-
-  test 'should generate account_renewed Notifications' do
-    project = create_cas_project(project_purpose: 'test')
-
-    recipients = SystemRole.cas_manager_and_access_approvers.map(&:users).flatten
-
-    title = 'CAS Account Renewed'
-    assert_difference -> { Notification.by_title(title).count }, 4 do
-      recipients.each do |user|
-        CasNotifier.account_renewed(project, user.id)
-      end
-    end
-
-    # TODO: Should it be creating UserNotifications?
-
-    assert_equal Notification.last.body, "CAS Account #{project.id} has been renewed.\n\n"
-  end
-
-  test 'should generate account_renewed_dataset_approver Notifications' do
-    project = create_cas_project(owner: users(:no_roles))
-    pd1 = ProjectDataset.new(dataset: dataset(83), terms_accepted: true)
-    pd2 = ProjectDataset.new(dataset: dataset(84), terms_accepted: true)
-    project.project_datasets << pd1
-    project.project_datasets << pd2
-    pdl = ProjectDatasetLevel.new(access_level_id: 1, expiry_date: Time.zone.today + 1.week)
-    pd1.project_dataset_levels << pdl
-    pdl = ProjectDatasetLevel.new(access_level_id: 1, expiry_date: Time.zone.today + 1.week)
-    pd2.project_dataset_levels << pdl
-    project.save!
-
-    title = 'CAS Account Renewed With Access to Dataset'
-    assert_difference -> { Notification.by_title(title).count }, 3 do
-      project.datasets.each do |dataset|
-        dataset.approvers.each do |approver|
-          CasNotifier.account_renewed_dataset_approver(project, approver.id)
-        end
-      end
-    end
-
-    # TODO: Should it be creating UserNotifications?
-    assert_equal Notification.last.body, "CAS account #{project.id} has been renewed. This " \
-                                         'account has access to one or more datasets that you ' \
-                                         "are an approver for.\n\n"
   end
 
   test 'should generate new_cas_project_saved Notifications' do

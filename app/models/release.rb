@@ -1,4 +1,6 @@
 class Release < ApplicationRecord
+  include BelongsToReferent
+
   belongs_to :project
   belongs_to :project_state, class_name: 'Workflow::ProjectState'
 

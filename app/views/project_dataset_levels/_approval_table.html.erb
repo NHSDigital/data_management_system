@@ -1,0 +1,27 @@
+<fieldset>
+  <legend><%= "#{status} datasets" %></legend>
+    <div id="<%= status %>_project_dataset_levels">
+      <table class="table table-condensed">
+        <thead>
+          <tr>
+            <th width="45%">Name</th>
+            <th width="5%">Level</th>
+            <th width="15%">Date</th>
+            <th width="15%">Status</th>
+            <% if status == 'Requested' %>
+              <th width="10%">Request Type</th>
+            <% else %>
+              <th width="10%">Decision Date</th>
+            <% end %>
+          </tr>
+        </thead>
+        <tbody>
+          <% project_dataset_levels.each do |level| %>
+            <tr id="<%= dom_id(level) %>" class="<%= approval_highlight_class(level) %>">
+              <%= render partial: '/project_dataset_levels/approval', locals: { project_dataset_level: level } %>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+</fieldset>

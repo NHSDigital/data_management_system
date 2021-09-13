@@ -28,7 +28,7 @@ module Import
                      'NBN' => 2912,
                      'RAD51C' => 3615,
                      'RAD51D' => 3616,
-                     'CDKN2A' =>20,
+                     'CDKN2A' => 20,
                      'CDK4' => 18 }.freeze
 
         BRCA_REGEX = /(?<atm>ATM)|

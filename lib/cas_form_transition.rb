@@ -14,7 +14,7 @@ class CasFormTransition
     {
       %w[REJECTION_REVIEWED DRAFT] => 'Reapply',
       %w[ACCESS_APPROVER_REJECTED SUBMITTED] => 'Return to Access Approval',
-      %w[ACCESS_GRANTED DRAFT] => 'Request Access Change',
+      %w[ACCESS_GRANTED DRAFT] => 'Update Access Details',
       %w[ACCOUNT_CLOSED DRAFT] => 'Reopen'
     }
   end

@@ -77,7 +77,7 @@ class ProjectsController < ApplicationController
   def cas_approvals
     @projects = Project.search(search_params).accessible_by(current_ability, :read).
                 order(updated_at: :desc)
-    @my_dataset_approvals = @projects.cas_dataset_approval(current_user, [nil]).
+    @my_dataset_approvals = @projects.cas_dataset_approval(current_user, [:request]).
                             order(updated_at: :desc)
     @my_access_approvals = @projects.cas_access_approval.order(updated_at: :desc)
 
@@ -211,6 +211,24 @@ class ProjectsController < ApplicationController
     end
   end
 
+  def project_dataset_levels_bulk_approvals
+    @project.transaction do
+      ProjectDatasetLevel.default_level_2_3_bulk_approvable(@project, current_user).
+        update_all(status: :approved, decided_at: Time.zone.now)
+    end
+  end
+
+  def project_dataset_levels_bulk_renewal_requests
+    @project.transaction do
+      ProjectDatasetLevel.default_level_2_3_bulk_renew_request(@project, current_user).each do |pdl|
+        ProjectDatasetLevel.create(project_dataset_id: pdl.project_dataset_id,
+                                   access_level_id: pdl.access_level_id,
+                                   expiry_date: 1.year.from_now,
+                                   selected: true)
+      end
+    end
+  end
+
   private
 
   def data_source_params
@@ -338,6 +356,7 @@ class ProjectsController < ApplicationController
     params.fetch(:search, {}).permit(
       :name,
       :application_log,
+      :assigned_user_id,
       project_type_id: [],
       owner: %i[
         first_name
@@ -348,4 +367,5 @@ class ProjectsController < ApplicationController
       }
     )
   end
+  helper_method :search_params
 end

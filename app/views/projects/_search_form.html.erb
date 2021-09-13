@@ -18,12 +18,12 @@
     <div class="collapse in" id="project_filters">
       <div class="form-group">
         <%= form.label :name, Project.human_attribute_name(:name) %>
-        <%= form.text_field :name, class: 'form-control', value: params.dig(:search, :name) %>
+        <%= form.text_field :name, class: 'form-control', value: search_params[:name] %>
       </div>
 
       <div class="form-group">
         <%= form.label :application_log, Project.human_attribute_name(:application_log) %>
-        <%= form.text_field :application_log, class: 'form-control', value: params.dig(:search, :application_log) %>
+        <%= form.text_field :application_log, class: 'form-control', value: search_params[:application_log] %>
       </div>
     </div>
   </fieldset>
@@ -41,16 +41,32 @@
       <div class="collapse" id="project_owner_filters">
         <div class="form-group">
           <%= sub_form.label :first_name, User.human_attribute_name(:first_name) %>
-          <%= sub_form.text_field :first_name, class: 'form-control', value: params.dig(:search, :owner, :first_name) %>
+          <%= sub_form.text_field :first_name, class: 'form-control', value: search_params.dig(:owner, :first_name) %>
         </div>
 
         <div class="form-group">
           <%= sub_form.label :last_name, User.human_attribute_name(:last_name) %>
-          <%= sub_form.text_field :last_name, class: 'form-control', value: params.dig(:search, :owner, :last_name) %>
+          <%= sub_form.text_field :last_name, class: 'form-control', value: search_params.dig(:owner, :last_name) %>
         </div>
       </div>
     </fieldset>
   <% end %>
+
+  <fieldset>
+    <legend>
+      <a href="#project_assigned_user_filters" class="btn btn-default btn-xs collapsed" data-toggle="collapse" expanded="false" aria-controls="project_assigned_user_filters">
+        <%= bootstrap_icon_tag('eye-open') %>
+        <%= bootstrap_icon_tag('eye-close') %>
+      </a>
+      <%= Project.human_attribute_name(:assigned_user) %>
+    </legend>
+
+    <div class="collapse" id="project_assigned_user_filters">
+      <div class="form-group">
+        <%= form.collection_select(:assigned_user_id, User.all_application_managers.in_use.order(:last_name, :first_name), :id, :full_name, { selected: search_params[:assigned_user_id], include_blank: true }, { class: 'form-control' }) %>
+      </div>
+    </div>
+  </fieldset>
 
   <fieldset data-controller="checkbox-select-all">
     <legend>
@@ -70,7 +86,7 @@
       </div>
 
       <%= form.collection_check_boxes :project_type_id, project_types, :id, :translated_name, { include_hidden: false } do |builder| %>
-        <% checked = params.dig(:search, :project_type_id) ? params[:search][:project_type_id].include?(builder.value.to_s) : true %>
+        <% checked = search_params[:project_type_id] ? search_params[:project_type_id].include?(builder.value.to_s) : true %>
         <div class="checkbox">
           <%= builder.label do %>
             <%= builder.check_box checked: checked, data: { target: :'checkbox-select-all.checkbox' } %>
@@ -100,7 +116,7 @@
         </div>
 
         <%= sub_form.collection_check_boxes :state_id, workflow_states, :id, :id, { include_hidden: false } do |builder| %>
-          <% checked = params.dig(:search, :current_project_state) ? params.dig(:search, :current_project_state, :state_id).include?(builder.value.to_s) : true %>
+          <% checked = search_params[:current_project_state] ? search_params.dig(:current_project_state, :state_id).include?(builder.value.to_s) : true %>
           <div class="checkbox">
             <%= builder.label do %>
               <%= builder.check_box checked: checked, data: { target: :'checkbox-select-all.checkbox' } %>

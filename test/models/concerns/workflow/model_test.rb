@@ -288,7 +288,7 @@ module Workflow
       assert project.transition_to(workflow_states(:submitted))
       assert project.transition_to(workflow_states(:dpia_start))
 
-      project.dpias.destroy_all
+      project.global_dpias.destroy_all
       refute project.transition_to(workflow_states(:dpia_review))
       assert_includes project.errors.details[:base], error: :no_attached_dpia
 
@@ -305,7 +305,7 @@ module Workflow
       assert project.transition_to(workflow_states(:dpia_review))
       assert project.transition_to(workflow_states(:dpia_moderation))
 
-      project.contracts.destroy_all
+      project.global_contracts.destroy_all
       refute project.transition_to(workflow_states(:contract_draft))
       assert_includes project.errors.details[:base], error: :no_attached_contract
 

@@ -3,6 +3,10 @@ require 'test_helper'
 class ProjectTest < ActiveSupport::TestCase
   include ActionMailer::TestHelper
 
+  test 'should include HasManyReferers' do
+    assert_includes ProjectAmendment.included_modules, HasManyReferers
+  end
+
   test 'should remove project data items when data source changed' do
     project = build_and_validate_project
     dataset = Dataset.find_by(name: 'Births Gold Standard')
@@ -437,9 +441,8 @@ class ProjectTest < ActiveSupport::TestCase
 
     project_dataset = ProjectDataset.new(dataset: dataset, terms_accepted: true)
     cas_project.project_datasets << project_dataset
-    pdl = ProjectDatasetLevel.new(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
-                                  approved: nil)
-    project_dataset.project_dataset_levels << pdl
+    pdl = ProjectDatasetLevel.create(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
+                                     project_dataset_id: project_dataset.id)
 
     # Should not be returned while at DRAFT state
     assert_equal 0, Project.cas_dataset_approval(user).count
@@ -448,7 +451,7 @@ class ProjectTest < ActiveSupport::TestCase
 
     assert_equal 1, Project.cas_dataset_approval(user).count
 
-    pdl.approved = true
+    pdl.status = :approved
     pdl.save!(validate: false)
 
     # Test the use of the scope with and without approved = nil argument
@@ -459,9 +462,8 @@ class ProjectTest < ActiveSupport::TestCase
     new_project_dataset = ProjectDataset.new(dataset: Dataset.find_by(name: 'SACT'),
                                              terms_accepted: true)
     new_project.project_datasets << new_project_dataset
-    pdl = ProjectDatasetLevel.new(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
-                                  approved: nil)
-    new_project_dataset.project_dataset_levels << pdl
+    ProjectDatasetLevel.create(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
+                               project_dataset_id: project_dataset.id)
 
     new_project.transition_to!(workflow_states(:submitted))
 
@@ -552,7 +554,8 @@ class ProjectTest < ActiveSupport::TestCase
 
   test 'destroy_project_datasets_without_any_levels after_save callback' do
     project = create_cas_project(owner: users(:standard_user2))
-    project_dataset = ProjectDataset.new(dataset: dataset(83), terms_accepted: true)
+    project_dataset = ProjectDataset.new(dataset: Dataset.find_by(name: 'Extra CAS Dataset One'),
+                                         terms_accepted: true)
     project.project_datasets << project_dataset
     pdl1 = ProjectDatasetLevel.new(access_level_id: 1, expiry_date: Time.zone.today, selected: true)
     pdl2 = ProjectDatasetLevel.new(access_level_id: 2, expiry_date: Time.zone.today, selected: true)
@@ -575,12 +578,12 @@ class ProjectTest < ActiveSupport::TestCase
 
   test 'returns an ODR application_log based of financialy year and id if application_log is nil' do
     %i[eoi application].each do |type|
-      assert_application_log('ODR_2021_', name: 'application log test 1',
-                                          project_type: project_types(type),
-                                          first_contact_date: Date.parse('2021/03/31'))
-      assert_application_log('ODR_2122_', name: 'application log test 2',
-                                          project_type: project_types(type),
-                                          first_contact_date: Date.parse('2021/04/01'))
+      assert_application_log('ODR2021_', name: 'application log test 1',
+                                         project_type: project_types(type),
+                                         first_contact_date: Date.parse('2021/03/31'))
+      assert_application_log('ODR2122_', name: 'application log test 2',
+                                         project_type: project_types(type),
+                                         first_contact_date: Date.parse('2021/04/01'))
     end
   end
 

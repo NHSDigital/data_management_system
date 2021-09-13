@@ -18,12 +18,12 @@ class ProjectDataset < ApplicationRecord
 
   # TODO: approved only applies to CAS so far
 
-  scope :dataset_approval, lambda { |user, approved_values = [nil, true, false]|
+  scope :dataset_approval, lambda { |user, statuses = %i[request approved rejected]|
     joins(dataset: :grants).where(
       grants: { user_id: user.id,
                 roleable_type: 'DatasetRole',
                 roleable_id: DatasetRole.fetch(:approver).id }
-    ).joins(:project_dataset_levels).where(project_dataset_levels: { approved: approved_values })
+    ).joins(:project_dataset_levels).where(project_dataset_levels: { status: statuses })
   }
 
   # data_source_name
@@ -55,9 +55,7 @@ class ProjectDataset < ApplicationRecord
     return unless project.cas?
     return unless project_dataset_levels.any?
 
-    not_selected = project_dataset_levels.select do |pdl|
-      pdl.selected == false
-    end
+    not_selected = project_dataset_levels.reject(&:selected)
 
     self.project_dataset_levels = (project_dataset_levels - not_selected)
   end

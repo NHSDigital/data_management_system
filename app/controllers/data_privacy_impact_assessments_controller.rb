@@ -2,10 +2,10 @@
 class DataPrivacyImpactAssessmentsController < ApplicationController
   load_and_authorize_resource :project
   load_and_authorize_resource :dpia, through: :project, shallow: true, parent: false,
-                                     through_association: :dpias,
+                                     through_association: :global_dpias,
                                      class: 'DataPrivacyImpactAssessment'
 
-  # We'll handle this one manually... 
+  # We'll handle this one manually...
   skip_authorize_resource :dpia, only: %i[download]
 
   def index
@@ -57,6 +57,7 @@ class DataPrivacyImpactAssessmentsController < ApplicationController
   def resource_params
     params.require(:data_privacy_impact_assessment).permit(
       %i[
+        referent_gid
         ig_toolkit_version
         ig_score
         ig_assessment_status_id

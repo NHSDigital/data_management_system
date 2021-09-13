@@ -1,7 +1,7 @@
 # RESTfully manages `Release`s.
 class ReleasesController < ApplicationController
   load_and_authorize_resource :project
-  load_and_authorize_resource through: :project, shallow: true
+  load_and_authorize_resource through: :project, shallow: true, through_association: :global_releases
 
   def index
     @releases = @releases.paginate(page: params[:page], per_page: 25)
@@ -40,6 +40,7 @@ class ReleasesController < ApplicationController
   def resource_params
     params.require(:release).permit(
       %i[
+        referent_gid
         invoice_requested_date
         invoice_sent_date
         phe_invoice_number

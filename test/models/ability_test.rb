@@ -791,7 +791,7 @@ class AbilityTest < ActiveSupport::TestCase
     project.grants.build(user: project_member, roleable: ProjectRole.fetch(:read_only))
     project.save!
 
-    release = project.releases.build
+    release = project.global_releases.build
 
     refute project_member.can?      :read, release
     refute project_owner.can?       :read, release
