@@ -89,7 +89,7 @@ module Workflow
     # NOTE: yuk.
     def notifiable_users
       # Does the user performing the transition need notifying?
-      scope = @project.users.where.not(id: current_user)
+      scope = @project.users.internal.where.not(id: current_user)
 
       # Copied from original project rejected notification...
       scope = scope.where.not(id: @project.users.odr_users) if @project.application?

@@ -1,0 +1,5 @@
+$('#cas_project_dataset_levels_tables').html("<%= escape_javascript(render partial: 'projects/cas_project_dataset_levels', locals: { project: @project } ) %>");
+$("#approve_level_2_3_default_datasets").load(" #approve_level_2_3_default_datasets > *")
+
+$('#status_label').html("<%= escape_javascript(render partial: 'projects/status_label', locals: { project: @project } ) %>");
+$('#transition_controls').html("<%= escape_javascript(render partial: 'projects/transition_controls', locals: { project: @project } ) %>");

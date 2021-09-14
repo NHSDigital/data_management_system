@@ -7,9 +7,11 @@ class ProjectsMailerTest < ActionMailer::TestCase
     dataset = Dataset.find_by(name: 'Extra CAS Dataset One')
     project_dataset = ProjectDataset.new(dataset: dataset, terms_accepted: true)
     project.project_datasets << project_dataset
-    pdl = ProjectDatasetLevel.new(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
-                                  approved: true)
+    pdl = ProjectDatasetLevel.create(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
+                                     project_dataset_id: project_dataset.id)
     project_dataset.project_dataset_levels << pdl
+
+    pdl.update(status: :rejected)
 
     email = CasMailer.with(project: project, project_dataset_level: pdl).dataset_level_approved_status_updated
 
@@ -28,9 +30,11 @@ class ProjectsMailerTest < ActionMailer::TestCase
     dataset = Dataset.find_by(name: 'Extra CAS Dataset One')
     project_dataset = ProjectDataset.new(dataset: dataset, terms_accepted: true)
     project.project_datasets << project_dataset
-    pdl = ProjectDatasetLevel.new(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
-                                  approved: true)
+    pdl = ProjectDatasetLevel.create(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
+                                     project_dataset_id: project_dataset.id)
     project_dataset.project_dataset_levels << pdl
+
+    pdl.update(status: :rejected)
 
     email = CasMailer.with(project: project, project_dataset_level: pdl).dataset_level_approved_status_updated_to_user
 
@@ -153,9 +157,8 @@ class ProjectsMailerTest < ActionMailer::TestCase
     dataset = Dataset.find_by(name: 'Extra CAS Dataset One')
     project_dataset = ProjectDataset.new(dataset: dataset, terms_accepted: true)
     project.project_datasets << project_dataset
-    pdl = ProjectDatasetLevel.new(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
-                                  approved: nil)
-    project_dataset.project_dataset_levels << pdl
+    ProjectDatasetLevel.create(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
+                               project_dataset_id: project_dataset.id)
 
     project.transition_to!(workflow_states(:submitted))
 
@@ -185,36 +188,6 @@ class ProjectsMailerTest < ActionMailer::TestCase
     assert_match %r{http://[^/]+/projects/#{project.id}}, email.text_part.body.to_s
   end
 
-  test 'requires renewal to user' do
-    project = create_cas_project(project_purpose: 'test',
-                             owner: users(:no_roles))
-
-    email = CasMailer.with(project: project).requires_renewal_to_user
-
-    assert_emails 1 do
-      email.deliver_later
-    end
-
-    assert_equal Array.wrap(project.owner.email), email.to
-    assert_equal 'CAS Access Requires Renewal', email.subject
-    assert_match %r{http://[^/]+/projects/#{project.id}}, email.text_part.body.to_s
-  end
-
-  test 'requires renewal midpoint to user' do
-    project = create_cas_project(project_purpose: 'test',
-                             owner: users(:no_roles))
-
-    email = CasMailer.with(project: project).requires_renewal_midpoint_to_user
-
-    assert_emails 1 do
-      email.deliver_later
-    end
-
-    assert_equal Array.wrap(project.owner.email), email.to
-    assert_equal 'CAS Access Urgently Requires Renewal', email.subject
-    assert_match %r{http://[^/]+/projects/#{project.id}}, email.text_part.body.to_s
-  end
-
   test 'account closed to user' do
     project = create_cas_project(project_purpose: 'test',
                              owner: users(:no_roles))
@@ -241,41 +214,6 @@ class ProjectsMailerTest < ActionMailer::TestCase
 
     assert_equal User.cas_managers.pluck(:email), email.to
     assert_equal 'CAS Account Has Closed', email.subject
-    assert_match %r{http://[^/]+/projects/#{project.id}}, email.text_part.body.to_s
-  end
-
-  test 'account renewed' do
-    project = create_cas_project(project_purpose: 'test')
-
-    email = CasMailer.with(project: project).account_renewed
-
-    assert_emails 1 do
-      email.deliver_later
-    end
-
-    assert_equal User.cas_manager_and_access_approvers.map(&:email), email.to
-    assert_equal 'CAS Account Renewed', email.subject
-    assert_match %r{http://[^/]+/projects/#{project.id}}, email.text_part.body.to_s
-  end
-
-  test 'account renewed dataset approver' do
-    project = create_cas_project(project_purpose: 'test', owner: users(:no_roles))
-
-    dataset = Dataset.find_by(name: 'Extra CAS Dataset One')
-    project_dataset = ProjectDataset.new(dataset: dataset, terms_accepted: true)
-    project.project_datasets << project_dataset
-    pdl = ProjectDatasetLevel.new(access_level_id: 1, expiry_date: Time.zone.today + 1.week)
-    project_dataset.project_dataset_levels << pdl
-    project.transition_to!(workflow_states(:submitted))
-
-    email = CasMailer.with(project: project, user: DatasetRole.fetch(:approver).users.first).account_renewed_dataset_approver
-
-    assert_emails 1 do
-      email.deliver_later
-    end
-
-    assert_equal Array.wrap(DatasetRole.fetch(:approver).users.first.email), email.to
-    assert_equal 'CAS Account Renewed With Access to Dataset', email.subject
     assert_match %r{http://[^/]+/projects/#{project.id}}, email.text_part.body.to_s
   end
 

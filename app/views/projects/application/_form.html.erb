@@ -8,280 +8,279 @@
 
 <%= render layout: "#{project_sub_type_path_prefix(@project)}/form_layout" do %>
   <%= bootstrap_form_for @project, url: url, horizontal: true, remote: remote, readonly: readonly do |form| %>
-    <div data-controller="project">
-      <%= form.error_and_warning_alert_boxes %>
-      <%= form.hidden_field(:project_type_id) %>
+    <%= form.error_and_warning_alert_boxes %>
+    <%= form.hidden_field(:project_type_id) %>
 
-      <%= form.control_group(:first_contact_date) do %>
-        <%= form.datepicker_field :first_contact_date, class: 'mandatory' %>
+    <%= form.control_group(:first_contact_date) do %>
+      <%= form.datepicker_field :first_contact_date, class: 'mandatory' %>
+    <% end %>
+
+    <%= form.control_group(:application_date) do %>
+      <%= form.datepicker_field(:application_date) %>
+    <% end %>
+
+    <fieldset style="margin-bottom: 20px;" id="chief_investigator">
+      <legend><%= t('sections.chief_investigator', scope: i18n_scope) %></legend>
+      <%= render 'projects/project_owner_grant', form: form %>
+      <%= form.control_group(:main_contact_name, t('main_contact_name', scope: i18n_scope)) do %>
+        <%= form.text_field :main_contact_name %>
+      <% end %>
+      <%= form.control_group(:main_contact_email, t('main_contact_email', scope: i18n_scope)) do %>
+        <%= form.text_field :main_contact_email %>
+      <% end %>
+    </fieldset>
+
+    <fieldset style="margin-bottom: 20px;" id="sponsorship">
+      <legend><%= t('sections.sponsorship', scope: i18n_scope) %></legend>
+      <%= render 'projects/application/organisation', form: form, target: :sponsor %>
+    </fieldset>
+
+    <fieldset style="margin-bottom: 20px;" id="funding">
+      <legend><%= t('sections.funding', scope: i18n_scope) %></legend>
+      <%= render 'projects/application/organisation', form: form, target: :funder %>
+      <%= form.control_group(:awarding_body_ref, t('awarding_body_ref', scope: i18n_scope), {}, class: 'col-md-3') do %>
+        <%= form.text_field :awarding_body_ref %>
+      <% end %>
+    </fieldset>
+
+    <fieldset style="margin-bottom: 20px;" id="overview">
+      <legend><%= t('sections.overview', scope: i18n_scope) %></legend>
+      <%= form.control_group(:name, t('name', scope: i18n_scope)) do %>
+        <%= form.text_field :name, class: 'mandatory' %>
       <% end %>
 
-      <%= form.control_group(:application_date) do %>
-        <%= form.datepicker_field(:application_date) %>
+      <% unless form.readonly? %>
+        <%= form.control_group(:clone_of) do %>
+          <%= form.collection_select(:clone_of, @team.projects.of_type_eoi, :id, :name, { include_blank: true }, class: 'form-control') %>
+        <% end %>
       <% end %>
 
-      <fieldset style="margin-bottom: 20px;" id="chief_investigator">
-        <legend><%= t('sections.chief_investigator', scope: i18n_scope) %></legend>
-        <%= render 'projects/project_owner_grant', form: form %>
-        <%= form.control_group(:main_contact_name, t('main_contact_name', scope: i18n_scope)) do %>
-          <%= form.text_field :main_contact_name %>
-        <% end %>
-        <%= form.control_group(:main_contact_email, t('main_contact_email', scope: i18n_scope)) do %>
-          <%= form.text_field :main_contact_email %>
-        <% end %>
-      </fieldset>
+      <%= form.control_group(:description, t('description', scope: i18n_scope)) do %>
+        <%= form.text_area :description, rows: 5 %>
+      <% end %>
+      <%= form.control_group(:why_data_required, t('why_data_required', scope: i18n_scope)) do %>
+        <%= form.text_area :why_data_required, rows: 5 %>
+      <% end %>
+      <%= form.control_group(:how_data_will_be_used, t('how_data_will_be_used', scope: i18n_scope)) do %>
+        <%= form.text_area :how_data_will_be_used, rows: 5 %>
+      <% end %>
+      <%= form.control_group(:public_benefit, t('public_benefit', scope: i18n_scope)) do %>
+        <%= form.text_area :public_benefit, rows: 5 %>
+      <% end %>
 
-      <fieldset style="margin-bottom: 20px;" id="sponsorship">
-        <legend><%= t('sections.sponsorship', scope: i18n_scope) %></legend>
-        <%= render 'projects/application/organisation', form: form, target: :sponsor %>
-      </fieldset>
+      <%= form.control_group(:project_end_uses, t('data_end_use', scope: i18n_scope), style: 'margin-bottom: 0px;', id: 'project_end_uses') do %>
+        <% readonly_value = @project.end_use_names.any? ? safe_join(@project.end_use_names, raw('<br />')) : '' %>
+        <%= form.collection_check_boxes(:end_use_ids, EndUse.all, :id, :name, readonly_value: readonly_value) do |b| %>
+          <div class="checkbox">
+            <%= b.label { b.check_box + b.text } %>
+          </div>
+        <% end %>
+      <% end %>
+      <%= form.control_group(:end_use_other, '') do %>
+        <%= form.text_area :end_use_other, placeholder: "If 'Other' please specify", data: { 'depends-on' => '#project_end_use', 'depends-on-value' => 'Other' } %>
+      <% end %>
 
-      <fieldset style="margin-bottom: 20px;" id="funding">
-        <legend><%= t('sections.funding', scope: i18n_scope) %></legend>
-        <%= render 'projects/application/organisation', form: form, target: :funder %>
-        <%= form.control_group(:awarding_body_ref, t('awarding_body_ref', scope: i18n_scope), {}, class: 'col-md-3') do %>
-          <%= form.text_field :awarding_body_ref %>
-        <% end %>
-      </fieldset>
+      <%= form.control_group(:start_data_date, t('start_data_date', scope: i18n_scope), {}, class: 'col-md-3') do %>
+        <%= form.datepicker_field :start_data_date %>
+      <% end %>
+      <%= form.control_group(:end_data_date, t('end_data_date', scope: i18n_scope), {}, class: 'col-md-3') do %>
+        <%= form.datepicker_field :end_data_date %>
+      <% end %>
 
-      <fieldset style="margin-bottom: 20px;" id="overview">
-        <legend><%= t('sections.overview', scope: i18n_scope) %></legend>
-        <%= form.control_group(:name, t('name', scope: i18n_scope)) do %>
-          <%= form.text_field :name, class: 'mandatory' %>
-        <% end %>
-
-        <%= form.control_group(:description, t('description', scope: i18n_scope)) do %>
-          <%= form.text_area :description, rows: 5 %>
-        <% end %>
-        <%= form.control_group(:why_data_required, t('why_data_required', scope: i18n_scope)) do %>
-          <%= form.text_area :why_data_required, rows: 5 %>
-        <% end %>
-        <%= form.control_group(:how_data_will_be_used, t('how_data_will_be_used', scope: i18n_scope)) do %>
-          <%= form.text_area :how_data_will_be_used, rows: 5 %>
-        <% end %>
-        <%= form.control_group(:public_benefit, t('public_benefit', scope: i18n_scope)) do %>
-          <%= form.text_area :public_benefit, rows: 5 %>
-        <% end %>
-
-        <%= form.control_group(:project_end_uses, t('data_end_use', scope: i18n_scope), style: 'margin-bottom: 0px;', id: 'project_end_uses') do %>
-          <% readonly_value = @project.end_use_names.any? ? safe_join(@project.end_use_names, raw('<br />')) : '' %>
-          <%= form.collection_check_boxes(:end_use_ids, EndUse.all, :id, :name, readonly_value: readonly_value) do |b| %>
-            <div class="checkbox">
-              <%= b.label { b.check_box + b.text } %>
-            </div>
-          <% end %>
-        <% end %>
-        <%= form.control_group(:end_use_other, '') do %>
-          <%= form.text_area :end_use_other, placeholder: "If 'Other' please specify", data: { 'depends-on' => '#project_end_use', 'depends-on-value' => 'Other' } %>
-        <% end %>
-
-        <%= form.control_group(:start_data_date, t('start_data_date', scope: i18n_scope), {}, class: 'col-md-3') do %>
-          <%= form.datepicker_field :start_data_date,
-          "data-target": "project.start",
-          "data-action": "blur->project#update_duration" %>
-        <% end %>
-        <%= form.control_group(:end_data_date, t('end_data_date', scope: i18n_scope), {}, class: 'col-md-3') do %>
-          <%= form.datepicker_field :end_data_date,
-          "data-target": "project.end",
-          "data-action": "blur->project#update_duration" %>
-        <% end %>
+      <% if form.readonly %>
         <%= form.control_group(:duration, t('duration', scope: i18n_scope), {}, class: 'col-md-3') do %>
-          <%= content_tag(:p, '',
-            class: 'form-control-static',
-            id: 'project_duration',
-            "data-target": 'project.duration'
-          ) %>
+          <p class="form-control-static"><%= pluralize(form.object.duration, 'Month') %></p>
         <% end %>
-      </fieldset>
+      <% end %>
+    </fieldset>
 
-      <fieldset style="margin-bottom: 20px;" id="data_specification">
-        <legend><%= t('sections.data_specification', scope: i18n_scope) %></legend>
-        <%= form.control_group :level_of_identifiability, t('level_of_identifiability', scope: i18n_scope) do %>
-          <%= form.select :level_of_identifiability, Lookups::IdentifiabilityLevel.pluck(:value), required: true %>
-        <% end %>
+    <fieldset style="margin-bottom: 20px;" id="data_specification">
+      <legend><%= t('sections.data_specification', scope: i18n_scope) %></legend>
+      <%= form.control_group :level_of_identifiability, t('level_of_identifiability', scope: i18n_scope) do %>
+        <%= form.select :level_of_identifiability, Lookups::IdentifiabilityLevel.pluck(:value), required: true %>
+      <% end %>
 
-        <% unless readonly %>
-        <div class='row' id="multi_project_datasets">
-          <%= form.control_group :project_datasets, link_to_add_row('Add Dataset', form, :project_datasets, class: 'btn btn-primary') do %>
-          <ul class='repeatable-fields list-group'>
-            <%= form.fields_for :project_datasets do |builder| %>
-            <%= render 'projects/project_dataset', form: builder %>
-            <% end %>
-          </ul>
+      <% unless readonly %>
+      <div class='row' id="multi_project_datasets">
+        <%= form.control_group :project_datasets, link_to_add_row('Add Dataset', form, :project_datasets, class: 'btn btn-primary') do %>
+        <ul class='repeatable-fields list-group'>
+          <%= form.fields_for :project_datasets do |builder| %>
+          <%= render 'projects/project_dataset', form: builder %>
           <% end %>
-        </div>
+        </ul>
         <% end %>
+      </div>
+      <% end %>
 
-        <%= form.control_group(:data_linkage, t('data_linkage', scope: i18n_scope)) do %>
-          <% form.text_area :data_linkage, rows: 5 %>
-        <% end %>
+      <%= form.control_group(:data_linkage, t('data_linkage', scope: i18n_scope)) do %>
+        <% form.text_area :data_linkage, rows: 5 %>
+      <% end %>
 
-        <%= form.control_group(:onwardly_share, t('onwardly_share', scope: i18n_scope), {}, class: 'col-md-2', id: 'onwardly_share') do %>
-          <%= form.select :onwardly_share, { 'Yes' => true, 'No' => false }, include_blank: true, required: true, readonly_value: boolean_text_conversion(@project.onwardly_share) %>
-        <% end %>
-        <%= form.control_group(:onwardly_share_detail, t('onwardly_share_detail', scope: i18n_scope)) do %>
-          <%= form.text_area :onwardly_share_detail, rows: 5 %>
-        <% end %>
+      <%= form.control_group(:onwardly_share, t('onwardly_share', scope: i18n_scope), {}, class: 'col-md-2', id: 'onwardly_share') do %>
+        <%= form.select :onwardly_share, { 'Yes' => true, 'No' => false }, include_blank: true, required: true, readonly_value: boolean_text_conversion(@project.onwardly_share) %>
+      <% end %>
+      <%= form.control_group(:onwardly_share_detail, t('onwardly_share_detail', scope: i18n_scope)) do %>
+        <%= form.text_area :onwardly_share_detail, rows: 5 %>
+      <% end %>
 
-        <%= form.control_group(:data_already_held_for_project, t('data_already_held_for_project', scope: i18n_scope), {}, class: 'col-md-2', id: 'data_already_held_for_project') do %>
-          <%= form.select :data_already_held_for_project, { 'Yes' => true, 'No' => false }, include_blank: true, readonly_value: boolean_text_conversion(@project.data_already_held_for_project) %>
-        <% end %>
-        <%= form.control_group(:data_already_held_detail, t('data_already_held_detail', scope: i18n_scope)) do %>
-          <% form.text_area :data_already_held_detail, rows: 5 %>
-        <% end %>
+      <%= form.control_group(:data_already_held_for_project, t('data_already_held_for_project', scope: i18n_scope), {}, class: 'col-md-2', id: 'data_already_held_for_project') do %>
+        <%= form.select :data_already_held_for_project, { 'Yes' => true, 'No' => false }, include_blank: true, readonly_value: boolean_text_conversion(@project.data_already_held_for_project) %>
+      <% end %>
+      <%= form.control_group(:data_already_held_detail, t('data_already_held_detail', scope: i18n_scope)) do %>
+        <% form.text_area :data_already_held_detail, rows: 5 %>
+      <% end %>
 
-        <%= form.control_group(:data_to_contact_others, t('data_to_contact_others', scope: i18n_scope), {}, class: 'col-md-2', id: 'data_to_contact_others') do %>
-          <%= form.select :data_to_contact_others, { 'Yes' => true, 'No' => false }, include_blank: true, readonly_value: boolean_text_conversion(@project.data_to_contact_others) %>
-        <% end %>
-        <%= form.control_group(:data_to_contact_others_desc, t('data_to_contact_others_desc', scope: i18n_scope)) do %>
-          <% form.text_area :data_to_contact_others_desc, rows: 5 %>
-        <% end %>
-      </fieldset>
+      <%= form.control_group(:data_to_contact_others, t('data_to_contact_others', scope: i18n_scope), {}, class: 'col-md-2', id: 'data_to_contact_others') do %>
+        <%= form.select :data_to_contact_others, { 'Yes' => true, 'No' => false }, include_blank: true, readonly_value: boolean_text_conversion(@project.data_to_contact_others) %>
+      <% end %>
+      <%= form.control_group(:data_to_contact_others_desc, t('data_to_contact_others_desc', scope: i18n_scope)) do %>
+        <% form.text_area :data_to_contact_others_desc, rows: 5 %>
+      <% end %>
+    </fieldset>
 
-      <fieldset style="margin-bottom: 20px;" id="programme_support">
-        <legend><%= t('sections.programme_support', scope: i18n_scope) %></legend>
-        <%= form.control_group(:programme_support_id, t('programme_support_id', scope: i18n_scope), {}, class: 'col-md-2') do %>
-          <%= form.collection_select :programme_support_id, Lookups::ProgrammeSupport.all, :id, :value, include_blank: true, readonly_value: form.object.programme_support&.value %>
-        <% end %>
-        <%= form.control_group(:programme_support_detail, t('programme_support_detail', scope: i18n_scope)) do %>
-          <%= form.text_area :programme_support_detail, rows: 5 %>
-        <% end %>
-        <%= form.control_group(:scrn_id, t('scrn_id', scope: i18n_scope), {}, class: 'col-md-3') { form.text_field :scrn_id } %>
-        <%= form.control_group(:programme_approval_date, t('programme_approval_date', scope: i18n_scope), {}, class: 'col-md-3') { form.datepicker_field :programme_approval_date } %>
-        <%= form.control_group(:phe_contacts, t('phe_contacts', scope: i18n_scope)) do %>
-          <%= form.text_area :phe_contacts, rows: 5 %>
-        <% end %>
-      </fieldset>
+    <fieldset style="margin-bottom: 20px;" id="programme_support">
+      <legend><%= t('sections.programme_support', scope: i18n_scope) %></legend>
+      <%= form.control_group(:programme_support_id, t('programme_support_id', scope: i18n_scope), {}, class: 'col-md-2') do %>
+        <%= form.collection_select :programme_support_id, Lookups::ProgrammeSupport.all, :id, :value, include_blank: true, readonly_value: form.object.programme_support&.value %>
+      <% end %>
+      <%= form.control_group(:programme_support_detail, t('programme_support_detail', scope: i18n_scope)) do %>
+        <%= form.text_area :programme_support_detail, rows: 5 %>
+      <% end %>
+      <%= form.control_group(:scrn_id, t('scrn_id', scope: i18n_scope), {}, class: 'col-md-3') { form.text_field :scrn_id } %>
+      <%= form.control_group(:programme_approval_date, t('programme_approval_date', scope: i18n_scope), {}, class: 'col-md-3') { form.datepicker_field :programme_approval_date } %>
+      <%= form.control_group(:phe_contacts, t('phe_contacts', scope: i18n_scope)) do %>
+        <%= form.text_area :phe_contacts, rows: 5 %>
+      <% end %>
+    </fieldset>
 
-      <fieldset style="margin-bottom: 20px;" id="legal_gateway_common_law">
-        <legend><%= t('sections.legal_gateway_common_law', scope: i18n_scope) %></legend>
+    <fieldset style="margin-bottom: 20px;" id="legal_gateway_common_law">
+      <legend><%= t('sections.legal_gateway_common_law', scope: i18n_scope) %></legend>
 
-        <strong>Direct Care</strong><br />
-        <%= form.control_group(:acg_who, t('acg_who', scope: i18n_scope)) { form.text_field :acg_who } %>
-        <hr/>
+      <strong>Direct Care</strong><br />
+      <%= form.control_group(:acg_who, t('acg_who', scope: i18n_scope)) { form.text_field :acg_who } %>
+      <hr/>
 
-        <strong>Informed Consent</strong><br />
-        <%= form.control_group(:informed_patient_consent, t(:informed_patient_consent, scope: i18n_scope), {}, class: 'col-md-3') do %>
-          <%= form.select(:informed_patient_consent, { 'Yes' => true, 'No' => false }, include_blank: true, readonly_value: boolean_text_conversion(form.object.informed_patient_consent)) %>
-        <% end %>
+      <strong>Informed Consent</strong><br />
+      <%= form.control_group(:informed_patient_consent, t(:informed_patient_consent, scope: i18n_scope), {}, class: 'col-md-3') do %>
+        <%= form.select(:informed_patient_consent, { 'Yes' => true, 'No' => false }, include_blank: true, readonly_value: boolean_text_conversion(form.object.informed_patient_consent)) %>
+      <% end %>
 
-        <strong>Statutory (Section 251) Exemption</strong><br />
-        <%= form.control_group(:s251_exemption_id, t('s251_exemption_id', scope: i18n_scope), {}, class: 'col-md-3') do %>
-          <%= form.collection_select(:s251_exemption_id, Lookups::CommonLawExemption.all, :id, :value, { include_blank: true, readonly_value: form.object.s251_exemption&.value }, class: 'form-control') %>
-        <% end %>
-        <%= form.control_group(:cag_ref, t('cag_ref', scope: i18n_scope), {}, class: 'col-md-3') { form.text_field :cag_ref } %>
-        <%= form.control_group(:date_of_renewal, t('date_of_renewal', scope: i18n_scope), {}, class: 'col-md-3') { form.datepicker_field :date_of_renewal } %>
-      </fieldset>
+      <strong>Statutory (Section 251) Exemption</strong><br />
+      <%= form.control_group(:s251_exemption_id, t('s251_exemption_id', scope: i18n_scope), {}, class: 'col-md-3') do %>
+        <%= form.collection_select(:s251_exemption_id, Lookups::CommonLawExemption.all, :id, :value, { include_blank: true, readonly_value: form.object.s251_exemption&.value }, class: 'form-control') %>
+      <% end %>
+      <%= form.control_group(:cag_ref, t('cag_ref', scope: i18n_scope), {}, class: 'col-md-3') { form.text_field :cag_ref } %>
+      <%= form.control_group(:date_of_renewal, t('date_of_renewal', scope: i18n_scope), {}, class: 'col-md-3') { form.datepicker_field :date_of_renewal } %>
+    </fieldset>
 
-      <fieldset style="margin-bottom: 20px;" id="legal_gateway_data_protection">
-        <legend><%= t('sections.legal_gateway_data_protection', scope: i18n_scope) %></legend>
-        <%= form.control_group(:project_lawful_bases, t('project_lawful_bases', scope: i18n_scope), id: 'project_lawful_bases') do %>
-          <% article6readonly_value = form.object.lawful_bases.any? ? safe_join(form.object.lawful_bases.article6.pluck(:value), raw('<br />')) : '' %>
-          <% article9readonly_value = form.object.lawful_bases.any? ? safe_join(form.object.lawful_bases.article9.pluck(:value), raw('<br />')) : '' %>
-            <div class="article6">
-              <strong><%= t('article6', scope: i18n_scope)%></strong>
-              <%= form.collection_check_boxes(:lawful_basis_ids, Lookups::LawfulBasis.article6, :id, :value, readonly_value: article6readonly_value) do |b| %>
-                <div class="checkbox">
-                  <%= b.label { b.check_box + b.text } %>
-                </div>
-              <% end %>
-            </div>
-          <div class="article9">
-            <strong><%= t('article9', scope: i18n_scope)%></strong>
-            <%= form.collection_check_boxes(:lawful_basis_ids, Lookups::LawfulBasis.article9, :id, :value, readonly_value: article9readonly_value) do |b| %>
+    <fieldset style="margin-bottom: 20px;" id="legal_gateway_data_protection">
+      <legend><%= t('sections.legal_gateway_data_protection', scope: i18n_scope) %></legend>
+      <%= form.control_group(:project_lawful_bases, t('project_lawful_bases', scope: i18n_scope), id: 'project_lawful_bases') do %>
+        <% article6readonly_value = form.object.lawful_bases.any? ? safe_join(form.object.lawful_bases.article6.pluck(:value), raw('<br />')) : '' %>
+        <% article9readonly_value = form.object.lawful_bases.any? ? safe_join(form.object.lawful_bases.article9.pluck(:value), raw('<br />')) : '' %>
+          <div class="article6">
+            <strong><%= t('article6', scope: i18n_scope)%></strong>
+            <%= form.collection_check_boxes(:lawful_basis_ids, Lookups::LawfulBasis.article6, :id, :value, readonly_value: article6readonly_value) do |b| %>
               <div class="checkbox">
                 <%= b.label { b.check_box + b.text } %>
               </div>
             <% end %>
           </div>
-        <% end %>
-      </fieldset>
-
-      <fieldset style="margin-bottom: 20px;" id="hra_ethics">
-        <legend><%= t('sections.hra_ethics', scope: i18n_scope) %></legend>
-        <%= form.control_group(:ethics_approval_nrec_name, t('ethics_approval_nrec_name', scope: i18n_scope)) do %>
-          <%= form.text_field :ethics_approval_nrec_name %>
-        <% end %>
-        <%= form.control_group(:ethics_approval_nrec_ref, t('ethics_approval_nrec_ref', scope: i18n_scope)) do %>
-          <%= form.text_field :ethics_approval_nrec_ref %>
-        <% end %>
-      </fieldset>
-
-      <fieldset style="margin-bottom: 20px;" id="confidentiality">
-        <legend><%= t('sections.confidentiality', scope: i18n_scope) %></legend>
-        <%= form.control_group(:processing_territory, t('processing_territory', scope: i18n_scope), {}, class: 'col-md-2') do %>
-          <%= form.collection_select(:processing_territory_id, Lookups::ProcessingTerritory.all, :id, :value, { include_blank: true, readonly_value: form.object.processing_territory&.value }, class: 'form-control') %>
-        <% end %>
-        <%= form.control_group(:processing_territory_other, t('processing_territory_other', scope: i18n_scope)) do %>
-          <% form.text_field :processing_territory_other, placeholder: "If 'Other' please specify" %>
-        <% end %>
-        <%= form.control_group(:dpa_org_code, t('dpa_org_code', scope: i18n_scope), {}, class: 'col-md-3') do %>
-          <%= form.text_field :dpa_org_code %>
-        <% end %>
-        <%= form.control_group(:dpa_org_name, t('dpa_org_name', scope: i18n_scope)) { form.text_field :dpa_org_name } %>
-        <%= form.control_group(:dpa_registration_end_date, t('dpa_registration_end_date', scope: i18n_scope), {}, class: 'col-md-3') do %>
-          <%= form.datepicker_field :dpa_registration_end_date %>
-        <% end %>
-        <%= form.control_group(:security_assurance, t('security_assurance', scope: i18n_scope), {}, class: 'col-md-5') do %>
-          <%= form.collection_select(:security_assurance_id, Lookups::SecurityAssurance.all, :id, :value, { include_blank: true, readonly_value: form.object.security_assurance&.value }, class: 'form-control') %>
-        <% end %>
-        <%= form.control_group(:ig_code, t('ig_code', scope: i18n_scope), {}, class: 'col-md-3') do %>
-          <%= form.text_field :ig_code %>
-        <% end %>
-      </fieldset>
-
-      <fieldset style="margin-bottom: 20px;" id="data_processor">
-        <legend><%= t('sections.data_processor', scope: i18n_scope) %></legend>
-        <%= render 'projects/application/organisation', form: form, target: :data_processor %>
-        <%= form.control_group(:processing_territory_outsourced, t('processing_territory_outsourced', scope: i18n_scope), {}, class: 'col-md-2') do %>
-          <%= form.collection_select(:processing_territory_outsourced_id, Lookups::ProcessingTerritory.all, :id, :value, { include_blank: true, readonly_value: form.object.processing_territory_outsourced&.value }, class: 'form-control') %>
-        <% end %>
-        <%= form.control_group(:processing_territory_outsourced_other, t('processing_territory_outsourced_other', scope: i18n_scope)) do %>
-          <% form.text_field :processing_territory_outsourced_other, placeholder: "If 'Other' please specify" %>
-        <% end %>
-        <%= form.control_group(:dpa_org_code_outsourced, t('dpa_org_code_outsourced', scope: i18n_scope), {}, class: 'col-md-3') do %>
-          <%= form.text_field :dpa_org_code_outsourced %>
-        <% end %>
-        <%= form.control_group(:dpa_org_name_outsourced, t('dpa_org_name_outsourced', scope: i18n_scope)) do %>
-          <% form.text_field :dpa_org_name_outsourced %>
-        <% end %>
-        <%= form.control_group(:dpa_registration_end_date_outsourced, t('dpa_registration_end_date_outsourced', scope: i18n_scope), {}, class: 'col-md-3') do %>
-          <%= form.datepicker_field :dpa_registration_end_date_outsourced %>
-        <% end %>
-        <%= form.control_group(:security_assurance_outsourced, t('security_assurance_outsourced', scope: i18n_scope), {}, class: 'col-md-5') do %>
-          <%= form.collection_select(:security_assurance_outsourced_id, Lookups::SecurityAssurance.all, :id, :value, { include_blank: true, readonly_value: form.object.security_assurance_outsourced&.value }, class: 'form-control') %>
-        <% end %>
-        <%= form.control_group(:ig_code_outsourced, t('ig_code_outsourced', scope: i18n_scope), {}, class: 'col-md-3') do %>
-          <%= form.text_field :ig_code_outsourced %>
-        <% end %>
-        <%= form.control_group(:ig_toolkit_version_outsourced, t('ig_toolkit_version_outsourced', scope: i18n_scope), {}, class: 'col-md-3') do %>
-          <%= form.text_field :ig_toolkit_version_outsourced %>
-        <% end %>
-      </fieldset>
-
-      <fieldset id="additional_information">
-        <legend><%= t('sections.additional_information', scope: i18n_scope) %></legend>
-        <%= form.control_group(:additional_info, t('additional_info', scope: i18n_scope)) do %>
-          <% form.text_area :additional_info, rows: 5 %>
-        <% end %>
-        <% if readonly %>
-          <%= form.control_group(:closure_reason, t('closure_reason', scope: i18n_scope)) do %>
-            <%= form.collection_select(:closure_reason, Lookups::ClosureReason.all, :id, :value, { include_blank: true, readonly_value: form.object.closure_reason&.value }, class: 'form-control') %>
+        <div class="article9">
+          <strong><%= t('article9', scope: i18n_scope)%></strong>
+          <%= form.collection_check_boxes(:lawful_basis_ids, Lookups::LawfulBasis.article9, :id, :value, readonly_value: article9readonly_value) do |b| %>
+            <div class="checkbox">
+              <%= b.label { b.check_box + b.text } %>
+            </div>
           <% end %>
-          <%= form.control_group(:closure_date, t('closure_date', scope: i18n_scope), {}, class: 'col-md-3') do %>
-            <%= form.datepicker_field :closure_date %>
-          <% end %>
-        <% end %>
-      </fieldset>
+        </div>
+      <% end %>
+    </fieldset>
 
-      <% unless readonly %>
-        <%= form.control_group nil do %>
-          <div class="pull-right">
-            <%= link_to 'Cancel', (@project.persisted? ? project_path(@project) : team_projects_path(@project.team)), class: 'btn btn-default' %>
-            <%= form.submit (@project.persisted? ? 'Update Application' : 'Create Application'), class: 'btn btn-primary' %>
-          </div>
+    <fieldset style="margin-bottom: 20px;" id="hra_ethics">
+      <legend><%= t('sections.hra_ethics', scope: i18n_scope) %></legend>
+      <%= form.control_group(:ethics_approval_nrec_name, t('ethics_approval_nrec_name', scope: i18n_scope)) do %>
+        <%= form.text_field :ethics_approval_nrec_name %>
+      <% end %>
+      <%= form.control_group(:ethics_approval_nrec_ref, t('ethics_approval_nrec_ref', scope: i18n_scope)) do %>
+        <%= form.text_field :ethics_approval_nrec_ref %>
+      <% end %>
+    </fieldset>
+
+    <fieldset style="margin-bottom: 20px;" id="confidentiality">
+      <legend><%= t('sections.confidentiality', scope: i18n_scope) %></legend>
+      <%= form.control_group(:processing_territory, t('processing_territory', scope: i18n_scope), {}, class: 'col-md-2') do %>
+        <%= form.collection_select(:processing_territory_id, Lookups::ProcessingTerritory.all, :id, :value, { include_blank: true, readonly_value: form.object.processing_territory&.value }, class: 'form-control') %>
+      <% end %>
+      <%= form.control_group(:processing_territory_other, t('processing_territory_other', scope: i18n_scope)) do %>
+        <% form.text_field :processing_territory_other, placeholder: "If 'Other' please specify" %>
+      <% end %>
+      <%= form.control_group(:dpa_org_code, t('dpa_org_code', scope: i18n_scope), {}, class: 'col-md-3') do %>
+        <%= form.text_field :dpa_org_code %>
+      <% end %>
+      <%= form.control_group(:dpa_org_name, t('dpa_org_name', scope: i18n_scope)) { form.text_field :dpa_org_name } %>
+      <%= form.control_group(:dpa_registration_end_date, t('dpa_registration_end_date', scope: i18n_scope), {}, class: 'col-md-3') do %>
+        <%= form.datepicker_field :dpa_registration_end_date %>
+      <% end %>
+      <%= form.control_group(:security_assurance, t('security_assurance', scope: i18n_scope), {}, class: 'col-md-5') do %>
+        <%= form.collection_select(:security_assurance_id, Lookups::SecurityAssurance.all, :id, :value, { include_blank: true, readonly_value: form.object.security_assurance&.value }, class: 'form-control') %>
+      <% end %>
+      <%= form.control_group(:ig_code, t('ig_code', scope: i18n_scope), {}, class: 'col-md-3') do %>
+        <%= form.text_field :ig_code %>
+      <% end %>
+    </fieldset>
+
+    <fieldset style="margin-bottom: 20px;" id="data_processor">
+      <legend><%= t('sections.data_processor', scope: i18n_scope) %></legend>
+      <%= render 'projects/application/organisation', form: form, target: :data_processor %>
+      <%= form.control_group(:processing_territory_outsourced, t('processing_territory_outsourced', scope: i18n_scope), {}, class: 'col-md-2') do %>
+        <%= form.collection_select(:processing_territory_outsourced_id, Lookups::ProcessingTerritory.all, :id, :value, { include_blank: true, readonly_value: form.object.processing_territory_outsourced&.value }, class: 'form-control') %>
+      <% end %>
+      <%= form.control_group(:processing_territory_outsourced_other, t('processing_territory_outsourced_other', scope: i18n_scope)) do %>
+        <% form.text_field :processing_territory_outsourced_other, placeholder: "If 'Other' please specify" %>
+      <% end %>
+      <%= form.control_group(:dpa_org_code_outsourced, t('dpa_org_code_outsourced', scope: i18n_scope), {}, class: 'col-md-3') do %>
+        <%= form.text_field :dpa_org_code_outsourced %>
+      <% end %>
+      <%= form.control_group(:dpa_org_name_outsourced, t('dpa_org_name_outsourced', scope: i18n_scope)) do %>
+        <% form.text_field :dpa_org_name_outsourced %>
+      <% end %>
+      <%= form.control_group(:dpa_registration_end_date_outsourced, t('dpa_registration_end_date_outsourced', scope: i18n_scope), {}, class: 'col-md-3') do %>
+        <%= form.datepicker_field :dpa_registration_end_date_outsourced %>
+      <% end %>
+      <%= form.control_group(:security_assurance_outsourced, t('security_assurance_outsourced', scope: i18n_scope), {}, class: 'col-md-5') do %>
+        <%= form.collection_select(:security_assurance_outsourced_id, Lookups::SecurityAssurance.all, :id, :value, { include_blank: true, readonly_value: form.object.security_assurance_outsourced&.value }, class: 'form-control') %>
+      <% end %>
+      <%= form.control_group(:ig_code_outsourced, t('ig_code_outsourced', scope: i18n_scope), {}, class: 'col-md-3') do %>
+        <%= form.text_field :ig_code_outsourced %>
+      <% end %>
+      <%= form.control_group(:ig_toolkit_version_outsourced, t('ig_toolkit_version_outsourced', scope: i18n_scope), {}, class: 'col-md-3') do %>
+        <%= form.text_field :ig_toolkit_version_outsourced %>
+      <% end %>
+    </fieldset>
+
+    <fieldset id="additional_information">
+      <legend><%= t('sections.additional_information', scope: i18n_scope) %></legend>
+      <%= form.control_group(:additional_info, t('additional_info', scope: i18n_scope)) do %>
+        <% form.text_area :additional_info, rows: 5 %>
+      <% end %>
+      <% if readonly %>
+        <%= form.control_group(:closure_reason, t('closure_reason', scope: i18n_scope)) do %>
+          <%= form.collection_select(:closure_reason, Lookups::ClosureReason.all, :id, :value, { include_blank: true, readonly_value: form.object.closure_reason&.value }, class: 'form-control') %>
+        <% end %>
+        <%= form.control_group(:closure_date, t('closure_date', scope: i18n_scope), {}, class: 'col-md-3') do %>
+          <%= form.datepicker_field :closure_date %>
         <% end %>
       <% end %>
-    </div>
+    </fieldset>
+
+    <% unless readonly %>
+      <%= form.control_group nil do %>
+        <div class="pull-right">
+          <%= link_to 'Cancel', (@project.persisted? ? project_path(@project) : team_projects_path(@project.team)), class: 'btn btn-default' %>
+          <%= form.submit (@project.persisted? ? 'Update Application' : 'Create Application'), class: 'btn btn-primary' %>
+        </div>
+      <% end %>
+    <% end %>
   <% end %>
 <% end %>

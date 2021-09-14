@@ -71,6 +71,7 @@ namespace :export do
       puts 'No batch selected - aborting.'
       exit
     end
+    fname_full = SafePath.new('mbis_data').join(fname)
     unless Export::Helpers::RakeHelper::DeathExtractor.
            extract_mbis_weekly_death_file(eb, fname, 'Export::CancerDeathWeekly', 'cd')
       puts "Error: failed to extract #{fname} - aborting."
@@ -78,7 +79,7 @@ namespace :export do
     end
     # Generate summary report file
     # Ignore 1 header row in computing count
-    counts = { 'CD' => File.readlines(SafePath.new('mbis_data').join(fname)).size - 1 }
+    counts = { 'CD' => CSV.read(fname_full).size - 1 }
     group_names = { 'CD' => 'Cancer deaths' }
     File.open(SafePath.new('mbis_data').join(fn_sum), 'w+') do |f|
       group_names.each do |group, name|

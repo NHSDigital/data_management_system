@@ -79,9 +79,6 @@ access_approver_approved:
 access_approver_rejected:
   id: ACCESS_APPROVER_REJECTED
 
-renewal:
-  id: RENEWAL
-
 account_closed:
   id: ACCOUNT_CLOSED
 

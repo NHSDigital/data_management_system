@@ -456,9 +456,8 @@ class ProjectTest < ActiveSupport::TestCase
 
     project_dataset = ProjectDataset.new(dataset: dataset, terms_accepted: true)
     cas_project.project_datasets << project_dataset
-    pdl = ProjectDatasetLevel.new(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
-                                  approved: nil)
-    project_dataset.project_dataset_levels << pdl
+    pdl = ProjectDatasetLevel.create(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
+                                     project_dataset_id: project_dataset.id)
 
     # Should not be returned while at DRAFT state
     assert_equal 0, Project.cas_dataset_approval(user).count
@@ -467,7 +466,7 @@ class ProjectTest < ActiveSupport::TestCase
 
     assert_equal 1, Project.cas_dataset_approval(user).count
 
-    pdl.approved = true
+    pdl.status = :approved
     pdl.save!(validate: false)
 
     # Test the use of the scope with and without approved = nil argument
@@ -478,9 +477,8 @@ class ProjectTest < ActiveSupport::TestCase
     new_project_dataset = ProjectDataset.new(dataset: Dataset.find_by(name: 'SACT'),
                                              terms_accepted: true)
     new_project.project_datasets << new_project_dataset
-    pdl = ProjectDatasetLevel.new(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
-                                  approved: nil)
-    new_project_dataset.project_dataset_levels << pdl
+    ProjectDatasetLevel.create(access_level_id: 1, expiry_date: Time.zone.today + 1.week,
+                               project_dataset_id: project_dataset.id)
 
     new_project.transition_to!(workflow_states(:submitted))
 
@@ -571,7 +569,8 @@ class ProjectTest < ActiveSupport::TestCase
 
   test 'destroy_project_datasets_without_any_levels after_save callback' do
     project = create_cas_project(owner: users(:standard_user2))
-    project_dataset = ProjectDataset.new(dataset: dataset(83), terms_accepted: true)
+    project_dataset = ProjectDataset.new(dataset: Dataset.find_by(name: 'Extra CAS Dataset One'),
+                                         terms_accepted: true)
     project.project_datasets << project_dataset
     pdl1 = ProjectDatasetLevel.new(access_level_id: 1, expiry_date: Time.zone.today, selected: true)
     pdl2 = ProjectDatasetLevel.new(access_level_id: 2, expiry_date: Time.zone.today, selected: true)
@@ -647,6 +646,80 @@ class ProjectTest < ActiveSupport::TestCase
     assert_equal relationship, project.relationship_to(related)
     assert_equal relationship, related.relationship_to(project)
     assert_nil project.relationship_to(projects(:one))
+  end
+
+  test 'should calculate duration' do
+    project = Project.new
+
+    # insufficient data to calculate duration...
+    project.assign_attributes(
+      start_data_date: Date.new(2021, 9, 1),
+      end_data_date:   nil
+    )
+    assert_nil project.duration
+
+    # insufficient data to calculate duration...
+    project.assign_attributes(
+      start_data_date: nil,
+      end_data_date:   Date.new(2021, 10, 1)
+    )
+    assert_nil project.duration
+
+    # sufficient data to calculate duration...
+    project.assign_attributes(
+      start_data_date: Date.new(2021, 9, 1),
+      end_data_date:   Date.new(2021, 10, 1)
+    )
+    assert_equal 1, project.duration
+
+    # watch out for miscalcualtions based on calendar months...
+    project.assign_attributes(
+      start_data_date: Date.new(2021, 9, 30),
+      end_data_date:   Date.new(2021, 10, 1)
+    )
+    assert_equal 0, project.duration
+
+    # watch out for rounding errors...
+    project.assign_attributes(
+      start_data_date: Date.new(2021, 9, 1),
+      end_data_date:   Date.new(2021, 10, 30)
+    )
+    assert_equal 1, project.duration
+
+    # no calculation needed...
+    project.assign_attributes(
+      duration: 3
+    )
+    assert_equal 3, project.duration
+  end
+
+  test 'should update duration on save' do
+    project = projects(:test_application)
+
+    project.update!(duration: 1)
+
+    assert_no_changes -> { project[:duration] } do
+      project.description = 'Test'
+      project.save!
+    end
+
+    assert_no_changes -> { project[:duration] } do
+      project.start_data_date = Time.zone.today
+      project.save!
+    end
+
+    assert_changes -> { project[:duration] } do
+      project.start_data_date = Time.zone.today
+      project.end_data_date   = 2.months.from_now
+      project.save!
+    end
+
+    # Don't attempt to recalculate/sync if the duration has been explicitly set...
+    project.duration = 6
+    assert_no_changes -> { project[:duration] } do
+      project.end_data_date = 5.months.from_now
+      project.save!
+    end
   end
 
   private

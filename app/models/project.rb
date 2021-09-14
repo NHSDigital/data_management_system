@@ -109,9 +109,10 @@ class Project < ApplicationRecord
   # The `assigned_user` will generally be an ODR representative responsible for the project
   belongs_to :assigned_user, class_name: 'User', inverse_of: :assigned_projects, optional: true
 
-  after_save :reset_project_data_items
+  before_save  :update_duration
   after_create :notify_cas_manager_new_cas_project_saved
-  after_save :destroy_project_datasets_without_any_levels
+  after_save   :reset_project_data_items
+  after_save   :destroy_project_datasets_without_any_levels
 
   # effectively belongs_to .. through: .. association
   # delegate :dataset,      to: :team_dataset, allow_nil: true
@@ -184,8 +185,8 @@ class Project < ApplicationRecord
   scope :contributors, ->(user) { joins(:grants).where(
                                   grants: { roleable: ProjectRole.can_edit, user_id: user.id }) }
 
-  scope :cas_dataset_approval, lambda { |user, approved_values = [nil, true, false]|
-    where(id: ProjectDataset.dataset_approval(user, approved_values).pluck(:project_id)).order(:id).
+  scope :cas_dataset_approval, lambda { |user, statuses = %i[request approved rejected]|
+    where(id: ProjectDataset.dataset_approval(user, statuses).pluck(:project_id)).order(:id).
       joins(:current_state).merge(Workflow::State.dataset_approval_states)
   }
 
@@ -296,6 +297,10 @@ class Project < ApplicationRecord
 
   def application_date
     super || created_at || Time.zone.now
+  end
+
+  def duration
+    super || calculate_duration_in_months
   end
 
   def classification_names
@@ -598,6 +603,18 @@ class Project < ApplicationRecord
     "#{application_log}/A#{amendment_number + 1}"
   end
 
+  def user_approvable_levels_pending?(current_user)
+    ProjectDatasetLevel.default_level_2_3_bulk_approvable(self, current_user).any?
+  end
+
+  def level_2_3_defaults_expiring?(current_user)
+    ProjectDatasetLevel.default_level_2_3_bulk_renew_request(self, current_user).any?
+  end
+
+  def default_levels_all_decided
+    ProjectDatasetLevel.cas_type_levels(self, 1).none?(&:request?)
+  end
+
   private
 
   def project_type_inquirer
@@ -762,5 +779,24 @@ class Project < ApplicationRecord
     start_year = date.month < 4 ? date.year - 1 : date.year
 
     Date.new(start_year, 4, 1)..Date.new(start_year + 1, 3, 31)
+  end
+
+  def calculate_duration_in_months
+    return unless start_date ||= self[:start_data_date]
+    return unless end_date   ||= self[:end_data_date]
+
+    delta  = (end_date.year * 12 + end_date.month) - (start_date.year * 12 + start_date.month)
+    offset = start_date.day > end_date.day ? -1 : 0
+
+    delta + offset
+  end
+
+  # NOTE: ODR want to use `duration` to confirm end date has been corractly calculated.
+  def update_duration
+    return if duration_changed? # Avoid feedback loop...
+    return unless (changed_attributes.keys & %w[start_data_date end_data_date]).any?
+    return unless new_duration ||= calculate_duration_in_months
+
+    self.duration = new_duration
   end
 end

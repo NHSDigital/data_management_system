@@ -10,19 +10,22 @@ class AbilityCasApplicationTest < ActiveSupport::TestCase
     owner_project = create_cas_project(owner: applicant)
     owner_project.reload.current_state
 
-    project_dataset1 = ProjectDataset.new(dataset: dataset(83), terms_accepted: true)
-    project_dataset2 = ProjectDataset.new(dataset: dataset(83), terms_accepted: true)
+    project_dataset1 = ProjectDataset.new(dataset: Dataset.find_by(name: 'Extra CAS Dataset One'),
+                                          terms_accepted: true)
+    project_dataset2 = ProjectDataset.new(dataset: Dataset.find_by(name: 'Extra CAS Dataset One'),
+                                          terms_accepted: true)
 
     not_owner_project.project_datasets << project_dataset1
     owner_project.project_datasets << project_dataset2
-    project_dataset1_pdl = ProjectDatasetLevel.new(access_level_id: 1,
-                                                   expiry_date: Time.zone.today + 1.week,
-                                                   approved: false)
-    project_dataset1.project_dataset_levels << project_dataset1_pdl
-    project_dataset2_pdl = ProjectDatasetLevel.new(access_level_id: 1,
-                                                   expiry_date: Time.zone.today + 1.week,
-                                                   approved: false)
-    project_dataset2.project_dataset_levels << project_dataset2_pdl
+    project_dataset1_pdl = ProjectDatasetLevel.create(access_level_id: 1,
+                                                      expiry_date: Time.zone.today + 1.week,
+                                                      project_dataset_id: project_dataset1.id)
+    project_dataset2_pdl = ProjectDatasetLevel.create(access_level_id: 1,
+                                                      expiry_date: Time.zone.today + 1.week,
+                                                      project_dataset_id: project_dataset2.id)
+
+    project_dataset1_pdl.update(status: :rejected)
+    project_dataset2_pdl.update(status: :rejected)
 
     applicant_ablity = Ability.new(applicant)
 
@@ -60,12 +63,14 @@ class AbilityCasApplicationTest < ActiveSupport::TestCase
     non_cas_project = create_project(project_type: project_types(:eoi), project_purpose: 'test',
                                      owner: users(:standard_user))
 
-    project_dataset = ProjectDataset.new(dataset: dataset(83), terms_accepted: true)
+    project_dataset = ProjectDataset.new(dataset: Dataset.find_by(name: 'Extra CAS Dataset One'),
+                                         terms_accepted: true)
     matched_dataset_project.project_datasets << project_dataset
     pdl = ProjectDatasetLevel.new(access_level_id: 1, expiry_date: Time.zone.today + 1.week)
     project_dataset.project_dataset_levels << pdl
 
-    Grant.create(dataset: dataset(83), roleable: DatasetRole.fetch(:approver), user: applicant).tap(&:save)
+    Grant.create(dataset: Dataset.find_by(name: 'Extra CAS Dataset One'),
+                 roleable: DatasetRole.fetch(:approver), user: applicant).tap(&:save)
     applicant_ablity = Ability.new(applicant)
 
     assert applicant_ablity.can? :create, Project.new(project_type: project_types(:cas))
@@ -77,7 +82,8 @@ class AbilityCasApplicationTest < ActiveSupport::TestCase
     refute applicant_ablity.can? :destroy, matched_dataset_project
     refute applicant_ablity.can? :read, matched_dataset_project
     refute applicant_ablity.can? :update, matched_dataset_project
-    refute applicant_ablity.can? :update, pdl
+    refute applicant_ablity.can? :approve, pdl
+    refute applicant_ablity.can? :reject, pdl
 
     matched_dataset_project.transition_to(Workflow::State.find('SUBMITTED'))
     matched_dataset_project.reload_current_state
@@ -86,9 +92,10 @@ class AbilityCasApplicationTest < ActiveSupport::TestCase
     refute applicant_ablity.can? :destroy, matched_dataset_project
     assert applicant_ablity.can? :read, matched_dataset_project
     refute applicant_ablity.can? :update, matched_dataset_project
-    assert applicant_ablity.can? :update, pdl
+    assert applicant_ablity.can? :approve, pdl
+    assert applicant_ablity.can? :reject, pdl
 
-    pdl.update(approved: true)
+    pdl.update(status: :approved)
     matched_dataset_project.transition_to(Workflow::State.find('ACCESS_APPROVER_APPROVED'))
     applicant_ablity = Ability.new(applicant)
 
@@ -96,17 +103,20 @@ class AbilityCasApplicationTest < ActiveSupport::TestCase
     refute applicant_ablity.can? :destroy, matched_dataset_project
     assert applicant_ablity.can? :read, matched_dataset_project
     refute applicant_ablity.can? :update, matched_dataset_project
-    assert applicant_ablity.can? :update, pdl
+    refute applicant_ablity.can? :approve, pdl
+    refute applicant_ablity.can? :reject, pdl
     # Shouldn't be able to access a project that doesn't require their dataset
     refute applicant_ablity.can? :destroy, non_matched_dataset_project
     refute applicant_ablity.can? :read, non_matched_dataset_project
     refute applicant_ablity.can? :update, non_matched_dataset_project
-    refute applicant_ablity.can? :update, non_matched_dataset_project.project_datasets.first.project_dataset_levels.first
+    refute applicant_ablity.can? :approve, non_matched_dataset_project.project_datasets.first.project_dataset_levels.first
+    refute applicant_ablity.can? :reject, non_matched_dataset_project.project_datasets.first.project_dataset_levels.first
     # Shouldn't be able to crud non-cas projects where they aren't owner
     refute applicant_ablity.can? :destroy, non_cas_project
     refute applicant_ablity.can? :read, non_cas_project
     refute applicant_ablity.can? :update, non_cas_project
-    refute applicant_ablity.can? :update, non_cas_project.project_datasets.first.project_dataset_levels.first
+    refute applicant_ablity.can? :approve, non_cas_project.project_datasets.first.project_dataset_levels.first
+    refute applicant_ablity.can? :reject, non_cas_project.project_datasets.first.project_dataset_levels.first
   end
 
   test 'cas_access_approver ability' do

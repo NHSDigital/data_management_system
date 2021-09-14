@@ -1,0 +1,23 @@
+<div id='requested_project_dataset_levels_table'>
+  <% if ProjectDatasetLevel.request.same_project(project).any? %>
+    <%= render partial: '/project_dataset_levels/approval_table', locals: { project_dataset_levels: ProjectDatasetLevel.request.same_project(project), status: 'Requested' } %>
+  <% end %>
+</div>
+
+<div id='approved_project_dataset_levels_table'>
+  <% if ProjectDatasetLevel.where(status: %i[approved renewable]).same_project(project).any? %>
+    <%= render partial: '/project_dataset_levels/approval_table', locals: { project_dataset_levels: ProjectDatasetLevel.where(status: %i[approved renewable]).same_project(project), status: 'Approved' } %>
+  <% end %>
+</div>
+
+<div id='rejected_project_dataset_levels_table'>
+  <% if ProjectDatasetLevel.rejected.same_project(project).any? %>
+    <%= render partial: '/project_dataset_levels/approval_table', locals: { project_dataset_levels: ProjectDatasetLevel.rejected.same_project(project), status: 'Rejected' } %>
+  <% end %>
+</div>
+
+<div id='closed_project_dataset_levels_table'>
+  <% if ProjectDatasetLevel.closed.same_project(project).any? %>
+    <%= render partial: '/project_dataset_levels/approval_table', locals: { project_dataset_levels: ProjectDatasetLevel.closed.same_project(project), status: 'Closed' } %>
+  <% end %>
+</div>

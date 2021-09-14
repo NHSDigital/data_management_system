@@ -53,8 +53,7 @@ module ProjectsHelper
     'ACCESS_APPROVER_REJECTED' => 'label-danger',
     'REJECTION_REVIEWED' => 'label-danger',
     'ACCESS_GRANTED' => 'label-success',
-    'ACCOUNT_CLOSED' => 'label-danger',
-    'RENEWAL' => 'label-warning'
+    'ACCOUNT_CLOSED' => 'label-danger'
   }.freeze
 
   def new_project_dropdown_button(team, **html_options)
@@ -147,6 +146,23 @@ module ProjectsHelper
       'warning'
     else
       status ? 'success' : 'danger'
+    end
+  end
+
+  def cas_approval_button_message(status)
+    case status
+    when 'request' then 'PENDING'
+    when 'rejected' then 'DECLINED'
+    when 'closed' then 'CLOSED'
+    else 'APPROVED'
+    end
+  end
+
+  def cas_approval_button_style(status)
+    case status
+    when 'request' then 'warning'
+    when 'rejected', 'closed' then 'danger'
+    else 'success'
     end
   end
 
@@ -325,10 +341,23 @@ module ProjectsHelper
   def display_level_date(project_dataset_level)
     return unless project_dataset_level.expiry_date
 
-    if project_dataset_level.approved
+    if project_dataset_level.approved? || project_dataset_level.renewable?
       project_dataset_level.expiry_date.strftime('%d/%m/%Y (expiry)')
+    elsif project_dataset_level.closed?
+      project_dataset_level.expiry_date.strftime('%d/%m/%Y (closed)')
     else
       project_dataset_level.expiry_date.strftime('%d/%m/%Y (requested)')
+    end
+  end
+
+  def display_request_type(level)
+    matching_levels = ProjectDatasetLevel.same_access_level_levels(level)
+    if matching_levels.any? && matching_levels.max_by(&:created_at).approved?
+      'Renewal'
+    elsif matching_levels.any? && matching_levels.max_by(&:created_at).rejected?
+      'Reapplication'
+    else
+      'New'
     end
   end
 
@@ -371,6 +400,13 @@ module ProjectsHelper
   def dataset_level_match(role_datasets, dataset, level)
     role_datasets.any? do |role_dataset|
       role_dataset['name'] == dataset.name && (role_dataset['levels'].include? level)
+    end
+  end
+
+  def approval_highlight_class(level)
+    if ProjectDataset.dataset_approval(current_user).include?(level.project_dataset) &&
+       level.request?
+      'dataset_highlight'
     end
   end
 end
