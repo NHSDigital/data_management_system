@@ -15,6 +15,7 @@ module Import
                      'BRCA2' => 8,
                      'ATM' => 451,
                      'CHEK2' => 865,
+                     'EPCAM' => 1432,
                      'PALB2' => 3186,
                      'TP53' => 79,
                      'MLH1' => 2744,
