@@ -20,7 +20,6 @@ class StGeorgeHandlerTest < ActiveSupport::TestCase
     @handler.add_moleculartestingtype(@genotype, predictive_record)
     assert_equal 2, @genotype.attribute_map['moleculartestingtype']
 
-
     diagnostic_record = build_raw_record('pseudo_id1' => 'bob')
     diagnostic_record.raw_fields['moleculartestingtype'] = 'affected'
     @handler.add_moleculartestingtype(@genotype, diagnostic_record)
@@ -66,31 +65,31 @@ class StGeorgeHandlerTest < ActiveSupport::TestCase
     assert_equal true, @handler.targeted_test?(targeted_record)
     @handler.process_genetictestcope(@genotype, targeted_record)
     assert_equal 'Targeted BRCA mutation test', @genotype.attribute_map['genetictestscope']
-    
+
     full_screen_record = build_raw_record('pseudo_id1' => 'bob')
     full_screen_record.raw_fields['moleculartestingtype'] = 'Full Screen'
     assert_equal true, @handler.full_screen?(full_screen_record)
     @handler.process_genetictestcope(@genotype, full_screen_record)
     assert_equal 'Full screen BRCA1 and BRCA2', @genotype.attribute_map['genetictestscope']
     full_screen_record = build_raw_record('pseudo_id1' => 'bob')
-    full_screen_record.raw_fields['moleculartestingtype'] = 
-     'BRCA1 & 2 exon deletion & duplication analysis'
+    full_screen_record.raw_fields['moleculartestingtype'] =
+      'BRCA1 & 2 exon deletion & duplication analysis'
     assert_equal true, @handler.full_screen?(full_screen_record)
     @handler.process_genetictestcope(@genotype, full_screen_record)
     assert_equal 'Full screen BRCA1 and BRCA2', @genotype.attribute_map['genetictestscope']
   end
-  
+
   test 'process_single_record' do
     @logger.expects(:debug).with('SUCCESSFUL gene parse for BRCA2')
     @logger.expects(:debug).with('SUCCESSFUL cdna change parse for: 6275_6276delTT')
     @logger.expects(:debug).with('FAILED protein parse for: BR2 c.6275_6276delTT')
-    variants = @handler.process_variants_from_record(@genotype, @record)
+    @handler.process_variants_from_record(@genotype, @record)
     assert_equal 2, @genotype.attribute_map['teststatus']
     assert_equal 'c.6275_6276del', @genotype.attribute_map['codingdnasequencechange']
     fullscreen_record = build_raw_record('pseudo_id1' => 'bob')
     fullscreen_record.raw_fields['moleculartestingtype'] = 'Full Screen'
     assert_equal true, @handler.full_screen?(fullscreen_record)
-    #Test for full screen record
+    # Test for full screen record
     @logger.expects(:debug).with('SUCCESSFUL gene parse for BRCA1')
     @logger.expects(:debug).with('SUCCESSFUL gene parse for BRCA2')
     @logger.expects(:debug).with('SUCCESSFUL cdna change parse for: 6275_6276delTT')
@@ -127,7 +126,7 @@ class StGeorgeHandlerTest < ActiveSupport::TestCase
     @logger.expects(:debug).with('SUCCESSFUL gene parse for BRCA1')
     @logger.expects(:debug).with('SUCCESSFUL exon variant parse for: Dup 13 BR1')
     @logger.expects(:debug).with('FAILED protein parse for: Dup 13 BR1')
-    variants = @handler.process_variants_from_record(@genotype, single_exon_variant_record)
+    @handler.process_variants_from_record(@genotype, single_exon_variant_record)
     assert_equal 2, @genotype.attribute_map['teststatus']
     assert_equal '13', @genotype.attribute_map['exonintroncodonnumber']
     assert_equal 7, @genotype.attribute_map['gene']
@@ -151,12 +150,12 @@ class StGeorgeHandlerTest < ActiveSupport::TestCase
     failed_record_nogene.raw_fields['genotype'] = 'Failed'
     @logger.expects(:debug).with('Unable to extract gene')
     @logger.expects(:debug).with('FAILED gene parse for: Failed')
-    variants = @handler.process_variants_from_record(@genotype, failed_record_nogene)
+    @handler.process_variants_from_record(@genotype, failed_record_nogene)
     assert_equal 9, @genotype.attribute_map['teststatus']
     failed_record_gene = build_raw_record('pseudo_id1' => 'bob')
     failed_record_gene.raw_fields['genotype'] = 'Failed BR1'
     @logger.expects(:debug).with('SUCCESSFUL gene parse for BRCA1')
-    variants = @handler.process_variants_from_record(@genotype, failed_record_gene)
+    @handler.process_variants_from_record(@genotype, failed_record_gene)
     assert_equal 9, @genotype.attribute_map['teststatus']
     assert_equal 7, @genotype.attribute_map['gene']
     fullscreen_failed_record = build_raw_record('pseudo_id1' => 'bob')
@@ -179,7 +178,7 @@ class StGeorgeHandlerTest < ActiveSupport::TestCase
     assert_equal true, @handler.normal?(no_gene_normal_genotype_record)
     @logger.expects(:debug).with('Unable to extract gene')
     @logger.expects(:debug).with('FAILED gene parse for: Normal')
-    variants = @handler.process_variants_from_record(@genotype, no_gene_normal_genotype_record)
+    @handler.process_variants_from_record(@genotype, no_gene_normal_genotype_record)
     assert_equal 1, @genotype.attribute_map['teststatus']
     assert_nil(@genotype.attribute_map['gene'])
     normal_genotype_record_with_gene = build_raw_record('pseudo_id1' => 'bob')
@@ -188,7 +187,7 @@ class StGeorgeHandlerTest < ActiveSupport::TestCase
     @logger.expects(:debug).with('Unable to extract gene')
     @logger.expects(:debug).with('SUCCESSFUL gene parse for BRCA1')
     @logger.expects(:debug).with('SUCCESSFUL gene parse for: BRCA1')
-    variants = @handler.process_variants_from_record(@genotype, normal_genotype_record_with_gene)
+    @handler.process_variants_from_record(@genotype, normal_genotype_record_with_gene)
     assert_equal true, @handler.normal?(no_gene_normal_genotype_record)
     assert_equal 7, @genotype.attribute_map['gene']
     assert_equal 1, @genotype.attribute_map['teststatus']
@@ -196,7 +195,7 @@ class StGeorgeHandlerTest < ActiveSupport::TestCase
     normal_mtype_record_with_gene.raw_fields['genotype'] = 'BR1 c.68_69delAG'
     normal_mtype_record_with_gene.raw_fields['moleculartestingtype'] = 'Predictive - unaffected'
     @logger.expects(:debug).with('SUCCESSFUL gene parse for BRCA1')
-    variants = @handler.process_variants_from_record(@genotype, normal_mtype_record_with_gene)
+    @handler.process_variants_from_record(@genotype, normal_mtype_record_with_gene)
     assert_equal true, @handler.normal?(no_gene_normal_genotype_record)
     assert_equal 7, @genotype.attribute_map['gene']
     assert_equal 1, @genotype.attribute_map['teststatus']
@@ -216,7 +215,6 @@ class StGeorgeHandlerTest < ActiveSupport::TestCase
     assert_equal 1, @genotype.attribute_map['teststatus']
   end
 
-
   private
 
   def build_raw_record(options = {})
@@ -232,8 +230,6 @@ class StGeorgeHandlerTest < ActiveSupport::TestCase
     Import::Brca::Core::RawRecord.new(default_options.merge!(options))
   end
 
-
-
   def clinical_json
     { sex: '2',
       hospitalnumber: '332061',
@@ -242,8 +238,6 @@ class StGeorgeHandlerTest < ActiveSupport::TestCase
       specimentype: '5',
       age: 42 }.to_json
   end
-
-
 
   def rawtext_clinical_json
     { sex: 'Female',
