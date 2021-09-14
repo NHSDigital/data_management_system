@@ -13,7 +13,8 @@ module Import
           CDNA_REGEX = /c\.(?<cdna>[0-9]+[^\s]+)|c\.\[(?<cdna>.*?)\]/i.freeze
 
           PROTEIN_REGEX = /p\.(?<impact>[a-z]+[0-9]+[a-z]+)|
-                           p\.(\[)?(\()?(?<impact>[a-z]+[0-9]+[a-z]+)(\))?(\])?/ix.freeze
+                           p\.(?<sqrbo>\[)?(?<rndbo>\()?(?<impact>[a-z]+[0-9]+[a-z]+)
+                           (?<rndbrc>\))?(?<sqrbc>\])?/ix.freeze
 
           DEPRECATED_BRCA_NAMES_MAP = { 'BR1'    => 'BRCA1',
                                         'B1'     => 'BRCA1',
@@ -37,12 +38,15 @@ module Import
                                      SMARCB1|
                                      LZTR1)/xi.freeze
 
-          EXON_VARIANT_REGEX = /(?<variant>del|dup|ins).+ex(on)?(s)?\s(?<exons>[0-9]+(-[0-9]+)?)|
-                              ex(on)?(s)?\s(?<exons>[0-9]+(-[0-9]+)?)\s(?<variant>del|dup|ins)|
-                              (?<variant>del|dup|ins)\sexon(s)?\s(?<exons>[0-9]+(\sto\s[0-9]+))|
-                              (?<variant>del|dup|ins)(\s)?(?<exons>[0-9]+(-[0-9]+)?)|
-                              ex(on)?(s)?\s(?<exons>[0-9]+(\sto\s[0-9]+))\s(?<variant>del|dup|ins)
-                              /ix.freeze
+          EXON_VARIANT_REGEX = /(?<variant>del|dup|ins).+ex(?<on>on)?(?<s>s)?\s
+                                (?<exons>[0-9]+(?<dgs>-[0-9]+)?)|
+                              ex(?<on>on)?(?<s>s)?\s(?<exons>[0-9]+(?<dgs>-[0-9]+)?)\s
+                              (?<variant>del|dup|ins)|
+                              (?<variant>del|dup|ins)\sexon(?<s>s)?\s
+                              (?<exons>[0-9]+(?<dgs>\sto\s[0-9]+))|
+                              (?<variant>del|dup|ins)(?<s>\s)?(?<exons>[0-9]+(?<dgs>-[0-9]+)?)|
+                              ex(?<on>on)?(?<s>s)?\s(?<exons>[0-9]+(?<dgs>\sto\s[0-9]+)?)\s
+                              (?<variant>del|dup|ins)/ix.freeze
 
           DEPRECATED_BRCA_NAMES_REGEX = /B1|BR1|BRCA\s1|B2|BR2|BRCA\s2/i.freeze
 
