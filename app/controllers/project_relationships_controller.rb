@@ -38,7 +38,7 @@ class ProjectRelationshipsController < ApplicationController
   end
 
   def destroy
-    @other_project = @project_relationship.projects.detect { |project| project != @project }
+    @other_project = @project_relationship.projects.where.not(id: @project).take
 
     if @project_relationship.destroy
       respond_to do |format|
