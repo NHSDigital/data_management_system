@@ -10,7 +10,7 @@ module Import
           PASS_THROUGH_FIELDS = %w[age sex consultantcode collecteddate
                                    receiveddate authoriseddate servicereportidentifier
                                    providercode receiveddate sampletype].freeze
-          CDNA_REGEX = /c\.(?<cdna>[0-9]+[^\s]+)|c\.\[(?<cdna>(.*?))\]/i.freeze
+          CDNA_REGEX = /c\.(?<cdna>[0-9]+[^\s]+)|c\.\[(?<cdna>.*?)\]/i.freeze
 
           PROTEIN_REGEX = /p\.(?<impact>[a-z]+[0-9]+[a-z]+)|
                            p\.(\[)?(\()?(?<impact>[a-z]+[0-9]+[a-z]+)(\))?(\])?/ix.freeze
@@ -45,10 +45,6 @@ module Import
                               /ix.freeze
 
           DEPRECATED_BRCA_NAMES_REGEX = /B1|BR1|BRCA\s1|B2|BR2|BRCA\s2/i.freeze
-
-          # EXON_VARIANT_REGEX = /ex(on)?(s)?\s(?<exons>[0-9]+(-[0-9]+)?)\s(?<variant>del|dup|ins)|
-          #                      (?<variant>del|dup|ins)\sexon(s)?\s[0-9]+(\sto\s[0-9]+)?|
-          #                      (?<variant>del|dup|ins)\sexon(s)?\s[0-9]+(-[0-9]+)?/ix.freeze
 
           def initialize(batch)
             @extractor = Import::ExtractionUtilities::LocationExtractor.new
@@ -112,23 +108,27 @@ module Import
             positive_gene = []
             gene = record.raw_fields['genotype'].scan(BRCA_GENES_REGEX)
             deprecated_gene = record.raw_fields['genotype'].scan(DEPRECATED_BRCA_NAMES_REGEX)
-            if gene.present?
-              if gene.size == 1
-                positive_gene.append(gene.join)
-              else positive_gene.append(gene)
-              end
-            end
-            if deprecated_gene.present?
-              if deprecated_gene.size == 1
-                positive_gene.append(DEPRECATED_BRCA_NAMES_MAP[deprecated_gene.join])
-              else
-                deprecated_gene.each do |dg|
-                  positive_gene.append(DEPRECATED_BRCA_NAMES_MAP[dg])
-                end
-              end
-            end
+            process_rightname_gene(gene, positive_gene) if gene.present?
+            process_deprecated_gene(deprecated_gene, positive_gene) if deprecated_gene.present?
             @logger.debug 'Unable to extract gene' if gene.empty? && deprecated_gene.empty?
             positive_gene
+          end
+
+          def process_rightname_gene(gene, positive_gene)
+            if gene.size == 1
+              positive_gene.append(gene.join)
+            else positive_gene.append(gene)
+            end
+          end
+
+          def process_deprecated_gene(deprecated_gene, positive_gene)
+            if deprecated_gene.size == 1
+              positive_gene.append(DEPRECATED_BRCA_NAMES_MAP[deprecated_gene.join])
+            else
+              deprecated_gene.each do |dg|
+                positive_gene.append(DEPRECATED_BRCA_NAMES_MAP[dg])
+              end
+            end
           end
 
           def process_fullscreen_records(genotype, record, positive_gene, genotypes)
@@ -178,24 +178,36 @@ module Import
 
           def process_targeted_records(positive_gene, genotype, record, genotypes)
             if normal?(record)
-              process_single_gene(genotype, record)
-              genotype.add_status(1)
-              genotypes.append(genotype)
+              process_normal_targeted(genotype, record, genotypes)
             elsif failed_test?(record)
-              process_single_gene(genotype, record)
-              genotype.add_status(9)
-              genotypes.append(genotype)
+              process_failed_targeted(genotype, record, genotypes)
             elsif positive_cdna?(record) || positive_exonvariant?(record)
-              if record.raw_fields['genotype'].scan(CDNA_REGEX).size > 1
-                process_multiple_positive_variants(positive_gene, genotype, record, genotypes)
-              else
-                process_single_gene(genotype, record)
-                process_single_positive_variants(genotype, record)
-                process_single_protein(genotype, record)
-                genotypes.append(genotype)
-              end
+              process_positive_targeted(record, positive_gene, genotype, genotypes)
             end
             genotypes
+          end
+
+          def process_normal_targeted(genotype, record, genotypes)
+            process_single_gene(genotype, record)
+            genotype.add_status(1)
+            genotypes.append(genotype)
+          end
+
+          def process_failed_targeted(genotype, record, genotypes)
+            process_single_gene(genotype, record)
+            genotype.add_status(9)
+            genotypes.append(genotype)
+          end
+
+          def process_positive_targeted(record, positive_gene, genotype, genotypes)
+            if record.raw_fields['genotype'].scan(CDNA_REGEX).size > 1
+              process_multiple_positive_variants(positive_gene, genotype, record, genotypes)
+            else
+              process_single_gene(genotype, record)
+              process_single_positive_variants(genotype, record)
+              process_single_protein(genotype, record)
+              genotypes.append(genotype)
+            end
           end
 
           def process_single_gene(genotype, record)
