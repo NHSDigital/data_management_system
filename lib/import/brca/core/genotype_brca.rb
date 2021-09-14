@@ -36,6 +36,7 @@ module Import
                    }.freeze
 
         BRCA_REGEX = /(?<atm>ATM|P041|P042)|
+                      (?<epcam>EPCAM)|
                       (?<chek2>CHEK2|P190)|
                       (?<palb2>PALB2)|
                       (?<brca1>BRCA1|B1|BR1|P002|P002B|P087)|
@@ -52,6 +53,8 @@ module Import
                       (?<nbn>NBN)|
                       (?<rad51c>RAD51C)|
                       (?<rad51d>RAD51D)|
+                      (?<cdkn2a>CDKN2A)|
+                      (?<cdk4>CDK4)|
                       (?<smad>SMAD4)|
                       (?<nf1>NF1)|
                       (?<nf2>NF2)|
@@ -82,8 +85,8 @@ module Import
         end
 
         def process_integer_imput(brca_input)
-          if [7, 8, 72, 79, 451, 865, 3186, 2744, 2804, 2808, 3394, 62, 76,
-              590, 2912, 3615, 3616, 2850, 54, 55, 74, 4952].include? brca_input
+          if [7, 8, 72, 79, 451, 865, 3186, 2744, 1432, 2804, 2808, 3394, 62, 76,
+              590, 2912, 3615, 3616, 2850, 54, 55, 74, 4952, 18, 20].include? brca_input
             @attribute_map['gene'] = brca_input
             @logger.debug "SUCCESSFUL gene parse for #{brca_input}"
           elsif (1..2).cover? brca_input
