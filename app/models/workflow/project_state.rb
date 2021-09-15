@@ -26,7 +26,7 @@ module Workflow
     after_save :notify_user_cas_application_rejected
     after_save :notify_cas_access_granted
     after_save :notify_account_closed
-    after_commit :auto_transition_access_approver_approved_to_access_granted
+    after_create_commit :auto_transition_access_approver_approved_to_access_granted
 
     delegate :assigned_user, :assigning_user, to: :current_assignment, allow_nil: true
     delegate :full_name, to: :assigned_user,  prefix: true, allow_nil: true
