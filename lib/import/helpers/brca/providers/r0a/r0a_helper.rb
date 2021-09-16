@@ -56,7 +56,10 @@ module Import
               add_test_scope_to(genotype, moltesttypes, genera, exons)
             end
 
-            # TODO: Boyscout
+            # Switching rubocop off for this method as reduced method length and removal of
+            # duplicated branches would only be stylish and bring no improvement
+            # rubocop:disable Lint/DuplicateBranch
+            # rubocop:disable Metrics/MethodLength
             def add_test_scope_to(genotype, moltesttypes, genera, exons)
               stringed_moltesttypes = moltesttypes.flatten.join(',')
               stringed_exons = exons.flatten.join(',')
@@ -83,6 +86,8 @@ module Import
                 genotype.add_test_scope(:full_screen)
               end
             end
+            # rubocop:enable Lint/DuplicateBranch
+            # rubocop:enable Metrics/MethodLength
 
             def process_non_cdna_normal(gene, genetic_info, genotype, genotypes)
               genotype_dup = genotype.dup
@@ -120,19 +125,15 @@ module Import
               end
             end
 
-            def process_non_brca_genes(genotype_dup, gene, genetic_info, genotypes,
-                                       genotype)
+            def process_non_brca_genes(genotype_dup, gene, genetic_info, genotypes, genotype)
               @logger.debug("IDENTIFIED #{gene}, #{cdna_from(genetic_info)} from #{genetic_info}")
               mutations = list_mutations(genetic_info)
-              proteins = list_proteins(genetic_info)
-              longest_protein = proteins.max_by(&:length)
               if !genetic_info.join(',').scan(BRCA_GENES_REGEX).flatten.join.empty? &&
                  genetic_info.join(',').scan(BRCA_GENES_REGEX).flatten.join != gene
                 extract_normal_badlyformatted_genotypes(genotype_dup, gene, genotypes)
               else
                 if mutations.size > 1
-                  multiple_mutations(mutations, longest_protein, gene, genetic_info,
-                                     genotype, genotypes)
+                  multiple_mutations(mutations, gene, genetic_info, genotype, genotypes)
                 elsif mutations.join.split(',').size == 1
                   single_badformat_variant(genotype_dup, genetic_info, gene, genotypes)
                   genotypes
@@ -149,31 +150,27 @@ module Import
               genotypes.append(genotype_dup)
             end
 
-            def multiple_mutations(mutations, longest_protein, gene, genetic_info,
-                                   genotype, genotypes)
+            def multiple_mutations(mutations, gene, genetic_info, genotype, genotypes)
               if mutations.size == 2
-                mutation_duplicate1 = mutations[0].upcase
-                mutation_duplicate2 = mutations[1].upcase
-                longest_mutation = mutations.max_by(&:length)
+                mutation_duplicate1, mutation_duplicate2 = *mutations.map(&:upcase)
                 if mutation_duplicate1.include?(mutation_duplicate2) ||
                    mutation_duplicate2.include?(mutation_duplicate1)
-                  duplicated_variants(genetic_info, longest_mutation, genotype, gene,
-                                      mutations, longest_protein, genotypes)
+                  duplicated_variants(genetic_info, genotype, gene, mutations, genotypes)
                 else
                   different_mutations(mutations, genotype, gene, genotypes)
                 end
                 genotypes
               else
                 mutations = mutations.split(',').flatten.map { |mutation| mutation.gsub('het', '') }
-                mutations = mutations.uniq
-                different_mutations(mutations, genotype, gene, genotypes)
+                different_mutations(mutations.uniq, genotype, gene, genotypes)
               end
             end
 
-            def duplicated_variants(genetic_info, longest_mutation, genotype, gene,
-                                    mutations, longest_protein, genotypes)
+            def duplicated_variants(genetic_info, genotype, gene, mutations, genotypes)
+              longest_mutation = mutations.max_by(&:length)
               duplicated_geno = genotype.dup
               duplicated_geno.add_gene(gene)
+              longest_protein = list_proteins(genetic_info).max_by(&:length)
               if genetic_info.join(',').match(longest_mutation)
                 duplicated_geno.add_gene_location(CDNA_REGEX.match(genetic_info.join(','))[:cdna])
               else

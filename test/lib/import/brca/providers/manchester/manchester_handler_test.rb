@@ -283,6 +283,7 @@ class ManchesterHandlerTest < ActiveSupport::TestCase
       genotype.add_passthrough_fields(record.mapped_fields,
                                       record.raw_fields,
                                       Import::Helpers::Brca::Providers::R0a::R0aConstants::PASS_THROUGH_FIELDS_COLO)
+      @handler.process_fields(record)
       @handler.testscope_from_rawfields(genotype, record)
       mutations = @handler.assign_gene_mutation(genotype, record)
       assert_equal 'Full screen BRCA1 and BRCA2', genotype.attribute_map['genetictestscope']

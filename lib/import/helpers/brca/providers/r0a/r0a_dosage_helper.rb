@@ -100,9 +100,8 @@ module Import
             def non_brca_gene_record(gene, genetic_info, genotype, genotypes)
               if gene == 'No Gene'
                 @logger.debug("Nothing to do for #{gene} and #{genetic_info}")
-              elsif !cdna_match?(genetic_info) && !exon_match?(genetic_info) &&
-                    normal?(genetic_info)
-                # genotype_dup = genotype.dup
+              elsif (!cdna_match?(genetic_info) && !exon_match?(genetic_info) &&
+                    normal?(genetic_info)) || genetic_info.join(',').match(/evidence/i)
                 process_non_cdna_normal(gene, genetic_info, genotype, genotypes)
               elsif cdna_match?(genetic_info)
                 process_non_dosage_cdna(gene, genetic_info, genotype, genotypes)
@@ -116,12 +115,10 @@ module Import
                   process_non_cdna_normal(gene, genetic_info, genotype, genotypes)
                 when /control/i
                   @logger.debug("IDENTIFIED FALSE POSITIVE #{gene}"\
-                  " #{genetic_info}, skipping entry")
+                                " #{genetic_info}, skipping entry")
                 end
               elsif genetic_info.join(',').empty?
                 @logger.debug("IDENTIFIED FALSE POSITIVE #{gene} #{genetic_info}, skipping entry")
-              elsif genetic_info.join(',').match(/evidence/i)
-                process_non_cdna_normal(gene, genetic_info, genotype, genotypes)
               end
             end
 
