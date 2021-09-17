@@ -32,6 +32,8 @@ class ProjectDatasetLevel < ApplicationRecord
     request.where(access_level_id: [2, 3]).
       joins(:project_dataset).where(project_datasets: { project_id: project.id }).
       joins(project_dataset: :dataset).where(datasets: { cas_type: 1 }).
+      joins(project_dataset: { project: :current_state }).
+      merge(Workflow::State.dataset_approval_states).
       joins(project_dataset: { dataset: :grants }).where(
         grants: { user_id: user.id,
                   roleable_type: 'DatasetRole',
