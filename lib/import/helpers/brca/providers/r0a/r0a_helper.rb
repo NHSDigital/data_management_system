@@ -55,8 +55,9 @@ module Import
               add_test_scope_to(genotype, moltesttypes, genera, exons)
             end
 
-            # Switching rubocop off for this method as reduced method length and removal of
-            # duplicated branches would only be stylish and bring no improvement
+            # Switching rubocop off for this method as reduced method length as
+            # any further breaking down would be purely arbitrary
+            # The order is also important here, so duplciate branches are required
             # rubocop:disable Lint/DuplicateBranch
             # rubocop:disable Metrics/MethodLength
             def add_test_scope_to(genotype, moltesttypes, genera, exons)
@@ -125,27 +126,27 @@ module Import
             end
 
             def process_non_brca_genes(genotype_dup, gene, genetic_info, genotypes, genotype)
-               @logger.debug("IDENTIFIED #{gene}, #{cdna_from(genetic_info)} from #{genetic_info}")
-               mutations = list_mutations(genetic_info)
-               if empty_or_badlyformatted_genotype?(genetic_info, gene)
-                 extract_normal_badlyformatted_genotypes(genotype_dup, gene, genotypes)
-               else
-                 if mutations.size > 1
-                   multiple_mutations(mutations, gene, genetic_info, genotype, genotypes)
-                 elsif mutations.join.split(',').size == 1
-                   single_badformat_variant(genotype_dup, genetic_info, gene, genotypes)
-                   genotypes
-                 elsif mutations.join.split(',').size > 1
-                   multiple_badformatted_variants(mutations, genotype, gene, genotypes)
-                 end
-                 @logger.debug("IDENTIFIED #{gene}, POSITIVE TEST from #{genetic_info}")
-               end
-             end 
- 
-             def empty_or_badlyformatted_genotype?(genetic_info, gene)
-               !genetic_info.join(',').scan(BRCA_GENES_REGEX).flatten.join.empty? &&
-                 genetic_info.join(',').scan(BRCA_GENES_REGEX).flatten.join != gene
-             end
+              @logger.debug("IDENTIFIED #{gene}, #{cdna_from(genetic_info)} from #{genetic_info}")
+              mutations = list_mutations(genetic_info)
+              if empty_or_badlyformatted_genotype?(genetic_info, gene)
+                extract_normal_badlyformatted_genotypes(genotype_dup, gene, genotypes)
+              else
+                if mutations.size > 1
+                  multiple_mutations(mutations, gene, genetic_info, genotype, genotypes)
+                elsif mutations.join.split(',').size == 1
+                  single_badformat_variant(genotype_dup, genetic_info, gene, genotypes)
+                  genotypes
+                elsif mutations.join.split(',').size > 1
+                  multiple_badformatted_variants(mutations, genotype, gene, genotypes)
+                end
+                @logger.debug("IDENTIFIED #{gene}, POSITIVE TEST from #{genetic_info}")
+              end
+            end
+
+            def empty_or_badlyformatted_genotype?(genetic_info, gene)
+              !genetic_info.join(',').scan(BRCA_GENES_REGEX).flatten.join.empty? &&
+                genetic_info.join(',').scan(BRCA_GENES_REGEX).flatten.join != gene
+            end
 
             def extract_normal_badlyformatted_genotypes(genotype_dup, gene, genotypes)
               genotype_dup.add_gene(gene.upcase)
@@ -170,11 +171,10 @@ module Import
             end
 
             def duplicated_variants(genetic_info, genotype, gene, mutations, genotypes)
-              longest_mutation = mutations.max_by(&:length)
               duplicated_geno = genotype.dup
               duplicated_geno.add_gene(gene)
               longest_protein = list_proteins(genetic_info).max_by(&:length)
-              if genetic_info.join(',').match(longest_mutation)
+              if genetic_info.join(',').match(mutations.max_by(&:length))
                 duplicated_geno.add_gene_location(CDNA_REGEX.match(genetic_info.join(','))[:cdna])
               else
                 duplicated_geno.add_gene_location(mutations.min_by(&:length))
@@ -364,18 +364,6 @@ module Import
               genotype_dup.add_status(status)
               genotypes.append(genotype_dup)
             end
-
-            # def restructure_oddlynamed_nondosage_exons(dosage_nondosage)
-            #   return if dosage_nondosage[:exon].nil?
-            #    dosage_nondosage[:exon] = dosage_nondosage[:exon].flatten
-            #    dosage_nondosage[:exon] =
-            #      dosage_nondosage[:exon].map do |exon|
-            #        exon.gsub!(/BRCA2|B2|BR2|P045|P077/, 'BRCA2')
-            #        exon.gsub!(/BRCA1|B1|BR1|P002|P002B|P087/, 'BRCA1')
-            #        exon.gsub!(/ATM|P041|P042/, 'ATM')
-            #        exon.gsub(/CHEK2|CKEK2|P190/, 'CHEK2')
-            #      end
-            #  end
 
             def restructure_oddlynamed_nondosage_exons(dosage_nondosage)
               dosage_nondosage[:exon] = dosage_nondosage[:exon].flatten
