@@ -99,7 +99,7 @@ module Import
 
           def process_variants_from_record(genotype, record)
             genotypes = []
-            positive_gene = get_positive_gene(record)
+            positive_gene = get_positive_genes(record)
             if ashkenazi?(record) || polish?(record) || full_screen?(record)
               process_fullscreen_records(genotype, record, positive_gene, genotypes)
             elsif targeted_test?(record) || void_genetictestscope?(record)
@@ -108,7 +108,7 @@ module Import
             genotypes
           end
 
-          def get_positive_gene(record)
+          def get_positive_genes(record)
             positive_gene = []
             gene = record.raw_fields['genotype'].scan(BRCA_GENES_REGEX)
             deprecated_gene = record.raw_fields['genotype'].scan(DEPRECATED_BRCA_NAMES_REGEX)
@@ -118,33 +118,30 @@ module Import
             positive_gene
           end
 
-          def process_rightname_gene(gene, positive_gene)
-            if gene.size == 1
-              positive_gene.append(gene.join)
-            else positive_gene.append(gene)
-            end
+          def process_rightname_gene(gene, positive_genes)
+            gene.size == 1 ? positive_genes.append(gene.join) : positive_genes.append(gene)
           end
 
-          def process_deprecated_gene(deprecated_gene, positive_gene)
+          def process_deprecated_gene(deprecated_gene, positive_genes)
             if deprecated_gene.size == 1
-              positive_gene.append(DEPRECATED_BRCA_NAMES_MAP[deprecated_gene.join])
+              positive_genes.append(DEPRECATED_BRCA_NAMES_MAP[deprecated_gene.join])
             else
               deprecated_gene.each do |dg|
-                positive_gene.append(DEPRECATED_BRCA_NAMES_MAP[dg])
+                positive_genes.append(DEPRECATED_BRCA_NAMES_MAP[dg])
               end
             end
           end
 
-          def process_fullscreen_records(genotype, record, positive_gene, genotypes)
+          def process_fullscreen_records(genotype, record, positive_genes, genotypes)
             if normal?(record)
               normal_full_screen(genotype, genotypes)
             elsif failed_test?(record)
               failed_full_screen(genotype, genotypes)
             elsif positive_cdna?(record) || positive_exonvariant?(record)
               if record.raw_fields['genotype'].scan(CDNA_REGEX).size > 1
-                process_multiple_positive_variants(positive_gene, genotype, record, genotypes)
+                process_multiple_positive_variants(positive_genes, genotype, record, genotypes)
               else
-                single_variant_full_screen(genotype, genotypes, positive_gene, record)
+                single_variant_full_screen(genotype, genotypes, positive_genes, record)
               end
             end
             genotypes
@@ -168,25 +165,25 @@ module Import
             end
           end
 
-          def single_variant_full_screen(genotype, genotypes, positive_gene, record)
-            negative_gene = %w[BRCA1 BRCA2] - positive_gene
+          def single_variant_full_screen(genotype, genotypes, positive_genes, record)
+            negative_gene = %w[BRCA1 BRCA2] - positive_genes
             genotype_dup = genotype.dup
             genotype_dup.add_gene(negative_gene.join)
             genotype_dup.add_status(1)
             genotypes.append(genotype_dup)
-            genotype.add_gene(positive_gene.join)
+            genotype.add_gene(positive_genes.join)
             process_single_positive_variants(genotype, record)
             process_single_protein(genotype, record)
             genotypes.append(genotype)
           end
 
-          def process_targeted_records(positive_gene, genotype, record, genotypes)
+          def process_targeted_records(positive_genes, genotype, record, genotypes)
             if normal?(record)
               process_normal_targeted(genotype, record, genotypes)
             elsif failed_test?(record)
               process_failed_targeted(genotype, record, genotypes)
             elsif positive_cdna?(record) || positive_exonvariant?(record)
-              process_positive_targeted(record, positive_gene, genotype, genotypes)
+              process_positive_targeted(record, positive_genes, genotype, genotypes)
             end
             genotypes
           end
@@ -203,9 +200,9 @@ module Import
             genotypes.append(genotype)
           end
 
-          def process_positive_targeted(record, positive_gene, genotype, genotypes)
+          def process_positive_targeted(record, positive_genes, genotype, genotypes)
             if record.raw_fields['genotype'].scan(CDNA_REGEX).size > 1
-              process_multiple_positive_variants(positive_gene, genotype, record, genotypes)
+              process_multiple_positive_variants(positive_genes, genotype, record, genotypes)
             else
               process_single_gene(genotype, record)
               process_single_positive_variants(genotype, record)
@@ -263,16 +260,16 @@ module Import
             end
           end
 
-          def process_multiple_positive_variants(positive_gene, genotype, record, genotypes)
-            if positive_gene.flatten.uniq.size > 1
+          def process_multiple_positive_variants(positive_genes, genotype, record, genotypes)
+            if positive_genes.flatten.uniq.size > 1
               mutation = record.raw_fields['genotype'].scan(CDNA_REGEX).flatten.compact
               protein = record.raw_fields['genotype'].scan(PROTEIN_REGEX).flatten.compact
-              variants = positive_gene.uniq.zip(mutation.flatten.compact, protein.flatten.compact)
+              variants = positive_genes.uniq.zip(mutation.flatten.compact, protein.flatten.compact)
               add_variants_multiple_results(variants, genotype, genotypes)
-            elsif positive_gene.flatten.uniq.size == 1
-              positive_gene *= record.raw_fields['genotype'].
+            elsif positive_genes.flatten.uniq.size == 1
+              positive_genes *= record.raw_fields['genotype'].
                                scan(CDNA_REGEX).flatten.compact.size
-              variants = positive_gene.zip(record.raw_fields['genotype'].
+              variants = positive_genes.zip(record.raw_fields['genotype'].
                          scan(CDNA_REGEX).flatten.compact)
               add_variants_multiple_results(variants, genotype, genotypes)
             end
