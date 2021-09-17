@@ -18,7 +18,6 @@ module Import
               add_servicereportidentifier(genotype, record)
               testscope_from_rawfields(genotype, record)
               results = assign_gene_mutation(genotype, record)
-              # @persister.integrate_and_store(genotype)
               results.each { |result| @persister.integrate_and_store(result) }
             end
 

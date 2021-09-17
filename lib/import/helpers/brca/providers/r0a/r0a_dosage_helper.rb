@@ -61,9 +61,8 @@ module Import
 
             def process_dosage_test_exons(genes)
               @dosage_record_map[:exon].map do |exons|
-                if exons.scan(BRCA_GENES_REGEX).count.positive? # && mlpa?(exons)
+                if exons.scan(BRCA_GENES_REGEX).count.positive?
                   exons.scan(BRCA_GENES_REGEX).flatten.each { |gene| genes.append(gene) }
-                #                  #binding.pry
                 else
                   genes.append('No Gene')
                 end

@@ -33,8 +33,6 @@ module Import
             def edit_nondosage_genotype_field(exon, index)
               if @non_dosage_record_map[:genotype][index] == 'BRCA1 Normal, BRCA2 Normal'
                 @non_dosage_record_map[:genotype][index] = ['NGS Normal'] * 2
-                # @non_dosage_record_map[:genotype][index] =
-                #   @non_dosage_record_map[:genotype][index].flatten
               elsif @non_dosage_record_map[:genotype][index].scan(/Normal, /i).size.positive? ||
                     @non_dosage_record_map[:genotype][index].scan(/,.+Normal/i).size.positive?
                 @non_dosage_record_map[:genotype][index] =
@@ -42,40 +40,29 @@ module Import
               elsif @non_dosage_record_map[:genotype][index] == 'Normal'
                 @non_dosage_record_map[:genotype][index] =
                   ['Normal'] * exon.scan(BRCA_GENES_REGEX).uniq.size
-                # @non_dosage_record_map[:genotype][index] =
-                #   @non_dosage_record_map[:genotype][index].flatten
               else
                 @non_dosage_record_map[:genotype][index] =
                   @non_dosage_record_map[:genotype][index]
               end
-              # @non_dosage_record_map[:genotype] = @non_dosage_record_map[:genotype].flatten
             end
 
             def edit_nondosage_genotype2_field(exon, index)
               if !@non_dosage_record_map[:genotype2][index].nil? &&
                  @non_dosage_record_map[:genotype2][index].scan(/coverage at 100X/).size.positive?
                 @non_dosage_record_map[:genotype2][index] = ['NGS Normal'] * 2
-                # @non_dosage_record_map[:genotype2][index] =
-                #   @non_dosage_record_map[:genotype2][index].flatten
               elsif !@non_dosage_record_map[:genotype2][index].nil? &&
                     @non_dosage_record_map[:genotype2][index].empty?
                 @non_dosage_record_map[:genotype2][index] = ['MLPA Normal'] * 2
-                # @non_dosage_record_map[:genotype2][index] =
-                #   @non_dosage_record_map[:genotype2][index].flatten
               elsif @non_dosage_record_map[:genotype2][index].nil? &&
                     @non_dosage_record_map[:genotype][index].is_a?(String) &&
                     @non_dosage_record_map[:genotype][index].scan(/MSH2/).size.positive?
                 @non_dosage_record_map[:genotype2][index] =
                   [''] * exon.scan(BRCA_GENES_REGEX).size
-                # @non_dosage_record_map[:genotype2][index] =
-                #   @non_dosage_record_map[:genotype2][index].flatten
               elsif @non_dosage_record_map[:genotype2][index] == 'Normal' ||
                     @non_dosage_record_map[:genotype2][index].nil? ||
                     @non_dosage_record_map[:genotype2][index] == 'Fail'
                 @non_dosage_record_map[:genotype2][index] =
                   ['Normal'] * exon.scan(BRCA_GENES_REGEX).uniq.size
-                # @non_dosage_record_map[:genotype2][index] =
-                #   @non_dosage_record_map[:genotype2][index].flatten
               end
             end
 
