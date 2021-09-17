@@ -214,6 +214,8 @@ module Import
             end
           end
 
+          # Ordering here is important so duplicate branches are required
+          # rubocop:disable  Lint/DuplicateBranch
           def process_single_gene(genotype, record)
             if record.raw_fields['genotype'].scan(BRCA_GENES_REGEX).size.positive?
               genotype.add_gene($LAST_MATCH_INFO[:brca])
@@ -229,6 +231,7 @@ module Import
               @logger.debug "FAILED gene parse for: #{record.raw_fields['genotype']}"
             end
           end
+          # rubocop:enable  Lint/DuplicateBranch
 
           def process_single_protein(genotype, record)
             if record.raw_fields['genotype'].scan(PROTEIN_REGEX).size.positive?
