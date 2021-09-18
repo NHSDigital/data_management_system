@@ -109,16 +109,21 @@ module Import
               elsif genetic_info.join(',').match(EXON_LOCATION_REGEX) && exon_match?(genetic_info)
                 process_brca_gene_and_exon_match(genotype, gene, genetic_info, genotypes)
               elsif !genetic_info.join(',').match(EXON_LOCATION_REGEX) && exon_match?(genetic_info)
-                case genetic_info.join(',')
-                when /normal/i, /evidence/i
-                  process_non_cdna_normal(gene, genetic_info, genotype, genotypes)
-                when /control/i
-                  @logger.debug("IDENTIFIED FALSE POSITIVE #{gene}"\
-                                " #{genetic_info}, skipping entry")
-                end
+                negative_test_exon_variant(gene, genetic_info, genotype, genotypes)
               elsif genetic_info.join(',').empty?
                 @logger.debug("IDENTIFIED FALSE POSITIVE #{gene} #{genetic_info}, skipping entry")
               end
+            end
+
+            def negative_test_exon_variant(gene, genetic_info, genotype, genotypes)
+              case genetic_info.join(',')
+              when /normal/i, /evidence/i
+                process_non_cdna_normal(gene, genetic_info, genotype, genotypes)
+              when /control/i
+                @logger.debug("IDENTIFIED FALSE POSITIVE #{gene}"\
+                              " #{genetic_info}, skipping entry")
+              end
+              genotypes
             end
 
             def brca_gene_record_noexon(genetic_info, gene, genotype, genotypes)
