@@ -14,8 +14,8 @@ module Import
         BRCA_MAP = { 'BRCA1' => 7,
                      'BRCA2' => 8,
                      'ATM' => 451,
-                     'EPCAM' => 1432,
                      'CHEK2' => 865,
+                     'EPCAM' => 1432,
                      'PALB2' => 3186,
                      'TP53' => 79,
                      'MLH1' => 2744,
@@ -28,28 +28,39 @@ module Import
                      'NBN' => 2912,
                      'RAD51C' => 3615,
                      'RAD51D' => 3616,
-                     'CDKN2A' => 20,
-                     'CDK4' => 18 }.freeze
+                     'SMAD4' => 72,
+                     'MUTYH' => 2850,
+                     'NF1' => 54,
+                     'NF2' => 55,
+                     'SMARCB1' => 74,
+                     'LZTR1' => 4952
+                   }.freeze
 
-        BRCA_REGEX = /(?<atm>ATM)|
+        BRCA_REGEX = /(?<atm>ATM|P041|P042)|
                       (?<epcam>EPCAM)|
-                      (?<chek2>CHEK2)|
+                      (?<chek2>CHEK2|P190)|
                       (?<palb2>PALB2)|
-                      (?<brca1>BRCA1)|
-                      (?<brca2>BRCA2)|
+                      (?<brca1>BRCA1|B1|BR1|P002|P002B|P087)|
+                      (?<brca2>BRCA2|B2|BR2|P045|P077)|
                       (?<tp53>TP53)|
                       (?<mlh1>MLH1)|
                       (?<msh2>MSH2)|
                       (?<msh6>MSH6)|
                       (?<pms2>PMS2)|
                       (?<stk>STK11)|
+                      (?<mutyh>MUTYH)|
                       (?<pten>PTEN)|
                       (?<brip1>BRIP1)|
                       (?<nbn>NBN)|
                       (?<rad51c>RAD51C)|
                       (?<rad51d>RAD51D)|
                       (?<cdkn2a>CDKN2A)|
-                      (?<cdk4>CDK4)/ix.freeze # Added by Francesco
+                      (?<cdk4>CDK4)|
+                      (?<smad>SMAD4)|
+                      (?<nf1>NF1)|
+                      (?<nf2>NF2)|
+                      (?<smarcb1>SMARCB1)|
+                      (?<lztr1>LZTR1)/ix.freeze # Added by Francesco
 
         def other_gene
           gene = @attribute_map['gene']
@@ -75,8 +86,8 @@ module Import
         end
 
         def process_integer_imput(brca_input)
-          if [7, 8, 79, 451, 865, 3186, 2744, 2804, 1432, 3394, 62, 76,
-              590, 2912, 3615, 3616, 20, 18].include? brca_input
+          if [7, 8, 72, 79, 451, 865, 3186, 2744, 1432, 2804, 2808, 3394, 62, 76,
+              590, 2912, 3615, 3616, 2850, 54, 55, 74, 4952, 18, 20].include? brca_input
             @attribute_map['gene'] = brca_input
             @logger.debug "SUCCESSFUL gene parse for #{brca_input}"
           elsif (1..2).cover? brca_input
