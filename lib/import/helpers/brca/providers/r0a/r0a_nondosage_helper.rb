@@ -69,7 +69,6 @@ module Import
             def process_grouped_non_dosage_tests(grouped_tests, genotype, genotypes)
               if (@non_dosage_record_map[:moleculartestingtype].uniq & DO_NOT_IMPORT).empty?
                 grouped_tests.each do |gene, genetic_info|
-                  # next unless MOLTEST_MAP[selected_genes].include? gene
                   if gene == 'No Gene'
                     @logger.debug("Nothing to do for #{gene} and #{genetic_info}")
                   elsif cdna_match?(genetic_info)
