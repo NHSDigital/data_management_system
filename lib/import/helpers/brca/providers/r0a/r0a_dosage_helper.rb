@@ -7,54 +7,6 @@ module Import
           module R0aDosageHelper
             include Import::Helpers::Brca::Providers::R0a::R0aConstants
 
-            def split_multiplegenes_dosage_map
-              @dosage_record_map[:exon].each.with_index do |exon, index|
-                if exon.scan(BRCA_GENES_REGEX).size > 1
-                  @dosage_record_map[:exon][index] =
-                    @dosage_record_map[:exon][index].scan(BRCA_GENES_REGEX).flatten.each do |gene|
-                      gene.concat('_MLPA')
-                    end
-                  @dosage_record_map[:genotype][index] =
-                    edit_dosage_genotype_field(exon, index)
-                  @dosage_record_map[:genotype2][index] =
-                    edit_dosage_genotype2_field(exon, index)
-                end
-              end
-              @dosage_record_map[:exon] = @dosage_record_map[:exon].flatten
-              @dosage_record_map[:genotype] = @dosage_record_map[:genotype].flatten
-              @dosage_record_map[:genotype2] = @dosage_record_map[:genotype2].flatten
-            end
-
-            def edit_dosage_genotype_field(exon, index)
-              case @dosage_record_map[:genotype][index]
-              when 'Normal'
-                @dosage_record_map[:genotype][index] =
-                  ['Normal'] * exon.scan(BRCA_GENES_REGEX).size
-                @dosage_record_map[:genotype][index] =
-                  @dosage_record_map[:genotype][index].flatten
-              when 'BRCA1 Normal, BRCA2 Normal'
-                @dosage_record_map[:genotype][index] = ['NGS Normal'] * 2
-                @dosage_record_map[:genotype][index] =
-                  @dosage_record_map[:genotype][index].flatten
-              end
-            end
-
-            def edit_dosage_genotype2_field(_exon, index)
-              if !@dosage_record_map[:genotype2][index].nil? &&
-                 @dosage_record_map[:genotype2][index].empty?
-                @dosage_record_map[:genotype2][index] = ['MLPA Normal'] * 2
-                @dosage_record_map[:genotype2][index] =
-                  @dosage_record_map[:genotype2][index].flatten
-              elsif !@dosage_record_map[:genotype2][index].nil? &&
-                    @dosage_record_map[:genotype2][index].scan(
-                      /100% coverage at 100X/
-                    ).size.positive?
-                @dosage_record_map[:genotype2][index] = ['NGS Normal'] * 2
-                @dosage_record_map[:genotype2][index] =
-                  @dosage_record_map[:genotype2][index].flatten
-              end
-            end
-
             def dosage_test?
               @dosage_record_map[:moleculartestingtype].uniq.join.scan(/dosage/i).size.positive?
             end

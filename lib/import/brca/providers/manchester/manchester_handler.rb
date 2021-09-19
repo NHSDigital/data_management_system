@@ -23,17 +23,20 @@ module Import
             @logger.debug('STARTING PARSING')
             # Assigns a new array for each missing key in the Hash
             # to ensure a new object is created each time
-            @dosage_record_map     = Hash.new { |hash, key| hash[key] = [] }
-            @non_dosage_record_map = Hash.new { |hash, key| hash[key] = [] }
+            @dosage_record_hash     = Hash.new { |hash, key| hash[key] = [] }
+            @non_dosage_record_hash = Hash.new { |hash, key| hash[key] = [] }
 
             # For clarity, `raw_fields` contains multiple raw records, unlike other providers
             record.raw_fields.each { |raw_record| process_raw_record(raw_record) }
 
-            restructure_oddlynamed_nondosage_exons(@non_dosage_record_map)
-            split_multiplegenes_nondosage_map
+            restructure_oddlynamed_nondosage_exons(@non_dosage_record_hash)
+            non_dosage_splitter    = NonDosageMultigeneSplitter.new(@non_dosage_record_hash)
+            @non_dosage_record_map = non_dosage_splitter.split_non_dosage_multiple_genes
 
-            restructure_oddlynamed_nondosage_exons(@dosage_record_map)
-            split_multiplegenes_dosage_map
+            restructure_oddlynamed_nondosage_exons(@dosage_record_hash)
+            dosage_splitter    = DosageMultigeneSplitter.new(@dosage_record_hash)
+            @dosage_record_map = dosage_splitter.split_dosage_multiplegenes
+
             @lines_processed += 1 # TODO: factor this out to be automatic across handlers
             assign_and_populate_results_for(record)
             @logger.debug('DONE TEST')
@@ -53,19 +56,20 @@ module Import
           end
 
           def populate_dosage_data_from(raw_record)
-            @dosage_record_map[:genus].append(raw_record['genus'])
-            @dosage_record_map[:moleculartestingtype].append(raw_record['moleculartestingtype'])
-            @dosage_record_map[:exon].append(raw_record['exon'])
-            @dosage_record_map[:genotype].append(raw_record['genotype'])
-            @dosage_record_map[:genotype2].append(raw_record['genotype2'])
+            @dosage_record_hash[:genus].append(raw_record['genus'])
+            @dosage_record_hash[:moleculartestingtype].append(raw_record['moleculartestingtype'])
+            @dosage_record_hash[:exon].append(raw_record['exon'])
+            @dosage_record_hash[:genotype].append(raw_record['genotype'])
+            @dosage_record_hash[:genotype2].append(raw_record['genotype2'])
           end
 
           def populate_non_dosage_data_from(raw_record)
-            @non_dosage_record_map[:genus].append(raw_record['genus'])
-            @non_dosage_record_map[:moleculartestingtype].append(raw_record['moleculartestingtype'])
-            @non_dosage_record_map[:exon].append(raw_record['exon'])
-            @non_dosage_record_map[:genotype].append(raw_record['genotype'])
-            @non_dosage_record_map[:genotype2].append(raw_record['genotype2'])
+            @non_dosage_record_hash[:genus].append(raw_record['genus'])
+            @non_dosage_record_hash[:moleculartestingtype].
+              append(raw_record['moleculartestingtype'])
+            @non_dosage_record_hash[:exon].append(raw_record['exon'])
+            @non_dosage_record_hash[:genotype].append(raw_record['genotype'])
+            @non_dosage_record_hash[:genotype2].append(raw_record['genotype2'])
           end
         end
       end
