@@ -19,7 +19,7 @@ module Workflow
 
     scope :not_deleted, -> { where.not(id: 'DELETED') }
     scope :dataset_approval_states, lambda {
-      where(id: %w[SUBMITTED ACCESS_APPROVER_APPROVED ACCESS_APPROVER_REJECTED ACCESS_GRANTED])
+      where(id: %w[SUBMITTED ACCESS_APPROVER_APPROVED ACCESS_GRANTED])
     }
     scope :reapply_dataset_states, lambda {
       where(id: %w[DRAFT SUBMITTED ACCESS_APPROVER_APPROVED ACCESS_APPROVER_REJECTED ACCESS_GRANTED])
