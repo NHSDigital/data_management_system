@@ -49,7 +49,7 @@ INNER JOIN e_batch   eb ON eb.e_batchid = pp.e_batch_id) where genetictestscope 
 "
 run_sql "$SQL"
 
-SQL="
+SQL_FS_MMR="
 select CASE WHEN gene='358' THEN  'APC'
   WHEN gene='577' THEN  'BMPR1A'
   WHEN gene='1432' THEN  'EPCAM'
@@ -72,9 +72,9 @@ select CASE WHEN gene='358' THEN  'APC'
   INNER JOIN ppatients pp ON pp.id = md.ppatient_id
   INNER JOIN e_batch   eb ON eb.e_batchid = pp.e_batch_id) where genetictestscope like '%Full%MMR%' group by gene order by 1;
 "
-run_sql "$SQL"
+run_sql "$SQL_FS_MMR"
 
-SQL="
+SQL_TG_MMR="
 select CASE WHEN gene='358' THEN  'APC'
  WHEN gene='577' THEN  'BMPR1A'
  WHEN gene='1432' THEN  'EPCAM'
@@ -97,7 +97,78 @@ select CASE WHEN gene='358' THEN  'APC'
  INNER JOIN ppatients pp ON pp.id = md.ppatient_id
  INNER JOIN e_batch   eb ON eb.e_batchid = pp.e_batch_id) where genetictestscope like '%Targ%MMR%' group by gene order by 1;
 "
-run_sql "$SQL"
+run_sql "$SQL_TG_MMR"
+
+SQL_FS_BRCA="
+select CASE WHEN gene::integer=7 THEN 'BRCA1'
+WHEN gene::integer=8 THEN 'BRCA2'
+WHEN gene::integer=451 THEN 'ATM'
+WHEN gene::integer=865 THEN 'CHEK2'
+WHEN gene::integer=3186 THEN 'PALB2'
+WHEN gene::integer=79 THEN 'TP53'
+WHEN gene::integer=2744 THEN 'MLH1'
+WHEN gene::integer=2804 THEN 'MSH2'
+WHEN gene::integer=2808 THEN 'MSH6'
+WHEN gene::Integer=3394 THEN 'PMS2'
+WHEN gene::Integer=62 THEN 'PTEN'
+WHEN gene::Integer=76 THEN 'STK11'
+WHEN gene::Integer=590 THEN 'BRIP1'
+WHEN gene::Integer=2912 THEN 'NBN'
+WHEN gene::Integer=3615 THEN 'RAD51C'
+WHEN gene::Integer=3616 THEN 'RAD51D'
+WHEN gene::Integer=20 THEN 'CDKN2A'
+WHEN gene::Integer=18 THEN 'CDK4'
+WHEN gene::Integer=1432 THEN 'EPCAM'
+WHEN gene::Integer=2850 THEN 'MUTYH'
+WHEN gene::Integer=54 THEN 'NF1'
+WHEN gene::Integer=55 THEN 'NF2'
+WHEN gene::Integer=74 THEN 'SMARCB1'
+WHEN gene::Integer=4952 THEN 'LZTR1'
+WHEN gene::Integer=72 THEN 'SMAD4'
+ END AS genes,
+count(distinct(md.servicereportidentifier))
+ FROM (molecular_data md INNER JOIN genetic_test_results gtr
+ ON md.molecular_dataid = gtr.molecular_data_id
+ INNER JOIN ppatients pp ON pp.id = md.ppatient_id
+ INNER JOIN e_batch   eb ON eb.e_batchid = pp.e_batch_id) where genetictestscope like '%Full%BRCA%' GROUP BY gene order by 1;
+"
+run_sql "$SQL_FS_BRCA"
+
+SQL_TG_BRCA="
+select CASE WHEN gene::integer=7 THEN 'BRCA1'
+WHEN gene::integer=8 THEN 'BRCA2'
+WHEN gene::integer=451 THEN 'ATM'
+WHEN gene::integer=865 THEN 'CHEK2'
+WHEN gene::integer=3186 THEN 'PALB2'
+WHEN gene::integer=79 THEN 'TP53'
+WHEN gene::integer=2744 THEN 'MLH1'
+WHEN gene::integer=2804 THEN 'MSH2'
+WHEN gene::integer=2808 THEN 'MSH6'
+WHEN gene::Integer=3394 THEN 'PMS2'
+WHEN gene::Integer=62 THEN 'PTEN'
+WHEN gene::Integer=76 THEN 'STK11'
+WHEN gene::Integer=590 THEN 'BRIP1'
+WHEN gene::Integer=2912 THEN 'NBN'
+WHEN gene::Integer=3615 THEN 'RAD51C'
+WHEN gene::Integer=3616 THEN 'RAD51D'
+WHEN gene::Integer=20 THEN 'CDKN2A'
+WHEN gene::Integer=18 THEN 'CDK4'
+WHEN gene::Integer=1432 THEN 'EPCAM'
+WHEN gene::Integer=2850 THEN 'MUTYH'
+WHEN gene::Integer=54 THEN 'NF1'
+WHEN gene::Integer=55 THEN 'NF2'
+WHEN gene::Integer=74 THEN 'SMARCB1'
+WHEN gene::Integer=4952 THEN 'LZTR1'
+WHEN gene::Integer=72 THEN 'SMAD4'
+END AS genes,
+ count(distinct(md.servicereportidentifier))
+ FROM (molecular_data md INNER JOIN genetic_test_results gtr
+ ON md.molecular_dataid = gtr.molecular_data_id
+ INNER JOIN ppatients pp ON pp.id = md.ppatient_id
+ INNER JOIN e_batch   eb ON eb.e_batchid = pp.e_batch_id) where (genetictestscope like '%Targ%BRCA%'  or genetictestscope like '%AJ%BRCA%') GROUP BY gene order by 1;
+"
+run_sql "$SQL_TG_BRCA"
+
 
 SQL="
 select provider, count(distinct(pseudo_id1,pseudo_id2,servicereportidentifier))
