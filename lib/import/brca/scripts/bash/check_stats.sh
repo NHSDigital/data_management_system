@@ -10,7 +10,7 @@ cd "$1"
 FILEPATH="$2"
 echo Code revision: $(git rev-parse HEAD 2>/dev/null || cat REVISION)
 echo Data revision: $(cd "$FILEPATH"; svnversion)
-echo Data checksum: $(cd "$FILEPATH"; find . -type f -print0|LC_ALL=C sort -z|xargs -0 md5sum|cut -c-32|md5sum|cut -c-32)
+echo Data checksum: $(cd "$FILEPATH"; find . -type f -name '*.pseudo' -print0|LC_ALL=C sort -z|xargs -0 md5sum|cut -c-32|md5sum|cut -c-32)
 
 echo Record counts: $(bundle exec rails runner "p [EBatch, Pseudo::Ppatient, Pseudo::GeneticTestResult, Pseudo::GeneticSequenceVariant].collect { |klass| [klass.name, klass.count] }.to_h" 2>/dev/null)
 
