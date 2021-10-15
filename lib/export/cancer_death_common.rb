@@ -25,16 +25,25 @@ module Export
               8281\z|833\z|845\z|846\z|8911\z|899\z|95.*\z).*)\z
     /x.freeze
     # Rare disease pattern, plan.io task #14947, details in #match_rare_disease_row?
-    RD_PATTERN = /\A(D761|D762|D763|E830|M313|M317|M301|M314|I776|I778|M352|M315|M316|M321|
-      M330|M332|M331|M339|M340|M341|M348|M349|M083|M084|M082|M080|M300|M308|J991|N085|N164|
-      M328|M329|M609|G724|M608|M089|G903)\z
+    # Extract used until 2020-10
+    # RD_PATTERN = /\A(D761|D762|D763|E830|M313|M317|M301|M314|I776|I778|M352|M315|M316|M321|
+    #   M330|M332|M331|M339|M340|M341|M348|M349|M083|M084|M082|M080|M300|M308|J991|N085|N164|
+    #   M328|M329|M609|G724|M608|M089|G903)\z
+    # /x.freeze
+    # Updated criteria implemented 2021-10, cf. plan.io #14947#note-18
+    RD_PATTERN = /\A(E009|E030|E031|E700|E701|M313|M317|M301|M314|I776|I778|M352|M315|M316|
+      M321|M330|M332|M331|M339|M340|M341|M348|M349|M083|M084|M082|M080|M300|M308|J991|N085|
+      N164|M328|M329|M609|G724|M608|M089|M360)\z
     /x.freeze
     RD_PATTERN_POST_2015 = /\A(Q.*)\z/.freeze
-    RD_STRING_PATTERNS = [[/LSTR/, /SYND/],
-                          [/MENK/],
-                          [/WOLFRAM/],
-                          [/DIDMOAD/],
-                          [/MULTI/, /ATROPHY/]].freeze
+    # Extract used until 2020-10
+    # RD_STRING_PATTERNS = [[/LSTR/, /SYND/],
+    #                       [/MENK/],
+    #                       [/WOLFRAM/],
+    #                       [/DIDMOAD/],
+    #                       [/MULTI/, /ATROPHY/]].freeze
+    # Updated criteria implemented 2021-10, cf. plan.io #14947#note-18
+    RD_STRING_PATTERNS = [].freeze
     # C / D00-D48, confirmed as sufficient against early 2017 cancer death files
     SURVEILLANCE_CODES = { 'cd' => /^(C|D[0123]|D4[0-8])/, # New cancer deaths (only cancer causes)
                            'new' => /^[A-Z]/, # New coded cancer and non-cancer deaths

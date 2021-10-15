@@ -2,6 +2,7 @@ module Export
   # Export and de-pseudonymise rare diseases extract for analysis server
   # Specification in plan.io #14702:
   # Initially to be filtered against cases identified from the data lake
+  # The regular rare disease extract for CARA data loading is in lib/export/cancer_death_common.rb
   class RareDiseaseDeathsFile < DeathFileSimple
     SURVEILLANCE_PATTERN = /
        \A(E830|M313|M301|M317|G12|Q87|Q80|Q81|Q85|Q86|Q87|Q78|Q928|D821|D57|D56)
