@@ -21,7 +21,7 @@ end
 infile = ARGV[0]
 outfile = ARGV[1]
 salt_repseudo = ARGV[2]
-shorten = !ARGV[3]&.start_with?('shorten=f') # shorten by default
+shorten = ARGV[3].nil? || !ARGV[3].start_with?('shorten=f') # shorten by default
 
 unless File.exist?(infile)
   puts "Error: Missing input file: #{infile}"
