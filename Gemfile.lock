@@ -195,6 +195,9 @@ GEM
     launchy (2.5.0)
       addressable (~> 2.7)
     libv8 (7.3.492.27.1)
+    libv8 (7.3.492.27.1-x86_64-darwin-19)
+    libv8 (7.3.492.27.1-x86_64-darwin-20)
+    libv8 (7.3.492.27.1-x86_64-linux)
     listen (3.4.1)
       rb-fsevent (~> 0.10, >= 0.10.3)
       rb-inotify (~> 0.9, >= 0.9.10)
@@ -290,8 +293,12 @@ GEM
     net-ssh-gateway (2.0.0)
       net-ssh (>= 4.0.0)
     nio4r (2.5.8)
-    nokogiri (1.12.3)
+    nokogiri (1.12.5)
       mini_portile2 (~> 2.6.1)
+      racc (~> 1.4)
+    nokogiri (1.12.5-x86_64-darwin)
+      racc (~> 1.4)
+    nokogiri (1.12.5-x86_64-linux)
       racc (~> 1.4)
     notiffany (0.1.1)
       nenv (~> 0.1)
@@ -328,7 +335,7 @@ GEM
     pry-rails (0.3.9)
       pry (>= 0.10.4)
     public_suffix (4.0.6)
-    puma (4.3.8)
+    puma (4.3.10)
       nio4r (~> 2.0)
     quantile (0.2.1)
     racc (1.5.2)
@@ -489,6 +496,9 @@ GEM
 
 PLATFORMS
   ruby
+  x86_64-darwin-19
+  x86_64-darwin-20
+  x86_64-linux
 
 DEPENDENCIES
   activemodel-caution (= 6.0.4.1)
