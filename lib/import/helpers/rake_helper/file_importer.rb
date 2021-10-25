@@ -48,6 +48,46 @@ module Import
           #      'records'
           e_batch
         end
+
+        # Import all outstanding batches of weekly birth / death data.
+        # Raises an exception when trying to import any incomplete files
+        # Otherwise returns the number of newly imported files
+        def self.import_weekly(e_types, logger: Rails.logger)
+          imported = 0
+          e_types.each do |e_type|
+            pattern = case e_type
+                      when 'PSBIRTH' then 'private/mbis_data/births/MBISWEEKLY_Births_B[0-9]*.txt'
+                      when 'PSDEATH' then 'private/mbis_data/deaths/MBISWEEKLY_Deaths_D[0-9]*.txt'
+                      else raise "Unsupported e_type #{e_type}"
+                      end
+            Dir.glob(pattern).sort.each do |fname0|
+              fname_stripped = fname0.sub('private/mbis_data/', '')
+              filename = SafePath.new('mbis_data').join(fname_stripped)
+              # Has the file already been imported (same filename or digest)?
+              digest = Digest::SHA1.file(SafeFile.safepath_to_string(filename)).hexdigest
+              if EBatch.where(e_type: e_type).
+                 exists?(['original_filename = ? or digest = ?', fname_stripped, digest])
+                # logger.debug("Skipping already imported file #{fname_stripped.inspect}")
+                next
+              end
+
+              # Will raise an exception if the file is unreadable or missing a footer
+              # Will return nil if the file cannot be imported
+              begin
+                e_batch = import_mbis_and_rollback_failures(fname_stripped, e_type,
+                                                            keep: false, ignore_footer: false)
+                raise 'ERROR: failure importing file' if e_batch.nil?
+              rescue RuntimeError
+                logger.warn("ERROR: Cannot import #{e_type} file #{fname_stripped.inspect}")
+                raise "ERROR: Cannot import file #{fname_stripped.inspect}"
+              end
+              imported += 1
+              logger.warn("Successfully imported #{e_type} file #{fname_stripped.inspect} as " \
+                          "e_batchid #{e_batch.id}")
+            end
+          end
+          imported
+        end
       end
     end
   end

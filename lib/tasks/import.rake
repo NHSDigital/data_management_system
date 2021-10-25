@@ -23,7 +23,7 @@ namespace :import do
   desc <<~SYNTAX
     Import MBIS Birth data
     Usage:
-      bin/rake import:birth fname='births/MBISWEEKLY_Births_D171028.txt' [keep=Y] [ignore_footer=Y]
+      bin/rake import:birth fname='births/MBISWEEKLY_Births_B171028.txt' [keep=Y] [ignore_footer=Y]
       Use keep=Y to keep failed imports and not rollback.
       Use ignore_footer=Y to import files missing a footer row
   SYNTAX
