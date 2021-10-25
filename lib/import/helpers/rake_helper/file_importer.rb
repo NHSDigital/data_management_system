@@ -74,6 +74,7 @@ module Import
               # Will raise an exception if the file is unreadable or missing a footer
               # Will return nil if the file cannot be imported
               begin
+                logger.warn("Importing #{e_type} file #{fname_stripped.inspect}")
                 e_batch = import_mbis_and_rollback_failures(fname_stripped, e_type,
                                                             keep: false, ignore_footer: false)
                 raise 'ERROR: failure importing file' if e_batch.nil?
