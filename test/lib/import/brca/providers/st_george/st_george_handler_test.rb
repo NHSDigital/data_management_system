@@ -108,8 +108,6 @@ class StGeorgeHandlerTest < ActiveSupport::TestCase
   test 'process_multiple_cdnavariants' do
     multiple_cdnavariants_record = build_raw_record('pseudo_id1' => 'bob')
     multiple_cdnavariants_record.raw_fields['genotype'] = 'BRCA1 c.666A>G + BR2 c.6275_6276del'
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for BRCA1')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for BRCA2')
     variants = @handler.process_variants_from_record(@genotype, multiple_cdnavariants_record)
     assert_equal 2, variants.size
     assert_equal 2, variants[0].attribute_map['teststatus']
@@ -118,6 +116,61 @@ class StGeorgeHandlerTest < ActiveSupport::TestCase
     assert_equal 8, variants[1].attribute_map['gene']
     assert_equal 'c.666A>G', variants[0].attribute_map['codingdnasequencechange']
     assert_equal 'c.6275_6276del', variants[1].attribute_map['codingdnasequencechange']
+  end
+
+  test 'process_multiple_cdnavariants_protein_for_same_gene' do
+    multiple_cdnavariants_record = build_raw_record('pseudo_id1' => 'bob')
+    multiple_cdnavariants_record.raw_fields['genotype'] = 'BR1 c.3005delA, c.3119G>A (p.Ser1040Asn)'
+    variants = @handler.process_variants_from_record(@genotype, multiple_cdnavariants_record)
+    assert_equal 2, variants.size
+    assert_equal 2, variants[0].attribute_map['teststatus']
+    assert_equal 2, variants[1].attribute_map['teststatus']
+    assert_equal 7, variants[0].attribute_map['gene']
+    assert_equal 7, variants[1].attribute_map['gene']
+    assert_equal 'c.3005del', variants[0].attribute_map['codingdnasequencechange']
+    assert_equal 'c.3119G>A', variants[1].attribute_map['codingdnasequencechange']
+    assert_equal 'p.Ser1040Asn', variants[1].attribute_map['proteinimpact']
+  end
+
+  test 'process_multiple_cdnavariants_for_same_gene' do
+    multiple_cdnavariants_record = build_raw_record('pseudo_id1' => 'bob')
+    multiple_cdnavariants_record.raw_fields['genotype'] = 'BR1 c.3052ins5 (c.3048dupTGAGA)'
+    @logger.expects(:debug).with('SUCCESSFUL gene parse for BRCA1')
+    @logger.expects(:debug).with('SUCCESSFUL gene parse for BRCA1')
+    variants = @handler.process_variants_from_record(@genotype, multiple_cdnavariants_record)
+    assert_equal 2, variants.size
+    assert_equal 2, variants[0].attribute_map['teststatus']
+    assert_equal 2, variants[1].attribute_map['teststatus']
+    assert_equal 7, variants[0].attribute_map['gene']
+    assert_equal 7, variants[1].attribute_map['gene']
+    assert_equal 'c.3052ins5', variants[0].attribute_map['codingdnasequencechange']
+    assert_equal 'c.3048dupTGAGA', variants[1].attribute_map['codingdnasequencechange']
+  end
+
+  test 'process_multiple_cdnavariants_multiple_delimiter' do
+    multiple_cdnavariants_record = build_raw_record('pseudo_id1' => 'bob')
+    multiple_cdnavariants_record.raw_fields['genotype'] = 'BR1 +BR2 c.68_69delAG + c.5946delT'
+    variants = @handler.process_variants_from_record(@genotype, multiple_cdnavariants_record)
+    assert_equal 2, variants.size
+    assert_equal 2, variants[0].attribute_map['teststatus']
+    assert_equal 2, variants[1].attribute_map['teststatus']
+    assert_equal 7, variants[0].attribute_map['gene']
+    assert_equal 8, variants[1].attribute_map['gene']
+    assert_equal 'c.68_69del', variants[0].attribute_map['codingdnasequencechange']
+    assert_equal 'c.5946del', variants[1].attribute_map['codingdnasequencechange']
+  end
+
+  test 'process_multiple_cdnavariants_square_brackets' do
+    multiple_cdnavariants_record = build_raw_record('pseudo_id1' => 'bob')
+    multiple_cdnavariants_record.raw_fields['genotype'] = 'BRCA1: [c.3750delG]; BRCA2: [c.4447delA]'
+    variants = @handler.process_variants_from_record(@genotype, multiple_cdnavariants_record)
+    assert_equal 2, variants.size
+    assert_equal 2, variants[0].attribute_map['teststatus']
+    assert_equal 2, variants[1].attribute_map['teststatus']
+    assert_equal 7, variants[0].attribute_map['gene']
+    assert_equal 8, variants[1].attribute_map['gene']
+    assert_equal 'c.3750del]', variants[0].attribute_map['codingdnasequencechange']
+    assert_equal 'c.4447del]', variants[1].attribute_map['codingdnasequencechange']
   end
 
   test 'process_single_exonvariant' do

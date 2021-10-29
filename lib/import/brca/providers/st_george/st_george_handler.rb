@@ -10,7 +10,7 @@ module Import
           PASS_THROUGH_FIELDS = %w[age sex consultantcode collecteddate
                                    receiveddate authoriseddate servicereportidentifier
                                    providercode receiveddate sampletype].freeze
-          CDNA_REGEX = /c\.(?<cdna>[0-9]+[^\s]+)|c\.\[(?<cdna>.*?)\]/i.freeze
+          CDNA_REGEX = /c\.(?<cdna>[0-9]+[^\s)]+)|c\.\[(?<cdna>.*?)\]/i.freeze
 
           PROTEIN_REGEX = /p\.(?<impact>[a-z]+[0-9]+[a-z]+)|
                            p\.(?<sqrbo>\[)?(?<rndbo>\()?(?<impact>[a-z]+[0-9]+[a-z]+)
@@ -50,11 +50,7 @@ module Import
 
           DEPRECATED_BRCA_NAMES_REGEX = /B1|BR1|BRCA\s1|B2|BR2|BRCA\s2/i.freeze
 
-          def initialize(batch)
-            @extractor = Import::ExtractionUtilities::LocationExtractor.new
-            @failed_genotype_parse_counter = 0
-            super
-          end
+          DELIMETER_REGEX = /[&\n+,;]|and|IFD/i.freeze
 
           def process_fields(record)
             genotype = Import::Brca::Core::GenotypeBrca.new(record)
@@ -262,18 +258,70 @@ module Import
 
           def process_multiple_positive_variants(positive_genes, genotype, record, genotypes)
             if positive_genes.flatten.uniq.size > 1
-              mutation = record.raw_fields['genotype'].scan(CDNA_REGEX).flatten.compact
-              protein = record.raw_fields['genotype'].scan(PROTEIN_REGEX).flatten.compact
-              variants = positive_genes.uniq.zip(mutation.flatten.compact, protein.flatten.compact)
-              add_variants_multiple_results(variants, genotype, genotypes)
+              variants = process_multi_genes_rec(record, positive_genes)
             elsif positive_genes.flatten.uniq.size == 1
-              positive_genes *= record.raw_fields['genotype'].
-                               scan(CDNA_REGEX).flatten.compact.size
-              variants = positive_genes.zip(record.raw_fields['genotype'].
-                         scan(CDNA_REGEX).flatten.compact)
-              add_variants_multiple_results(variants, genotype, genotypes)
+              variants = process_uniq_gene_rec(record, positive_genes)
             end
+
+            add_variants_multiple_results(variants, genotype, genotypes) unless variants.nil?
+
             genotypes
+          end
+
+          def process_multi_genes_rec(record, positive_genes)
+            if record.raw_fields['genotype'].scan(DELIMETER_REGEX).size > 1
+              variants = process_single_variant(record, positive_genes)
+            elsif record.raw_fields['genotype'].scan(DELIMETER_REGEX).size.positive?
+              variants = process_split_variants(record, [])
+            end
+            variants
+          end
+
+          def process_uniq_gene_rec(record, positive_genes)
+            if record.raw_fields['genotype'].scan(DELIMETER_REGEX).size.positive?
+              variants = process_split_variants(record, positive_genes)
+            else
+              positive_genes *= record.raw_fields['genotype'].scan(CDNA_REGEX).
+                                flatten.compact.size
+              variants = process_single_variant(record, positive_genes)
+            end
+            variants
+          end
+
+          def process_single_variant(record, positive_genes)
+            mutation = get_cdna_mutation(record.raw_fields['genotype'])
+            protein = get_protein_impact(record.raw_fields['genotype'])
+            positive_genes.zip(mutation, protein.flatten.compact)
+          end
+
+          def process_split_variants(record, positive_genes)
+            record.raw_fields['genotype'].scan(DELIMETER_REGEX)
+            raw_genotypes = record.raw_fields['genotype'].split($LAST_MATCH_INFO[0])
+            variants = []
+            raw_genotypes.each do |raw_genotype|
+              if positive_genes == []
+                positive_gene_rec = []
+                gene = raw_genotype.scan(BRCA_GENES_REGEX)
+                deprec_gene = raw_genotype.scan(DEPRECATED_BRCA_NAMES_REGEX)
+                process_rightname_gene(gene, positive_gene_rec) if gene.present?
+                process_deprecated_gene(deprec_gene, positive_gene_rec) if deprec_gene.present?
+              else
+                positive_gene_rec = positive_genes
+              end
+              mutation = get_cdna_mutation(raw_genotype)
+              protein = get_protein_impact(raw_genotype)
+              variants << positive_gene_rec.zip(mutation, protein.flatten.compact).flatten
+            end
+            variants
+          end
+
+          def get_protein_impact(raw_genotype)
+            raw_genotype.scan(PROTEIN_REGEX)
+            $LAST_MATCH_INFO.nil? ? [] : [$LAST_MATCH_INFO[:impact]]
+          end
+
+          def get_cdna_mutation(raw_genotype)
+            raw_genotype.scan(CDNA_REGEX).flatten.compact
           end
 
           def add_gene_from_deprecated_nomenclature(genotype, record)
