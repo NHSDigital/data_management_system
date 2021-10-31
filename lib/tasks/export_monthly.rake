@@ -49,7 +49,7 @@ namespace :export do
   namespace :monthly do
     desc <<~USAGE
       Export monthly MBIS Death data
-      Syntax: rake export:monthly:death project_name='...' team_name='...' klass=... [filter=...] [month=YYYY-MM]
+      Syntax: rake export:monthly:death project_name='...' team_name='...' klass=... [filter=...] [month=YYYY-MM] [extract_path=extracts/...]
     USAGE
     task death: :'pseudo:keys:load' do
       extractor      = Export::Helpers::RakeHelper::DeathExtractor
@@ -59,11 +59,13 @@ namespace :export do
       team_name      = ENV.delete('team_name')
       klass          = ENV.delete('klass')&.constantize
       filter         = ENV.delete('filter')
+      month          = ENV.delete('month')
+      extract_path   = ENV.delete('extract_path').presence
       # Accepts month parameter, e.g. 2020-10, to run non-interactively
       if project_name.blank? || team_name.blank? || klass.blank?
         puts <<~USAGE
           Error: Missing required parameter.
-          Syntax: rake export:monthly:death project_name='...' team_name='...' klass=... [filter=...] [month=YYYY-MM]
+          Syntax: rake export:monthly:death project_name='...' team_name='...' klass=... [filter=...] [month=YYYY-MM] [extract_path=extracts/...]
         USAGE
         exit 1
       end
@@ -77,13 +79,15 @@ namespace :export do
                        end
       fname_team     = team_name.parameterize(separator: '_')
       fname_project  = project_name.parameterize(separator: '_')
-      extract_path   = "extracts/#{fname_team}/#{fname_project}"
+      extract_path   ||= "extracts/#{fname_team}/#{fname_project}"
 
       fname_patterns.map! do |fname_pattern|
         "#{extract_path}/%Y-%m-%d/#{fname_pattern}"
       end
 
-      date, fnames, batches = extractor.pick_mbis_monthly_death_batches(project_name, fname_patterns)
+      date, fnames, batches = extractor.pick_mbis_monthly_death_batches(project_name,
+                                                                        fname_patterns,
+                                                                        month: month)
 
       unless batches
         puts 'No batch selected - aborting.'

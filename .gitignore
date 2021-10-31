@@ -18,6 +18,7 @@ config/database.yml
 config/secrets.yml
 config/admin_users.yml
 config/odr_users.yml
+config/regular_extracts.csv
 config/special_users.development.yml
 config/special_users.production.yml
 config/user_yubikeys.yml

@@ -26,6 +26,22 @@ module Export
       'XX' => /^[UVWXY]/ # U01 - Y989 inclusive
     }.freeze
 
+    # Returns an array of filename format pattern, for output (e.g. csv or txt file),
+    # summary file and zip file [fname, fname_summary, fname_zip]
+    # filter is the extract type filter
+    # period is :weekly or :monthly or :annual
+    def self.fname_patterns(_filter, period)
+      case period
+      when :weekly
+        %w[PAN%y%m%dD_MBIS.TXT PAN%y%m%dP_MBIS.TXT PAN%y%m%d_MBIS.zip]
+      when :monthly
+        %w[PAN%Y-%mD_MBIS.TXT PAN%Y-%mP_MBIS.TXT PAN%Y-%m_MBIS.zip]
+      when :annual
+        %w[PAN%YD.TXT PAN%YP_MBIS.TXT PAN%Y_MBIS.zip]
+      else raise "Unknown period #{period}"
+      end
+    end
+
     private
 
     def header_rows

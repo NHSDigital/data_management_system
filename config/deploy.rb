@@ -55,7 +55,7 @@ set :explicitly_writeable_shared_paths, %w( log tmp tmp/pids )
 set :build_script, <<~SHELL
   set -e
   for fname in config/special_users.production.yml config/admin_users.yml config/odr_users.yml \
-               config/user_yubikeys.yml; do
+               config/user_yubikeys.yml config/regular_extracts.csv; do
     rm -f "$fname"
     svn export --force "#{secondary_repo}/$fname" "$fname"
   done

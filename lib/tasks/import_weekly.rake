@@ -4,26 +4,28 @@ namespace :import do
     Usage:
       bin/rake import:weekly [e_types=PSBIRTH,PSDEATH]
       Use a comma separated list of e_types
+
+      Returns an exit status of 0 on successful import, or 1 if imports fail
   SYNTAX
   task weekly: [:environment, 'pseudo:keys:load'] do
     e_types = ENV['e_types'].presence&.split(',') || %w[PSBIRTH PSDEATH]
     logger = ActiveSupport::Logger.new($stdout)
     logger.extend(ActiveSupport::Logger.broadcast(Rails.logger))
-    # TODO: Make weekly import / export return an exit status
-    # TODO: Make general weekly import import everything if you don't give a filename
-    # TODO: Put pointers into exception catching
     begin
       count = Import::Helpers::RakeHelper::FileImporter.import_weekly(e_types, logger: logger)
       if count.zero?
         logger.warn "No new weekly batches to import for e_types=#{e_types.join(',')}"
-        logger.warn 'For annual or unusually named batches, use bin/rake import:birth ' \
-                    'or bin/rake import:death'
+        unless ENV['quieter_import_weekly']
+          # Allow extra messages to be silenced, e.g. when running from inside rake export:weekly
+          logger.warn 'For annual or unusually named batches, use bin/rake import:birth ' \
+                      'or bin/rake import:death'
+        end
       else
         logger.warn "Imported #{count} batches for e_types #{e_types.join(',')}"
       end
       # TODO: Warn about what to do for exceptions
     rescue RuntimeError => e
-      unless [e.message, e.cause.message].any? do |message|
+      unless [e.message, e.cause&.message].any? do |message|
                ['ERROR: failure importing file',
                 'ERROR: Not importing file with missing footer row - possibly truncated?'].
              include?(message)

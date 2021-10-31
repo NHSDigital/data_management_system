@@ -225,6 +225,22 @@ module Export
       Regexp.new("^(#{sites.join('|')})")
     end
 
+    # Returns an array of filename format pattern, for output (e.g. csv or txt file),
+    # summary file and zip file [fname, fname_summary, fname_zip]
+    # filter is the extract type filter
+    # period is :weekly or :monthly or :annual
+    def self.fname_patterns(_filter, period)
+      case period
+      when :weekly
+        %w[CDSCWK%W_MBIS.TXT CDSCWK%WP_MBIS.TXT CDSC%Y%m%d_MBIS.zip]
+      when :monthly
+        %w[CDSC%Y-%mD_MBIS.TXT CDSC%Y-%mP_MBIS.TXT CDSC%Y-%m_MBIS.zip]
+      when :annual
+        %w[CDSC%YD.TXT CDSC%YP_MBIS.TXT CDSC%Y_MBIS.zip]
+      else raise "Unknown period #{period}"
+      end
+    end
+
     private
 
     # Does this row match the given surveillance code?
