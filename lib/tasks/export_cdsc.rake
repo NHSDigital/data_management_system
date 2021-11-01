@@ -3,6 +3,7 @@ require 'highline/import'
 namespace :export do
   desc 'Export CDSC weekly files interactively'
   task cdsc: [:environment, 'pseudo:keys:load'] do
+    week = ENV.delete('week')
     # Check keys are correctly configured
     pdp = Export::Helpers::RakeHelper::EncryptOutput.find_project_data_password(
       'Weekly CDSC extract', 'Information Management'
@@ -11,7 +12,8 @@ namespace :export do
                         CDSC%Y%m%d_MBIS.zip].
                      collect { |s| 'extracts/CDSC Weekly/%Y-%m-%d/' + s }
     date, (fn_not9, fn9, fn_sum, fn_zip), eb = Export::Helpers::RakeHelper::DeathExtractor.
-                                               pick_mbis_weekly_death_batch('CDSC', fname_patterns)
+                                               pick_mbis_weekly_death_batch('CDSC', fname_patterns,
+                                                                            week: week)
     unless eb
       puts 'No batch selected - aborting.'
       exit
@@ -57,23 +59,26 @@ end
 namespace :export do
   desc 'Export Cancer Death (CD) weekly files interactively'
   task cd: [:environment, 'pseudo:keys:load'] do
+    week = ENV.delete('week')
+    klass = Export::CancerDeathWeekly
+    filter = 'cd'
     # Check keys are correctly configured
     pdp = Export::Helpers::RakeHelper::EncryptOutput.find_project_data_password(
       'EnCORE Mortality Data Feed', 'ENCORE'
     )
     recipient = 'CD'
-    fname_patterns = %w[CD%Y%m%d.csv CD%Y%m%d_summary.txt CD%Y%m%d_MBIS.zip].
+    fname_patterns = klass.fname_patterns(filter, :weekly).
                      collect { |s| 'extracts/CD Weekly/%Y-%m-%d/' + s }
     date, (fname, fn_sum,
            fn_zip), eb = Export::Helpers::RakeHelper::DeathExtractor.
-                         pick_mbis_weekly_death_batch(recipient, fname_patterns)
+                         pick_mbis_weekly_death_batch(recipient, fname_patterns, week: week)
     unless eb
       puts 'No batch selected - aborting.'
       exit
     end
     fname_full = SafePath.new('mbis_data').join(fname)
     unless Export::Helpers::RakeHelper::DeathExtractor.
-           extract_mbis_weekly_death_file(eb, fname, 'Export::CancerDeathWeekly', 'cd')
+           extract_mbis_weekly_death_file(eb, fname, klass, filter)
       puts "Error: failed to extract #{fname} - aborting."
       exit 1
     end
@@ -99,6 +104,7 @@ end
 namespace :export do
   desc 'Export flu / pandemic (PAN) weekly files interactively'
   task flu: [:environment, 'pseudo:keys:load'] do
+    week = ENV.delete('week')
     # Check keys are correctly configured
     recipient = 'FLU'
     pdp = Export::Helpers::RakeHelper::EncryptOutput.find_project_data_password(
@@ -107,7 +113,7 @@ namespace :export do
     fname_patterns = %w[PAN%y%m%d_MBIS.TXT PAN%y%m%d_MBIS.zip].
                      collect { |s| 'extracts/Pandemic Flu Weekly Extract/%Y-%m-%d/' + s }
     _date, (fname, fn_zip), eb = Export::Helpers::RakeHelper::DeathExtractor.
-                                 pick_mbis_weekly_death_batch(recipient, fname_patterns)
+                                 pick_mbis_weekly_death_batch(recipient, fname_patterns, week: week)
     unless eb
       puts 'No batch selected - aborting.'
       exit

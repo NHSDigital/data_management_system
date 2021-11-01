@@ -8,8 +8,10 @@ module Export
         # If optional week parameter is supplied (in YYYY-MM-DD format), then this runs in
         # batch mode, and returns the latest data for that week, or raises an exception if no
         # batch for that month is available.
-        def self.pick_mbis_weekly_death_batch(desc, fname_patterns, weeks_ago: 4,
-                                                                    week: nil)
+        def self.pick_mbis_weekly_death_batch(desc, fname_patterns,
+                                              weeks_ago: 4,
+                                              week: nil,
+                                              logger: ActiveSupport::Logger.new($stdout))
           if week && !/\A[0-9]{4}-[0-9]{2}-[0-9]{2}\z/.match?(week)
             raise(ArgumentError, "Invalid week #{week}, expected YYYY-MM-DD")
           end
@@ -36,7 +38,7 @@ module Export
             end
             raise "No batch found for week #{week}" unless date
 
-            puts "Extracting week #{week} with e_batchid #{eb.id}"
+            logger&.warn "Extracting week #{week} with e_batchid #{eb.id}"
           else
             puts "e_batchid: original MBIS filename -> #{desc} files"
             dated_batches.each do |_date, fnames, eb|
@@ -111,9 +113,11 @@ module Export
         # If optional month parameter is supplied (in YYYY-MM format), then this runs in
         # batch mode, and returns the latest data for that month, or raises an exception if no
         # batch for that month is available.
-        def self.pick_mbis_monthly_death_batches(desc, fname_patterns, months_ago: 2,
-                                                                       month: nil)
-          month = ENV['month']
+        def self.pick_mbis_monthly_death_batches(desc, fname_patterns,
+                                                 months_ago: 2,
+                                                 month: nil,
+                                                 logger: ActiveSupport::Logger.new($stdout))
+          month ||= ENV['month']
           if month
             year0, month0 = /^([0-9]{4})-([0-9]{2})$/.match(month)[1..2].collect(&:to_i)
             months_ago = (Time.current.year - year0) * 12 + (Time.current.month - month0)
@@ -148,7 +152,7 @@ module Export
             end
             raise "No batch found for month #{month}" unless date
 
-            puts "Extracting month #{month} with e_batchids #{batches.collect(&:id)}"
+            logger&.warn "Extracting month #{month} with e_batchids #{batches.collect(&:id)}"
           else
             puts "e_batchid: original MBIS filename -> #{desc} files"
             dated_batches.each do |_date, fnames, eb, batches|

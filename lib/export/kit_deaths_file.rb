@@ -3,6 +3,18 @@ module Export
   # Specification file: "PHE K&IS DEATHS 2016.pdf" and https://ncr.plan.io/issues/9205
   # and https://ncr.plan.io/issues/23906
   class KitDeathsFile < DeathFileSimple
+    def self.fname_patterns(_filter, period)
+      case period
+      when :weekly
+        %w[KITDEATHS%y%m%dD_MBIS.TXT KITDEATHS%y%m%dP_MBIS.TXT KITDEATHS%y%m%d_MBIS.zip]
+      when :monthly
+        %w[KITDEATHS%Y-%m_MBIS.TXT KITDEATHS%Y-%m_summary_MBIS.TXT KITDEATHS%Y-%m_MBIS.zip]
+      when :annual
+        %w[KITDEATHS%YD.TXT KITDEATHS%YP_MBIS.TXT KITDEATHS%Y_MBIS.zip]
+      else raise "Unknown period #{period}"
+      end
+    end
+
     private
 
     def csv_options

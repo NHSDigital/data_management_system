@@ -9,6 +9,18 @@ module Export
                    ccgr ctryr ctydr ctyr wardr ccg9r ward9r mbisid icdu icduf]
     end
 
+    def self.fname_patterns(_filter, period)
+      case period
+      when :weekly
+        %w[NCD%y%m%dD_MBIS.TXT NCD%y%m%dP_MBIS.TXT NCD%y%m%d_MBIS.zip]
+      when :monthly
+        %w[NCD%Y-%m_MBIS.TXT NCD%Y-%m_summary_MBIS.TXT NCD%Y-%m_MBIS.zip]
+      when :annual
+        %w[NCD%YD.TXT NCD%YP_MBIS.TXT NCD%Y_MBIS.zip]
+      else raise "Unknown period #{period}"
+      end
+    end
+
     private
 
     def header_rows

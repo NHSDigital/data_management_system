@@ -10,6 +10,22 @@ module Export
       %w[fnamdx]
     ).freeze
 
+    # Returns an array of filename format pattern, for output (e.g. csv or txt file),
+    # summary file and zip file [fname, fname_summary, fname_zip]
+    # filter is the extract type filter
+    # period is :weekly or :monthly or :annual
+    def self.fname_patterns(_filter, period)
+      case period
+      when :weekly
+        %w[WEEK%Y%m%dD_MBIS.TXT WEEK%Y%m%dP_MBIS.TXT %Y%m%d_MBIS.zip]
+      when :monthly
+        %w[MTH%Y-%mD_MBIS.TXT MTH%Y-%mP_MBIS.TXT MTH%Y-%m_MBIS.zip]
+      when :annual
+        %w[YEAR%YD.TXT YEAR%YP_MBIS.TXT YEAR%Y_MBIS.zip]
+      else raise "Unknown period #{period}"
+      end
+    end
+
     private
 
     def csv_options

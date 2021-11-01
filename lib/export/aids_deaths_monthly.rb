@@ -19,6 +19,18 @@ module Export
       # Field corcertt2 is not present in MBIS
     end
 
+    def self.fname_patterns(_filter, period)
+      case period
+      when :weekly
+        %w[HPAMTH%y%m%dD_MBIS.TXT HPAMTH%y%m%dP_MBIS.TXT HPAMTH%y%m%d_MBIS.zip]
+      when :monthly
+        %w[HPAMTH%Y-%mD_MBIS.TXT HPAMTH%Y-%mP_MBIS.TXT HPAMTH%Y-%m_MBIS.zip]
+      when :annual
+        %w[HPAMTH%YD.TXT HPAMTH%YP_MBIS.TXT HPAMTH%Y_MBIS.zip]
+      else raise "Unknown period #{period}"
+      end
+    end
+
     private
 
     def csv_options
