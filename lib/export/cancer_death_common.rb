@@ -31,11 +31,17 @@ module Export
     #   M328|M329|M609|G724|M608|M089|G903)\z
     # /x.freeze
     # Updated criteria implemented 2021-10, cf. plan.io #14947#note-18
-    RD_PATTERN = /\A(E009|E030|E031|E700|E701|M313|M317|M301|M314|I776|I778|M352|M315|M316|
-      M321|M330|M332|M331|M339|M340|M341|M348|M349|M083|M084|M082|M080|M300|M308|J991|N085|
-      N164|M328|M329|M609|G724|M608|M089|M360)\z
+    # RD_PATTERN = /\A(E009|E030|E031|E700|E701|M313|M317|M301|M314|I776|I778|M352|M315|M316|
+    #   M321|M330|M332|M331|M339|M340|M341|M348|M349|M083|M084|M082|M080|M300|M308|J991|N085|
+    #   N164|M328|M329|M609|G724|M608|M089|M360)\z
+    # /x.freeze
+    # Updated criteria implemented 2021-11, cf. plan.io #14947#note-21
+    RD_PATTERN = /\A(D761|D762|D763|U10.*|M303|E752)\z
     /x.freeze
-    RD_PATTERN_POST_2015 = /\A(Q.*)\z/.freeze
+    # Extract used until 2020-11
+    # RD_PATTERN_POST_2015 = /\A(Q.*)\z/.freeze
+    # Updated criteria implemented 2021-11, cf. plan.io #14947#note-21
+    RD_PATTERN_POST_2015 = /\AZZZZZZ\z/.freeze # match no ICD codes
     # Extract used until 2020-10
     # RD_STRING_PATTERNS = [[/LSTR/, /SYND/],
     #                       [/MENK/],
