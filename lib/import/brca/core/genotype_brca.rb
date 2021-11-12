@@ -133,7 +133,7 @@ module Import
           when :polish_screen
             @attribute_map['genetictestscope'] = 'Polish BRCA screen'
           when :no_genetictestscope
-            @attribute_map['genetictestscope'] = 'Unable to assign genetictestscope'
+            @attribute_map['genetictestscope'] = 'Unable to assign BRCA genetictestscope'
           else
             @logger.warn "Bad key given to addTestScope: #{scope}"
           end
