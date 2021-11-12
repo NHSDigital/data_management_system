@@ -6,14 +6,14 @@ module Import
           # Constants used by LondonKgcHandlerColorectal
           module Rr8Constants
 
-            PASS_THROUGH_FIELDS = %w[age consultantcode
-                                     providercode
-                                     receiveddate
-                                     authoriseddate
-                                     requesteddate
-                                     servicereportidentifier
-                                     organisationcode_testresult
-                                     specimentype].freeze
+            DEPRECATED_BRCA_NAMES_MAP = { 'BR1'    => 'BRCA1',
+                                          'B1'     => 'BRCA1',
+                                          'BRCA 1' => 'BRCA1',
+                                          'BR2'    => 'BRCA2',
+                                          'B2'     => 'BRCA2',
+                                          'BRCA 2' => 'BRCA2' }.freeze
+
+            DEPRECATED_BRCA_NAMES_REGEX = /B1|BR1|BRCA\s1|B2|BR2|BRCA\s2/i.freeze
 
             TEST_SCOPE_MAP = { 'diagnostic' => :full_screen,
                                'mutation screening' => :full_screen,
@@ -107,53 +107,17 @@ module Import
                               'Predictive BRCA1 seq pos' => :predictive,
                               'Predictive BRCA2 seq neg' => :predictive }.freeze
 
-              # FULL_SCREEN_LIST = [ 'mutation screening',
-              #                      'b2 class 5 uv',
-              #                      '(v2) any gene c5 - unaffected patient',
-              #                      '(v2) class 5 low penetrance gene',
-              #                      '(v2) normal',
-              #                      '(v2) normal (mlpa dosage)',
-              #                      'b1/b2 - c3 pos',
-              #                      'b1/b2 class 3 - unaffected',
-              #                      'b1/b2 class 3 uv',
-              #                      'b1/b2 class 4 uv',
-              #                      'b1/b2 class 5 uv',
-              #                      'b2 class 4 uv',
-              #                      'brca ms diag normal',
-              #                      'brca#/palb2 - diag normal',
-              #                      'brca/palb2 - diag c4/5',
-              #                      'normal b1 and b2',
-              #                      'normal b1/b2',
-              #                      'normal b1/b2 - unaffected',
-              #                      'b1 class 5 uv - mlpa',
-              #                      'diagnostic',
-              #                      '(v2) any gene c5 - unaffected patient',
-              #                      '(v2) class 5 low penetrance gene',
-              #                      '(v2) normal',
-              #                      '(v2) normal (mlpa dosage)',
-              #                      'b1/b2 - c3 pos',
-              #                      'b1/b2 class 3 - unaffected',
-              #                      'b1/b2 class 3 uv',
-              #                      'b1/b2 class 4 uv',
-              #                      'b1/b2 class 5 uv',
-              #                      'b2 class 4 uv',
-              #                      'brca - diagnostic class 3',
-              #                      'brca - diagnostic class 4',
-              #                      'brca - diagnostic class 5',
-              #                      'brca - diagnostic class 5 - mlpa',
-              #                      'brca - diagnostic class 5 - unaffected',
-              #                      'brca - diagnostic normal',
-              #                      'brca - diagnostic normal - unaffected',
-              #                      'brca ms - diag c3',
-              #                      'brca ms - diag c4/5',
-              #                      'brca ms diag normal',
-              #                      'brca#/palb2 - diag normal',
-              #                      'brca/palb2 - diag c4/5',
-              #                      'normal b1 and b2',
-              #                      'normal b1/b2',
-              #                      'normal b1/b2 - unaffected',
-              #                      'b1 class 5 uv',
-              #                      'b2 class 5 uv - unaffected patient'].freeze
+            PASS_THROUGH_FIELDS = %w[age consultantcode
+                                     providercode
+                                     receiveddate
+                                     authoriseddate
+                                     requesteddate
+                                     servicereportidentifier
+                                     organisationcode_testresult
+                                     specimentype].freeze
+
+                                     FIELD_NAME_MAPPINGS = { 'consultantcode'  => 'practitionercode',
+                                                             'instigated_date' => 'requesteddate' }.freeze
 
               FULL_SCREEN_LIST = ['diagnostic',
                                   'mutation screening',
@@ -181,7 +145,7 @@ module Import
                                      (?<status>pos|neg)/ix.freeze
 
             PREDICTIVE_REPORT_REGEX_NEGATIVE  = /.*(?:familial)?(?<variantclass>(?:\slikely)\s
-                                                pathogenic)?\sBRCA(?<brca>1|2)\s
+                                                pathogenic)?\s(?<brca>BRCA1|BRCA2)\s
                                                 (?:mutation|sequence\svariant)\s?\s
                                                 (?<location>c\.[^\s\.]+)\s(?<protein>\(p\..*\))?\s?
                                                 is\sabsent.*/ix.freeze
@@ -189,47 +153,91 @@ module Import
             PREDICTIVE_REPORT_REGEX_POSITIVE  = /.*patient\sis\s(?<zygosity>hetero|homo)zygous\sfor
                                                 \sthe\s?
                                                 (?<family>\sfamilial)?(?<variantclass>(?:\slikely)?
-                                                (?:\spathogenic)?)\sBRCA(?<brca>1|2)\s
+                                                (?:\spathogenic)?)\s(?<brca>BRCA1|BRCA2)\s
                                                 (?:mutation|sequence\svariant)\s?\s
                                                 (?<location>c\.[^\s\.]+).*/ix.freeze
 
-            PREDICTIVE_REPORT_REGEX_INHERITED = /has\s(?<status>not\s)?inherited\sthe\s
+            PREDICTIVE_REPORT_NEGATIVE_INHERITED_REGEX = /has\s(?<status>not\s)?inherited\sthe\s
                                                 (?<family>familial\s)?
-                                                BRCA(?<brca>1|2)\s(?:mutation|sequence\svariant)\s?
-                                                \s(?<location>c\.[^\s\.]+)\s
+                                                (?<brca>BRCA1|BRCA2)\s(?:mutation|sequence\svariant)
+                                                \s?\s(?<location>c\.[^\s\.]+)\s
                                                 (?<protein>\(p\..*\))?/ix.freeze
 
+            PREDICTIVE_MLPA_POSITIVE = /(MLPA|Sequence)\sanalysis\sindicates\sthat\sthis\spatient\sis\s
+                                        (?<zygosity>hetero|homo)zygous\sfor\sthe\s
+                                        (?<variantclass>(?:likely\s)?pathogenic)?\s
+                                        (?<brca>BRCA1|BRCA2)\s((?<mutationtype>deletion|duplication)
+                                        (\sof\sexon(s)?\s(?<exons>[0-9]+(-[0-9])?))?|exon(s)?\s
+                                        (?<exons>[0-9]+(-[0-9])?)\s
+                                        (?<mutationtype>deletion|duplication))/ix.freeze
+
             PREDICTIVE_MLPA_NEGATIVE = /mlpa.*the(?<family>\sfamilial)?(?<variantclass>\s
-                                       (?:likely\s)?pathogenic)?\sBRCA(?<brca>1|2)\s
-                                       (?<mutationtype>deletion|duplication)\sof\sexons?\s
-                                       (?<exons>\d+[a-z0-9]*(?:-\d+[a-z0-9]*)?)\sis\s
-                                       absent/ix.freeze
+                                        (?:likely\s)?pathogenic)?\s(?<brca>BRCA1|BRCA2)\s
+                                        (?<mutationtype>deletion|duplication)\sof\sexons?\s
+                                        (?<exons>\d+[a-z0-9]*(?:-\d+[a-z0-9]*)?)\sis\s
+                                        absent|mlpa.*does\snot\shave\sthe
+                                        (?<family>\sfamilial)?(?<variantclass>\s
+                                        (?:likely\s)?pathogenic)?\s(?<brca>BRCA1|BRCA2)\s
+                                        (?<mutationtype>deletion|duplication)/ix.freeze
+
             PREDICTIVE_INHERITED_EXON = /has\s(?<status>not\s)?inherited\sthe\s
                                         (?<family>familial\s)?(?<variantclass>\s(?:likely\s)?
-                                        pathogenic\s)?BRCA(?<brca>1|2)\s
+                                        pathogenic\s)?(?<brca>BRCA1|BRCA2)\s
                                         (?<mutationtype>deletion|duplication)\sof\sexons?\s
                                         (?<exons>\d+[a-z0-9]*(?:-\d+[a-z0-9]*)?)/ix.freeze
+
+            PREDICTIVE_POSITIVE_EXON = /.*patient\sis\s(?<zygosity>hetero|homo)zygous\sfor\sthe\s
+                                       (?<family>familial\s)?
+                                       (?<variantclass>(?:likely\s)?pathogenic\s)?
+                                       (?<brca>BRCA1|BRCA2)\s
+                                       (?<mutationtype>deletion|duplication)\sof\sexon(s)?\s
+                                       (?<exons>[0-9]+(-[0-9]+)?)/ix.freeze
 
             CONFIRMATION_REGEX = /confirmation\sb(?:rca)?(?<brca>1|2)\s
                                  (?<method>seq|ngs|mlpa)\s(?<status>pos|neg)/ix.freeze
 
-            VARIANT_CLASS_REGEX = /b(?:rca)?(?<brca>1|2)\sclass\s(?<class>[1-5]a?)\s
+            VARIANT_CLASS_REGEX = /(?<brca>b(?:rca)?(1|2))\sclass\s(?<class>[1-5]a?)\s
                                   (uv|new)(?:\sunaffected patient)?/ix.freeze
 
-            VARIANTSEQ_REGEX = /(?<method>ngs\s)?b(?:rca)?(?<brca>1|2)\sseq\svariant(?:\s-\sclass\s
+            VARIANTSEQ_REGEX = /(?<method>ngs\s)?(?<brca>b(?:rca)?1|2)\sseq\svariant(?:\s-\sclass\s
                                 (?<variantclass>[1-5]))?/ix.freeze
 
             SCREENING_FAILED_REGEX = /^(?:(?<method>ngs)\s)?screening\sfailed$/i.freeze
 
             WORD_REPORT_NORMAL_REGEX = /^word\sreport\s-\snormal$/i.freeze
 
+            BRCA_REGEX = /(?<brca>BRCA1|BRCA2)/i.freeze
+
+            GENE_LOCATION = '(?<location>c\.[^ \.]+) ?(?<protein>\(p\.[^)]*\))?'.freeze
+
+            EXON_LOCATION = /(?<variantclass>\s(?:likely\s)?
+                             pathogenic\s)?(?<brca>BRCA1|BRCA2)\s
+                             (?<mutationtype>deletion|duplication)\s(of|involving|including)?\sexons?\s
+                             (?<exons>\d+[a-z0-9]*(?:-\d+[a-z0-9]*)?)/ix.freeze
+
+            # CDNA_VARIANT_CLASS_REGEX  = /.*patient\sis\s(?<zygosity>hetero|homo)zygous\sfor
+            #                             \sthe\s?
+            #                             (?<family>\sfamilial)?(?<variantclass>(?:\slikely)?
+            #                             (?:\spathogenic)?)\s(?<brca>BRCA1|BRCA2)\s
+            #                             (?:mutation|sequence\svariant)\s?\s
+            #                             (?<location>c\.[^\s\.]+)
+            #                             \s?p\.\((?<protein>.\w+\d+\w+)\)?.*/ix.freeze
+            CDNA_VARIANT_CLASS_REGEX  =   /.*patient\sis\s(?<zygosity>hetero|homo)zygous\sfor
+                                          \sthe\s?
+                                          (?<family>\sfamilial)?(?<variantclass>(?:\slikely)?
+                                          (?:\spathogenic)?)\s(?<brca>BRCA1|BRCA2)\s
+                                          (?:mutation|sequence\svariant|variant)\s?\s
+                                          (?<location>c\.[^\s\.]+)
+                                          \s?(p\.\((?<protein>.\w+\d+\w+)\))?.*/ix.freeze
+
             BRCA_BASE = 'br?c?a?'.freeze
             BRCA     = BRCA_BASE + '(?<brca>1|2)'.freeze
 
-
             DOUBLE_MLPA_REGEX = /^normal\s#{BRCA}\sand #{BRCA},\sMLPA\sfail$/i.freeze
 
+            DOUBLE_NORMAL_LIST = %w[b1 b2 normal unaffected].freeze
 
+            DOUBLE_NORMAL_EXCLUDEABLE = ([' '] + %w[/ NGS MLPA seq and - patient]).map(&:downcase)
 
           end
         end
