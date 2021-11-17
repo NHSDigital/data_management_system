@@ -30,7 +30,7 @@ end
 
 hash_re = /\A[0-9a-f]{64}\z/
 
-unless hash_re.match?(salt_repseudo)
+unless hash_re =~ salt_repseudo
   puts 'Error: Invalid salt_repseudo'
   exit 1
 end
@@ -46,7 +46,7 @@ CSV.open(outfile, 'wb') do |csv_out|
     rownum += 1
     if rownum == 1 # Header row
       change_cols = row.collect.with_index do |col, index|
-        index if col.match?(/pseudo_id[_0-9]*/i)
+        index if col =~ /pseudo_id[_0-9]*/i
       end.compact
       if change_cols.empty?
         STDERR << "Error: no columns to repseudonymise\n"
@@ -57,7 +57,7 @@ CSV.open(outfile, 'wb') do |csv_out|
     else
       change_cols.each do |i|
         next if row[i].nil? || row[i] == ''
-        unless row[i].match?(hash_re)
+        unless row[i] =~ hash_re
           STDERR << "Error: invalid pseudo_id on row #{rownum}, column offset #{index}: aborting\n"
           exit 1
         end
