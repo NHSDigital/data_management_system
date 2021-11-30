@@ -212,23 +212,25 @@ module Import
 
             EXON_LOCATION = /(?<variantclass>\s(?:likely\s)?
                              pathogenic\s)?(?<brca>BRCA1|BRCA2)\s
-                             (?<mutationtype>deletion|duplication)\s(of|involving|including)?\sexons?\s
+                             (?<mutationtype>deletion|duplication)\s(of|involving|including)?\s
+                             exons?\s
                              (?<exons>\d+[a-z0-9]*(?:-\d+[a-z0-9]*)?)/ix.freeze
 
-            # CDNA_VARIANT_CLASS_REGEX  = /.*patient\sis\s(?<zygosity>hetero|homo)zygous\sfor
-            #                             \sthe\s?
-            #                             (?<family>\sfamilial)?(?<variantclass>(?:\slikely)?
-            #                             (?:\spathogenic)?)\s(?<brca>BRCA1|BRCA2)\s
-            #                             (?:mutation|sequence\svariant)\s?\s
-            #                             (?<location>c\.[^\s\.]+)
-            #                             \s?p\.\((?<protein>.\w+\d+\w+)\)?.*/ix.freeze
             CDNA_VARIANT_CLASS_REGEX  =   /.*patient\sis\s(?<zygosity>hetero|homo)zygous\sfor
                                           \sthe\s?
                                           (?<family>\sfamilial)?(?<variantclass>(?:\slikely)?
                                           (?:\spathogenic)?)\s(?<brca>BRCA1|BRCA2)\s
                                           (?:mutation|sequence\svariant|variant)\s?\s
                                           (?<location>c\.[^\s\.]+)
-                                          \s?(p\.\((?<protein>.\w+\d+\w+)\))?.*/ix.freeze
+                                          \s?(p\.\(?(?<protein>\w+\d+\w+)\))?.*|
+                                          .*patient\sis\s(?<zygosity>hetero|homo)zygous\sfor
+                                           \sthe\s?
+                                           (?<family>\sfamilial)?(?<variantclass>(?:\slikely)?
+                                           (?:\spathogenic)?)\s
+                                           (?:mutation|sequence\svariant|variant)?\s
+                                           (?<location>c\.[^\s\.]+)\s?
+                                           (\(?p\.\(?(?<protein>\w+\d+\w+)\))?
+                                           \s(in\s|involving\s)?(?<brca>BRCA1|BRCA2)?/ix.freeze
 
             BRCA_BASE = 'br?c?a?'.freeze
             BRCA     = BRCA_BASE + '(?<brca>1|2)'.freeze
@@ -239,6 +241,35 @@ module Import
 
             DOUBLE_NORMAL_EXCLUDEABLE = ([' '] + %w[/ NGS MLPA seq and - patient]).map(&:downcase)
 
+            PROTEIN_REGEX = /\(?p\.\(?(?<impact>.\w+\d+\w+|\=)\)?/i.freeze
+
+            CDNA_REGEX = /c\.(?<cdna>[0-9]+.>[A-Za-z]+)|
+                          c\.(?<cdna>[0-9]+\+[0-9]+[A-Z]+>[A-Z]+)|
+                          c\.(?<cdna>[0-9]+\-[0-9]+[A-Z]+>[A-Z]+)|
+                          c\.(?<cdna>[0-9]+.[0-9]+[A-Za-z]+)/ix.freeze
+            
+            CDNA_MUTATION_TYPES_REGEX = /.*patient\sis\s(?<zygosity>hetero|homo)zygous\sfor
+                                         \sthe\s?
+                                         (?<family>\sfamilial)?\s(?<brca>BRCA1|BRCA2)?\s?
+                                         (?<variantclass>(?:\slikely)?
+                                         (?:pathogenic)?)\s?(?<brca>BRCA1|BRCA2)?\s?
+                                         (?<type>frameshift|splice\ssite|missense|
+                                         nonsense|synonymous)?\s?
+                                         (mutation|sequence\svariant|variant)?\s?
+                                         #{CDNA_REGEX}\s?#{PROTEIN_REGEX}?/ix.freeze
+
+            MUTATION_DETECTED_REGEX = /(?<zygosity>hetero|homo)zygous\s?
+                                      (?<variantclass>(?:\slikely)?
+                                      (?:pathogenic)?)\s?(?<brca>BRCA1|BRCA2)?\s?
+                                      (mutation|sequence\svariant|variant)?\s?#{CDNA_REGEX}\s?
+                                      #{PROTEIN_REGEX}?\s?was\sdetected./ix.freeze
+
+            DOUBLE_CDNA_VARIANTS_REGEX = /(?<zygosity>hetero|homo)zygous\s?for\sthe\s
+                                          (?<brca>BRCA1|BRCA2)?\s?(sequence\svariants|
+                                          sequence\schanges)?\s?#{CDNA_REGEX}\s?
+                                          #{PROTEIN_REGEX}?\s?in?\s?(?<brca>BRCA1|BRCA2)?
+                                          \s?(and|\,)?\s?#{CDNA_REGEX}\s?
+                                          #{PROTEIN_REGEX}?/ix.freeze
           end
         end
       end
