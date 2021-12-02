@@ -214,7 +214,24 @@ module Import
                              pathogenic\s)?(?<brca>BRCA1|BRCA2)\s
                              (?<mutationtype>deletion|duplication)\s(of|involving|including)?\s
                              exons?\s
+                             (?<exons>\d+[a-z0-9]*(?:-\d+[a-z0-9]*)?)|
+                             (?<variantclass>\s(?:likely\s)?
+                             pathogenic\s)?
+                             (?<mutationtype>deletion|duplication)\s(of|involving|including)?\s
+                             (?<brca>BRCA1|BRCA2)\sexons?\s
                              (?<exons>\d+[a-z0-9]*(?:-\d+[a-z0-9]*)?)/ix.freeze
+
+            PROMOTER_EXON_LOCATION = /(?<variantclass>\s(?:likely\s)?
+                                      pathogenic\s)?(?<brca>BRCA1|BRCA2)?\s?
+                                      (?<mutationtype>deletion|duplication)\s([a-zA-Z0-9_ ]*)?\s
+                                      the\spromoter\s(region\s)?to\sexons?\s
+                                      (?<exons>\d+[a-z0-9]*(?:-\d+[a-z0-9]*)?)
+                                      (\sof\s(?<brca>BRCA1|BRCA2))?/ix.freeze
+
+            EXON_LOCATION_EXCEPTIONS = /(?<mutationtype>deletion|duplication).+
+                                        exons?\s(?<exons>\d+[a-z0-9]*(?:-\d+[a-z0-9]*)?)|
+                                        exons?\s(?<exons>\d+[a-z0-9]*(?:-\d+[a-z0-9]*)?).+
+                                        (?<mutationtype>deletion|duplication)/ix.freeze
 
             CDNA_VARIANT_CLASS_REGEX  =   /.*patient\sis\s(?<zygosity>hetero|homo)zygous\sfor
                                           \sthe\s?
@@ -248,6 +265,8 @@ module Import
                           c\.(?<cdna>[0-9]+\-[0-9]+[A-Z]+>[A-Z]+)|
                           c\.(?<cdna>[0-9]+.[0-9]+[A-Za-z]+)/ix.freeze
             
+            CDNA_PROTEIN_COMBO_EXCEPTIONS = /#{CDNA_REGEX}\s#{PROTEIN_REGEX}/ix.freeze
+
             CDNA_MUTATION_TYPES_REGEX = /.*patient\sis\s(?<zygosity>hetero|homo)zygous\sfor
                                          \sthe\s?
                                          (?<family>\sfamilial)?\s(?<brca>BRCA1|BRCA2)?\s?

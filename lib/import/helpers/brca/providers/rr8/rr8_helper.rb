@@ -178,6 +178,27 @@ module Import
                   Maybe(exon_variant[:exons]).map { |x| genotype.add_exon_location(x)}
                   genotype.add_status(2)
                   genotypes.append(genotype)
+                elsif report_string.scan(PROMOTER_EXON_LOCATION).size.positive?
+                  if genotype.attribute_map['genetictestscope'] == "Full screen BRCA1 and BRCA2"
+                    process_negative_genes(positive_gene, genotype, genotypes)
+                  end
+                  promoter_variant = report_string.match(PROMOTER_EXON_LOCATION)
+                  genotype.add_gene(positive_gene.join)
+                  Maybe(promoter_variant[:variantclass]).map { |x| genotype.add_variant_class(x) }
+                  Maybe(promoter_variant[:mutationtype]).map { |x| genotype.add_variant_type(x) }
+                  Maybe(promoter_variant[:exons]).map { |x| genotype.add_exon_location(x)}
+                  genotype.add_status(2)
+                  genotypes.append(genotype)
+                elsif report_string.scan(EXON_LOCATION_EXCEPTIONS).size.positive?
+                  if genotype.attribute_map['genetictestscope'] == "Full screen BRCA1 and BRCA2"
+                    process_negative_genes(positive_gene, genotype, genotypes)
+                  end
+                  exc_exon_variant = report_string.match(EXON_LOCATION_EXCEPTIONS)
+                  genotype.add_gene(positive_gene.join)
+                  Maybe(exc_exon_variant[:mutationtype]).map { |x| genotype.add_variant_type(x) }
+                  Maybe(exc_exon_variant[:exons]).map { |x| genotype.add_exon_location(x)}
+                  genotype.add_status(2)
+                  genotypes.append(genotype)
                 elsif report_string.scan(CDNA_VARIANT_CLASS_REGEX).size.positive?
                   if genotype.attribute_map['genetictestscope'] == "Full screen BRCA1 and BRCA2"
                     process_negative_genes(positive_gene, genotype, genotypes)
@@ -274,6 +295,18 @@ module Import
                     genotypes
                   # else binding.pry
                   end
+                elsif report_string.scan(CDNA_PROTEIN_COMBO_EXCEPTIONS).size.positive?
+                  if genotype.attribute_map['genetictestscope'] == "Full screen BRCA1 and BRCA2"
+                    process_negative_genes(positive_gene, genotype, genotypes)
+                  end
+                  cdna_variants_exceptions = report_string.match(CDNA_PROTEIN_COMBO_EXCEPTIONS)
+                  genotype.add_gene(positive_gene.join)
+                  genotype.add_gene_location(cdna_variants_exceptions[:cdna])
+                  genotype.add_protein_impact(cdna_variants_exceptions[:impact])
+                  genotype.add_status(2)
+                  genotypes.append(genotype)
+                  genotypes
+                else binding.pry
                 end
                 genotypes
               end
