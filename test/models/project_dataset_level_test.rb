@@ -252,7 +252,7 @@ class ProjectDatasetLevelTest < ActiveSupport::TestCase
     status_1_l2_pdl.valid?
     assert status_1_l2_pdl.errors.messages[:status].include?('has already been taken')
   end
-  
+
   test 'expiry date must be in the future but only on creation' do
     # test that creation of pdl without future expiry date does trigger error
     project = create_cas_project(owner: users(:no_roles))
