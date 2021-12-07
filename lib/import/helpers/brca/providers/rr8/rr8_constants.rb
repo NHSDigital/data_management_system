@@ -134,6 +134,7 @@ module Import
                               'predictive',
                               'familial' ]
 
+            BRCA_REGEX = /(?<brca>BRCA1|BRCA2)/i.freeze
 
             AJNEGATIVE_REGEX = /(?:predictive )?aj(?: pre-screen(?: conf)?)?\s
                                 neg(?: 3seq)?/ix.freeze
@@ -143,6 +144,34 @@ module Import
 
             PREDICTIVE_VALID_REGEX = /predictive\sb(?:rca)?(?<brca>1|2)\s(?<method>seq|ngs|mlpa)\s
                                      (?<status>pos|neg)/ix.freeze
+
+            CONFIRMATION_REGEX = /confirmation\sb(?:rca)?(?<brca>1|2)\s
+                                 (?<method>seq|ngs|mlpa)\s(?<status>pos|neg)/ix.freeze
+
+            VARIANT_CLASS_REGEX = /(?<brca>b(?:rca)?(1|2))\sclass\s(?<class>[1-5]a?)\s
+                                  (uv|new)(?:\sunaffected patient)?/ix.freeze
+
+            VARIANTSEQ_REGEX = /(?<method>ngs\s)?(?<brca>b(?:rca)?1|2)\sseq\svariant(?:\s-\sclass\s
+                                (?<variantclass>[1-5]))?/ix.freeze
+
+            TRUNCATING_VARIANT_REGEX = /(ngs\s)?b(?:rca)?(1|2)\struncating.frameshift/ix.freeze
+
+            SCREENING_FAILED_REGEX = /^(?:(?<method>ngs)\s)?screening\sfailed$/i.freeze
+
+            WORD_REPORT_NORMAL_REGEX = /^word\sreport\s-\s(ab)?normal$/i.freeze
+
+            CLASS_M_REGEX = /B(1|2) Class M/i.freeze
+
+            DOUBLE_NORMAL_MLPA_FAIL = /^normal\s(#{BRCA_REGEX}|#{DEPRECATED_BRCA_NAMES_REGEX})\s
+                                       and\s(#{BRCA_REGEX}|#{DEPRECATED_BRCA_NAMES_REGEX}),\s
+                                       MLPA\sfail$/ix.freeze
+
+            SEQUENCE_ANALYSIS_SCREENING_MLPA   = /screened\sfor\s#{BRCA_REGEX}\sand\s#{BRCA_REGEX}\s
+                                                  mutations\sby\ssequence\sanalysis/ix.freeze
+
+            MLPA_FAIL_REGEX = /mlpa\sanalysis\sof\s#{BRCA_REGEX}\sfailed/ix.freeze
+
+            GENE_LOCATION = '(?<location>c\.[^ \.]+) ?(?<protein>\(p\.[^)]*\))?'.freeze
 
             PREDICTIVE_REPORT_REGEX_NEGATIVE  = /.*(?:familial)?(?<variantclass>(?:\slikely)\s
                                                 pathogenic)?\s(?<brca>BRCA1|BRCA2)\s
@@ -193,22 +222,6 @@ module Import
                                        (?<mutationtype>deletion|duplication)\sof\sexon(s)?\s
                                        (?<exons>[0-9]+(-[0-9]+)?)/ix.freeze
 
-            CONFIRMATION_REGEX = /confirmation\sb(?:rca)?(?<brca>1|2)\s
-                                 (?<method>seq|ngs|mlpa)\s(?<status>pos|neg)/ix.freeze
-
-            VARIANT_CLASS_REGEX = /(?<brca>b(?:rca)?(1|2))\sclass\s(?<class>[1-5]a?)\s
-                                  (uv|new)(?:\sunaffected patient)?/ix.freeze
-
-            VARIANTSEQ_REGEX = /(?<method>ngs\s)?(?<brca>b(?:rca)?1|2)\sseq\svariant(?:\s-\sclass\s
-                                (?<variantclass>[1-5]))?/ix.freeze
-
-            SCREENING_FAILED_REGEX = /^(?:(?<method>ngs)\s)?screening\sfailed$/i.freeze
-
-            WORD_REPORT_NORMAL_REGEX = /^word\sreport\s-\snormal$/i.freeze
-
-            BRCA_REGEX = /(?<brca>BRCA1|BRCA2)/i.freeze
-
-            GENE_LOCATION = '(?<location>c\.[^ \.]+) ?(?<protein>\(p\.[^)]*\))?'.freeze
 
             EXON_LOCATION = /(?<variantclass>\s(?:likely\s)?
                              pathogenic\s)?(?<brca>BRCA1|BRCA2)\s
@@ -249,11 +262,6 @@ module Import
                                            (\(?p\.\(?(?<protein>\w+\d+\w+)\))?
                                            \s(in\s|involving\s)?(?<brca>BRCA1|BRCA2)?/ix.freeze
 
-            BRCA_BASE = 'br?c?a?'.freeze
-            BRCA     = BRCA_BASE + '(?<brca>1|2)'.freeze
-
-            DOUBLE_MLPA_REGEX = /^normal\s#{BRCA}\sand #{BRCA},\sMLPA\sfail$/i.freeze
-
             DOUBLE_NORMAL_LIST = %w[b1 b2 normal unaffected].freeze
 
             DOUBLE_NORMAL_EXCLUDEABLE = ([' '] + %w[/ NGS MLPA seq and - patient]).map(&:downcase)
@@ -267,10 +275,11 @@ module Import
             
             CDNA_PROTEIN_COMBO_EXCEPTIONS = /#{CDNA_REGEX}\s#{PROTEIN_REGEX}/ix.freeze
 
-            CDNA_MUTATION_TYPES_REGEX = /.*patient\sis\s(?<zygosity>hetero|homo)zygous\sfor
-                                         \sthe\s?
-                                         (?<family>\sfamilial)?\s(?<brca>BRCA1|BRCA2)?\s?
-                                         (?<variantclass>(?:\slikely)?
+            CDNA_MUTATION_TYPES_REGEX = /(.*patient\sis\s(?<zygosity>hetero|homo)zygous\sfor
+                                         \sthe\s?|
+                                         .*patient\shas\sinherited(?<zygosity>hetero|homo)zygous
+                                         \sfor\sthe\s?)?(?<family>\sfamilial)?\s
+                                         (?<brca>BRCA1|BRCA2)?\s?(?<variantclass>(?:\slikely)?
                                          (?:pathogenic)?)\s?(?<brca>BRCA1|BRCA2)?\s?
                                          (?<type>frameshift|splice\ssite|missense|
                                          nonsense|synonymous)?\s?
