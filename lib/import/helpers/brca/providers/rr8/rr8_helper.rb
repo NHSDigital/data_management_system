@@ -53,6 +53,8 @@ module Import
                 process_word_report_tests(record, genotype, genotypes)
               elsif class_m_record?(record, genotype, genotypes)
                 process_class_m_tests(record, genotype, genotypes)
+              elsif familial_class_record?(record, genotype, genotypes)
+                process_familial_class_tests(record, genotype, genotypes)
               end
               genotypes
             end
@@ -82,6 +84,14 @@ module Import
               genotype_string.include?('AJ'))
             end
 
+            def familial_class_record?(record, genotype, genotypes)
+              genotype_string = Maybe(record.raw_fields['genotype']).
+                                or_else(Maybe(record.raw_fields['report_result']).
+                                or_else(''))
+                                
+              genotype_string.scan(/Familial Class/i.freeze).size.positive?
+            end
+
             def class_m_record?(record, genotype, genotypes)
               genotype_string = Maybe(record.raw_fields['genotype']).
                                 or_else(Maybe(record.raw_fields['report_result']).
@@ -104,6 +114,43 @@ module Import
                                 or_else(''))
                                 
               genotype_string.scan(WORD_REPORT_NORMAL_REGEX).size.positive?
+            end
+
+            def process_familial_class_tests(record, genotype, genotypes)
+              genotype_string = Maybe(record.raw_fields['genotype']).
+                                or_else(Maybe(record.raw_fields['report_result']).
+                                or_else(''))
+              report_string = Maybe([record.raw_fields['report'],
+                              record.mapped_fields['report'],
+                              record.raw_fields['firstofreport']].
+                              reject(&:nil?).first).or_else('')
+              positive_gene = report_string.scan(Import::Brca::Core::GenotypeBrca::BRCA_REGEX).
+                              flatten.compact.uniq
+              genotype.add_gene(positive_gene.join)
+              if genotype_string.scan(/pos/i).size.positive?
+                genotype.add_variant_class( genotype_string.scan(/[0-9]/i).join.to_i)
+                if genotype.attribute_map['genetictestscope'] == "Full screen BRCA1 and BRCA2"
+                  process_negative_genes(positive_gene, genotype, genotypes)
+                end
+                if report_string.scan(CDNA_VARIANT_CLASS_REGEX).size.positive?
+                  variant = report_string.match(CDNA_VARIANT_CLASS_REGEX)
+                  Maybe(variant[:location]).map { |x| genotype.add_gene_location(x)}
+                  Maybe(variant[:protein]).map {|x| genotype.add_protein_impact(x)}
+                  Maybe(variant[:zygosity]).map {|x| genotype.add_zygosity(x)}
+                  Maybe(variant[:variantclass]).map { |x| genotype.add_variant_class(x)}  
+                elsif report_string.scan(CDNA_MUTATION_TYPES_REGEX).size.positive?
+                  variant = report_string.match(CDNA_MUTATION_TYPES_REGEX)
+                  Maybe(variant[:cdna]).map { |x| genotype.add_gene_location(x)}
+                  Maybe(variant[:impact]).map {|x| genotype.add_protein_impact(x)}
+                end
+                genotypes.append(genotype)
+              elsif genotype_string.scan(/neg/i).size.positive?
+                  genotype.add_gene(report_string)
+                  genotype.add_status(1)
+                  genotypes.append(genotype)
+              else binding.pry
+              end
+              genotypes
             end
 
             def process_word_report_tests(record, genotype, genotypes)
@@ -142,6 +189,7 @@ module Import
               genotype_string.scan(TRUNCATING_VARIANT_REGEX).size.positive?
             end
  
+            # TODO: implement 'else' cases
             def process_class_m_tests(record, genotype, genotypes)
               genotype_string = Maybe(record.raw_fields['genotype']).
                                 or_else(Maybe(record.raw_fields['report_result']).
@@ -164,7 +212,7 @@ module Import
                   genotype.add_gene_location(report_string.match(PROTEIN_REGEX)[:impact])
                 end
                 genotypes.append(genotype)
-              else binding.pry
+              # else binding.pry
               end
             end
 
