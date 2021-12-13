@@ -252,4 +252,44 @@ class ProjectDatasetLevelTest < ActiveSupport::TestCase
     status_1_l2_pdl.valid?
     assert status_1_l2_pdl.errors.messages[:status].include?('has already been taken')
   end
+
+  test 'expiry date must be in the future but only on creation' do
+    # test that creation of pdl without future expiry date does trigger error
+    project = create_cas_project(owner: users(:no_roles))
+    project_dataset = ProjectDataset.create(dataset: Dataset.find_by(name: 'Cas Defaults Dataset'),
+                                            terms_accepted: true,
+                                            project_id: project.id)
+    l1_default_pdl = ProjectDatasetLevel.create(access_level_id: 1, selected: true,
+                                                project_dataset_id: project_dataset.id,
+                                                expiry_date: Time.zone.today - 1.week)
+
+    refute l1_default_pdl.persisted?
+    l1_default_pdl.valid?
+    assert_includes l1_default_pdl.errors.messages[:expiry_date], 'Must be in the future'
+
+    # test that creation of pdl with future expiry date doesn't trigger error
+    l1_default_pdl = ProjectDatasetLevel.create(access_level_id: 1, selected: true,
+                                                project_dataset_id: project_dataset.id,
+                                                expiry_date: Time.zone.today + 1.week)
+
+    assert l1_default_pdl.persisted?
+    l1_default_pdl.valid?
+    refute_includes l1_default_pdl.errors.messages[:expiry_date], 'Must be in the future'
+
+    # test that updating doesn't trigger error
+    project_dataset = ProjectDataset.create(dataset: Dataset.find_by(name: 'Another Cas Defaults Dataset'),
+                                            terms_accepted: true,
+                                            project_id: project.id)
+    l1_default_pdl = ProjectDatasetLevel.create(access_level_id: 1, selected: true,
+                                                project_dataset_id: project_dataset.id,
+                                                expiry_date: Time.zone.today + 1.week)
+
+    assert l1_default_pdl.persisted?
+
+    # simulate the passing of time
+    l1_default_pdl.update!(expiry_date: Time.zone.today - 1.week)
+    l1_default_pdl.update(status: :rejected)
+    l1_default_pdl.valid?
+    refute_includes l1_default_pdl.errors.messages[:expiry_date], 'Must be in the future'
+  end
 end
