@@ -17,4 +17,9 @@ export default class extends Controller {
       }
     }
   }
+  connect() {
+    if ($(".alert.alert-danger.alert-dismissible").length){
+      $(document).scrollTop( $(".alert.alert-danger.alert-dismissible").offset().top );
+    }
+  }
 }
