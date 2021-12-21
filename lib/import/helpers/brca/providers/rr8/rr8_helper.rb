@@ -55,9 +55,32 @@ module Import
                 process_class_m_tests(record, genotype, genotypes)
               elsif familial_class_record?(record, genotype, genotypes)
                 process_familial_class_tests(record, genotype, genotypes)
+              elsif class4_negative_predictive?(record, genotype, genotypes)
+                process_class4_pred_neg_record(record, genotype, genotypes)
+              elsif brca2_pttshift_record?(record, genotype, genotypes)
+                process_brca2_pttshift_records(record, genotype, genotypes)
+              elsif b1_mlpa_exon_positive?(record, genotype, genotypes)
+                process_b1_mlpa_exon_positive(record, genotype, genotypes)
+              elsif mlpa_negative_screening_failed?(record, genotype, genotypes)
+                process_mlpa_negative_screening_failed(record, genotype, genotypes)
+              elsif brca_diagnostic_normal?(record, genotype, genotypes)
+                process_brca_diagnostic_normal(record, genotype, genotypes)
+              elsif predictive_test_exon13?(record, genotype, genotypes)
+                process_predictive_test_exon13(record, genotype, genotypes)
+              elsif screening_failed?(record, genotype, genotypes)
+                process_screening_failed_records(record, genotype, genotypes)
+              elsif brca_diagnostic_test?(record, genotype, genotypes)
+                process_brca_diagnostic_tests(record, genotype, genotypes)
+              elsif class_3_unaffected_records?(record, genotype, genotypes)
+                process_class_3_unaffected_records(record, genotype, genotypes)
+              elsif pred_class4_positive_records?(record, genotype, genotypes)
+                process_pred_class4_positive_records(record, genotype, genotypes)
+              elsif genotype_string.scan(/BRCA\sMS.+Diag\s(?<negpos>Normal|Diag C4\/5)/).size.positive?
+                binding.pry
               end
               genotypes
             end
+
 
             def full_screen?(genetictestscope_field)
               return if genetictestscope_field.nil?
@@ -92,6 +115,46 @@ module Import
               genotype_string.scan(/Familial Class/i.freeze).size.positive?
             end
 
+            def brca2_pttshift_record?(record, genotype, genotypes)
+              genotype_string = Maybe(record.raw_fields['genotype']).
+                                or_else(Maybe(record.raw_fields['report_result']).
+                                or_else(''))
+                                
+              genotype_string == 'B2 PTT shift'
+            end
+
+            def class_3_unaffected_records?(record, genotype, genotypes)
+              genotype_string = Maybe(record.raw_fields['genotype']).
+                                or_else(Maybe(record.raw_fields['report_result']).
+                                or_else(''))
+                                
+              genotype_string == 'Class 3 - UNAFFECTED'
+            end
+
+            def b1_mlpa_exon_positive?(record, genotype, genotypes)
+              genotype_string = Maybe(record.raw_fields['genotype']).
+                                or_else(Maybe(record.raw_fields['report_result']).
+                                or_else(''))
+                                
+              genotype_string.scan(/B1.+MLPA\+ve/).size.positive?
+            end
+
+            def predictive_test_exon13?(record, genotype, genotypes)
+              genotype_string = Maybe(record.raw_fields['genotype']).
+                                or_else(Maybe(record.raw_fields['report_result']).
+                                or_else(''))
+                                
+              genotype_string.scan(/Predictive Ex13 dup (?<negpos>neg|pos)/i).size.positive?
+            end
+
+            def class4_negative_predictive?(record, genotype, genotypes)
+              genotype_string = Maybe(record.raw_fields['genotype']).
+                                or_else(Maybe(record.raw_fields['report_result']).
+                                or_else(''))
+                                
+              genotype_string == 'Pred Class 4 seq negative'
+            end
+
             def class_m_record?(record, genotype, genotypes)
               genotype_string = Maybe(record.raw_fields['genotype']).
                                 or_else(Maybe(record.raw_fields['report_result']).
@@ -114,6 +177,226 @@ module Import
                                 or_else(''))
                                 
               genotype_string.scan(WORD_REPORT_NORMAL_REGEX).size.positive?
+            end
+
+            def mlpa_negative_screening_failed?(record, genotype, genotypes)
+              genotype_string = Maybe(record.raw_fields['genotype']).
+                                or_else(Maybe(record.raw_fields['report_result']).
+                                or_else(''))
+                                
+              genotype_string == 'screening failed; MLPA normal'
+            end
+
+            def brca_diagnostic_normal?(record, genotype, genotypes)
+              genotype_string = Maybe(record.raw_fields['genotype']).
+                                or_else(Maybe(record.raw_fields['report_result']).
+                                or_else(''))
+                                
+              genotype_string == 'BRCA - Diagnostic Normal'
+            end
+
+            def screening_failed?(record, genotype, genotypes)
+              genotype_string = Maybe(record.raw_fields['genotype']).
+                                or_else(Maybe(record.raw_fields['report_result']).
+                                or_else(''))
+
+              genotype_string.downcase == 'screening failed'
+            end
+
+            def brca_diagnostic_test?(record, genotype, genotypes)
+              genotype_string = Maybe(record.raw_fields['genotype']).
+                                or_else(Maybe(record.raw_fields['report_result']).
+                                or_else(''))
+              
+              genotype_string.scan(/BRCA\s\-\sDiagnostic/).size.positive?
+            end
+
+            def pred_class4_positive_records?(record, genotype, genotypes)
+              genotype_string = Maybe(record.raw_fields['genotype']).
+                                or_else(Maybe(record.raw_fields['report_result']).
+                                or_else(''))
+
+              genotype_string.scan(/Pred Class 4 seq pos/).size.positive?
+            end
+
+              def process_pred_class4_positive_records(record, genotype, genotypes)
+                report_string = Maybe([record.raw_fields['report'],
+                                record.mapped_fields['report'],
+                                record.raw_fields['firstofreport']].
+                                reject(&:nil?).first).or_else('')
+                variant = report_string.match(CDNA_VARIANT_CLASS_REGEX)
+                positive_gene = [variant[:brca]]
+                if genotype.attribute_map['genetictestscope'] == "Full screen BRCA1 and BRCA2"
+                  process_negative_genes(positive_gene, genotype, genotypes)
+                end
+                genotype.add_gene(positive_gene.join)
+                Maybe(variant[:location]).map { |x| genotype.add_gene_location(x)}
+                Maybe(variant[:protein]).map {|x| genotype.add_protein_impact(x)}
+                Maybe(variant[:zygosity]).map {|x| genotype.add_zygosity(x)}
+                genotype.add_variant_class('4')
+                genotypes.append(genotype)
+                genotypes
+              end
+
+            def process_class_3_unaffected_records(record, genotype, genotypes)
+              report_string = Maybe([record.raw_fields['report'],
+                              record.mapped_fields['report'],
+                              record.raw_fields['firstofreport']].
+                              reject(&:nil?).first).or_else('')
+              variant = report_string.match(CDNA_VARIANT_CLASS_REGEX)
+              positive_gene = [variant[:brca]]
+
+              if genotype.attribute_map['genetictestscope'] == "Full screen BRCA1 and BRCA2"
+                process_negative_genes(positive_gene, genotype, genotypes)
+              end
+              genotype.add_gene(positive_gene.join)
+              Maybe(variant[:location]).map { |x| genotype.add_gene_location(x)}
+              Maybe(variant[:protein]).map {|x| genotype.add_protein_impact(x)}
+              Maybe(variant[:zygosity]).map {|x| genotype.add_zygosity(x)}
+              genotype.add_variant_class('3')
+              genotypes.append(genotype)
+              genotypes
+            end
+
+
+            def process_brca_diagnostic_tests(record, genotype, genotypes)
+              report_string = Maybe([record.raw_fields['report'],
+                              record.mapped_fields['report'],
+                              record.raw_fields['firstofreport']].
+                              reject(&:nil?).first).or_else('')
+              if  report_string.scan(CDNA_VARIANT_CLASS_REGEX).size.positive?
+                variant = report_string.match(CDNA_VARIANT_CLASS_REGEX)
+                positive_gene = [variant[:brca]]
+                if genotype.attribute_map['genetictestscope'] == "Full screen BRCA1 and BRCA2"
+                  process_negative_genes(positive_gene, genotype, genotypes)
+                end
+                genotype.add_gene(variant[:brca])
+                Maybe(variant[:location]).map { |x| genotype.add_gene_location(x)}
+                Maybe(variant[:protein]).map {|x| genotype.add_protein_impact(x)}
+                Maybe(variant[:zygosity]).map {|x| genotype.add_zygosity(x)}
+                Maybe(variant[:variantclass]).map { |x| genotype.add_variant_class(x)}  
+                genotypes.append(genotype)
+              elsif report_string.scan(/No pathogenic variant was identified/).size.positive?
+                reported_genes = ['BRCA1', 'BRCA2']
+                reported_genes.each do |negative_gene|
+                  genotype2 = genotype.dup
+                  genotype2.add_gene(negative_gene)
+                  genotype2.add_status(1)
+                  genotypes.append(genotype2)
+                end
+                genotypes
+              end
+              genotypes
+            end
+
+            def process_screening_failed_records(record, genotype, genotypes)
+              reported_genes = ['BRCA1', 'BRCA2']
+              reported_genes.each do |negative_gene|
+                genotype2 = genotype.dup
+                genotype2.add_gene(negative_gene)
+                genotype2.add_status(9)
+                genotypes.append(genotype2)
+              end
+              genotypes
+            end
+
+            def process_predictive_test_exon13(record, genotype, genotypes)
+              genotype_string = Maybe(record.raw_fields['genotype']).
+                                or_else(Maybe(record.raw_fields['report_result']).
+                                or_else(''))
+              
+              if genotype_string.match(/Predictive Ex13 dup (?<negpos>neg|pos)/i)[:negpos] == 'pos'
+                genotype.add_gene('BRCA1')
+                genotype.add_variant_type('duplication')
+                genotype.add_exon_location('13')
+                genotype.add_status(2)
+                genotypes.append(genotype)
+              else
+                genotype.add_gene('BRCA1')
+                genotype.add_status(1)
+                genotypes.append(genotype)
+              end
+              genotypes
+            end
+
+
+            def process_brca_diagnostic_normal(record, genotype, genotypes)
+              reported_genes = ['BRCA1', 'BRCA2']
+              reported_genes.each do |negative_gene|
+                genotype2 = genotype.dup
+                genotype2.add_gene(negative_gene)
+                genotype2.add_status(1)
+                genotypes.append(genotype2)
+              end
+              genotypes
+            end
+
+            def process_mlpa_negative_screening_failed(record, genotype, genotypes)
+              reported_genes = ['BRCA1', 'BRCA2']
+              reported_genes.each do |negative_gene|
+                genotype2 = genotype.dup
+                genotype2.add_gene(negative_gene)
+                genotype2.add_status(1)
+                genotypes.append(genotype2)
+              end
+              genotypes
+            end
+
+            def process_b1_mlpa_exon_positive(record, genotype, genotypes)
+              genotype_string = Maybe(record.raw_fields['genotype']).
+                                or_else(Maybe(record.raw_fields['report_result']).
+                                or_else(''))
+              report_string = Maybe([record.raw_fields['report'],
+                              record.mapped_fields['report'],
+                              record.raw_fields['firstofreport']].
+                              reject(&:nil?).first).or_else('')
+              positive_gene   = [DEPRECATED_BRCA_NAMES_MAP[
+                                genotype_string.scan(DEPRECATED_BRCA_NAMES_REGEX).join
+                                ]]
+              if genotype.attribute_map['genetictestscope'] == "Full screen BRCA1 and BRCA2"
+                process_negative_genes(positive_gene, genotype, genotypes)
+              end
+              genotype.add_gene(positive_gene.join)
+              exon_variants = report_string.match(EXON_LOCATION_EXCEPTIONS)
+              genotype.add_gene(positive_gene.join)
+              Maybe(exon_variants[:mutationtype]).map { |x| genotype.add_variant_type(x) }
+              Maybe(exon_variants[:exons]).map { |x| genotype.add_exon_location(x)}
+              genotype.add_status(2)
+              genotypes.append(genotype)
+            end
+
+            def process_class4_pred_neg_record(record, genotype, genotypes)
+              report_string = Maybe([record.raw_fields['report'],
+                              record.mapped_fields['report'],
+                              record.raw_fields['firstofreport']].
+                              reject(&:nil?).first).or_else('')
+              genotype.add_gene(report_string.match(BRCA_REGEX)[:brca])
+              genotype.add_status(1)
+              genotypes.append(genotype)
+            end
+
+            def process_brca2_pttshift_records(record, genotype, genotypes)
+              genotype_string = Maybe(record.raw_fields['genotype']).
+                                or_else(Maybe(record.raw_fields['report_result']).
+                                or_else(''))
+              report_string = Maybe([record.raw_fields['report'],
+                              record.mapped_fields['report'],
+                              record.raw_fields['firstofreport']].
+                              reject(&:nil?).first).or_else('')
+              positive_gene   = [DEPRECATED_BRCA_NAMES_MAP[
+                                genotype_string.scan(DEPRECATED_BRCA_NAMES_REGEX).join
+                                ]]
+              if genotype.attribute_map['genetictestscope'] == "Full screen BRCA1 and BRCA2"
+                process_negative_genes(positive_gene, genotype, genotypes)
+              end
+              genotype.add_gene(positive_gene.join)
+              report_string.scan(CDNA_MUTATION_TYPES_REGEX).size.positive?
+              variant = report_string.match(CDNA_MUTATION_TYPES_REGEX)
+              Maybe(variant[:cdna]).map { |x| genotype.add_gene_location(x)}
+              Maybe(variant[:zygosity]).map { |x| genotype.add_zygosity(x)}
+              Maybe(variant[:type]).map { |x| genotype.add_variant_impact(x)}
+              Maybe(variant[:impact]).map {|x| genotype.add_protein_impact(x)}
+              genotypes.append(genotype)
             end
 
             def process_familial_class_tests(record, genotype, genotypes)
@@ -148,7 +431,6 @@ module Import
                   genotype.add_gene(report_string)
                   genotype.add_status(1)
                   genotypes.append(genotype)
-              else binding.pry
               end
               genotypes
             end
@@ -212,7 +494,7 @@ module Import
                   genotype.add_gene_location(report_string.match(PROTEIN_REGEX)[:impact])
                 end
                 genotypes.append(genotype)
-              # else binding.pry
+              # else binding.pry ONLY THREE CASES TO SORT OUT
               end
             end
 
