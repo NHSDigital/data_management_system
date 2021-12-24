@@ -29,7 +29,7 @@ svn export --force "$CARA_ESOURCES_REPO/$INFILE" private/mbis_data/
 
 echo Matching patients: this takes about 20 minutes for 2500 patients
 bin/rake export:matched infile="$BASEFILE" outfile="$RESPONSE" allow_fuzzy=fuzzy e_type=PSBIRTH klass=Export::CongenitalAnomaliesBirthsFile RAILS_ENV=production
-rm "private/mbis_data/$INFILE"
+rm "private/mbis_data/$BASEFILE"
 
 if [ ! -e "private/mbis_data/$RESPONSE" ]; then
     echo "ERROR: Missing output file private/mbis_data/$RESPONSE": aborting >&2
