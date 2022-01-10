@@ -253,14 +253,14 @@ module Import
                                           (?:\spathogenic)?)\s(?<brca>BRCA1|BRCA2|PALB2)\s
                                           (?:mutation|sequence\svariant|variant)\s?\s
                                           (?<location>c\.[^\s\.]+)
-                                          \s?(p\.\(?(?<protein>\w+\d+\w+)\))?.*|
+                                          \s?(p\.\(?(?<impact>\w+\d+\w+)\))?.*|
                                           .*patient\sis\s(?<zygosity>hetero|homo)zygous\sfor
                                            \sthe\s?
                                            (?<family>\sfamilial)?(?<variantclass>(?:\slikely)?
                                            (?:\spathogenic)?)\s
                                            (?:mutation|sequence\svariant|variant)?\s
                                            (?<location>c\.[^\s\.]+)\s?
-                                           (\(?p\.\(?(?<protein>\w+\d+\w+)\))?
+                                           (\(?p\.\(?(?<impact>\w+\d+\w+)\))?
                                            \s(in\s|involving\s)?(?<brca>BRCA1|BRCA2|PALB2)?/ix.freeze
 
             DOUBLE_NORMAL_LIST = %w[b1 b2 normal unaffected].freeze
@@ -269,10 +269,10 @@ module Import
 
             PROTEIN_REGEX = /\(?p\.\(?(?<impact>.\w+\d+\w+|\=)\)?/i.freeze
 
-            CDNA_REGEX = /c\.(?<cdna>[0-9]+.>[A-Za-z]+)|
-                          c\.(?<cdna>[0-9]+\+[0-9]+[A-Z]+>[A-Z]+)|
-                          c\.(?<cdna>[0-9]+\-[0-9]+[A-Z]+>[A-Z]+)|
-                          c\.(?<cdna>[0-9]+.[0-9]+[A-Za-z]+)/ix.freeze
+            CDNA_REGEX = /c\.(?<location>[0-9]+.>[A-Za-z]+)|
+                          c\.(?<location>[0-9]+\+[0-9]+[A-Z]+>[A-Z]+)|
+                          c\.(?<location>[0-9]+\-[0-9]+[A-Z]+>[A-Z]+)|
+                          c\.(?<location>[0-9]+.[0-9]+[A-Za-z]+)/ix.freeze
             
             CDNA_PROTEIN_COMBO_EXCEPTIONS = /#{CDNA_REGEX}\s#{PROTEIN_REGEX}/ix.freeze
 
