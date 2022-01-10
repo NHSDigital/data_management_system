@@ -62,9 +62,11 @@ module Import
               elsif b1_mlpa_exon_positive?(record, genotype, genotypes)
                 process_b1_mlpa_exon_positive(record, genotype, genotypes)
               elsif mlpa_negative_screening_failed?(record, genotype, genotypes)
-                process_mlpa_negative_screening_failed(record, genotype, genotypes)
+                brca_double_negative(record, genotype, genotypes)
+                # process_mlpa_negative_screening_failed(record, genotype, genotypes)
               elsif brca_diagnostic_normal?(record, genotype, genotypes)
-                process_brca_diagnostic_normal(record, genotype, genotypes)
+                brca_double_negative(record, genotype, genotypes)
+                # process_brca_diagnostic_normal(record, genotype, genotypes)
               elsif predictive_test_exon13?(record, genotype, genotypes)
                 process_predictive_test_exon13(record, genotype, genotypes)
               elsif screening_failed?(record, genotype, genotypes)
@@ -80,11 +82,13 @@ module Import
               elsif predictive_b2_pathological_neg_test?(record, genotype, genotypes)
                 process_predictive_b2_pathological_neg_record(record, genotype, genotypes)
               elsif ngs_failed_mlpa_normal_test?(record, genotype, genotypes)
-                process_ngs_failed_mlpa_normal_record(record, genotype, genotypes)
+                brca_double_negative(record, genotype, genotypes)
+                # process_ngs_failed_mlpa_normal_record(record, genotype, genotypes)
               elsif ngs_screening_failed_tests?(record, genotype, genotypes)
                 process_ngs_screening_failed_record(record, genotype, genotypes)
               elsif ngs_B1_and_B2_normal_mlpa_fail?(record, genotype, genotypes)
-                process_ngs_B1_and_B2_normal_mlpa_fail_record(record, genotype, genotypes)
+                brca_double_negative(record, genotype, genotypes)
+                # process_ngs_B1_and_B2_normal_mlpa_fail_record(record, genotype, genotypes)
               elsif brca_palb2_diag_normal_test?(record, genotype, genotypes)
                 process_brca_palb2_diag_normal_record(record, genotype, genotypes)
               elsif ngs_brca2_multiple_exon_mlpa_positive?(record, genotype, genotypes)
@@ -309,6 +313,7 @@ module Import
                 genotype2.add_gene(negative_gene)
                 genotype2.add_status(9)
                 genotypes.append(genotype2)
+                genotypes
               end
               genotypes
             end
@@ -326,12 +331,7 @@ module Import
               if genotype.attribute_map['genetictestscope'] == "Full screen BRCA1 and BRCA2"
                 process_negative_genes(positive_gene, genotype, genotypes)
               end
-              genotype.add_gene(positive_gene.join)
-              Maybe(exon_variants[:variantclass]).map {|x| genotype.add_variant_class(x)}
-              Maybe(exon_variants[:mutationtype]).map { |x| genotype.add_variant_type(x)}
-              Maybe(exon_variants[:exons]).map { |x| genotype.add_exon_location(x)}
-              genotype.add_status(2)
-              genotypes.append(genotype)
+              extract_exon_variant(genotype, positive_gene, exon_variants, genotypes)
             end
 
             def process_brca_palb2_diag_class4_5_record(record, genotype, genotypes)
@@ -341,19 +341,12 @@ module Import
                               record.mapped_fields['report'],
                               record.raw_fields['firstofreport']].
                               reject(&:nil?).first).or_else('')
-              exon_variant = report_string.match(PREDICTIVE_POSITIVE_EXON)
+              exon_variants = report_string.match(PREDICTIVE_POSITIVE_EXON)
               positive_gene = [exon_variant[:brca]]
               if genotype.attribute_map['genetictestscope'] == "Full screen BRCA1 and BRCA2"
                 process_negative_genes_w_palb2(positive_gene, genotype, genotypes)
               end
-              genotype.add_gene(positive_gene.join)
-              Maybe(exon_variant[:zygosity]).map { |x| genotype.add_zygosity(x)}
-              Maybe(exon_variant[:variantclass]).map {|x| genotype.add_variant_class(x)}
-              Maybe(exon_variant[:brca]).map { |x| genotype.add_gene(x)}
-              Maybe(exon_variant[:mutationtype]).map { |x| genotype.add_variant_type(x)}
-              Maybe(exon_variant[:exons]).map { |x| genotype.add_exon_location(x)}
-              genotype.add_status(2)
-              genotypes.append(genotype)
+              extract_exon_variant(genotype, positive_gene, exon_variants, genotypes)
               genotypes
             end
 
@@ -370,7 +363,7 @@ module Import
                 process_negative_genes_w_palb2(positive_gene, genotype, genotypes)
               end
               genotype.add_gene(positive_gene.join)
-              Maybe(variant[:cdna]).map { |x| genotype.add_gene_location(x)}
+              Maybe(variant[:location]).map { |x| genotype.add_gene_location(x)}
               Maybe(variant[:impact]).map {|x| genotype.add_protein_impact(x)}
               Maybe(variant[:zygosity]).map {|x| genotype.add_zygosity(x)}
               Maybe(variant[:variantclass]).map {|x| genotype.add_variant_class(x)}
@@ -382,19 +375,20 @@ module Import
             def process_predictive_b2_pathological_neg_record(record, genotype, genotypes)
               genotype.add_gene('BRCA2')
               genotype.add_status(1)
-              genotypes.append(genotypes)
+              genotypes.append(genotype)
             end
 
-            def process_ngs_failed_mlpa_normal_record(record, genotype, genotypes)
-              reported_genes = ['BRCA1', 'BRCA2']
-              reported_genes.each do |negative_gene|
-                genotype2 = genotype.dup
-                genotype2.add_gene(negative_gene)
-                genotype2.add_status(1)
-                genotypes.append(genotype2)
-              end
-              genotypes
-            end
+            # def process_ngs_failed_mlpa_normal_record(record, genotype, genotypes)
+            #   reported_genes = ['BRCA1', 'BRCA2']
+            #   reported_genes.each do |negative_gene|
+            #     genotype2 = genotype.dup
+            #     genotype2.add_gene(negative_gene)
+            #     genotype2.add_status(1)
+            #     genotypes.append(genotype2)
+            #     genotypes
+            #   end
+            #   genotypes
+            # end
 
             def ngs_screening_failed_tests?(record, genotype, genotypes)
               genotype_string = Maybe(record.raw_fields['genotype']).
@@ -410,6 +404,7 @@ module Import
                 genotype2.add_gene(negative_gene)
                 genotype2.add_status(9)
                 genotypes.append(genotype2)
+                genotypes
               end
             end
 
@@ -491,7 +486,7 @@ module Import
                 process_negative_genes(positive_gene, genotype, genotypes)
               end
               genotype.add_gene(positive_gene.join)
-              Maybe(variant[:cdna]).map { |x| genotype.add_gene_location(x)}
+              Maybe(variant[:location]).map { |x| genotype.add_gene_location(x)}
               Maybe(variant[:impact]).map {|x| genotype.add_protein_impact(x)}
               Maybe(variant[:zygosity]).map {|x| genotype.add_zygosity(x)}
               genotype.add_variant_class('3')
@@ -512,7 +507,7 @@ module Import
                 process_negative_genes(positive_gene, genotype, genotypes)
               end
               genotype.add_gene(positive_gene.join)
-              Maybe(variant[:cdna]).map { |x| genotype.add_gene_location(x)}
+              Maybe(variant[:location]).map { |x| genotype.add_gene_location(x)}
               Maybe(variant[:impact]).map {|x| genotype.add_protein_impact(x)}
               Maybe(variant[:zygosity]).map {|x| genotype.add_zygosity(x)}
               Maybe(variant[:variantclass]).map {|x| genotype.add_variant_class(x)}
@@ -527,6 +522,7 @@ module Import
                 genotype2.add_gene(negative_gene)
                 genotype2.add_status(1)
                 genotypes.append(genotype2)
+                genotypes
               end
               genotypes
             end
@@ -538,6 +534,7 @@ module Import
                 genotype2.add_gene(negative_gene)
                 genotype2.add_status(9)
                 genotypes.append(genotype2)
+                genotypes
               end
               genotypes
             end
@@ -560,12 +557,9 @@ module Import
               if genotype.attribute_map['genetictestscope'] == "Full screen BRCA1 and BRCA2"
                 process_negative_genes_w_palb2(positive_gene, genotype, genotypes)
               end
-              genotype.add_gene(positive_gene.join)
-              Maybe(variant[:cdna]).map { |x| genotype.add_gene_location(x)}
-              Maybe(variant[:impact]).map {|x| genotype.add_protein_impact(x)}
-              Maybe(variant[:zygosity]).map {|x| genotype.add_zygosity(x)}
-              genotype.add_variant_class('3')
-              genotypes.append(genotype)
+              varclass = 'unknown'
+              extract_records_custom_variantclass(genotype, positive_gene, variant, 
+                                                  varclass, genotypes)
               genotypes
             end
 
@@ -579,16 +573,11 @@ module Import
               if genotype.attribute_map['genetictestscope'] == "Full screen BRCA1 and BRCA2"
                 process_negative_genes(positive_gene, genotype, genotypes)
               end
-              genotype.add_gene(positive_gene.join)
-              Maybe(variant[:cdna]).map { |x| genotype.add_gene_location(x)}
-              Maybe(variant[:impact]).map {|x| genotype.add_protein_impact(x)}
-              Maybe(variant[:zygosity]).map {|x| genotype.add_zygosity(x)}
-              genotype.add_variant_class('3')
-              genotypes.append(genotype)
+              varclass = 'unknown'
+              extract_records_custom_variantclass(genotype, positive_gene, variant,
+                                                  varclass, genotypes)
               genotypes
             end
-
-
 
             def process_ngs_brca2_multiple_exon_mlpa_positive?(record, genotype, genotypes)
               genotype_string = Maybe(record.raw_fields['genotype']).
@@ -620,19 +609,11 @@ module Import
                 genotype2.add_gene(negative_gene)
                 genotype2.add_status(1)
                 genotypes.append(genotype2)
+                genotypes
               end
+              genotypes
             end
 
-            def process_ngs_B1_and_B2_normal_mlpa_fail_record(record, genotype, genotypes)
-              reported_genes = ['BRCA1', 'BRCA2']
-              reported_genes.each do |negative_gene|
-                genotype2 = genotype.dup
-                genotype2.add_gene(negative_gene)
-                genotype2.add_status(1)
-                genotypes.append(genotype2)
-              end
-            end
-            
             def process_brca_diag_records(record, genotype, genotypes)
               genotype_string = Maybe(record.raw_fields['genotype']).
                                 or_else(Maybe(record.raw_fields['report_result']).
@@ -641,18 +622,11 @@ module Import
                               record.mapped_fields['report'],
                               record.raw_fields['firstofreport']].
                               reject(&:nil?).first).or_else('')
-              
+  
               positive_negative_test = genotype_string.match(/BRCA\sMS.+Diag\s(?<negpos>Normal|
                                                               Diag\sC4\/5)/ix)[:negpos]
               if positive_negative_test == 'Normal'
-                reported_genes = ['BRCA1', 'BRCA2']
-                reported_genes.each do |negative_gene|
-                  genotype2 = genotype.dup
-                  genotype2.add_gene(negative_gene)
-                  genotype2.add_status(1)
-                  genotypes.append(genotype2)
-                end
-              else binding.pry
+                brca_double_negative(record, genotype, genotypes)
               end
               genotypes
             end
@@ -667,14 +641,30 @@ module Import
               if genotype.attribute_map['genetictestscope'] == "Full screen BRCA1 and BRCA2"
                 process_negative_genes(positive_gene, genotype, genotypes)
               end
-              genotype.add_gene(positive_gene.join)
-              Maybe(variant[:location]).map { |x| genotype.add_gene_location(x)}
-              Maybe(variant[:protein]).map {|x| genotype.add_protein_impact(x)}
-              Maybe(variant[:zygosity]).map {|x| genotype.add_zygosity(x)}
-              genotype.add_variant_class('4')
-              genotypes.append(genotype)
+              varclass = 'likely pathogenic'
+              extract_records_custom_variantclass(genotype, positive_gene, variant, 
+                                                  varclass, genotypes)
               genotypes
             end
+
+            # def process_pred_class4_positive_records(record, genotype, genotypes)
+            #   report_string = Maybe([record.raw_fields['report'],
+            #                   record.mapped_fields['report'],
+            #                   record.raw_fields['firstofreport']].
+            #                   reject(&:nil?).first).or_else('')
+            #   variant = report_string.match(CDNA_VARIANT_CLASS_REGEX)
+            #   positive_gene = [variant[:brca]]
+            #   if genotype.attribute_map['genetictestscope'] == "Full screen BRCA1 and BRCA2"
+            #     process_negative_genes(positive_gene, genotype, genotypes)
+            #   end
+            #   genotype.add_gene(positive_gene.join)
+            #   Maybe(variant[:location]).map { |x| genotype.add_gene_location(x)}
+            #   Maybe(variant[:protein]).map {|x| genotype.add_protein_impact(x)}
+            #   Maybe(variant[:zygosity]).map {|x| genotype.add_zygosity(x)}
+            #   genotype.add_variant_class('4')
+            #   genotypes.append(genotype)
+            #   genotypes
+            # end
 
             def process_class_3_unaffected_records(record, genotype, genotypes)
               report_string = Maybe([record.raw_fields['report'],
@@ -687,15 +677,31 @@ module Import
               if genotype.attribute_map['genetictestscope'] == "Full screen BRCA1 and BRCA2"
                 process_negative_genes(positive_gene, genotype, genotypes)
               end
-              genotype.add_gene(positive_gene.join)
-              Maybe(variant[:location]).map { |x| genotype.add_gene_location(x)}
-              Maybe(variant[:protein]).map {|x| genotype.add_protein_impact(x)}
-              Maybe(variant[:zygosity]).map {|x| genotype.add_zygosity(x)}
-              genotype.add_variant_class('3')
-              genotypes.append(genotype)
+              varclass = 'unknown'
+              extract_records_custom_variantclass(genotype, positive_gene, variant, 
+                                                  varclass, genotypes)
               genotypes
             end
 
+            # def process_class_3_unaffected_records(record, genotype, genotypes)
+            #   report_string = Maybe([record.raw_fields['report'],
+            #                   record.mapped_fields['report'],
+            #                   record.raw_fields['firstofreport']].
+            #                   reject(&:nil?).first).or_else('')
+            #   variant = report_string.match(CDNA_VARIANT_CLASS_REGEX)
+            #   positive_gene = [variant[:brca]]
+            #
+            #   if genotype.attribute_map['genetictestscope'] == "Full screen BRCA1 and BRCA2"
+            #     process_negative_genes(positive_gene, genotype, genotypes)
+            #   end
+            #   genotype.add_gene(positive_gene.join)
+            #   Maybe(variant[:location]).map { |x| genotype.add_gene_location(x)}
+            #   Maybe(variant[:protein]).map {|x| genotype.add_protein_impact(x)}
+            #   Maybe(variant[:zygosity]).map {|x| genotype.add_zygosity(x)}
+            #   genotype.add_variant_class('3')
+            #   genotypes.append(genotype)
+            #   genotypes
+            # end
 
             def process_brca_diagnostic_tests(record, genotype, genotypes)
               report_string = Maybe([record.raw_fields['report'],
@@ -710,19 +716,12 @@ module Import
                 end
                 genotype.add_gene(variant[:brca])
                 Maybe(variant[:location]).map { |x| genotype.add_gene_location(x)}
-                Maybe(variant[:protein]).map {|x| genotype.add_protein_impact(x)}
+                Maybe(variant[:impact]).map {|x| genotype.add_protein_impact(x)}
                 Maybe(variant[:zygosity]).map {|x| genotype.add_zygosity(x)}
                 Maybe(variant[:variantclass]).map { |x| genotype.add_variant_class(x)}  
                 genotypes.append(genotype)
               elsif report_string.scan(/No pathogenic variant was identified/).size.positive?
-                reported_genes = ['BRCA1', 'BRCA2']
-                reported_genes.each do |negative_gene|
-                  genotype2 = genotype.dup
-                  genotype2.add_gene(negative_gene)
-                  genotype2.add_status(1)
-                  genotypes.append(genotype2)
-                end
-                genotypes
+                brca_double_negative(record, genotype, genotypes)
               end
               genotypes
             end
@@ -734,6 +733,7 @@ module Import
                 genotype2.add_gene(negative_gene)
                 genotype2.add_status(9)
                 genotypes.append(genotype2)
+                genotypes
               end
               genotypes
             end
@@ -753,29 +753,6 @@ module Import
                 genotype.add_gene('BRCA1')
                 genotype.add_status(1)
                 genotypes.append(genotype)
-              end
-              genotypes
-            end
-
-
-            def process_brca_diagnostic_normal(record, genotype, genotypes)
-              reported_genes = ['BRCA1', 'BRCA2']
-              reported_genes.each do |negative_gene|
-                genotype2 = genotype.dup
-                genotype2.add_gene(negative_gene)
-                genotype2.add_status(1)
-                genotypes.append(genotype2)
-              end
-              genotypes
-            end
-
-            def process_mlpa_negative_screening_failed(record, genotype, genotypes)
-              reported_genes = ['BRCA1', 'BRCA2']
-              reported_genes.each do |negative_gene|
-                genotype2 = genotype.dup
-                genotype2.add_gene(negative_gene)
-                genotype2.add_status(1)
-                genotypes.append(genotype2)
               end
               genotypes
             end
@@ -830,7 +807,7 @@ module Import
               genotype.add_gene(positive_gene.join)
               report_string.scan(CDNA_MUTATION_TYPES_REGEX).size.positive?
               variant = report_string.match(CDNA_MUTATION_TYPES_REGEX)
-              Maybe(variant[:cdna]).map { |x| genotype.add_gene_location(x)}
+              Maybe(variant[:location]).map { |x| genotype.add_gene_location(x)}
               Maybe(variant[:zygosity]).map { |x| genotype.add_zygosity(x)}
               Maybe(variant[:type]).map { |x| genotype.add_variant_impact(x)}
               Maybe(variant[:impact]).map {|x| genotype.add_protein_impact(x)}
@@ -856,12 +833,12 @@ module Import
                 if report_string.scan(CDNA_VARIANT_CLASS_REGEX).size.positive?
                   variant = report_string.match(CDNA_VARIANT_CLASS_REGEX)
                   Maybe(variant[:location]).map { |x| genotype.add_gene_location(x)}
-                  Maybe(variant[:protein]).map {|x| genotype.add_protein_impact(x)}
+                  Maybe(variant[:impact]).map {|x| genotype.add_protein_impact(x)}
                   Maybe(variant[:zygosity]).map {|x| genotype.add_zygosity(x)}
                   Maybe(variant[:variantclass]).map { |x| genotype.add_variant_class(x)}  
                 elsif report_string.scan(CDNA_MUTATION_TYPES_REGEX).size.positive?
                   variant = report_string.match(CDNA_MUTATION_TYPES_REGEX)
-                  Maybe(variant[:cdna]).map { |x| genotype.add_gene_location(x)}
+                  Maybe(variant[:location]).map { |x| genotype.add_gene_location(x)}
                   Maybe(variant[:impact]).map {|x| genotype.add_protein_impact(x)}
                 end
                 genotypes.append(genotype)
@@ -927,9 +904,9 @@ module Import
               end
               genotype.add_gene(positive_gene.join)
               if report_string.scan(CDNA_REGEX).size.positive?
-                genotype.add_gene_location(report_string.match(CDNA_REGEX)[:cdna])
+                genotype.add_gene_location(report_string.match(CDNA_REGEX)[:location])
                 if report_string.scan(PROTEIN_REGEX).size.positive?
-                  genotype.add_gene_location(report_string.match(PROTEIN_REGEX)[:impact])
+                  genotype.add_protein_impact(report_string.match(PROTEIN_REGEX)[:impact])
                 end
                 genotypes.append(genotype)
               # else binding.pry ONLY THREE CASES TO SORT OUT
@@ -954,7 +931,7 @@ module Import
               genotype.add_gene(positive_gene.join)
               if report_string.scan(CDNA_MUTATION_TYPES_REGEX).size.positive?
                 variant = report_string.match(CDNA_MUTATION_TYPES_REGEX)
-                Maybe(variant[:cdna]).map { |x| genotype.add_gene_location(x)}
+                Maybe(variant[:location]).map { |x| genotype.add_gene_location(x)}
                 Maybe(variant[:zygosity]).map { |x| genotype.add_zygosity(x)}
                 Maybe(variant[:type]).map { |x| genotype.add_variant_impact(x)}
                 Maybe(variant[:impact]).map {|x| genotype.add_protein_impact(x)}
@@ -1061,7 +1038,7 @@ module Import
                   if report_string.scan(CDNA_MUTATION_TYPES_REGEX).size.positive?
                     variant = report_string.match(CDNA_MUTATION_TYPES_REGEX)
                     Maybe(variant[:brca]).map { |x| genotype.add_gene(x)}
-                    Maybe(variant[:cdna]).map { |x| genotype.add_gene_location(x)}
+                    Maybe(variant[:location]).map { |x| genotype.add_gene_location(x)}
                     Maybe(variant[:zygosity]).map { |x| genotype.add_zygosity(x)}
                     Maybe(variant[:variantclass]).map { |x| genotype.add_variant_class(x)}
                     Maybe(variant[:impact]).map {|x| genotype.add_protein_impact(x)}
@@ -1101,28 +1078,18 @@ module Import
                     genotype.add_status(2)
                     genotypes.append(genotype)
                   elsif report_string.scan(PREDICTIVE_POSITIVE_EXON).size.positive?
-                    exon_variant = report_string.match(PREDICTIVE_POSITIVE_EXON)
-                    Maybe(exon_variant[:zygosity]).map { |x| genotype.add_zygosity(x)}
-                    Maybe(exon_variant[:variantclass]).map {|x| genotype.add_variant_class(x)}
-                    Maybe(exon_variant[:brca]).map { |x| genotype.add_gene(x)}
-                    Maybe(exon_variant[:mutationtype]).map { |x| genotype.add_variant_type(x)}
-                    Maybe(exon_variant[:exons]).map { |x| genotype.add_exon_location(x)}
-                    genotype.add_status(2)
-                    genotypes.append(genotype)
+                    exon_variants = report_string.match(PREDICTIVE_POSITIVE_EXON)
+                    positive_gene = [exon_variants[:brca]]
+                    extract_exon_variant(genotype, positive_gene, exon_variants, genotypes)
                   elsif report_string.scan(PREDICTIVE_MLPA_POSITIVE).size.positive?
-                    mlpa_exon_variant = report_string.match(PREDICTIVE_MLPA_POSITIVE)
-                    Maybe(mlpa_exon_variant[:zygosity]).map { |x| genotype.add_zygosity(x)}
-                    Maybe(mlpa_exon_variant[:variantclass]).map {|x| genotype.add_variant_class(x)}
-                    Maybe(mlpa_exon_variant[:brca]).map { |x| genotype.add_gene(x)}
-                    Maybe(mlpa_exon_variant[:mutationtype]).map { |x| genotype.add_variant_type(x)}
-                    Maybe(mlpa_exon_variant[:exons]).map { |x| genotype.add_exon_location(x)}
-                    genotype.add_status(2)
-                    genotypes.append(genotype)
+                    exon_variants = report_string.match(PREDICTIVE_MLPA_POSITIVE)
+                    positive_gene = [exon_variants[:brca]]
+                    extract_exon_variant(genotype, positive_gene, exon_variants, genotypes)
                   elsif report_string.scan(CDNA_VARIANT_CLASS_REGEX).size.positive?
                     cdna_variant = report_string.match(CDNA_VARIANT_CLASS_REGEX)
                     Maybe(cdna_variant[:brca]).map { |x| genotype.add_gene(x)}
                     Maybe(cdna_variant[:location]).map { |x| genotype.add_gene_location(x)}
-                    Maybe(cdna_variant[:protein]).map {|x| genotype.add_protein_impact(x)}
+                    Maybe(cdna_variant[:impact]).map {|x| genotype.add_protein_impact(x)}
                     Maybe(cdna_variant[:zygosity]).map {|x| genotype.add_zygosity(x)}
                     Maybe(cdna_variant[:variantclass]).map { |x| genotype.add_variant_class(x)}
                     genotype.add_status(2)
@@ -1181,7 +1148,7 @@ module Import
                   cdna_variant = report_string.match(CDNA_VARIANT_CLASS_REGEX)
                   genotype.add_gene(positive_gene.join)
                   Maybe(cdna_variant[:location]).map { |x| genotype.add_gene_location(x)}
-                  Maybe(cdna_variant[:protein]).map {|x| genotype.add_protein_impact(x)}
+                  Maybe(cdna_variant[:impact]).map {|x| genotype.add_protein_impact(x)}
                   Maybe(cdna_variant[:zygosity]).map {|x| genotype.add_zygosity(x)}
                   Maybe(cdna_variant[:variantclass]).map { |x| genotype.add_variant_class(x)}
                   genotype.add_status(2)
@@ -1195,7 +1162,7 @@ module Import
                   Maybe(cdna_variants_types[:zygosity]).map {|x| genotype.add_zygosity(x)}
                   Maybe(cdna_variants_types[:variantclass]).map { |x| genotype.add_variant_class(x)}
                   Maybe(cdna_variants_types[:type]).map { |x| genotype.add_variant_impact(x)}
-                  Maybe(cdna_variants_types[:cdna]).map { |x| genotype.add_gene_location(x)}
+                  Maybe(cdna_variants_types[:location]).map { |x| genotype.add_gene_location(x)}
                   Maybe(cdna_variants_types[:impact]).map {|x| genotype.add_protein_impact(x)}
                   genotype.add_status(2)
                   genotypes.append(genotype)
@@ -1207,7 +1174,7 @@ module Import
                   genotype.add_gene(positive_gene.join)
                   Maybe(detected_variant[:zygosity]).map {|x| genotype.add_zygosity(x)}
                   Maybe(detected_variant[:variantclass]).map { |x| genotype.add_variant_class(x)}
-                  Maybe(detected_variant[:cdna]).map { |x| genotype.add_gene_location(x)}
+                  Maybe(detected_variant[:location]).map { |x| genotype.add_gene_location(x)}
                   Maybe(detected_variant[:impact]).map {|x| genotype.add_protein_impact(x)}
                   genotype.add_status(2)
                   genotypes.append(genotype)
@@ -1275,7 +1242,7 @@ module Import
                   end
                   cdna_variants_exceptions = report_string.match(CDNA_PROTEIN_COMBO_EXCEPTIONS)
                   genotype.add_gene(positive_gene.join)
-                  genotype.add_gene_location(cdna_variants_exceptions[:cdna])
+                  genotype.add_gene_location(cdna_variants_exceptions[:location])
                   genotype.add_protein_impact(cdna_variants_exceptions[:impact])
                   genotype.add_status(2)
                   genotypes.append(genotype)
@@ -1310,6 +1277,7 @@ module Import
                   genotype2.add_gene(negative_gene)
                   genotype2.add_status(1)
                   genotypes.append(genotype2)
+                  genotypes
                 end
                 genotypes
               end
@@ -1321,6 +1289,7 @@ module Import
                   genotype2.add_gene(negative_gene)
                   genotype2.add_status(1)
                   genotypes.append(genotype2)
+                  genotypes
                 end
                 genotypes
               end
@@ -1382,14 +1351,9 @@ module Import
             end
 
             def process_positive_predictive_exonvariant(report_string, genotype, genotypes)
-              variant = report_string.gsub('\n', '').match(PREDICTIVE_POSITIVE_EXON)
-              Maybe(variant[:zygosity]).map { |x| genotype.add_zygosity(x) }
-              Maybe(variant[:variantclass]).map { |x| genotype.add_variant_class(x) }
-              Maybe(variant[:brca]).map { |x| genotype.add_gene(x) }
-              Maybe(variant[:mutationtype]).map { |x| genotype.add_variant_type(x) }
-              Maybe(variant[:exons]).map { |x| genotype.add_exon_location(x) }
-              genotypes.append(genotype)
-              @logger.debug 'Sucessfully parsed POSITIVE EXON pred record'
+              exon_variants = report_string.gsub('\n', '').match(PREDICTIVE_POSITIVE_EXON)
+              positive_gene = [exon_variants[:brca]]
+              extract_exon_variant(genotype, positive_gene, exon_variants, genotypes)
             end
             
             def process_negative_mlpa_predictive(report_string, genotype, genotypes)
@@ -1400,16 +1364,42 @@ module Import
             end
             
             def process_positive_mlpa_predictive(report_string, genotype, genotypes)
-              variant = report_string.gsub('\n', '').match(PREDICTIVE_MLPA_POSITIVE)
-              Maybe(variant[:zygosity]).map { |x| genotype.add_zygosity(x) }
-              Maybe(variant[:variantclass]).map { |x| genotype.add_variant_class(x) }
-              Maybe(variant[:brca]).map { |x| genotype.add_gene(x) }
-              Maybe(variant[:mutationtype]).map { |x| genotype.add_variant_type(x) }
-              Maybe(variant[:exons]).map { |x| genotype.add_exon_location(x) }
-              genotypes.append(genotype)
-              @logger.debug 'Sucessfully parsed POSITIVE MLPA pred record'
+              exon_variants = report_string.gsub('\n', '').match(PREDICTIVE_MLPA_POSITIVE)
+              positive_gene = [exon_variants[:brca]]
+              extract_exon_variant(genotype, positive_gene, exon_variants, genotypes)
             end
 
+            def extract_records_custom_variantclass(genotype, positive_gene, variant, varclass,genotypes)
+              genotype.add_gene(positive_gene.join)
+              Maybe(variant[:location]).map { |x| genotype.add_gene_location(x)}
+              Maybe(variant[:impact]).map {|x| genotype.add_protein_impact(x)}
+              Maybe(variant[:zygosity]).map {|x| genotype.add_zygosity(x)}
+              genotype.add_variant_class(varclass)
+              genotypes.append(genotype)
+            end
+
+            def brca_double_negative(record, genotype, genotypes)
+              reported_genes = ['BRCA1', 'BRCA2']
+              reported_genes.each do |negative_gene|
+                genotype2 = genotype.dup
+                genotype2.add_gene(negative_gene)
+                genotype2.add_status(1)
+                genotypes.append(genotype2)
+                genotypes
+              end
+              genotypes
+            end
+
+            def extract_exon_variant(genotype, positive_gene, exon_variants, genotypes)
+              genotype.add_gene(positive_gene.join)
+              # Maybe(exon_variants[:zygosity]).map { |x| genotype.add_zygosity(x)}
+              Maybe(exon_variants[:variantclass]).map {|x| genotype.add_variant_class(x)}
+              Maybe(exon_variants[:brca]).map { |x| genotype.add_gene(x)}
+              Maybe(exon_variants[:mutationtype]).map { |x| genotype.add_variant_type(x)}
+              Maybe(exon_variants[:exons]).map { |x| genotype.add_exon_location(x)}
+              genotype.add_status(2)
+              genotypes.append(genotype)
+            end
           end
         end
       end
