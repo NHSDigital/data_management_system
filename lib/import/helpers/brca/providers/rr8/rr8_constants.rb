@@ -171,7 +171,7 @@ module Import
 
             MLPA_FAIL_REGEX = /mlpa\sanalysis\sof\s#{BRCA_REGEX}\sfailed/ix.freeze
 
-            GENE_LOCATION = '(?<location>c\.[^ \.]+) ?(?<protein>\(p\.[^)]*\))?'.freeze
+            GENE_LOCATION = '(?<location>c\.[^ \.]+) ?(?<impact>\(p\.[^)]*\))?'.freeze
 
             PREDICTIVE_REPORT_REGEX_NEGATIVE  = /.*(?:familial)?(?<variantclass>(?:\slikely)\s
                                                 pathogenic)?\s(?<brca>BRCA1|BRCA2|PALB2)\s
