@@ -12,7 +12,7 @@ module Import
                                               record.raw_fields['moleculartestingtype']].
                              reject(&:nil?).first).or_else('')
               genotype_string = Maybe(record.raw_fields['genotype']).
-                                      or_else(Maybe(record.raw_fields['report_result']).
+                                or_else(Maybe(record.raw_fields['report_result']).
                                        or_else(''))
               if full_screen?(genetictestscope_field)
                 genotype.add_test_scope(:full_screen)
@@ -20,7 +20,7 @@ module Import
                 genotype.add_test_scope(:targeted_mutation)
               elsif ashkenazi?(genetictestscope_field, genotype_string)
                 genotype.add_test_scope(:aj_screen)
-              else 
+              else
                 genotype.add_test_scope(:no_genetictestscope)
               end
             end
@@ -31,17 +31,17 @@ module Import
                                 or_else(Maybe(record.raw_fields['report_result']).
                                 or_else(''))
               report_string = Maybe([record.raw_fields['report'],
-                              record.mapped_fields['report'],
-                              record.raw_fields['firstofreport']].
+                                     record.mapped_fields['report'],
+                                     record.raw_fields['firstofreport']].
                               reject(&:nil?).first).or_else('')
               if predictive_test?(record, genotype, genotypes)
-                process_predictive_tests(record,genotype, genotypes)
+                process_predictive_tests(record, genotype, genotypes)
               elsif double_normal_test?(record, genotype, genotypes)
-                process_doublenormal_tests(record,genotype, genotypes)
+                process_doublenormal_tests(record, genotype, genotypes)
               elsif variant_seq?(record, genotype, genotypes)
                 process_variantseq_tests(record, genotype, genotypes)
               elsif variant_class?(record, genotype, genotypes)
-               process_variant_class_records(record, genotype, genotypes)
+                process_variant_class_records(record, genotype, genotypes)
               elsif confirmation_test?(record, genotype, genotypes)
                 process_confirmation_test(record, genotype, genotypes)
               elsif ashkenazi_test?(record, genotype, genotypes)
@@ -84,12 +84,10 @@ module Import
                 process_predictive_b2_pathological_neg_record(record, genotype, genotypes)
               elsif ngs_failed_mlpa_normal_test?(record, genotype, genotypes)
                 brca_double_negative(record, genotype, genotypes)
-                # process_ngs_failed_mlpa_normal_record(record, genotype, genotypes)
               elsif ngs_screening_failed_tests?(record, genotype, genotypes)
                 process_ngs_screening_failed_record(record, genotype, genotypes)
               elsif ngs_B1_and_B2_normal_mlpa_fail?(record, genotype, genotypes)
                 brca_double_negative(record, genotype, genotypes)
-                # process_ngs_B1_and_B2_normal_mlpa_fail_record(record, genotype, genotypes)
               elsif brca_palb2_diag_normal_test?(record, genotype, genotypes)
                 process_brca_palb2_diag_normal_record(record, genotype, genotypes)
               elsif ngs_brca2_multiple_exon_mlpa_positive?(record, genotype, genotypes)
@@ -107,7 +105,7 @@ module Import
               elsif brca_diagnostic_class4_5_test?(record, genotype, genotypes)
                 process_brca_diagnostic_class4_5_record(record, genotype, genotypes)
               elsif brca_palb2_mlpa_class4_5_tests?(record, genotype, genotypes)
-                process_brca_palb2_diag_class4_5_record(record, genotype, genotypes)
+                process_brca_palb2_mlpa_class4_5_record(record, genotype, genotypes)
               elsif brca_diag_class4_5_mlpa_tests?(record, genotype, genotypes)
                 process_brca_diag_class4_5_mlpa_record(record, genotype, genotypes)
               elsif brca_diagnostic_class3?(record, genotype, genotypes)
@@ -118,8 +116,8 @@ module Import
               genotypes
             end
 
-            def process_brca_palb2_diag_screening_failed_record(record, genotype, genotypes)
-              reported_genes = ['BRCA1', 'BRCA2', 'PALB2']
+            def process_brca_palb2_diag_screening_failed_record(_record, genotype, genotypes)
+              reported_genes = %w[BRCA1 BRCA2 PALB2]
               reported_genes.each do |negative_gene|
                 genotype2 = genotype.dup
                 genotype2.add_gene(negative_gene)
@@ -135,27 +133,27 @@ module Import
                                 or_else(Maybe(record.raw_fields['report_result']).
                                 or_else(''))
               report_string = Maybe([record.raw_fields['report'],
-                              record.mapped_fields['report'],
-                              record.raw_fields['firstofreport']].
+                                     record.mapped_fields['report'],
+                                     record.raw_fields['firstofreport']].
                               reject(&:nil?).first).or_else('')
               exon_variants = report_string.match(EXON_LOCATION)
               positive_gene   = [exon_variants[:brca]]
-              if genotype.attribute_map['genetictestscope'] == "Full screen BRCA1 and BRCA2"
+              if genotype.attribute_map['genetictestscope'] == 'Full screen BRCA1 and BRCA2'
                 process_negative_genes(positive_gene, genotype, genotypes)
               end
               extract_exon_variant(genotype, positive_gene, exon_variants, genotypes)
             end
 
-            def process_brca_palb2_diag_class4_5_record(record, genotype, genotypes)
+            def process_brca_palb2_mlpa_class4_5_record(record, genotype, genotypes)
               return if record.raw_fields['report'].match(CDNA_MUTATION_TYPES_REGEX).nil?
 
               report_string = Maybe([record.raw_fields['report'],
-                              record.mapped_fields['report'],
-                              record.raw_fields['firstofreport']].
+                                     record.mapped_fields['report'],
+                                     record.raw_fields['firstofreport']].
                               reject(&:nil?).first).or_else('')
               exon_variants = report_string.match(PREDICTIVE_POSITIVE_EXON)
-              positive_gene = [exon_variant[:brca]]
-              if genotype.attribute_map['genetictestscope'] == "Full screen BRCA1 and BRCA2"
+              positive_gene = [exon_variants[:brca]]
+              if genotype.attribute_map['genetictestscope'] == 'Full screen BRCA1 and BRCA2'
                 process_negative_genes_w_palb2(positive_gene, genotype, genotypes)
               end
               extract_exon_variant(genotype, positive_gene, exon_variants, genotypes)
@@ -166,32 +164,31 @@ module Import
               return if record.raw_fields['report'].match(CDNA_MUTATION_TYPES_REGEX).nil?
 
               report_string = Maybe([record.raw_fields['report'],
-                              record.mapped_fields['report'],
-                              record.raw_fields['firstofreport']].
+                                     record.mapped_fields['report'],
+                                     record.raw_fields['firstofreport']].
                               reject(&:nil?).first).or_else('')
               variant = report_string.match(CDNA_MUTATION_TYPES_REGEX)
               positive_gene = [variant[:brca]]
-              if genotype.attribute_map['genetictestscope'] == "Full screen BRCA1 and BRCA2"
+              if genotype.attribute_map['genetictestscope'] == 'Full screen BRCA1 and BRCA2'
                 process_negative_genes_w_palb2(positive_gene, genotype, genotypes)
               end
               genotype.add_gene(positive_gene.join)
-              Maybe(variant[:location]).map { |x| genotype.add_gene_location(x)}
-              Maybe(variant[:impact]).map {|x| genotype.add_protein_impact(x)}
-              Maybe(variant[:zygosity]).map {|x| genotype.add_zygosity(x)}
-              Maybe(variant[:variantclass]).map {|x| genotype.add_variant_class(x)}
+              Maybe(variant[:location]).map { |x| genotype.add_gene_location(x) }
+              Maybe(variant[:impact]).map { |x| genotype.add_protein_impact(x) }
+              Maybe(variant[:zygosity]).map { |x| genotype.add_zygosity(x) }
+              Maybe(variant[:variantclass]).map { |x| genotype.add_variant_class(x) }
               genotypes.append(genotype)
               genotypes
             end
 
-
-            def process_predictive_b2_pathological_neg_record(record, genotype, genotypes)
+            def process_predictive_b2_pathological_neg_record(_record, genotype, genotypes)
               genotype.add_gene('BRCA2')
               genotype.add_status(1)
               genotypes.append(genotype)
             end
 
-            def process_ngs_screening_failed_record(record, genotype, genotypes)
-              reported_genes = ['BRCA1', 'BRCA2']
+            def process_ngs_screening_failed_record(_record, genotype, genotypes)
+              reported_genes = %w[BRCA1 BRCA2]
               reported_genes.each do |negative_gene|
                 genotype2 = genotype.dup
                 genotype2.add_gene(negative_gene)
@@ -205,13 +202,13 @@ module Import
               return if record.raw_fields['report'].match(CDNA_MUTATION_TYPES_REGEX).nil?
 
               report_string = Maybe([record.raw_fields['report'],
-                              record.mapped_fields['report'],
-                              record.raw_fields['firstofreport']].
+                                     record.mapped_fields['report'],
+                                     record.raw_fields['firstofreport']].
                               reject(&:nil?).first).or_else('')
               variant = report_string.match(CDNA_MUTATION_TYPES_REGEX)
               positive_gene = [variant[:brca]]
               genotype.add_variant_class('unknown')
-              if genotype.attribute_map['genetictestscope'] == "Full screen BRCA1 and BRCA2"
+              if genotype.attribute_map['genetictestscope'] == 'Full screen BRCA1 and BRCA2'
                 process_negative_genes(positive_gene, genotype, genotypes)
               end
               extract_cdna_variant_information(genotype, positive_gene, variant, genotypes)
@@ -221,19 +218,19 @@ module Import
               return if record.raw_fields['report'].match(CDNA_MUTATION_TYPES_REGEX).nil?
 
               report_string = Maybe([record.raw_fields['report'],
-                              record.mapped_fields['report'],
-                              record.raw_fields['firstofreport']].
+                                     record.mapped_fields['report'],
+                                     record.raw_fields['firstofreport']].
                               reject(&:nil?).first).or_else('')
               variant = report_string.match(CDNA_MUTATION_TYPES_REGEX)
               positive_gene = [variant[:brca]]
-              if genotype.attribute_map['genetictestscope'] == "Full screen BRCA1 and BRCA2"
+              if genotype.attribute_map['genetictestscope'] == 'Full screen BRCA1 and BRCA2'
                 process_negative_genes(positive_gene, genotype, genotypes)
               end
               extract_cdna_variant_information(genotype, positive_gene, variant, genotypes)
             end
 
-            def process_generic_normal_record(record, genotype, genotypes)
-              reported_genes = ['BRCA1', 'BRCA2', 'PALB2', 'TP53']
+            def process_generic_normal_record(_record, genotype, genotypes)
+              reported_genes = %w[BRCA1 BRCA2 PALB2 TP53]
               reported_genes.each do |negative_gene|
                 genotype2 = genotype.dup
                 genotype2.add_gene(negative_gene)
@@ -244,8 +241,8 @@ module Import
               genotypes
             end
 
-            def process_mlpa_only_fail_record(record, genotype, genotypes)
-              reported_genes = ['BRCA1', 'BRCA2']
+            def process_mlpa_only_fail_record(_record, genotype, genotypes)
+              reported_genes = %w[BRCA1 BRCA2]
               reported_genes.each do |negative_gene|
                 genotype2 = genotype.dup
                 genotype2.add_gene(negative_gene)
@@ -258,12 +255,12 @@ module Import
 
             def process_brca_palb2_diagnostic_class3_record(record, genotype, genotypes)
               report_string = Maybe([record.raw_fields['report'],
-                              record.mapped_fields['report'],
-                              record.raw_fields['firstofreport']].
+                                     record.mapped_fields['report'],
+                                     record.raw_fields['firstofreport']].
                               reject(&:nil?).first).or_else('')
               variant = report_string.match(CDNA_MUTATION_TYPES_REGEX)
               positive_gene = [variant[:brca]]
-              if genotype.attribute_map['genetictestscope'] == "Full screen BRCA1 and BRCA2"
+              if genotype.attribute_map['genetictestscope'] == 'Full screen BRCA1 and BRCA2'
                 process_negative_genes_w_palb2(positive_gene, genotype, genotypes)
               end
               genotype.add_variant_class('unknown')
@@ -273,12 +270,12 @@ module Import
 
             def process_brca2_class3_unknown_variant_records(record, genotype, genotypes)
               report_string = Maybe([record.raw_fields['report'],
-                              record.mapped_fields['report'],
-                              record.raw_fields['firstofreport']].
+                                     record.mapped_fields['report'],
+                                     record.raw_fields['firstofreport']].
                               reject(&:nil?).first).or_else('')
               variant = report_string.match(CDNA_MUTATION_TYPES_REGEX)
               positive_gene = [variant[:brca]]
-              if genotype.attribute_map['genetictestscope'] == "Full screen BRCA1 and BRCA2"
+              if genotype.attribute_map['genetictestscope'] == 'Full screen BRCA1 and BRCA2'
                 process_negative_genes(positive_gene, genotype, genotypes)
               end
               varclass = 'unknown'
@@ -291,26 +288,26 @@ module Import
                                 or_else(Maybe(record.raw_fields['report_result']).
                                 or_else(''))
               report_string = Maybe([record.raw_fields['report'],
-                              record.mapped_fields['report'],
-                              record.raw_fields['firstofreport']].
+                                     record.mapped_fields['report'],
+                                     record.raw_fields['firstofreport']].
                               reject(&:nil?).first).or_else('')
-              positive_gene   = [DEPRECATED_BRCA_NAMES_MAP[
+              positive_gene = [DEPRECATED_BRCA_NAMES_MAP[
                                 genotype_string.scan(DEPRECATED_BRCA_NAMES_REGEX).join
                                 ]]
-              if genotype.attribute_map['genetictestscope'] == "Full screen BRCA1 and BRCA2"
+              if genotype.attribute_map['genetictestscope'] == 'Full screen BRCA1 and BRCA2'
                 process_negative_genes(positive_gene, genotype, genotypes)
               end
               genotype.add_gene(positive_gene.join)
               exon_variants = report_string.match(EXON_LOCATION_EXCEPTIONS)
               genotype.add_gene(positive_gene.join)
               Maybe(exon_variants[:mutationtype]).map { |x| genotype.add_variant_type(x) }
-              Maybe(exon_variants[:exons]).map { |x| genotype.add_exon_location(x)}
+              Maybe(exon_variants[:exons]).map { |x| genotype.add_exon_location(x) }
               genotype.add_status(2)
               genotypes.append(genotype)
             end
 
-            def process_brca_palb2_diag_normal_record(record, genotype, genotypes)
-              reported_genes = ['BRCA1', 'BRCA2', 'PALB2']
+            def process_brca_palb2_diag_normal_record(_record, genotype, genotypes)
+              reported_genes = %w[BRCA1 BRCA2 PALB2]
               reported_genes.each do |negative_gene|
                 genotype2 = genotype.dup
                 genotype2.add_gene(negative_gene)
@@ -326,12 +323,12 @@ module Import
                                 or_else(Maybe(record.raw_fields['report_result']).
                                 or_else(''))
               report_string = Maybe([record.raw_fields['report'],
-                              record.mapped_fields['report'],
-                              record.raw_fields['firstofreport']].
+                                     record.mapped_fields['report'],
+                                     record.raw_fields['firstofreport']].
                               reject(&:nil?).first).or_else('')
-  
-              positive_negative_test = genotype_string.match(/BRCA\sMS.+Diag\s(?<negpos>Normal|
-                                                              Diag\sC4\/5)/ix)[:negpos]
+
+              positive_negative_test = genotype_string.match(%r{BRCA\sMS.+Diag\s(?<negpos>Normal|
+                                                              Diag\sC4/5)}ix)[:negpos]
               if positive_negative_test == 'Normal'
                 brca_double_negative(record, genotype, genotypes)
               end
@@ -340,12 +337,12 @@ module Import
 
             def process_pred_class4_positive_records(record, genotype, genotypes)
               report_string = Maybe([record.raw_fields['report'],
-                              record.mapped_fields['report'],
-                              record.raw_fields['firstofreport']].
+                                     record.mapped_fields['report'],
+                                     record.raw_fields['firstofreport']].
                               reject(&:nil?).first).or_else('')
               variant = report_string.match(CDNA_VARIANT_CLASS_REGEX)
               positive_gene = [variant[:brca]]
-              if genotype.attribute_map['genetictestscope'] == "Full screen BRCA1 and BRCA2"
+              if genotype.attribute_map['genetictestscope'] == 'Full screen BRCA1 and BRCA2'
                 process_negative_genes(positive_gene, genotype, genotypes)
               end
               genotype.add_variant_class('likely pathogenic')
@@ -355,13 +352,13 @@ module Import
 
             def process_class_3_unaffected_records(record, genotype, genotypes)
               report_string = Maybe([record.raw_fields['report'],
-                              record.mapped_fields['report'],
-                              record.raw_fields['firstofreport']].
+                                     record.mapped_fields['report'],
+                                     record.raw_fields['firstofreport']].
                               reject(&:nil?).first).or_else('')
               variant = report_string.match(CDNA_VARIANT_CLASS_REGEX)
               positive_gene = [variant[:brca]]
 
-              if genotype.attribute_map['genetictestscope'] == "Full screen BRCA1 and BRCA2"
+              if genotype.attribute_map['genetictestscope'] == 'Full screen BRCA1 and BRCA2'
                 process_negative_genes(positive_gene, genotype, genotypes)
               end
               genotype.add_variant_class('unknown')
@@ -371,13 +368,13 @@ module Import
 
             def process_brca_diagnostic_tests(record, genotype, genotypes)
               report_string = Maybe([record.raw_fields['report'],
-                              record.mapped_fields['report'],
-                              record.raw_fields['firstofreport']].
+                                     record.mapped_fields['report'],
+                                     record.raw_fields['firstofreport']].
                               reject(&:nil?).first).or_else('')
               if  report_string.scan(CDNA_VARIANT_CLASS_REGEX).size.positive?
                 variant = report_string.match(CDNA_VARIANT_CLASS_REGEX)
                 positive_gene = [variant[:brca]]
-                if genotype.attribute_map['genetictestscope'] == "Full screen BRCA1 and BRCA2"
+                if genotype.attribute_map['genetictestscope'] == 'Full screen BRCA1 and BRCA2'
                   process_negative_genes(positive_gene, genotype, genotypes)
                 end
                 extract_cdna_variant_information(genotype, positive_gene, variant, genotypes)
@@ -387,8 +384,8 @@ module Import
               genotypes
             end
 
-            def process_screening_failed_records(record, genotype, genotypes)
-              reported_genes = ['BRCA1', 'BRCA2']
+            def process_screening_failed_records(_record, genotype, genotypes)
+              reported_genes = %w[BRCA1 BRCA2]
               reported_genes.each do |negative_gene|
                 genotype2 = genotype.dup
                 genotype2.add_gene(negative_gene)
@@ -403,18 +400,16 @@ module Import
               genotype_string = Maybe(record.raw_fields['genotype']).
                                 or_else(Maybe(record.raw_fields['report_result']).
                                 or_else(''))
-              
+
+              genotype.add_gene('BRCA1')
               if genotype_string.match(/Predictive Ex13 dup (?<negpos>neg|pos)/i)[:negpos] == 'pos'
-                genotype.add_gene('BRCA1')
                 genotype.add_variant_type('duplication')
                 genotype.add_exon_location('13')
                 genotype.add_status(2)
-                genotypes.append(genotype)
               else
-                genotype.add_gene('BRCA1')
                 genotype.add_status(1)
-                genotypes.append(genotype)
               end
+              genotypes.append(genotype)
               genotypes
             end
 
@@ -423,28 +418,28 @@ module Import
                                 or_else(Maybe(record.raw_fields['report_result']).
                                 or_else(''))
               report_string = Maybe([record.raw_fields['report'],
-                              record.mapped_fields['report'],
-                              record.raw_fields['firstofreport']].
+                                     record.mapped_fields['report'],
+                                     record.raw_fields['firstofreport']].
                               reject(&:nil?).first).or_else('')
-              positive_gene   = [DEPRECATED_BRCA_NAMES_MAP[
+              positive_gene = [DEPRECATED_BRCA_NAMES_MAP[
                                 genotype_string.scan(DEPRECATED_BRCA_NAMES_REGEX).join
                                 ]]
-              if genotype.attribute_map['genetictestscope'] == "Full screen BRCA1 and BRCA2"
+              if genotype.attribute_map['genetictestscope'] == 'Full screen BRCA1 and BRCA2'
                 process_negative_genes(positive_gene, genotype, genotypes)
               end
               genotype.add_gene(positive_gene.join)
               exon_variants = report_string.match(EXON_LOCATION_EXCEPTIONS)
               genotype.add_gene(positive_gene.join)
               Maybe(exon_variants[:mutationtype]).map { |x| genotype.add_variant_type(x) }
-              Maybe(exon_variants[:exons]).map { |x| genotype.add_exon_location(x)}
+              Maybe(exon_variants[:exons]).map { |x| genotype.add_exon_location(x) }
               genotype.add_status(2)
               genotypes.append(genotype)
             end
 
             def process_class4_pred_neg_record(record, genotype, genotypes)
               report_string = Maybe([record.raw_fields['report'],
-                              record.mapped_fields['report'],
-                              record.raw_fields['firstofreport']].
+                                     record.mapped_fields['report'],
+                                     record.raw_fields['firstofreport']].
                               reject(&:nil?).first).or_else('')
               genotype.add_gene(report_string.match(BRCA_REGEX)[:brca])
               genotype.add_status(1)
@@ -456,13 +451,13 @@ module Import
                                 or_else(Maybe(record.raw_fields['report_result']).
                                 or_else(''))
               report_string = Maybe([record.raw_fields['report'],
-                              record.mapped_fields['report'],
-                              record.raw_fields['firstofreport']].
+                                     record.mapped_fields['report'],
+                                     record.raw_fields['firstofreport']].
                               reject(&:nil?).first).or_else('')
-              positive_gene   = [DEPRECATED_BRCA_NAMES_MAP[
+              positive_gene = [DEPRECATED_BRCA_NAMES_MAP[
                                 genotype_string.scan(DEPRECATED_BRCA_NAMES_REGEX).join
                                 ]]
-              if genotype.attribute_map['genetictestscope'] == "Full screen BRCA1 and BRCA2"
+              if genotype.attribute_map['genetictestscope'] == 'Full screen BRCA1 and BRCA2'
                 process_negative_genes(positive_gene, genotype, genotypes)
               end
               genotype.add_gene(positive_gene.join)
@@ -471,21 +466,20 @@ module Import
               extract_cdna_variant_information(genotype, positive_gene, variant, genotypes)
             end
 
-
             def process_familial_class_tests(record, genotype, genotypes)
               genotype_string = Maybe(record.raw_fields['genotype']).
                                 or_else(Maybe(record.raw_fields['report_result']).
                                 or_else(''))
               report_string = Maybe([record.raw_fields['report'],
-                              record.mapped_fields['report'],
-                              record.raw_fields['firstofreport']].
+                                     record.mapped_fields['report'],
+                                     record.raw_fields['firstofreport']].
                               reject(&:nil?).first).or_else('')
               positive_gene = report_string.scan(Import::Brca::Core::GenotypeBrca::BRCA_REGEX).
                               flatten.compact.uniq
               genotype.add_gene(positive_gene.join)
               if genotype_string.scan(/pos/i).size.positive?
-                genotype.add_variant_class( genotype_string.scan(/[0-9]/i).join.to_i)
-                if genotype.attribute_map['genetictestscope'] == "Full screen BRCA1 and BRCA2"
+                genotype.add_variant_class(genotype_string.scan(/[0-9]/i).join.to_i)
+                if genotype.attribute_map['genetictestscope'] == 'Full screen BRCA1 and BRCA2'
                   process_negative_genes(positive_gene, genotype, genotypes)
                 end
                 if report_string.scan(CDNA_VARIANT_CLASS_REGEX).size.positive?
@@ -497,16 +491,16 @@ module Import
                 end
                 genotypes.append(genotype)
               elsif genotype_string.scan(/neg/i).size.positive?
-                  genotype.add_gene(report_string)
-                  genotype.add_status(1)
-                  genotypes.append(genotype)
+                genotype.add_gene(report_string)
+                genotype.add_status(1)
+                genotypes.append(genotype)
               end
               genotypes
             end
 
-            def process_word_report_tests(record, genotype, genotypes)
-              if genotype.attribute_map['genetictestscope'] == "Full screen BRCA1 and BRCA2"
-                reported_genes = ['BRCA1', 'BRCA2']
+            def process_word_report_tests(_record, genotype, genotypes)
+              if genotype.attribute_map['genetictestscope'] == 'Full screen BRCA1 and BRCA2'
+                reported_genes = %w[BRCA1 BRCA2]
                 reported_genes.each do |negative_gene|
                   genotype2 = genotype.dup
                   genotype2.add_gene(negative_gene)
@@ -514,7 +508,7 @@ module Import
                   genotypes.append(genotype2)
                 end
                 genotypes
-              else 
+              else
                 genotype.add_status(4)
                 genotypes.append(genotype)
               end
@@ -527,14 +521,14 @@ module Import
                                 or_else(Maybe(record.raw_fields['report_result']).
                                 or_else(''))
               report_string = Maybe([record.raw_fields['report'],
-                              record.mapped_fields['report'],
-                              record.raw_fields['firstofreport']].
+                                     record.mapped_fields['report'],
+                                     record.raw_fields['firstofreport']].
                               reject(&:nil?).first).or_else('')
-                              
+
               positive_gene   = [DEPRECATED_BRCA_NAMES_MAP[
                                 genotype_string.scan(DEPRECATED_BRCA_NAMES_REGEX).join
                                 ]]
-              if genotype.attribute_map['genetictestscope'] == "Full screen BRCA1 and BRCA2"
+              if genotype.attribute_map['genetictestscope'] == 'Full screen BRCA1 and BRCA2'
                 process_negative_genes(positive_gene, genotype, genotypes)
               end
               genotype.add_gene(positive_gene.join)
@@ -544,7 +538,7 @@ module Import
                   genotype.add_protein_impact(report_string.match(PROTEIN_REGEX)[:impact])
                 end
                 genotypes.append(genotype)
-              # else binding.pry ONLY THREE CASES TO SORT OUT
+                # else binding.pry ONLY THREE CASES TO SORT OUT
               end
             end
 
@@ -553,14 +547,14 @@ module Import
                                 or_else(Maybe(record.raw_fields['report_result']).
                                 or_else(''))
               report_string = Maybe([record.raw_fields['report'],
-                              record.mapped_fields['report'],
-                              record.raw_fields['firstofreport']].
+                                     record.mapped_fields['report'],
+                                     record.raw_fields['firstofreport']].
                               reject(&:nil?).first).or_else('')
-                              
+
               positive_gene   = [DEPRECATED_BRCA_NAMES_MAP[
                                 genotype_string.scan(DEPRECATED_BRCA_NAMES_REGEX).join
                                 ]]
-              if genotype.attribute_map['genetictestscope'] == "Full screen BRCA1 and BRCA2"
+              if genotype.attribute_map['genetictestscope'] == 'Full screen BRCA1 and BRCA2'
                 process_negative_genes(positive_gene, genotype, genotypes)
               end
               genotype.add_gene(positive_gene.join)
@@ -582,8 +576,8 @@ module Import
 
             def process_double_normal_mlpa_test(record, genotype, genotypes)
               report_string = Maybe([record.raw_fields['report'],
-                              record.mapped_fields['report'],
-                              record.raw_fields['firstofreport']].
+                                     record.mapped_fields['report'],
+                                     record.raw_fields['firstofreport']].
                               reject(&:nil?).first).or_else('')
               genotype_string = Maybe(record.raw_fields['genotype']).
                                 or_else(Maybe(record.raw_fields['report_result']).
@@ -602,218 +596,221 @@ module Import
               genotypes
             end
 
-              def process_ashkenazi_tests(record, genotype, genotypes)
-                report_string = Maybe([record.raw_fields['report'],
-                                record.mapped_fields['report'],
-                                record.raw_fields['firstofreport']].
-                                reject(&:nil?).first).or_else('')
-                genotype_string = Maybe(record.raw_fields['genotype']).
-                                  or_else(Maybe(record.raw_fields['report_result']).
-                                  or_else(''))
-                if  genotype_string.scan(AJPOSITIVE_REGEX).size.positive?
-                  if report_string.scan(CDNA_MUTATION_TYPES_REGEX).size.positive?
-                    variant = report_string.match(CDNA_MUTATION_TYPES_REGEX)
-                    positive_gene = [variant[:brca]]
-                    extract_cdna_variant_information(genotype, positive_gene, variant, genotypes)
-                  end
-                  genotypes
-                elsif  genotype_string.scan(AJNEGATIVE_REGEX).size.positive?
-                  genotype.add_gene(report_string.match(CDNA_MUTATION_TYPES_REGEX)[:brca])
-                  genotype.add_status(1)
-                  genotypes.append(genotype)
-                end
-                genotypes
-              end
-
-              # TODO: find more exceptions
-              def process_confirmation_test(record, genotype, genotypes)
-                report_string = Maybe([record.raw_fields['report'],
-                                record.mapped_fields['report'],
-                                record.raw_fields['firstofreport']].
-                                reject(&:nil?).first).or_else('')
-                genotype_string = Maybe(record.raw_fields['genotype']).
-                                  or_else(Maybe(record.raw_fields['report_result']).
-                                  or_else(''))
-                confirmation_test_details = genotype_string.match(CONFIRMATION_REGEX)
-                if confirmation_test_details[:status] == 'neg'
-                  genotype.add_gene(confirmation_test_details[:brca].to_i)
-                  genotype.add_status(1)
-                  genotypes.append(genotype)
-                elsif confirmation_test_details[:status] == 'pos'
-                  if report_string.scan(PREDICTIVE_REPORT_REGEX_POSITIVE).size.positive?
-                    variant = report_string.match(PREDICTIVE_REPORT_REGEX_POSITIVE)
-                    positive_gene = [variant[:brca]]
-                    extract_cdna_variant_information(genotype, positive_gene, variant, genotypes)
-                  elsif report_string.scan(PREDICTIVE_POSITIVE_EXON).size.positive?
-                    exon_variants = report_string.match(PREDICTIVE_POSITIVE_EXON)
-                    positive_gene = [exon_variants[:brca]]
-                    extract_exon_variant(genotype, positive_gene, exon_variants, genotypes)
-                  elsif report_string.scan(PREDICTIVE_MLPA_POSITIVE).size.positive?
-                    exon_variants = report_string.match(PREDICTIVE_MLPA_POSITIVE)
-                    positive_gene = [exon_variants[:brca]]
-                    extract_exon_variant(genotype, positive_gene, exon_variants, genotypes)
-                  elsif report_string.scan(CDNA_VARIANT_CLASS_REGEX).size.positive?
-                    variant = report_string.match(CDNA_VARIANT_CLASS_REGEX)
-                    positive_gene = [variant[:brca]]
-                    extract_cdna_variant_information(genotype, positive_gene, variant, genotypes)
-                  end
-                end
-              end
-
-              # TODO: find more exceptions
-              def process_variant_class_records(record, genotype, genotypes)
-                report_string = Maybe([record.raw_fields['report'],
-                                record.mapped_fields['report'],
-                                record.raw_fields['firstofreport']].
-                                reject(&:nil?).first).or_else('')
-                genotype_string = Maybe(record.raw_fields['genotype']).
-                                  or_else(Maybe(record.raw_fields['report_result']).
-                                  or_else(''))
-                tested_gene = genotype_string.match(VARIANT_CLASS_REGEX)[:brca]
-                positive_gene = [DEPRECATED_BRCA_NAMES_MAP[tested_gene]]
-                if report_string.scan(EXON_LOCATION).size.positive?
-                  if genotype.attribute_map['genetictestscope'] == "Full screen BRCA1 and BRCA2"
-                    process_negative_genes(positive_gene, genotype, genotypes)
-                  end
-                  exon_variant = report_string.match(EXON_LOCATION)
-                  genotype.add_gene(positive_gene.join)
-                  Maybe(exon_variant[:variantclass]).map { |x| genotype.add_variant_class(x) }
-                  Maybe(exon_variant[:mutationtype]).map { |x| genotype.add_variant_type(x) }
-                  Maybe(exon_variant[:exons]).map { |x| genotype.add_exon_location(x)}
-                  genotype.add_status(2)
-                  genotypes.append(genotype)
-                elsif report_string.scan(PROMOTER_EXON_LOCATION).size.positive?
-                  if genotype.attribute_map['genetictestscope'] == "Full screen BRCA1 and BRCA2"
-                    process_negative_genes(positive_gene, genotype, genotypes)
-                  end
-                  promoter_variant = report_string.match(PROMOTER_EXON_LOCATION)
-                  genotype.add_gene(positive_gene.join)
-                  Maybe(promoter_variant[:variantclass]).map { |x| genotype.add_variant_class(x) }
-                  Maybe(promoter_variant[:mutationtype]).map { |x| genotype.add_variant_type(x) }
-                  Maybe(promoter_variant[:exons]).map { |x| genotype.add_exon_location(x)}
-                  genotype.add_status(2)
-                  genotypes.append(genotype)
-                elsif report_string.scan(EXON_LOCATION_EXCEPTIONS).size.positive?
-                  if genotype.attribute_map['genetictestscope'] == "Full screen BRCA1 and BRCA2"
-                    process_negative_genes(positive_gene, genotype, genotypes)
-                  end
-                  exc_exon_variant = report_string.match(EXON_LOCATION_EXCEPTIONS)
-                  genotype.add_gene(positive_gene.join)
-                  Maybe(exc_exon_variant[:mutationtype]).map { |x| genotype.add_variant_type(x) }
-                  Maybe(exc_exon_variant[:exons]).map { |x| genotype.add_exon_location(x)}
-                  genotype.add_status(2)
-                  genotypes.append(genotype)
-                elsif report_string.scan(CDNA_VARIANT_CLASS_REGEX).size.positive?
-                  if genotype.attribute_map['genetictestscope'] == "Full screen BRCA1 and BRCA2"
-                    process_negative_genes(positive_gene, genotype, genotypes)
-                  end
-                  variant = report_string.match(CDNA_VARIANT_CLASS_REGEX)
-                  extract_cdna_variant_information(genotype, positive_gene, variant, genotypes)
-                elsif report_string.scan(CDNA_MUTATION_TYPES_REGEX).size.positive?
-                  if genotype.attribute_map['genetictestscope'] == "Full screen BRCA1 and BRCA2"
-                    process_negative_genes(positive_gene, genotype, genotypes)
-                  end
+            def process_ashkenazi_tests(record, genotype, genotypes)
+              report_string = Maybe([record.raw_fields['report'],
+                                     record.mapped_fields['report'],
+                                     record.raw_fields['firstofreport']].
+                              reject(&:nil?).first).or_else('')
+              genotype_string = Maybe(record.raw_fields['genotype']).
+                                or_else(Maybe(record.raw_fields['report_result']).
+                                or_else(''))
+              if genotype_string.scan(AJPOSITIVE_REGEX).size.positive?
+                if report_string.scan(CDNA_MUTATION_TYPES_REGEX).size.positive?
                   variant = report_string.match(CDNA_MUTATION_TYPES_REGEX)
+                  positive_gene = [variant[:brca]]
                   extract_cdna_variant_information(genotype, positive_gene, variant, genotypes)
-                elsif report_string.scan(MUTATION_DETECTED_REGEX).size.positive?
-                  if genotype.attribute_map['genetictestscope'] == "Full screen BRCA1 and BRCA2"
-                    process_negative_genes(positive_gene, genotype, genotypes)
-                  end
-                  variant = report_string.match(MUTATION_DETECTED_REGEX)
-                  extract_cdna_variant_information(genotype, positive_gene, variant, genotypes)
-                elsif report_string.scan(CDNA_REGEX).uniq.size > 1
-                  if report_string.sub(/.*?\. /, '').scan(BRCA_REGEX).uniq.size == 1
-                    extract_multiplecdnas_samegene(genotype, report_string, positive_gene, genotypes)
-                  elsif report_string.sub(/.*?\. /, '').scan(BRCA_REGEX).uniq.size == 2
-                    extract_multiplecdnas_multiplegene(report_string, genotype, genotypes)
-                  end
-                elsif report_string.scan(CDNA_PROTEIN_COMBO_EXCEPTIONS).size.positive?
-                  if genotype.attribute_map['genetictestscope'] == "Full screen BRCA1 and BRCA2"
-                    process_negative_genes(positive_gene, genotype, genotypes)
-                  end
-                  variant = report_string.match(CDNA_PROTEIN_COMBO_EXCEPTIONS)
-                  extract_cdna_variant_information(genotype, positive_gene, variant,
-                                                   varclass, genotypes)
                 end
                 genotypes
+              elsif genotype_string.scan(AJNEGATIVE_REGEX).size.positive?
+                genotype.add_gene(report_string.match(CDNA_MUTATION_TYPES_REGEX)[:brca])
+                genotype.add_status(1)
+                genotypes.append(genotype)
               end
+              genotypes
+            end
 
-              def extract_multiplecdnas_samegene(genotype, report_string, positive_gene, genotypes)
-                if genotype.attribute_map['genetictestscope'] == "Full screen BRCA1 and BRCA2"
+            # TODO: find more exceptions
+            def process_confirmation_test(record, genotype, genotypes)
+              report_string = Maybe([record.raw_fields['report'],
+                                     record.mapped_fields['report'],
+                                     record.raw_fields['firstofreport']].
+                              reject(&:nil?).first).or_else('')
+              genotype_string = Maybe(record.raw_fields['genotype']).
+                                or_else(Maybe(record.raw_fields['report_result']).
+                                or_else(''))
+              confirmation_test_details = genotype_string.match(CONFIRMATION_REGEX)
+              case confirmation_test_details[:status]
+              when 'neg'
+                genotype.add_gene(confirmation_test_details[:brca].to_i)
+                genotype.add_status(1)
+                genotypes.append(genotype)
+              when 'pos'
+                if report_string.scan(PREDICTIVE_REPORT_REGEX_POSITIVE).size.positive?
+                  variant = report_string.match(PREDICTIVE_REPORT_REGEX_POSITIVE)
+                  positive_gene = [variant[:brca]]
+                  extract_cdna_variant_information(genotype, positive_gene, variant, genotypes)
+                elsif report_string.scan(PREDICTIVE_POSITIVE_EXON).size.positive?
+                  exon_variants = report_string.match(PREDICTIVE_POSITIVE_EXON)
+                  positive_gene = [exon_variants[:brca]]
+                  extract_exon_variant(genotype, positive_gene, exon_variants, genotypes)
+                elsif report_string.scan(PREDICTIVE_MLPA_POSITIVE).size.positive?
+                  exon_variants = report_string.match(PREDICTIVE_MLPA_POSITIVE)
+                  positive_gene = [exon_variants[:brca]]
+                  extract_exon_variant(genotype, positive_gene, exon_variants, genotypes)
+                elsif report_string.scan(CDNA_VARIANT_CLASS_REGEX).size.positive?
+                  variant = report_string.match(CDNA_VARIANT_CLASS_REGEX)
+                  positive_gene = [variant[:brca]]
+                  extract_cdna_variant_information(genotype, positive_gene, variant, genotypes)
+                end
+              end
+            end
+
+            # TODO: find more exceptions
+            def process_variant_class_records(record, genotype, genotypes)
+              report_string = Maybe([record.raw_fields['report'],
+                                     record.mapped_fields['report'],
+                                     record.raw_fields['firstofreport']].
+                              reject(&:nil?).first).or_else('')
+              genotype_string = Maybe(record.raw_fields['genotype']).
+                                or_else(Maybe(record.raw_fields['report_result']).
+                                or_else(''))
+              tested_gene = genotype_string.match(VARIANT_CLASS_REGEX)[:brca]
+              positive_gene = [DEPRECATED_BRCA_NAMES_MAP[tested_gene]]
+              if report_string.scan(EXON_LOCATION).size.positive?
+                if genotype.attribute_map['genetictestscope'] == 'Full screen BRCA1 and BRCA2'
                   process_negative_genes(positive_gene, genotype, genotypes)
                 end
-                if report_string.scan(CDNA_REGEX).uniq.size == 2 
-                  extract_double_cdna_variants(report_string, genotype, genotypes)
-                else
-                  cdnas = report_string.scan(CDNA_REGEX).flatten.compact.uniq
-                  cdnas.each do |cdna|
-                    mutant_genotype = genotype.dup
-                    mutant_genotype.add_gene(positive_gene.join)
-                    mutant_genotype.add_gene_location(cdna)
-                    mutant_genotype.add_status(2)
-                    genotypes.append(mutant_genotype)
-                    genotypes
-                  end
-                  genotypes
+                exon_variant = report_string.match(EXON_LOCATION)
+                genotype.add_gene(positive_gene.join)
+                Maybe(exon_variant[:variantclass]).map { |x| genotype.add_variant_class(x) }
+                Maybe(exon_variant[:mutationtype]).map { |x| genotype.add_variant_type(x) }
+                Maybe(exon_variant[:exons]).map { |x| genotype.add_exon_location(x) }
+                genotype.add_status(2)
+                genotypes.append(genotype)
+              elsif report_string.scan(PROMOTER_EXON_LOCATION).size.positive?
+                if genotype.attribute_map['genetictestscope'] == 'Full screen BRCA1 and BRCA2'
+                  process_negative_genes(positive_gene, genotype, genotypes)
                 end
+                promoter_variant = report_string.match(PROMOTER_EXON_LOCATION)
+                genotype.add_gene(positive_gene.join)
+                Maybe(promoter_variant[:variantclass]).map { |x| genotype.add_variant_class(x) }
+                Maybe(promoter_variant[:mutationtype]).map { |x| genotype.add_variant_type(x) }
+                Maybe(promoter_variant[:exons]).map { |x| genotype.add_exon_location(x) }
+                genotype.add_status(2)
+                genotypes.append(genotype)
+              elsif report_string.scan(EXON_LOCATION_EXCEPTIONS).size.positive?
+                if genotype.attribute_map['genetictestscope'] == 'Full screen BRCA1 and BRCA2'
+                  process_negative_genes(positive_gene, genotype, genotypes)
+                end
+                exc_exon_variant = report_string.match(EXON_LOCATION_EXCEPTIONS)
+                genotype.add_gene(positive_gene.join)
+                Maybe(exc_exon_variant[:mutationtype]).map { |x| genotype.add_variant_type(x) }
+                Maybe(exc_exon_variant[:exons]).map { |x| genotype.add_exon_location(x) }
+                genotype.add_status(2)
+                genotypes.append(genotype)
+              elsif report_string.scan(CDNA_VARIANT_CLASS_REGEX).size.positive?
+                if genotype.attribute_map['genetictestscope'] == 'Full screen BRCA1 and BRCA2'
+                  process_negative_genes(positive_gene, genotype, genotypes)
+                end
+                variant = report_string.match(CDNA_VARIANT_CLASS_REGEX)
+                extract_cdna_variant_information(genotype, positive_gene, variant, genotypes)
+              elsif report_string.scan(CDNA_MUTATION_TYPES_REGEX).size.positive?
+                if genotype.attribute_map['genetictestscope'] == 'Full screen BRCA1 and BRCA2'
+                  process_negative_genes(positive_gene, genotype, genotypes)
+                end
+                variant = report_string.match(CDNA_MUTATION_TYPES_REGEX)
+                extract_cdna_variant_information(genotype, positive_gene, variant, genotypes)
+              elsif report_string.scan(MUTATION_DETECTED_REGEX).size.positive?
+                if genotype.attribute_map['genetictestscope'] == 'Full screen BRCA1 and BRCA2'
+                  process_negative_genes(positive_gene, genotype, genotypes)
+                end
+                variant = report_string.match(MUTATION_DETECTED_REGEX)
+                extract_cdna_variant_information(genotype, positive_gene, variant, genotypes)
+              elsif report_string.scan(CDNA_REGEX).uniq.size > 1
+                case report_string.sub(/.*?\. /, '').scan(BRCA_REGEX).uniq.size
+                when 1
+                  extract_multiplecdnas_samegene(genotype, report_string, positive_gene,
+                                                 genotypes)
+                when 2
+                  extract_multiplecdnas_multiplegene(report_string, genotype, genotypes)
+                end
+              elsif report_string.scan(CDNA_PROTEIN_COMBO_EXCEPTIONS).size.positive?
+                if genotype.attribute_map['genetictestscope'] == 'Full screen BRCA1 and BRCA2'
+                  process_negative_genes(positive_gene, genotype, genotypes)
+                end
+                variant = report_string.match(CDNA_PROTEIN_COMBO_EXCEPTIONS)
+                extract_cdna_variant_information(genotype, positive_gene, variant,
+                                                 varclass, genotypes)
               end
+              genotypes
+            end
 
-              def extract_multiplecdnas_multiplegene(report_string, genotype, genotypes)
-                genes = report_string.sub(/.*?\. /, '').scan(BRCA_REGEX).uniq.flatten.compact
-                cdnas = report_string.sub(/.*?\. /, '').scan(CDNA_REGEX).uniq.flatten.compact
-                variants = genes.zip(cdnas)
-                variants.each do |gene, cdna|
+            def extract_multiplecdnas_samegene(genotype, report_string, positive_gene, genotypes)
+              if genotype.attribute_map['genetictestscope'] == 'Full screen BRCA1 and BRCA2'
+                process_negative_genes(positive_gene, genotype, genotypes)
+              end
+              if report_string.scan(CDNA_REGEX).uniq.size == 2
+                extract_double_cdna_variants(report_string, genotype, genotypes)
+              else
+                cdnas = report_string.scan(CDNA_REGEX).flatten.compact.uniq
+                cdnas.each do |cdna|
                   mutant_genotype = genotype.dup
-                  mutant_genotype.add_gene(gene)
+                  mutant_genotype.add_gene(positive_gene.join)
                   mutant_genotype.add_gene_location(cdna)
                   mutant_genotype.add_status(2)
                   genotypes.append(mutant_genotype)
                   genotypes
                 end
-              end
-
-              def process_variantseq_tests(record, genotype, genotypes)
-                report_string = Maybe([record.raw_fields['report'],
-                                record.mapped_fields['report'],
-                                record.raw_fields['firstofreport']].
-                                reject(&:nil?).first).or_else('')
-                genotype_string = Maybe(record.raw_fields['genotype']).
-                                  or_else(Maybe(record.raw_fields['report_result']).
-                                  or_else(''))
-                positive_gene = report_string.scan(BRCA_REGEX)
-                variant = report_string.match(GENE_LOCATION)
-                if genotype.attribute_map['genetictestscope'] == "Full screen BRCA1 and BRCA2"
-                  process_negative_genes(positive_gene, genotype, genotypes)
-                end
-                positive_gene = [report_string.match(BRCA_REGEX)[:brca]]
-                extract_cdna_variant_information(genotype, positive_gene, variant, genotypes)
-              end
-
-              def process_negative_genes(positive_gene, genotype, genotypes)
-                negative_genes = ['BRCA1', 'BRCA2'] - positive_gene
-                negative_genes.each do |negative_gene|
-                  genotype2 = genotype.dup
-                  genotype2.add_gene(negative_gene)
-                  genotype2.add_status(1)
-                  genotypes.append(genotype2)
-                  genotypes
-                end
                 genotypes
               end
+            end
 
-              def process_negative_genes_w_palb2(positive_gene, genotype, genotypes)
-                negative_genes = ['BRCA1', 'BRCA2', 'PALB2'] - positive_gene
-                negative_genes.each do |negative_gene|
-                  genotype2 = genotype.dup
-                  genotype2.add_gene(negative_gene)
-                  genotype2.add_status(1)
-                  genotypes.append(genotype2)
-                  genotypes
-                end
+            def extract_multiplecdnas_multiplegene(report_string, genotype, genotypes)
+              genes = report_string.sub(/.*?\. /, '').scan(BRCA_REGEX).uniq.flatten.compact
+              cdnas = report_string.sub(/.*?\. /, '').scan(CDNA_REGEX).uniq.flatten.compact
+              variants = genes.zip(cdnas)
+              variants.each do |gene, cdna|
+                mutant_genotype = genotype.dup
+                mutant_genotype.add_gene(gene)
+                mutant_genotype.add_gene_location(cdna)
+                mutant_genotype.add_status(2)
+                genotypes.append(mutant_genotype)
                 genotypes
               end
+            end
 
-            def process_doublenormal_tests(record, genotype, genotypes)
+            def process_variantseq_tests(record, genotype, genotypes)
+              report_string = Maybe([record.raw_fields['report'],
+                                     record.mapped_fields['report'],
+                                     record.raw_fields['firstofreport']].
+                              reject(&:nil?).first).or_else('')
+              genotype_string = Maybe(record.raw_fields['genotype']).
+                                or_else(Maybe(record.raw_fields['report_result']).
+                                or_else(''))
+              positive_gene = report_string.scan(BRCA_REGEX)
+              variant = report_string.match(GENE_LOCATION)
+              if genotype.attribute_map['genetictestscope'] == 'Full screen BRCA1 and BRCA2'
+                process_negative_genes(positive_gene, genotype, genotypes)
+              end
+              positive_gene = [report_string.match(BRCA_REGEX)[:brca]]
+              extract_cdna_variant_information(genotype, positive_gene, variant, genotypes)
+            end
+
+            def process_negative_genes(positive_gene, genotype, genotypes)
+              negative_genes = %w[BRCA1 BRCA2] - positive_gene
+              negative_genes.each do |negative_gene|
+                genotype2 = genotype.dup
+                genotype2.add_gene(negative_gene)
+                genotype2.add_status(1)
+                genotypes.append(genotype2)
+                genotypes
+              end
+              genotypes
+            end
+
+            def process_negative_genes_w_palb2(positive_gene, genotype, genotypes)
+              negative_genes = %w[BRCA1 BRCA2 PALB2] - positive_gene
+              negative_genes.each do |negative_gene|
+                genotype2 = genotype.dup
+                genotype2.add_gene(negative_gene)
+                genotype2.add_status(1)
+                genotypes.append(genotype2)
+                genotypes
+              end
+              genotypes
+            end
+
+            def process_doublenormal_tests(_record, genotype, genotypes)
               genotype2 = genotype.dup
               genotype.add_gene('BRCA1')
               genotype.add_status(1)
@@ -823,11 +820,10 @@ module Import
               genotypes.append(genotype2)
             end
 
-            def process_predictive_tests(record,genotype, genotypes)
-              
+            def process_predictive_tests(record, genotype, genotypes)
               report_string = Maybe([record.raw_fields['report'],
-                              record.mapped_fields['report'],
-                              record.raw_fields['firstofreport']].
+                                     record.mapped_fields['report'],
+                                     record.raw_fields['firstofreport']].
                               reject(&:nil?).first).or_else('')
               if report_string.scan(PREDICTIVE_REPORT_REGEX_POSITIVE).size.positive?
                 process_positive_predictive(report_string, genotype, genotypes)
@@ -843,7 +839,7 @@ module Import
                 process_positive_mlpa_predictive(report_string, genotype, genotypes)
               end
             end
-            
+
             def process_positive_predictive(report_string, genotype, genotypes)
               variant = report_string.gsub('\n', '').match(PREDICTIVE_REPORT_REGEX_POSITIVE)
               positive_gene = [variant[:brca]]
@@ -852,14 +848,18 @@ module Import
             end
 
             def process_negative_predictive(report_string, genotype, genotypes)
-              Maybe(report_string.match(PREDICTIVE_REPORT_REGEX_NEGATIVE)[:brca]).map { |x| genotype.add_gene(x) }
+              Maybe(report_string.match(PREDICTIVE_REPORT_REGEX_NEGATIVE)[:brca]).map do |x|
+                genotype.add_gene(x)
+              end
               genotype.add_status(1)
               genotypes.append(genotype)
               @logger.debug 'Sucessfully parsed negative pred record'
             end
 
             def process_negative_inherited_predictive(report_string, genotype, genotypes)
-              Maybe(report_string.match(PREDICTIVE_REPORT_NEGATIVE_INHERITED_REGEX)[:brca]).map { |x| genotype.add_gene(x) }
+              Maybe(report_string.match(PREDICTIVE_REPORT_NEGATIVE_INHERITED_REGEX)[:brca]).map do |x|
+                genotype.add_gene(x)
+              end
               genotype.add_status(1)
               genotypes.append(genotype)
               @logger.debug 'Sucessfully parsed negative INHERITED pred record'
@@ -870,14 +870,16 @@ module Import
               positive_gene = [exon_variants[:brca]]
               extract_exon_variant(genotype, positive_gene, exon_variants, genotypes)
             end
-            
+
             def process_negative_mlpa_predictive(report_string, genotype, genotypes)
-              Maybe(report_string.match(PREDICTIVE_MLPA_NEGATIVE)[:brca]).map { |x| genotype.add_gene(x) }
+              Maybe(report_string.match(PREDICTIVE_MLPA_NEGATIVE)[:brca]).map do |x|
+                genotype.add_gene(x)
+              end
               genotype.add_status(1)
               genotypes.append(genotype)
               @logger.debug 'Sucessfully parsed NEGATIVE MLPA pred record'
             end
-            
+
             def process_positive_mlpa_predictive(report_string, genotype, genotypes)
               exon_variants = report_string.gsub('\n', '').match(PREDICTIVE_MLPA_POSITIVE)
               positive_gene = [exon_variants[:brca]]
@@ -886,21 +888,21 @@ module Import
 
             def extract_cdna_variant_information(genotype, positive_gene, variant, genotypes)
               genotype.add_gene(positive_gene.join)
-              Maybe(variant[:location]).map { |x| genotype.add_gene_location(x)} if
+              Maybe(variant[:location]).map { |x| genotype.add_gene_location(x) } if
               variant.names.include? 'location'
-              Maybe(variant[:impact]).map {|x| genotype.add_protein_impact(x)} if
+              Maybe(variant[:impact]).map { |x| genotype.add_protein_impact(x) } if
               variant.names.include? 'impact'
-              Maybe(variant[:zygosity]).map {|x| genotype.add_zygosity(x)} if
+              Maybe(variant[:zygosity]).map { |x| genotype.add_zygosity(x) } if
               variant.names.include? 'zigosity'
-              Maybe(variant[:variantclass]). map {|x| genotype.add_variant_class(x)} if
+              Maybe(variant[:variantclass]).map { |x| genotype.add_variant_class(x) } if
               variant.names.include? 'variantclass'
-              Maybe(variant[:type]).map { |x| genotype.add_variant_impact(x)} if
+              Maybe(variant[:type]).map { |x| genotype.add_variant_impact(x) } if
               variant.names.include? 'type'
               genotypes.append(genotype)
             end
 
-            def brca_double_negative(record, genotype, genotypes)
-              reported_genes = ['BRCA1', 'BRCA2']
+            def brca_double_negative(_record, genotype, genotypes)
+              reported_genes = %w[BRCA1 BRCA2]
               reported_genes.each do |negative_gene|
                 genotype2 = genotype.dup
                 genotype2.add_gene(negative_gene)
@@ -914,17 +916,17 @@ module Import
             def extract_exon_variant(genotype, positive_gene, exon_variants, genotypes)
               genotype.add_gene(positive_gene.join)
               # Maybe(exon_variants[:zygosity]).map { |x| genotype.add_zygosity(x)}
-              Maybe(exon_variants[:variantclass]).map {|x| genotype.add_variant_class(x)}
-              Maybe(exon_variants[:brca]).map { |x| genotype.add_gene(x)}
-              Maybe(exon_variants[:mutationtype]).map { |x| genotype.add_variant_type(x)}
-              Maybe(exon_variants[:exons]).map { |x| genotype.add_exon_location(x)}
+              Maybe(exon_variants[:variantclass]).map { |x| genotype.add_variant_class(x) }
+              Maybe(exon_variants[:brca]).map { |x| genotype.add_gene(x) }
+              Maybe(exon_variants[:mutationtype]).map { |x| genotype.add_variant_type(x) }
+              Maybe(exon_variants[:exons]).map { |x| genotype.add_exon_location(x) }
               genotype.add_status(2)
               genotypes.append(genotype)
             end
 
             def extract_double_cdna_variants(report_string, genotype, genotypes)
+              cdnas = report_string.scan(CDNA_REGEX).flatten.compact.uniq
               if report_string.scan(PROTEIN_REGEX).uniq.size == 2
-                cdnas = report_string.scan(CDNA_REGEX).flatten.compact.uniq
                 proteins = report_string.scan(PROTEIN_REGEX).flatten.compact
                 variants = cdnas.zip(proteins)
                 variants.each do |cdna, protein|
@@ -936,9 +938,7 @@ module Import
                   genotypes.append(mutant_genotype)
                   genotypes
                 end
-                genotypes
               else
-                cdnas = report_string.scan(CDNA_REGEX).flatten.compact.uniq
                 cdnas.each do |cdna|
                   mutant_genotype = genotype.dup
                   mutant_genotype.add_gene(positive_gene.join)
@@ -947,10 +947,9 @@ module Import
                   genotypes.append(mutant_genotype)
                   genotypes
                 end
-                genotypes
               end
+              genotypes
             end
-
           end
         end
       end
