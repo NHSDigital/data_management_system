@@ -56,7 +56,7 @@ class ReportsTest < ActionDispatch::IntegrationTest
 
     visit report_path(id: 'open_project_report')
 
-    assert_equal root_path, current_path
+    assert_current_path root_path
     assert has_text?(/not authorized/i)
   end
 end

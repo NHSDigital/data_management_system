@@ -51,7 +51,7 @@ class ReleasesTest < ActionDispatch::IntegrationTest
       assert_difference -> { project.releases.count } do
         click_button('Create Release')
 
-        assert_equal project_path(project), current_path
+        assert_current_path project_path(project)
         assert has_text?('Release created successfully')
         assert has_selector?('#releasesTable', visible: true)
       end
@@ -74,7 +74,7 @@ class ReleasesTest < ActionDispatch::IntegrationTest
     assert_changes -> { release.reload.release_date } do
       click_button('Update Release')
 
-      assert_equal project_path(project), current_path
+      assert_current_path project_path(project)
       assert has_text?('Release updated successfully')
       assert has_selector?('#releasesTable', visible: true)
     end
@@ -93,7 +93,7 @@ class ReleasesTest < ActionDispatch::IntegrationTest
           click_link(href: release_path(release), title: 'Delete')
         end
 
-        assert_equal project_path(project), current_path
+        assert_current_path project_path(project)
         assert has_selector?('#releasesTable', visible: true)
       end
     end
@@ -109,7 +109,7 @@ class ReleasesTest < ActionDispatch::IntegrationTest
     click_on('Releases')
 
     click_link(href: release_path(release), title: 'Details')
-    assert_equal release_path(release), current_path
+    assert_current_path release_path(release)
   end
 
   test 'should redirect if unauthorized' do
@@ -121,7 +121,7 @@ class ReleasesTest < ActionDispatch::IntegrationTest
 
     visit edit_release_path(release)
 
-    refute_equal edit_release_path(release), current_path
+    assert_no_current_path edit_release_path(release)
     assert has_text?('You are not authorized to access this page.')
   end
 end

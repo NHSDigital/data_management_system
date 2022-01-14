@@ -45,7 +45,7 @@ class ContractsTest < ActionDispatch::IntegrationTest
       assert_difference -> { project.contracts.count } do
         click_button('Create Contract')
 
-        assert_equal project_path(project), current_path
+        assert_current_path project_path(project)
         assert has_text?('Contract created successfully')
         assert has_selector?('#contractsTable', visible: true)
       end
@@ -66,7 +66,7 @@ class ContractsTest < ActionDispatch::IntegrationTest
     assert_changes -> { contract.reload.destruction_form_received_date } do
       click_button('Update Contract')
 
-      assert_equal project_path(project), current_path
+      assert_current_path project_path(project)
       assert has_text?('Contract updated successfully')
       assert has_selector?('#contractsTable', visible: true)
     end
@@ -87,7 +87,7 @@ class ContractsTest < ActionDispatch::IntegrationTest
           click_link(href: contract_path(contract), title: 'Delete')
         end
 
-        assert_equal project_path(project), current_path
+        assert_current_path project_path(project)
         assert has_selector?('#contractsTable', visible: true)
       end
     end
@@ -103,7 +103,7 @@ class ContractsTest < ActionDispatch::IntegrationTest
     click_on('Contracts')
 
     click_link(href: contract_path(contract), title: 'Details')
-    assert_equal contract_path(contract), current_path
+    assert_current_path contract_path(contract)
   end
 
   test 'should be able to download attached document' do
@@ -114,7 +114,7 @@ class ContractsTest < ActionDispatch::IntegrationTest
     click_on('Contracts')
 
     click_link(href: contract_path(contract), title: 'Details')
-    assert_equal contract_path(contract), current_path
+    assert_current_path contract_path(contract)
 
     accept_prompt do
       click_link(href: download_contract_path(contract))
@@ -133,7 +133,7 @@ class ContractsTest < ActionDispatch::IntegrationTest
 
     visit edit_contract_path(contract)
 
-    refute_equal edit_contract_path(contract), current_path
+    assert_no_current_path edit_contract_path(contract)
     assert has_text?('You are not authorized to access this page.')
   end
 

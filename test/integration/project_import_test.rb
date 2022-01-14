@@ -16,7 +16,7 @@ class ProjectImportTest < ActionDispatch::IntegrationTest
 
     visit team_path(teams(:team_two))
 
-    assert_equal team_path(teams(:team_two)), current_path
+    assert_current_path team_path(teams(:team_two))
     assert has_no_button? 'Import'
     assert has_no_field? 'file'
   end
@@ -25,7 +25,7 @@ class ProjectImportTest < ActionDispatch::IntegrationTest
     team = teams(:team_two)
 
     visit team_path(team)
-    assert_equal team_path(team), current_path
+    assert_current_path team_path(team)
 
     click_button 'Import'
 
@@ -48,7 +48,7 @@ class ProjectImportTest < ActionDispatch::IntegrationTest
     team = teams(:team_two)
 
     visit team_path(team)
-    assert_equal team_path(team), current_path
+    assert_current_path team_path(team)
 
     click_button 'Import'
 
@@ -122,7 +122,7 @@ class ProjectImportTest < ActionDispatch::IntegrationTest
 
         assert has_no_text?('Provisional Title')
         assert has_text?('My Test Import Project')
-        assert_equal project_path(project), current_path
+        assert_current_path project_path(project)
       end
     end
   end

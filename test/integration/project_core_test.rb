@@ -106,7 +106,7 @@ class ProjectCoreTest < ActionDispatch::IntegrationTest
       end
     end
 
-    assert_equal project_path(@eoi), current_path
+    assert_current_path project_path(@eoi)
     assert page.has_text? 'EOI was successfully assigned'
     assert_equal assigned_user, @eoi.reload.assigned_user
 
@@ -169,7 +169,7 @@ class ProjectCoreTest < ActionDispatch::IntegrationTest
       end
     end
 
-    assert_equal dashboard_projects_path, current_path
+    assert_current_path dashboard_projects_path
   end
 
   test 'should be able to see linked projects' do
