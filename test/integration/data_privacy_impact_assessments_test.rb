@@ -51,7 +51,7 @@ class DataPrivacyImpactAssessmentsTest < ActionDispatch::IntegrationTest
       assert_difference -> { project.dpias.count } do
         click_button('Create DPIA')
 
-        assert_equal project_path(project), current_path
+        assert_current_path project_path(project)
         assert has_text?('DPIA created successfully')
         # assert has_selector?('#projectAmendments', visible: true)
       end
@@ -76,7 +76,7 @@ class DataPrivacyImpactAssessmentsTest < ActionDispatch::IntegrationTest
     assert_changes -> { dpia.reload.dpia_decision_date } do
       click_button('Update DPIA')
 
-      assert_equal project_path(project), current_path
+      assert_current_path project_path(project)
       assert has_text?('DPIA updated successfully')
       #assert has_selector?('#projectAmendments', visible: true)
     end
@@ -99,7 +99,7 @@ class DataPrivacyImpactAssessmentsTest < ActionDispatch::IntegrationTest
           click_link(href: data_privacy_impact_assessment_path(dpia), title: 'Delete')
         end
 
-        assert_equal project_path(project), current_path
+        assert_current_path project_path(project)
       end
     end
 
@@ -115,7 +115,7 @@ class DataPrivacyImpactAssessmentsTest < ActionDispatch::IntegrationTest
     click_on('DPIAs')
 
     click_link(href: data_privacy_impact_assessment_path(dpia), title: 'Details')
-    assert_equal data_privacy_impact_assessment_path(dpia), current_path
+    assert_current_path data_privacy_impact_assessment_path(dpia)
   end
 
   test 'should be able to download attached document' do
@@ -126,7 +126,7 @@ class DataPrivacyImpactAssessmentsTest < ActionDispatch::IntegrationTest
     click_on('DPIAs')
 
     click_link(href: data_privacy_impact_assessment_path(dpia), title: 'Details')
-    assert_equal data_privacy_impact_assessment_path(dpia), current_path
+    assert_current_path data_privacy_impact_assessment_path(dpia)
 
     accept_prompt do
       click_link(href: download_data_privacy_impact_assessment_path(dpia))
@@ -145,7 +145,7 @@ class DataPrivacyImpactAssessmentsTest < ActionDispatch::IntegrationTest
 
     visit edit_data_privacy_impact_assessment_path(dpia)
 
-    refute_equal edit_data_privacy_impact_assessment_path(dpia), current_path
+    assert_no_current_path edit_data_privacy_impact_assessment_path(dpia)
     assert has_text?('You are not authorized to access this page.')
   end
 end

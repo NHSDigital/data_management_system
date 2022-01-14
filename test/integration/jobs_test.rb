@@ -8,7 +8,7 @@ class JobsTest < ActionDispatch::IntegrationTest
   test 'should get index' do
     visit jobs_path
 
-    assert_equal jobs_path, current_path
+    assert_current_path jobs_path
   end
 
   test 'should get show' do
@@ -18,7 +18,7 @@ class JobsTest < ActionDispatch::IntegrationTest
 
     click_link('Details', href: job_path(job))
 
-    assert_equal job_path(job), current_path
+    assert_current_path job_path(job)
     assert has_link?(href: jobs_path)
     assert has_link?('Delete', href: job_path(job))
   end
@@ -33,7 +33,7 @@ class JobsTest < ActionDispatch::IntegrationTest
         click_link('Delete', href: job_path(job))
       end
 
-      assert_equal jobs_path, current_path
+      assert_current_path jobs_path
       assert has_text?('Job was successfully destroyed')
       assert has_no_text?('Cannot destroy job')
       assert has_no_selector?('tr', id: "job_#{job.id}")
@@ -50,7 +50,7 @@ class JobsTest < ActionDispatch::IntegrationTest
         click_link('Delete', href: job_path(job))
       end
 
-      assert_equal jobs_path, current_path
+      assert_current_path jobs_path
       assert has_no_text?('Job was successfully destroyed')
       assert has_text?('Cannot destroy job')
       assert has_selector?('tr', id: "job_#{job.id}")
@@ -65,7 +65,7 @@ class JobsTest < ActionDispatch::IntegrationTest
 
     visit jobs_path
 
-    assert_equal root_path, current_path
+    assert_current_path root_path
     assert has_text?('not authorized')
   end
 
@@ -83,6 +83,6 @@ class JobsTest < ActionDispatch::IntegrationTest
 
     assert has_text?('Job not found')
     assert has_no_selector?('tr', id: "job_#{job.id}")
-    assert_equal jobs_path, current_path
+    assert_current_path jobs_path
   end
 end

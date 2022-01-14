@@ -14,7 +14,7 @@ class DataAssetsTest < ActionDispatch::IntegrationTest
       click_button :submit
     end
 
-    assert_equal data_assets_path, current_path
+    assert_current_path data_assets_path, ignore_query: true
     within('table') do
       assert has_no_text?('Birth')
     end

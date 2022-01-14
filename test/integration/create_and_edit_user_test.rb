@@ -65,13 +65,13 @@ class CreateAndEditUserTest < ActionDispatch::IntegrationTest
     user.grants.create!(team: team, roleable: team_roles(:mbis_applicant))
 
     visit user_path(user)
-    assert_equal user_path(user), current_path
+    assert_current_path user_path(user)
 
     click_link('Roles')
-    assert_equal user_grants_path(user), current_path
+    assert_current_path user_grants_path(user)
 
     page.find('#user-team-grants').click_link 'Edit'
-    assert_equal edit_team_user_grants_path(user), current_path
+    assert_current_path edit_team_user_grants_path(user)
 
     assert_difference('Grant.count', +2) do
       page.check("grants_TeamRole_#{teams(:team_one).id}_#{TeamRole.fetch(:read_only).id}")

@@ -13,13 +13,13 @@ class OrganisationsFlowsTest < ActionDispatch::IntegrationTest
 
     visit edit_organisation_path(@organisation)
 
-    assert_equal root_path, current_path
+    assert_current_path root_path
     assert page.has_text? 'You are not authorized to access this page'
   end
 
   test 'should be able to create organisations' do
     visit new_organisation_path
-    assert_equal new_organisation_path, current_path
+    assert_current_path new_organisation_path
 
     fill_in :organisation_name, with: 'New Test Organisation'
     select 'Other', from: :organisation_organisation_type_id
@@ -38,13 +38,13 @@ class OrganisationsFlowsTest < ActionDispatch::IntegrationTest
 
     new_organisation = Organisation.order(:created_at).last
 
-    assert_equal organisation_path(new_organisation), current_path
+    assert_current_path organisation_path(new_organisation)
     assert page.has_text? 'Organisation was successfully created.'
   end
 
   test 'should be able to update organisations' do
     visit edit_organisation_path(@organisation)
-    assert_equal edit_organisation_path(@organisation), current_path
+    assert_current_path edit_organisation_path(@organisation)
 
     fill_in :organisation_name, with: ''
 
@@ -62,7 +62,7 @@ class OrganisationsFlowsTest < ActionDispatch::IntegrationTest
       click_button 'Update Organisation'
     end
 
-    assert_equal organisation_path(@organisation), current_path
+    assert_current_path organisation_path(@organisation)
     assert page.has_text? 'Organisation was successfully updated.'
   end
 
@@ -78,13 +78,13 @@ class OrganisationsFlowsTest < ActionDispatch::IntegrationTest
       end
     end
 
-    assert_equal organisations_path, current_path
+    assert_current_path organisations_path
     assert page.has_text? 'Organisation was successfully destroyed.'
   end
 
   test 'can create organisation with addresses' do
     visit new_organisation_path
-    assert_equal new_organisation_path, current_path
+    assert_current_path new_organisation_path
 
     fill_in :organisation_name, with: 'Hammond Organ'
     select 'Other', from: :organisation_organisation_type_id
@@ -111,7 +111,7 @@ class OrganisationsFlowsTest < ActionDispatch::IntegrationTest
       click_button :submit
     end
 
-    assert_equal organisations_path, current_path
+    assert_current_path organisations_path, ignore_query: true
 
     within('table') do
       assert has_text?('Test Organisation One')

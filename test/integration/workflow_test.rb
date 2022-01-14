@@ -15,7 +15,7 @@ class WorkflowTest < ActionDispatch::IntegrationTest
     click_on 'Accept'
 
     visit project_path(project)
-    assert_equal project_path(project), current_path
+    assert_current_path project_path(project)
 
     assert_no_difference -> { project.project_states.count } do
       accept_prompt do
@@ -40,7 +40,7 @@ class WorkflowTest < ActionDispatch::IntegrationTest
     click_on 'Accept'
 
     visit project_path(project)
-    assert_equal project_path(project), current_path
+    assert_current_path project_path(project)
 
     assert_difference -> { project.project_states.count } do
       accept_prompt do

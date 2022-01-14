@@ -10,7 +10,7 @@ class HomePageTest < ActionDispatch::IntegrationTest
     within '.navbar' do
       click_link('Data Management System')
     end
-    assert_equal home_index_path, current_path
+    assert_current_path home_index_path
   end
 
   test 'should return projects index page for cas role user' do
@@ -22,7 +22,7 @@ class HomePageTest < ActionDispatch::IntegrationTest
     within '.navbar' do
       click_link('Data Management System')
     end
-    assert_equal home_index_path, current_path
+    assert_current_path home_index_path
   end
 
   test 'should return home index page for standard user' do
@@ -34,7 +34,7 @@ class HomePageTest < ActionDispatch::IntegrationTest
     within '.navbar' do
       click_link('Data Management System')
     end
-    assert_equal home_index_path, current_path
+    assert_current_path home_index_path
   end
 
   test 'should visit Cas application form when clicking CAS Application Form link if in test' do
@@ -80,7 +80,7 @@ class HomePageTest < ActionDispatch::IntegrationTest
 
     click_link('My Applications')
 
-    assert_equal projects_path, current_path
+    assert_current_path projects_path
   end
 
   test 'should visit datasets page when clicking ODR Datasets link' do
@@ -91,6 +91,6 @@ class HomePageTest < ActionDispatch::IntegrationTest
 
     click_link('ODR Datasets')
 
-    assert_equal datasets_path, current_path
+    assert_current_path datasets_path
   end
 end

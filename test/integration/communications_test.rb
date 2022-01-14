@@ -152,7 +152,7 @@ class CommunicationsTest < ActionDispatch::IntegrationTest
     assert has_no_selector?('.communication',        visible: :all)
 
     visit project_communications_path(@project)
-    assert_equal root_path, current_path
+    assert_current_path root_path
     # assert has_text?('not authorized') # NOTE: Flakey (!?!?!)
   end
 

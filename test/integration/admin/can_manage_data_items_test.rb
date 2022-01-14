@@ -152,7 +152,8 @@ class CanManageDataItemsTest < ActionDispatch::IntegrationTest
   end
 
   test 'can drag and drop and save sort order' do
-    visit dataset_version_path(sact_dataset_version)
+    original_path = dataset_version_path(sact_dataset_version)
+    visit original_path
     
     record_node = sact_dataset_version.version_entity.child_nodes.first
     assert_equal 'Record', record_node.name
@@ -182,7 +183,7 @@ class CanManageDataItemsTest < ActionDispatch::IntegrationTest
     end
 
     # Revisit path and expect order to have saved and visible
-    visit current_path
+    visit original_path
 
     assert_equal 1, Nodes::Entity.find_by(name: 'Outcome').sort,
                     'Drag and Drop node did not save sort order'

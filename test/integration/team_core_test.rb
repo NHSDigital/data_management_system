@@ -41,7 +41,7 @@ class TeamCoreTest < ActionDispatch::IntegrationTest
       click_button :submit, match: :first
     end
 
-    assert_equal teams_path, current_path
+    assert_current_path teams_path, ignore_query: true
     within('table') do
       assert has_text?('team_one')
       assert has_no_text?('team_two')
@@ -56,7 +56,7 @@ class TeamCoreTest < ActionDispatch::IntegrationTest
       click_button :submit, match: :first
     end
 
-    assert_equal teams_path, current_path
+    assert_current_path teams_path, ignore_query: true
     within('table') do
       assert has_text?('Dream Team')
       assert has_no_text?('team_two')

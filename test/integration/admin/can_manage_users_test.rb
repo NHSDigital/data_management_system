@@ -38,7 +38,7 @@ class CanManageUsersTest < ActionDispatch::IntegrationTest
       click_button :submit
     end
 
-    assert_equal users_path, current_path
+    assert_current_path users_path, ignore_query: true
     within('table') do
       assert has_text?('fizzy')
       assert has_no_text?('Manager')

@@ -51,7 +51,7 @@ class ProjectAmendmentsTest < ActionDispatch::IntegrationTest
     assert_difference -> { project.project_amendments.count } do
       click_button('Create Amendment')
 
-      assert_equal project_path(project), current_path
+      assert_current_path project_path(project)
       assert has_text?('Amendment created successfully')
       assert has_selector?('#projectAmendments', visible: true)
     end
@@ -84,7 +84,7 @@ class ProjectAmendmentsTest < ActionDispatch::IntegrationTest
       assert_no_changes -> { amendment.reference } do
         click_button('Update Amendment')
 
-        assert_equal project_path(project), current_path
+        assert_current_path project_path(project)
         assert has_text?('Amendment updated successfully')
         assert has_selector?('#projectAmendments', visible: true)
       end
@@ -110,7 +110,7 @@ class ProjectAmendmentsTest < ActionDispatch::IntegrationTest
         click_link(href: project_amendment_path(amendment), title: 'Delete')
       end
 
-      assert_equal project_path(project), current_path
+      assert_current_path project_path(project)
     end
 
     assert has_text?('Amendment destroyed successfully')
@@ -125,7 +125,7 @@ class ProjectAmendmentsTest < ActionDispatch::IntegrationTest
     click_on('Amendments')
 
     click_link(href: project_amendment_path(amendment), title: 'Details')
-    assert_equal project_amendment_path(amendment), current_path
+    assert_current_path project_amendment_path(amendment)
   end
 
   test 'should redirect if unauthorized' do
@@ -137,7 +137,7 @@ class ProjectAmendmentsTest < ActionDispatch::IntegrationTest
 
     visit edit_project_amendment_path(amendment)
 
-    refute_equal project_amendment_path(amendment), current_path
+    assert_no_current_path project_amendment_path(amendment)
     assert has_text?('You are not authorized to access this page.')
   end
 

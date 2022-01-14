@@ -181,7 +181,7 @@ class ProjectSearchTest < ActionDispatch::IntegrationTest
       click_button :submit
     end
 
-    assert_equal dashboard_projects_path, current_path
+    assert_current_path dashboard_projects_path, ignore_query: true
     assert has_no_content? 'My Projects'
     assert has_no_content? 'Assigned Projects'
     assert has_content? 'Unassigned Projects'
@@ -221,7 +221,7 @@ class ProjectSearchTest < ActionDispatch::IntegrationTest
       click_button :submit
     end
 
-    assert_equal dashboard_projects_path, current_path
+    assert_current_path dashboard_projects_path, ignore_query: true
     assert has_no_content? 'My Projects'
     assert has_content? 'Assigned Projects'
     assert has_no_content? 'Unassigned Projects'

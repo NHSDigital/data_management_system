@@ -18,7 +18,7 @@ class AuditTest < ActionDispatch::IntegrationTest
 
     visit versions_path
 
-    assert_equal root_path, current_path
+    assert_current_path root_path
   end
 
   test 'should allow authorized access' do
@@ -30,7 +30,7 @@ class AuditTest < ActionDispatch::IntegrationTest
 
     visit versions_path
 
-    assert_equal versions_path, current_path
+    assert_current_path versions_path
   end
 
   test 'auditing of team' do
