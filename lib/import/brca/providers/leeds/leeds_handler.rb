@@ -8,17 +8,8 @@ module Import
         class LeedsHandler < Import::Brca::Core::ProviderHandler
           include Import::Helpers::Brca::Providers::Rr8::Rr8Constants
           include Import::Helpers::Brca::Providers::Rr8::Rr8Helper
+          include Import::Helpers::Brca::Providers::Rr8::Rr8ReportCases
           
-          # FIELD_NAME_MAPPINGS = { 'consultantcode'  => 'practitionercode',
-          #                         'instigated_date' => 'requesteddate' }.freeze
-          # CDNA_REGEX = /c\.(?<cdna>[0-9]+.>[A-Za-z]+)|c\.(?<cdna>[0-9]+.[0-9]+[A-Za-z]+)/i.freeze
-          # PROTEIN_REGEX = /\(?p\.\(?(?<impact>.\w+\d+\w+)\)/i.freeze
-          # BRCA1_REGEX = /B1/i.freeze
-          # BRCA2_REGEX = /B2/i.freeze
-          # TESTSTATUS_REGEX = /unaffected|neg|normal/i.freeze
-          # GENE_CDNA_PROTEIN_REGEX = /(?<brca> BRCA(1|2)) variant (c\.(?<cdna>[0-9]+.>[A-Za-z]+)|c\.(?<cdna>[0-9]+.[0-9]+[A-Za-z]+)) (?:p\.\((?<impact>.\w+\d+\w+)\))|(?<brca> BRCA(1|2)) sequence variant c\.(?<cdna>[0-9]+.>[A-Za-z]+)|c\.(?<cdna>[0-9]+.[0-9]+[A-Za-z]+) (?:p\.\((?<impact>.\w+\d+\w+)\))/i.freeze
-
-
 
           def initialize(batch)
             # @extractor = ReportExtractor::GenotypeAndReportExtractor.new
@@ -33,9 +24,10 @@ module Import
                                             record.raw_fields,
                                             PASS_THROUGH_FIELDS,
                                             FIELD_NAME_MAPPINGS)
-            assess_scope_from_genotype(record, genotype)
+            variant_processor = VariantProcessor.new(genotype, record, @logger)
+            variant_processor.assess_scope_from_genotype
             # process_tests(record, genotype, genotypes)
-            res =process_tests(record, genotype)
+            res = variant_processor.process_tests
             res.map { |cur_genotype| @persister.integrate_and_store(cur_genotype) }
             # add_protein_impact_from_report(genotype, record) # Added by Francesco
             # add_cdna_change_from_report(genotype, record) # Added by Francesco
