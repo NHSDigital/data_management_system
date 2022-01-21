@@ -46,7 +46,8 @@ module Import
             if predictive_test?
               process_predictive_tests
             elsif double_normal_test?
-              process_doublenormal_tests
+              brca_double_negative
+              # process_doublenormal_tests
             elsif variant_seq?
               process_variantseq_tests
             elsif variant_class?
@@ -88,7 +89,7 @@ module Import
             elsif pred_class4_positive_records?
               process_pred_class4_positive_records
             elsif brca_diag_tests?
-              process_brca_diag_records
+              brca_double_negative
             elsif predictive_b2_pathological_neg_test?
               process_predictive_b2_pathological_neg_record
             elsif ngs_failed_mlpa_normal_test?
