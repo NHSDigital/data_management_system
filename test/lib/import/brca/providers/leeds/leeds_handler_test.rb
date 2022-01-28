@@ -18,8 +18,6 @@ class LeedsHandlerTest < ActiveSupport::TestCase
   end
 
   test 'full_screen_test' do
-    # @variant_processor = Import::Brca::Providers::Leeds::VariantProcessor.new(@genotype,
-    #                                                                          @record, @logger)
     @variant_processor.genetictestscope_field = 'r208.1'
     assert_equal 'Full screen BRCA1 and BRCA2', @variant_processor.assess_scope_from_genotype
   end
@@ -712,6 +710,7 @@ class LeedsHandlerTest < ActiveSupport::TestCase
     assert_equal 8, res[1].attribute_map['gene']
     assert_equal 1, res[1].attribute_map['teststatus']
   end
+
 
   test 'process_brca_diagnostic_normal_test' do
     @variant_processor.report_string  = 'This patient has been screened for variants in BRCA1 and '\
