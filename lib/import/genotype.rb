@@ -41,7 +41,8 @@ module Import
 
     VARIANT_IMPACT_MAP = { 'missense' => 1,
                            'nonsense' => 2,
-                           'frameshift' => 6 } .freeze
+                           'frameshift' => 6,
+                           'splice site' => 11} .freeze
 
     TESTING_TYPE_MAP = { 'askhenazi pre-screen' => nil,
                          'diagnostic' => 1,
