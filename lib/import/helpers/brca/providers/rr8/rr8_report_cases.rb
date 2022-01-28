@@ -3,6 +3,7 @@ module Import
     module Brca
       module Providers
         module Rr8
+          # Process Leeds-specific record cases to apply right extraction method
           module Rr8ReportCases
             include Import::Helpers::Brca::Providers::Rr8::Rr8Constants
 
@@ -10,25 +11,25 @@ module Import
               return if @genetictestscope_field.nil?
 
               FULL_SCREEN_LIST.include?(@genetictestscope_field.downcase.to_s) ||
-              @genetictestscope_field.downcase.scan(FULL_SCREEN_REGEX).size.positive?
+                @genetictestscope_field.downcase.scan(FULL_SCREEN_REGEX).size.positive?
             end
 
             def targeted?
               return if @genetictestscope_field.nil?
 
               (TARGETED_LIST.include?(@genetictestscope_field.downcase.to_s) ||
-              @genetictestscope_field.downcase.scan(TARGETED_REGEX).size.positive?) && 
-              (@genotype_string.scan(AJNEGATIVE_REGEX).size.zero? &&
-              @genotype_string.scan(AJPOSITIVE_REGEX).size.zero?)
+              @genetictestscope_field.downcase.scan(TARGETED_REGEX).size.positive?) &&
+                (@genotype_string.scan(AJNEGATIVE_REGEX).size.zero? &&
+                @genotype_string.scan(AJPOSITIVE_REGEX).size.zero?)
             end
 
             def ashkenazi?
               return if @genetictestscope_field.nil?
 
-              (@genetictestscope_field.downcase.include? ('ashkenazi') or
+              (@genetictestscope_field.downcase.include?('ashkenazi') or
               @genetictestscope_field.include?('AJ')) ||
-              (@genotype_string.downcase.include? ('ashkenazi') or
-              @genotype_string.include?('AJ'))
+                (@genotype_string.downcase.include?('ashkenazi') or
+                @genotype_string.include?('AJ'))
             end
 
             def familial_class_record?
@@ -71,16 +72,12 @@ module Import
               @genotype_string == 'screening failed; MLPA normal'
             end
 
-            def brca_diagnostic_normal?
-              @genotype_string == 'BRCA - Diagnostic Normal'
-            end
-
             def screening_failed?
               @genotype_string.downcase == 'screening failed'
             end
 
             def brca_diagnostic_test?
-              @genotype_string.scan(/BRCA\s\-\sDiagnostic/).size.positive?
+              @genotype_string.scan(/BRCA\s-\sDiagnostic/).size.positive?
             end
 
             def pred_class4_positive_records?
@@ -88,8 +85,8 @@ module Import
             end
 
             def brca_diag_tests?
-              @genotype_string.scan(/BRCA\sMS.+Diag\s(?<negpos>Normal|
-                                     Diag\sC4\/5)/ix).size.positive?
+              @genotype_string.scan(%r{BRCA\sMS.+Diag\s(?<negpos>Normal|
+                                     Diag\sC4/5)}ix).size.positive?
             end
 
             def predictive_b2_pathological_neg_test?
@@ -102,7 +99,7 @@ module Import
 
             def brca_palb2_diag_class4_5_tests?
               @genotype_string == 'BRCA/PALB2 - Diag C4/5' ||
-              @genotype_string == 'BRCA/PALB2 Diag C4/5 - UNAFF'
+                @genotype_string == 'BRCA/PALB2 Diag C4/5 - UNAFF'
             end
 
             def brca_palb2_mlpa_class4_5_tests?
@@ -121,13 +118,13 @@ module Import
               @genotype_string == 'NGS screening failed'
             end
 
-            def ngs_B1_and_B2_normal_mlpa_fail?
+            def ngs_b1_and_b2_normal_mlpa_fail?
               @genotype_string == 'NGS B1 and B2 normal, MLPA fail'
             end
-            
+
             def brca_palb2_diag_normal_test?
               @genotype_string == 'BRCA/PALB2 - Diag Normal' ||
-              @genotype_string == 'BRCA/PALB2 Diag Normal - UNAFF'
+                @genotype_string == 'BRCA/PALB2 Diag Normal - UNAFF'
             end
 
             def ngs_brca2_multiple_exon_mlpa_positive?
@@ -156,14 +153,14 @@ module Import
 
             def brca_palb2_diagnostic_class3_test?
               @genotype_string == 'BRCA/PALB2 - Diag C3 UNAFF' ||
-              @genotype_string == 'BRCA/PALB2 - Diag C3'
+                @genotype_string == 'BRCA/PALB2 - Diag C3'
             end
 
             def ashkenazi_test?
               @genotype_string.scan(AJNEGATIVE_REGEX).size.positive? ||
-              @genotype_string.scan(AJPOSITIVE_REGEX).size.positive? ||
-              (@genotype_string.downcase.include? ('ashkenazi') or
-              @genotype_string.include?('AJ'))
+                @genotype_string.scan(AJPOSITIVE_REGEX).size.positive? ||
+                (@genotype_string.downcase.include?('ashkenazi') or
+                @genotype_string.include?('AJ'))
             end
 
             def truncating_variant_test?
@@ -171,7 +168,7 @@ module Import
             end
 
             def double_normal_test?
-              words = @genotype_string.split(/,| |\//) 
+              words = @genotype_string.split(%r{,| |/})
               trimmed_words = words.map(&:downcase).
                               reject { |x| DOUBLE_NORMAL_EXCLUDEABLE.include? x }
               all_safe = trimmed_words.

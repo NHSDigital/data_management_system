@@ -3,7 +3,7 @@ module Import
     module Brca
       module Providers
         module Rr8
-          # Constants used by LondonKgcHandlerColorectal
+          # Constants used by Leeds BRCA Handler
           module Rr8Constants
             DEPRECATED_BRCA_NAMES_MAP = { 'BR1'    => 'BRCA1',
                                           'B1'     => 'BRCA1',
@@ -13,98 +13,6 @@ module Import
                                           'BRCA 2' => 'BRCA2' }.freeze
 
             DEPRECATED_BRCA_NAMES_REGEX = /B1|BR1|BRCA\s1|B2|BR2|BRCA\s2/i.freeze
-
-            TEST_SCOPE_MAP = { 'diagnostic' => :full_screen,
-                               'mutation screening' => :full_screen,
-                               'confirmation' => :targeted_mutation,
-                               'predictive' => :targeted_mutation,
-                               'prenatal' => :targeted_mutation,
-                               'ashkenazi pre-screen' => :aj_screen,
-                               '(v2) Any gene C5 - unaffected patient' => :full_screen,
-                               '(v2) Class 5 low penetrance gene' => :full_screen,
-                               '(v2) Normal' => :full_screen,
-                               '(v2) Normal (MLPA dosage)' => :full_screen,
-                               'B1/B2 - C3 pos' => :full_screen,
-                               'B1/B2 Class 3 - UNAFFECTED' => :full_screen,
-                               'B1/B2 Class 3 UV' => :full_screen,
-                               'B1/B2 Class 4 UV' => :full_screen,
-                               'B1/B2 Class 5 UV' => :full_screen,
-                               'B2 Class 4 UV' => :full_screen,
-                               'BRCA - Diagnostic Class 3' => :full_screen,
-                               'BRCA - Diagnostic Class 4' => :full_screen,
-                               'BRCA - Diagnostic Class 5' => :full_screen,
-                               'BRCA - Diagnostic Class 5 - MLPA' => :full_screen,
-                               'BRCA - Diagnostic Class 5 - UNAFFECTED' => :full_screen,
-                               'BRCA - Diagnostic Normal' => :full_screen,
-                               'BRCA - Diagnostic Normal - UNAFFECTED' => :full_screen,
-                               'BRCA MS - Diag C3' => :full_screen,
-                               'BRCA MS - Diag C4/5' => :full_screen,
-                               'BRCA MS Diag Normal' => :full_screen,
-                               'BRCA#/PALB2 - Diag Normal' => :full_screen,
-                               'BRCA/PALB2 - Diag C4/5' => :full_screen,
-                               'Conf B2 C4/C5 seq pos' => :targeted_mutation,
-                               'Normal B1 and B2' => :full_screen,
-                               'Normal B1/B2' => :full_screen,
-                               'Normal B1/B2 - UNAFFECTED' => :full_screen,
-                               'Pred B1 C4/C5 MLPA neg' => :targeted_mutation,
-                               'Pred B1 C4/C5 MLPA pos' => :targeted_mutation,
-                               'Pred B1 C4/C5 seq neg' => :targeted_mutation,
-                               'Pred B1 C4/C5 seq pos' => :targeted_mutation,
-                               'Pred B2 C4/C5 MLPA pos' => :targeted_mutation,
-                               'Pred B2 C4/C5 seq neg' => :targeted_mutation,
-                               'Pred B2 C4/C5 seq pos' => :targeted_mutation,
-                               'Pred B2 MLPA neg' => :targeted_mutation,
-                               'Predictive AJ neg 3seq' => :aj_screen,
-                               'Predictive AJ pos 3seq' => :aj_screen,
-                               'Predictive BRCA1 MLPA neg' => :targeted_mutation,
-                               'Predictive BRCA1 seq pos' => :targeted_mutation,
-                               'Predictive BRCA2 seq neg' => :targeted_mutation }.freeze
-
-            TEST_TYPE_MAP = { 'diagnostic' => :diagnostic,
-                              'mutation screening' => :diagnostic,
-                              'confirmation' => :diagnostic,
-                              'predictive' => :predictive,
-                              'prenatal' => :prenatal,
-                              'ashkenazi pre-screen' => nil,
-                              '(v2) Any gene C5 - unaffected patient' => :predictive,
-                              '(v2) Class 5 low penetrance gene' => :diagnostic,
-                              '(v2) Normal' => :diagnostic,
-                              '(v2) Normal (MLPA dosage)' => :diagnostic,
-                              'B1/B2 - C3 pos' => :diagnostic,
-                              'B1/B2 Class 3 - UNAFFECTED' => :predictive,
-                              'B1/B2 Class 3 UV' => :diagnostic,
-                              'B1/B2 Class 4 UV' => :diagnostic,
-                              'B1/B2 Class 5 UV' => :diagnostic,
-                              'B2 Class 4 UV' => :diagnostic,
-                              'BRCA - Diagnostic Class 3' => :diagnostic,
-                              'BRCA - Diagnostic Class 4' => :diagnostic,
-                              'BRCA - Diagnostic Class 5' => :diagnostic,
-                              'BRCA - Diagnostic Class 5 - MLPA' => :diagnostic,
-                              'BRCA - Diagnostic Class 5 - UNAFFECTED' => :predictive,
-                              'BRCA - Diagnostic Normal' => :diagnostic,
-                              'BRCA - Diagnostic Normal - UNAFFECTED' => :predictive,
-                              'BRCA MS - Diag C3' => :diagnostic,
-                              'BRCA MS - Diag C4/5' => :diagnostic,
-                              'BRCA MS Diag Normal' => :diagnostic,
-                              'BRCA#/PALB2 - Diag Normal' => :diagnostic,
-                              'BRCA/PALB2 - Diag C4/5' => :diagnostic,
-                              'Conf B2 C4/C5 seq pos' => :diagnostic,
-                              'Normal B1 and B2' => :diagnostic,
-                              'Normal B1/B2' => :diagnostic,
-                              'Normal B1/B2 - UNAFFECTED' => :predictive,
-                              'Pred B1 C4/C5 MLPA neg' => :predictive,
-                              'Pred B1 C4/C5 MLPA pos' => :predictive,
-                              'Pred B1 C4/C5 seq neg' => :predictive,
-                              'Pred B1 C4/C5 seq pos' => :predictive,
-                              'Pred B2 C4/C5 MLPA pos' => :predictive,
-                              'Pred B2 C4/C5 seq neg' => :predictive,
-                              'Pred B2 C4/C5 seq pos' => :predictive,
-                              'Pred B2 MLPA neg' => :predictive,
-                              'Predictive AJ neg 3seq' => :predictive,
-                              'Predictive AJ pos 3seq' => :predictive,
-                              'Predictive BRCA1 MLPA neg' => :predictive,
-                              'Predictive BRCA1 seq pos' => :predictive,
-                              'Predictive BRCA2 seq neg' => :predictive }.freeze
 
             PASS_THROUGH_FIELDS = %w[age consultantcode
                                      providercode
@@ -147,8 +55,8 @@ module Import
             CONFIRMATION_REGEX = /confirmation\sb(?:rca)?(?<brca>1|2)\s
                                  (?<method>seq|ngs|mlpa)\s(?<status>pos|neg)/ix.freeze
 
-            VARIANT_CLASS_REGEX = /(?<brca>b(?:rca)?(1|2))\sclass\s(?<class>[1-5]a?)\s
-                                  (uv|new)(?:\sunaffected patient)?/ix.freeze
+            VARIANT_CLASS_REGEX = /(?<brca>b(?:rca)?(?<num>1|2))\sclass\s(?<class>[1-5]a?)\s
+                                  (?<uvnew>uv|new)(?:\sunaffected patient)?/ix.freeze
 
             VARIANTSEQ_REGEX = /(?<method>ngs\s)?(?<brca>b(?:rca)?1|2)\sseq\svariant(?:\s-\sclass\s
                                 (?<variantclass>[1-5]))?/ix.freeze
@@ -191,13 +99,16 @@ module Import
                                                 \s?\s(?<location>c\.[^\s.]+)\s
                                                 (?<protein>\(p\..*\))?/ix.freeze
 
-            PREDICTIVE_MLPA_POSITIVE = /(MLPA|Sequence)\sanalysis\sindicates\sthat\sthis\spatient\sis\s
+            PREDICTIVE_MLPA_POSITIVE = /(?<mlpaseq>MLPA|Sequence)\sanalysis\sindicates\sthat\s
+                                        this\spatient\s
+                                        is\s
                                         (?<zygosity>hetero|homo)zygous\sfor\sthe\s
                                         (?<variantclass>(?:likely\s)?pathogenic)?\s
                                         (?<brca>BRCA1|BRCA2|PALB2)\s
-                                        ((?<mutationtype>deletion|duplication)
-                                        (\sof\sexon(s)?\s(?<exons>[0-9]+(-[0-9])?))?|exon(s)?\s
-                                        (?<exons>[0-9]+(-[0-9])?)\s
+                                        (?<muts>(?<mutationtype>deletion|duplication)
+                                        (?<exs>\sof\sexon(?<s>s)?\s
+                                        (?<exons>[0-9]+(?<num>-[0-9])?))?|exon(?<s>s)?\s
+                                        (?<exons>[0-9]+(?<num>-[0-9])?)\s
                                         (?<mutationtype>deletion|duplication))/ix.freeze
 
             PREDICTIVE_MLPA_NEGATIVE = /mlpa.*the(?<family>\sfamilial)?(?<variantclass>\s
@@ -219,26 +130,27 @@ module Import
                                        (?<family>familial\s)?
                                        (?<variantclass>(?:likely\s)?pathogenic\s)?
                                        (?<brca>BRCA1|BRCA2|PALB2)\s
-                                       (?<mutationtype>deletion|duplication)\sof\sexon(s)?\s
-                                       (?<exons>[0-9]+(-[0-9]+)?)/ix.freeze
+                                       (?<mutationtype>deletion|duplication)\sof\sexon(?<s>s)?\s
+                                       (?<exons>[0-9]+(?<num>-[0-9]+)?)/ix.freeze
 
             EXON_LOCATION = /(?<variantclass>\s(?:likely\s)?
                              pathogenic\s)?(?<brca>BRCA1|BRCA2|PALB2)\s
-                             (?<mutationtype>deletion|duplication)\s(of|involving|including)?\s
-                             exons?\s
+                             (?<mutationtype>deletion|duplication)\s(?<alts>of|involving|including)?
+                             \sexons?\s
                              (?<exons>\d+[a-z0-9]*(?:-\d+[a-z0-9]*)?)|
                              (?<variantclass>\s(?:likely\s)?
                              pathogenic\s)?
-                             (?<mutationtype>deletion|duplication)\s(of|involving|including)?\s
-                             (?<brca>BRCA1|BRCA2|PALB2)\sexons?\s
+                             (?<mutationtype>deletion|duplication)\s(?<alts>of|involving|including)?
+                             \s(?<brca>BRCA1|BRCA2|PALB2)\sexons?\s
                              (?<exons>\d+[a-z0-9]*(?:-\d+[a-z0-9]*)?)/ix.freeze
 
             PROMOTER_EXON_LOCATION = /(?<variantclass>\s(?:likely\s)?
                                       pathogenic\s)?(?<brca>BRCA1|BRCA2|PALB2)?\s?
-                                      (?<mutationtype>deletion|duplication)\s([a-zA-Z0-9_ ]*)?\s
-                                      the\spromoter\s(region\s)?to\sexons?\s
+                                      (?<mutationtype>deletion|duplication)\s
+                                      (?<az09>[a-zA-Z0-9_ ]*)?\s
+                                      the\spromoter\s(?<region>region\s)?to\sexons?\s
                                       (?<exons>\d+[a-z0-9]*(?:-\d+[a-z0-9]*)?)
-                                      (\sof\s(?<brca>BRCA1|BRCA2|PALB2))?/ix.freeze
+                                      (?<alternative>\sof\s(?<brca>BRCA1|BRCA2|PALB2))?/ix.freeze
 
             EXON_LOCATION_EXCEPTIONS = /(?<mutationtype>deletion|duplication).+
                                         exons?\s(?<exons>\d+[a-z0-9]*(?:-\d+[a-z0-9]*)?)|
@@ -251,15 +163,16 @@ module Import
                                           (?:\spathogenic)?)\s(?<brca>BRCA1|BRCA2|PALB2)\s
                                           (?:mutation|sequence\svariant|variant)\s?\s
                                           (?<location>c\.[^\s.]+)
-                                          \s?(p\.\(?(?<impact>\w+\d+\w+)\))?.*|
+                                          \s?(?<p>p\.\(?(?<impact>\w+\d+\w+)\))?.*|
                                           .*patient\sis\s(?<zygosity>hetero|homo)zygous\sfor
                                            \sthe\s?
                                            (?<family>\sfamilial)?(?<variantclass>(?:\slikely)?
                                            (?:\spathogenic)?)\s
                                            (?:mutation|sequence\svariant|variant)?\s
                                            (?<location>c\.[^\s.]+)\s?
-                                           (\(?p\.\(?(?<impact>\w+\d+\w+)\))?
-                                           \s(in\s|involving\s)?(?<brca>BRCA1|BRCA2|PALB2)?/ix.freeze
+                                           (?<p>\(?p\.\(?(?<impact>\w+\d+\w+)\))?
+                                           \s(?<involving>in\s|involving\s)?(?<brca>BRCA1|BRCA2|
+                                           PALB2)?/ix.freeze
 
             DOUBLE_NORMAL_LIST = %w[b1 b2 normal unaffected].freeze
 
@@ -270,7 +183,8 @@ module Import
             CDNA_REGEX = /c\.(?<location>[0-9]+.>[A-Za-z]+)|
                           c\.(?<location>[0-9]+\+[0-9]+[A-Z]+>[A-Z]+)|
                           c\.(?<location>[0-9]+-[0-9]+[A-Z]+>[A-Z]+)|
-                          c\.(?<location>[0-9]+.[0-9]+[A-Za-z]+)/ix.freeze
+                          c\.(?<location>[0-9]+.[0-9]+[A-Za-z]+)|
+                          c\.(?<location>[0-9]+[A-Za-z]+)/ix.freeze
 
             CDNA_PROTEIN_COMBO_EXCEPTIONS = /#{CDNA_REGEX}\s#{PROTEIN_REGEX}/ix.freeze
 
