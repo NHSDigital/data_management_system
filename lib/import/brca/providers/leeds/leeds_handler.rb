@@ -24,10 +24,19 @@ module Import
                                             record.raw_fields,
                                             PASS_THROUGH_FIELDS,
                                             FIELD_NAME_MAPPINGS)
+            add_organisationcode_testresult(genotype)
+            add_molecular_testing_type(record, genotype)
             variant_processor = VariantProcessor.new(genotype, record, @logger)
             variant_processor.assess_scope_from_genotype
             res = variant_processor.process_tests
             res.map { |cur_genotype| @persister.integrate_and_store(cur_genotype) }
+          end
+
+          def add_molecular_testing_type(record, genotype)
+            return unless record.raw_fields['moleculartestingtype'].present?
+
+            mtype = record.raw_fields['moleculartestingtype']
+            genotype.add_molecular_testing_type_strict(TEST_TYPE_MAP[mtype.downcase.strip])
           end
 
           def add_organisationcode_testresult(genotype)
