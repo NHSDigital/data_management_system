@@ -23,6 +23,15 @@ module Import
                                      organisationcode_testresult
                                      specimentype].freeze
 
+            TEST_TYPE_MAP = { 'mutation screening' => :carrier,
+                              'diagnostic' => :diagnostic,
+                              'diagnostic; brca' => :diagnostic,
+                              'R208.1' => :diagnostic,
+                              'R208.2' => :diagnostic,
+                              'confirmation' => :diagnostic,
+                              'predictive' => :predictive,
+                              'prenatal' => :predictive }.freeze
+
             FIELD_NAME_MAPPINGS = { 'consultantcode'  => 'practitionercode',
                                     'instigated_date' => 'requesteddate' }.freeze
 
