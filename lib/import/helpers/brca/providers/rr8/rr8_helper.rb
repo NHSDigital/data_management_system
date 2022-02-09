@@ -236,6 +236,8 @@ module Import
             end
 
             def process_negative_single_gene(regex)
+              return if @report_string.match(regex).nil?
+
               @genotype.add_gene(@report_string.match(regex)[:brca])
               @genotype.add_status(1)
               @genotypes.append(@genotype)
