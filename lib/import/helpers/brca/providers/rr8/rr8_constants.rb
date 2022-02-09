@@ -21,7 +21,7 @@ module Import
                                      requesteddate
                                      servicereportidentifier
                                      organisationcode_testresult
-                                     specimentype].freeze
+                                     specimentype genotype].freeze
 
             TEST_TYPE_MAP = { 'mutation screening' => :carrier,
                               'diagnostic' => :diagnostic,
