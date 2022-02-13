@@ -69,6 +69,18 @@ module Import
             ]
           end
 
+          def add_molecular_testing_type
+            return unless @record.raw_fields['moleculartestingtype'].present?
+
+            mtype = @record.raw_fields['moleculartestingtype']
+            if TEST_TYPE_MAP[mtype.downcase.strip] == :diagnostic &&
+              @genotype_string.scan(/unaffected/i).size.positive?
+              @genotype.add_molecular_testing_type_strict(:predictive)
+            else
+              @genotype.add_molecular_testing_type_strict(TEST_TYPE_MAP[mtype.downcase.strip])
+            end
+          end
+
           def assess_scope_from_genotype
             if full_screen?
               @genotype.add_test_scope(:full_screen)
