@@ -33,7 +33,7 @@ public/system/project_attachments/
 .yardoc/
 .rubocop-https---raw-githubusercontent-com-PublicHealthEngland-ndr-dev-support-master--rubocop-yml
 public/assets/*
-
+vendor/cache/*
 
 /public/packs
 /public/packs-test
