@@ -5,11 +5,12 @@ module Import
         # Process Leeds-specific record details
         class VariantProcessor
 
-          attr_accessor :report_string
-          attr_accessor :genotype_string
-          attr_accessor :genetictestscope_field
-          
-          
+          attr_accessor :aj_report_date
+          attr_accessor :aj_assay_result
+          attr_accessor :predictive_report_date
+          attr_accessor :brca1_mutation
+          attr_accessor :brca2_mutation
+
           def initialize(genotype, record, logger)
             @genotype   = genotype
             @record     = record
@@ -22,6 +23,7 @@ module Import
             @brca2_mutation = record.raw_fields['brca2 mutation']
           end
 
+          
           # def add_molecular_testing_type
           #   return unless @record.raw_fields['moleculartestingtype'].present?
           #
