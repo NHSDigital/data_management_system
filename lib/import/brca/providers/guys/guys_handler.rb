@@ -54,6 +54,8 @@ module Import
               process_polish_test
             elsif targeted_test_first_option?
               process_targeted_test_first_option
+            elsif targeted_test_second_option?
+              binding.pry
             end
           end
 
@@ -158,6 +160,12 @@ module Import
             @predictive_report_date.present? && @aj_assay_result.nil? && @polish_assay_result.nil?
           end
 
+          def targeted_test_second_option?
+            @predictive_report_date.present? &&
+            @aj_assay_result.scan(/neg|nrg/i).size.positive? &&
+            (@brca1_mutation.present? || @brca2_mutation.present? || @brca1_mlpa_result.present? || @brca2_mlpa_result.present?)
+          end
+          
           def process_targeted_test_first_option
             return if all_null_results_targeted_test_first_option?
             if normal_brca1_seq_targeted_test_first_option? || 
@@ -344,7 +352,21 @@ module Import
           end
 
           def ashkenazi_test?
-            @ajreport_date.present? || @aj_assay_result.present?
+            (@aj_report_date.present? || @aj_assay_result.present?) &&
+            (normal_ashkenazi_test? || positive_ashkenazi_test?)
+          end
+
+          def normal_ashkenazi_test?
+            return if @aj_assay_result.nil?
+
+            @aj_assay_result.scan(/neg|nrg/i).size.positive? &&
+            @brca1_mutation.nil? && @brca2_mutation.nil?
+          end
+
+          def positive_ashkenazi_test?
+            return if @aj_assay_result.nil?
+
+            @aj_assay_result.scan(/neg|nrg/i).size.zero?
           end
 
           def normal_ashkkenazi_test?
