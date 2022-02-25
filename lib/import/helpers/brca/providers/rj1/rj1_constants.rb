@@ -6,11 +6,11 @@ module Import
           module Rj1Constants
 
             # CDNA_REGEX = /c\.(?<cdna>[^\s]+)/ix.freeze
-            CDNA_REGEX = /(\w+\s)?c\.\s?(?<cdna>[^\s]+)|(?<cdna>^[0-9].+)\s\(M\)/i.freeze
-            EXON_REGEX = /(?<zygosity>het|hom)\s(?<deldup>del(etion)?|dup(lication)?)[\s\w]+?
+            CDNA_REGEX = /(\w+\s)?c\.\s?(?<cdna>[^\s]+)|(?<cdna>^[0-9].+)\s?\(M\)/i.freeze
+            EXON_REGEX = /(?<zygosity>het|hom)\.?\s(?<deldup>del(etion)?|dup(lication)?)\.?[\s\w]+?
                           ex(on)?\s?(?<exons>[0-9]+(?<otherexon>-[0-9]+)?)|ex(on)?\s?
-                          (?<exons>[0-9]+(?<otherexon>-[0-9]+)?)\s?(?<zygosity>het|hom)?\s?
-                          (?<deldup>del(etion)?|dup(lication)?)/ix.freeze
+                          (?<exons>[0-9]+(?<otherexon>-[0-9]+)?)\s?(?<zygosity>het|hom)?\.?\s?
+                          (?<deldup>del(etion)?|dup(lication)?)\.?/ix.freeze
 
             BRCA_GENES_REGEX = /(?<brca>BRCA1|
                                        BR1|

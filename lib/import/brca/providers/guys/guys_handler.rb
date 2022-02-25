@@ -117,16 +117,7 @@ module Import
             @genotypes.append(positive_genotype)
           end
 
-          def process_positive_exonvariant(positive_gene, variant_type, exonic_variant, test_scope)
-            positive_genotype = @genotype.dup
-            positive_genotype.add_gene(positive_gene)
-            positive_genotype.add_variant_type(variant_type)
-            positive_genotype.add_exon_location(exonic_variant)
-            positive_genotype.add_status(2)
-            positive_genotype.add_test_scope(test_scope)
-            @genotypes.append(positive_genotype)
-          end
-          
+
           def process_negative_gene(negative_gene, test_scope)
             negative_genotype = @genotype.dup
             negative_genotype.add_gene(negative_gene)
@@ -134,6 +125,15 @@ module Import
             negative_genotype.add_test_scope(test_scope)
             @genotypes.append(negative_genotype)
           end
+
+          def process_failed_gene(failed_gene, test_scope)
+            failed_genotype = @genotype.dup
+            failed_genotype.add_gene(failed_gene)
+            failed_genotype.add_status(9)
+            failed_genotype.add_test_scope(test_scope)
+            @genotypes.append(failed_genotype)
+          end
+
 
           def brca1_mutation?
             return if @brca1_mutation.nil?
@@ -160,25 +160,111 @@ module Import
 
           def process_targeted_test_first_option
             return if all_null_results_targeted_test_first_option?
+            if normal_brca1_seq_targeted_test_first_option? || 
+            normal_brca2_seq_targeted_test_first_option?
+             process_normal_brca1_2_seq_targeted_tests_option_1
+            elsif positive_seq_brca1_targeted_test_first_option? ||
+              brca1_mutation?||
+              positive_seq_brca2_targeted_test_first_option?||
+              brca2_mutation?
+              process_positive_brca1_2_seq_targeted_tests_option1
+            elsif normal_brca1_mlpa_targeted_test_first_option?||
+              normal_brca2_mlpa_targeted_test_first_option?
+              process_normal_brca1_2_mlpa_targeted_tests_option_1
+            elsif positive_mlpa_brca1_targeted_test_first_option? ||
+             positive_exonvariants_in_set_brca1_targeted_test_first_option? ||
+              positive_mlpa_brca2_targeted_test_first_option? ||
+              positive_exonvariants_in_set_brca2_targeted_test_first_option?
+              process_positive_brca1_2_mlpa_targeted_tests_option1
+            elsif failed_brca1_mlpa_targeted_test_first_option? ||
+              failed_brca2_mlpa_targeted_test_first_option?
+              process_failed_brca1_2_targeted_tests_option_1
+            # else binding.pry
+            end
+          end
 
+          def process_normal_brca1_2_seq_targeted_tests_option_1
             if normal_brca1_seq_targeted_test_first_option?
               process_negative_gene('BRCA1', :targeted_mutation)
             elsif normal_brca2_seq_targeted_test_first_option?
               process_negative_gene('BRCA2', :targeted_mutation)
-            elsif positive_seq_brca1_targeted_test_first_option?
+            end
+          end
+
+          def process_failed_brca1_2_targeted_tests_option_1
+            if failed_brca1_mlpa_targeted_test_first_option?
+              process_failed_gene('BRCA1', :targeted_mutation)
+            elsif failed_brca1_mlpa_targeted_test_first_option?
+              process_failed_gene('BRCA2', :targeted_mutation)
+            end
+          end
+
+
+          def process_positive_brca1_2_seq_targeted_tests_option1
+            if positive_seq_brca1_targeted_test_first_option?
               process_positive_cdnavariant('BRCA1',@brca1_seq_result.match(CDNA_REGEX)[:cdna], 
-                                           :targeted_mutation)
+                                         :targeted_mutation)
+            elsif brca1_mutation?
+              process_positive_cdnavariant('BRCA1',@brca1_mutation.match(CDNA_REGEX)[:cdna], 
+                                            :targeted_mutation)
             elsif positive_seq_brca2_targeted_test_first_option?
               process_positive_cdnavariant('BRCA2',@brca2_seq_result.match(CDNA_REGEX)[:cdna], 
-                                          :targeted_mutation)
-            elsif positive_mlpa_brca1_targeted_test_first_option?
-              process_positive_exonvariant('BRCA1', @brca1_mlpa_result.match(EXON_REGEX)[:deldup], 
-                                           @brca1_mlpa_result.match(EXON_REGEX)[:exons], :targeted_mutation)
-            elsif positive_mlpa_brca2_targeted_test_first_option?
-              process_positive_exonvariant('BRCA2', @brca2_mlpa_result.match(EXON_REGEX)[:deldup], 
-                                          @brca2_mlpa_result.match(EXON_REGEX)[:exons], :targeted_mutation)
-            else binding.pry
+                                        :targeted_mutation)
+            elsif brca2_mutation?
+              process_positive_cdnavariant('BRCA1',@brca2_mutation.match(CDNA_REGEX)[:cdna], 
+                                            :targeted_mutation)
             end
+          end
+
+          def process_normal_brca1_2_mlpa_targeted_tests_option_1
+            if normal_brca1_mlpa_targeted_test_first_option?
+              process_negative_gene('BRCA1', :targeted_mutation)
+            elsif normal_brca2_mlpa_targeted_test_first_option?
+              process_negative_gene('BRCA2', :targeted_mutation)
+            end
+          end
+ 
+          def process_positive_brca1_2_mlpa_targeted_tests_option1
+            return if @brca1_mlpa_result.nil? && @brca2_mlpa_result.nil?
+
+            if positive_mlpa_brca1_targeted_test_first_option?
+              process_positive_exonvariant('BRCA1', @brca1_mlpa_result.match(EXON_REGEX), :targeted_mutation)
+            elsif positive_exonvariants_in_set_brca1_targeted_test_first_option?
+               process_positive_exonvariant('BRCA1', @brca1_seq_result.match(EXON_REGEX), :targeted_mutation)
+            elsif positive_mlpa_brca2_targeted_test_first_option?
+              process_positive_exonvariant('BRCA2', @brca2_mlpa_result.match(EXON_REGEX), :targeted_mutation)
+            elsif positive_exonvariants_in_set_brca2_targeted_test_first_option?
+              process_positive_exonvariant('BRCA2', @brca2_seq_result.match(EXON_REGEX), :targeted_mutation)
+            end
+          end
+          
+          def process_positive_exonvariant(positive_gene, exon_variant, test_scope)
+            positive_genotype = @genotype.dup
+            positive_genotype.add_gene(positive_gene)
+            add_zygosity_from_exonicvariant(exon_variant, positive_genotype)
+            add_varianttype_from_exonicvariant(exon_variant, positive_genotype)
+            add_involved_exons_from_exonicvariant(exon_variant, positive_genotype)
+            positive_genotype.add_status(2)
+            positive_genotype.add_test_scope(test_scope)
+            @genotypes.append(positive_genotype)
+          end
+
+          def add_zygosity_from_exonicvariant(exon_variant, positive_genotype)
+            Maybe(exon_variant[:zygosity]).map { |x| positive_genotype.add_zygosity(x) }
+          rescue StandardError
+            @logger.debug 'Cannot add exon variant zygosity'
+          end
+
+          def add_varianttype_from_exonicvariant(exon_variant, positive_genotype)
+            Maybe(exon_variant[:deldup]).map { |x| positive_genotype.add_variant_type(x) }
+          rescue StandardError
+            @logger.debug 'Cannot add exon variant type'
+          end
+
+          def add_involved_exons_from_exonicvariant(exon_variant, positive_genotype)
+            Maybe(exon_variant[:exons]).map { |x| positive_genotype.add_exon_location(x) }
+          rescue StandardError
+            @logger.debug 'Cannot add exons involved in exonic variant'
           end
 
           def normal_brca1_seq_targeted_test_first_option?
@@ -186,7 +272,9 @@ module Import
             @brca1_seq_result.downcase == '-ve' ||
             @brca1_seq_result.downcase == 'neg' ||
             @brca1_seq_result.downcase == 'nrg' ||
-            @brca1_seq_result.scan(/neg|nrg|norm/i).size.positive?
+            @brca1_seq_result.scan(/neg|nrg|norm/i).size.positive? ||
+            @brca1_seq_result.scan(/no mut/i).size.positive? ||
+            @brca1_seq_result.scan(/no var|no fam|not det/i).size.positive? 
           end
 
           def normal_brca2_seq_targeted_test_first_option?
@@ -194,13 +282,31 @@ module Import
             @brca2_seq_result.downcase == '-ve' ||
             @brca2_seq_result.downcase == 'neg' ||
             @brca2_seq_result.downcase == 'nrg' ||
-            @brca2_seq_result.scan(/neg|nrg|norm/i).size.positive?
+            @brca2_seq_result.scan(/neg|nrg|norm/i).size.positive?||
+            @brca2_seq_result.scan(/no mut/i).size.positive? ||
+            @brca2_seq_result.scan(/no var|no fam|not det/i).size.positive? 
           end
 
-          def normal_brca2_mlpq_targeted_test_first_option?
-            return if @brca2_mlpa_result.nil? || brca1_mlpa_result == "N/A"
-            @brca2_seq_result.downcase == 'no del/dup' 
+          def normal_brca1_mlpa_targeted_test_first_option?
+            return if @brca1_mlpa_result.nil? || @brca1_mlpa_result == "N/A"
+            @brca1_mlpa_result.scan(/no del\/dup/i).size.positive?
           end
+
+          def normal_brca2_mlpa_targeted_test_first_option?
+            return if @brca2_mlpa_result.nil? || @brca2_mlpa_result == "N/A"
+            @brca2_mlpa_result.scan(/no del\/dup/i).size.positive?
+          end
+
+          def failed_brca1_mlpa_targeted_test_first_option?
+            return if @brca1_mlpa_result.nil? || @brca1_mlpa_result == "N/A"
+            @brca1_mlpa_result.scan(/fail/i).size.positive?
+          end
+
+          def failed_brca2_mlpa_targeted_test_first_option?
+            return if @brca2_mlpa_result.nil? || @brca2_mlpa_result == "N/A"
+            @brca2_mlpa_result.scan(/fail/i).size.positive?
+          end
+
 
           def positive_seq_brca1_targeted_test_first_option?
             return if @brca1_seq_result.nil?
@@ -220,6 +326,16 @@ module Import
           def positive_mlpa_brca2_targeted_test_first_option?
             return if @brca2_mlpa_result.nil?
             @authoriseddate.nil? && @brca2_mlpa_result.scan(EXON_REGEX).size.positive?
+          end
+
+          def positive_exonvariants_in_set_brca1_targeted_test_first_option?
+            return if @brca1_seq_result.nil?
+            @authoriseddate.nil? && @brca1_seq_result.scan(EXON_REGEX).size.positive?
+          end
+
+          def positive_exonvariants_in_set_brca2_targeted_test_first_option?
+            return if @brca2_seq_result.nil?
+            @authoriseddate.nil? && @brca2_seq_result.scan(EXON_REGEX).size.positive?
           end
 
           def all_null_results_targeted_test_first_option?
