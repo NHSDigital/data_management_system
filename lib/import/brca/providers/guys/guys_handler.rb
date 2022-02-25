@@ -55,7 +55,7 @@ module Import
             elsif targeted_test_first_option?
               process_targeted_test_first_option
             elsif targeted_test_second_option?
-              binding.pry
+              # binding.pry
             end
           end
 
