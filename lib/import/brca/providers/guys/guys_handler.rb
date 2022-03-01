@@ -35,7 +35,13 @@ module Import
             @brca2_mlpa_result = record.raw_fields['brca2 mlpa results']
             @brca1_seq_result = record.raw_fields['brca1 seq result']
             @brca2_seq_result = record.raw_fields['brca2 seq result']
-            
+            @tests_extraction_methods = [
+              [:ashkenazi_test?, :process_ashkenazi_test],
+              [:polish_test?, :process_polish_test],
+              [:targeted_test_first_option?, :process_targeted_test_first_option],
+              [:targeted_test_second_option?, :process_targeted_test_first_option]
+              ]
+              
             mtype = record.raw_fields['moleculartestingtype']
             genotype.add_molecular_testing_type_strict(mtype) if mtype
             add_organisationcode_testresult(genotype)
@@ -47,17 +53,26 @@ module Import
             genotype.attribute_map['organisationcode_testresult'] = '699L0'
           end
 
-          def process_tests
-            if ashkenazi_test?
-              process_ashkenazi_test
-            elsif polish_test?
-              process_polish_test
-            elsif targeted_test_first_option?
-              process_targeted_test_first_option
-            elsif targeted_test_second_option?
-              # binding.pry
-            end
+        def process_tests
+                    # insert loop here
+          @tests_extraction_methods.each do |condition_extraction|
+            binding.pry
+            condition, extraction = *condition_extraction
+            return send(extraction) if send(condition)
           end
+        end                  
+                  
+          # def process_tests
+          #   if ashkenazi_test?
+          #     process_ashkenazi_test
+          #   elsif polish_test?
+          #     process_polish_test
+          #   elsif targeted_test_first_option?
+          #     process_targeted_test_first_option
+          #   elsif targeted_test_second_option?
+          #     # binding.pry
+          #   end
+          # end
 
           def process_polish_test
             return if @polish_assay_result.nil?
