@@ -6,6 +6,14 @@ module Import
           module Rj1Constants
 
             # CDNA_REGEX = /c\.(?<cdna>[^\s]+)/ix.freeze
+            METHODS_MAP = [
+              [:ashkenazi_test?, :process_ashkenazi_test],
+              [:polish_test?, :process_polish_test],
+              [:targeted_test_first_option?, :process_targeted_test_first_option],
+              [:targeted_test_second_option?, :process_targeted_test_first_option]
+              ]
+            
+            
             CDNA_REGEX = /(\w+\s)?c\.\s?(?<cdna>[^\s]+)|(?<cdna>^[0-9].+)\s?\(M\)/i.freeze
             EXON_REGEX = /(?<zygosity>het|hom)\.?\s(?<deldup>del(etion)?|dup(lication)?)\.?[\s\w]+?
                           ex(on)?\s?(?<exons>[0-9]+(?<otherexon>-[0-9]+)?)|ex(on)?\s?
