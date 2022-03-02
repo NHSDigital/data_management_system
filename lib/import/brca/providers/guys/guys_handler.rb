@@ -31,48 +31,101 @@ module Import
             @polish_assay_result = record.raw_fields['polish assay result']
             @predictive_report_date = record.raw_fields['predictive report date']
             @authoriseddate = record.raw_fields['authoriseddate']
+            @predictive = record.raw_fields['predictive']
+            @ngs_result = record.raw_fields['ngs result']
+            @fullscreen_result = record.raw_fields['full screen result']
             @brca1_mlpa_result = record.raw_fields['brca1 mlpa results']
             @brca2_mlpa_result = record.raw_fields['brca2 mlpa results']
             @brca1_seq_result = record.raw_fields['brca1 seq result']
             @brca2_seq_result = record.raw_fields['brca2 seq result']
-            @tests_extraction_methods = [
-              [:ashkenazi_test?, :process_ashkenazi_test],
-              [:polish_test?, :process_polish_test],
-              [:targeted_test_first_option?, :process_targeted_test_first_option],
-              [:targeted_test_second_option?, :process_targeted_test_first_option]
-              ]
               
             mtype = record.raw_fields['moleculartestingtype']
             genotype.add_molecular_testing_type_strict(mtype) if mtype
             add_organisationcode_testresult(genotype)
             res = process_tests
-            res.each { |cur_genotype| @persister.integrate_and_store(cur_genotype) } unless res.nil?
+            binding.pry if !res.empty?
+            res.each { |cur_genotype| @persister.integrate_and_store(cur_genotype) } unless res.empty?
           end
 
           def add_organisationcode_testresult(genotype)
             genotype.attribute_map['organisationcode_testresult'] = '699L0'
           end
 
-        def process_tests
-                    # insert loop here
-          @tests_extraction_methods.each do |condition_extraction|
-            binding.pry
-            condition, extraction = *condition_extraction
-            return send(extraction) if send(condition)
+          def process_tests
+            results = []
+            METHODS_MAP.each do |condition_extraction|
+              condition, extraction = *condition_extraction
+              results << send(extraction) if send(condition)
+            end
+            results.compact
           end
-        end                  
-                  
+
+
+          # def process_tests
+          #             # insert loop here
+          #   METHODS_MAP.each do |condition_extraction|
+          #     condition, extraction = *condition_extraction
+          #     binding.pry
+          #     send(extraction) if send(condition)
+          #   end
+          # end
+
           # def process_tests
           #   if ashkenazi_test?
           #     process_ashkenazi_test
-          #   elsif polish_test?
-          #     process_polish_test
-          #   elsif targeted_test_first_option?
-          #     process_targeted_test_first_option
-          #   elsif targeted_test_second_option?
-          #     # binding.pry
           #   end
+          #   if polish_test?
+          #     process_polish_test
+          #   end
+          #   if targeted_test_first_option?
+          #     process_targeted_test_first_option
+          #   end
+            # elsif targeted_test_second_option?
+            #   process_targeted_test_first_option
+            # elsif targeted_test_fourth_option?
+            #   process_targeted_test_first_option
+            # if full_screen_test_option1?
+            #   binding.pry
+            # end
           # end
+
+          def full_screen_test_option1?
+            @fullscreen_result.present? || @authoriseddate.present?
+          end
+
+          def targeted_test_first_option?
+            @predictive_report_date.present? && @aj_assay_result.nil? && @polish_assay_result.nil?
+          end
+
+          def targeted_test_second_option?
+            return if @aj_assay_result.nil?
+            @predictive_report_date.present? &&
+            @aj_assay_result.scan(/neg|nrg/i).size.positive? &&
+            (@brca1_mutation.present? || @brca2_mutation.present? || @brca1_mlpa_result.present? || @brca2_mlpa_result.present?)
+          end
+          
+          def targeted_test_third_option?
+            @predictive_report_date.present? &&
+            @polish_assay_result.scan(/neg|nrg/i).size.positive? &&
+            (@brca1_mutation.present? || @brca2_mutation.present? || @brca1_mlpa_result.present? || @brca2_mlpa_result.present?)
+          end
+          
+          def targeted_test_fourth_option?
+            @predictive_report_date.nil? && @predictive.scan(/true/i).size.positive? &&
+            @ngs_result.nil? &&
+            @polish_assay_result.nil? && @aj_assay_result.nil? && @fullscreen_result.nil?
+          end
+
+          def ashkenazi_test?
+            @aj_report_date.present? || @aj_assay_result.present?# ) &&
+#             (normal_ashkenazi_test? || positive_ashkenazi_test?)
+          end
+
+          def polish_test?
+            @polish_report_date.present? || @polish_assay_result.present?
+            # normal_polish_test? || !normal_polish_test?
+          end
+
 
           def process_polish_test
             return if @polish_assay_result.nil?
@@ -171,15 +224,6 @@ module Import
             BRCA2_MUTATIONS.include? @aj_assay_result
           end
 
-          def targeted_test_first_option?
-            @predictive_report_date.present? && @aj_assay_result.nil? && @polish_assay_result.nil?
-          end
-
-          def targeted_test_second_option?
-            @predictive_report_date.present? &&
-            @aj_assay_result.scan(/neg|nrg/i).size.positive? &&
-            (@brca1_mutation.present? || @brca2_mutation.present? || @brca1_mlpa_result.present? || @brca2_mlpa_result.present?)
-          end
           
           def process_targeted_test_first_option
             return if all_null_results_targeted_test_first_option?
@@ -366,11 +410,6 @@ module Import
             @brca1_mpa_result.nil? && @brca2_mlpa_result.nil?
           end
 
-          def ashkenazi_test?
-            (@aj_report_date.present? || @aj_assay_result.present?) &&
-            (normal_ashkenazi_test? || positive_ashkenazi_test?)
-          end
-
           def normal_ashkenazi_test?
             return if @aj_assay_result.nil?
 
@@ -392,10 +431,6 @@ module Import
             @aj_assay_result.downcase == "no variant" ||
             @aj_assay_result.downcase == 'no variants detected'||
             @aj_assay_result.scan(/neg|nrg/i).size.positive?
-          end
-          
-          def polish_test?
-            @polish_report_date.present? || @polish_assay_result.present?
           end
 
           def normal_polish_test?
