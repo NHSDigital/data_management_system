@@ -26,6 +26,7 @@ module Import
                 process_negative_genes(positive_gene)
               end
               extract_exon_variant(positive_gene, exon_variant)
+              @genotypes
             end
 
             def process_brca_palb2_mlpa_class4_5_record
@@ -49,6 +50,7 @@ module Import
                 process_negative_genes_w_palb2(positive_gene)
               end
               extract_cdna_variant_information(positive_gene, cdna_variant)
+              @genotypes
             end
 
             def process_predictive_b2_pathological_neg_record
@@ -65,6 +67,7 @@ module Import
                 genotype2.add_status(9)
                 @genotypes.append(genotype2)
               end
+              @genotypes
             end
 
             def process_brca_diagnostic_class3_record
@@ -77,6 +80,7 @@ module Import
                 process_negative_genes(positive_gene)
               end
               extract_cdna_variant_information(positive_gene, cdna_variant)
+              @genotypes
             end
 
             def process_brca_diagnostic_class4_5_record
@@ -88,6 +92,7 @@ module Import
                 process_negative_genes(positive_gene)
               end
               extract_cdna_variant_information(positive_gene, cdna_variant)
+              @genotypes
             end
 
             def process_generic_normal_record
@@ -143,6 +148,7 @@ module Import
               end
               exon_variant = @report_string.match(EXON_LOCATION_EXCEPTIONS)
               extract_exon_variant(positive_gene, exon_variant)
+              @genotypes
             end
 
             def process_brca_palb2_diag_normal_record
@@ -227,6 +233,7 @@ module Import
               @genotype.add_gene(positive_gene.join)
               exon_variant = @report_string.match(EXON_LOCATION_EXCEPTIONS)
               extract_exon_variant(positive_gene, exon_variant)
+              @genotypes
             end
 
             def process_class4_negative_predictive
@@ -278,6 +285,7 @@ module Import
                 cdna_variant = @report_string.match(CDNA_MUTATION_TYPES_REGEX)
                 extract_cdna_variant_information(positive_gene, cdna_variant)
               end
+              @genotypes
             end
 
             def process_word_report_tests
@@ -377,6 +385,7 @@ module Import
               when 'pos'
                 process_positive_confirmation_test
               end
+              @genotypes
             end
 
             def process_positive_confirmation_test
@@ -387,6 +396,7 @@ module Import
                     @report_string.scan(CDNA_VARIANT_CLASS_REGEX).size.positive?
                 process_cdnavariant_from_positive_confirmation_test
               end
+              @genotypes
             end
 
             def process_cdnavariant_from_positive_confirmation_test
@@ -399,6 +409,7 @@ module Import
                 positive_gene = [cdna_variant[:brca]]
                 extract_cdna_variant_information(positive_gene, cdna_variant)
               end
+              @genotypes
             end
 
             def process_exonvariant_from_positive_confirmation_test
@@ -411,6 +422,7 @@ module Import
                 positive_gene = [exon_variant[:brca]]
                 extract_exon_variant(positive_gene, exon_variant)
               end
+              @genotypes
             end
 
             def process_variant_class_records
@@ -431,6 +443,7 @@ module Import
                     @report_string.scan(EXON_LOCATION_EXCEPTIONS).size.positive?
                 process_variant_class_records_exon_variants_two_genotype_genes
               end
+              @genotypes
             end
 
             def process_single_gene_genotypestring_variant_class_records
@@ -444,6 +457,7 @@ module Import
                     @report_string.scan(CDNA_MUTATION_TYPES_REGEX).size.positive?
                 process_variant_class_records_cdna_variants_single_genotype_gene(positive_gene)
               end
+              @genotypes
             end
 
             def process_variant_class_records_exon_variants_single_genotype_gene(positive_gene)
@@ -460,6 +474,7 @@ module Import
                 exon_variants = @report_string.match(EXON_LOCATION_EXCEPTIONS)
                 extract_exon_variant(positive_gene, exon_variants)
               end
+              @genotypes
             end
 
             def process_variant_class_records_cdna_variants_single_genotype_gene(positive_gene)
@@ -473,6 +488,7 @@ module Import
                 cdna_variant = @report_string.match(CDNA_MUTATION_TYPES_REGEX)
                 extract_cdna_variant_information(positive_gene, cdna_variant)
               end
+              @genotypes
             end
 
             def process_variant_class_records_exon_variants_two_genotype_genes
@@ -490,6 +506,7 @@ module Import
                 process_negative_genes(positive_gene)
               end
               extract_exon_variant(positive_gene, exon_variants)
+              @genotypes
             end
 
             def process_variant_class_records_cdna_variants_two_genotype_genes
@@ -508,6 +525,7 @@ module Import
                 end
                 extract_cdna_variant_information(positive_gene, cdna_variant)
               end
+              @genotypes
             end
 
             def extract_multiplecdnas_general(positive_gene, cdnas)
@@ -581,6 +599,7 @@ module Import
                 cdna_variant = @report_string.match(GENE_LOCATION)
                 extract_cdna_variant_information(positive_gene, cdna_variant)
               end
+              @genotypes
             end
 
             def process_negative_genes(positive_gene)
@@ -619,24 +638,28 @@ module Import
               elsif @report_string.scan(PREDICTIVE_MLPA_POSITIVE).size.positive?
                 process_positive_mlpa_predictive
               end
+              @genotypes
             end
 
             def process_positive_predictive
               cdna_variant = @report_string.gsub('\n', '').match(PREDICTIVE_REPORT_REGEX_POSITIVE)
               positive_gene = [cdna_variant[:brca]]
               extract_cdna_variant_information(positive_gene, cdna_variant)
+              @genotypes
             end
 
             def process_positive_predictive_exonvariant
               exon_variant = @report_string.gsub('\n', '').match(PREDICTIVE_POSITIVE_EXON)
               positive_gene = [exon_variant[:brca]]
               extract_exon_variant(positive_gene, exon_variant)
+              @genotypes
             end
 
             def process_positive_mlpa_predictive
               exon_variant = @report_string.gsub('\n', '').match(PREDICTIVE_MLPA_POSITIVE)
               positive_gene = [exon_variant[:brca]]
               extract_exon_variant(positive_gene, exon_variant)
+              @genotypes
             end
 
             def extract_cdna_variant_information(positive_gene, cdna_variant)
