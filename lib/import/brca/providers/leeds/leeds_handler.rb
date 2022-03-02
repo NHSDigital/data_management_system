@@ -29,7 +29,7 @@ module Import
             variant_processor.add_molecular_testing_type
             variant_processor.assess_scope_from_genotype
             res = variant_processor.process_tests
-            res.map { |cur_genotype| @persister.integrate_and_store(cur_genotype) }
+            res.map { |cur_genotype| @persister.integrate_and_store(cur_genotype) } unless res.nil?
           end
 
           def add_organisationcode_testresult(genotype)

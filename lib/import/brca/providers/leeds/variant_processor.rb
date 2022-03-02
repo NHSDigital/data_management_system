@@ -97,9 +97,10 @@ module Import
             # insert loop here
             @genotype_condition_extraction_methods.each do |condition_extraction|
               condition, extraction = *condition_extraction
-              if send(condition)
-                send(extraction)
-              end
+              return send(extraction) if send(condition)
+              # if send(condition)
+              #   send(extraction)
+              # end
             end
             @genotypes
           end
