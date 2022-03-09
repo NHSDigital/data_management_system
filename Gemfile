@@ -1,7 +1,8 @@
 source 'https://rubygems.org'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 6.0.4.6'
+gem 'rails', '~> 6.0.4.7'
+gem 'activemodel-caution', '6.0.4.7'
 # Use postgresql as the database for Active Record
 gem 'pg'
 # use Puma as the app server
@@ -48,7 +49,6 @@ gem 'ndr_import'
 gem 'ndr_error', '~> 2.0'
 gem 'ndr_workflow', '~> 1.2', '>= 1.2.2'
 gem 'ndr_ui'
-gem 'activemodel-caution', '6.0.4.6'
 gem 'ndr_pseudonymise', '~> 0.2.6'
 gem 'ndr_authenticate', '0.2.3.1'
 
