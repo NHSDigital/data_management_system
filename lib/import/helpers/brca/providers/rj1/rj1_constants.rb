@@ -9,8 +9,13 @@ module Import
             METHODS_MAP = [
               [:ashkenazi_test?, :process_ashkenazi_test],
               [:polish_test?, :process_polish_test],
-              [:targeted_test_first_option?, :process_targeted_test_first_option],
-              [:targeted_test_second_option?, :process_targeted_test_first_option]
+              [:targeted_test_first_option?, :process_targeted_test],
+              [:targeted_test_second_option?, :process_targeted_test],
+              [:targeted_test_third_option?, :process_targeted_test],
+              [:targeted_test_fourth_option?, :process_targeted_test],
+              [:full_screen_test_option1?, :process_fullscreen_test_option1],
+              [:full_screen_test_option2?, :process_fullscreen_test_option2],
+              [:full_screen_test_option3?, :process_fullscreen_test_option3]
               ]
             
             
