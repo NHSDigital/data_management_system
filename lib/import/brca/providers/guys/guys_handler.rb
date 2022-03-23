@@ -39,6 +39,12 @@ module Import
             @brca2_mlpa_result = record.raw_fields['brca2 mlpa results']
             @brca1_seq_result = record.raw_fields['brca1 seq result']
             @brca2_seq_result = record.raw_fields['brca2 seq result']
+            @date_2_3_reported = record.raw_fields['date 2/3 reported']
+            @brca1_report_date = record.raw_fields['full brca1 report date']
+            @brca2_report_date = record.raw_fields['full brca2 report date']
+            @brca2_ptt_report_date = record.raw_fields['brca2 ptt report date']
+            @full_ppt_report_date = record.raw_fields['full ptt report date']
+            
               
             mtype = record.raw_fields['moleculartestingtype']
             genotype.add_molecular_testing_type_strict(mtype) if mtype
@@ -81,7 +87,7 @@ module Import
             @brca1_seq_result.downcase == '-ve' ||
             @brca1_seq_result.downcase == 'neg' ||
             @brca1_seq_result.downcase == 'nrg' ||
-            @brca1_seq_result.scan(/neg|nrg|norm/i).size.positive? ||
+            @brca1_seq_result.scan(/neg|nrg|norm|-ve/i).size.positive? ||
             @brca1_seq_result.scan(/no mut/i).size.positive? ||
             @brca1_seq_result.scan(/no var|no fam|not det/i).size.positive? 
           end
@@ -91,7 +97,7 @@ module Import
             @brca2_seq_result.downcase == '-ve' ||
             @brca2_seq_result.downcase == 'neg' ||
             @brca2_seq_result.downcase == 'nrg' ||
-            @brca2_seq_result.scan(/neg|nrg|norm/i).size.positive?||
+            @brca2_seq_result.scan(/neg|nrg|norm|-ve/i).size.positive?||
             @brca2_seq_result.scan(/no mut/i).size.positive? ||
             @brca2_seq_result.scan(/no var|no fam|not det/i).size.positive? 
           end
@@ -230,6 +236,15 @@ module Import
           ################ HERE ARE ASHKENAZI TESTS ###########################################
           #####################################################################################
           
+          def add_ajscreen_date
+            return if @aj_report_date.nil? && @report_report_date.nil?
+            if @aj_report_date.present?
+              @genotype.attribute_map['authoriseddate'] = @aj_report_date
+            elsif @report_report_date.present?
+              @genotype.attribute_map['authoriseddate'] = @predictive_report_date
+            end
+          end
+          
           def ashkenazi_test?
             @aj_report_date.present? || @aj_assay_result.present?
           end
@@ -259,6 +274,8 @@ module Import
           
           def process_ashkenazi_test
             return if @aj_assay_result.nil?
+            
+            add_ajscreen_date
 
             if normal_ashkkenazi_test?
                process_double_brca_negative(:aj_screen)
@@ -302,6 +319,13 @@ module Import
           #####################################################################################
           ################ HERE ARE POLISH TESTS ##############################################
           #####################################################################################
+          def add_polish_screen_date
+            return if @polish_report_date.nil?
+
+              @genotype.attribute_map['authoriseddate'] = @polish_report_date
+          end
+          
+          
           
           def polish_test?
             @polish_report_date.present? || @polish_assay_result.present?
@@ -321,6 +345,7 @@ module Import
           def process_polish_test
             return if @polish_assay_result.nil?
 
+            add_polish_screen_date
             if normal_polish_test?
                process_negative_gene('BRCA1', :polish_screen)
             elsif @polish_assay_result.scan(CDNA_REGEX).size.positive?
@@ -332,6 +357,11 @@ module Import
           #####################################################################################
           ################ HERE ARE TARGETED TESTS ############################################
           #####################################################################################
+          def add_targeted_screen_date
+            return if @predictive_report_date.nil?
+
+              @genotype.attribute_map['authoriseddate'] = @predictive_report_date
+          end
           
           def targeted_test_first_option?
             @predictive_report_date.present? && @aj_assay_result.nil? && @polish_assay_result.nil?
@@ -452,8 +482,31 @@ module Import
             @genotypes
           end
           
+          def process_brca1_malformed_cdna_targeted_test
+            return if @brca1_seq_result.nil? && @brca1_mutation.nil?
+            if @brca1_seq_result.present?
+              cdna_variant = @brca1_seq_result.scan(/([^\s]+)/i)[0].join
+            else cdna_variant = @brca1_mutation.scan(/([^\s]+)/i)[0].join
+            end
+            process_positive_cdnavariant('BRCA1', cdna_variant, :targeted_mutation)
+            @genotypes
+          end
+
+          def process_brca2_malformed_cdna_targeted_test
+            return if @brca2_seq_result.nil? && @brca2_mutation.nil?
+            if @brca2_seq_result.present?
+              cdna_variant = @brca2_seq_result.scan(/([^\s]+)/i)[0].join
+            else cdna_variant = @brca2_mutation.scan(/([^\s]+)/i)[0].join
+            end
+            process_positive_cdnavariant('BRCA2', cdna_variant, :targeted_mutation)
+            @genotypes
+          end
+
+
+          
           def process_targeted_test
-            
+            add_targeted_screen_date
+
             if all_null_results_targeted_test?
               process_all_null_results_targeted_test(:targeted_mutation)
             elsif normal_brca1_seq? || 
@@ -475,7 +528,10 @@ module Import
             elsif failed_brca1_mlpa_targeted_test? ||
               failed_brca2_mlpa_targeted_test?
               process_failed_brca1_2_targeted_tests
-            # else binding.pry
+            elsif brca1_malformed_cdna_fullscreen_option3?
+              process_brca1_malformed_cdna_targeted_test
+            elsif brca2_malformed_cdna_fullscreen_option3?
+              process_brca2_malformed_cdna_targeted_test
             end
             @genotypes
           end
@@ -564,8 +620,10 @@ module Import
           end
 
           def fullscreen_brca2_mutated_exon_brca1_normal?
-            @ngs_result.scan(/B2|BRCA2|BRCA 2|BR2/i).size.positive? &&
-            @ngs_result.scan(EXON_REGEX).size.positive?
+            (@ngs_result.scan(/B2|BRCA2|BRCA 2|BR2/i).size.positive? &&
+            @ngs_result.scan(EXON_REGEX).size.positive?) ||
+            (@brca2_mlpa_result.present? && @brca2_mlpa_result.scan(EXON_REGEX).size.positive?)
+            
           end
     
           def process_fullscreen_brca2_mutated_exon_brca1_normal(exon_variant)
@@ -576,8 +634,9 @@ module Import
           end
 
           def fullscreen_brca1_mutated_exon_brca2_normal?
-            @ngs_result.scan(/B1|BRCA1|BRCA 1|BR1/i).size.positive? &&
-            @ngs_result.scan(EXON_REGEX).size.positive?
+            (@ngs_result.scan(/B1|BRCA1|BRCA 1|BR1/i).size.positive? &&
+            @ngs_result.scan(EXON_REGEX).size.positive?) ||
+            (@brca1_mlpa_result.present? && @brca1_mlpa_result.scan(EXON_REGEX).size.positive?)
           end
 
           def process_fullscreen_brca1_mutated_exon_brca2_normal(exon_variant)
@@ -630,8 +689,17 @@ module Import
             @ngs_result.nil? && @fullscreen_result.nil? && @authoriseddate.nil?
           end
 
+          def add_full_screen_date_option1
+            return if @ngs_report_date.nil?
+
+            @genotype.attribute_map['authoriseddate'] = @ngs_report_date
+          end
+
+
+
           def process_fullscreen_test_option1
             return if @ngs_result.nil?
+            add_full_screen_date_option1
             if @ngs_result.downcase.scan(/no\s*mut|no\s*var/i).size.positive?
               process_double_brca_negative(:full_screen)
             elsif @ngs_result.downcase.scan(/fail/i).size.positive?
@@ -648,10 +716,35 @@ module Import
               process_fullscreen_non_brca_mutated_cdna_gene
             elsif fullscreen_non_brca_mutated_exon_gene?
               process_fullscreen_non_brca_mutated_exon_gene
+            # else binding.pry
             end
           end
-        
+
+          def add_full_screen_date_option2
+            return if @authoriseddate.nil?
+
+            @genotype.attribute_map['authoriseddate'] = @authoriseddate
+          end
+
+          def add_full_screen_date_option3
+            return if @date_2_3_reported.nil? && @brca1_report_date.nil? && @brca2_report_date.nil? &&
+            @brca2_ptt_report_dated.nil? && @full_ppt_report_date.nil?
+
+            date = [
+                    @date_2_3_reported, @brca1_report_date, @brca2_report_date, 
+                    @brca2_ptt_report_dated, @full_ppt_report_date 
+                  ].compact
+            if date.size > 1
+              @genotype.attribute_map['authoriseddate'] = date.min
+            else 
+              @genotype.attribute_map['authoriseddate'] = date.join
+            end
+          end
+              
+
           def process_fullscreen_test_option2
+            
+            add_full_screen_date_option2
             if @fullscreen_result.present? && @fullscreen_result.downcase.scan(/no\s*mut|no\s*var/i).size.positive?
               process_double_brca_negative(:full_screen)
             elsif fullscreen_non_brca_mutated_cdna_gene?
@@ -676,8 +769,11 @@ module Import
           end
 
           def process_fullscreen_test_option3
+            add_full_screen_date_option3
            if all_fullscreen_option2_relevant_fields_nil?
              process_double_brca_unknown(:full_screen)
+           elsif brca_false_positives?
+             process_double_brca_negative(:full_screen)
            elsif brca1_malformed_cdna_fullscreen_option3?
              process_brca1_malformed_cdna_fullscreen_option3
            elsif brca2_malformed_cdna_fullscreen_option3?
@@ -700,6 +796,12 @@ module Import
              process_double_brca_fail(:full_screen)
            # else binding.pry
            end
+          end
+
+          def brca_false_positives?
+            return if @brca1_seq_result.nil? && @brca2_seq_result.nil?
+            (@brca1_seq_result.present? && @brca1_seq_result.scan(/-ve/i).size.positive?) ||
+            (@brca2_seq_result.present? && @brca2_seq_result.scan(/-ve/i).size.positive?)
           end
 
           def brca1_cdna_variant_fullscreen_option3?
@@ -763,8 +865,8 @@ module Import
           def process_brca1_malformed_cdna_fullscreen_option3
             return if @brca1_seq_result.nil? && @brca1_mutation.nil?
             if @brca1_seq_result.present?
-              cdna_variant = @brca1_seq_result.scan(/([^\s]+)/i).join
-            else cdna_variant = @brca1_mutation.scan(/([^\s]+)/i).join
+              cdna_variant = @brca1_seq_result.scan(/([^\s]+)/i)[0].join
+            else cdna_variant = @brca1_mutation.scan(/([^\s]+)/i)[0].join
             end
             process_fullscreen_brca1_mutated_cdna_brca2_normal(cdna_variant)
             @genotypes
