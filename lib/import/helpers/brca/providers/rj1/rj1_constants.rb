@@ -26,7 +26,8 @@ module Import
                           (?<exons>[0-9]+(?<otherexon>-[0-9]+)?)\s?(?<zygosity>het|hom)?\.?\s?
                           (?<deldup>del(etion)?|dup(lication)?)\.?|
                           (?<zygosity>het|hom)\s?(?<deldup>del|dup)\s?ex(?<ons>ons)?\s?
-                          (?<exons>[0-9]+(?<otherexon>-[0-9]+)?)/ix.freeze
+                          (?<exons>[0-9]+(?<otherexon>-[0-9]+)?)|
+                          (?<zygosity>het|hom)\sdel\sex(on)?(?<exons>[0-9]+(?<otherexon>-[0-9]+)?)/ix.freeze
 
             BRCA_GENES_REGEX = /(?<brca>BRCA1|
                                        BR1|

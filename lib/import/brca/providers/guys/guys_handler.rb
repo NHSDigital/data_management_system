@@ -69,8 +69,208 @@ module Import
           end
 
           #####################################################################################
+          ################ PROCESSOR METHODS ##################################################
+          #####################################################################################
+
+          def process_ashkenazi_test
+            return if @aj_assay_result.nil?
+            
+            add_ajscreen_date
+
+            if normal_ashkkenazi_test?
+               process_double_brca_negative(:aj_screen)
+            elsif brca1_mutation? || brca2_mutation?
+              if brca1_mutation? & !brca2_mutation?
+                process_positive_cdnavariant('BRCA1',@brca1_mutation, :aj_screen)
+                process_negative_gene('BRCA2', :aj_screen)
+              elsif brca2_mutation? & !brca1_mutation?
+                process_positive_cdnavariant('BRCA2',@brca2_mutation, :aj_screen)
+                process_negative_gene('BRCA1', :aj_screen)
+              elsif brca2_mutation? & brca1_mutation?
+                process_positive_cdnavariant('BRCA2',@brca2_mutation, :aj_screen)
+                process_positive_cdnavariant('BRCA1',@brca1_mutation, :aj_screen)
+              end
+              @genotypes
+            elsif brca1_mutation_exception? || @aj_assay_result == "68_69delAG"
+              if @aj_assay_result == "68_69delAG"
+                process_positive_cdnavariant('BRCA1','68_69delAG', :aj_screen)
+                process_negative_gene('BRCA2', :aj_screen)
+              else
+                process_positive_cdnavariant('BRCA1',@aj_assay_result, :aj_screen)
+                process_negative_gene('BRCA2', :aj_screen)
+              end
+              @genotypes
+            elsif brca2_mutation_exception?
+               process_positive_cdnavariant('BRCA2',@aj_assay_result, :aj_screen) 
+               process_negative_gene('BRCA1', :aj_screen)
+            end
+            @genotypes
+          end
+
+          def process_polish_test
+            return if @polish_assay_result.nil?
+
+            add_polish_screen_date
+            if normal_polish_test?
+               process_negative_gene('BRCA1', :polish_screen)
+            elsif @polish_assay_result.scan(CDNA_REGEX).size.positive?
+              process_positive_cdnavariant('BRCA1',@polish_assay_result, :polish_screen)
+            end
+            @genotypes
+          end
+
+          def process_targeted_test
+            add_targeted_screen_date
+
+            if all_null_results_targeted_test?
+              process_all_null_results_targeted_test(:targeted_mutation)
+            elsif normal_brca1_seq? || 
+            normal_brca2_seq?
+             process_normal_brca1_2_seq_targeted_tests
+            elsif positive_seq_brca1? ||
+              brca1_mutation?||
+              positive_seq_brca2?||
+              brca2_mutation?
+              process_positive_brca1_2_seq_targeted_tests
+            elsif normal_brca1_mlpa_targeted_test?||
+              normal_brca2_mlpa_targeted_test?
+              process_normal_brca1_2_mlpa_targeted_tests
+            elsif positive_mlpa_brca1_targeted_test? ||
+             positive_exonvariants_in_set_brca1_targeted_test? ||
+              positive_mlpa_brca2_targeted_test? ||
+              positive_exonvariants_in_set_brca2_targeted_test?
+              process_positive_brca1_2_mlpa_targeted_tests
+            elsif failed_brca1_mlpa_targeted_test? ||
+              failed_brca2_mlpa_targeted_test?
+              process_failed_brca1_2_targeted_tests
+            elsif brca1_malformed_cdna_fullscreen_option3?
+              process_brca1_malformed_cdna_targeted_test
+            elsif brca2_malformed_cdna_fullscreen_option3?
+              process_brca2_malformed_cdna_targeted_test
+            elsif no_cdna_variant?
+              process_all_null_results_targeted_test(:targeted_mutation)
+            end
+            @genotypes
+          end
+
+          def process_fullscreen_test_option1
+            return if @ngs_result.nil?
+            add_full_screen_date_option1
+            if @ngs_result.downcase.scan(/no\s*mut|no\s*var/i).size.positive?
+              process_double_brca_negative(:full_screen)
+            elsif @ngs_result.downcase.scan(/fail/i).size.positive?
+              process_double_brca_fail(:full_screen)
+            elsif @ngs_result.scan(/b(?<brca>1|2)/i).size.positive?
+              variants = @ngs_result.scan(CDNA_REGEX).uniq.flatten.compact
+              genes = [@ngs_result.match(/b(?<brca>1|2)/i)[:brca].to_i]
+              process_multiple_variants_ngs_results(variants,genes)
+            elsif @ngs_result.scan(BRCA_REGEX).size > 1
+              variants = @ngs_result.scan(CDNA_REGEX).uniq.flatten.compact
+              genes = @ngs_result.scan(BRCA_GENES_REGEX).uniq.flatten.compact
+              process_multiple_variants_ngs_results(variants,genes)
+            elsif fullscreen_brca2_mutated_cdna_brca1_normal?
+              process_fullscreen_brca2_mutated_cdna_brca1_normal(@ngs_result)
+            elsif fullscreen_brca1_mutated_cdna_brca2_normal?
+              process_fullscreen_brca1_mutated_cdna_brca2_normal(@ngs_result)
+            elsif fullscreen_brca2_mutated_exon_brca1_normal?
+              process_fullscreen_brca2_mutated_exon_brca1_normal(@ngs_result.match(EXON_REGEX))
+            elsif fullscreen_brca1_mutated_exon_brca2_normal?
+              process_fullscreen_brca1_mutated_exon_brca2_normal(@ngs_result.match(EXON_REGEX))
+            elsif fullscreen_non_brca_mutated_cdna_gene?
+              process_fullscreen_non_brca_mutated_cdna_gene
+            elsif fullscreen_non_brca_mutated_exon_gene?
+              process_fullscreen_non_brca_mutated_exon_gene
+            elsif @ngs_result.scan(BRCA_GENES_REGEX).size.positive? &&
+              @ngs_result.scan(/(?<cdna>[0-9]+[a-z]+>[a-z]+)/i).size.positive?
+              positive_genotype = @genotype.dup
+              positive_gene = @ngs_result.scan(BRCA_GENES_REGEX).flatten.compact.join
+              negative_gene = ["BRCA2", "BRCA1"] - @ngs_result.scan(BRCA_GENES_REGEX).flatten.compact
+              process_negative_gene(negative_gene.join, :full_screen)
+              positive_genotype.add_gene(positive_gene)
+              positive_genotype.add_gene_location(@ngs_result.match(/(?<cdna>[0-9]+[a-z]+>[a-z]+)/i)[:cdna].tr(';',''))
+              positive_genotype.add_status(2)
+              positive_genotype.add_test_scope(:full_screen)
+              @genotypes.append(positive_genotype)
+            end
+          end
+
+          def process_fullscreen_test_option2
+            
+            add_full_screen_date_option2
+            if @fullscreen_result.present? && @fullscreen_result.downcase.scan(/no\s*mut|no\s*var/i).size.positive?
+              process_double_brca_negative(:full_screen)
+            elsif fullscreen_non_brca_mutated_cdna_gene?
+              process_fullscreen_non_brca_mutated_cdna_gene
+            elsif brca1_mutation? && brca2_mutation?
+              process_positive_cdnavariant('BRCA1', @brca1_mutation, :full_screen)
+              process_positive_cdnavariant('BRCA2', @brca2_mutation, :full_screen)
+            elsif brca2_cdna_variant_fullscreen_option2?
+              process_fullscreen_brca2_mutated_cdna_option2
+            elsif brca1_cdna_variant_fullscreen_option2?
+              process_fullscreen_brca1_mutated_cdna_option2
+            elsif all_null_cdna_variants_except_full_screen_test?
+              process_fullscreen_result_cdnavariant
+            elsif fullscreen_brca1_mlpa_positive_variant?
+              process_full_screen_brca1_mlpa_positive_variant(@brca1_mlpa_result.scan(EXON_REGEX))
+            elsif fullscreen_brca2_mlpa_positive_variant?
+              process_full_screen_brca2_mlpa_positive_variant(@brca2_mlpa_result.scan(EXON_REGEX))
+            elsif all_fullscreen_option2_relevant_fields_nil?
+              process_double_brca_unknown(:full_screen)
+            elsif double_brca_mlpa_negative?
+              process_double_brca_negative(:full_screen)
+            elsif brca1_mlpa_normal_brca2_null?
+              process_double_brca_fail(:full_screen)
+            else binding.pry
+            end
+          end
+
+          def process_fullscreen_test_option3
+            add_full_screen_date_option3
+           if all_fullscreen_option2_relevant_fields_nil?
+             process_double_brca_unknown(:full_screen)
+           elsif brca1_normal_brca2_nil? || brca2_normal_brca1_nil?
+             process_double_brca_negative(:full_screen)
+           elsif brca_false_positives?
+             process_double_brca_negative(:full_screen)
+           elsif normal_brca2_malformed_fullscreen_option3?
+             process_double_brca_negative(:full_screen)
+           elsif brca1_malformed_cdna_fullscreen_option3?
+             process_brca1_malformed_cdna_fullscreen_option3
+           elsif brca2_malformed_cdna_fullscreen_option3?
+             process_brca2_malformed_cdna_fullscreen_option3
+           elsif brca1_cdna_variant_fullscreen_option3?
+             process_brca1_cdna_variant_fullscreen_option3
+           elsif brca2_cdna_variant_fullscreen_option3?
+             process_brca2_cdna_variant_fullscreen_option3
+           elsif double_brca_mlpa_negative?
+             process_double_brca_negative(:full_screen)
+           elsif fullscreen_brca1_mlpa_positive_variant?
+             process_full_screen_brca1_mlpa_positive_variant(@brca1_mlpa_result.scan(EXON_REGEX))
+           elsif fullscreen_brca2_mlpa_positive_variant?
+             process_full_screen_brca2_mlpa_positive_variant(@brca2_mlpa_result.scan(EXON_REGEX))
+           elsif double_brca_malformed_cdna_fullscreen_option3?
+             process_double_brca_malformed_cdna_fullscreen_option3
+           elsif @brca2_mlpa_result.present? && @brca1_mlpa_result.present? &&
+             @brca2_mlpa_result.scan(/fail/i).size.positive? &&
+             @brca1_mlpa_result.scan(/fail/i).size.positive? &&
+             process_double_brca_fail(:full_screen)
+           elsif brca1_mlpa_normal_brca2_null?
+             process_double_brca_fail(:full_screen)
+           # else binding.pry
+           end
+          end
+
+
+
+          #####################################################################################
           ################ HERE ARE COMMON METHODS ############################################
           #####################################################################################
+
+          def no_cdna_variant?
+            @brca1_mutation.nil? && @brca2_mutation.nil? &&
+            @brca1_seq_result.nil? && @brca2_seq_result.nil? &&
+            @brca1_mlpa_result.downcase == 'n/a' && @brca2_mlpa_result.downcase == 'n/a'
+          end
 
           def brca1_mutation?
             return if @brca1_mutation.nil?
@@ -191,13 +391,27 @@ module Import
             @genotypes
           end
 
-          def process_positive_cdnavariant(positive_gene, cdna_variant, test_scope)
+          def process_positive_cdnavariant(positive_gene, variant_field, test_scope)
             positive_genotype = @genotype.dup
             positive_genotype.add_gene(positive_gene)
-            positive_genotype.add_gene_location(cdna_variant)
+            # positive_genotype.add_gene_location(cdna_variant)
+            add_cdnavariant_from_variantfield(variant_field, positive_genotype)
+            add_proteinimpact_from_variantfield(variant_field, positive_genotype)
             positive_genotype.add_status(2)
             positive_genotype.add_test_scope(test_scope)
             @genotypes.append(positive_genotype)
+          end
+
+          def add_cdnavariant_from_variantfield(variant_field, positive_genotype)
+            Maybe(variant_field.match(CDNA_REGEX)[:cdna]).map { |x| positive_genotype.add_gene_location(x.tr(';','')) }
+          rescue StandardError
+            @logger.debug 'Cannot add cdna variant'
+          end
+
+          def add_proteinimpact_from_variantfield(variant_field, positive_genotype)
+            Maybe(variant_field.match(PROTEIN_REGEX)[:impact]).map { |x| positive_genotype.add_protein_impact(x) }
+          rescue StandardError
+            @logger.debug 'Cannot add protein impact'
           end
 
           def process_positive_exonvariant(positive_gene, exon_variant, test_scope)
@@ -272,41 +486,6 @@ module Import
             @aj_assay_result.scan(/neg|nrg/i).size.positive?
           end
           
-          def process_ashkenazi_test
-            return if @aj_assay_result.nil?
-            
-            add_ajscreen_date
-
-            if normal_ashkkenazi_test?
-               process_double_brca_negative(:aj_screen)
-            elsif brca1_mutation? || brca2_mutation?
-              if brca1_mutation? & !brca2_mutation?
-                process_positive_cdnavariant('BRCA1',@brca1_mutation.match(CDNA_REGEX)[:cdna], :aj_screen)
-                process_negative_gene('BRCA2', :aj_screen)
-              elsif brca2_mutation? & !brca1_mutation?
-                process_positive_cdnavariant('BRCA2',@brca2_mutation.match(CDNA_REGEX)[:cdna], :aj_screen)
-                process_negative_gene('BRCA1', :aj_screen)
-              elsif brca2_mutation? & brca1_mutation?
-                process_positive_cdnavariant('BRCA2',@brca2_mutation.match(CDNA_REGEX)[:cdna], :aj_screen)
-                process_positive_cdnavariant('BRCA1',@brca1_mutation.match(CDNA_REGEX)[:cdna], :aj_screen)
-              end
-              @genotypes
-            elsif brca1_mutation_exception? || @aj_assay_result == "68_69delAG"
-              if @aj_assay_result == "68_69delAG"
-                process_positive_cdnavariant('BRCA1','68_69delAG', :aj_screen)
-                process_negative_gene('BRCA2', :aj_screen)
-              else
-                process_positive_cdnavariant('BRCA1',@aj_assay_result.match(CDNA_REGEX)[:cdna], :aj_screen)
-                process_negative_gene('BRCA2', :aj_screen)
-              end
-              @genotypes
-            elsif brca2_mutation_exception?
-               process_positive_cdnavariant('BRCA2',@aj_assay_result.match(CDNA_REGEX)[:cdna], :aj_screen) 
-               process_negative_gene('BRCA1', :aj_screen)
-            end
-            @genotypes
-          end
-          
           def brca1_mutation_exception?
             # @aj_assay_result == "68_69delAG" ||
             BRCA1_MUTATIONS.include? @aj_assay_result
@@ -341,18 +520,7 @@ module Import
             @polish_assay_result.downcase == 'no variants detected'||
             @polish_assay_result.scan(/neg|nrg/i).size.positive?
           end
-          
-          def process_polish_test
-            return if @polish_assay_result.nil?
 
-            add_polish_screen_date
-            if normal_polish_test?
-               process_negative_gene('BRCA1', :polish_screen)
-            elsif @polish_assay_result.scan(CDNA_REGEX).size.positive?
-              process_positive_cdnavariant('BRCA1',@polish_assay_result.match(CDNA_REGEX)[:cdna], :polish_screen)
-            end
-            @genotypes
-          end
           
           #####################################################################################
           ################ HERE ARE TARGETED TESTS ############################################
@@ -392,12 +560,14 @@ module Import
 
           def positive_mlpa_brca1_targeted_test?
             return if @brca1_mlpa_result.nil?
-            @authoriseddate.nil? && @brca1_mlpa_result.scan(EXON_REGEX).size.positive?
+            (@authoriseddate.nil? || @record.raw_fields['servicereportidentifier'] == '06/03030') &&
+            @brca1_mlpa_result.scan(EXON_REGEX).size.positive?
           end
 
           def positive_mlpa_brca2_targeted_test?
             return if @brca2_mlpa_result.nil?
-            @authoriseddate.nil? && @brca2_mlpa_result.scan(EXON_REGEX).size.positive?
+            (@authoriseddate.nil? || @record.raw_fields['servicereportidentifier'] == '06/03030') &&
+            @brca2_mlpa_result.scan(EXON_REGEX).size.positive?
           end
 
           def positive_exonvariants_in_set_brca1_targeted_test?
@@ -452,16 +622,16 @@ module Import
 
           def process_positive_brca1_2_seq_targeted_tests
             if positive_seq_brca1?
-              process_positive_cdnavariant('BRCA1',@brca1_seq_result.match(CDNA_REGEX)[:cdna], 
+              process_positive_cdnavariant('BRCA1',@brca1_seq_result, 
                                          :targeted_mutation)
             elsif brca1_mutation?
-              process_positive_cdnavariant('BRCA1',@brca1_mutation.match(CDNA_REGEX)[:cdna], 
+              process_positive_cdnavariant('BRCA1',@brca1_mutation, 
                                             :targeted_mutation)
             elsif positive_seq_brca2?
-              process_positive_cdnavariant('BRCA2',@brca2_seq_result.match(CDNA_REGEX)[:cdna], 
+              process_positive_cdnavariant('BRCA2',@brca2_seq_result, 
                                         :targeted_mutation)
             elsif brca2_mutation?
-              process_positive_cdnavariant('BRCA1',@brca2_mutation.match(CDNA_REGEX)[:cdna], 
+              process_positive_cdnavariant('BRCA2',@brca2_mutation, 
                                             :targeted_mutation)
             end
             @genotypes
@@ -485,61 +655,53 @@ module Import
           def process_brca1_malformed_cdna_targeted_test
             return if @brca1_seq_result.nil? && @brca1_mutation.nil?
             if @brca1_seq_result.present?
-              cdna_variant = @brca1_seq_result.scan(/([^\s]+)/i)[0].join
-            else cdna_variant = @brca1_mutation.scan(/([^\s]+)/i)[0].join
+              badformat_cdna_brca1_variant = @brca1_seq_result.scan(/([^\s]+)/i)[0].join
+            else badformat_cdna_brca1_variant = @brca1_mutation.scan(/([^\s]+)/i)[0].join
             end
-            process_positive_cdnavariant('BRCA1', cdna_variant, :targeted_mutation)
-            @genotypes
+            positive_genotype = @genotype.dup
+            positive_genotype.add_gene('BRCA1')
+            positive_genotype.add_gene_location(badformat_cdna_brca1_variant.tr(';',''))
+            positive_genotype.add_status(2)
+            positive_genotype.add_test_scope(:targeted_mutation)
+            @genotypes.append(positive_genotype)
           end
 
           def process_brca2_malformed_cdna_targeted_test
             return if @brca2_seq_result.nil? && @brca2_mutation.nil?
             if @brca2_seq_result.present?
-              cdna_variant = @brca2_seq_result.scan(/([^\s]+)/i)[0].join
-            else cdna_variant = @brca2_mutation.scan(/([^\s]+)/i)[0].join
+              badformat_cdna_brca2_variant = @brca2_seq_result.scan(/([^\s]+)/i)[0].join
+            else badformat_cdna_brca2_variant = @brca2_mutation.scan(/([^\s]+)/i)[0].join
             end
-            process_positive_cdnavariant('BRCA2', cdna_variant, :targeted_mutation)
-            @genotypes
+            positive_genotype = @genotype.dup
+            positive_genotype.add_gene('BRCA2')
+            positive_genotype.add_gene_location(badformat_cdna_brca2_variant.tr(';',''))
+            positive_genotype.add_status(2)
+            positive_genotype.add_test_scope(:targeted_mutation)
+            @genotypes.append(positive_genotype)
           end
 
 
           
-          def process_targeted_test
-            add_targeted_screen_date
-
-            if all_null_results_targeted_test?
-              process_all_null_results_targeted_test(:targeted_mutation)
-            elsif normal_brca1_seq? || 
-            normal_brca2_seq?
-             process_normal_brca1_2_seq_targeted_tests
-            elsif positive_seq_brca1? ||
-              brca1_mutation?||
-              positive_seq_brca2?||
-              brca2_mutation?
-              process_positive_brca1_2_seq_targeted_tests
-            elsif normal_brca1_mlpa_targeted_test?||
-              normal_brca2_mlpa_targeted_test?
-              process_normal_brca1_2_mlpa_targeted_tests
-            elsif positive_mlpa_brca1_targeted_test? ||
-             positive_exonvariants_in_set_brca1_targeted_test? ||
-              positive_mlpa_brca2_targeted_test? ||
-              positive_exonvariants_in_set_brca2_targeted_test?
-              process_positive_brca1_2_mlpa_targeted_tests
-            elsif failed_brca1_mlpa_targeted_test? ||
-              failed_brca2_mlpa_targeted_test?
-              process_failed_brca1_2_targeted_tests
-            elsif brca1_malformed_cdna_fullscreen_option3?
-              process_brca1_malformed_cdna_targeted_test
-            elsif brca2_malformed_cdna_fullscreen_option3?
-              process_brca2_malformed_cdna_targeted_test
-            end
-            @genotypes
-          end
 
           #####################################################################################
           ################ HERE ARE FULL SCREEN TESTS #########################################
           #####################################################################################
           
+          def full_screen_test_option1?
+            @ngs_result.present? ||
+            @ngs_report_date.present?
+          end
+
+          def full_screen_test_option2?
+            @fullscreen_result.present? || @authoriseddate.present?
+          end
+
+          def full_screen_test_option3?
+            @predictive_report_date.nil? && @predictive.downcase == 'false' &&
+            @aj_assay_result.nil? && @polish_assay_result.nil? &&
+            @ngs_result.nil? && @fullscreen_result.nil? && @authoriseddate.nil?
+          end
+
           
           def all_fullscreen_option2_relevant_fields_nil?
             @brca1_mlpa_result.nil? && @brca2_mlpa_result.nil? &&
@@ -581,7 +743,7 @@ module Import
             @fullscreen_result.scan(/(?<brca>BRCA1|BRCA2)/i).size.zero?
             positive_gene = @fullscreen_result.match(/(?<brca>BRCA1|BRCA2)/i)[:brca]
             negative_gene = ['BRCA1', 'BRCA2'] - [positive_gene]
-            process_positive_cdnavariant(positive_gene, @fullscreen_result.match(CDNA_REGEX)[:cdna], :full_screen)
+            process_positive_cdnavariant(positive_gene, @fullscreen_result, :full_screen)
             process_negative_gene(negative_gene.join, :full_screen)
           end
           
@@ -662,7 +824,7 @@ module Import
             return if @ngs_result.nil?
             process_double_brca_negative(:full_screen)
             positive_gene = @ngs_result.match(/(?<nonbrca>CHEK2|PALB2|TP53)/i)[:nonbrca]
-            process_positive_cdnavariant(positive_gene, @ngs_result.match(CDNA_REGEX)[:cdna], :full_screen)
+            process_positive_cdnavariant(positive_gene, @ngs_result, :full_screen)
             @genotypes
           end
     
@@ -674,51 +836,37 @@ module Import
             @genotypes
           end
 
-          def full_screen_test_option1?
-            @ngs_result.present? ||
-            @ngs_report_date.present?
-          end
-
-          def full_screen_test_option2?
-            @fullscreen_result.present? || @authoriseddate.present?
-          end
-
-          def full_screen_test_option3?
-            @predictive_report_date.nil? && @predictive.downcase == 'false' &&
-            @aj_assay_result.nil? && @polish_assay_result.nil? &&
-            @ngs_result.nil? && @fullscreen_result.nil? && @authoriseddate.nil?
-          end
-
           def add_full_screen_date_option1
             return if @ngs_report_date.nil?
 
             @genotype.attribute_map['authoriseddate'] = @ngs_report_date
           end
 
-
-
-          def process_fullscreen_test_option1
-            return if @ngs_result.nil?
-            add_full_screen_date_option1
-            if @ngs_result.downcase.scan(/no\s*mut|no\s*var/i).size.positive?
-              process_double_brca_negative(:full_screen)
-            elsif @ngs_result.downcase.scan(/fail/i).size.positive?
-              process_double_brca_fail(:full_screen)
-            elsif fullscreen_brca2_mutated_cdna_brca1_normal?
-              process_fullscreen_brca2_mutated_cdna_brca1_normal(@ngs_result.match(CDNA_REGEX)[:cdna])
-            elsif fullscreen_brca1_mutated_cdna_brca2_normal?
-              process_fullscreen_brca1_mutated_cdna_brca2_normal(@ngs_result.match(CDNA_REGEX)[:cdna])
-            elsif fullscreen_brca2_mutated_exon_brca1_normal?
-              process_fullscreen_brca2_mutated_exon_brca1_normal(@ngs_result.match(EXON_REGEX))
-            elsif fullscreen_brca1_mutated_exon_brca2_normal?
-              process_fullscreen_brca1_mutated_exon_brca2_normal(@ngs_result.match(EXON_REGEX))
-            elsif fullscreen_non_brca_mutated_cdna_gene?
-              process_fullscreen_non_brca_mutated_cdna_gene
-            elsif fullscreen_non_brca_mutated_exon_gene?
-              process_fullscreen_non_brca_mutated_exon_gene
-            # else binding.pry
+          def process_multiple_variants_ngs_results(variants,genes)
+            if genes.size == variants.size
+              genes.zip(variants).each { |gene,variant| 
+              positive_genotype =  @genotype.dup
+              positive_genotype.add_gene(gene)
+              positive_genotype.add_gene_location(variant) 
+              positive_genotype.add_status(2)
+              positive_genotype.add_test_scope(:full_screen)
+              @genotypes.append(positive_genotype)
+              }
+            else
+              genes = genes * variants.size
+              genes.zip(variants).each { |gene,variant| 
+              positive_genotype =  @genotype.dup
+              positive_genotype.add_gene(gene)
+              positive_genotype.add_gene_location(variant) 
+              positive_genotype.add_status(2)
+              positive_genotype.add_test_scope(:full_screen)
+              @genotypes.append(positive_genotype)
+              }
             end
+            @genotypes
           end
+
+
 
           def add_full_screen_date_option2
             return if @authoriseddate.nil?
@@ -742,61 +890,7 @@ module Import
           end
               
 
-          def process_fullscreen_test_option2
-            
-            add_full_screen_date_option2
-            if @fullscreen_result.present? && @fullscreen_result.downcase.scan(/no\s*mut|no\s*var/i).size.positive?
-              process_double_brca_negative(:full_screen)
-            elsif fullscreen_non_brca_mutated_cdna_gene?
-              process_fullscreen_non_brca_mutated_cdna_gene
-            elsif brca2_cdna_variant_fullscreen_option2?
-              process_fullscreen_brca2_mutated_cdna_option2
-            elsif brca1_cdna_variant_fullscreen_option2?
-              process_fullscreen_brca1_mutated_cdna_option2
-            elsif all_null_cdna_variants_except_full_screen_test?
-              process_fullscreen_result_cdnavariant
-            elsif brca2_seq_result_missing_cdot?
-              process_missing_cdot_cdna_varint_brca12_seq
-            elsif fullscreen_brca1_mlpa_positive_variant?
-              process_full_screen_brca1_mlpa_positive_variant(@brca1_mlpa_result.scan(EXON_REGEX))
-            elsif fullscreen_brca2_mlpa_positive_variant?
-              process_full_screen_brca2_mlpa_positive_variant(@brca2_mlpa_result.scan(EXON_REGEX))
-            elsif all_fullscreen_option2_relevant_fields_nil?
-              process_double_brca_unknown(:full_screen)
-            elsif double_brca_mlpa_negative?
-              process_double_brca_negative(:full_screen)
-            end
-          end
 
-          def process_fullscreen_test_option3
-            add_full_screen_date_option3
-           if all_fullscreen_option2_relevant_fields_nil?
-             process_double_brca_unknown(:full_screen)
-           elsif brca_false_positives?
-             process_double_brca_negative(:full_screen)
-           elsif brca1_malformed_cdna_fullscreen_option3?
-             process_brca1_malformed_cdna_fullscreen_option3
-           elsif brca2_malformed_cdna_fullscreen_option3?
-             process_brca2_malformed_cdna_fullscreen_option3
-           elsif brca1_cdna_variant_fullscreen_option3?
-             process_brca1_cdna_variant_fullscreen_option3
-           elsif brca2_cdna_variant_fullscreen_option3?
-             process_brca2_cdna_variant_fullscreen_option3
-           elsif double_brca_mlpa_negative?
-             process_double_brca_negative(:full_screen)
-           elsif fullscreen_brca1_mlpa_positive_variant?
-             process_full_screen_brca1_mlpa_positive_variant(@brca1_mlpa_result.scan(EXON_REGEX))
-           elsif fullscreen_brca2_mlpa_positive_variant?
-             process_full_screen_brca2_mlpa_positive_variant(@brca2_mlpa_result.scan(EXON_REGEX))
-           elsif double_brca_malformed_cdna_fullscreen_option3?
-             process_double_brca_malformed_cdna_fullscreen_option3
-           elsif @brca2_mlpa_result.present? && @brca1_mlpa_result.present? &&
-             @brca2_mlpa_result.scan(/fail/i).size.positive? &&
-             @brca1_mlpa_result.scan(/fail/i).size.positive? &&
-             process_double_brca_fail(:full_screen)
-           # else binding.pry
-           end
-          end
 
           def brca_false_positives?
             return if @brca1_seq_result.nil? && @brca2_seq_result.nil?
@@ -814,7 +908,7 @@ module Import
           def process_brca1_cdna_variant_fullscreen_option3
             cdna_variant = [@brca1_mutation,@brca1_seq_result].flatten.uniq.join
             if [@brca2_mutation,@brca2_seq_result].flatten.compact.uniq.empty?
-              process_fullscreen_brca1_mutated_cdna_brca2_normal(cdna_variant.match(CDNA_REGEX)[:cdna])
+              process_fullscreen_brca1_mutated_cdna_brca2_normal(cdna_variant)
             end
             @genotypes
           end
@@ -829,7 +923,7 @@ module Import
           def process_brca2_cdna_variant_fullscreen_option3
             cdna_variant = [@brca2_mutation,@brca2_seq_result].flatten.uniq.join
             if [@brca1_mutation,@brca1_seq_result].flatten.compact.uniq.empty?
-              process_fullscreen_brca2_mutated_cdna_brca1_normal(cdna_variant.match(CDNA_REGEX)[:cdna])
+              process_fullscreen_brca2_mutated_cdna_brca1_normal(cdna_variant)
             end
             @genotypes
           end
@@ -850,26 +944,41 @@ module Import
 
           def process_double_brca_malformed_cdna_fullscreen_option3
             if @brca1_seq_result.present?
-              cdna_brca1_variant = @brca1_seq_result.scan(/([^\s]+)\s?/i)[0].join
-            else cdna_brca1_variant = @brca1_mutation.scan(/([^\s]+)\s?/i)[0].join
+              badformat_cdna_brca1_variant = @brca1_seq_result.scan(/([^\s]+)\s?/i)[0].join
+            else badformat_cdna_brca1_variant = @brca1_mutation.scan(/([^\s]+)\s?/i)[0].join
             end
-            process_positive_cdnavariant('BRCA1', cdna_brca1_variant, :full_screen)
+            positive_genotype = @genotype.dup
+            positive_genotype.add_gene('BRCA1')
+            positive_genotype.add_gene_location(badformat_cdna_brca1_variant.tr(';',''))
+            positive_genotype.add_status(2)
+            positive_genotype.add_test_scope(:full_screen)
+            @genotypes.append(positive_genotype)
             if @brca2_seq_result.present?
-              cdna_brca2_variant = @brca2_seq_result.scan(/([^\s]+)\s?/i)[0].join
-            else cdna_brca2_variant = @brca2_mutation.scan(/([^\s]+)\s?/i)[0].join
+              badformat_cdna_brca2_variant = @brca2_seq_result.scan(/([^\s]+)\s?/i)[0].join
+            else badformat_cdna_brca2_variant = @brca2_mutation.scan(/([^\s]+)\s?/i)[0].join
             end
-            process_positive_cdnavariant('BRCA2', cdna_brca2_variant, :full_screen)
+            positive_genotype = @genotype.dup
+            positive_genotype.add_gene('BRCA2')
+            positive_genotype.add_gene_location(badformat_cdna_brca2_variant.tr(';',''))
+            positive_genotype.add_status(2)
+            positive_genotype.add_test_scope(:full_screen)
+            @genotypes.append(positive_genotype)
           end
 
 
           def process_brca1_malformed_cdna_fullscreen_option3
+            process_negative_gene('BRCA2', :full_screen)
             return if @brca1_seq_result.nil? && @brca1_mutation.nil?
             if @brca1_seq_result.present?
-              cdna_variant = @brca1_seq_result.scan(/([^\s]+)/i)[0].join
-            else cdna_variant = @brca1_mutation.scan(/([^\s]+)/i)[0].join
+              badformat_cdna_brca1_variant = @brca1_seq_result.scan(/([^\s]+)/i)[0].join
+            else badformat_cdna_brca1_variant = @brca1_mutation.scan(/([^\s]+)/i)[0].join
             end
-            process_fullscreen_brca1_mutated_cdna_brca2_normal(cdna_variant)
-            @genotypes
+            positive_genotype = @genotype.dup
+            positive_genotype.add_gene('BRCA1')
+            positive_genotype.add_gene_location(badformat_cdna_brca1_variant.tr(';',''))
+            positive_genotype.add_status(2)
+            positive_genotype.add_test_scope(:full_screen)
+            @genotypes.append(positive_genotype)
           end
 
           def brca2_malformed_cdna_fullscreen_option3?
@@ -878,15 +987,27 @@ module Import
             @brca1_mutation.nil? && @brca1_seq_result.nil? &&
             @brca1_mlpa_result.nil? && @brca2_mlpa_result.nil?
           end
-            
+          
+          def normal_brca2_malformed_fullscreen_option3?
+            return if @brca2_seq_result.nil?
+            @brca2_seq_result.scan(/neg|norm/i).size.positive?
+          end
+
           def process_brca2_malformed_cdna_fullscreen_option3
-            return if @brca2_seq_result.nil? && @brca2_mutation.nil?
-            if @brca2_seq_result.present?
-              cdna_variant = @brca2_seq_result.scan(/([^\s]+)/i)[0].join
-            else cdna_variant = @brca2_mutation.scan(/([^\s]+)/i)[0].join
+            process_negative_gene('BRCA1', :full_screen)
+            return if (@brca2_seq_result.nil? && @brca2_mutation.nil?) ||
+            (@brca2_seq_result.present? && @brca2_seq_result.scan(/neg|norm/i).size.positive?)
+            
+            if @brca2_seq_result.present? && @brca2_seq_result.scan(/neg|norm/i).size.zero?
+              badformat_cdna_brca2_variant = @brca2_seq_result.scan(/([^\s]+)/i)[0].join
+            else badformat_cdna_brca2_variant = @brca2_mutation.scan(/([^\s]+)/i)[0].join
             end
-            process_fullscreen_brca2_mutated_cdna_brca1_normal(cdna_variant)
-            @genotypes
+            positive_genotype = @genotype.dup
+            positive_genotype.add_gene('BRCA2')
+            positive_genotype.add_gene_location(badformat_cdna_brca2_variant.tr(';',''))
+            positive_genotype.add_status(2)
+            positive_genotype.add_test_scope(:full_screen)
+            @genotypes.append(positive_genotype)
           end
 
 
@@ -912,13 +1033,6 @@ module Import
             @genotypes
           end
 
-
-          def process_missing_cdot_cdna_varint_brca12_seq
-            process_positive_cdnavariant('BRCA2', @brca2_seq_result.match(/(?<cdna>[0-9]+[a-z]+>[a-z]+)/i)[:cdna], :full_screen)
-            process_negative_gene('BRCA1', :full_screen)
-          end
-          
-
           def fullscreen_normal_double_brca_mlpa_option2?
             return if @brca1_mlpa_result.nil? && @brca2_mlpa_result.nil?
             @brca1_mlpa_result.scan(/no del\/dup/i).size.positive? &&
@@ -934,9 +1048,9 @@ module Import
           def process_fullscreen_brca2_mutated_cdna_option2
             process_negative_gene('BRCA1', :full_screen)
             if !@brca2_mutation.nil? && @brca2_mutation.scan(CDNA_REGEX).size.positive?
-              process_positive_cdnavariant('BRCA2', @brca2_mutation.match(CDNA_REGEX)[:cdna], :full_screen)
+              process_positive_cdnavariant('BRCA2', @brca2_mutation, :full_screen)
             elsif !@brca2_seq_result.nil? && @brca2_seq_result.scan(CDNA_REGEX).size.positive?
-              process_positive_cdnavariant('BRCA2', @brca2_seq_result.match(CDNA_REGEX)[:cdna], :full_screen)
+              process_positive_cdnavariant('BRCA2', @brca2_seq_result, :full_screen)
             end
             @genotypes
           end
@@ -946,12 +1060,34 @@ module Import
             (!@brca1_seq_result.nil? && @brca1_seq_result.scan(CDNA_REGEX).size.positive?)
           end
 
+          def brca1_normal_brca2_nil?
+            (@brca2_mutation.nil? && @brca2_seq_result.nil? && @brca2_mlpa_result.nil?) &&
+            ((@brca1_mlpa_result.present? &&
+            @brca1_mlpa_result.scan(/no del\/dup/i).size.positive?) ||
+            (@brca1_seq_result.present? && @brca1_seq_result.scan(/neg|norm/i).size.positive?))
+          end
+
+          def brca2_normal_brca1_nil?
+            (@brca1_mutation.nil? && @brca1_seq_result.nil? && @brca1_mlpa_result.nil?) &&
+            ((@brca2_mlpa_result.present? &&
+            @brca2_mlpa_result.scan(/no del\/dup/i).size.positive?)||
+            (@brca2_seq_result.present? && @brca2_seq_result.scan(/neg|norm/i).size.positive?))
+          end
+
+          def brca1_mlpa_normal_brca2_null?
+            return if @brca2_mlpa_result.nil? && @brca1_mlpa_result.nil?
+            (@brca1_mlpa_result.nil? && @brca2_mlpa_result.scan(/no del\/dup/i).size.positive?) ||
+            (@brca2_mlpa_result.nil? && @brca1_mlpa_result.scan(/no del\/dup/i).size.positive?) ||
+            (@brca2_mlpa_result.downcase == 'n/a' && @brca1_mlpa_result.scan(/no del\/dup/i).size.positive?) ||
+            (@brca1_mlpa_result.downcase == 'n/a' && @brca2_mlpa_result.scan(/no del\/dup/i).size.positive?)
+          end
+
           def process_fullscreen_brca1_mutated_cdna_option2
             process_negative_gene('BRCA2', :full_screen)
             if !@brca1_mutation.nil? && @brca1_mutation.scan(CDNA_REGEX).size.positive?
-              process_positive_cdnavariant('BRCA1', @brca1_mutation.match(CDNA_REGEX)[:cdna], :full_screen)
+              process_positive_cdnavariant('BRCA1', @brca1_mutation, :full_screen)
             elsif !@brca1_seq_result.nil? && @brca1_seq_result.scan(CDNA_REGEX).size.positive?
-              process_positive_cdnavariant('BRCA1', @brca1_seq_result.match(CDNA_REGEX)[:cdna], :full_screen)
+              process_positive_cdnavariant('BRCA1', @brca1_seq_result, :full_screen)
             end
             @genotypes
           end
@@ -960,3 +1096,7 @@ module Import
     end
   end
 end
+
+
+#SRIs to hardcore
+#12/10483, 05/06817 and 16/29400,
