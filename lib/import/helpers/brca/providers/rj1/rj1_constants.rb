@@ -54,6 +54,16 @@ module Import
                                        NF2|
                                        SMARCB1|
                                        LZTR1)/xi.freeze
+                                       
+            DEPRECATED_BRCA_NAMES_MAP = { 'BR1'    => 'BRCA1',
+                                          'B1'     => 'BRCA1',
+                                          'BRCA 1' => 'BRCA1',
+                                          'BR2'    => 'BRCA2',
+                                          'B2'     => 'BRCA2',
+                                          'BRCA 2' => 'BRCA2' }.freeze
+            
+            DEPRECATED_BRCA_NAMES_REGEX = /B1|BR1|BRCA\s1|B2|BR2|BRCA\s2/i.freeze
+                                       
             BRCA1_MUTATIONS = [ "het c.68_69delAG (p.Glu23fs)", "het c.5266dupC (p.Gln1756fs) (M)", 
                                "Het c.68_69delAG p.(Glu23fs) (M)", "c.302-1g>t (M)"]
             BRCA2_MUTATIONS = ["c.5946delT (M)", "c.5946delT (p.Ser1982fs) (M)",

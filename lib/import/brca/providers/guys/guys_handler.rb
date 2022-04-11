@@ -69,6 +69,56 @@ module Import
           end
 
           #####################################################################################
+          ################ OPTION METHODS ##################################################
+          #####################################################################################
+
+          def ashkenazi_test?
+            @aj_report_date.present? || @aj_assay_result.present?
+          end
+          
+          def full_screen_test_option1?
+            @ngs_result.present? ||
+            @ngs_report_date.present?
+          end
+
+          def full_screen_test_option2?
+            @fullscreen_result.present? || @authoriseddate.present?
+          end
+
+          def full_screen_test_option3?
+            @predictive_report_date.nil? && @predictive.downcase == 'false' &&
+            @aj_assay_result.nil? && @polish_assay_result.nil? &&
+            @ngs_result.nil? && @fullscreen_result.nil? && @authoriseddate.nil?
+          end
+          
+          def targeted_test_first_option?
+            @predictive_report_date.present? && @aj_assay_result.nil? && @polish_assay_result.nil?
+          end
+
+          def targeted_test_second_option?
+            return if @aj_assay_result.nil?
+            @predictive_report_date.present? &&
+            @aj_assay_result.scan(/neg|nrg/i).size.positive? &&
+            (@brca1_mutation.present? || @brca2_mutation.present? ||
+            @brca1_mlpa_result.present? || @brca2_mlpa_result.present?)
+          end
+          
+          def targeted_test_third_option?
+            return if @polish_assay_result.nil?
+            @predictive_report_date.present? &&
+            @polish_assay_result.scan(/neg|nrg/i).size.positive? &&
+            (@brca1_mutation.present? || @brca2_mutation.present? ||
+            @brca1_mlpa_result.present? || @brca2_mlpa_result.present?)
+          end
+          
+          def targeted_test_fourth_option?
+            return if @predictive.nil?
+            @predictive_report_date.nil? && @predictive.scan(/true/i).size.positive? &&
+            @ngs_result.nil? &&
+            @polish_assay_result.nil? && @aj_assay_result.nil? && @fullscreen_result.nil?
+          end
+
+          #####################################################################################
           ################ PROCESSOR METHODS ##################################################
           #####################################################################################
 
@@ -153,6 +203,33 @@ module Import
             @genotypes
           end
 
+          def process_multiple_variants_ngs_results(variants,genes)
+            negative_gene = ['BRCA1', 'BRCA2'] - genes
+            process_negative_gene(negative_gene.join, :full_screen)  if negative_gene.present?
+            # binding.pry
+            if genes.uniq.size == variants.uniq.size
+              genes.zip(variants).each { |gene,variant| 
+              positive_genotype =  @genotype.dup
+              positive_genotype.add_gene(gene)
+              positive_genotype.add_gene_location(variant) 
+              positive_genotype.add_status(2)
+              positive_genotype.add_test_scope(:full_screen)
+              @genotypes.append(positive_genotype)
+              }
+            else
+              genes = genes.uniq * variants.uniq.size
+              genes.zip(variants.uniq).each { |gene,variant| 
+              positive_genotype =  @genotype.dup
+              positive_genotype.add_gene(gene)
+              positive_genotype.add_gene_location(variant) 
+              positive_genotype.add_status(2)
+              positive_genotype.add_test_scope(:full_screen)
+              @genotypes.append(positive_genotype)
+              }
+            end
+            @genotypes
+          end
+          
           def process_fullscreen_test_option1
             return if @ngs_result.nil?
             add_full_screen_date_option1
@@ -161,10 +238,13 @@ module Import
             elsif @ngs_result.downcase.scan(/fail/i).size.positive?
               process_double_brca_fail(:full_screen)
             elsif @ngs_result.scan(/b(?<brca>1|2)/i).size.positive?
-              variants = @ngs_result.scan(CDNA_REGEX).uniq.flatten.compact
-              genes = [@ngs_result.match(/b(?<brca>1|2)/i)[:brca].to_i]
-              process_multiple_variants_ngs_results(variants,genes)
-            elsif @ngs_result.scan(BRCA_REGEX).size > 1
+              
+            variants = @ngs_result.scan(CDNA_REGEX).uniq.flatten.compact
+            tested_genes = @ngs_result.scan(DEPRECATED_BRCA_NAMES_REGEX).flatten.uniq.flatten.compact
+            positive_genes = tested_genes.map {|tested_gene|  DEPRECATED_BRCA_NAMES_MAP[tested_gene]}
+            process_multiple_variants_ngs_results(variants,positive_genes)
+            #   process_multiple_variants_ngs_results(variants,positive_genes)
+            elsif @ngs_result.scan(CDNA_REGEX).size > 1
               variants = @ngs_result.scan(CDNA_REGEX).uniq.flatten.compact
               genes = @ngs_result.scan(BRCA_GENES_REGEX).uniq.flatten.compact
               process_multiple_variants_ngs_results(variants,genes)
@@ -459,10 +539,7 @@ module Import
             end
           end
           
-          def ashkenazi_test?
-            @aj_report_date.present? || @aj_assay_result.present?
-          end
-          
+
           def normal_ashkenazi_test?
             return if @aj_assay_result.nil?
 
@@ -531,32 +608,7 @@ module Import
               @genotype.attribute_map['authoriseddate'] = @predictive_report_date
           end
           
-          def targeted_test_first_option?
-            @predictive_report_date.present? && @aj_assay_result.nil? && @polish_assay_result.nil?
-          end
 
-          def targeted_test_second_option?
-            return if @aj_assay_result.nil?
-            @predictive_report_date.present? &&
-            @aj_assay_result.scan(/neg|nrg/i).size.positive? &&
-            (@brca1_mutation.present? || @brca2_mutation.present? ||
-            @brca1_mlpa_result.present? || @brca2_mlpa_result.present?)
-          end
-          
-          def targeted_test_third_option?
-            return if @polish_assay_result.nil?
-            @predictive_report_date.present? &&
-            @polish_assay_result.scan(/neg|nrg/i).size.positive? &&
-            (@brca1_mutation.present? || @brca2_mutation.present? ||
-            @brca1_mlpa_result.present? || @brca2_mlpa_result.present?)
-          end
-          
-          def targeted_test_fourth_option?
-            return if @predictive.nil?
-            @predictive_report_date.nil? && @predictive.scan(/true/i).size.positive? &&
-            @ngs_result.nil? &&
-            @polish_assay_result.nil? && @aj_assay_result.nil? && @fullscreen_result.nil?
-          end
 
           def positive_mlpa_brca1_targeted_test?
             return if @brca1_mlpa_result.nil?
@@ -687,20 +739,7 @@ module Import
           ################ HERE ARE FULL SCREEN TESTS #########################################
           #####################################################################################
           
-          def full_screen_test_option1?
-            @ngs_result.present? ||
-            @ngs_report_date.present?
-          end
 
-          def full_screen_test_option2?
-            @fullscreen_result.present? || @authoriseddate.present?
-          end
-
-          def full_screen_test_option3?
-            @predictive_report_date.nil? && @predictive.downcase == 'false' &&
-            @aj_assay_result.nil? && @polish_assay_result.nil? &&
-            @ngs_result.nil? && @fullscreen_result.nil? && @authoriseddate.nil?
-          end
 
           
           def all_fullscreen_option2_relevant_fields_nil?
@@ -842,29 +881,7 @@ module Import
             @genotype.attribute_map['authoriseddate'] = @ngs_report_date
           end
 
-          def process_multiple_variants_ngs_results(variants,genes)
-            if genes.size == variants.size
-              genes.zip(variants).each { |gene,variant| 
-              positive_genotype =  @genotype.dup
-              positive_genotype.add_gene(gene)
-              positive_genotype.add_gene_location(variant) 
-              positive_genotype.add_status(2)
-              positive_genotype.add_test_scope(:full_screen)
-              @genotypes.append(positive_genotype)
-              }
-            else
-              genes = genes * variants.size
-              genes.zip(variants).each { |gene,variant| 
-              positive_genotype =  @genotype.dup
-              positive_genotype.add_gene(gene)
-              positive_genotype.add_gene_location(variant) 
-              positive_genotype.add_status(2)
-              positive_genotype.add_test_scope(:full_screen)
-              @genotypes.append(positive_genotype)
-              }
-            end
-            @genotypes
-          end
+
 
 
 
@@ -1096,7 +1113,3 @@ module Import
     end
   end
 end
-
-
-#SRIs to hardcore
-#12/10483, 05/06817 and 16/29400,
