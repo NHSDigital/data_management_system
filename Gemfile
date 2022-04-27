@@ -1,8 +1,8 @@
 source 'https://rubygems.org'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 6.0.4.7'
-gem 'activemodel-caution', '6.0.4.7'
+gem 'rails', '~> 6.0.4.8'
+gem 'activemodel-caution', '6.0.4.8'
 # Use postgresql as the database for Active Record
 gem 'pg'
 # use Puma as the app server
