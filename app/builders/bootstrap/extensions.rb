@@ -27,7 +27,7 @@ module Bootstrap
 
     def lookup_select_group(method, **options)
       control_group(method, options.delete(:text)) do
-        lookup_select(method, options)
+        lookup_select(method, **options)
       end
     end
   end
