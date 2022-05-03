@@ -11,6 +11,7 @@ module Import
             #####################################################################################
 
             def no_cdna_variant?
+              return if @brca1_mlpa_result.nil? && @brca2_mlpa_result.nil?
               @brca1_mutation.nil? && @brca2_mutation.nil? &&
               @brca1_seq_result.nil? && @brca2_seq_result.nil? &&
               @brca1_mlpa_result.downcase == 'n/a' && @brca2_mlpa_result.downcase == 'n/a'
@@ -47,22 +48,26 @@ module Import
             end
             def normal_brca1_mlpa_targeted_test?
               return if @brca1_mlpa_result.nil? || @brca1_mlpa_result == "N/A"
-              @brca1_mlpa_result.scan(/no del\/dup/i).size.positive?
+              @brca1_mlpa_result.scan(/no del\/dup/i).size.positive? #&&
+              #(@authoriseddate.nil? || @record.raw_fields['servicereportidentifier'] == '06/03030')
             end
 
             def normal_brca2_mlpa_targeted_test?
               return if @brca2_mlpa_result.nil? || @brca2_mlpa_result == "N/A"
-              @brca2_mlpa_result.scan(/no del\/dup/i).size.positive?
+              @brca2_mlpa_result.scan(/no del\/dup/i).size.positive? #&&
+              #(@authoriseddate.nil? || @record.raw_fields['servicereportidentifier'] == '06/03030')
             end
 
             def failed_brca1_mlpa_targeted_test?
               return if @brca1_mlpa_result.nil? || @brca1_mlpa_result == "N/A"
-              @brca1_mlpa_result.scan(/fail/i).size.positive?
+              @brca1_mlpa_result.scan(/fail/i).size.positive? &&
+              (@authoriseddate.nil? || @record.raw_fields['servicereportidentifier'] == '06/03030')
             end
 
             def failed_brca2_mlpa_targeted_test?
               return if @brca2_mlpa_result.nil? || @brca2_mlpa_result == "N/A"
-              @brca2_mlpa_result.scan(/fail/i).size.positive?
+              @brca2_mlpa_result.scan(/fail/i).size.positive? &&
+              (@authoriseddate.nil? || @record.raw_fields['servicereportidentifier'] == '06/03030')
             end
 
             def positive_seq_brca1?
@@ -89,17 +94,6 @@ module Import
               failed_genotype.add_status(9)
               failed_genotype.add_test_scope(test_scope)
               @genotypes.append(failed_genotype)
-            end
-
-            def process_double_brca_negative(test_scope)
-              ['BRCA1', 'BRCA2'].each do |negative_gene| 
-                genotype1 = @genotype.dup
-                genotype1.add_gene(negative_gene)
-                genotype1.add_status(1)
-                genotype1.add_test_scope(test_scope)
-                @genotypes.append(genotype1)
-              end
-              @genotypes
             end
 
             def process_double_brca_negative(test_scope)

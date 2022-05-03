@@ -26,8 +26,8 @@ module Import
               return if @aj_assay_result.nil?
               @predictive_report_date.present? &&
               @aj_assay_result.scan(/neg|nrg/i).size.positive? &&
-              (@brca1_mutation.present? || @brca2_mutation.present? ||
-              @brca1_mlpa_result.present? || @brca2_mlpa_result.present?)
+              (@brca1_mutation.present? || @brca2_mutation.present?) #||
+              # @brca1_mlpa_result.present? || @brca2_mlpa_result.present?)
             end
           
             def targeted_test_third_option?
@@ -65,7 +65,7 @@ module Import
 
             def process_ashkenazi_test
               return if @aj_assay_result.nil?
-            
+               # binding.pry if @record.raw_fields['servicereportidentifier'] == '97/04007'
               add_ajscreen_date
 
               if normal_ashkkenazi_test?
@@ -78,20 +78,20 @@ module Import
                   process_positive_cdnavariant('BRCA2',@brca2_mutation, :aj_screen)
                   process_negative_gene('BRCA1', :aj_screen)
                 elsif brca2_mutation? & brca1_mutation?
-                  process_positive_cdnavariant('BRCA2',@brca2_mutation, :aj_screen)
-                  process_positive_cdnavariant('BRCA1',@brca1_mutation, :aj_screen)
                 end
                 @genotypes
               elsif brca1_mutation_exception? || @aj_assay_result == "68_69delAG"
-                if @aj_assay_result == "68_69delAG"
-                  process_positive_cdnavariant('BRCA1','68_69delAG', :aj_screen)
-                  process_negative_gene('BRCA2', :aj_screen)
-                else
+                # if @aj_assay_result == "68_69delAG"
+                #   binding.pry
+                #   process_positive_cdnavariant('BRCA1','68_69delAG', :aj_screen)
+                #   process_negative_gene('BRCA2', :aj_screen)
+                # else
                   process_positive_cdnavariant('BRCA1',@aj_assay_result, :aj_screen)
                   process_negative_gene('BRCA2', :aj_screen)
-                end
+                # end
                 @genotypes
               elsif brca2_mutation_exception?
+                # binding.pry
                  process_positive_cdnavariant('BRCA2',@aj_assay_result, :aj_screen) 
                  process_negative_gene('BRCA1', :aj_screen)
               end
@@ -110,12 +110,61 @@ module Import
               @genotypes
             end
 
+            # def process_targeted_test
+            #   add_targeted_screen_date
+            #
+            #   if all_null_results_targeted_test?
+            #     process_all_null_results_targeted_test(:targeted_mutation)
+            #     @genotypes
+            #   end
+            #   if normal_brca1_seq? || normal_brca2_seq?
+            #    process_normal_brca1_2_seq_targeted_tests
+            #                  @genotypes
+            #  end
+            #   if positive_seq_brca1? || brca1_mutation?|| positive_seq_brca2?|| brca2_mutation?
+            #     process_positive_brca1_2_seq_targeted_tests
+            #                   @genotypes
+            #   end
+            #   if positive_mlpa_brca1_targeted_test? ||
+            #    positive_exonvariants_in_set_brca1_targeted_test? ||
+            #     positive_mlpa_brca2_targeted_test? ||
+            #     positive_exonvariants_in_set_brca2_targeted_test?
+            #     process_positive_brca1_2_mlpa_targeted_tests
+            #                   @genotypes
+            #   end
+            #   if normal_brca1_mlpa_targeted_test?||
+            #     normal_brca2_mlpa_targeted_test?
+            #     process_normal_brca1_2_mlpa_targeted_tests
+            #                   @genotypes
+            #   end
+            #   if failed_brca1_mlpa_targeted_test? ||
+            #     failed_brca2_mlpa_targeted_test?
+            #     process_failed_brca1_2_targeted_tests
+            #                   @genotypes
+            #   end
+            #   if brca1_malformed_cdna_fullscreen_option3?
+            #     process_brca1_malformed_cdna_targeted_test
+            #                   @genotypes
+            #                 end
+            #   if brca2_malformed_cdna_fullscreen_option3?
+            #     process_brca2_malformed_cdna_targeted_test
+            #     @genotypes
+            #   end
+            #   if no_cdna_variant?
+            #     process_all_null_results_targeted_test(:targeted_mutation)
+            #                   @genotypes
+            #   # else binding.pry
+            #   end
+            #   @genotypes
+            # end
+
+
             def process_targeted_test
               add_targeted_screen_date
 
               if all_null_results_targeted_test?
                 process_all_null_results_targeted_test(:targeted_mutation)
-              elsif normal_brca1_seq? || 
+              elsif normal_brca1_seq? ||
               normal_brca2_seq?
                process_normal_brca1_2_seq_targeted_tests
               elsif positive_seq_brca1? ||
@@ -123,14 +172,14 @@ module Import
                 positive_seq_brca2?||
                 brca2_mutation?
                 process_positive_brca1_2_seq_targeted_tests
-              elsif normal_brca1_mlpa_targeted_test?||
-                normal_brca2_mlpa_targeted_test?
-                process_normal_brca1_2_mlpa_targeted_tests
               elsif positive_mlpa_brca1_targeted_test? ||
                positive_exonvariants_in_set_brca1_targeted_test? ||
                 positive_mlpa_brca2_targeted_test? ||
                 positive_exonvariants_in_set_brca2_targeted_test?
                 process_positive_brca1_2_mlpa_targeted_tests
+              elsif normal_brca1_mlpa_targeted_test?||
+                normal_brca2_mlpa_targeted_test?
+                process_normal_brca1_2_mlpa_targeted_tests
               elsif failed_brca1_mlpa_targeted_test? ||
                 failed_brca2_mlpa_targeted_test?
                 process_failed_brca1_2_targeted_tests
@@ -140,6 +189,7 @@ module Import
                 process_brca2_malformed_cdna_targeted_test
               elsif no_cdna_variant?
                 process_all_null_results_targeted_test(:targeted_mutation)
+              # else binding.pry
               end
               @genotypes
             end
@@ -152,11 +202,10 @@ module Import
               elsif @ngs_result.downcase.scan(/fail/i).size.positive?
                 process_double_brca_fail(:full_screen)
               elsif @ngs_result.scan(/b(?<brca>1|2)/i).size.positive?
-              
-              variants = @ngs_result.scan(CDNA_REGEX).uniq.flatten.compact
-              tested_genes = @ngs_result.scan(DEPRECATED_BRCA_NAMES_REGEX).flatten.uniq.flatten.compact
-              positive_genes = tested_genes.map {|tested_gene|  DEPRECATED_BRCA_NAMES_MAP[tested_gene]}
-              process_multiple_variants_ngs_results(variants,positive_genes)
+                variants = @ngs_result.scan(CDNA_REGEX).uniq.flatten.compact
+                tested_genes = @ngs_result.scan(DEPRECATED_BRCA_NAMES_REGEX).flatten.uniq.flatten.compact
+                positive_genes = tested_genes.map {|tested_gene|  DEPRECATED_BRCA_NAMES_MAP[tested_gene]}
+                process_multiple_variants_ngs_results(variants,positive_genes)
               #   process_multiple_variants_ngs_results(variants,positive_genes)
               elsif @ngs_result.scan(CDNA_REGEX).size > 1
                 variants = @ngs_result.scan(CDNA_REGEX).uniq.flatten.compact
@@ -172,10 +221,12 @@ module Import
                 process_fullscreen_brca1_mutated_exon_brca2_normal(@ngs_result.match(EXON_REGEX))
               elsif fullscreen_non_brca_mutated_cdna_gene?
                 process_fullscreen_non_brca_mutated_cdna_gene
-              elsif fullscreen_non_brca_mutated_exon_gene?
-                process_fullscreen_non_brca_mutated_exon_gene
+              # elsif fullscreen_non_brca_mutated_exon_gene?
+              #   binding.pry
+              #   process_fullscreen_non_brca_mutated_exon_gene
               elsif @ngs_result.scan(BRCA_GENES_REGEX).size.positive? &&
                 @ngs_result.scan(/(?<cdna>[0-9]+[a-z]+>[a-z]+)/i).size.positive?
+                # binding.pry
                 positive_genotype = @genotype.dup
                 positive_gene = @ngs_result.scan(BRCA_GENES_REGEX).flatten.compact.join
                 negative_gene = ["BRCA2", "BRCA1"] - @ngs_result.scan(BRCA_GENES_REGEX).flatten.compact
@@ -203,6 +254,7 @@ module Import
               elsif brca1_cdna_variant_fullscreen_option2?
                 process_fullscreen_brca1_mutated_cdna_option2
               elsif all_null_cdna_variants_except_full_screen_test?
+                # binding.pry
                 process_fullscreen_result_cdnavariant
               elsif fullscreen_brca1_mlpa_positive_variant?
                 process_full_screen_brca1_mlpa_positive_variant(@brca1_mlpa_result.scan(EXON_REGEX))
@@ -214,6 +266,7 @@ module Import
                 process_double_brca_negative(:full_screen)
               elsif brca1_mlpa_normal_brca2_null?
                 process_double_brca_fail(:full_screen)
+              else binding.pry
               end
             end
 
