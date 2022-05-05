@@ -4,7 +4,8 @@ source 'https://rubygems.org'
 gem 'rails', '~> 6.0.4.8'
 gem 'activemodel-caution', '6.0.4.8'
 # Use postgresql as the database for Active Record
-gem 'pg'
+# gem 'pg', '>= 0.18', '< 2.0'
+gem 'pg', '~> 1.2.3' # Support old CentOS 7 PostgreSQL client 9.2.24
 # use Puma as the app server
 gem 'puma', '~> 4.0', '>= 4.3.5' # Bump to >= 4.3.5 in response to CVE-2020-11076 & CVE-2020-11077
 # Use SCSS for stylesheets
