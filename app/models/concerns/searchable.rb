@@ -47,9 +47,13 @@ module Searchable
       if filters[:associated].any?
         scope = filters[:associated].inject(scope) do |chain, (association, search_params)|
           options = _searchable_options[association.name]
-          args    = options && options[:kwargs] ? { params: search_params } : search_params
+          search_result = if options && options[:kwargs]
+                            association.klass.search(params: search_params)
+                          else
+                            association.klass.search(search_params)
+                          end
 
-          chain.joins(association.name).merge(association.klass.search(args))
+          chain.joins(association.name).merge(search_result)
         end
       end
 
