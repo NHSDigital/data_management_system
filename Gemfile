@@ -16,7 +16,27 @@ gem 'uglifier', '>= 1.3.0'
 gem 'coffee-rails'
 # See https://github.com/rails/execjs#readme for more supported runtimes
 # gem 'therubyracer', platforms: :ruby
-gem 'mini_racer'
+# gem 'mini_racer'
+# Allow mini_racer version to be overridden in a custom Gemfile
+# We need this for mini_racer on Mac OS Monterey, where the old libv8 no longer compiles
+unless defined?(BUNDLER_OVERRIDE_MINI_RACER) && BUNDLER_OVERRIDE_MINI_RACER
+  # We have built our own CentOS 7 binaries for mini_racer
+  # (with separate gem files for Ruby 2.7 and Ruby 3.0)
+  # Copy these into place if needed
+  gem_fname = 'mini_racer-0.6.2-x86_64-linux.gem'
+  gem_dir = if RUBY_PLATFORM == 'x86_64-linux' && File.exist?('/etc/os-release') &&
+               File.readlines('/etc/os-release').grep(/^(ID="centos"|VERSION_ID="7")$/).count == 2
+              "vendor/mini_racer-x86_64-linux-ruby#{RUBY_VERSION.split('.')[0..1].join}"
+            end
+  require 'fileutils'
+  if gem_dir && Dir.exist?(gem_dir)
+    FileUtils.cp "#{gem_dir}/#{gem_fname}", 'vendor/cache/'
+  else
+    FileUtils.rm_f "vendor/cache/#{gem_fname}"
+  end
+  gem 'libv8-node', '~> 16.10'
+  gem 'mini_racer', '~> 0.6.2'
+end
 
 # Turbolinks makes following links in your web application faster. Read more: https://github.com/rails/turbolinks
 gem 'turbolinks', '~> 5.x'

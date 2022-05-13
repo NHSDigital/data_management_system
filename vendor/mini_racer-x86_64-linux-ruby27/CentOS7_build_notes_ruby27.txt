@@ -1,0 +1,90 @@
+This directory contains a compiled gemfile mini_racer-0.6.2-x86_64-linux.gem
+compiled with Ruby 2.7 on CentOS 7.
+
+We need this, because the default development toolchain on CentOS 7 is too
+old to compile the latest binaries.
+
+Instead, we add the extra tools on a single build box, and use this to
+compile the gem.
+
+Please note, we currently compile separate binaries for Ruby 2.7.x and Ruby 3.0.x
+and have a special stanza in Gemfile to copy the right binary into vendor/cache
+
+Instructions tested 2022-05-13.
+
+To set up the toolchain and install mini_racer 0.6.2
+(cf. https://github.com/rubyjs/mini_racer/issues/169):
+
+  sudo yum group install "Development Tools"
+  sudo yum install centos-release-scl # handles multiple versions of scl
+  sudo yum install scl-utils
+  sudo yum install scl-utils-build
+  sudo yum install devtoolset-9
+  scl enable devtoolset-9 bash # set everything up for version 9
+  gcc --version # this should be 9 now
+
+  # If necessary, set proxy servers, e.g.
+  export http_proxy=http://hostname:8080/
+  export https_proxy=http://hostname:8080/
+  export HTTP_PROXY=http://hostname:8080/
+
+  gem fetch mini_racer --version 0.6.2
+  gem install -N mini_racer-0.6.2.gem
+
+To compile the gem manually (after following the steps above):
+  git clone https://github.com/rubyjs/mini_racer.git
+  cd mini_racer
+  git checkout v0.6.2
+  rbenv shell 2.7.6
+  bundle install
+  rake clobber
+  scl enable devtoolset-9 bash # set everything up for version 9
+  rake compile
+  rake test
+  rake native gem
+  ls -oh pkg/*.gem # expect to see mini_racer-0.6.2-x86_64-linux.gem
+
+
+To update a repository with the Ruby 2.7 mini_racer binaries:
+
+  mkdir -p vendor/mini_racer-x86_64-linux-ruby27
+  mv ~/mini_racer/pkg/mini_racer-0.6.2-x86_64-linux.gem vendor/mini_racer-x86_64-linux-ruby27/
+
+Add the following to the Gemfile instead of the existing mini_racer / libv8 entries:
+
+  # We have built our own CentOS 7 binaries for mini_racer
+  # (with separate gem files for Ruby 2.7 and Ruby 3.0)
+  # Copy these into place if needed
+  gem_fname = 'mini_racer-0.6.2-x86_64-linux.gem'
+  gem_dir = if RUBY_PLATFORM == 'x86_64-linux' && File.exist?('/etc/os-release') &&
+               File.readlines('/etc/os-release').grep(/^(ID="centos"|VERSION_ID="7")$/).count == 2
+              "vendor/mini_racer-x86_64-linux-ruby#{RUBY_VERSION.split('.')[0..1].join}"
+            end
+  require 'fileutils'
+  if gem_dir && Dir.exist?(gem_dir)
+    FileUtils.cp "#{gem_dir}/#{gem_fname}", 'vendor/cache/'
+  else
+    FileUtils.rm_f "vendor/cache/#{gem_fname}"
+  end
+  gem 'libv8-node', '~> 16.10'
+  gem 'mini_racer', '~> 0.6.2'
+
+Add the following to .gitignore
+
+  # Ignored to allow multiple different versions to be copied in by Gemfile
+  vendor/cache/mini_racer-0.6.2-x86_64-linux.gem
+
+Run the following commands:
+  bundle lock --add-platform x86_64-linux
+  grep -A1 '^    mini_racer' Gemfile.lock
+
+Expect to see the following output from grep:
+      mini_racer (0.6.2)
+        libv8-node (~> 16.10.0.0)
+  --
+      mini_racer (0.6.2-x86_64-linux)
+        libv8-node (~> 16.10.0.0)
+
+If they're not there already, add the last 2 lines above, immediately after the first 2.
+
+Run tests / commit the changes.
