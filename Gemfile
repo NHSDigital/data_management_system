@@ -30,7 +30,12 @@ unless defined?(BUNDLER_OVERRIDE_MINI_RACER) && BUNDLER_OVERRIDE_MINI_RACER
             end
   require 'fileutils'
   if gem_dir && Dir.exist?(gem_dir)
-    FileUtils.cp "#{gem_dir}/#{gem_fname}", 'vendor/cache/'
+    begin
+      FileUtils.cp "#{gem_dir}/#{gem_fname}", 'vendor/cache/'
+    rescue Errno::EACCES
+      # Deployer account may not have write access to vendor/cache/
+      # (in which case the file in vendor/cache/ is probably already correct)
+    end
   else
     FileUtils.rm_f "vendor/cache/#{gem_fname}"
   end
