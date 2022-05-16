@@ -6,7 +6,7 @@ class Dataset < ApplicationRecord
 
   has_many :dataset_versions, dependent: :destroy
   has_many :project_datasets
-  has_many :grants, foreign_key: :dataset_id, dependent: :destroy
+  has_many :grants, dependent: :destroy
   has_many :users, -> { extending(GrantedBy).distinct }, through: :grants
 
   has_many :approver_grants, lambda {

@@ -19,7 +19,7 @@ class Project < ApplicationRecord
   has_many :project_classifications, dependent: :destroy
   has_many :classifications, through: :project_classifications
   has_many :project_data_passwords, dependent: :destroy
-  has_many :grants, foreign_key: :project_id, dependent: :destroy
+  has_many :grants, dependent: :destroy
   has_many :users, -> { extending(GrantedBy).distinct }, through: :grants
   has_many :project_amendments, dependent: :destroy
   has_many :communications, dependent: :destroy
@@ -86,10 +86,12 @@ class Project < ApplicationRecord
   # The `assigned_user` will generally be an ODR representative responsible for the project
   belongs_to :assigned_user, class_name: 'User', inverse_of: :assigned_projects, optional: true
 
-  before_save  :update_duration
+  before_validation :add_datasets_for_clone
+  before_save :update_duration
+  before_save :nullify_blank_lookups
   after_create :notify_cas_manager_new_cas_project_saved
-  after_save   :reset_project_data_items
-  after_save   :destroy_project_datasets_without_any_levels
+  after_save :reset_project_data_items
+  after_save :destroy_project_datasets_without_any_levels
 
   # effectively belongs_to .. through: .. association
   # delegate :dataset,      to: :team_dataset, allow_nil: true
@@ -109,8 +111,8 @@ class Project < ApplicationRecord
   with_options reject_if: :all_blank, allow_destroy: true do
     accepts_nested_attributes_for :project_attachments
     accepts_nested_attributes_for :project_nodes
-    accepts_nested_attributes_for :owner_grant, update_only: :true
-    accepts_nested_attributes_for :project_datasets, update_only: :true
+    accepts_nested_attributes_for :owner_grant, update_only: true
+    accepts_nested_attributes_for :project_datasets, update_only: true
   end
 
   validates :name, presence: true, uniqueness: {
@@ -157,13 +159,19 @@ class Project < ApplicationRecord
   scope :odr_projects,        -> { joins(:project_type).merge(ProjectType.odr) }
   scope :odr_mbis_projects, -> { joins(:project_type).merge(ProjectType.odr_mbis) }
 
-  scope :owned_by, ->(user) { joins(:grants).where(
-                              grants: { roleable: ProjectRole.owner, user_id: user.id }) }
-  scope :contributors, ->(user) { joins(:grants).where(
-                                  grants: { roleable: ProjectRole.can_edit, user_id: user.id }) }
+  scope :owned_by, lambda { |user|
+                     joins(:grants).where(
+                       grants: { roleable: ProjectRole.owner, user_id: user.id }
+                     )
+                   }
+  scope :contributors, lambda { |user|
+                         joins(:grants).where(
+                           grants: { roleable: ProjectRole.can_edit, user_id: user.id }
+                         )
+                       }
 
   scope :cas_dataset_approval, lambda { |user, statuses = %i[request approved rejected]|
-    where(id: ProjectDataset.dataset_approval(user, statuses).pluck(:project_id)).order(:id).
+    where(id: ProjectDataset.dataset_approval(user, statuses).select(:project_id)).order(:id).
       joins(:current_state).merge(Workflow::State.dataset_approval_states)
   }
 
@@ -175,9 +183,6 @@ class Project < ApplicationRecord
   accepts_nested_attributes_for :project_attachments
 
   after_transition_to :status_change_notifier
-
-  before_validation :add_datasets_for_clone
-  before_save :nullify_blank_lookups
 
   DATA_SOURCE_ITEM_NO_CLONE_FIELDS = %w[id project_id project_data_source_item_id].freeze
 
@@ -241,8 +246,10 @@ class Project < ApplicationRecord
       )
 
       chain = []
-      chain << arel_table[:first_contact_date].gteq("20#{match[:fy_start]}-04-01") if match[:fy_start]
-      chain << arel_table[:first_contact_date].lteq("20#{match[:fy_end]}-03-31")   if match[:fy_end]
+      if match[:fy_start]
+        chain << arel_table[:first_contact_date].gteq("20#{match[:fy_start]}-04-01")
+      end
+      chain << arel_table[:first_contact_date].lteq("20#{match[:fy_end]}-03-31") if match[:fy_end]
       chain << arel_table[:id].eq(match[:id].to_i) if match[:id]
 
       filter.or(
@@ -301,7 +308,7 @@ class Project < ApplicationRecord
   end
 
   def available_data_source_items
-  # TODO: hook up dataset_version
+    # TODO: hook up dataset_version
     dataset_version_ids = datasets.flat_map { |d| d.dataset_versions.last.id }
     data_items = Nodes::DataItem.where(dataset_version_id: dataset_version_ids)
     data_item_groups = Nodes::DataItemGroup.where(dataset_version_id: dataset_version_ids)
@@ -316,7 +323,7 @@ class Project < ApplicationRecord
   def unselected_available_data_source_items
     selected = project_nodes.collect(&:node_id)
     all = dataset.dataset_versions.last.data_items_and_data_item_groups.collect(&:id)
-    dataset.dataset_versions.last.data_items.where(id: all-selected)
+    dataset.dataset_versions.last.data_items.where(id: all - selected)
   end
 
   def unjustified_data_items
@@ -330,7 +337,7 @@ class Project < ApplicationRecord
     return false if eoi?
 
     if project_nodes.count.zero? ||
-       project_nodes.count != 0 && unjustified_data_items > 0 ||
+       project_nodes.count != 0 && unjustified_data_items.positive? ||
        members.count.zero?
       'disabled'
     else
@@ -343,7 +350,6 @@ class Project < ApplicationRecord
   def null_senior_user_id
     update_column(:senior_user_id, nil)
   end
-
 
   # TODO: Presentation layer logic. No longer relevant? See `project_status_label`
   # get a friendly status message to show to the user
@@ -385,14 +391,12 @@ class Project < ApplicationRecord
       number_of_days_warning = (project.frequency == 'Annually' ? [30, 14, 3, 1] : [14, 3, 1])
       key_dates = number_of_days_warning.map { |a| project.end_data_date - a.days }
       next unless key_dates.include? Time.zone.today
+
       title = "#{project.name} - Will expire in #{(project.end_data_date - Time.zone.today).to_i} days"
       project.team.delegate_users.each do |delegate|
         Notification.create!(title: title,
-                             body: CONTENT_TEMPLATES['email_project_day_expiry']['body'] %
-                             { project: project.name,
-                               number_of_days: (project.end_data_date - Time.zone.today).to_i,
-                               expiry_date: project.end_data_date,
-                               data_set: project.datasets.map(&:name).join(' | ') },
+                             body: format(CONTENT_TEMPLATES['email_project_day_expiry']['body'],
+                                          project: project.name, number_of_days: (project.end_data_date - Time.zone.today).to_i, expiry_date: project.end_data_date, data_set: project.datasets.map(&:name).join(' | ')),
                              project_id: project.id,
                              odr_users: true,
                              user_id: delegate.id)
@@ -406,11 +410,12 @@ class Project < ApplicationRecord
   def self.check_and_set_expired_projects
     of_type_project.in_use.find_each do |project|
       next unless project.end_data_date < Time.zone.now
+
       project.transition_to!(Workflow::State.find('EXPIRED'))
       project.team.delegate_users.each do |delegate|
         Notification.create!(title: "#{project.name} - Expired",
-                             body: CONTENT_TEMPLATES['email_project_expired']['body'] %
-                             { project_name: project.name },
+                             body: format(CONTENT_TEMPLATES['email_project_expired']['body'],
+                                          project_name: project.name),
                              project_id: project.id,
                              odr_users: true,
                              user_id: delegate.id)
@@ -467,7 +472,7 @@ class Project < ApplicationRecord
   def self.report2
     Team.all
     team - project - comments
-    all.each do |p|
+    all.find_each do |p|
       projects << { team: p.team.name,
                     division: p.team.division.name,
                     head_of_profession: p.team.division.head_of_profession,
@@ -521,7 +526,7 @@ class Project < ApplicationRecord
 
   # return children of any data_item_groups
   def all_data_items
-    return nodes unless nodes.any? { |node| node.type ==  'Nodes::DataItemGroup' }
+    return nodes unless nodes.any? { |node| node.type == 'Nodes::DataItemGroup' }
 
     item_groups = nodes.where(type: 'Nodes::DataItemGroup')
     items = nodes - item_groups
@@ -591,6 +596,7 @@ class Project < ApplicationRecord
   def reset_project_data_items
     # Do any nodes belong to a dataset that is no longer associated with project
     return unless project_nodes.any? { |project_node| datasets.exclude? project_node.node.dataset }
+
     project_nodes.each do |project_node|
       project_node.destroy if datasets.exclude? project_node.node.dataset
     end
@@ -617,7 +623,7 @@ class Project < ApplicationRecord
     return unless end_data_date.present? && start_data_date.present?
     return unless end_data_date < start_data_date
 
-    errors.add :end_data_date, "must be after start date"
+    errors.add :end_data_date, 'must be after start date'
   end
 
   def user_delegate?(team, userid)
@@ -705,6 +711,7 @@ class Project < ApplicationRecord
   def add_datasets_for_clone
     return unless clone_of.presence
     return if persisted?
+
     # TODO: I'm not sure we should be cloninng this. perhaps turn off validation if clone_of
 
     Project.find(clone_of).datasets.each_with_object(project_datasets) do |d, pd|

@@ -1,3 +1,4 @@
+# Organisation model
 class Organisation < ApplicationRecord
   belongs_to :country,           class_name: 'Lookups::Country', optional: true
   belongs_to :organisation_type, class_name: 'Lookups::OrganisationType'
@@ -6,14 +7,14 @@ class Organisation < ApplicationRecord
   has_many :addresses, as: :addressable
   has_many :datasets, foreign_key: 'managing_organisation_id'
   accepts_nested_attributes_for :addresses, reject_if: :all_blank,
-                                            allow_destroy: true, update_only: :true
+                                            allow_destroy: true, update_only: true
   has_paper_trail
 
   validates :name, presence: true
-  validates :organisation_type_other, presence: true, if: -> {
+  validates :organisation_type_other, presence: true, if: lambda {
     organisation_type == Lookups::OrganisationType.other
   }
-  validates :organisation_type_other, absence: true, if: -> {
+  validates :organisation_type_other, absence: true, if: lambda {
     organisation_type != Lookups::OrganisationType.other
   }
 

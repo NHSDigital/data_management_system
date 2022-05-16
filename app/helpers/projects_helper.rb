@@ -1,18 +1,18 @@
 # Project helper methods
 module ProjectsHelper
   STATE_TRANSITION_BUTTON_CLASSES = {
-    'DELETED'   => 'btn-danger',
+    'DELETED' => 'btn-danger',
     'SUBMITTED' => 'btn-success',
-    'APPROVED'  => 'btn-success',
-    'REJECTED'  => 'btn-danger',
+    'APPROVED' => 'btn-success',
+    'REJECTED' => 'btn-danger',
     'COMPLETED' => 'btn-success',
-    'AMEND'     => 'btn-warning',
-    'DPIA_START'         => 'btn-success',
-    'DPIA_REVIEW'        => 'btn-success',
-    'DPIA_MODERATION'    => 'btn-success',
-    'DPIA_REJECTED'      => 'btn-danger',
-    'CONTRACT_DRAFT'     => 'btn-success',
-    'CONTRACT_REJECTED'  => 'btn-danger',
+    'AMEND' => 'btn-warning',
+    'DPIA_START' => 'btn-success',
+    'DPIA_REVIEW' => 'btn-success',
+    'DPIA_MODERATION' => 'btn-success',
+    'DPIA_REJECTED' => 'btn-danger',
+    'CONTRACT_DRAFT' => 'btn-success',
+    'CONTRACT_REJECTED' => 'btn-danger',
     'CONTRACT_COMPLETED' => 'btn-success',
     'DATA_RELEASED' => 'btn-success',
     'DATA_DESTROYED' => 'btn-danger',
@@ -24,13 +24,13 @@ module ProjectsHelper
   }.freeze
 
   STATE_TRANSITION_BUTTON_ICONS = {
-    'DELETED'   => 'trash',
+    'DELETED' => 'trash',
     'SUBMITTED' => 'thumbs-up',
-    'APPROVED'  => 'thumbs-up',
-    'REJECTED'  => 'thumbs-down',
+    'APPROVED' => 'thumbs-up',
+    'REJECTED' => 'thumbs-down',
     'COMPLETED' => 'thumbs-up',
-    'DPIA_REJECTED'      => 'thumbs-down',
-    'CONTRACT_REJECTED'  => 'thumbs-down',
+    'DPIA_REJECTED' => 'thumbs-down',
+    'CONTRACT_REJECTED' => 'thumbs-down',
     'CONTRACT_COMPLETED' => 'thumbs-up',
     'ACCESS_APPROVER_APPROVED' => 'thumbs-up',
     'ACCESS_APPROVER_REJECTED' => 'thumbs-down',
@@ -38,27 +38,27 @@ module ProjectsHelper
   }.freeze
 
   STATE_LABEL_CLASSES = {
-    'DRAFT'     => 'label-warning',
-    'APPROVED'  => 'label-success',
-    'REJECTED'  => 'label-danger',
-    'EXPIRED'   => 'label-danger',
+    'DRAFT' => 'label-warning',
+    'APPROVED' => 'label-success',
+    'REJECTED' => 'label-danger',
+    'EXPIRED' => 'label-danger',
     'COMPLETED' => 'label-success',
-    'AMEND'     => 'label-warning',
-    'DPIA_REJECTED'      => 'label-danger',
-    'CONTRACT_REJECTED'  => 'label-danger',
+    'AMEND' => 'label-warning',
+    'DPIA_REJECTED' => 'label-danger',
+    'CONTRACT_REJECTED' => 'label-danger',
     'CONTRACT_COMPLETED' => 'label-success',
-    'DATA_RELEASED'  => 'label-success',
+    'DATA_RELEASED' => 'label-success',
     'DATA_DESTROYED' => 'label-danger',
     'ACCESS_APPROVER_APPROVED' => 'label-success',
     'ACCESS_APPROVER_REJECTED' => 'label-danger',
     'REJECTION_REVIEWED' => 'label-danger',
     'ACCESS_GRANTED' => 'label-success',
     'ACCOUNT_CLOSED' => 'label-danger',
-    'DHSC'        => 'label-success',
-    'MANY'        => 'label-danger',
+    'DHSC' => 'label-success',
+    'MANY' => 'label-danger',
     'NHS Digital' => 'label-info',
     'NHS England' => 'label-info',
-    'UKHSA'       => 'label-success'
+    'UKHSA' => 'label-success'
   }.freeze
 
   STATE_ALERT_CLASSES = {
@@ -76,25 +76,25 @@ module ProjectsHelper
     options.merge!(html_options)
 
     menu = capture do
-      content_tag(:ul, class: 'dropdown-menu') do
+      tag.ul(class: 'dropdown-menu') do
         scope = ProjectType.bound_to_team.by_team_and_user_role(team, current_user)
         scope.find_each do |project_type|
           link = link_to(
             project_type.name,
             new_team_project_path(team, project: { project_type_id: project_type.id })
           )
-          concat content_tag(:li, link)
+          concat tag.li(link)
         end
       end
     end
 
-    button = button_tag(bootstrap_icon_tag('plus') + ' New', options)
+    button = button_tag("#{bootstrap_icon_tag('plus')} New", options)
 
     button_group { safe_join([button, menu]) }
   end
 
   def project_type_label(project)
-    content_tag(:span, friendly_type_name(project.project_type_name), class: 'label label-primary')
+    tag.span(friendly_type_name(project.project_type_name), class: 'label label-primary')
   end
 
   def project_status_label(project, state = nil, **html_options)
@@ -103,7 +103,7 @@ module ProjectsHelper
     default_options = {
       class: ['label', STATE_LABEL_CLASSES.fetch(state.id, 'label-default')]
     }
-    content_tag(:span, state.name(project.project_type), html_options.merge(default_options))
+    tag.span(state.name(project.project_type), html_options.merge(default_options))
   end
 
   def project_managed_by_label(project, **html_options)
@@ -114,13 +114,13 @@ module ProjectsHelper
     default_options = {
       class: ['label', STATE_LABEL_CLASSES.fetch(state, 'label-default')]
     }
-    content_tag(:span, state, html_options.merge(default_options))
+    tag.span(state, html_options.merge(default_options))
   end
 
   def project_managed_by_alert(project)
     return unless project&.project_type&.name&.in? %w[Application EOI]
     return unless project&.datasets&.any?(&:managing_organisation)
-    return if project&.managed_by&.blank?
+    return if project&.managed_by.blank?
 
     state = project.managed_by.count.eql?(1) ? project&.managed_by&.first&.name : 'MANY'
     mo_names = project.managed_by.map(&:name).join('; ')
@@ -131,7 +131,7 @@ module ProjectsHelper
   def odr_reference(project)
     return unless project&.project_type&.name&.in? %w[Application EOI]
 
-    content_tag(:small, "ODR Reference: #{project.application_log}")
+    tag.small("ODR Reference: #{project.application_log}")
   end
 
   def transition_button(project, state, **options)
@@ -224,7 +224,7 @@ module ProjectsHelper
     style = approval_button_style(status)
     text  = approval_button_message(status)
 
-    content_tag(:span, text, options.merge(class: "label label-#{style}"))
+    tag.span(text, options.merge(class: "label label-#{style}"))
   end
 
   def mortality_fields?
@@ -282,7 +282,7 @@ module ProjectsHelper
 
   def project_owner_text
     owner = @project.owner
-    text = " (Applicant)"
+    text = ' (Applicant)'
     return text if current_user != owner
 
     text << ' (You)'
@@ -316,7 +316,8 @@ module ProjectsHelper
 
   def project_dataset_selection
     @project.project_type.available_datasets.map do |dataset|
-      ["#{dataset.team.organisation.name}: #{dataset.name}", dataset.id, { 'data-terms' => dataset.terms }]
+      ["#{dataset.team.organisation.name}: #{dataset.name}",
+       dataset.id, { 'data-terms' => dataset.terms }]
     end.sort
   end
 
@@ -328,14 +329,14 @@ module ProjectsHelper
   end
 
   def table_filter_options(name)
-    return unless @project.datasets.any? { |d| d.dataset_type.name ==  'table_specification' }
+    return unless @project.datasets.any? { |d| d.dataset_type.name == 'table_specification' }
 
     tables = @project.datasets.flat_map do |dataset|
       dataset.dataset_versions.last.table_nodes
     end
     table_values = tables.map(&:name).unshift(['All Tables', 'ALL'])
-    content_tag(:div, class: 'row') do
-      content_tag(:div, class: 'col-md-12') do
+    tag.div(class: 'row') do
+      tag.div(class: 'col-md-12') do
         select_tag(name, options_for_select(table_values),
                    class: 'form-control', name: 'select-project-table')
       end
