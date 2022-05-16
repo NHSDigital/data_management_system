@@ -53,7 +53,20 @@ module ProjectsHelper
     'ACCESS_APPROVER_REJECTED' => 'label-danger',
     'REJECTION_REVIEWED' => 'label-danger',
     'ACCESS_GRANTED' => 'label-success',
-    'ACCOUNT_CLOSED' => 'label-danger'
+    'ACCOUNT_CLOSED' => 'label-danger',
+    'DHSC'        => 'label-success',
+    'MANY'        => 'label-danger',
+    'NHS Digital' => 'label-info',
+    'NHS England' => 'label-info',
+    'UKHSA'       => 'label-success'
+  }.freeze
+
+  STATE_ALERT_CLASSES = {
+    'DHSC'        => 'success',
+    'MANY'        => 'danger',
+    'NHS Digital' => 'info',
+    'NHS England' => 'info',
+    'UKHSA'       => 'success'
   }.freeze
 
   def new_project_dropdown_button(team, **html_options)
@@ -91,6 +104,28 @@ module ProjectsHelper
       class: ['label', STATE_LABEL_CLASSES.fetch(state.id, 'label-default')]
     }
     content_tag(:span, state.name(project.project_type), html_options.merge(default_options))
+  end
+
+  def project_managed_by_label(project, **html_options)
+    return if project.managed_by.blank?
+
+    state = project.managed_by.count.eql?(1) ? project&.managed_by&.first&.name : 'MANY'
+
+    default_options = {
+      class: ['label', STATE_LABEL_CLASSES.fetch(state, 'label-default')]
+    }
+    content_tag(:span, state, html_options.merge(default_options))
+  end
+
+  def project_managed_by_alert(project)
+    return unless project&.project_type&.name&.in? %w[Application EOI]
+    return unless project&.datasets&.any?(&:managing_organisation)
+    return if project&.managed_by&.blank?
+
+    state = project.managed_by.count.eql?(1) ? project&.managed_by&.first&.name : 'MANY'
+    mo_names = project.managed_by.map(&:name).join('; ')
+
+    bootstrap_alert_tag(STATE_ALERT_CLASSES.fetch(state), "Project managed by #{mo_names}")
   end
 
   def odr_reference(project)
@@ -281,8 +316,8 @@ module ProjectsHelper
 
   def project_dataset_selection
     @project.project_type.available_datasets.map do |dataset|
-      [dataset.name, dataset.id, { 'data-terms' => dataset.terms }]
-    end
+      ["#{dataset.team.organisation.name}: #{dataset.name}", dataset.id, { 'data-terms' => dataset.terms }]
+    end.sort
   end
 
   def dataset_filter_options(name)

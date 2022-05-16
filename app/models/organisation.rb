@@ -4,6 +4,7 @@ class Organisation < ApplicationRecord
 
   has_many :teams, dependent: :destroy
   has_many :addresses, as: :addressable
+  has_many :datasets, foreign_key: 'managing_organisation_id'
   accepts_nested_attributes_for :addresses, reject_if: :all_blank,
                                             allow_destroy: true, update_only: :true
   has_paper_trail

@@ -18,7 +18,7 @@
     <tbody>
       <% project.datasets.each do |dataset| %>
         <tr>
-          <td><%= dataset.name %></td>
+          <td><%= dataset.managing_organisation.name %>: <%= dataset.name %></td>
           <td><%= dataset.full_name %></td>
         </tr>
       <% end %>
