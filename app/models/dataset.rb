@@ -2,7 +2,7 @@
 class Dataset < ApplicationRecord
   belongs_to :team
   belongs_to :dataset_type, inverse_of: :datasets
-  belongs_to :managing_organisation, class_name: 'Organisation'
+  belongs_to :managing_organisation, class_name: 'Organisation', optional: true
 
   has_many :dataset_versions, dependent: :destroy
   has_many :project_datasets
