@@ -18,15 +18,18 @@ module Import
             def positive_mlpa_brca1_targeted_test?
               return if @brca1_mlpa_result.nil?
 
-              (@authoriseddate.nil? || @record.raw_fields['servicereportidentifier'] == '06/03030') &&
-                @brca1_mlpa_result.scan(EXON_REGEX).size.positive?
+              ((@authoriseddate.nil? || @record.raw_fields['servicereportidentifier'] == '06/03030') &&
+                @brca1_mlpa_result.scan(EXON_REGEX).size.positive?) ||
+                (@brca1_mlpa_result.scan(EXON_REGEX).size.positive? && targeted_test_fourth_option?)
             end
 
             def positive_mlpa_brca2_targeted_test?
               return if @brca2_mlpa_result.nil?
 
-              (@authoriseddate.nil? || @record.raw_fields['servicereportidentifier'] == '06/03030') &&
-                @brca2_mlpa_result.scan(EXON_REGEX).size.positive?
+              ((@authoriseddate.nil? || @record.raw_fields['servicereportidentifier'] == '06/03030') &&
+              @brca2_mlpa_result.scan(EXON_REGEX).size.positive?) ||
+              (@brca2_mlpa_result.scan(EXON_REGEX).size.positive? && targeted_test_fourth_option?)
+
             end
 
             def positive_exonvariants_in_set_brca1_targeted_test?
@@ -42,13 +45,13 @@ module Import
             end
 
             def all_null_results_targeted_test?
-              @brca1_seq_result.nil? && @brca2_seq_result.nil? &&
-                @brca1_mpa_result.nil? && @brca2_mlpa_result.nil?
+              @brca1_seq_result.nil? && @brca1_mutation.nil? && @brca2_mutation.nil? &&
+              @brca2_seq_result.nil? && @brca1_mlpa_result.nil? && @brca2_mlpa_result.nil?
             end
 
             def process_all_null_results_targeted_test(test_scope)
               unknown_genotype = @genotype.dup
-              unknown_genotype.add_status(9)
+              unknown_genotype.add_status(4)
               unknown_genotype.add_test_scope(test_scope)
               @genotypes.append(unknown_genotype)
             end
@@ -60,6 +63,18 @@ module Import
                 process_negative_gene('BRCA2', :targeted_mutation)
               end
               @genotypes
+            end
+
+            def normal_brca1_mlpa_targeted_test?
+              return if @brca1_mlpa_result.nil? || @brca1_mlpa_result == "N/A"
+              @brca1_mlpa_result.scan(/no del\/dup/i).size.positive? #&&
+              #(@authoriseddate.nil? || @record.raw_fields['servicereportidentifier'] == '06/03030')
+            end
+
+            def normal_brca2_mlpa_targeted_test?
+              return if @brca2_mlpa_result.nil? || @brca2_mlpa_result == "N/A"
+              @brca2_mlpa_result.scan(/no del\/dup/i).size.positive? #&&
+              #(@authoriseddate.nil? || @record.raw_fields['servicereportidentifier'] == '06/03030')
             end
 
             def process_normal_brca1_2_mlpa_targeted_tests
@@ -74,7 +89,7 @@ module Import
             def process_failed_brca1_2_targeted_tests
               if failed_brca1_mlpa_targeted_test?
                 process_failed_gene('BRCA1', :targeted_mutation)
-              elsif failed_brca1_mlpa_targeted_test?
+              elsif failed_brca2_mlpa_targeted_test?
                 process_failed_gene('BRCA2', :targeted_mutation)
               end
               @genotypes
@@ -98,7 +113,7 @@ module Import
             end
 
             def process_positive_brca1_2_mlpa_targeted_tests
-              return if @brca1_mlpa_result.nil? && @brca2_mlpa_result.nil?
+              # return if @brca1_mlpa_result.nil? && @brca2_mlpa_result.nil?
 
               if positive_mlpa_brca1_targeted_test?
                 process_positive_exonvariant('BRCA1', @brca1_mlpa_result.match(EXON_REGEX),
@@ -118,11 +133,10 @@ module Import
 
             def process_brca1_malformed_cdna_targeted_test
               return if @brca1_seq_result.nil? && @brca1_mutation.nil?
-
-              badformat_cdna_brca1_variant = if @brca1_seq_result.present?
-                                               @brca1_seq_result.scan(/([^\s]+)/i)[0].join
+              badformat_cdna_brca1_variant = if @brca1_mutation.present?
+                                                @brca1_mutation.match(MALFORMED_CDNA_REGEX)[:cdna]
                                              else
-                                               @brca1_mutation.scan(/([^\s]+)/i)[0].join
+                                               @brca1_seq_result.match(MALFORMED_CDNA_REGEX)[:cdna]
                                              end
               positive_genotype = @genotype.dup
               positive_genotype.add_gene('BRCA1')
@@ -136,9 +150,9 @@ module Import
               return if @brca2_seq_result.nil? && @brca2_mutation.nil?
 
               badformat_cdna_brca2_variant = if @brca2_seq_result.present?
-                                               @brca2_seq_result.scan(/([^\s]+)/i)[0].join
+                                               @brca2_seq_result.match(MALFORMED_CDNA_REGEX)[:cdna]
                                              else
-                                               @brca2_mutation.scan(/([^\s]+)/i)[0].join
+                                               @brca2_mutation.match(MALFORMED_CDNA_REGEX)[:cdna]
                                              end
               positive_genotype = @genotype.dup
               positive_genotype.add_gene('BRCA2')

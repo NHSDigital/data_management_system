@@ -18,7 +18,6 @@ module Import
               [:full_screen_test_option3?, :process_fullscreen_test_option3]
               ]
             
-            
             CDNA_REGEX = /(\w+\s)?c\.\s?(?<cdna>[^\s]+)|(?<cdna>^[0-9].+)\s?\(M\)/i.freeze
             PROTEIN_REGEX = /p\.(?<impact>[a-z]+[0-9]+[a-z]+)/i.freeze
             EXON_REGEX = /(?<zygosity>het|hom)\.?\s(?<deldup>del(etion)?|dup(lication)?)\.?[\s\w]+?
@@ -28,6 +27,8 @@ module Import
                           (?<zygosity>het|hom)\s?(?<deldup>del|dup)\s?ex(?<ons>ons)?\s?
                           (?<exons>[0-9]+(?<otherexon>-[0-9]+)?)|
                           (?<zygosity>het|hom)\sdel\sex(on)?(?<exons>[0-9]+(?<otherexon>-[0-9]+)?)/ix.freeze
+
+            MALFORMED_CDNA_REGEX = /(?<donotgrep>het|BRCA1|BRCA2)?\s?(?<cdna>[^\s]+)/i.freeze
 
             BRCA_GENES_REGEX = /(?<brca>BRCA1|
                                        BR1|

@@ -215,8 +215,8 @@ module Import
             def brca1_malformed_cdna_fullscreen_option3?
               ((@brca1_mutation.present? && @brca1_mutation.scan(CDNA_REGEX).size.zero?) ||
               (@brca1_seq_result.present? && @brca1_seq_result.scan(CDNA_REGEX).size.zero?)) &&
-                @brca2_mutation.nil? && @brca2_seq_result.nil? &&
-                @brca1_mlpa_result.nil? && @brca2_mlpa_result.nil?
+                (@brca2_mutation.nil? && @brca2_seq_result.nil? &&
+                @brca1_mlpa_result.nil? && @brca2_mlpa_result.nil?)
             end
 
             def double_brca_malformed_cdna_fullscreen_option3?

@@ -46,17 +46,6 @@ module Import
               @brca2_seq_result.scan(/no mut/i).size.positive? ||
               @brca2_seq_result.scan(/no var|no fam|not det/i).size.positive? 
             end
-            def normal_brca1_mlpa_targeted_test?
-              return if @brca1_mlpa_result.nil? || @brca1_mlpa_result == "N/A"
-              @brca1_mlpa_result.scan(/no del\/dup/i).size.positive? #&&
-              #(@authoriseddate.nil? || @record.raw_fields['servicereportidentifier'] == '06/03030')
-            end
-
-            def normal_brca2_mlpa_targeted_test?
-              return if @brca2_mlpa_result.nil? || @brca2_mlpa_result == "N/A"
-              @brca2_mlpa_result.scan(/no del\/dup/i).size.positive? #&&
-              #(@authoriseddate.nil? || @record.raw_fields['servicereportidentifier'] == '06/03030')
-            end
 
             def failed_brca1_mlpa_targeted_test?
               return if @brca1_mlpa_result.nil? || @brca1_mlpa_result == "N/A"
