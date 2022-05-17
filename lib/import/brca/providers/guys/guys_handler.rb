@@ -54,8 +54,9 @@ module Import
             mtype = record.raw_fields['moleculartestingtype']
             genotype.add_molecular_testing_type_strict(mtype) if mtype
             add_organisationcode_testresult(genotype)
-            res = process_tests unless process_tests.empty? || process_tests.nil?
-            res&.flatten&.each do |cur_genotype|
+            #Below method appends extracted items to @genotypes list
+            process_tests
+            @genotypes.flatten.each do |cur_genotype|
               @persister.integrate_and_store(cur_genotype)
             end
           end
@@ -65,12 +66,15 @@ module Import
           end
 
           def process_tests
-            results = []
+            # results = []
             METHODS_MAP.each do |condition_extraction|
               condition, extraction = *condition_extraction
-              results << send(extraction) if send(condition)
+              # results << send(extraction) if send(condition)
+              # results = send(extraction) if send(condition)
+              # binding.pry
+              send(extraction) if send(condition)
             end
-            results.compact
+            # results.compact
           end
         end
       end
