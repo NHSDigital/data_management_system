@@ -25,6 +25,16 @@ class ApplicationController < ActionController::Base
     redirect_to(terms_and_conditions_url)
   end
 
+  # Return a basic classname and object reference instead of the full internal controller state
+  # This reduces the #inspect output from about 800KB to about 50 characters
+  #
+  # We wouldn't ordinarily want to call #inspect on a controller, but in Ruby 3.x,
+  # NoMethodError calls #inspect on the embedded object, and includes it all,
+  # resulting in excessively large error messages.
+  def inspect
+    to_s
+  end
+
   private
 
   def capture_exception(exception)
