@@ -1035,7 +1035,8 @@ CREATE TABLE public.datasets (
     dataset_type_id integer,
     team_id integer,
     levels jsonb DEFAULT '{}'::jsonb NOT NULL,
-    cas_type smallint
+    cas_type smallint,
+    managing_organisation_id integer
 );
 
 
@@ -8271,6 +8272,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20210526131356'),
 ('20210603114230'),
 ('20210603155912'),
-('20210604102124');
+('20210604102124'),
+('20220428152502');
 
 

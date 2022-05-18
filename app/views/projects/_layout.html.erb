@@ -1,3 +1,4 @@
+<%= project_managed_by_alert(@project) %>
 <%= content_tag :div, class: dom_class(@project), id: dom_id(@project) do %>
   <%= render 'transition_errors', project: @project %>
   <%= render 'header', project: @project %>

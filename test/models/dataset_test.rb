@@ -7,6 +7,7 @@ class DatasetTest < ActiveSupport::TestCase
     refute new_dataset.valid?
     assert_includes new_dataset.errors.details[:dataset_type], error: :blank
     new_dataset.dataset_type = dataset_type(:table_spec)
+    new_dataset.team = Team.first
     refute new_dataset.valid?
     assert_includes new_dataset.errors.details[:name], error: :taken, value: 'Uniqueness Test'
   end

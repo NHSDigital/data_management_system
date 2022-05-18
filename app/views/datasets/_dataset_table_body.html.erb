@@ -12,6 +12,7 @@
   <% else %>
     <tbody>
       <tr>
+        <td><%= dataset.team&.organisation&.name %></td>
         <td><%= dataset.team&.name %></td>
         <td><%= dataset.name %></td>
         <td><%#= version.semver_version.gsub('-', '.') %></td>

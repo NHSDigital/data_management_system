@@ -168,6 +168,14 @@ class Project < ApplicationRecord
 
   DATA_SOURCE_ITEM_NO_CLONE_FIELDS = %w[id project_id project_data_source_item_id].freeze
 
+
+  # Returns an array of unique Organisations for the attached datasets.
+  def managed_by
+    return if datasets.blank?
+
+    datasets.map(&:managing_organisation).uniq.compact
+  end
+
   class << self
     def unassigned(check_temporal: false)
       return where(assigned_user: nil) unless check_temporal
