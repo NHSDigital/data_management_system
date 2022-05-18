@@ -2,6 +2,8 @@
 class Project < ApplicationRecord
   include Workflow::Model
   include Commentable
+  include Searchable
+  include HasManyReferers
 
   has_many :project_attachments, as: :attachable, dependent: :destroy
   has_many :project_nodes, dependent: :destroy
@@ -17,13 +19,22 @@ class Project < ApplicationRecord
   has_many :project_classifications, dependent: :destroy
   has_many :classifications, through: :project_classifications
   has_many :project_data_passwords, dependent: :destroy
-  has_many :grants, foreign_key: :project_id, dependent: :destroy
+  has_many :grants, dependent: :destroy
   has_many :users, -> { extending(GrantedBy).distinct }, through: :grants
   has_many :project_amendments, dependent: :destroy
-  has_many :dpias, class_name: 'DataPrivacyImpactAssessment', dependent: :destroy
-  has_many :contracts, dependent: :destroy
-  has_many :releases,  dependent: :destroy
   has_many :communications, dependent: :destroy
+
+  # The following associations are somewhat deprecated (and slightly confusing) now.
+  # These resources should have a polymorphic parent (either a project or an amendment;
+  # see `BelongsToReferent` and `HasManyReferers`).
+  # That said, these associations (and their inverse counterparts) are kind of useful as a means
+  # of accessing _all_ the relevant resources within the scope of a project, irrespective of the
+  # true parent resource.
+  with_options dependent: :destroy do
+    has_many :global_dpias,     class_name: 'DataPrivacyImpactAssessment'
+    has_many :global_contracts, class_name: 'Contract'
+    has_many :global_releases,  class_name: 'Release'
+  end
 
   has_many :project_lawful_bases, dependent: :destroy
   has_many :lawful_bases, through: :project_lawful_bases
@@ -75,25 +86,33 @@ class Project < ApplicationRecord
   # The `assigned_user` will generally be an ODR representative responsible for the project
   belongs_to :assigned_user, class_name: 'User', inverse_of: :assigned_projects, optional: true
 
-  after_save :reset_project_data_items
+  before_validation :add_datasets_for_clone
+  before_save :update_duration
+  before_save :nullify_blank_lookups
   after_create :notify_cas_manager_new_cas_project_saved
+  after_save :reset_project_data_items
   after_save :destroy_project_datasets_without_any_levels
 
   # effectively belongs_to .. through: .. association
   # delegate :dataset,      to: :team_dataset, allow_nil: true
   delegate :organisation, to: :team
 
-  delegate :name,      to: :project_type, prefix: true, allow_nil: true
-  delegate :name,      to: :team,         prefix: true, allow_nil: true # team_name
-  delegate :full_name, to: :owner,        prefix: true, allow_nil: true
+  with_options prefix: true, allow_nil: true do
+    delegate :name,            to: :project_type
+    delegate :translated_name, to: :project_type
+    delegate :name,            to: :team
+    delegate :full_name,       to: :owner
+    delegate :full_name,       to: :assigned_user
+  end
 
+  delegate :supports_pdf_import?, to: :project_type
   delegate :project?, :eoi?, :application?, :cas?, to: :project_type_inquirer
 
   with_options reject_if: :all_blank, allow_destroy: true do
     accepts_nested_attributes_for :project_attachments
     accepts_nested_attributes_for :project_nodes
-    accepts_nested_attributes_for :owner_grant, update_only: :true
-    accepts_nested_attributes_for :project_datasets, update_only: :true
+    accepts_nested_attributes_for :owner_grant, update_only: true
+    accepts_nested_attributes_for :project_datasets, update_only: true
   end
 
   validates :name, presence: true, uniqueness: {
@@ -140,13 +159,19 @@ class Project < ApplicationRecord
   scope :odr_projects,        -> { joins(:project_type).merge(ProjectType.odr) }
   scope :odr_mbis_projects, -> { joins(:project_type).merge(ProjectType.odr_mbis) }
 
-  scope :owned_by, ->(user) { joins(:grants).where(
-                              grants: { roleable: ProjectRole.owner, user_id: user.id }) }
-  scope :contributors, ->(user) { joins(:grants).where(
-                                  grants: { roleable: ProjectRole.can_edit, user_id: user.id }) }
+  scope :owned_by, lambda { |user|
+                     joins(:grants).where(
+                       grants: { roleable: ProjectRole.owner, user_id: user.id }
+                     )
+                   }
+  scope :contributors, lambda { |user|
+                         joins(:grants).where(
+                           grants: { roleable: ProjectRole.can_edit, user_id: user.id }
+                         )
+                       }
 
-  scope :cas_dataset_approval, lambda { |user, approved_values = [nil, true, false]|
-    where(id: ProjectDataset.dataset_approval(user, approved_values).pluck(:project_id)).order(:id).
+  scope :cas_dataset_approval, lambda { |user, statuses = %i[request approved rejected]|
+    where(id: ProjectDataset.dataset_approval(user, statuses).select(:project_id)).order(:id).
       joins(:current_state).merge(Workflow::State.dataset_approval_states)
   }
 
@@ -155,18 +180,25 @@ class Project < ApplicationRecord
       joins(:project_type).merge(ProjectType.cas)
   }
 
-  scope :by_project_type, lambda { |type = :all|
-    joins(:project_type).where(project_type: ProjectType.send(type))
-  }
-
   accepts_nested_attributes_for :project_attachments
 
   after_transition_to :status_change_notifier
 
-  before_validation :add_datasets_for_clone
-  before_save :nullify_blank_lookups
-
   DATA_SOURCE_ITEM_NO_CLONE_FIELDS = %w[id project_id project_data_source_item_id].freeze
+
+  attr_searchable :name,                  :text_filter
+  attr_searchable :application_log,       :application_log_filter # Meh.
+  attr_searchable :project_type_id,       :default_filter
+  attr_searchable :assigned_user_id,      :default_filter
+  attr_searchable :owner,                 :association_filter, kwargs: true # FIXME: See Searchable
+  attr_searchable :current_project_state, :association_filter
+
+  # Returns an array of unique Organisations for the attached datasets.
+  def managed_by
+    return if datasets.blank?
+
+    datasets.map(&:managing_organisation).uniq.compact
+  end
 
   class << self
     def unassigned(check_temporal: false)
@@ -196,10 +228,48 @@ class Project < ApplicationRecord
         base.where(workflow_current_project_states: { assigned_user_id: user })
       )
     end
+
+    private
+
+    # Custom search filter.
+    # Legacy data... computed fields... desire to search on magic strings rather than the actual
+    # underyling data...
+    # NOTE: Expect edge cases where this may not produce the anticipated results.
+    def application_log_filter(_field, value)
+      return if value.blank?
+
+      string = value.to_s.strip
+      filter = arel_table[:application_log].matches("%#{string}%")
+
+      return filter unless match ||= string.match(
+        %r(\A(?<head>ODR_?(?<fy_start>\d{2})(?<fy_end>\d{2})_?)?(?<id>\d+)?(?<tail>/.*)?\z)i
+      )
+
+      chain = []
+      if match[:fy_start]
+        chain << arel_table[:first_contact_date].gteq("20#{match[:fy_start]}-04-01")
+      end
+      chain << arel_table[:first_contact_date].lteq("20#{match[:fy_end]}-03-31") if match[:fy_end]
+      chain << arel_table[:id].eq(match[:id].to_i) if match[:id]
+
+      filter.or(
+        Arel::Nodes::Grouping.new(
+          chain.reduce(chain.shift) { |node, predicate| node.and(predicate) }
+        )
+      )
+    end
+  end
+
+  def organisation_name
+    super || organisation&.name
   end
 
   def application_date
     super || created_at || Time.zone.now
+  end
+
+  def duration
+    super || calculate_duration_in_months
   end
 
   def classification_names
@@ -238,7 +308,7 @@ class Project < ApplicationRecord
   end
 
   def available_data_source_items
-  # TODO: hook up dataset_version
+    # TODO: hook up dataset_version
     dataset_version_ids = datasets.flat_map { |d| d.dataset_versions.last.id }
     data_items = Nodes::DataItem.where(dataset_version_id: dataset_version_ids)
     data_item_groups = Nodes::DataItemGroup.where(dataset_version_id: dataset_version_ids)
@@ -253,7 +323,7 @@ class Project < ApplicationRecord
   def unselected_available_data_source_items
     selected = project_nodes.collect(&:node_id)
     all = dataset.dataset_versions.last.data_items_and_data_item_groups.collect(&:id)
-    dataset.dataset_versions.last.data_items.where(id: all-selected)
+    dataset.dataset_versions.last.data_items.where(id: all - selected)
   end
 
   def unjustified_data_items
@@ -267,7 +337,7 @@ class Project < ApplicationRecord
     return false if eoi?
 
     if project_nodes.count.zero? ||
-       project_nodes.count != 0 && unjustified_data_items > 0 ||
+       project_nodes.count != 0 && unjustified_data_items.positive? ||
        members.count.zero?
       'disabled'
     else
@@ -280,7 +350,6 @@ class Project < ApplicationRecord
   def null_senior_user_id
     update_column(:senior_user_id, nil)
   end
-
 
   # TODO: Presentation layer logic. No longer relevant? See `project_status_label`
   # get a friendly status message to show to the user
@@ -322,14 +391,12 @@ class Project < ApplicationRecord
       number_of_days_warning = (project.frequency == 'Annually' ? [30, 14, 3, 1] : [14, 3, 1])
       key_dates = number_of_days_warning.map { |a| project.end_data_date - a.days }
       next unless key_dates.include? Time.zone.today
+
       title = "#{project.name} - Will expire in #{(project.end_data_date - Time.zone.today).to_i} days"
       project.team.delegate_users.each do |delegate|
         Notification.create!(title: title,
-                             body: CONTENT_TEMPLATES['email_project_day_expiry']['body'] %
-                             { project: project.name,
-                               number_of_days: (project.end_data_date - Time.zone.today).to_i,
-                               expiry_date: project.end_data_date,
-                               data_set: project.datasets.map(&:name).join(' | ') },
+                             body: format(CONTENT_TEMPLATES['email_project_day_expiry']['body'],
+                                          project: project.name, number_of_days: (project.end_data_date - Time.zone.today).to_i, expiry_date: project.end_data_date, data_set: project.datasets.map(&:name).join(' | ')),
                              project_id: project.id,
                              odr_users: true,
                              user_id: delegate.id)
@@ -343,11 +410,12 @@ class Project < ApplicationRecord
   def self.check_and_set_expired_projects
     of_type_project.in_use.find_each do |project|
       next unless project.end_data_date < Time.zone.now
+
       project.transition_to!(Workflow::State.find('EXPIRED'))
       project.team.delegate_users.each do |delegate|
         Notification.create!(title: "#{project.name} - Expired",
-                             body: CONTENT_TEMPLATES['email_project_expired']['body'] %
-                             { project_name: project.name },
+                             body: format(CONTENT_TEMPLATES['email_project_expired']['body'],
+                                          project_name: project.name),
                              project_id: project.id,
                              odr_users: true,
                              user_id: delegate.id)
@@ -385,7 +453,7 @@ class Project < ApplicationRecord
   def odr_rejected_notification
     return unless template ||= CONTENT_TEMPLATES.dig('email_project_odr_approval_decision', 'body')
 
-    Notification.create! do |notification|
+    Notification.create!(generate_mail: false) do |notification|
       notification.title      = "#{name} - Rejected"
       notification.body       = format(template, project: name, status: current_state.id)
       notification.project_id = id
@@ -404,7 +472,7 @@ class Project < ApplicationRecord
   def self.report2
     Team.all
     team - project - comments
-    all.each do |p|
+    all.find_each do |p|
       projects << { team: p.team.name,
                     division: p.team.division.name,
                     head_of_profession: p.team.division.head_of_profession,
@@ -458,7 +526,7 @@ class Project < ApplicationRecord
 
   # return children of any data_item_groups
   def all_data_items
-    return nodes unless nodes.any? { |node| node.type ==  'Nodes::DataItemGroup' }
+    return nodes unless nodes.any? { |node| node.type == 'Nodes::DataItemGroup' }
 
     item_groups = nodes.where(type: 'Nodes::DataItemGroup')
     items = nodes - item_groups
@@ -487,15 +555,31 @@ class Project < ApplicationRecord
     return unless odr?
     return unless first_contact_date
 
-    application_fyear = financial_year(first_contact_date)
-    "ODR_#{application_fyear.first.year}_#{application_fyear.last.year}_#{id}"
+    fy_start, fy_end = financial_year(first_contact_date).minmax.map! do |date|
+      date.strftime('%y')
+    end
+
+    "ODR#{fy_start}#{fy_end}_#{id}"
   end
+  alias reference application_log
 
   def next_amendment_reference
     return unless odr?
     return unless application_log
 
     "#{application_log}/A#{amendment_number + 1}"
+  end
+
+  def user_approvable_levels_pending?(current_user)
+    ProjectDatasetLevel.default_level_2_3_bulk_approvable(self, current_user).any?
+  end
+
+  def level_2_3_defaults_expiring?(current_user)
+    ProjectDatasetLevel.default_level_2_3_bulk_renew_request(self, current_user).any?
+  end
+
+  def default_levels_all_decided
+    ProjectDatasetLevel.cas_type_levels(self, 1).none?(&:request?)
   end
 
   private
@@ -512,6 +596,7 @@ class Project < ApplicationRecord
   def reset_project_data_items
     # Do any nodes belong to a dataset that is no longer associated with project
     return unless project_nodes.any? { |project_node| datasets.exclude? project_node.node.dataset }
+
     project_nodes.each do |project_node|
       project_node.destroy if datasets.exclude? project_node.node.dataset
     end
@@ -538,7 +623,7 @@ class Project < ApplicationRecord
     return unless end_data_date.present? && start_data_date.present?
     return unless end_data_date < start_data_date
 
-    errors.add :end_data_date, "must be after start date"
+    errors.add :end_data_date, 'must be after start date'
   end
 
   def user_delegate?(team, userid)
@@ -626,6 +711,7 @@ class Project < ApplicationRecord
   def add_datasets_for_clone
     return unless clone_of.presence
     return if persisted?
+
     # TODO: I'm not sure we should be cloninng this. perhaps turn off validation if clone_of
 
     Project.find(clone_of).datasets.each_with_object(project_datasets) do |d, pd|
@@ -664,107 +750,22 @@ class Project < ApplicationRecord
     Date.new(start_year, 4, 1)..Date.new(start_year + 1, 3, 31)
   end
 
-  class << self
-    def search(params)
-      return all if params.blank?
+  def calculate_duration_in_months
+    return unless start_date ||= self[:start_data_date]
+    return unless end_date   ||= self[:end_data_date]
 
-      scope = search_filters(all, params)
-      scope = scope.joins(arel_grant(scope)).joins(arel_user).where(grant_filter)
+    delta  = (end_date.year * 12 + end_date.month) - (start_date.year * 12 + start_date.month)
+    offset = start_date.day > end_date.day ? -1 : 0
 
-      scope
-    end
+    delta + offset
+  end
 
-    def my_projects_search(params)
-      return all if params.blank?
+  # NOTE: ODR want to use `duration` to confirm end date has been corractly calculated.
+  def update_duration
+    return if duration_changed? # Avoid feedback loop...
+    return unless (changed_attributes.keys & %w[start_data_date end_data_date]).any?
+    return unless new_duration ||= calculate_duration_in_months
 
-      scope = search_filters(all, params)
-      scope = scope.joins(additional_grants_join).joins(arel_user_grants_alias_join)
-
-      scope
-    end
-
-    def search_filters(scope, params)
-      filters = []
-      filters << id_filter(params[:name])
-      # project table
-      %i[name application_log].each do |field|
-        filters << field_filter(field, params[:name])
-      end
-      # user table
-      %i[first_name last_name].each do |field|
-        filters << applicant_filter(field, params[:name])
-      end
-
-      filters.compact!
-
-      filters.each_with_index do |filter, i|
-        scope = i.zero? ? scope.where(filter) : scope.or(where(filter))
-      end
-
-      scope
-    end
-
-    private
-
-    def id_filter(text)
-      id_as_string = Arel::Nodes::NamedFunction.new('CAST', [arel_table[:id].as('VARCHAR')])
-      id_as_string.matches("%#{text.strip}%") if text.present?
-    end
-
-    def applicant_filter(field, text)
-      User.arel_table[field].matches("%#{text.strip}%") if text.present?
-    end
-
-    def grant_filter
-      owner_role = ProjectRole.fetch(:owner)
-      { grants: { roleable_type: 'ProjectRole', roleable_id: owner_role.id } }
-    end
-
-    def field_filter(field, text)
-      arel_table[field].matches("%#{text.strip}%") if text.present?
-    end
-
-    def addtional_grants_filter(field, text)
-      Grant.arel_table.alias('grants2')[field].matches("%#{text.strip}%") if text.present?
-    end
-
-    def project_join(scope, join_table, scope_key, join_table_key = nil)
-      # default same field name if not provided
-      join_table_key = scope_key if join_table_key.nil?
-      join_table = join_table.arel_table
-      projects_table = scope.arel_table
-
-      constraints = join_table.create_on(
-        join_table[join_table_key].eq(projects_table[scope_key])
-      )
-      join_table.create_join(join_table, constraints, Arel::Nodes::OuterJoin)
-    end
-
-    def arel_grant(scope)
-      project_join(scope, Grant, :id, :project_id)
-    end
-
-    def arel_user
-      project_join(Grant, User, :user_id, :id)
-    end
-
-    def arel_user_grants_alias_join
-      join_table = User.arel_table
-      grants_table = Grant.arel_table.alias('grants2')
-      constraints = join_table.create_on(
-        join_table[:id].eq(grants_table[:user_id])
-      )
-      join_table.create_join(join_table, constraints, Arel::Nodes::OuterJoin)
-    end
-
-    # for @my_projects
-    def additional_grants_join
-      join_table = Grant.arel_table.alias('grants2')
-      projects_table = Project.arel_table
-      constraints = join_table.create_on(
-        join_table[:project_id].eq(projects_table[:id])
-      )
-      join_table.create_join(join_table, constraints, Arel::Nodes::OuterJoin)
-    end
+    self.duration = new_duration
   end
 end
