@@ -166,19 +166,19 @@ class CasApplicationFormTest < ActionDispatch::IntegrationTest
         assert find('.glyphicon-remove')
       end
       within '#level_3_selected' do
-        assert has_no_content?
+        assert has_no_content?(/[^-]/), 'Should contain a single dash or be blank'
       end
       within '#level_1_expiry_date' do
         assert has_content?("#{Time.zone.today.strftime('%d/%m/%Y')} (requested)")
       end
       within '#level_2_expiry_date' do
-        assert has_no_content?
+        assert has_no_content?(/[^-]/), 'Should contain a single dash or be blank'
       end
     end
 
     within "#dataset_#{application.project_datasets.find_by(dataset_id: 86).dataset.id}_row" do
       within '#level_1_selected' do
-        assert has_no_content?
+        assert has_no_content?(/[^-]/), 'Should contain a single dash or be blank'
       end
       within '#level_2_selected' do
         assert find('.glyphicon-ok')
