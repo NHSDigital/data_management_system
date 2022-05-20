@@ -184,8 +184,9 @@ module Import
               add_full_screen_date_option2
               if @fullscreen_result.present? && @fullscreen_result.downcase.scan(/no\s*mut|no\s*var/i).size.positive?
                 process_double_brca_negative(:full_screen)
-              elsif fullscreen_non_brca_mutated_cdna_gene?
-                process_fullscreen_non_brca_mutated_cdna_gene
+              # elsif fullscreen_non_brca_mutated_cdna_gene?
+              #   binding.pry
+              #   process_fullscreen_non_brca_mutated_cdna_gene
               elsif brca1_mutation? && brca2_mutation?
                 process_positive_cdnavariant('BRCA1', @brca1_mutation, :full_screen)
                 process_positive_cdnavariant('BRCA2', @brca2_mutation, :full_screen)
@@ -201,11 +202,11 @@ module Import
                 #TODO: Check the method below
                 process_full_screen_brca2_mlpa_positive_variant(@brca2_mlpa_result.scan(EXON_REGEX))
               elsif all_fullscreen_option2_relevant_fields_nil?
-                process_double_brca_unknown(:full_screen)
+                process_double_brca_negative(:full_screen)
               elsif double_brca_mlpa_negative?
                 process_double_brca_negative(:full_screen)
-              elsif brca1_mlpa_normal_brca2_null?
-                process_double_brca_fail(:full_screen)
+              elsif brca12_mlpa_normal_brca12_null?
+                process_double_brca_negative(:full_screen)
               # else binding.pry
               end
             end
@@ -240,7 +241,7 @@ module Import
                @brca2_mlpa_result.scan(/fail/i).size.positive? &&
                @brca1_mlpa_result.scan(/fail/i).size.positive?
                process_double_brca_fail(:full_screen)
-             elsif brca1_mlpa_normal_brca2_null?
+             elsif brca12_mlpa_normal_brca12_null?
                process_double_brca_negative(:full_screen)
              end
             end

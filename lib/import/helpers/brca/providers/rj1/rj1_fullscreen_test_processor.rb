@@ -118,8 +118,11 @@ module Import
             def fullscreen_non_brca_mutated_cdna_gene?
               return if @ngs_result.nil?
 
-              @ngs_result.scan(/(?<nonbrca>CHEK2|PALB2|TP53)/i).size.positive? &&
-                @ngs_result.scan(CDNA_REGEX).size.positive?
+              (@ngs_result.scan(/(?<nonbrca>CHEK2|PALB2|TP53)/i).size.positive? &&
+                @ngs_result.scan(CDNA_REGEX).size.positive?) || 
+                (@fullscreen_result.present? && 
+                @fullscreen_result.scan(/(?<nonbrca>CHEK2|PALB2|TP53)/i).size.positive? &&
+                @fullscreen_result.scan(CDNA_REGEX).size.positive?)
             end
 
             def fullscreen_non_brca_mutated_exon_gene?
@@ -364,7 +367,7 @@ module Import
                 (@brca2_seq_result.present? && @brca2_seq_result.scan(/neg|norm/i).size.positive?))
             end
 
-            def brca1_mlpa_normal_brca2_null?
+            def brca12_mlpa_normal_brca12_null?
               return if @brca2_mlpa_result.nil? && @brca1_mlpa_result.nil?
 
               (@brca1_mlpa_result.nil? && @brca2_mlpa_result.scan(%r{no del/dup}i).size.positive?) ||
