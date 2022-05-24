@@ -19,7 +19,7 @@ module Import
               ]
             
             CDNA_REGEX = /(\w+\s)?c\.\s?(?<cdna>[^\s]+)|(?<cdna>^[0-9].+)\s?\(M\)/i.freeze
-            PROTEIN_REGEX = /p\.(?<impact>[a-z]+[0-9]+[a-z]+)/i.freeze
+            PROTEIN_REGEX = /p\.\(?(?<impact>[a-z]+[0-9]+[a-z]+)\)?/i.freeze
             EXON_REGEX = /(?<zygosity>het|hom)\.?\s(?<deldup>del(etion)?|dup(lication)?)\.?[\s\w]+?
                           ex(on)?\s?(?<exons>[0-9]+(?<otherexon>-[0-9]+)?)|ex(on)?\s?
                           (?<exons>[0-9]+(?<otherexon>-[0-9]+)?)\s?(?<zygosity>het|hom)?\.?\s?

@@ -145,16 +145,22 @@ module Import
                 process_double_brca_negative(:full_screen)
               elsif @ngs_result.downcase.scan(/fail/i).size.positive?
                 process_double_brca_fail(:full_screen)
+              elsif @ngs_result.scan(CDNA_REGEX).size > 1
+                variants = @ngs_result.scan(CDNA_REGEX).uniq.flatten.compact
+                genes = @ngs_result.scan(BRCA_GENES_REGEX).uniq.flatten.compact
+                process_multiple_variants_ngs_results(variants,genes)
+              elsif fullscreen_non_brca_mutated_cdna_gene?
+                process_fullscreen_non_brca_mutated_cdna_gene
               elsif @ngs_result.scan(/b(?<brca>1|2)/i).size.positive?
                 variants = @ngs_result.scan(CDNA_REGEX).uniq.flatten.compact
                 tested_genes = @ngs_result.scan(DEPRECATED_BRCA_NAMES_REGEX).flatten.uniq.flatten.compact
                 positive_genes = tested_genes.map {|tested_gene|  DEPRECATED_BRCA_NAMES_MAP[tested_gene]}
                 process_multiple_variants_ngs_results(variants,positive_genes)
               #   process_multiple_variants_ngs_results(variants,positive_genes)
-              elsif @ngs_result.scan(CDNA_REGEX).size > 1
-                variants = @ngs_result.scan(CDNA_REGEX).uniq.flatten.compact
-                genes = @ngs_result.scan(BRCA_GENES_REGEX).uniq.flatten.compact
-                process_multiple_variants_ngs_results(variants,genes)
+              # elsif @ngs_result.scan(CDNA_REGEX).size > 1
+              #   variants = @ngs_result.scan(CDNA_REGEX).uniq.flatten.compact
+              #   genes = @ngs_result.scan(BRCA_GENES_REGEX).uniq.flatten.compact
+              #   process_multiple_variants_ngs_results(variants,genes)
               elsif fullscreen_brca2_mutated_cdna_brca1_normal?
                 process_fullscreen_brca2_mutated_cdna_brca1_normal(@ngs_result)
               elsif fullscreen_brca1_mutated_cdna_brca2_normal?
@@ -163,8 +169,6 @@ module Import
                 process_fullscreen_brca2_mutated_exon_brca1_normal(@ngs_result.match(EXON_REGEX))
               elsif fullscreen_brca1_mutated_exon_brca2_normal?
                 process_fullscreen_brca1_mutated_exon_brca2_normal(@ngs_result.match(EXON_REGEX))
-              elsif fullscreen_non_brca_mutated_cdna_gene?
-                process_fullscreen_non_brca_mutated_cdna_gene
               elsif @ngs_result.scan(BRCA_GENES_REGEX).size.positive? &&
                 @ngs_result.scan(/(?<cdna>[0-9]+[a-z]+>[a-z]+)/i).size.positive?
                 positive_genotype = @genotype.dup
