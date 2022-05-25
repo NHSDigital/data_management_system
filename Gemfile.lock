@@ -196,7 +196,6 @@ GEM
       addressable (~> 2.7)
     libv8-node (16.10.0.0)
     libv8-node (16.10.0.0-x86_64-darwin)
-    libv8-node (16.10.0.0-x86_64-darwin-19)
     libv8-node (16.10.0.0-x86_64-linux)
     listen (3.4.1)
       rb-fsevent (~> 0.10, >= 0.10.3)
