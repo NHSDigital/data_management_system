@@ -45,15 +45,78 @@ module Import
               @brca2_seq_result.scan(CDNA_REGEX).size.zero?) && @brca2_mutation.nil?
             end
 
-            def process_fullscreen_result_cdnavariant
-              return if @fullscreen_result.nil? ||
-                        @fullscreen_result.scan(/(?<brca>BRCA1|BRCA2)/i).size.zero?
 
-              positive_gene = @fullscreen_result.match(/(?<brca>BRCA1|BRCA2)/i)[:brca]
-              negative_gene = %w[BRCA1 BRCA2] - [positive_gene]
-              process_positive_cdnavariant(positive_gene, @fullscreen_result, :full_screen)
-              process_negative_gene(negative_gene.join, :full_screen)
+            def process_fullscreen_result_cdnavariant
+              return if @fullscreen_result.nil? 
+              detected_genes = if @fullscreen_result.scan(/(?<brca>BRCA1|BRCA2)/i).present?
+                                 @fullscreen_result.scan(/(?<brca>BRCA1|BRCA2)/i).flatten.compact.uniq
+                              else
+                               tested_genes = @fullscreen_result.scan(DEPRECATED_BRCA_NAMES_REGEX).flatten.compact.uniq
+                               
+                               # tested_genes.map {|tested_gene|  DEPRECATED_BRCA_NAMES_MAP[tested_gene]}
+                              end
+
+              split_records = @fullscreen_result.split(detected_genes[-1])
+              split_records[1].prepend(detected_genes[-1])
+              split_records.map! {|split_record| split_record.gsub('B1', 'BRCA1').gsub('B2','BRCA2')}
+              split_records = split_records.reject(&:empty?)
+              if split_records.size > split_records.join.scan(BRCA_GENES_REGEX).flatten.size
+                split_records[-1] = split_records[-1].sub(" ", detected_genes[-1]+" ")
+              end
+
+              positive_genes = if split_records.is_a? String
+                                 split_records.scan(/(?<brca>BRCA1|BRCA2)/i).flatten.uniq.compact 
+                               else
+                                 split_records.join.scan(/(?<brca>BRCA1|BRCA2)/i).flatten.uniq.compact
+                               end
+                               
+              negative_gene = %w[BRCA1 BRCA2] - positive_genes
+              if split_records.is_a? String
+                process_positive_cdnavariant(positive_genes.join, @fullscreen_result, :full_screen)
+              else
+                split_records.each do |list_of_variants|
+                  return if list_of_variants.scan(/(?<brca>BRCA1|BRCA2)/i).empty?
+                  gene = list_of_variants.match(/(?<brca>BRCA1|BRCA2)/i)[:brca]
+                  cdnavariants = list_of_variants.scan(CDNA_REGEX).uniq.flatten.compact
+                  genes = [gene] * cdnavariants.uniq.size
+                  genes.zip(cdnavariants.uniq).each do |gene, variant|
+                    positive_genotype = @genotype.dup
+                    positive_genotype.add_gene(gene)
+                    positive_genotype.add_gene_location(variant)
+                    positive_genotype.add_status(2)
+                    positive_genotype.add_test_scope(:full_screen)
+                    @genotypes.append(positive_genotype)
+                  end
+                end
+              end
+              process_negative_gene(negative_gene.join, :full_screen) if negative_gene.present?
             end
+
+
+
+            # def process_fullscreen_result_cdnavariant
+            #   return if @fullscreen_result.nil?
+            #
+            #   positive_gene = if @fullscreen_result.match(/(?<brca>BRCA1|BRCA2)/i).present?
+            #                     @fullscreen_result.match(/(?<brca>BRCA1|BRCA2)/i)[:brca]
+            #                   else
+            #                    tested_genes = @fullscreen_result.match(DEPRECATED_BRCA_NAMES_REGEX)
+            #                    tested_genes = DEPRECATED_BRCA_NAMES_MAP[tested_genes.to_s]
+            #                   end
+            #   negative_gene = %w[BRCA1 BRCA2] - [positive_gene]
+            #   process_positive_cdnavariant(positive_gene, @fullscreen_result, :full_screen)
+            #   process_negative_gene(negative_gene.join, :full_screen)
+            # end
+
+            # def process_fullscreen_result_cdnavariant
+            #   return if @fullscreen_result.nil? ||
+            #             @fullscreen_result.scan(/(?<brca>BRCA1|BRCA2)/i).size.zero?
+            #
+            #   positive_gene = @fullscreen_result.match(/(?<brca>BRCA1|BRCA2)/i)[:brca]
+            #   negative_gene = %w[BRCA1 BRCA2] - [positive_gene]
+            #   process_positive_cdnavariant(positive_gene, @fullscreen_result, :full_screen)
+            #   process_negative_gene(negative_gene.join, :full_screen)
+            # end
 
             def brca1_seq_result_missing_cdot?
               return if @brca1_seq_result.nil?
@@ -181,8 +244,10 @@ module Import
             def brca_false_positives?
               return if @brca1_seq_result.nil? && @brca2_seq_result.nil?
 
-              (@brca1_seq_result.present? && @brca1_seq_result.scan(/-ve/i).size.positive?) ||
-                (@brca2_seq_result.present? && @brca2_seq_result.scan(/-ve/i).size.positive?)
+              (@brca1_seq_result.present? && @brca1_seq_result.scan(/-ve/i).size.positive? &&
+              [@brca2_mutation,@brca2_seq_result].uniq.compact.empty?) ||
+              (@brca2_seq_result.present? && @brca2_seq_result.scan(/-ve/i).size.positive? &&
+              [@brca1_mutation,@brca1_seq_result].uniq.compact.empty?)
             end
 
             def brca1_cdna_variant_fullscreen_option3?
@@ -194,7 +259,8 @@ module Import
 
             def process_brca1_cdna_variant_fullscreen_option3
               cdna_variant = [@brca1_mutation, @brca1_seq_result].flatten.uniq.join
-              if [@brca2_mutation, @brca2_seq_result].flatten.compact.uniq.empty?
+              if [@brca2_mutation, @brca2_seq_result].flatten.compact.uniq.empty? || 
+                [@brca2_mutation, @brca2_seq_result].join.scan(/neg|norm|-ve/i).size.positive?
                 process_fullscreen_brca1_mutated_cdna_brca2_normal(cdna_variant)
               end
               @genotypes
@@ -376,7 +442,7 @@ module Import
                 (@brca1_mlpa_result.downcase == 'n/a' && @brca2_mlpa_result.scan(%r{no del/dup}i).size.positive?)
             end
 
-            def process_multiple_variants_ngs_results(variants, genes)
+            def process_multiple_variants_fullscreen_results(variants, genes)
               negative_gene = %w[BRCA1 BRCA2] - genes
               process_negative_gene(negative_gene.join, :full_screen) if negative_gene.present?
               # binding.pry

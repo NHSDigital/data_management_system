@@ -675,13 +675,17 @@ class GuysHandlerTest < ActiveSupport::TestCase
     brca1_exon_variant_fullscreen2.raw_fields['brca2 mlpa results'] = 'No del/dup'
     brca1_exon_variant_fullscreen2.raw_fields['full screen result'] = 'BRCA1 Het c.305C>G (p.Ala102Gly) (UV); BRCA2 Het c.7806-40A>G (UV); Het c.8460A>C (p.Val2820Val) (UV)'
     res = @handler.process_fields(brca1_exon_variant_fullscreen2)
-    assert_equal 2, res.size
+    assert_equal 3, res.size
     assert_equal 'Full screen BRCA1 and BRCA2', res[0].attribute_map['genetictestscope']
     assert_equal 2, res[0].attribute_map['teststatus']
     assert_equal 7, res[0].attribute_map['gene']
-    assert_equal 1, res[1].attribute_map['teststatus']
+    assert_equal 2, res[1].attribute_map['teststatus']
     assert_equal 8, res[1].attribute_map['gene']
     assert_equal 'Full screen BRCA1 and BRCA2', res[1].attribute_map['genetictestscope']
+    assert_equal 2, res[2].attribute_map['teststatus']
+    assert_equal 8, res[2].attribute_map['gene']
+    assert_equal 'Full screen BRCA1 and BRCA2', res[1].attribute_map['genetictestscope']
+    
   end
 
   test 'all_fields_nil_fullscreen2_test' do

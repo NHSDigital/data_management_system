@@ -117,17 +117,18 @@ module Import
                 positive_seq_brca2?||
                 brca2_mutation?
                 process_positive_brca1_2_seq_targeted_tests
-              elsif positive_mlpa_brca1_targeted_test? ||
-               positive_exonvariants_in_set_brca1_targeted_test? ||
-                positive_mlpa_brca2_targeted_test? ||
-                positive_exonvariants_in_set_brca2_targeted_test?
-                process_positive_brca1_2_mlpa_targeted_tests
               elsif normal_brca1_mlpa_targeted_test?||
                 normal_brca2_mlpa_targeted_test?
                 process_normal_brca1_2_mlpa_targeted_tests
               elsif failed_brca1_mlpa_targeted_test? ||
                 failed_brca2_mlpa_targeted_test?
                 process_failed_brca1_2_targeted_tests
+              elsif positive_mlpa_brca1_targeted_test? ||
+               positive_exonvariants_in_set_brca1_targeted_test? ||
+                positive_mlpa_brca2_targeted_test? ||
+                positive_exonvariants_in_set_brca2_targeted_test?
+                process_positive_brca1_2_mlpa_targeted_tests
+
               elsif brca1_malformed_cdna_fullscreen_option3?
                 process_brca1_malformed_cdna_targeted_test
               elsif brca2_malformed_cdna_fullscreen_option3?
@@ -145,22 +146,24 @@ module Import
                 process_double_brca_negative(:full_screen)
               elsif @ngs_result.downcase.scan(/fail/i).size.positive?
                 process_double_brca_fail(:full_screen)
-              elsif @ngs_result.scan(CDNA_REGEX).size > 1
+              elsif @ngs_result.scan(CDNA_REGEX).size > 1 &&
+                @ngs_result.scan(BRCA_GENES_REGEX).present?
                 variants = @ngs_result.scan(CDNA_REGEX).uniq.flatten.compact
                 genes = @ngs_result.scan(BRCA_GENES_REGEX).uniq.flatten.compact
-                process_multiple_variants_ngs_results(variants,genes)
+                process_multiple_variants_fullscreen_results(variants,genes)
               elsif fullscreen_non_brca_mutated_cdna_gene?
                 process_fullscreen_non_brca_mutated_cdna_gene
               elsif @ngs_result.scan(/b(?<brca>1|2)/i).size.positive?
                 variants = @ngs_result.scan(CDNA_REGEX).uniq.flatten.compact
                 tested_genes = @ngs_result.scan(DEPRECATED_BRCA_NAMES_REGEX).flatten.uniq.flatten.compact
                 positive_genes = tested_genes.map {|tested_gene|  DEPRECATED_BRCA_NAMES_MAP[tested_gene]}
-                process_multiple_variants_ngs_results(variants,positive_genes)
-              #   process_multiple_variants_ngs_results(variants,positive_genes)
+                process_multiple_variants_fullscreen_results(variants,positive_genes)
+
+              #   process_multiple_variants_fullscreen_results(variants,positive_genes)
               # elsif @ngs_result.scan(CDNA_REGEX).size > 1
               #   variants = @ngs_result.scan(CDNA_REGEX).uniq.flatten.compact
               #   genes = @ngs_result.scan(BRCA_GENES_REGEX).uniq.flatten.compact
-              #   process_multiple_variants_ngs_results(variants,genes)
+              #   process_multiple_variants_fullscreen_results(variants,genes)
               elsif fullscreen_brca2_mutated_cdna_brca1_normal?
                 process_fullscreen_brca2_mutated_cdna_brca1_normal(@ngs_result)
               elsif fullscreen_brca1_mutated_cdna_brca2_normal?
@@ -184,39 +187,44 @@ module Import
             end
 
             def process_fullscreen_test_option2
-            
               add_full_screen_date_option2
-              if @fullscreen_result.present? && @fullscreen_result.downcase.scan(/no\s*mut|no\s*var/i).size.positive?
+              if @fullscreen_result.present? && @fullscreen_result.downcase.scan(/no\s*mut|no\s*var|norm/i).size.positive?
                 process_double_brca_negative(:full_screen)
               # elsif fullscreen_non_brca_mutated_cdna_gene?
               #   binding.pry
               #   process_fullscreen_non_brca_mutated_cdna_gene
+            elsif brca1_malformed_cdna_fullscreen_option3?
+              process_brca1_malformed_cdna_fullscreen_option3
+            elsif brca2_malformed_cdna_fullscreen_option3?
+              process_brca2_malformed_cdna_fullscreen_option3
               elsif brca1_mutation? && brca2_mutation?
                 process_positive_cdnavariant('BRCA1', @brca1_mutation, :full_screen)
                 process_positive_cdnavariant('BRCA2', @brca2_mutation, :full_screen)
               elsif brca2_cdna_variant_fullscreen_option2?
                 process_fullscreen_brca2_mutated_cdna_option2
-              elsif brca1_cdna_variant_fullscreen_option2?                
+              elsif brca1_cdna_variant_fullscreen_option2?
                 process_fullscreen_brca1_mutated_cdna_option2
               elsif all_null_cdna_variants_except_full_screen_test?
                 process_fullscreen_result_cdnavariant
               elsif fullscreen_brca1_mlpa_positive_variant?
-                process_full_screen_brca1_mlpa_positive_variant(@brca1_mlpa_result.scan(EXON_REGEX))
+                process_full_screen_brca1_mlpa_positive_variant(@brca1_mlpa_result.match(EXON_REGEX))
               elsif fullscreen_brca2_mlpa_positive_variant?
                 #TODO: Check the method below
-                process_full_screen_brca2_mlpa_positive_variant(@brca2_mlpa_result.scan(EXON_REGEX))
+                process_full_screen_brca2_mlpa_positive_variant(@brca2_mlpa_result.match(EXON_REGEX))
               elsif all_fullscreen_option2_relevant_fields_nil?
                 process_double_brca_negative(:full_screen)
               elsif double_brca_mlpa_negative?
                 process_double_brca_negative(:full_screen)
               elsif brca12_mlpa_normal_brca12_null?
                 process_double_brca_negative(:full_screen)
-              # else binding.pry
+              else binding.pry
               end
             end
 
             def process_fullscreen_test_option3
               add_full_screen_date_option3
+              # binding.pry if @record.raw_fields['servicereportidentifier'] == '03/00062'
+              # binding.pry if @record.raw_fields['servicereportidentifier'] == '05/12444'
              if all_fullscreen_option2_relevant_fields_nil?
                process_double_brca_unknown(:full_screen)
              elsif brca1_normal_brca2_nil? || brca2_normal_brca1_nil?
@@ -235,10 +243,10 @@ module Import
                process_brca2_cdna_variant_fullscreen_option3
              elsif double_brca_mlpa_negative?
                process_double_brca_negative(:full_screen)
-             elsif fullscreen_brca1_mlpa_positive_variant?               
-               process_full_screen_brca1_mlpa_positive_variant(@brca1_mlpa_result.scan(EXON_REGEX))
+             elsif fullscreen_brca1_mlpa_positive_variant? 
+               process_full_screen_brca1_mlpa_positive_variant(@brca1_mlpa_result.match(EXON_REGEX))
              elsif fullscreen_brca2_mlpa_positive_variant?
-               process_full_screen_brca2_mlpa_positive_variant(@brca2_mlpa_result.scan(EXON_REGEX))
+               process_full_screen_brca2_mlpa_positive_variant(@brca2_mlpa_result.match(EXON_REGEX))
              elsif double_brca_malformed_cdna_fullscreen_option3?               
                process_double_brca_malformed_cdna_fullscreen_option3
              elsif @brca2_mlpa_result.present? && @brca1_mlpa_result.present? &&

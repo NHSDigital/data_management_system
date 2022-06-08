@@ -20,31 +20,30 @@ module Import
             
             CDNA_REGEX = /(\w+\s)?c\.\s?(?<cdna>[^\s]+)|(?<cdna>^[0-9].+)\s?\(M\)/i.freeze
             PROTEIN_REGEX = /p\.\(?(?<impact>[a-z]+[0-9]+[a-z]+)\)?/i.freeze
-            EXON_REGEX = /(?<zygosity>het|hom)\.?\s(?<deldup>del(etion)?|dup(lication)?)\.?[\s\w]+?
+            # EXON_REGEX = /(?<zygosity>het|hom)\.?\s(?<deldup>del(etion)?|dup(lication)?)\.?[\s\w]+?
+            #               ex(on)?\s?(?<exons>[0-9]+(?<otherexon>-[0-9]+)?)|ex(on)?\s?
+            #               (?<exons>[0-9]+(?<otherexon>-[0-9]+)?)\s?(?<zygosity>het|hom)?\.?\s?
+            #               (?<deldup>del(etion)?|dup(lication)?)\.?|
+            #               (?<zygosity>het|hom)\s?(?<deldup>del|dup)\s?ex(?<ons>ons)?\s?
+            #               (?<exons>[0-9]+(?<otherexon>-[0-9]+)?)|
+            #               (?<zygosity>het|hom)\sdel\sex(on)?(?<exons>[0-9]+(?<otherexon>-[0-9]+)?)/ix.freeze
+
+            EXON_REGEX = /(?<zygosity>het|hom)?\.?\s(?<deldup>del(etion)?|dup(lication)?)\.?[\s\w]+?
                           ex(on)?\s?(?<exons>[0-9]+(?<otherexon>-[0-9]+)?)|ex(on)?\s?
                           (?<exons>[0-9]+(?<otherexon>-[0-9]+)?)\s?(?<zygosity>het|hom)?\.?\s?
                           (?<deldup>del(etion)?|dup(lication)?)\.?|
-                          (?<zygosity>het|hom)\s?(?<deldup>del|dup)\s?ex(?<ons>ons)?\s?
+                          (?<zygosity>het|hom)?\s?(?<deldup>del|dup)\s?ex(?<ons>ons)?\s?
                           (?<exons>[0-9]+(?<otherexon>-[0-9]+)?)|
-                          (?<zygosity>het|hom)\sdel\sex(on)?(?<exons>[0-9]+(?<otherexon>-[0-9]+)?)/ix.freeze
+                          (?<zygosity>het|hom)?\s?del\s
+                          ex(on)?(?<exons>[0-9]+(?<otherexon>-[0-9]+)?)/ix.freeze
 
             MALFORMED_CDNA_REGEX = /(?<donotgrep>het|BRCA1|BRCA2)?\s?(?<cdna>[^\s]+)/i.freeze
 
             BRCA_GENES_REGEX = /(?<brca>BRCA1|
-                                       BR1|
-                                       B1|
-                                       P002|
-                                       P002B|
-                                       P087|
                                        BRCA2|
-                                       BR2|
-                                       B2|
-                                       P045|
-                                       P077|
                                        ATM|
                                        P041|
                                        CHEK2|
-                                       P190|
                                        PALB2|
                                        MLH1|
                                        MSH2|
