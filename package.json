@@ -1,13 +1,15 @@
 {
   "dependencies": {
     "@babel/polyfill": "^7.4.4",
-    "@rails/webpacker": "^5.4.2",
+    "@rails/webpacker": "5.4.3",
     "@stimulus/polyfills": "^1.1.1",
     "stimulus": "^1.1.1",
-    "stimulus-checkbox-select-all": "^4.0.0"
+    "stimulus-checkbox-select-all": "^4.0.0",
+    "webpack": "^4.46.0",
+    "webpack-cli": "^3.3.12"
   },
   "devDependencies": {
-    "webpack-dev-server": "^4.1.1"
+    "webpack-dev-server": "^3"
   },
   "private": true
 }
