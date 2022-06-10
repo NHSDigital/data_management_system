@@ -3,6 +3,7 @@ module Import
     module Brca
       module Providers
         module Rj1
+          # Processor for Targeted Screen Tests exctraction methods
           module Rj1TargetedTestProcessor
             include Import::Helpers::Brca::Providers::Rj1::Rj1Constants
 
@@ -18,7 +19,8 @@ module Import
             def positive_mlpa_brca1_targeted_test?
               return if @brca1_mlpa_result.nil?
 
-              ((@authoriseddate.nil? || @record.raw_fields['servicereportidentifier'] == '06/03030') &&
+              ((@authoriseddate.nil? ||
+              @record.raw_fields['servicereportidentifier'] == '06/03030') &&
                 @brca1_mlpa_result.scan(EXON_REGEX).size.positive?) ||
                 (@brca1_mlpa_result.scan(EXON_REGEX).size.positive? && targeted_test_fourth_option?)
             end
@@ -26,10 +28,10 @@ module Import
             def positive_mlpa_brca2_targeted_test?
               return if @brca2_mlpa_result.nil?
 
-              ((@authoriseddate.nil? || @record.raw_fields['servicereportidentifier'] == '06/03030') &&
+              ((@authoriseddate.nil? ||
+              @record.raw_fields['servicereportidentifier'] == '06/03030') &&
               @brca2_mlpa_result.scan(EXON_REGEX).size.positive?) ||
-              (@brca2_mlpa_result.scan(EXON_REGEX).size.positive? && targeted_test_fourth_option?)
-
+                (@brca2_mlpa_result.scan(EXON_REGEX).size.positive? && targeted_test_fourth_option?)
             end
 
             def positive_exonvariants_in_set_brca1_targeted_test?
@@ -46,7 +48,7 @@ module Import
 
             def all_null_results_targeted_test?
               @brca1_seq_result.nil? && @brca1_mutation.nil? && @brca2_mutation.nil? &&
-              @brca2_seq_result.nil? && @brca1_mlpa_result.nil? && @brca2_mlpa_result.nil?
+                @brca2_seq_result.nil? && @brca1_mlpa_result.nil? && @brca2_mlpa_result.nil?
             end
 
             def process_all_null_results_targeted_test(test_scope)
@@ -66,15 +68,15 @@ module Import
             end
 
             def normal_brca1_mlpa_targeted_test?
-              return if @brca1_mlpa_result.nil? || @brca1_mlpa_result == "N/A"
-              @brca1_mlpa_result.scan(/no del\/dup/i).size.positive? #&&
-              #(@authoriseddate.nil? || @record.raw_fields['servicereportidentifier'] == '06/03030')
+              return if @brca1_mlpa_result.nil? || @brca1_mlpa_result == 'N/A'
+
+              @brca1_mlpa_result.scan(%r{no del/dup}i).size.positive?
             end
 
             def normal_brca2_mlpa_targeted_test?
-              return if @brca2_mlpa_result.nil? || @brca2_mlpa_result == "N/A"
-              @brca2_mlpa_result.scan(/no del\/dup/i).size.positive? #&&
-              #(@authoriseddate.nil? || @record.raw_fields['servicereportidentifier'] == '06/03030')
+              return if @brca2_mlpa_result.nil? || @brca2_mlpa_result == 'N/A'
+
+              @brca2_mlpa_result.scan(%r{no del/dup}i).size.positive?
             end
 
             def process_normal_brca1_2_mlpa_targeted_tests
@@ -133,8 +135,9 @@ module Import
 
             def process_brca1_malformed_cdna_targeted_test
               return if @brca1_seq_result.nil? && @brca1_mutation.nil?
+
               badformat_cdna_brca1_variant = if @brca1_mutation.present?
-                                                @brca1_mutation.match(MALFORMED_CDNA_REGEX)[:cdna]
+                                               @brca1_mutation.match(MALFORMED_CDNA_REGEX)[:cdna]
                                              else
                                                @brca1_seq_result.match(MALFORMED_CDNA_REGEX)[:cdna]
                                              end

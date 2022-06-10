@@ -3,6 +3,7 @@ module Import
     module Brca
       module Providers
         module Rj1
+          # Processor for Polish Tests exctraction methods
           module Rj1PolishTestProcessor
             include Import::Helpers::Brca::Providers::Rj1::Rj1Constants
 

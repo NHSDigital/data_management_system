@@ -3,6 +3,7 @@ module Import
     module Brca
       module Providers
         module Rj1
+          # Processor for Ashkenazi Screen Tests exctraction methods
           module Rj1AshkenaziTestProcessor
             include Import::Helpers::Brca::Providers::Rj1::Rj1Constants
 

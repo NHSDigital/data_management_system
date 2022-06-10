@@ -3,6 +3,7 @@ module Import
     module Brca
       module Providers
         module Rj1
+          # Processor for common exctraction methods for FullScreen, Targeted, Ashkenazi and Polish
           module Rj1CommonMethodsProcessor
             include Import::Helpers::Brca::Providers::Rj1::Rj1Constants
 
@@ -12,60 +13,71 @@ module Import
 
             def no_cdna_variant?
               return if @brca1_mlpa_result.nil? && @brca2_mlpa_result.nil?
+
               @brca1_mutation.nil? && @brca2_mutation.nil? &&
-              @brca1_seq_result.nil? && @brca2_seq_result.nil? &&
-              @brca1_mlpa_result.downcase == 'n/a' && @brca2_mlpa_result.downcase == 'n/a'
+                @brca1_seq_result.nil? && @brca2_seq_result.nil? &&
+                @brca1_mlpa_result&.downcase == 'n/a' && @brca2_mlpa_result&.downcase == 'n/a'
             end
 
             def brca1_mutation?
               return if @brca1_mutation.nil?
+
               @brca1_mutation.scan(CDNA_REGEX).size.positive?
             end
-          
+
             def brca2_mutation?
               return if @brca2_mutation.nil?
+
               @brca2_mutation.scan(CDNA_REGEX).size.positive?
             end
 
             def normal_brca1_seq?
               return if @brca1_seq_result.nil?
+
               @brca1_seq_result.downcase == '-ve' ||
-              @brca1_seq_result.downcase == 'neg' ||
-              @brca1_seq_result.downcase == 'nrg' ||
-              @brca1_seq_result.scan(/neg|nrg|norm|-ve/i).size.positive? ||
-              @brca1_seq_result.scan(/no mut/i).size.positive? ||
-              @brca1_seq_result.scan(/no var|no fam|not det/i).size.positive? 
+                @brca1_seq_result.downcase == 'neg' ||
+                @brca1_seq_result.downcase == 'nrg' ||
+                @brca1_seq_result.scan(/neg|nrg|norm|-ve/i).size.positive? ||
+                @brca1_seq_result.scan(/no mut/i).size.positive? ||
+                @brca1_seq_result.scan(/no var|no fam|not det/i).size.positive?
             end
 
             def normal_brca2_seq?
               return if @brca2_seq_result.nil?
+
               @brca2_seq_result.downcase == '-ve' ||
-              @brca2_seq_result.downcase == 'neg' ||
-              @brca2_seq_result.downcase == 'nrg' ||
-              @brca2_seq_result.scan(/neg|nrg|norm|-ve/i).size.positive?||
-              @brca2_seq_result.scan(/no mut/i).size.positive? ||
-              @brca2_seq_result.scan(/no var|no fam|not det/i).size.positive? 
+                @brca2_seq_result.downcase == 'neg' ||
+                @brca2_seq_result.downcase == 'nrg' ||
+                @brca2_seq_result.scan(/neg|nrg|norm|-ve/i).size.positive? ||
+                @brca2_seq_result.scan(/no mut/i).size.positive? ||
+                @brca2_seq_result.scan(/no var|no fam|not det/i).size.positive?
             end
 
             def failed_brca1_mlpa_targeted_test?
-              return if @brca1_mlpa_result.nil? || @brca1_mlpa_result == "N/A"
+              return if @brca1_mlpa_result.nil? || @brca1_mlpa_result == 'N/A'
+
               @brca1_mlpa_result.scan(/fail/i).size.positive? &&
-              (@authoriseddate.nil? || @record.raw_fields['servicereportidentifier'] == '06/03030')
+                (@authoriseddate.nil? ||
+                @record.raw_fields['servicereportidentifier'] == '06/03030')
             end
 
             def failed_brca2_mlpa_targeted_test?
-              return if @brca2_mlpa_result.nil? || @brca2_mlpa_result == "N/A"
+              return if @brca2_mlpa_result.nil? || @brca2_mlpa_result == 'N/A'
+
               @brca2_mlpa_result.scan(/fail/i).size.positive? &&
-              (@authoriseddate.nil? || @record.raw_fields['servicereportidentifier'] == '06/03030')
+                (@authoriseddate.nil? ||
+                @record.raw_fields['servicereportidentifier'] == '06/03030')
             end
 
             def positive_seq_brca1?
               return if @brca1_seq_result.nil?
+
               @brca1_seq_result.scan(CDNA_REGEX).size.positive?
             end
 
             def positive_seq_brca2?
               return if @brca2_seq_result.nil?
+
               @brca2_seq_result.scan(CDNA_REGEX).size.positive?
             end
 
@@ -86,7 +98,7 @@ module Import
             end
 
             def process_double_brca_negative(test_scope)
-              ['BRCA1', 'BRCA2'].each do |negative_gene| 
+              %w[BRCA1 BRCA2].each do |negative_gene|
                 genotype1 = @genotype.dup
                 genotype1.add_gene(negative_gene)
                 genotype1.add_status(1)
@@ -97,7 +109,7 @@ module Import
             end
 
             def process_double_brca_fail(test_scope)
-              ['BRCA1', 'BRCA2'].each do |unknown_gene_test| 
+              %w[BRCA1 BRCA2].each do |unknown_gene_test|
                 genotype1 = @genotype.dup
                 genotype1.add_gene(unknown_gene_test)
                 genotype1.add_status(9)
@@ -108,7 +120,7 @@ module Import
             end
 
             def process_double_brca_unknown(test_scope)
-              ['BRCA1', 'BRCA2'].each do |unknown_gene_test| 
+              %w[BRCA1 BRCA2].each do |unknown_gene_test|
                 genotype1 = @genotype.dup
                 genotype1.add_gene(unknown_gene_test)
                 genotype1.add_status(4)
@@ -130,13 +142,17 @@ module Import
             end
 
             def add_cdnavariant_from_variantfield(variant_field, positive_genotype)
-              Maybe(variant_field.match(CDNA_REGEX)[:cdna]).map { |x| positive_genotype.add_gene_location(x.tr(';','')) }
+              Maybe(variant_field.match(CDNA_REGEX)[:cdna]).map do |x|
+                positive_genotype.add_gene_location(x.tr(';', ''))
+              end
             rescue StandardError
               @logger.debug 'Cannot add cdna variant'
             end
 
             def add_proteinimpact_from_variantfield(variant_field, positive_genotype)
-              Maybe(variant_field.match(PROTEIN_REGEX)[:impact]).map { |x| positive_genotype.add_protein_impact(x) }
+              Maybe(variant_field.match(PROTEIN_REGEX)[:impact]).map do |x|
+                positive_genotype.add_protein_impact(x)
+              end
             rescue StandardError
               @logger.debug 'Cannot add protein impact'
             end
@@ -169,7 +185,6 @@ module Import
             rescue StandardError
               @logger.debug 'Cannot add exons involved in exonic variant'
             end
- 
           end
         end
       end

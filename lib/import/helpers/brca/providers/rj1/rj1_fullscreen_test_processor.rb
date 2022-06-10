@@ -468,21 +468,21 @@ module Import
             end
 
             def brca1_mlpa_nil_brca2_mlpa_normal?
-              @brca1_mlpa_result.nil? && @brca2_mlpa_result.scan(%r{no del/dup}i).size.positive?
+              @brca1_mlpa_result.nil? && @brca2_mlpa_result&.scan(%r{no del/dup}i).size.positive?
             end
 
             def brca2_mlpa_nil_brca1_mlpa_normal?
-              @brca2_mlpa_result.nil? && @brca1_mlpa_result.scan(%r{no del/dup}i).size.positive?
+              @brca2_mlpa_result.nil? && @brca1_mlpa_result&.scan(%r{no del/dup}i).size.positive?
             end
 
             def brca2_mlpa_na_brca1_mlpa_normal?
-              @brca2_mlpa_result.downcase == 'n/a' &&
-                @brca1_mlpa_result.scan(%r{no del/dup}i).size.positive?
+              @brca2_mlpa_result&.downcase == 'n/a' &&
+                @brca1_mlpa_result&.scan(%r{no del/dup}i).size.positive?
             end
 
             def brca1_mlpa_na_brca2_mlpa_normal?
-              @brca1_mlpa_result.downcase == 'n/a' &&
-                @brca2_mlpa_result.scan(%r{no del/dup}i).size.positive?
+              @brca1_mlpa_result&.downcase == 'n/a' &&
+                @brca2_mlpa_result&.scan(%r{no del/dup}i).size.positive?
             end
 
             def brca12_mlpa_normal_brca12_null?
