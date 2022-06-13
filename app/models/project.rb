@@ -188,6 +188,13 @@ class Project < ApplicationRecord
   attr_searchable :owner,                 :association_filter, kwargs: true # FIXME: See Searchable
   attr_searchable :current_project_state, :association_filter
 
+  # Returns an array of unique Organisations for the attached datasets.
+  def managed_by
+    return if datasets.blank?
+
+    datasets.map(&:managing_organisation).uniq.compact
+  end
+
   class << self
     def unassigned(check_temporal: false)
       return where(assigned_user: nil) unless check_temporal
