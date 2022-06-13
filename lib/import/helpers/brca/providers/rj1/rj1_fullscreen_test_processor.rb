@@ -47,6 +47,14 @@ module Import
               return if @fullscreen_result.nil?
 
               detected_genes = process_detected_genes
+              split_records = create_split_records(detected_genes)
+              positive_genes = process_positive_genes(split_records)
+              process_split_records(split_records)
+              negative_gene = %w[BRCA1 BRCA2] - positive_genes
+              process_negative_gene(negative_gene.join, :full_screen) if negative_gene.present?
+            end
+
+            def create_split_records(detected_genes)
               split_records = @fullscreen_result.split(detected_genes[-1])
               split_records[1].prepend(detected_genes[-1])
               split_records.map! do |split_record|
@@ -56,10 +64,7 @@ module Import
               if split_records.size > split_records.join.scan(BRCA_GENES_REGEX).flatten.size
                 split_records[-1] = split_records[-1].sub(' ', "#{detected_genes[-1]} ")
               end
-              positive_genes = process_positive_genes(split_records)
-              process_split_records(split_records)
-              negative_gene = %w[BRCA1 BRCA2] - positive_genes
-              process_negative_gene(negative_gene.join, :full_screen) if negative_gene.present?
+              split_records
             end
 
             def process_positive_genes(split_records)
@@ -448,6 +453,23 @@ module Import
               @genotypes
             end
 
+            def process_malformed_variants_fullscreen_option1
+              positive_genotype = @genotype.dup
+              positive_gene = @ngs_result.scan(BRCA_GENES_REGEX).flatten.compact.join
+              negative_gene = %w[BRCA2
+                                 BRCA1] - @ngs_result.scan(BRCA_GENES_REGEX).flatten.compact
+              process_negative_gene(negative_gene.join, :full_screen)
+              positive_genotype.add_gene(positive_gene)
+              positive_genotype.add_gene_location(
+                @ngs_result.match(/(?<cdna>[0-9]+[a-z]+>[a-z]+)/i)[:cdna].tr(
+                  ';', ''
+                )
+              )
+              positive_genotype.add_status(2)
+              positive_genotype.add_test_scope(:full_screen)
+              @genotypes.append(positive_genotype)
+            end
+
             def brca1_cdna_variant_fullscreen_option2?
               (!@brca1_mutation.nil? && @brca1_mutation.scan(CDNA_REGEX).size.positive?) ||
                 (!@brca1_seq_result.nil? && @brca1_seq_result.scan(CDNA_REGEX).size.positive?)
@@ -467,22 +489,32 @@ module Import
                 (@brca2_seq_result.present? && @brca2_seq_result.scan(/neg|norm/i).size.positive?))
             end
 
+            def process_deprecated_genes_record_fullscreen_option1
+              variants = @ngs_result.scan(CDNA_REGEX).uniq.flatten.compact
+              tested_genes = @ngs_result.scan(DEPRECATED_BRCA_NAMES_REGEX).flatten.uniq.
+                             flatten.compact
+              positive_genes = tested_genes.map do |tested_gene|
+                DEPRECATED_BRCA_NAMES_MAP[tested_gene]
+              end
+              process_multiple_variants_fullscreen_results(variants, positive_genes)
+            end
+
             def brca1_mlpa_nil_brca2_mlpa_normal?
-              @brca1_mlpa_result.nil? && @brca2_mlpa_result&.scan(%r{no del/dup}i).size.positive?
+              @brca1_mlpa_result.nil? && @brca2_mlpa_result&.scan(%r{no del/dup}i)&.size&.positive?
             end
 
             def brca2_mlpa_nil_brca1_mlpa_normal?
-              @brca2_mlpa_result.nil? && @brca1_mlpa_result&.scan(%r{no del/dup}i).size.positive?
+              @brca2_mlpa_result.nil? && @brca1_mlpa_result&.scan(%r{no del/dup}i)&.size&.positive?
             end
 
             def brca2_mlpa_na_brca1_mlpa_normal?
               @brca2_mlpa_result&.downcase == 'n/a' &&
-                @brca1_mlpa_result&.scan(%r{no del/dup}i).size.positive?
+                @brca1_mlpa_result&.scan(%r{no del/dup}i)&.size&.positive?
             end
 
             def brca1_mlpa_na_brca2_mlpa_normal?
               @brca1_mlpa_result&.downcase == 'n/a' &&
-                @brca2_mlpa_result&.scan(%r{no del/dup}i).size.positive?
+                @brca2_mlpa_result&.scan(%r{no del/dup}i)&.size&.positive?
             end
 
             def brca12_mlpa_normal_brca12_null?
@@ -492,42 +524,16 @@ module Import
                 brca2_mlpa_nil_brca1_mlpa_normal? ||
                 brca2_mlpa_na_brca1_mlpa_normal? ||
                 brca1_mlpa_na_brca2_mlpa_normal?
-
-              # (@brca1_mlpa_result.nil? &&
-              # @brca2_mlpa_result.scan(%r{no del/dup}i).size.positive?) ||
-              #   (@brca2_mlpa_result.nil? &&
-              #   @brca1_mlpa_result.scan(%r{no del/dup}i).size.positive?) ||
-              # (@brca2_mlpa_result.downcase == 'n/a' &&
-              #  @brca1_mlpa_result.scan(%r{no del/dup}i).size.positive?) ||
-              # (@brca1_mlpa_result.downcase == 'n/a' &&
-              # @brca2_mlpa_result.scan(%r{no del/dup}i).size.positive?)
             end
 
             def process_multiple_variants_fullscreen_results(variants, genes)
               negative_gene = %w[BRCA1 BRCA2] - genes
               process_negative_gene(negative_gene.join, :full_screen) if negative_gene.present?
-              # binding.pry
               if genes.uniq.size == variants.uniq.size
                 process_even_gene_cdna_variants_fullscreen_fullscreenresults(genes, variants)
-              # genes.zip(variants).each do |gene, variant|
-              #    positive_genotype = @genotype.dup
-              #    positive_genotype.add_gene(gene)
-              #    positive_genotype.add_gene_location(variant)
-              #    positive_genotype.add_status(2)
-              #    positive_genotype.add_test_scope(:full_screen)
-              #    @genotypes.append(positive_genotype)
-              #  end
               else
                 genes = genes.uniq * variants.uniq.size
                 process_one_gene_many_cdna_variants_fullscreen_fullscreenresults(genes, variants)
-                # genes.zip(variants.uniq).each do |gene, variant|
-                #   positive_genotype = @genotype.dup
-                #   positive_genotype.add_gene(gene)
-                #   positive_genotype.add_gene_location(variant)
-                #   positive_genotype.add_status(2)
-                #   positive_genotype.add_test_scope(:full_screen)
-                #   @genotypes.append(positive_genotype)
-                # end
               end
               @genotypes
             end

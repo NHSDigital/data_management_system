@@ -71,7 +71,7 @@ class GuysHandlerTest < ActiveSupport::TestCase
     assert_equal 1, res[1].attribute_map['teststatus']
     assert_equal 7, res[1].attribute_map['gene']
   end
-  
+
   test 'normal_polish_test' do
     polish_record = build_raw_record('pseudo_id1' => 'bob')
     polish_record.raw_fields['ashkenazi assay result'] = nil
@@ -84,7 +84,7 @@ class GuysHandlerTest < ActiveSupport::TestCase
     assert_equal 1, res[0].attribute_map['teststatus']
     assert_equal 7, res[0].attribute_map['gene']
   end
-  
+
   test 'mutated_polish_test' do
     polish_mutated_record = build_raw_record('pseudo_id1' => 'bob')
     polish_mutated_record.raw_fields['ashkenazi assay result'] = nil
@@ -166,7 +166,7 @@ class GuysHandlerTest < ActiveSupport::TestCase
     assert_equal 2, res[0].attribute_map['teststatus']
     assert_equal 7, res[0].attribute_map['gene']
   end
-  
+
   test 'brca1_normal_exon_targeted1_test' do
     brca1_normal_exon_targeted1_record = build_raw_record('pseudo_id1' => 'bob')
     brca1_normal_exon_targeted1_record.raw_fields['predictive report date'] = '2010-05-27 00:00:00'
@@ -180,7 +180,7 @@ class GuysHandlerTest < ActiveSupport::TestCase
     assert_equal 1, res[0].attribute_map['teststatus']
     assert_equal 7, res[0].attribute_map['gene']
   end
-  
+
   test 'brca2_failed_exon_targeted1_test' do
     brca1_normal_exon_targeted1_record = build_raw_record('pseudo_id1' => 'bob')
     brca1_normal_exon_targeted1_record.raw_fields['predictive report date'] = '2010-05-27 00:00:00'
@@ -193,7 +193,7 @@ class GuysHandlerTest < ActiveSupport::TestCase
     assert_equal 9, res[0].attribute_map['teststatus']
     assert_equal 8, res[0].attribute_map['gene']
   end
-  
+
   test 'no_cdna_no_exon_targeted1_test' do
     no_cdna_no_exon_targeted1_record = build_raw_record('pseudo_id1' => 'bob')
     no_cdna_no_exon_targeted1_record.raw_fields['predictive report date'] = '2010-05-27 00:00:00'
@@ -221,7 +221,7 @@ class GuysHandlerTest < ActiveSupport::TestCase
     assert_equal 7, res[2].attribute_map['gene']
     assert_equal 2, res[2].attribute_map['teststatus']
   end
-  
+
   test 'brca_all_nil_targeted4_test' do
     brca_all_nil_targeted4_record = build_raw_record('pseudo_id1' => 'bob')
     brca_all_nil_targeted4_record.raw_fields['predictive'] = 'true'
@@ -292,7 +292,7 @@ class GuysHandlerTest < ActiveSupport::TestCase
     assert_equal 7, res[0].attribute_map['gene']
     assert_equal 2, res[0].attribute_map['teststatus']
   end
-  
+
   test 'brca1_mlpa_normal_targeted4_test' do
     brca1_mlpa_normal_targeted4_record = build_raw_record('pseudo_id1' => 'bob')
     brca1_mlpa_normal_targeted4_record.raw_fields['predictive'] = 'true'
@@ -424,7 +424,7 @@ class GuysHandlerTest < ActiveSupport::TestCase
     assert_equal 8, res[1].attribute_map['gene']
     assert_equal 'c.3599_3600del', res[1].attribute_map['codingdnasequencechange']
   end
-  
+
   test 'brca_double_cdna_variant_fullscreen1_test' do
     brca_double_cdna_variant_fullscreen1_record = build_raw_record('pseudo_id1' => 'bob')
     brca_double_cdna_variant_fullscreen1_record.raw_fields['predictive'] = 'false'
@@ -447,7 +447,7 @@ class GuysHandlerTest < ActiveSupport::TestCase
     assert_equal 7, res[1].attribute_map['gene']
     assert_equal 'c.5332+4A>G', res[1].attribute_map['codingdnasequencechange']
   end
-  
+
   test 'brca2_cdna_variant_brca1_normal_fullscreen1_test' do
     brca2_cdna_variant_brca1_normal_record = build_raw_record('pseudo_id1' => 'bob')
     brca2_cdna_variant_brca1_normal_record.raw_fields['predictive'] = 'false'
@@ -491,7 +491,7 @@ class GuysHandlerTest < ActiveSupport::TestCase
     assert_equal 7, res[1].attribute_map['gene']
     assert_equal 'c.5266dupC', res[1].attribute_map['codingdnasequencechange']
   end
-  
+
   test 'brca2_exon_variant_brca1_normal_fullscreen1_test' do
     brca2_exon_variant_brca1_normal_record = build_raw_record('pseudo_id1' => 'bob')
     brca2_exon_variant_brca1_normal_record.raw_fields['predictive'] = 'false'
@@ -581,7 +581,7 @@ class GuysHandlerTest < ActiveSupport::TestCase
     assert_equal 'Full screen BRCA1 and BRCA2', res[1].attribute_map['genetictestscope']
     assert_equal 'c.7558C>T', res[1].attribute_map['codingdnasequencechange']
   end
-  
+
   test 'brca_double_fail_fullscreen2_test' do
     brca_double_normal_fullscreen2_record = build_raw_record('pseudo_id1' => 'bob')
     brca_double_normal_fullscreen2_record.raw_fields['predictive'] = 'false'
@@ -600,7 +600,7 @@ class GuysHandlerTest < ActiveSupport::TestCase
     assert_equal 8, res[1].attribute_map['gene']
     assert_equal 'Full screen BRCA1 and BRCA2', res[1].attribute_map['genetictestscope']
   end
-  
+
   test 'brca2_cdna_varint_fullscreen2_test' do
     brca2_cdna_varint_fullscreen2_record = build_raw_record('pseudo_id1' => 'bob')
     brca2_cdna_varint_fullscreen2_record.raw_fields['predictive'] = 'false'
@@ -621,7 +621,7 @@ class GuysHandlerTest < ActiveSupport::TestCase
     assert_equal 'c.7758G>A', res[1].attribute_map['codingdnasequencechange']
     assert_equal 'Full screen BRCA1 and BRCA2', res[1].attribute_map['genetictestscope']
   end
-  
+
   test 'brca1_cdna_varint_fullscreen2_test' do
     brca1_cdna_varint_fullscreen2_record = build_raw_record('pseudo_id1' => 'bob')
     brca1_cdna_varint_fullscreen2_record.raw_fields['predictive'] = 'false'
@@ -642,7 +642,7 @@ class GuysHandlerTest < ActiveSupport::TestCase
     assert_equal 'c.5110T>C', res[1].attribute_map['codingdnasequencechange']
     assert_equal 'Full screen BRCA1 and BRCA2', res[1].attribute_map['genetictestscope']
   end
-  
+
   test 'brca2_cdna_varint_fsresult_only_fullscreen2_test' do
     brca2_cdna_varint_fsresult_only_fullscreen2_record = build_raw_record('pseudo_id1' => 'bob')
     brca2_cdna_varint_fsresult_only_fullscreen2_record.raw_fields['predictive'] = 'false'
@@ -685,7 +685,6 @@ class GuysHandlerTest < ActiveSupport::TestCase
     assert_equal 2, res[2].attribute_map['teststatus']
     assert_equal 8, res[2].attribute_map['gene']
     assert_equal 'Full screen BRCA1 and BRCA2', res[1].attribute_map['genetictestscope']
-    
   end
 
   test 'all_fields_nil_fullscreen2_test' do
@@ -708,7 +707,7 @@ class GuysHandlerTest < ActiveSupport::TestCase
     assert_equal 8, res[1].attribute_map['gene']
     assert_equal 'Full screen BRCA1 and BRCA2', res[1].attribute_map['genetictestscope']
   end
-  
+
   test 'brca1_nil_brca2_normal_fullscreen2_test' do
     all_fields_nil_fullscreen2 = build_raw_record('pseudo_id1' => 'bob')
     all_fields_nil_fullscreen2.raw_fields['predictive'] = 'false'
@@ -940,7 +939,7 @@ class GuysHandlerTest < ActiveSupport::TestCase
     assert_equal 8, res[1].attribute_map['gene']
     assert_equal 'Full screen BRCA1 and BRCA2', res[1].attribute_map['genetictestscope']
   end
-  
+
   test 'double_brca_mlformed_variant_fullscreen3_test' do
     double_brca_mlformed_variant_fullscreen3_record = build_raw_record('pseudo_id1' => 'bob')
     double_brca_mlformed_variant_fullscreen3_record.raw_fields['predictive'] = 'false'
@@ -966,7 +965,7 @@ class GuysHandlerTest < ActiveSupport::TestCase
     assert_equal 'Full screen BRCA1 and BRCA2', res[1].attribute_map['genetictestscope']
     assert_equal 'c.7691G>A', res[1].attribute_map['codingdnasequencechange']
   end
-  
+
   test 'double_brca_mlpa_fail_fullscreen3_test' do
     double_brca_mlpa_fail_fullscreen3_record = build_raw_record('pseudo_id1' => 'bob')
     double_brca_mlpa_fail_fullscreen3_record.raw_fields['predictive'] = 'false'
@@ -1039,39 +1038,39 @@ class GuysHandlerTest < ActiveSupport::TestCase
   end
 
   def rawtext_clinical_json
-    { "consultantname"=>"Watts",
-    "providercode"=>"Guy's Hospital",
-    "referring centre" => nil,
-    "servicereportidentifier"=>"SRI",
-    "spec no 2"=> nil,
-    "spec no 3"=> nil,
-    "requesteddate"=>nil,
-    "receiveddate"=>nil,
-    "data location"=>nil,
-    "predictive test performed overall"=> nil,
-    "predictive report date"=>nil,
-    'predictive date given' => nil,
-    'predictive' => "cabbage",
-    "brca1 mutation"=>nil,
-    "brca2 mutation"=>nil,
-    "u variant"=>nil,
-    "brca1 mlpa results" => nil,
-    "brca2 mlpa results" => nil ,
-    "brca1 seq result" => nil,
-    "brca2 seq result"=> nil,
-    "date 2/3 reported"=> nil,
-    "full brca1 report date"=>nil,
-    "full brca2 report date"=>nil,
-    "brca2 ptt report date"=> nil,
-    "full ptt report date"=>nil,
-    'authoriseddate' => nil,
-    'full screen resul' => nil,
-    'ngs report date' => nil,
-    "ngs result"=>nil,
-    'polish assay report date' => nil,
-    'polish assay result' => nil,
-    'ashkenazi assay report date' => '2010-08-10 00:00:00',
-    'ashkenazi assay result' => 'NEG',
-    moleculartestingtype: 'Predictive' }.to_json
+    { 'consultantname' => 'Watts',
+      'providercode' => "Guy's Hospital",
+      'referring centre' => nil,
+      'servicereportidentifier' => 'SRI',
+      'spec no 2' => nil,
+      'spec no 3' => nil,
+      'requesteddate' => nil,
+      'receiveddate' => nil,
+      'data location' => nil,
+      'predictive test performed overall' => nil,
+      'predictive report date' => nil,
+      'predictive date given' => nil,
+      'predictive' => 'cabbage',
+      'brca1 mutation' => nil,
+      'brca2 mutation' => nil,
+      'u variant' => nil,
+      'brca1 mlpa results' => nil,
+      'brca2 mlpa results' => nil,
+      'brca1 seq result' => nil,
+      'brca2 seq result' => nil,
+      'date 2/3 reported' => nil,
+      'full brca1 report date' => nil,
+      'full brca2 report date' => nil,
+      'brca2 ptt report date' => nil,
+      'full ptt report date' => nil,
+      'authoriseddate' => nil,
+      'full screen resul' => nil,
+      'ngs report date' => nil,
+      'ngs result' => nil,
+      'polish assay report date' => nil,
+      'polish assay result' => nil,
+      'ashkenazi assay report date' => '2010-08-10 00:00:00',
+      'ashkenazi assay result' => 'NEG',
+      moleculartestingtype: 'Predictive' }.to_json
   end
 end
