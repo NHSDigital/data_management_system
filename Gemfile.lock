@@ -212,6 +212,8 @@ GEM
     mini_portile2 (2.8.0)
     mini_racer (0.6.2)
       libv8-node (~> 16.10.0.0)
+    mini_racer (0.6.2-x86_64-linux)
+      libv8-node (~> 16.10.0.0)
     minitest (5.14.4)
     mocha (1.14.0)
     msworddoc-extractor (0.2.0)
