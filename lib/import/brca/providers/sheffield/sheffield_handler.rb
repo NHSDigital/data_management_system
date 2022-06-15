@@ -7,387 +7,533 @@ module Import
       module Sheffield
         # Process Sheffield-specific record details into generalized internal genotype format
         class SheffieldHandler < Import::Brca::Core::ProviderHandler
-          include ExtractionUtilities
-          TEST_SCOPE_MAPPING = { 'BRCA1 and 2 familial mutation' => :targeted_mutation,
-                                 'Breast & Ovarian cancer panel' => :full_screen,
-                                 'Breast Ovarian & Colorectal cancer panel' => :full_screen,
-                                 'Confirmation of Familial Mutation' => :targeted_mutation,
-                                 'Diagnostic testing for known mutation' => :targeted_mutation,
-                                 'Confirmation of Research Result' => :targeted_mutation,
-                                 'Predictive testing' => :targeted_mutation,
-                                 'Family Studies' => :targeted_mutation } .freeze
-
-          TEST_TYPE_MAPPING = { 'Diagnostic testing' => :diagnostic,
-                                'Further sample for diagnostic testing' => :diagnostic,
-                                'Confirmation of Familial Mutation' => :diagnostic,
-                                'Confirmation of Research Result' => :diagnostic,
-                                'Diagnostic testing for known mutation' => :diagnostic,
-                                'Predictive testing' => :predictive,
-                                'Family Studies' => :predictive } .freeze
-
-          PASS_THROUGH_FIELDS = %w[consultantcode
-                                   providercode
-                                   collecteddate
-                                   receiveddate
-                                   authoriseddate
-                                   servicereportidentifier
-                                   genotype
-                                   age].freeze
-
-          # BRCA_REGEX = /(?<brca>BRCA[0-9]).+/i
-          BRCA_REGEX = /(?<brca>BRCA[0-9])/i.freeze #
-          NEW_BRCA = /(?<brca>^BRCA[0-9])[^2]*\z/i.freeze
-          # WRONG_BRCA = /(BRCA1).+*(BRCA2)/i
-          CDNA_REGEX = /c.\[(?<cdna>[^\]]+)\];\[=\] | *c.\[(?:\()(?<cdna>[^\]]+)\](?:\));\[=\], | *c.\[(?<cdna>[^.]+)\];\[=\],/i.freeze
-          PROTEIN_REGEX = / p.(?:\[\(?(?<impact>[^\)\]]+)\)?\]|\[(?<impact>[^\]\)]+)\]);(?:\[\(=\)\]|\[=\]) | *p\.\[\((?<impact>[^ ]+(?=\)\];))/.freeze
-          EXON_LOCATION_REGEX = /exons? (\d+[a-z]*(?: ?- ?\d+[a-z]*)?)/i.freeze
-          DEL_DUP_REGEX = /(?:\W*(del)(?:etion|[^\W])?)|(?:\W*(dup)(?:lication|[^\W])?)/i.freeze
-
-          def initialize(batch)
-            @failed_genotype_counter = 0
-            @successful_gene_counter = 0
-            @gene_counter = 0
-            @failed_gene_counter = 0
-            @negative_test = 0
-            @positive_test = 0
-            super
-          end
+          include Import::Helpers::Brca::Providers::Rcu::RcuConstants
 
           def process_fields(record)
+            geno = record.raw_fields['genetictestscope']
+            return if NON_BRCA_SCOPE.include?(geno)
+
             genotype = Import::Brca::Core::GenotypeBrca.new(record)
             genotype.add_passthrough_fields(record.mapped_fields,
                                             record.raw_fields,
                                             PASS_THROUGH_FIELDS)
-            process_cdna_change(genotype, record)
-            process_protein_impact(genotype, record)
-            add_gene_from_duplicated_column(genotype, record) # ADDED BY FRANCESCO
-            # process_test_type(genotype,record)
-            add_test_scope(genotype, record)
             add_test_type(genotype, record)
-            # add_test_scope_from_type(genotype,record)
-            add_test_scope_from_karyo(genotype, record)
-            process_exons(record.raw_fields['genotype'], genotype)
-            process_gene_from_column(genotype, record) # Just added
             add_organisationcode_testresult(genotype)
-            res = process_gene(genotype, record)
-            res.map { |cur_genotype| @persister.integrate_and_store(cur_genotype) }
+            add_test_scope_from_geno_karyo(genotype, record)
 
-            # @lines_processed += 1 # TODO: factor this out to be automatic across handlers
+            res = process_variants_from_record(genotype, record)
+            res.map { |cur_genotype| @persister.integrate_and_store(cur_genotype) }
           end
 
           def add_organisationcode_testresult(genotype)
             genotype.attribute_map['organisationcode_testresult'] = '699D0'
           end
 
-          def add_test_scope(genotype, record)
-            Maybe(record.mapped_fields['genetictestscope']).each do |scope|
-              @logger.debug 'PERFORMING TEST for function add_test_scope'
-              @logger.debug "PERFORMING TEST for: #{record.mapped_fields['genetictestscope']}"
-              case scope
-              when 'BRCA1 and 2 familial mutation'
-                genotype.add_test_scope(:targeted_mutation)
-                @logger.debug "ADDED TARGETED TEST for: #{record.mapped_fields['genetictestscope']}"
-                # when 'BRCA1 and 2 gene analysis'
-                #  genotype.add_test_scope(:full_screen)
-              when 'Breast & Ovarian cancer panel'
-                genotype.add_test_scope(:full_screen)
-                @logger.debug "ADDED FULL_SCREEN TEST for: #{record.mapped_fields['genetictestscope']}"
-              when 'Breast Ovarian & Colorectal cancer panel'
-                genotype.add_test_scope(:full_screen)
-                @logger.debug "ADDED FULL_SCREEN TEST for: #{record.mapped_fields['genetictestscope']}"
-              end
-            end
-          end
-
-          #    def add_test_scope_from_type(genotype, record)
-          #      Maybe(record.raw_fields['moleculartestingtype']).each do |scope_from_type|
-          #        case scope_from_type
-          #        when 'Confirmation of Familial Mutation'
-          #          genotype.add_test_scope(:targeted_mutation)
-          #        when 'Confirmation of Research Result'
-          #          genotype.add_test_scope(:targeted_mutation)
-          #        when 'Diagnostic testing for known mutation'
-          #          genotype.add_test_scope(:targeted_mutation)
-          #        when 'Predictive testing'
-          #          genotype.add_test_scope(:targeted_mutation)
-          #        when 'Family Studies'
-          #          genotype.add_test_scope(:targeted_mutation)
-          #        end
-          #      end
-          #    end
-
-          # def add_test_scope_from_karyo(genotype, record)
-          #   Maybe(record.raw_fields['karyotypingmethod']).each do |scope_from_karyo|
-          #     case scope_from_karyo
-          #     when 'BRCA1 and 2 gene sequencing'
-          #       genotype.add_test_scope(:full_screen)
-          #     when 'Full Screen'
-          #       genotype.add_test_scope(:full_screen)
-          #     end
-          #   end
-          # end
-
-          def add_test_scope_from_karyo(genotype, record)
-            geno = record.mapped_fields['genetictestscope']
-            karyo = record.raw_fields['karyotypingmethod']
-            @logger.debug 'PERFORMING TEST for function add_test_scope_from_karyo'
-            @logger.debug "PERFORMING TEST for: #{record.raw_fields['karyotypingmethod']}"
-            @logger.debug "PERFORMING TEST for: #{record.raw_fields['genetictestscope']}"
-            if (geno == 'BRCA1 and 2 gene analysis' && karyo == 'BRCA1 and 2 gene sequencing') || (geno == 'BRCA1 and 2 gene analysis' && karyo == 'Full Screen')
-              @logger.debug "ADDED FULL_SCREEN TEST for: #{record.raw_fields['karyotypingmethod']}"
-              genotype.add_test_scope(:full_screen)
+          def add_test_scope_from_geno_karyo(genotype, record)
+            genotype_str = record.raw_fields['genetictestscope'].strip
+            karyo = record.raw_fields['karyotypingmethod'].strip
+            process_method = GENETICTESTSCOPE_METHOD_MAPPING[genotype_str]
+            if process_method
+              send(process_method, karyo, genotype)
             else
-              if (geno == 'BRCA1 and 2 gene analysis' && karyo != 'BRCA1 and 2 gene sequencing') || (geno == 'BRCA1 and 2 gene analysis' && karyo != 'Full Screen')
-                @logger.debug "ADDED TARGETED TEST for: #{record.raw_fields['karyotypingmethod']}"
-                genotype.add_test_scope(:targeted_mutation)
-              end
+              genotype.add_test_scope(:no_genetictestscope)
             end
           end
 
-          #  def process_test_type(genotype, record)
-          #    Maybe(record.raw_fields['moleculartestingtype']).each do |ttype|
-          #      genotype.add_molecular_testing_type_strict(TEST_TYPE_MAPPING[ttype.strip.downcase])
-          #     end
-          #  end
+          def process_scope_familial_mutation(karyo, genotype)
+            if BRCA_FAMILIAL_GENE_MAPPING.keys.include? karyo
+              @logger.debug "ADDED TARGETED TEST for: #{karyo}"
+              genotype.add_test_scope(:targeted_mutation)
+              @genes_set = BRCA_FAMILIAL_GENE_MAPPING[karyo]
+            else
+              genotype.add_test_scope(:no_genetictestscope)
+            end
+          end
+
+          def process_scope_gene_analysis(karyo, genotype)
+            if BRCA_ANALYSIS_GENE_MAPPING_FS.keys.include? karyo
+              @logger.debug "ADDED FULL_SCREEN TEST for: #{karyo}"
+              genotype.add_test_scope(:full_screen)
+              @genes_set = BRCA_ANALYSIS_GENE_MAPPING_FS[karyo]
+            elsif BRCA_ANALYSIS_GENE_MAPPING_TAR.keys.include? karyo
+              @logger.debug "ADDED TARGETED TEST for: #{karyo}"
+              genotype.add_test_scope(:targeted_mutation)
+              @genes_set = BRCA_ANALYSIS_GENE_MAPPING_TAR[karyo]
+            else
+              genotype.add_test_scope(:no_genetictestscope)
+            end
+          end
+
+          def process_scope_ovarian_panel(karyo, genotype)
+            if OVRN_CNCR_PNL_GENE_MAPPING.keys.include? karyo
+              @logger.debug "ADDED FULL_SCREEN for: #{karyo}"
+              genotype.add_test_scope(:full_screen)
+              @genes_set = OVRN_CNCR_PNL_GENE_MAPPING[karyo]
+            else
+              genotype.add_test_scope(:no_genetictestscope)
+            end
+          end
+
+          def process_scope_colo_ovarian_panel(karyo, genotype)
+            if OVRN_COLO_PNL_GENE_MAPPING.keys.include? karyo
+              @logger.debug "ADDED FULL_SCREEN for: #{karyo}"
+              genotype.add_test_scope(:full_screen)
+              @genes_set = OVRN_COLO_PNL_GENE_MAPPING[karyo]
+            else
+              genotype.add_test_scope(:no_genetictestscope)
+            end
+          end
+
+          def process_scope_r205(karyo, genotype)
+            if R205_GENE_MAPPING_FS.keys.include? karyo
+              @logger.debug "ADDED FULL_SCREEN TEST for: #{karyo}"
+              genotype.add_test_scope(:full_screen)
+              @genes_set = R205_GENE_MAPPING_FS[karyo]
+            elsif R205_GENE_MAPPING_TAR.keys.include? karyo
+              @logger.debug "ADDED TARGETED TEST for: #{karyo}"
+              genotype.add_test_scope(:targeted_mutation)
+              @genes_set = R205_GENE_MAPPING_TAR[karyo]
+            else
+              genotype.add_test_scope(:no_genetictestscope)
+            end
+          end
+
+          def process_scope_r206(karyo, genotype)
+            if R206_GENE_MAPPING.keys.include? karyo
+              @logger.debug "ADDED FULL_SCREEN TEST for: #{karyo}"
+              genotype.add_test_scope(:full_screen)
+              @genes_set = R206_GENE_MAPPING[karyo]
+            elsif ['R242.1 :: Predictive testing'].include? karyo
+              @logger.debug "ADDED TARGETED TEST for: #{karyo}"
+              genotype.add_test_scope(:targeted_mutation)
+              @genes_set = %w[ATM BRCA1 BRCA2 BRIP1 CDH1 CHEK2 EPCAM MLH1 MSH2 MSH6 PALB2 PTEN
+                              RAD51C RAD51D STK11 TP53 PMS2]
+            else
+              genotype.add_test_scope(:no_genetictestscope)
+            end
+          end
+
+          def process_scope_r207(karyo, genotype)
+            if R207_GENE_MAPPING_FS.keys.include? karyo
+              @logger.debug "ADDED FULL_SCREEN TEST for: #{karyo}"
+              genotype.add_test_scope(:full_screen)
+              @genes_set = R207_GENE_MAPPING_FS[karyo]
+            elsif R207_GENE_MAPPING_TAR.keys.include? karyo
+              @logger.debug "ADDED TARGETED TEST for: #{karyo}"
+              genotype.add_test_scope(:targeted_mutation)
+              @genes_set = R207_GENE_MAPPING_TAR[karyo]
+            else
+              genotype.add_test_scope(:no_genetictestscope)
+            end
+          end
+
+          def process_scope_r208(karyo, genotype)
+            if R208_GENE_MAPPING_FS.keys.include? karyo
+              @logger.debug "ADDED FULL_SCREEN TEST for: #{karyo}"
+              genotype.add_test_scope(:full_screen)
+              @genes_set = R208_GENE_MAPPING_FS[karyo]
+            elsif R208_GENE_MAPPING_TAR.keys.include? karyo
+              @logger.debug "ADDED TARGETED TEST for: #{karyo}"
+              genotype.add_test_scope(:targeted_mutation)
+              @genes_set = R208_GENE_MAPPING_TAR[karyo]
+            else
+              genotype.add_test_scope(:no_genetictestscope)
+            end
+          end
+
+          def process_scope_r240(karyo, genotype)
+            if R240_GENE_MAPPING_TAR.keys.include? karyo
+              @logger.debug "ADDED TARGETED TEST for: #{karyo}"
+              genotype.add_test_scope(:targeted_mutation)
+              @genes_set = R240_GENE_MAPPING_TAR[karyo]
+            else
+              genotype.add_test_scope(:no_genetictestscope)
+            end
+          end
+
+          def process_scope_r242(karyo, genotype)
+            if R242_GENE_MAPPING_TAR.keys.include? karyo
+              @logger.debug "ADDED TARGETED TEST for: #{karyo}"
+              genotype.add_test_scope(:targeted_mutation)
+              @genes_set = R242_GENE_MAPPING_TAR[karyo]
+            else
+              genotype.add_test_scope(:no_genetictestscope)
+            end
+          end
 
           def add_test_type(genotype, record)
             Maybe(record.raw_fields['moleculartestingtype']).each do |type|
-              case type
-              when 'Diagnostic testing'
-                genotype.add_molecular_testing_type_strict(:diagnostic)
-              when 'Confirmation of Familial Mutation'
-                genotype.add_molecular_testing_type_strict(:diagnostic)
-              when 'Confirmation of Research Result'
-                genotype.add_molecular_testing_type_strict(:diagnostic)
-              when 'Further sample for diagnostic testing'
-                genotype.add_molecular_testing_type_strict(:diagnostic)
-              when 'Diagnostic testing for known mutation'
-                genotype.add_molecular_testing_type_strict(:diagnostic)
-              when 'Predictive testing'
-                genotype.add_molecular_testing_type_strict(:predictive)
-              when 'Family Studies'
-                genotype.add_molecular_testing_type_strict(:predictive)
-              end
+              genotype.add_molecular_testing_type_strict(TEST_TYPE_MAPPING[type.strip])
             end
           end
 
-          def process_cdna_change(genotype, record)
-            case record.raw_fields['genotype']
-            when /No mutation detected/
-              genotype.add_status(:negative)
-            when %r{No pathogenic deletion/duplication mutation detected}
-              genotype.add_status(:negative)
-            when /No pathogenic mutation detected/i
-              genotype.add_status(:negative)
-              @negative_test += 1
-            when /No pathogenic muatation detected/i
-              genotype.add_status(:negative)
-              @negative_test += 1
-            when /No pathogenic mutation detected - incomplete analysis/i
-              genotype.add_status(:negative)
-              @negative_test += 1
-            when /No pathogenic mutation detected./i
-              genotype.add_status(:negative)
-              @negative_test += 1
-            when /No pathogenic mutation deteected/i
-              genotype.add_status(:negative)
-              @negative_test += 1
-            when /No pathogenic mutation was detected/i
-              genotype.add_status(:negative)
-              @negative_test += 1
-            when /No pathogenic mutations detected/i
-              genotype.add_status(:negative)
-              @negative_test += 1
-            when /familial pathogenic mutation not detected/i
-              genotype.add_status(:negative)
-              @negative_test += 1
-            when /Incomplete analysis - see below/i
-              genotype.add_status(:negative)
-              @negative_test += 1
-            when /Familial pathogenic mutation NOT detected/i
-              genotype.add_status(:negative)
-              @negative_test += 1
-            when /Familial pathogenic mutation not detected/i
-              genotype.add_status(:negative)
-              @negative_test += 1
+          def process_variants_from_record(genotype, record)
+            genotypes = []
+            if full_screen?(genotype)
+              process_fullscreen_records(genotype, record, genotypes)
+            elsif targeted?(genotype) || no_scope?(genotype)
+              process_targeted_no_scope_records(genotype, record, genotypes)
+            end
+            genotypes
+          end
+
+          def full_screen?(genotype)
+            return if genotype.attribute_map['genetictestscope'].nil?
+
+            genotype.attribute_map['genetictestscope'].scan(/Full screen/i).size.positive?
+          end
+
+          def targeted?(genotype)
+            return if genotype.attribute_map['genetictestscope'].nil?
+
+            genotype.attribute_map['genetictestscope'].scan(/Targeted/i).size.positive?
+          end
+
+          def no_scope?(genotype)
+            return if genotype.attribute_map['genetictestscope'].nil?
+
+            genotype.attribute_map['genetictestscope'].scan(/Unable to assign/i).size.positive?
+          end
+
+          # rubocop:disable Metrics/MethodLength disabled as rubcop reduces redability if the method
+          def process_targeted_no_scope_records(genotype, record, genotypes)
+            genotype_str = record.raw_fields['genotype']
+            positive_genes = genotype_str.scan(BRCA_REGEX).flatten.uniq
+            if positive_genes.size > 1
+              process_multi_genes(genotype, record, genotypes)
+            elsif positive_cdna?(genotype_str) || positive_exonvariant?(genotype_str)
+              process_single_variant(genotype, record, genotypes)
+            elsif normal?(record)
+              process_normal_targeted(genotype, record, genotypes)
+            elsif failed_test?(record)
+              process_failed_targeted(genotype, record, genotypes)
+            elsif only_protein_impact?(record)
+              process_protein_targeted(genotype, record, genotypes)
+            elsif stated_detected_only?(record)
+              process_stated_detected_targeted(genotype, record, genotypes)
+            else
+              process_unknown_targeted(genotype, record, genotypes)
+            end
+            genotypes
+          end
+          # rubocop:enable Metrics/MethodLength
+
+          def process_normal_targeted(genotype, record, genotypes)
+            process_single_gene(genotype, record)
+            genotype.add_status(1)
+            genotypes.append(genotype)
+            genotypes
+          end
+
+          def process_failed_targeted(genotype, record, genotypes)
+            process_single_gene(genotype, record)
+            genotype.add_status(9)
+            genotypes.append(genotype)
+            genotypes
+          end
+
+          def process_protein_targeted(genotype, record, genotypes)
+            genotype_str = record.raw_fields['genotype']
+            process_single_gene(genotype, record)
+            genotype.add_status(2)
+            genotype.add_gene_location('')
+            process_protein_impact(genotype, genotype_str)
+            genotypes.append(genotype)
+            genotypes
+          end
+
+          def process_stated_detected_targeted(genotype, record, genotypes)
+            process_single_gene(genotype, record)
+            genotype.add_status(2)
+            genotype.add_gene_location('')
+            genotype.add_protein_impact('')
+            genotypes.append(genotype)
+            genotypes
+          end
+
+          def process_unknown_targeted(genotype, record, genotypes)
+            process_single_gene(genotype, record)
+            genotype.add_status(4)
+            genotypes.append(genotype)
+            genotypes
+          end
+
+          def process_positive_targeted(genotype, record, genotypes)
+            genotype_str = record.raw_fields['genotype']
+            if genotype_str.scan(CDNA_REGEX).size > 1
+              process_multi_genes(genotype, record, genotypes)
+            else
+              process_single_gene(genotype, record)
+              process_protein_impact(genotype, genotype_str)
+              process_cdna_change(genotype, genotype_str)
+              process_exons(genotype, genotype_str)
+              genotypes.append(genotype)
+            end
+            genotypes
+          end
+
+          def process_single_gene(genotype, record)
+            positive_genes = get_gene(record)
+            genotype.add_gene(positive_genes[0]&.upcase) if positive_genes.present?
+            return if positive_genes.blank?
+
+            @logger.debug "SUCCESSFUL gene parse for: #{positive_genes[0]&.upcase}"
+          end
+
+          def add_other_genes_with_status(other_genes, genotype, genotypes, status)
+            other_genes.each do |gene|
+              genotype_other = genotype.dup
+              @logger.debug "SUCCESSFUL gene parse for #{status} status for: #{gene}"
+              genotype_other.add_status(status)
+              genotype_other.add_gene(gene)
+              genotype_other.add_protein_impact(nil)
+              genotype_other.add_gene_location(nil)
+              genotypes.append(genotype_other)
+            end
+            genotypes
+          end
+
+          def process_multi_genes(genotype, record, genotypes)
+            positive_genes = record.raw_fields['genotype'].scan(BRCA_REGEX).flatten.uniq
+            raw_genotypes = record.raw_fields['genotype'].split(positive_genes[-1])
+            raw_genotypes[1].prepend(positive_genes[-1])
+            process_raw_genotypes(raw_genotypes, genotype, genotypes)
+          end
+
+          def process_raw_genotypes(raw_genotypes, genotype, genotypes)
+            raw_genotypes.each do |raw_genotype|
+              raw_genotype.scan(BRCA_REGEX)
+              genotype_dup = genotype.dup
+              genotype_dup.add_gene($LAST_MATCH_INFO[:brca]&.upcase)
+              if positive_cdna?(raw_genotype) || positive_exonvariant?(raw_genotype)
+                process_exons(genotype_dup, raw_genotype)
+                process_cdna_change(genotype_dup, raw_genotype)
+                process_protein_impact(genotype_dup, raw_genotype)
+                genotype_dup.add_status(2)
+              else
+                genotype_dup.add_status(1)
+              end
+              genotypes.append(genotype_dup)
+            end
+            genotypes
+          end
+
+          def process_single_variant(genotype, record, genotypes)
+            positive_genes = get_gene(record)
+
+            if positive_genes.one?
+              process_positive_record(genotype, record, genotypes, positive_genes)
+            else
+              process_unknown_status_record(genotype, genotypes)
+            end
+            genotypes
+          end
+
+          def process_fullscreen_records(genotype, record, genotypes)
+            genotype_str = record.raw_fields['genotype']
+            if mlpa_fail?(record)
+              process_mlpa_fail_full_screen(genotype, record, genotypes)
+            elsif normal?(record)
+              process_normal_full_screen(genotype, record, genotypes)
+            elsif failed_test?(record)
+              process_failed_full_screen(genotype, record, genotypes)
+            elsif positive_cdna?(genotype_str) || positive_exonvariant?(genotype_str)
+              process_variant_fs_records(genotype, record, genotypes)
+            elsif only_protein_impact?(record) ||
+                  genotype_str.scan(/see\sbelow|comments/ix).size.positive?
+              add_other_genes_with_status(@genes_set, genotype, genotypes, 4)
+            end
+            genotypes
+          end
+
+          def process_variant_fs_records(genotype, record, genotypes)
+            if (record.raw_fields['genotype'].scan(CDNA_REGEX).size +
+                record.raw_fields['genotype'].scan(EXON_VARIANT_REGEX).size) > 1
+              process_multiple_variant_fs_record(genotype, record, genotypes)
+            else
+              process_single_variant_fs_record(genotype, record, genotypes)
+            end
+          end
+
+          def process_multiple_variant_fs_record(genotype, record, genotypes)
+            positive_genes = record.raw_fields['genotype'].scan(BRCA_REGEX).flatten.uniq
+            if positive_genes.blank?
+              add_other_genes_with_status(@genes_set, genotype, genotypes, 4)
+            elsif positive_genes.size > 1
+              process_multi_genes(genotype, record, genotypes)
+            else
+              process_positive_record(genotype, record, genotypes, positive_genes)
+            end
+            negative_genes = @genes_set - positive_genes
+            add_other_genes_with_status(negative_genes, genotype, genotypes, 1)
+            genotypes
+          end
+
+          def process_single_variant_fs_record(genotype, record, genotypes)
+            genotype_str = record.raw_fields['genotype'].to_s
+            positive_genes = genotype_str.scan(BRCA_REGEX).flatten.uniq
+
+            if positive_genes.blank?
+              add_other_genes_with_status(@genes_set, genotype, genotypes, 4)
+            else
+              process_positive_record(genotype, record, genotypes, positive_genes)
+              negative_genes = @genes_set - positive_genes
+              add_other_genes_with_status(negative_genes, genotype, genotypes, 1)
+            end
+
+            genotypes
+          end
+
+          def process_positive_record(genotype, record, genotypes, positive_gene)
+            genotype_str = record.raw_fields['genotype'].to_s
+            mutation = get_cdna_mutation(genotype_str)
+            protein = get_protein_impact(genotype_str)
+            genotype_pos = genotype.dup
+            genotype_pos.add_gene_location(mutation)
+            genotype_pos.add_protein_impact(protein)
+            genotype_pos.add_gene(positive_gene[0]&.upcase)
+            process_exons(genotype_pos, genotype_str)
+            genotypes.append(genotype_pos)
+          end
+
+          def process_unknown_status_record(genotype, genotypes)
+            genotype.add_status(4)
+            genotypes.append(genotype)
+            genotypes
+          end
+
+          def normal?(record)
+            variant = record.raw_fields['genotype'].strip
+            variant.scan(NORMAL_VAR_REGEX).size.positive?
+          end
+
+          def process_normal_full_screen(genotype, _record, genotypes)
+            negative_genes = @genes_set
+            add_other_genes_with_status(negative_genes, genotype, genotypes, 1)
+            genotypes
+          end
+
+          def failed_test?(record)
+            record.raw_fields['genotype'].scan(/Fail/i).size.positive?
+          end
+
+          def process_failed_full_screen(genotype, record, genotypes)
+            geno = record.raw_fields['genotype'].to_s
+            failed_gene = geno.scan(BRCA_REGEX).flatten.uniq.join
+            if failed_gene.blank?
+              add_other_genes_with_status(@genes_set, genotype, genotypes, 9)
+            else
+              genotype.add_gene(failed_gene&.upcase)
+              genotype.add_status(9)
+              genotypes.append(genotype)
+              negative_genes = @genes_set - [failed_gene]
+              add_other_genes_with_status(negative_genes, genotype, genotypes, 1)
+            end
+
+            genotypes
+          end
+
+          def mlpa_fail?(record)
+            record.raw_fields['genotype'].scan(MLPA_FAIL_REGEX).size.positive?
+          end
+
+          def process_mlpa_fail_full_screen(genotype, record, genotypes)
+            geno = record.raw_fields['genotype'].to_s
+            mlpa_genes = geno.scan(BRCA_REGEX).flatten.uniq
+
+            if mlpa_genes.blank?
+              add_other_genes_with_status(@genes_set, genotype, genotypes, 9)
+            else
+              process_mlpa_genes(mlpa_genes, genotype, genotypes)
+              negative_genes = @genes_set - mlpa_genes
+              add_other_genes_with_status(negative_genes, genotype, genotypes, 1)
+            end
+            genotypes
+          end
+
+          def process_mlpa_genes(mlpa_genes, genotype, genotypes)
+            mlpa_genes.each do |mlpa_fail_gene|
+              genotype_dup = genotype.dup
+              genotype_dup.add_gene(mlpa_fail_gene&.upcase)
+              genotype_dup.add_method('mlpa')
+              genotype_dup.add_status(9)
+              genotypes.append(genotype_dup)
+            end
+          end
+
+          def positive_cdna?(genotype_string)
+            genotype_string.scan(CDNA_REGEX).size.positive?
+          end
+
+          def positive_exonvariant?(genotype_string)
+            genotype_string.scan(EXON_VARIANT_REGEX).size.positive?
+          end
+
+          def get_protein_impact(raw_genotype)
+            raw_genotype.match(PROTEIN_REGEX)
+            $LAST_MATCH_INFO[:impact] unless $LAST_MATCH_INFO.nil?
+          end
+
+          def get_cdna_mutation(raw_genotype)
+            raw_genotype.match(CDNA_REGEX)
+            $LAST_MATCH_INFO[:cdna] unless $LAST_MATCH_INFO.nil?
+          end
+
+          def get_gene(record)
+            genotype_str = record.raw_fields['genotype'].to_s
+            positive_genes = genotype_str.scan(BRCA_REGEX).flatten.uniq
+            if positive_genes.size.zero?
+              positive_genes = record.raw_fields['karyotypingmethod'].scan(BRCA_REGEX).flatten.uniq
+            end
+            positive_genes
+          end
+
+          def only_protein_impact?(record)
+            variant = record.raw_fields['genotype']
+            variant.scan(CDNA_REGEX).size.zero? &&
+              variant.scan(EXON_VARIANT_REGEX).size.zero? &&
+              variant.scan(PROTEIN_REGEX).size.positive?
+          end
+
+          def stated_detected_only?(record)
+            variant = record.raw_fields['genotype']
+            ['Familial mutation detected',
+             'Familial pathogenic mutation detected'].include? variant
+          end
+
+          def process_cdna_change(genotype, genotype_str)
+            case genotype_str
             when CDNA_REGEX
               genotype.add_gene_location($LAST_MATCH_INFO[:cdna])
               @logger.debug "SUCCESSFUL cdna change parse for: #{$LAST_MATCH_INFO[:cdna]}"
               genotype.add_status(:positive)
-              @positive_test += 1
             else
-              @logger.debug "FAILED cdna change parse for: #{record.raw_fields['genotype']}"
-              @failed_genotype_counter += 1
+              @logger.debug "FAILED cdna change parse for: #{genotype_str}"
             end
           end
 
-          def process_protein_impact(genotype, record)
-            case record.raw_fields['genotype']
+          def process_protein_impact(genotype, genotype_str)
+            case genotype_str
             when PROTEIN_REGEX
               genotype.add_protein_impact($LAST_MATCH_INFO[:impact])
+              genotype.add_status(:positive)
               @logger.debug "SUCCESSFUL protein change parse for: #{$LAST_MATCH_INFO[:impact]}"
             else
-              @logger.debug "FAILED protein change parse for: #{record.raw_fields['genotype']}"
+              @logger.debug "FAILED protein change parse for: #{genotype_str}"
             end
           end
 
-          def extract_brca(genes)
-            Array(genes).reject(&:nil?).map { |entry| entry.scan(BRCA_REGEX).map { |match| match[0] } }.flatten
-          end
+          def process_exons(genotype, genotype_str)
+            exon_matches = EXON_VARIANT_REGEX.match(genotype_str)
+            return if exon_matches.nil?
 
-          def process_gene(genotype, record)
-            geno = record.raw_fields['genetictestscope'].to_s
-            karyo = record.raw_fields['karyotypingmethod'].to_s
-            puts "geno + karyo - #{geno} and #{karyo}"
-            #   | unless record.raw_fields['karyotypingmethod'].nil?
-            # unless record.raw_fields['karyotypingmethod'].nil?
-            if BRCA_REGEX.match(record.raw_fields['genotype'])
-              genotype.add_gene($LAST_MATCH_INFO[:brca])
-              @successful_gene_counter += 1
-              @gene_counter += 1
-              @logger.debug "SUCCESSFUL gene parse for: #{$LAST_MATCH_INFO[:brca]}"
-              [genotype]
-            # elsif BRCA_REGEX.match(record.raw_fields['genotype']) and rca_input.strip.scan(BRCA_REGEX).size == 2
-            elsif brcas = extract_brca(record.raw_fields['karyotypingmethod'].to_s)
-              if brcas.size == 1 && karyo != 'BRCA1 and 2 gene sequencing'
-                @logger.debug "JUST ADDED THIS GENE #{brcas}"
-                genotype.add_gene(brcas[0])
-                [genotype]
-              elsif brcas.size > 1
-                @logger.debug "EXTRACTED THESE GENES 2 #{brcas}"
-                genotype2 = genotype.dup
-                genotype.add_gene(7)
-                genotype2.add_gene(8)
-                [genotype, genotype2]
-              elsif (geno == 'BRCA1 and 2 gene analysis' && karyo == 'BRCA1 and 2 gene sequencing') || (geno == 'BRCA1 and 2 gene analysis' && karyo == 'Full Screen')
-                @logger.debug "Found geno + karyo - #{geno} and #{karyo}"
-                genotype2 = genotype.dup
-                genotype.add_gene(7)
-                genotype2.add_gene(8)
-                [genotype, genotype2]
-              else
-                [genotype]
-              end
-            else
-              @logger.debug 'FAILED gene parse'
-              @logger.debug "FAILED gene parse for: #{record.raw_fields['karyotypingmethod']} and/or #{record.raw_fields['genotype']}"
-              @failed_gene_counter += 1
-              @gene_counter += 1
-            end
-          end
-
-          #     BRCA_REGEX.match(record.raw_fields['karyotypingmethod']) andrecord.raw_fields['karyotypingmethod'].scan(BRCA_REGEX).flatten.size == 1
-          #    genotype.add_gene($LAST_MATCH_INFO[:brca])
-          #     @successful_gene_counter += 1
-          #     @gene_counter += 1
-          #     @logger.debug "ADDED GENE for #{record.raw_fields['karyotypingmethod']} "
-          #   elsif record.raw_fields['karyotypingmethod'].scan(BRCA_REGEX).flatten.size == 2
-          #     genotype2 = genotype.dup
-          #     genotype.add_gene(1)
-          #     @logger.debug "ADDED #{record.raw_fields['karyotypingmethod'].scan(BRCA_REGEX).flatten[0]} from #{record.raw_fields['karyotypingmethod']}"
-          #     genotype2.add_gene(2)
-          #    @logger.debug "ADDED #{record.raw_fields['karyotypingmethod'].scan(BRCA_REGEX).flatten[1]} from #{record.raw_fields['karyotypingmethod']}"
-          #     [genotype,genotype2]
-          #    else
-          #      @logger.debug "FAILED gene parse"
-          #      @logger.debug "FAILED gene parse for: #{record.raw_fields['karyotypingmethod']} and/or #{record.raw_fields['genotype']}"
-          #        @failed_gene_counter += 1
-          #       @gene_counter += 1
-          #    end
-          # end
-
-          def add_gene_from_duplicated_column(genotype, record)
-            geno = record.mapped_fields['genetictestscope']
-            karyo = record.raw_fields['karyotypingmethod']
-            if (geno == 'BRCA1 and 2 gene analysis' && karyo == 'BRCA1 and 2 gene sequencing') || (geno == 'BRCA1 and 2 gene analysis' && karyo == 'Full Screen')
-              genotype2 = genotype.dup
-              genotype.add_gene(1)
-              genotype2.add_gene(2)
-            else
-              @logger.debug 'COULDNT DO ANYTHING'
-            end
-          end
-
-          def process_gene_from_column(genotype, record)
-            gene = record.mapped_fields['gene'].to_i
-            case gene
-            when Integer then
-              if (7..8).cover? gene
-                genotype.add_gene(record.mapped_fields['gene'].to_i)
-                @successful_gene_counter += 1
-                @logger.debug "SUCCESSFUL gene parse for: #{record.mapped_fields['gene'].to_i}"
-              else
-                @logger.debug "FAILED gene parse for: #{record.mapped_fields['gene'].to_i}"
-                @failed_gene_counter += 1
-              end
-            end
-          end
-
-          # def process_gene(genotype, record)
-          #  case record.raw_fields['genotype']
-          #  when BRCA_REGEX
-          #   genotype.add_gene($LAST_MATCH_INFO[:brca])
-          #   @successful_gene_counter += 1
-          #   @gene_counter += 1
-          #   @logger.debug "SUCCESSFUL gene parse for: #{$LAST_MATCH_INFO[:brca]}"
-          # else
-          #   @logger.debug "FAILED gene parse for: #{record.raw_fields['genotype']}"
-          #   @failed_gene_counter += 1
-          #   @gene_counter += 1
-          # end
-          # end
-
-          def process_exons(genotype_string, genotype)
-            exon_matches = EXON_LOCATION_REGEX.match(genotype_string)
-            if exon_matches
-              genotype.add_exon_location(exon_matches[1].delete(' '))
-              genotype.add_variant_type(genotype_string)
-              @logger.debug "SUCCESSFUL exon extraction for: #{genotype_string}"
-            else
-              @logger.warn "Cannot extract exon from: #{genotype_string}"
-            end
-          end
-
-          # def process_gene(genotype, record)
-          #     gene_string = record.raw_fields['gene']
-          #     case gene_string
-          #     when String
-          #      @gene_counter += 1
-          #       brca_base = 'br?c?a?'
-          #       case gene_string
-          #      when /#{brca_base}1 and #{brca_base}2/i, /#{brca_base}2 and #{brca_base}1/i then
-          #        #genotype.add_test_scope(:full_screen)
-          #         genotype2 = genotype.dup
-          #         genotype.add_gene(1)
-          #        genotype2.add_gene(2)
-          #        [genotype, genotype2]
-          #       when /#{brca_base}(?<brca_num>1|2)/i then
-          #         #genotype.add_test_scope(:targeted_mutation)
-          #         genotype.add_gene($LAST_MATCH_INFO[:brca_num].to_i)
-          #       [genotype]
-          #      else
-          #        @failed_gene_counter += 1
-          #        @logger.debug "FAILED gene parse for: #{geneString}"
-          #        [genotype]
-          #       end
-          #     when nil
-          #       @logger.error 'Gene field absent for this record; cannot process'
-          #             [genotype]
-          #     end
-          #   end
-
-          def summarize
-            @logger.info '***************** Handler Report *******************'
-            @logger.info "Num genes failed to parse: #{@failed_gene_counter} of "\
-                         "#{@persister.genetic_tests.values.flatten.size} tests being attempted"
-            @logger.info "Num genes successfully parsed: #{@successful_gene_counter} of"\
-                          "#{@persister.genetic_tests.values.flatten.size} attempted"
-            @logger.info "Num genotypes failed to parse: #{@failed_genotype_counter}"\
-                         "of #{@lines_processed} attempted"
-            @logger.info "Num positive tests: #{@positive_test}"\
-                          "of #{@persister.genetic_tests.values.flatten.size} attempted"
-            @logger.info "Num negative tests: #{@negative_test}"\
-                          "of #{@persister.genetic_tests.values.flatten.size} attempted"
+            genotype.add_exon_location($LAST_MATCH_INFO[:exons])
+            Maybe(exon_matches[:mutationtype]).map { |x| genotype.add_variant_type(x) } if
+            exon_matches.names.include? 'mutationtype'
+            Maybe(exon_matches[:zygosity]).map { |x| genotype.add_zygosity(x) } if
+            exon_matches.names.include? 'zygosity'
+            genotype.add_status(2)
+            @logger.debug "SUCCESSFUL exon extraction for: #{genotype_str}"
           end
         end
       end

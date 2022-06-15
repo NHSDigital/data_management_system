@@ -119,18 +119,22 @@ done
 }
 
 RCU () {
-MBIS=$1
 PROV='RCU'
 IFS=$'\n'
-for x in $(find  $DIRPATH/$FILEPATH -type f -name "*.pseudo" -path "*/$PROV/*" \
-! -name "1acb5f31aa1f9d057b2105b9ac814c51f6f8bf44_01.04.2014 to 31.12.2018_Colorectal Cancer_09570820181212.csv.pseudo" \
-! -name "723f1a253c120dfafe1439bf9150870cd0deda78_01.04.2014 to 01.12.2018_Historical_NonBRCA_NonColorectal_01042014-01122018.csv.pseudo" \
-! -name "576f0670b0490bc788f673a5653c28cc1f7e7f7a_01.12.2019 to 31.12.2020_clean_Hereditary_Cancer_BRCA_CRC_31122019_31122020.csv.pseudo" )
+for x in $(find $DIRPATH/$FILEPATH -type f \
+\( -name "*BRCA*.pseudo*" -o \
+-name "143e91983941d5040b176a997b80509b43bc686d_01.12.2019*pseudo" \
+-o -name "*1dbb*pseudo" \
+-o -name "0341fb*pseudo" \) -path "*/$PROV/*" \
+! -name "*Colorectal*" \
+! -name "*NonBRCA*" \
+! -name "*nonBRCA*")
 do
 IFS="$OIFS"
-$BRAKE import:brca fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
+bundle exec rake import:brca fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
 done
 }
+
 
 RQ3 () {
 PROV='RQ3'
