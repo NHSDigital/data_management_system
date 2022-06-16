@@ -197,6 +197,7 @@ en:
         main_contact_name: Primary contact name (if different from above)
         main_contact_email: Primary contact email
         closure_date: Closure Date
+        odr_ref: ODR Ref
         informed_patient_consent: >
           The individual has provided consent to the processing of this application
       organisation:
@@ -230,6 +231,7 @@ en:
         level_of_identifiability: Classification of data requested
         project_end_uses: Summary of project type
         project_purpose: Enquiry details
+        odr_ref: ODR Ref
     cas:
       form_permissions_section:
         level1_heading: 'Access level 1: Highly sensitive data (includes all identifiers and names and addresses)'
