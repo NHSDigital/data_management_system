@@ -4,6 +4,7 @@ module Import
       module Providers
         module Rj1
           # Processor for Full Screen Tests exctraction methods
+          # rubocop:disable Metrics/ModuleLength
           module Rj1FullscreenTestProcessor
             include Import::Helpers::Brca::Providers::Rj1::Rj1Constants
 
@@ -168,6 +169,14 @@ module Import
               @genotypes
             end
 
+            def process_fullscreen_nonbrca_mutated_exon(exon_variant)
+              process_double_brca_negative(:full_screen)
+              # exon_variant = @ngs_result.match(EXON_REGEX)
+              process_positive_exonvariant(@ngs_result.match(BRCA_GENES_REGEX)[:brca],
+                                           exon_variant, :full_screen)
+              @genotypes
+            end
+
             def fullscreen_brca1_mutated_exon_brca2_normal?
               (@ngs_result.scan(/B1|BRCA1|BRCA 1|BR1/i).size.positive? &&
               @ngs_result.scan(EXON_REGEX).size.positive?) ||
@@ -179,6 +188,16 @@ module Import
               # exon_variant = @ngs_result.match(EXON_REGEX)
               process_positive_exonvariant('BRCA1', exon_variant, :full_screen)
               @genotypes
+            end
+
+            def process_adhoc_chek2_fullscreen_positive_records
+              process_double_brca_negative(:full_screen)
+              positive_genotype = @genotype.dup
+              positive_genotype.add_gene('CHEK2')
+              positive_genotype.add_gene_location('1100delC')
+              positive_genotype.add_status(2)
+              positive_genotype.add_test_scope(:full_screen)
+              @genotypes.append(positive_genotype)
             end
 
             def fullscreen_non_brca_mutated_cdna_gene?
@@ -387,6 +406,7 @@ module Import
               @brca2_seq_result.scan(/neg|norm/i).size.positive?
             end
 
+            # rubocop:disable Metrics/AbcSize
             def process_brca2_malformed_cdna_fullscreen_option3
               return if (@brca2_seq_result.nil? && @brca2_mutation.nil?) ||
                         (@brca2_seq_result.present? &&
@@ -406,6 +426,7 @@ module Import
               positive_genotype.add_test_scope(:full_screen)
               @genotypes.append(positive_genotype)
             end
+            # rubocop:enable Metrics/AbcSize
 
             def fullscreen_brca1_mlpa_positive_variant?
               return if @brca1_mlpa_result.nil?
@@ -570,6 +591,7 @@ module Import
               @genotypes
             end
           end
+          # rubocop:enable Metrics/ModuleLength
         end
       end
     end

@@ -20,6 +20,8 @@ module Import
                                    consultantcode
                                    providercode].freeze
 
+          # rubocop:disable Metrics/AbcSize
+          # rubocop:disable Metrics/MethodLength
           def process_fields(record)
             genotype = Import::Brca::Core::GenotypeBrca.new(record)
             genotype.add_passthrough_fields(record.mapped_fields,
@@ -60,6 +62,8 @@ module Import
               @persister.integrate_and_store(cur_genotype)
             end
           end
+          # rubocop:enable Metrics/AbcSize
+          # rubocop:enable Metrics/MethodLength
 
           def add_organisationcode_testresult(genotype)
             genotype.attribute_map['organisationcode_testresult'] = '699L0'

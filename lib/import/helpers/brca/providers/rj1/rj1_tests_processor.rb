@@ -4,6 +4,7 @@ module Import
       module Providers
         module Rj1
           # Extraction processor for Full Screen, Targeted, Ashkenazi and Polish tests
+          # rubocop:disable Metrics/ModuleLength
           module Rj1TestsProcessor
             include Import::Helpers::Brca::Providers::Rj1::Rj1Constants
 
@@ -69,6 +70,7 @@ module Import
 
             # rubocop:disable Metrics/AbcSize
             # rubocop:disable  Metrics/CyclomaticComplexity
+            # rubocop:disable Metrics/MethodLength
             def process_ashkenazi_test
               return if @aj_assay_result.nil?
 
@@ -93,9 +95,10 @@ module Import
               end
               @genotypes
             end
+            # rubocop:enable Metrics/MethodLength
+
             # rubocop:enable Metrics/AbcSize
             # rubocop:enable  Metrics/CyclomaticComplexity
-
             def process_polish_test
               return if @polish_assay_result.nil?
 
@@ -172,6 +175,9 @@ module Import
                 process_multiple_variants_fullscreen_results(variants, genes)
               elsif fullscreen_non_brca_mutated_cdna_gene?
                 process_fullscreen_non_brca_mutated_cdna_gene
+              elsif @ngs_result.scan(/PALB2|CHECK2/i).size.positive? &&
+                    @ngs_result.scan(EXON_REGEX).size.positive?
+                process_fullscreen_nonbrca_mutated_exon(@ngs_result.match(EXON_REGEX))
               elsif @ngs_result.scan(/b(?<brca>1|2)/i).size.positive?
                 process_deprecated_genes_record_fullscreen_option1
               elsif fullscreen_brca2_mutated_cdna_brca1_normal?
@@ -185,6 +191,8 @@ module Import
               elsif @ngs_result.scan(BRCA_GENES_REGEX).size.positive? &&
                     @ngs_result.scan(/(?<cdna>[0-9]+[a-z]+>[a-z]+)/i).size.positive?
                 process_malformed_variants_fullscreen_option1
+              elsif @ngs_result.scan(/1100del/i).size.positive?
+                process_adhoc_chek2_fullscreen_positive_records
               end
             end
             # rubocop:enable Metrics/AbcSize
@@ -287,6 +295,7 @@ module Import
             # rubocop:enable  Metrics/MethodLength
             # rubocop:enable  Metrics/PerceivedComplexity
           end
+          # rubocop:enable Metrics/ModuleLength
         end
       end
     end

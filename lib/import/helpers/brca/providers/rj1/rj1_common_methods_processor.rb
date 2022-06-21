@@ -11,6 +11,7 @@ module Import
             ################ HERE ARE COMMON METHODS ############################################
             #####################################################################################
 
+            # rubocop:disable Metrics/CyclomaticComplexity
             def no_cdna_variant?
               return if @brca1_mlpa_result.nil? && @brca2_mlpa_result.nil?
 
@@ -18,6 +19,7 @@ module Import
                 @brca1_seq_result.nil? && @brca2_seq_result.nil? &&
                 @brca1_mlpa_result&.downcase == 'n/a' && @brca2_mlpa_result&.downcase == 'n/a'
             end
+            # rubocop:enable Metrics/CyclomaticComplexity
 
             def brca1_mutation?
               return if @brca1_mutation.nil?
