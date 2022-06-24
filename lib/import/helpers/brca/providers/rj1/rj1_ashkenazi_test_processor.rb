@@ -22,14 +22,14 @@ module Import
             end
 
             def normal_ashkenazi_test?
-              return if @aj_assay_result.nil?
+              return false if @aj_assay_result.nil?
 
               @aj_assay_result.scan(/neg|nrg/i).size.positive? &&
                 @brca1_mutation.nil? && @brca2_mutation.nil?
             end
 
             def positive_ashkenazi_test?
-              return if @aj_assay_result.nil?
+              return false if @aj_assay_result.nil?
 
               @aj_assay_result.scan(/neg|nrg/i).size.zero?
             end
@@ -45,7 +45,6 @@ module Import
             end
 
             def brca1_mutation_exception?
-              # @aj_assay_result == "68_69delAG" ||
               BRCA1_MUTATIONS.include? @aj_assay_result
             end
 

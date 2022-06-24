@@ -19,7 +19,7 @@ module Import
             end
 
             def double_brca_mlpa_negative?
-              return if @brca1_mlpa_result.nil? || @brca2_mlpa_result.nil?
+              return false if @brca1_mlpa_result.nil? || @brca2_mlpa_result.nil?
 
               no_brca1_cdna_variant? && no_brca2_cdna_variant? &&
                 @brca1_mlpa_result.scan(%r{no\sdel/dup}i).size.positive? &&
@@ -27,7 +27,7 @@ module Import
             end
 
             def all_null_cdna_variants_except_full_screen_test?
-              return if @fullscreen_result.nil?
+              return false if @fullscreen_result.nil?
 
               no_brca1_cdna_variant? && no_brca2_cdna_variant?
             end
@@ -92,17 +92,6 @@ module Import
                   next if list_of_variants.scan(/(?<brca>BRCA1|BRCA2)/i).empty?
 
                   process_list_of_variants_splitrecords(list_of_variants)
-                  # gene = list_of_variants.match(/(?<brca>BRCA1|BRCA2)/i)[:brca]
-                  # cdnavariants = list_of_variants.scan(CDNA_REGEX).uniq.flatten.compact
-                  # genes = [gene] * cdnavariants.uniq.size
-                  # genes.zip(cdnavariants.uniq).each do |gene, variant|
-                  #   positive_genotype = @genotype.dup
-                  #   positive_genotype.add_gene(gene)
-                  #   positive_genotype.add_gene_location(variant)
-                  #   positive_genotype.add_status(2)
-                  #   positive_genotype.add_test_scope(:full_screen)
-                  #   @genotypes.append(positive_genotype)
-                  # end
                 end
               end
               @genotypes
@@ -123,13 +112,13 @@ module Import
             end
 
             def brca1_seq_result_missing_cdot?
-              return if @brca1_seq_result.nil?
+              return false if @brca1_seq_result.nil?
 
               @brca1_seq_result.scan(/(?<cdna>[0-9]+[a-z]+>[a-z]+)/i).size.positive?
             end
 
             def brca2_seq_result_missing_cdot?
-              return if @brca2_seq_result.nil?
+              return false if @brca2_seq_result.nil?
 
               @brca2_seq_result.scan(/(?<cdna>[0-9]+[a-z]+>[a-z]+)/i).size.positive?
             end
@@ -164,14 +153,12 @@ module Import
 
             def process_fullscreen_brca2_mutated_exon_brca1_normal(exon_variant)
               process_negative_gene('BRCA1', :full_screen)
-              # exon_variant = @ngs_result.match(EXON_REGEX)
               process_positive_exonvariant('BRCA2', exon_variant, :full_screen)
               @genotypes
             end
 
             def process_fullscreen_nonbrca_mutated_exon(exon_variant)
               process_double_brca_negative(:full_screen)
-              # exon_variant = @ngs_result.match(EXON_REGEX)
               process_positive_exonvariant(@ngs_result.match(BRCA_GENES_REGEX)[:brca],
                                            exon_variant, :full_screen)
               @genotypes
@@ -201,7 +188,7 @@ module Import
             end
 
             def fullscreen_non_brca_mutated_cdna_gene?
-              return if @ngs_result.nil?
+              return false if @ngs_result.nil?
 
               (@ngs_result.scan(/(?<nonbrca>CHEK2|PALB2|TP53)/i).size.positive? &&
                 @ngs_result.scan(CDNA_REGEX).size.positive?) ||
@@ -211,14 +198,14 @@ module Import
             end
 
             def fullscreen_non_brca_mutated_exon_gene?
-              return if @ngs_result.nil?
+              return false if @ngs_result.nil?
 
               @ngs_result.scan(/(?<nonbrca>CHEK2|PALB2|TP53)/i).size.positive? &&
                 @ngs_result.scan(EXON_REGEX).size.positive?
             end
 
             def process_fullscreen_non_brca_mutated_cdna_gene
-              return if @ngs_result.nil?
+              return false if @ngs_result.nil?
 
               process_double_brca_negative(:full_screen)
               positive_gene = @ngs_result.match(/(?<nonbrca>CHEK2|PALB2|TP53)/i)[:nonbrca]
@@ -265,7 +252,7 @@ module Import
             end
 
             def brca_false_positives?
-              return if @brca1_seq_result.nil? && @brca2_seq_result.nil?
+              return false if @brca1_seq_result.nil? && @brca2_seq_result.nil?
 
               (@brca1_seq_result.present? && @brca1_seq_result.scan(/-ve/i).size.positive? &&
               [@brca2_mutation, @brca2_seq_result].uniq.compact.empty?) ||
@@ -274,7 +261,7 @@ module Import
             end
 
             def brca1_cdna_variant_fullscreen_option3?
-              return if @brca1_mutation.nil? && @brca1_seq_result.nil?
+              return false if @brca1_mutation.nil? && @brca1_seq_result.nil?
 
               ((@brca1_mutation.present? && @brca1_mutation.scan(CDNA_REGEX).size.positive?) ||
               (@brca1_seq_result.present? && @brca1_seq_result.scan(CDNA_REGEX).size.positive?))
@@ -290,7 +277,7 @@ module Import
             end
 
             def brca2_cdna_variant_fullscreen_option3?
-              return if @brca2_mutation.nil? && @brca2_seq_result.nil?
+              return false if @brca2_mutation.nil? && @brca2_seq_result.nil?
 
               ((@brca2_mutation.present? && @brca2_mutation.scan(CDNA_REGEX).size.positive?) ||
               (@brca2_seq_result.present? && @brca2_seq_result.scan(CDNA_REGEX).size.positive?))
@@ -321,30 +308,6 @@ module Import
             def process_double_brca_malformed_cdna_fullscreen_option3
               process_malformed_brca1_cdna_fullscreen
               process_malformed_brca2_cdna_fullscreen
-              # badformat_cdna_brca1_variant = if @brca1_seq_result.present?
-              #                                  @brca1_seq_result.scan(/([^\s]+)\s?/i)[0].join
-              #                                else
-              #                                  @brca1_mutation.scan(/([^\s]+)\s?/i)[0].join
-              #                                end
-              # positive_genotype = @genotype.dup
-              # positive_genotype.add_gene('BRCA1')
-              # positive_genotype.add_gene_location(badformat_cdna_brca1_variant.tr(';', ''))
-              # positive_genotype.add_status(2)
-              # positive_genotype.add_test_scope(:full_screen)
-              # @genotypes.append(positive_genotype)
-
-              # badformat_cdna_brca2_variant = if @brca2_seq_result.present?
-              #                                  @brca2_seq_result.scan(/([^\s]+)\s?/i)[0].join
-              #                                else
-              #                                  @brca2_mutation.scan(/([^\s]+)\s?/i)[0].join
-              #                                end
-
-              # positive_genotype = @genotype.dup
-              # positive_genotype.add_gene('BRCA2')
-              # positive_genotype.add_gene_location(badformat_cdna_brca2_variant.tr(';', ''))
-              # positive_genotype.add_status(2)
-              # positive_genotype.add_test_scope(:full_screen)
-              # @genotypes.append(positive_genotype)
             end
 
             def process_malformed_brca2_cdna_fullscreen
@@ -380,17 +343,6 @@ module Import
 
               process_negative_gene('BRCA2', :full_screen)
               process_malformed_brca1_cdna_fullscreen
-              # badformat_cdna_brca1_variant = if @brca1_seq_result.present?
-              #                                  @brca1_seq_result.scan(/([^\s]+)/i)[0].join
-              #                                else
-              #                                  @brca1_mutation.scan(/([^\s]+)/i)[0].join
-              #                                end
-              # positive_genotype = @genotype.dup
-              # positive_genotype.add_gene('BRCA1')
-              # positive_genotype.add_gene_location(badformat_cdna_brca1_variant.tr(';', ''))
-              # positive_genotype.add_status(2)
-              # positive_genotype.add_test_scope(:full_screen)
-              # @genotypes.append(positive_genotype)
             end
 
             def brca2_malformed_cdna_fullscreen_option3?
@@ -401,7 +353,7 @@ module Import
             end
 
             def normal_brca2_malformed_fullscreen_option3?
-              return if @brca2_seq_result.nil?
+              return false if @brca2_seq_result.nil?
 
               @brca2_seq_result.scan(/neg|norm/i).size.positive?
             end
@@ -429,7 +381,7 @@ module Import
             # rubocop:enable Metrics/AbcSize
 
             def fullscreen_brca1_mlpa_positive_variant?
-              return if @brca1_mlpa_result.nil?
+              return false if @brca1_mlpa_result.nil?
 
               @brca1_mlpa_result.scan(EXON_REGEX).size.positive?
             end
@@ -441,7 +393,7 @@ module Import
             end
 
             def fullscreen_brca2_mlpa_positive_variant?
-              return if @brca2_mlpa_result.nil?
+              return false if @brca2_mlpa_result.nil?
 
               @brca2_mlpa_result.scan(EXON_REGEX).size.positive?
             end
@@ -453,7 +405,7 @@ module Import
             end
 
             def fullscreen_normal_double_brca_mlpa_option2?
-              return if @brca1_mlpa_result.nil? && @brca2_mlpa_result.nil?
+              return false if @brca1_mlpa_result.nil? && @brca2_mlpa_result.nil?
 
               @brca1_mlpa_result.scan(%r{no del/dup}i).size.positive? &&
                 @brca2_mlpa_result.scan(%r{no del/dup}i).size.positive?
@@ -539,7 +491,7 @@ module Import
             end
 
             def brca12_mlpa_normal_brca12_null?
-              return if @brca2_mlpa_result.nil? && @brca1_mlpa_result.nil?
+              return false if @brca2_mlpa_result.nil? && @brca1_mlpa_result.nil?
 
               brca1_mlpa_nil_brca2_mlpa_normal? ||
                 brca2_mlpa_nil_brca1_mlpa_normal? ||

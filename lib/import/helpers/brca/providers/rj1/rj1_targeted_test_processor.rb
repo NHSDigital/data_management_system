@@ -17,7 +17,7 @@ module Import
             end
 
             def positive_mlpa_brca1_targeted_test?
-              return if @brca1_mlpa_result.nil?
+              return false if @brca1_mlpa_result.nil?
 
               ((@authoriseddate.nil? ||
               @record.raw_fields['servicereportidentifier'] == '06/03030') &&
@@ -26,7 +26,7 @@ module Import
             end
 
             def positive_mlpa_brca2_targeted_test?
-              return if @brca2_mlpa_result.nil?
+              return false if @brca2_mlpa_result.nil?
 
               ((@authoriseddate.nil? ||
               @record.raw_fields['servicereportidentifier'] == '06/03030') &&
@@ -35,13 +35,13 @@ module Import
             end
 
             def positive_exonvariants_in_set_brca1_targeted_test?
-              return if @brca1_seq_result.nil?
+              return false if @brca1_seq_result.nil?
 
               @authoriseddate.nil? && @brca1_seq_result.scan(EXON_REGEX).size.positive?
             end
 
             def positive_exonvariants_in_set_brca2_targeted_test?
-              return if @brca2_seq_result.nil?
+              return false if @brca2_seq_result.nil?
 
               @authoriseddate.nil? && @brca2_seq_result.scan(EXON_REGEX).size.positive?
             end
@@ -68,13 +68,13 @@ module Import
             end
 
             def normal_brca1_mlpa_targeted_test?
-              return if @brca1_mlpa_result.nil? || @brca1_mlpa_result == 'N/A'
+              return false if @brca1_mlpa_result.nil? || @brca1_mlpa_result == 'N/A'
 
               @brca1_mlpa_result.scan(%r{no del/dup}i).size.positive?
             end
 
             def normal_brca2_mlpa_targeted_test?
-              return if @brca2_mlpa_result.nil? || @brca2_mlpa_result == 'N/A'
+              return false if @brca2_mlpa_result.nil? || @brca2_mlpa_result == 'N/A'
 
               @brca2_mlpa_result.scan(%r{no del/dup}i).size.positive?
             end
@@ -115,8 +115,6 @@ module Import
             end
 
             def process_positive_brca1_2_mlpa_targeted_tests
-              # return if @brca1_mlpa_result.nil? && @brca2_mlpa_result.nil?
-
               if positive_mlpa_brca1_targeted_test?
                 process_positive_exonvariant('BRCA1', @brca1_mlpa_result.match(EXON_REGEX),
                                              :targeted_mutation)

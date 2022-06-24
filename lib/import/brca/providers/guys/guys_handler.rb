@@ -70,15 +70,10 @@ module Import
           end
 
           def process_tests
-            # results = []
             METHODS_MAP.each do |condition_extraction|
               condition, extraction = *condition_extraction
-              # results << send(extraction) if send(condition)
-              # results = send(extraction) if send(condition)
-              # binding.pry
               send(extraction) if send(condition)
             end
-            # results.compact
           end
         end
       end

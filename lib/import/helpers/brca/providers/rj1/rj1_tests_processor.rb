@@ -29,8 +29,7 @@ module Import
 
               @predictive_report_date.present? &&
                 @aj_assay_result.scan(/neg|nrg/i).size.positive? &&
-                (@brca1_mutation.present? || @brca2_mutation.present?) # ||
-              # @brca1_mlpa_result.present? || @brca2_mlpa_result.present?)
+                (@brca1_mutation.present? || @brca2_mutation.present?)
             end
 
             def targeted_test_third_option?
@@ -51,8 +50,7 @@ module Import
             end
 
             def full_screen_test_option1?
-              @ngs_result.present? ||
-                @ngs_report_date.present?
+              @ngs_result.present? || @ngs_report_date.present?
             end
 
             def full_screen_test_option2?

@@ -13,7 +13,7 @@ module Import
 
             # rubocop:disable Metrics/CyclomaticComplexity
             def no_cdna_variant?
-              return if @brca1_mlpa_result.nil? && @brca2_mlpa_result.nil?
+              return false if @brca1_mlpa_result.nil? && @brca2_mlpa_result.nil?
 
               @brca1_mutation.nil? && @brca2_mutation.nil? &&
                 @brca1_seq_result.nil? && @brca2_seq_result.nil? &&
@@ -22,19 +22,19 @@ module Import
             # rubocop:enable Metrics/CyclomaticComplexity
 
             def brca1_mutation?
-              return if @brca1_mutation.nil?
+              return false if @brca1_mutation.nil?
 
               @brca1_mutation.scan(CDNA_REGEX).size.positive?
             end
 
             def brca2_mutation?
-              return if @brca2_mutation.nil?
+              return false if @brca2_mutation.nil?
 
               @brca2_mutation.scan(CDNA_REGEX).size.positive?
             end
 
             def normal_brca1_seq?
-              return if @brca1_seq_result.nil?
+              return false if @brca1_seq_result.nil?
 
               @brca1_seq_result.downcase == '-ve' ||
                 @brca1_seq_result.downcase == 'neg' ||
@@ -45,7 +45,7 @@ module Import
             end
 
             def normal_brca2_seq?
-              return if @brca2_seq_result.nil?
+              return false if @brca2_seq_result.nil?
 
               @brca2_seq_result.downcase == '-ve' ||
                 @brca2_seq_result.downcase == 'neg' ||
@@ -56,7 +56,7 @@ module Import
             end
 
             def failed_brca1_mlpa_targeted_test?
-              return if @brca1_mlpa_result.nil? || @brca1_mlpa_result == 'N/A'
+              return false if @brca1_mlpa_result.nil? || @brca1_mlpa_result == 'N/A'
 
               @brca1_mlpa_result.scan(/fail/i).size.positive? &&
                 (@authoriseddate.nil? ||
@@ -64,7 +64,7 @@ module Import
             end
 
             def failed_brca2_mlpa_targeted_test?
-              return if @brca2_mlpa_result.nil? || @brca2_mlpa_result == 'N/A'
+              return false if @brca2_mlpa_result.nil? || @brca2_mlpa_result == 'N/A'
 
               @brca2_mlpa_result.scan(/fail/i).size.positive? &&
                 (@authoriseddate.nil? ||
@@ -72,13 +72,13 @@ module Import
             end
 
             def positive_seq_brca1?
-              return if @brca1_seq_result.nil?
+              return false if @brca1_seq_result.nil?
 
               @brca1_seq_result.scan(CDNA_REGEX).size.positive?
             end
 
             def positive_seq_brca2?
-              return if @brca2_seq_result.nil?
+              return false if @brca2_seq_result.nil?
 
               @brca2_seq_result.scan(CDNA_REGEX).size.positive?
             end
