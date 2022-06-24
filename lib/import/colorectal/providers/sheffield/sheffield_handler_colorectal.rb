@@ -11,7 +11,7 @@ module Import
 
           def process_fields(record)
             genotype_str = record.raw_fields['genetictestscope'].strip
-            return if NON_CRC_GENTICTESCOPE.include? genotype_str
+            return if NON_CRC_GENTICTESCOPE.include? genotype_str.downcase
 
             genocolorectal = Import::Colorectal::Core::Genocolorectal.new(record)
             genocolorectal.add_passthrough_fields(record.mapped_fields,
@@ -50,7 +50,7 @@ module Import
               genocolorectal.add_test_scope(:targeted_mutation)
               @genes_set = COLO_PANEL_GENE_MAPPING_TAR[karyo]
             elsif 'Default' == karyo
-              scope = MOLECULAR_SCOPE_MAPPING[moleculartestingtype]
+              scope = MOLECULAR_SCOPE_MAPPING[moleculartestingtype.downcase]
               genocolorectal.add_test_scope(scope)
               @genes_set = %w[APC MUTYH]
             else
@@ -82,7 +82,7 @@ module Import
               genocolorectal.add_test_scope(:targeted_mutation)
               @genes_set = R210_PANEL_GENE_MAPPING_TAR[karyo]
             elsif R210_PANEL_GENE_MAPPING_MOL.keys.include? karyo
-              genocolorectal.add_test_scope(MOLECULAR_SCOPE_MAPPING[moleculartestingtype])
+              genocolorectal.add_test_scope(MOLECULAR_SCOPE_MAPPING[moleculartestingtype.downcase])
               @genes_set = R210_PANEL_GENE_MAPPING_MOL[karyo]
             else
               genocolorectal.add_test_scope(:no_genetictestscope)
@@ -99,7 +99,7 @@ module Import
               genocolorectal.add_test_scope(:targeted_mutation)
               @genes_set = R211_PANEL_GENE_MAPPING_TAR[karyo]
             elsif R211_PANEL_GENE_MAPPING_MOL.keys.include? karyo
-              genocolorectal.add_test_scope(MOLECULAR_SCOPE_MAPPING[moleculartestingtype])
+              genocolorectal.add_test_scope(MOLECULAR_SCOPE_MAPPING[moleculartestingtype.downcase])
               @genes_set = R211_PANEL_GENE_MAPPING_MOL[karyo]
             else
               genocolorectal.add_test_scope(:no_genetictestscope)
@@ -118,7 +118,7 @@ module Import
 
           def process_scope_fap(karyo, genocolorectal, moleculartestingtype)
             if FAP_PANEL_GENE_MAPPING_MOL.keys.include? karyo
-              genocolorectal.add_test_scope(MOLECULAR_SCOPE_MAPPING[moleculartestingtype])
+              genocolorectal.add_test_scope(MOLECULAR_SCOPE_MAPPING[moleculartestingtype.downcase])
               @genes_set = FAP_PANEL_GENE_MAPPING_MOL[karyo]
             else
               genocolorectal.add_test_scope(:no_genetictestscope)
@@ -137,7 +137,7 @@ module Import
               genocolorectal.add_test_scope(:targeted_mutation)
               @genes_set = HNPCC_PANEL_GENE_MAPPING_TAR[karyo]
             elsif HNPCC_PANEL_GENE_MAPPING_MOL.keys.include? karyo
-              genocolorectal.add_test_scope(MOLECULAR_SCOPE_MAPPING[moleculartestingtype])
+              genocolorectal.add_test_scope(MOLECULAR_SCOPE_MAPPING[moleculartestingtype.downcase])
               @genes_set = HNPCC_PANEL_GENE_MAPPING_MOL[karyo]
             else
               genocolorectal.add_test_scope(:no_genetictestscope)
@@ -146,7 +146,7 @@ module Import
 
           def process_scope_myh(karyo, genocolorectal, moleculartestingtype)
             if 'Default' == karyo
-              scope = MOLECULAR_SCOPE_MAPPING[moleculartestingtype]
+              scope = MOLECULAR_SCOPE_MAPPING[moleculartestingtype.downcase]
               @logger.debug "ADDED #{scope} TEST for: #{moleculartestingtype}"
               genocolorectal.add_test_scope(scope)
               @genes_set = %w[APC MUTYH]
@@ -168,7 +168,8 @@ module Import
           def add_test_type(genocolorectal, record)
             moltestingtype = record.raw_fields['moleculartestingtype']
 
-            genocolorectal.add_molecular_testing_type_strict(TEST_TYPE_MAPPING_COLO[moltestingtype])
+            genocolorectal.add_molecular_testing_type_strict(TEST_TYPE_MAPPING_COLO[moltestingtype.
+              downcase])
           end
 
           def process_variants_from_record(genocolorectal, record)

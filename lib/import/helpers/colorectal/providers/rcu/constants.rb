@@ -5,22 +5,13 @@ module Import
         module Rcu
           # Constants used by SheffieldColorectal
           module Constants
-            # TEST_SCOPE_MAPPING = { 'BRCA1 and 2 familial mutation' => :targeted_mutation
-            #                        'Breast & Ovarian cancer panel' => :full_screen
-            #                        'Breast Ovarian & Colorectal cancer panel' => :full_screen
-            #                        'Confirmation of Familial Mutation' => :targeted_mutation
-            #                        'Diagnostic testing for known mutation' => :targeted_mutation
-            #                        'Confirmation of Research Result' => :targeted_mutation
-            #                        'Predictive testing' => :targeted_mutation
-            #                        'Family Studies' => :targeted_mutation} .freeze
-
-            TEST_TYPE_MAPPING_COLO = { 'Diagnostic testing' => :diagnostic,
-                                       'Further sample for diagnostic testing' => :diagnostic,
-                                       'Confirmation of Familial Mutation' => :diagnostic,
-                                       'Confirmation of Research Result' => :diagnostic,
-                                       'Diagnostic testing for known mutation' => :diagnostic,
-                                       'Predictive testing' => :predictive,
-                                       'Family Studies' => :predictive }.freeze
+            TEST_TYPE_MAPPING_COLO = { 'diagnostic testing' => :diagnostic,
+                                       'further sample for diagnostic testing' => :diagnostic,
+                                       'confirmation of familial mutation' => :diagnostic,
+                                       'confirmation of research result' => :diagnostic,
+                                       'diagnostic testing for known mutation' => :diagnostic,
+                                       'predictive testing' => :predictive,
+                                       'family studies' => :predictive }.freeze
 
             PASS_THROUGH_FIELDS_COLO = %w[consultantcode
                                           providercode
@@ -32,33 +23,33 @@ module Import
                                           age].freeze
 
             NON_CRC_GENTICTESCOPE = [
-              'R208 :: Inherited breast cancer and ovarian cancer',
-              'R208 :: BRCA1 and BRCA2 testing at high familial risk',
-              'R205 :: Inherited breast cancer (without ovarian cancer) at very high familial risk',
-              'BRCA1 and 2 gene analysis',
-              'BRCA1 and 2 familial mutation',
-              'MEN1',
-              'Breast & Ovarian cancer panel',
-              'R217 :: Multiple endocrine neoplasia type 1',
-              'R207 :: Inherited ovarian cancer (without breast cancer)',
-              'HLRCC / MCUL',
-              'WT1',
-              'R365 :: Fumarate hydratase-related tumour syndromes',
-              'R217 :: Multiple endocrine neoplasia type 1',
-              'R224 :: Inherited renal cancer',
-              'R220 :: Wilms tumour with features suggestive of predisposition - SDGS',
-              'Fumarate Hydratase Deficiency',
-              'R216 :: Li Fraumeni Syndrome',
-              'R220 :: Wilms tumour with features suggestive of predisposition',
-              'MEN2',
-              'R242 - Predictive testing - Hered Cancers',
-              'R195 :: Proteinuric renal disease - inhouse',
-              'R218.1 :: Unknown mutation(s) by Single gene sequencing',
-              'R218 :: Multiple endocrine neoplasia type 2',
-              'R365 :: Fumarate hydratase-related tumour syndromes - SDGS',
-              'R240 - Familial Diagnostic testing - Hered Cancers',
-              'R206 :: Inherited breast cancer and ovarian cancer at high familial risk levels',
-              'R216 :: Li Fraumeni Syndrome - SDGS'
+              'r208 :: inherited breast cancer and ovarian cancer',
+              'r208 :: brca1 and brca2 testing at high familial risk',
+              'r205 :: inherited breast cancer (without ovarian cancer) at very high familial risk',
+              'brca1 and 2 gene analysis',
+              'brca1 and 2 familial mutation',
+              'men1',
+              'breast & ovarian cancer panel',
+              'r217 :: multiple endocrine neoplasia type 1',
+              'r207 :: inherited ovarian cancer (without breast cancer)',
+              'hlrcc / mcul',
+              'wt1',
+              'r365 :: fumarate hydratase-related tumour syndromes',
+              'r217 :: multiple endocrine neoplasia type 1',
+              'r224 :: inherited renal cancer',
+              'r220 :: wilms tumour with features suggestive of predisposition - sdgs',
+              'fumarate hydratase deficiency',
+              'r216 :: li fraumeni syndrome',
+              'r220 :: wilms tumour with features suggestive of predisposition',
+              'men2',
+              'r242 - predictive testing - hered cancers',
+              'r195 :: proteinuric renal disease - inhouse',
+              'r218.1 :: unknown mutation(s) by single gene sequencing',
+              'r218 :: multiple endocrine neoplasia type 2',
+              'r365 :: fumarate hydratase-related tumour syndromes - sdgs',
+              'r240 - familial diagnostic testing - hered cancers',
+              'r206 :: inherited breast cancer and ovarian cancer at high familial risk levels',
+              'r216 :: li fraumeni syndrome - sdgs'
             ].freeze
 
             GENETICTESTSCOPE_METHOD_MAPPING = {
@@ -184,12 +175,12 @@ module Import
             }.freeze
 
             MOLECULAR_SCOPE_MAPPING = {
-              'Carrier testing' => :no_genetictestscope,
-              'Confirmation of Familial Mutation' => :targeted_mutation,
-              'Diagnostic testing' => :full_screen,
-              'Diagnostic testing for known mutation' => :targeted_mutation,
-              'Family Studies' => :targeted_mutation,
-              'Predictive testing' => :targeted_mutation
+              'carrier testing' => :no_genetictestscope,
+              'confirmation of familial mutation' => :targeted_mutation,
+              'diagnostic testing' => :full_screen,
+              'diagnostic testing for known mutation' => :targeted_mutation,
+              'family studies' => :targeted_mutation,
+              'predictive testing' => :targeted_mutation
             }.freeze
 
             # rubocop:disable Lint/MixedRegexpCaptureTypes
