@@ -123,9 +123,9 @@ module Import
                     normal_brca12_seq_result?(@brca2_seq_result)
                 process_normal_brca1_2_seq_targeted_tests
               elsif positive_brca12_seq?(@brca1_seq_result) ||
-                     brca_mutation?(@brca1_mutation) ||
+                    brca_mutation?(@brca1_mutation) ||
                     positive_brca12_seq?(@brca2_seq_result) ||
-                     brca_mutation?(@brca2_mutation)
+                    brca_mutation?(@brca2_mutation)
                 process_positive_brca1_2_seq_targeted_tests
               elsif normal_brca1_mlpa_targeted_test? ||
                     normal_brca2_mlpa_targeted_test?
@@ -212,7 +212,7 @@ module Import
                 process_brca1_malformed_cdna_fullscreen_option3
               elsif brca2_malformed_cdna_fullscreen_option3?
                 process_brca2_malformed_cdna_fullscreen_option3
-              elsif  brca_mutation?(@brca1_mutation) &&  brca_mutation?(@brca2_mutation)
+              elsif brca_mutation?(@brca1_mutation) && brca_mutation?(@brca2_mutation)
                 process_positive_cdnavariant('BRCA1', @brca1_mutation, :full_screen)
                 process_positive_cdnavariant('BRCA2', @brca2_mutation, :full_screen)
               elsif brca2_cdna_variant_fullscreen_option2?

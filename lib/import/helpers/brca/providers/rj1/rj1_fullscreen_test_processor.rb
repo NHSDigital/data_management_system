@@ -52,9 +52,10 @@ module Import
               positive_genes = process_positive_genes(split_records)
               process_split_records(split_records)
               negative_gene = %w[BRCA1 BRCA2] - positive_genes
-              process_negative_or_failed_gene(negative_gene.join, 
-                                              1, :full_screen
-                                              ) if negative_gene.present?
+              if negative_gene.present?
+                process_negative_or_failed_gene(negative_gene.join,
+                                                1, :full_screen)
+              end
             end
 
             def create_split_records(detected_genes)
@@ -503,9 +504,10 @@ module Import
 
             def process_multiple_variants_fullscreen_results(variants, genes)
               negative_gene = %w[BRCA1 BRCA2] - genes
-              process_negative_or_failed_gene(negative_gene.join,
-                                              1, :full_screen
-                                              ) if negative_gene.present?
+              if negative_gene.present?
+                process_negative_or_failed_gene(negative_gene.join,
+                                                1, :full_screen)
+              end
               if genes.uniq.size == variants.uniq.size
                 process_even_gene_cdna_variants_fullscreen_fullscreenresults(genes, variants)
               else
