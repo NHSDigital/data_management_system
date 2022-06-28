@@ -27,18 +27,6 @@ module Import
               brca_mutation_field.scan(CDNA_REGEX).size.positive?
             end
 
-            # def  brca_mutation?(@brca1_mutation)
-            #   return false if @brca1_mutation.nil?
-            #
-            #   @brca1_mutation.scan(CDNA_REGEX).size.positive?
-            # end
-            #
-            # def  brca_mutation?(@brca2_mutation)
-            #   return false if @brca2_mutation.nil?
-            #
-            #   @brca2_mutation.scan(CDNA_REGEX).size.positive?
-            # end
-
             def normal_brca12_seq_result?(brca12_seq_result)
               return false if brca12_seq_result.nil?
 
