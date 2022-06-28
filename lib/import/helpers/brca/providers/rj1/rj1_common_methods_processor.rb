@@ -21,111 +21,62 @@ module Import
             end
             # rubocop:enable Metrics/CyclomaticComplexity
 
-            def brca1_mutation?
-              return false if @brca1_mutation.nil?
+            def brca_mutation?(brca_mutation_field)
+              return false if brca_mutation_field.nil?
 
-              @brca1_mutation.scan(CDNA_REGEX).size.positive?
+              brca_mutation_field.scan(CDNA_REGEX).size.positive?
             end
 
-            def brca2_mutation?
-              return false if @brca2_mutation.nil?
+            # def  brca_mutation?(@brca1_mutation)
+            #   return false if @brca1_mutation.nil?
+            #
+            #   @brca1_mutation.scan(CDNA_REGEX).size.positive?
+            # end
+            #
+            # def  brca_mutation?(@brca2_mutation)
+            #   return false if @brca2_mutation.nil?
+            #
+            #   @brca2_mutation.scan(CDNA_REGEX).size.positive?
+            # end
 
-              @brca2_mutation.scan(CDNA_REGEX).size.positive?
+            def normal_brca12_seq_result?(brca12_seq_result)
+              return false if brca12_seq_result.nil?
+
+              brca12_seq_result.downcase == '-ve' ||
+                brca12_seq_result.downcase == 'neg' ||
+                brca12_seq_result.downcase == 'nrg' ||
+                brca12_seq_result.scan(/neg|nrg|norm|-ve/i).size.positive? ||
+                brca12_seq_result.scan(/no mut/i).size.positive? ||
+                brca12_seq_result.scan(/no var|no fam|not det/i).size.positive?
             end
 
-            def normal_brca1_seq?
-              return false if @brca1_seq_result.nil?
+            def failed_brca12_mlpa_targeted_test?(brca12_mlpa_result)
+              return false if brca12_mlpa_result.nil? || brca12_mlpa_result == 'N/A'
 
-              @brca1_seq_result.downcase == '-ve' ||
-                @brca1_seq_result.downcase == 'neg' ||
-                @brca1_seq_result.downcase == 'nrg' ||
-                @brca1_seq_result.scan(/neg|nrg|norm|-ve/i).size.positive? ||
-                @brca1_seq_result.scan(/no mut/i).size.positive? ||
-                @brca1_seq_result.scan(/no var|no fam|not det/i).size.positive?
-            end
-
-            def normal_brca2_seq?
-              return false if @brca2_seq_result.nil?
-
-              @brca2_seq_result.downcase == '-ve' ||
-                @brca2_seq_result.downcase == 'neg' ||
-                @brca2_seq_result.downcase == 'nrg' ||
-                @brca2_seq_result.scan(/neg|nrg|norm|-ve/i).size.positive? ||
-                @brca2_seq_result.scan(/no mut/i).size.positive? ||
-                @brca2_seq_result.scan(/no var|no fam|not det/i).size.positive?
-            end
-
-            def failed_brca1_mlpa_targeted_test?
-              return false if @brca1_mlpa_result.nil? || @brca1_mlpa_result == 'N/A'
-
-              @brca1_mlpa_result.scan(/fail/i).size.positive? &&
+              brca12_mlpa_result.scan(/fail/i).size.positive? &&
                 (@authoriseddate.nil? ||
                 @record.raw_fields['servicereportidentifier'] == '06/03030')
             end
 
-            def failed_brca2_mlpa_targeted_test?
-              return false if @brca2_mlpa_result.nil? || @brca2_mlpa_result == 'N/A'
+            def positive_brca12_seq?(brca12_seq_result)
+              return false if brca12_seq_result.nil?
 
-              @brca2_mlpa_result.scan(/fail/i).size.positive? &&
-                (@authoriseddate.nil? ||
-                @record.raw_fields['servicereportidentifier'] == '06/03030')
+              brca12_seq_result.scan(CDNA_REGEX).size.positive?
             end
 
-            def positive_seq_brca1?
-              return false if @brca1_seq_result.nil?
-
-              @brca1_seq_result.scan(CDNA_REGEX).size.positive?
+            def process_negative_or_failed_gene(negfail_gene, negfailstatus, test_scope)
+              negative_or_failed_genotype = @genotype.dup
+              negative_or_failed_genotype.add_gene(negfail_gene)
+              negative_or_failed_genotype.add_status(negfailstatus)
+              negative_or_failed_genotype.add_test_scope(test_scope)
+              @genotypes.append(negative_or_failed_genotype)
             end
 
-            def positive_seq_brca2?
-              return false if @brca2_seq_result.nil?
-
-              @brca2_seq_result.scan(CDNA_REGEX).size.positive?
-            end
-
-            def process_negative_gene(negative_gene, test_scope)
-              negative_genotype = @genotype.dup
-              negative_genotype.add_gene(negative_gene)
-              negative_genotype.add_status(1)
-              negative_genotype.add_test_scope(test_scope)
-              @genotypes.append(negative_genotype)
-            end
-
-            def process_failed_gene(failed_gene, test_scope)
-              failed_genotype = @genotype.dup
-              failed_genotype.add_gene(failed_gene)
-              failed_genotype.add_status(9)
-              failed_genotype.add_test_scope(test_scope)
-              @genotypes.append(failed_genotype)
-            end
-
-            def process_double_brca_negative(test_scope)
-              %w[BRCA1 BRCA2].each do |negative_gene|
+            def process_double_brca_status(test_status, test_scope)
+              %w[BRCA1 BRCA2].each do |double_brca|
                 genotype1 = @genotype.dup
-                genotype1.add_gene(negative_gene)
-                genotype1.add_status(1)
-                genotype1.add_test_scope(test_scope)
-                @genotypes.append(genotype1)
-              end
-              @genotypes
-            end
-
-            def process_double_brca_fail(test_scope)
-              %w[BRCA1 BRCA2].each do |unknown_gene_test|
-                genotype1 = @genotype.dup
-                genotype1.add_gene(unknown_gene_test)
-                genotype1.add_status(9)
-                genotype1.add_test_scope(test_scope)
-                @genotypes.append(genotype1)
-              end
-              @genotypes
-            end
-
-            def process_double_brca_unknown(test_scope)
-              %w[BRCA1 BRCA2].each do |unknown_gene_test|
-                genotype1 = @genotype.dup
-                genotype1.add_gene(unknown_gene_test)
-                genotype1.add_status(4)
+                genotype1.add_gene(double_brca)
+                genotype1.add_status(test_status)
                 genotype1.add_test_scope(test_scope)
                 @genotypes.append(genotype1)
               end
@@ -135,7 +86,6 @@ module Import
             def process_positive_cdnavariant(positive_gene, variant_field, test_scope)
               positive_genotype = @genotype.dup
               positive_genotype.add_gene(positive_gene)
-              # positive_genotype.add_gene_location(cdna_variant)
               add_cdnavariant_from_variantfield(variant_field, positive_genotype)
               add_proteinimpact_from_variantfield(variant_field, positive_genotype)
               positive_genotype.add_status(2)

@@ -52,7 +52,9 @@ module Import
               positive_genes = process_positive_genes(split_records)
               process_split_records(split_records)
               negative_gene = %w[BRCA1 BRCA2] - positive_genes
-              process_negative_gene(negative_gene.join, :full_screen) if negative_gene.present?
+              process_negative_or_failed_gene(negative_gene.join, 
+                                              1, :full_screen
+                                              ) if negative_gene.present?
             end
 
             def create_split_records(detected_genes)
@@ -129,7 +131,7 @@ module Import
             end
 
             def process_fullscreen_brca2_mutated_cdna_brca1_normal(cdna_variant)
-              process_negative_gene('BRCA1', :full_screen)
+              process_negative_or_failed_gene('BRCA1', 1, :full_screen)
               process_positive_cdnavariant('BRCA2', cdna_variant, :full_screen)
               @genotypes
             end
@@ -140,7 +142,7 @@ module Import
             end
 
             def process_fullscreen_brca1_mutated_cdna_brca2_normal(cdna_variant)
-              process_negative_gene('BRCA2', :full_screen)
+              process_negative_or_failed_gene('BRCA2', 1, :full_screen)
               process_positive_cdnavariant('BRCA1', cdna_variant, :full_screen)
               @genotypes
             end
@@ -152,13 +154,13 @@ module Import
             end
 
             def process_fullscreen_brca2_mutated_exon_brca1_normal(exon_variant)
-              process_negative_gene('BRCA1', :full_screen)
+              process_negative_or_failed_gene('BRCA1', 1, :full_screen)
               process_positive_exonvariant('BRCA2', exon_variant, :full_screen)
               @genotypes
             end
 
             def process_fullscreen_nonbrca_mutated_exon(exon_variant)
-              process_double_brca_negative(:full_screen)
+              process_double_brca_status(1, :full_screen)
               process_positive_exonvariant(@ngs_result.match(BRCA_GENES_REGEX)[:brca],
                                            exon_variant, :full_screen)
               @genotypes
@@ -171,14 +173,14 @@ module Import
             end
 
             def process_fullscreen_brca1_mutated_exon_brca2_normal(exon_variant)
-              process_negative_gene('BRCA2', :full_screen)
+              process_negative_or_failed_gene('BRCA2', 1, :full_screen)
               # exon_variant = @ngs_result.match(EXON_REGEX)
               process_positive_exonvariant('BRCA1', exon_variant, :full_screen)
               @genotypes
             end
 
             def process_adhoc_chek2_fullscreen_positive_records
-              process_double_brca_negative(:full_screen)
+              process_double_brca_status(1, :full_screen)
               positive_genotype = @genotype.dup
               positive_genotype.add_gene('CHEK2')
               positive_genotype.add_gene_location('1100delC')
@@ -207,7 +209,7 @@ module Import
             def process_fullscreen_non_brca_mutated_cdna_gene
               return false if @ngs_result.nil?
 
-              process_double_brca_negative(:full_screen)
+              process_double_brca_status(1, :full_screen)
               positive_gene = @ngs_result.match(/(?<nonbrca>CHEK2|PALB2|TP53)/i)[:nonbrca]
               process_positive_cdnavariant(positive_gene, @ngs_result, :full_screen)
               @genotypes
@@ -216,7 +218,7 @@ module Import
             def process_fullscreen_non_brca_mutated_exon_gene
               return if @ngs_result.nil?
 
-              process_double_brca_negative(:full_screen)
+              process_double_brca_status(1, :full_screen)
               positive_gene = @ngs_result.match(/(?<nonbrca>CHEK2|PALB2|TP53)/i)[:nonbrca]
               process_positive_exonvariant(positive_gene, @ngs_result.match(EXON_REGEX),
                                            :full_screen)
@@ -341,7 +343,7 @@ module Import
             def process_brca1_malformed_cdna_fullscreen_option3
               return if @brca1_seq_result.nil? && @brca1_mutation.nil?
 
-              process_negative_gene('BRCA2', :full_screen)
+              process_negative_or_failed_gene('BRCA2', 1, :full_screen)
               process_malformed_brca1_cdna_fullscreen
             end
 
@@ -364,7 +366,7 @@ module Import
                         (@brca2_seq_result.present? &&
                          @brca2_seq_result.scan(/neg|norm/i).size.positive?)
 
-              process_negative_gene('BRCA1', :full_screen)
+              process_negative_or_failed_gene('BRCA1', 1, :full_screen)
 
               if @brca2_seq_result.present? && @brca2_seq_result.scan(/neg|norm/i).size.zero?
                 badformat_cdna_brca2_variant = @brca2_seq_result.scan(/([^\s]+)/i)[0].join
@@ -387,7 +389,7 @@ module Import
             end
 
             def process_full_screen_brca1_mlpa_positive_variant(exon_variant)
-              process_negative_gene('BRCA2', :full_screen)
+              process_negative_or_failed_gene('BRCA2', 1, :full_screen)
               process_positive_exonvariant('BRCA1', exon_variant, :full_screen)
               @genotypes
             end
@@ -399,7 +401,7 @@ module Import
             end
 
             def process_full_screen_brca2_mlpa_positive_variant(exon_variant)
-              process_negative_gene('BRCA1', :full_screen)
+              process_negative_or_failed_gene('BRCA1', 1, :full_screen)
               process_positive_exonvariant('BRCA2', exon_variant, :full_screen)
               @genotypes
             end
@@ -417,7 +419,7 @@ module Import
             end
 
             def process_fullscreen_brca2_mutated_cdna_option2
-              process_negative_gene('BRCA1', :full_screen)
+              process_negative_or_failed_gene('BRCA1', 1, :full_screen)
               if !@brca2_mutation.nil? && @brca2_mutation.scan(CDNA_REGEX).size.positive?
                 process_positive_cdnavariant('BRCA2', @brca2_mutation, :full_screen)
               elsif !@brca2_seq_result.nil? && @brca2_seq_result.scan(CDNA_REGEX).size.positive?
@@ -431,7 +433,7 @@ module Import
               positive_gene = @ngs_result.scan(BRCA_GENES_REGEX).flatten.compact.join
               negative_gene = %w[BRCA2
                                  BRCA1] - @ngs_result.scan(BRCA_GENES_REGEX).flatten.compact
-              process_negative_gene(negative_gene.join, :full_screen)
+              process_negative_or_failed_gene(negative_gene.join, 1, :full_screen)
               positive_genotype.add_gene(positive_gene)
               positive_genotype.add_gene_location(
                 @ngs_result.match(/(?<cdna>[0-9]+[a-z]+>[a-z]+)/i)[:cdna].tr(
@@ -501,7 +503,9 @@ module Import
 
             def process_multiple_variants_fullscreen_results(variants, genes)
               negative_gene = %w[BRCA1 BRCA2] - genes
-              process_negative_gene(negative_gene.join, :full_screen) if negative_gene.present?
+              process_negative_or_failed_gene(negative_gene.join,
+                                              1, :full_screen
+                                              ) if negative_gene.present?
               if genes.uniq.size == variants.uniq.size
                 process_even_gene_cdna_variants_fullscreen_fullscreenresults(genes, variants)
               else
@@ -534,7 +538,7 @@ module Import
             end
 
             def process_fullscreen_brca1_mutated_cdna_option2
-              process_negative_gene('BRCA2', :full_screen)
+              process_negative_or_failed_gene('BRCA2', 1, :full_screen)
               if !@brca1_mutation.nil? && @brca1_mutation.scan(CDNA_REGEX).size.positive?
                 process_positive_cdnavariant('BRCA1', @brca1_mutation, :full_screen)
               elsif !@brca1_seq_result.nil? && @brca1_seq_result.scan(CDNA_REGEX).size.positive?

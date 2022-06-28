@@ -75,21 +75,21 @@ module Import
               add_ajscreen_date
 
               if normal_ashkkenazi_test?
-                process_double_brca_negative(:aj_screen)
-              elsif brca1_mutation? || brca2_mutation?
-                if brca1_mutation? & !brca2_mutation?
+                process_double_brca_status(1, :aj_screen)
+              elsif brca_mutation?(@brca1_mutation) || brca_mutation?(@brca2_mutation)
+                if brca_mutation?(@brca1_mutation) & !brca_mutation?(@brca2_mutation)
                   process_positive_cdnavariant('BRCA1', @brca1_mutation, :aj_screen)
-                  process_negative_gene('BRCA2', :aj_screen)
-                elsif brca2_mutation? & !brca1_mutation?
+                  process_negative_or_failed_gene('BRCA2', 1, :aj_screen)
+                elsif brca_mutation?(@brca2_mutation) & !brca_mutation?(@brca1_mutation)
                   process_positive_cdnavariant('BRCA2', @brca2_mutation, :aj_screen)
-                  process_negative_gene('BRCA1', :aj_screen)
+                  process_negative_or_failed_gene('BRCA1', 1, :aj_screen)
                 end
               elsif brca1_mutation_exception? || @aj_assay_result == '68_69delAG'
                 process_positive_cdnavariant('BRCA1', @aj_assay_result, :aj_screen)
-                process_negative_gene('BRCA2', :aj_screen)
+                process_negative_or_failed_gene('BRCA2', 1, :aj_screen)
               elsif brca2_mutation_exception?
                 process_positive_cdnavariant('BRCA2', @aj_assay_result, :aj_screen)
-                process_negative_gene('BRCA1', :aj_screen)
+                process_negative_or_failed_gene('BRCA1', 1, :aj_screen)
               end
               @genotypes
             end
@@ -102,7 +102,7 @@ module Import
 
               add_polish_screen_date
               if normal_polish_test?
-                process_negative_gene('BRCA1', :polish_screen)
+                process_negative_or_failed_gene('BRCA1', 1, :polish_screen)
               elsif @polish_assay_result.scan(CDNA_REGEX).size.positive?
                 process_positive_cdnavariant('BRCA1', @polish_assay_result, :polish_screen)
               end
@@ -119,19 +119,19 @@ module Import
 
               if all_null_results_targeted_test?
                 process_all_null_results_targeted_test(:targeted_mutation)
-              elsif normal_brca1_seq? ||
-                    normal_brca2_seq?
+              elsif normal_brca12_seq_result?(@brca1_seq_result) ||
+                    normal_brca12_seq_result?(@brca2_seq_result)
                 process_normal_brca1_2_seq_targeted_tests
-              elsif positive_seq_brca1? ||
-                    brca1_mutation? ||
-                    positive_seq_brca2? ||
-                    brca2_mutation?
+              elsif positive_brca12_seq?(@brca1_seq_result) ||
+                     brca_mutation?(@brca1_mutation) ||
+                    positive_brca12_seq?(@brca2_seq_result) ||
+                     brca_mutation?(@brca2_mutation)
                 process_positive_brca1_2_seq_targeted_tests
               elsif normal_brca1_mlpa_targeted_test? ||
                     normal_brca2_mlpa_targeted_test?
                 process_normal_brca1_2_mlpa_targeted_tests
-              elsif failed_brca1_mlpa_targeted_test? ||
-                    failed_brca2_mlpa_targeted_test?
+              elsif failed_brca12_mlpa_targeted_test?(@brca1_mlpa_result) ||
+                    failed_brca12_mlpa_targeted_test?(@brca2_mlpa_result)
                 process_failed_brca1_2_targeted_tests
               elsif positive_mlpa_brca1_targeted_test? ||
                     positive_exonvariants_in_set_brca1_targeted_test? ||
@@ -163,9 +163,9 @@ module Import
 
               add_full_screen_date_option1
               if @ngs_result.downcase.scan(/no\s*mut|no\s*var/i).size.positive?
-                process_double_brca_negative(:full_screen)
+                process_double_brca_status(1, :full_screen)
               elsif @ngs_result.downcase.scan(/fail/i).size.positive?
-                process_double_brca_fail(:full_screen)
+                process_double_brca_status(9, :full_screen)
               elsif @ngs_result.scan(CDNA_REGEX).size > 1 &&
                     @ngs_result.scan(BRCA_GENES_REGEX).present?
                 variants = @ngs_result.scan(CDNA_REGEX).uniq.flatten.compact
@@ -207,12 +207,12 @@ module Import
               add_full_screen_date_option2
               if @fullscreen_result.present? &&
                  @fullscreen_result.downcase.scan(/no\s*mut|no\s*var|norm/i).size.positive?
-                process_double_brca_negative(:full_screen)
+                process_double_brca_status(1, :full_screen)
               elsif brca1_malformed_cdna_fullscreen_option3?
                 process_brca1_malformed_cdna_fullscreen_option3
               elsif brca2_malformed_cdna_fullscreen_option3?
                 process_brca2_malformed_cdna_fullscreen_option3
-              elsif brca1_mutation? && brca2_mutation?
+              elsif  brca_mutation?(@brca1_mutation) &&  brca_mutation?(@brca2_mutation)
                 process_positive_cdnavariant('BRCA1', @brca1_mutation, :full_screen)
                 process_positive_cdnavariant('BRCA2', @brca2_mutation, :full_screen)
               elsif brca2_cdna_variant_fullscreen_option2?
@@ -231,11 +231,11 @@ module Import
                   @brca2_mlpa_result.match(EXON_REGEX)
                 )
               elsif all_fullscreen_option2_relevant_fields_nil?
-                process_double_brca_negative(:full_screen)
+                process_double_brca_status(1, :full_screen)
               elsif double_brca_mlpa_negative?
-                process_double_brca_negative(:full_screen)
+                process_double_brca_status(1, :full_screen)
               elsif brca12_mlpa_normal_brca12_null?
-                process_double_brca_negative(:full_screen)
+                process_double_brca_status(1, :full_screen)
               end
             end
             # rubocop:enable Lint/DuplicateBranch
@@ -252,13 +252,13 @@ module Import
             def process_fullscreen_test_option3
               add_full_screen_date_option3
               if all_fullscreen_option2_relevant_fields_nil?
-                process_double_brca_unknown(:full_screen)
+                process_double_brca_status(4, :full_screen)
               elsif brca1_normal_brca2_nil? || brca2_normal_brca1_nil?
-                process_double_brca_negative(:full_screen)
+                process_double_brca_status(1, :full_screen)
               elsif brca_false_positives?
-                process_double_brca_negative(:full_screen)
+                process_double_brca_status(1, :full_screen)
               elsif normal_brca2_malformed_fullscreen_option3?
-                process_double_brca_negative(:full_screen)
+                process_double_brca_status(1, :full_screen)
               elsif brca1_malformed_cdna_fullscreen_option3?
                 process_brca1_malformed_cdna_fullscreen_option3
               elsif brca2_malformed_cdna_fullscreen_option3?
@@ -268,7 +268,7 @@ module Import
               elsif brca2_cdna_variant_fullscreen_option3?
                 process_brca2_cdna_variant_fullscreen_option3
               elsif double_brca_mlpa_negative?
-                process_double_brca_negative(:full_screen)
+                process_double_brca_status(1, :full_screen)
               elsif fullscreen_brca1_mlpa_positive_variant?
                 process_full_screen_brca1_mlpa_positive_variant(
                   @brca1_mlpa_result.match(EXON_REGEX)
@@ -282,9 +282,9 @@ module Import
               elsif @brca2_mlpa_result.present? && @brca1_mlpa_result.present? &&
                     @brca2_mlpa_result.scan(/fail/i).size.positive? &&
                     @brca1_mlpa_result.scan(/fail/i).size.positive?
-                process_double_brca_fail(:full_screen)
+                process_double_brca_status(9, :full_screen)
               elsif brca12_mlpa_normal_brca12_null?
-                process_double_brca_negative(:full_screen)
+                process_double_brca_status(1, :full_screen)
               end
             end
             # rubocop:enable Lint/DuplicateBranch

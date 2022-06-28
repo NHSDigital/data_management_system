@@ -59,10 +59,10 @@ module Import
             end
 
             def process_normal_brca1_2_seq_targeted_tests
-              if normal_brca1_seq?
-                process_negative_gene('BRCA1', :targeted_mutation)
-              elsif normal_brca2_seq?
-                process_negative_gene('BRCA2', :targeted_mutation)
+              if normal_brca12_seq_result?(@brca1_seq_result)
+                process_negative_or_failed_gene('BRCA1', 1, :targeted_mutation)
+              elsif normal_brca12_seq_result?(@brca2_seq_result)
+                process_negative_or_failed_gene('BRCA2', 1, :targeted_mutation)
               end
               @genotypes
             end
@@ -81,33 +81,33 @@ module Import
 
             def process_normal_brca1_2_mlpa_targeted_tests
               if normal_brca1_mlpa_targeted_test?
-                process_negative_gene('BRCA1', :targeted_mutation)
+                process_negative_or_failed_gene('BRCA1', 1, :targeted_mutation)
               elsif normal_brca2_mlpa_targeted_test?
-                process_negative_gene('BRCA2', :targeted_mutation)
+                process_negative_or_failed_gene('BRCA2', 1, :targeted_mutation)
               end
               @genotypes
             end
 
             def process_failed_brca1_2_targeted_tests
-              if failed_brca1_mlpa_targeted_test?
-                process_failed_gene('BRCA1', :targeted_mutation)
-              elsif failed_brca2_mlpa_targeted_test?
-                process_failed_gene('BRCA2', :targeted_mutation)
+              if failed_brca12_mlpa_targeted_test?(@brca1_mlpa_result)
+                process_negative_or_failed_gene('BRCA1', 9, :targeted_mutation)
+              elsif failed_brca12_mlpa_targeted_test?(@brca2_mlpa_result)
+                process_negative_or_failed_gene('BRCA2', 9, :targeted_mutation)
               end
               @genotypes
             end
 
             def process_positive_brca1_2_seq_targeted_tests
-              if positive_seq_brca1?
+              if positive_brca12_seq?(@brca1_seq_result)
                 process_positive_cdnavariant('BRCA1', @brca1_seq_result,
                                              :targeted_mutation)
-              elsif brca1_mutation?
+              elsif brca_mutation?(@brca1_mutation)
                 process_positive_cdnavariant('BRCA1', @brca1_mutation,
                                              :targeted_mutation)
-              elsif positive_seq_brca2?
+              elsif positive_brca12_seq?(@brca2_seq_result)
                 process_positive_cdnavariant('BRCA2', @brca2_seq_result,
                                              :targeted_mutation)
-              elsif brca2_mutation?
+              elsif brca_mutation?(@brca2_mutation)
                 process_positive_cdnavariant('BRCA2', @brca2_mutation,
                                              :targeted_mutation)
               end
