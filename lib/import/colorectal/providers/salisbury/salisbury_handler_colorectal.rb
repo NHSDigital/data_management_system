@@ -208,16 +208,20 @@ module Import
 
           def process_multiple_tested_genes(genotypes, record, genocolorectal, 
                                             colo_string, geno_string)
-            return if geno_string.nil?
+            #return if geno_string.nil?
 
             tested_genes = colo_string.scan(COLORECTAL_GENES_REGEX).flatten.compact
-            positive_genes = geno_string.scan(COLORECTAL_GENES_REGEX).flatten.compact
+            positive_genes =  if geno_string.present?
+                                geno_string.scan(COLORECTAL_GENES_REGEX).flatten.compact
+                              else []
+                              end
             negative_genes = tested_genes - positive_genes
             if normal_test?(record)
-              process_normal_records(colo_string, genocolorectal, genotypes)
+              process_normal_record(colo_string, genocolorectal, genotypes)
             elsif failed_test?(record)
               process_failed_records(colo_string, genocolorectal, genotypes)
             elsif positive_test?(record)
+              return if geno_string.nil?
               process_negative_genes(genotypes, genocolorectal, negative_genes)
               if one_cnv_multiple_genes_multiple_exons?(geno_string)
                 process_one_cnv_multiple_genes_multiple_exons(genotypes, positive_genes,
@@ -259,7 +263,6 @@ module Import
                 process_single_exon_variant(geno_string, genocolorectal, genotypes)
               elsif cdna_variant?(geno_string)
                 process_single_cdna_variant(colo_string, geno_string, genocolorectal, genotypes)
-              else binding.pry 
               end
             end
             genotypes
