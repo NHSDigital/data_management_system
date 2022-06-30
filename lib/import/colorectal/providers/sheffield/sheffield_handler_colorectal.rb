@@ -20,8 +20,8 @@ module Import
             add_test_scope_from_geno_karyo(genocolorectal, record)
             add_organisationcode_testresult(genocolorectal)
             add_test_type(genocolorectal, record)
-            res = process_variants_from_record(genocolorectal, record)
-            res.map { |cur_genotype| @persister.integrate_and_store(cur_genotype) }
+            results = process_variants_from_record(genocolorectal, record)
+            results.each { |cur_genotype| @persister.integrate_and_store(cur_genotype) }
           end
 
           def add_organisationcode_testresult(genocolorectal)
@@ -34,7 +34,7 @@ module Import
             moleculartestingtype = record.raw_fields['moleculartestingtype'].strip
             process_method = GENETICTESTSCOPE_METHOD_MAPPING[genotype_str.downcase]
             if process_method
-              send(process_method, karyo, genocolorectal, moleculartestingtype)
+              public_send(process_method, karyo, genocolorectal, moleculartestingtype)
             else
               genocolorectal.add_test_scope(:no_genetictestscope)
             end
@@ -183,19 +183,19 @@ module Import
           end
 
           def full_screen?(genocolorectal)
-            return if genocolorectal.attribute_map['genetictestscope'].nil?
+            return false if genocolorectal.attribute_map['genetictestscope'].nil?
 
             genocolorectal.attribute_map['genetictestscope'].scan(/Full screen/i).size.positive?
           end
 
           def targeted?(genocolorectal)
-            return if genocolorectal.attribute_map['genetictestscope'].nil?
+            return false if genocolorectal.attribute_map['genetictestscope'].nil?
 
             genocolorectal.attribute_map['genetictestscope'].scan(/Targeted/i).size.positive?
           end
 
           def no_scope?(genocolorectal)
-            return if genocolorectal.attribute_map['genetictestscope'].nil?
+            return false if genocolorectal.attribute_map['genetictestscope'].nil?
 
             genocolorectal.attribute_map['genetictestscope'].scan(/Unable/i).size.positive?
           end
@@ -407,10 +407,16 @@ module Import
             return if exon_matches.nil?
 
             genocolorectal.add_exon_location($LAST_MATCH_INFO[:exons])
-            Maybe(exon_matches[:mutationtype]).map { |x| genocolorectal.add_variant_type(x) } if
-            exon_matches.names.include? 'mutationtype'
-            Maybe(exon_matches[:zygosity]).map { |x| genocolorectal.add_zygosity(x) } if
-            exon_matches.names.include? 'zygosity'
+            if exon_matches.names.include? 'mutationtype'
+              Maybe(exon_matches[:mutationtype]).map do |mutationtype|
+                genocolorectal.add_variant_type(mutationtype)
+              end
+            end
+            if exon_matches.names.include? 'zygosity'
+              Maybe(exon_matches[:zygosity]).map do |zygosity|
+                genocolorectal.add_zygosity(zygosity)
+              end
+            end
             genocolorectal.add_status(2)
             @logger.debug "SUCCESSFUL exon extraction for: #{genotype_str}"
           end
