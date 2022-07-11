@@ -50,5 +50,9 @@ module Mbis
     config.i18n.default_locale    = :en
     config.i18n.fallbacks         = true
     config.i18n.available_locales = %i[en en-odr]
+
+    # TODO: Would be nice to push this out to a YAML file and access via `config_for`
+    # so that we can avoid hardcoding...
+    config.x.user.internal_domains = ['phe.gov.uk', 'ukhsa.gov.uk']
   end
 end

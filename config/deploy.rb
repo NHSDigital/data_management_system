@@ -5,6 +5,7 @@ require 'delayed/recipes'
 set :application, 'mbis_front'
 set :repository, 'https://github.com/PublicHealthEngland/data_management_system'
 set :scm, :git
+ssh_options[:compression] = 'none' # Avoid pointless zlib warning
 
 set :delayed_job_command, 'bin/delayed_job'
 # set :delayed_job_args,    '-n 1'
@@ -26,6 +27,9 @@ set :copy_exclude, %w(
   private
   test
   vendor/cache/*-darwin-1?.gem
+  vendor/cache/*-darwin1?.gem
+  vendor/cache/*-darwin-2?.gem
+  vendor/cache/*-x86_64-darwin.gem
 )
 
 # Exclude gems from these bundler groups:

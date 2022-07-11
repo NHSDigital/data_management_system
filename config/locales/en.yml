@@ -193,7 +193,7 @@ en:
         dpa_registration_end_date_outsourced: "Data Processor: Registration End Date"
         security_assurance_outsourced: "Data Processor: Security Assurance"
         ig_code_outsourced: "Data Processor: DSP Organisation Code"
-        ig_toolkit_version_outsourced: "Data Processor: DSP Organisation Code"
+        ig_toolkit_version_outsourced: "Data Processor: Version completed"
         main_contact_name: Primary contact name (if different from above)
         main_contact_email: Primary contact email
         closure_date: Closure Date

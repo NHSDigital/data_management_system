@@ -1,14 +1,9 @@
 require 'test_helper'
-#require 'import/genotype.rb'
-#require 'import/colorectal/core/genotype_mmr.rb'
-#require 'import/brca/core/provider_handler'
-#require 'import/storage_manager/persister'
 
 class SheffieldHandlerColorectalTest < ActiveSupport::TestCase
   def setup
     @record   = build_raw_record('pseudo_id1' => 'bob')
     @genotype = Import::Colorectal::Core::Genocolorectal.new(@record)
-    # TODO: Fully qualify CambridgeHandler in cambridge_handler.rb
     @importer_stdout, @importer_stderr = capture_io do
       @handler = Import::Colorectal::Providers::Sheffield::SheffieldHandlerColorectal.new(EBatch.new)
     end
@@ -29,158 +24,187 @@ class SheffieldHandlerColorectalTest < ActiveSupport::TestCase
   end
 
   test 'add_test_scope_from_karyo_fullscreen' do
-    @logger.expects(:debug).with('ADDED FULL_SCREEN TEST for: MLH1 MSH2 & MSH6')
-    @handler.add_test_scope_from_karyo(@genotype, @record)
+    @handler.add_test_scope_from_geno_karyo(@genotype, @record)
+    assert_equal 'Full screen Colorectal Lynch or MMR', @genotype.attribute_map['genetictestscope']
   end
 
   test 'add_test_scope_from_karyo_targeted' do
     targeted_record = build_raw_record('pseudo_id1' => 'bob')
-    targeted_record.mapped_fields['genetictestscope'] = 'R210 :: Inherited MMR deficiency (Lynch syndrome)'
+    targeted_record.raw_fields['genetictestscope'] = 'R210 :: Inherited MMR deficiency (Lynch syndrome)'
     targeted_record.raw_fields['karyotypingmethod'] = 'R242.1 :: Predictive testing'
-    @logger.expects(:debug).with('ADDED TARGETED TEST for: R242.1 :: Predictive testing')
-    @handler.add_test_scope_from_karyo(@genotype, targeted_record)
+    @handler.add_test_scope_from_geno_karyo(@genotype, targeted_record)
+    assert_equal 'Targeted Colorectal Lynch or MMR', @genotype.attribute_map['genetictestscope']
   end
 
-
   test 'add_colorectal_from_raw_test_full_screen' do
-    @genotype.attribute_map['genetictestscope'] = 'Full screen Colorectal Lynch or MMR'
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for negative test for: MSH2')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH2')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for negative test for: MSH6')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH6')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for MLH1')
-    @logger.expects(:debug).with('SUCCESSFUL cdna change parse for: 1653dup')
-    @logger.expects(:debug).with('SUCCESSFUL protein change parse for: Thr552fs')
-    @handler.add_colorectal_from_raw_test(@genotype, @record)
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for negative test for: MSH2')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH2')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for negative test for: MSH6')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH6')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for MLH1')
-    @logger.expects(:debug).with('SUCCESSFUL cdna change parse for: 1653dup')
-    @logger.expects(:debug).with('SUCCESSFUL protein change parse for: Thr552fs')
-    raw_test = @handler.add_colorectal_from_raw_test(@genotype, @record)
+    @handler.add_test_scope_from_geno_karyo(@genotype, @record)
+    raw_test = @handler.process_variants_from_record(@genotype, @record)
     assert_equal 3, raw_test.size
+    assert_equal 2744, raw_test[0].attribute_map['gene']
+    assert_equal 2, raw_test[0].attribute_map['teststatus']
+    assert_equal 2804, raw_test[1].attribute_map['gene']
+    assert_equal 1, raw_test[1].attribute_map['teststatus']
+    assert_equal 2808, raw_test[2].attribute_map['gene']
+    assert_equal 1, raw_test[2].attribute_map['teststatus']
   end
 
   test 'add_colorectal_from_normal_test_full_screen' do
-    @genotype.attribute_map['genetictestscope'] = 'Full screen Colorectal Lynch or MMR'
     normal_fs_record = build_raw_record('pseudo_id1' => 'bob')
     normal_fs_record.mapped_fields['genetictestscope'] = 'Colorectal cancer panel'
     normal_fs_record.raw_fields['karyotypingmethod'] = 'Full panel'
     normal_fs_record.raw_fields['genotype'] = 'No pathogenic mutation detected'
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for MLH1')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH2')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH6')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for PMS2')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for EPCAM')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for APC')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for MUTYH')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for BMPR1A')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for PTEN')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for POLD1')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for POLE')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for SMAD4')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for STK11')
-    @handler.add_colorectal_from_raw_test(@genotype, normal_fs_record)
+    @handler.add_test_scope_from_geno_karyo(@genotype, normal_fs_record)
+    assert_equal 'Full screen Colorectal Lynch or MMR', @genotype.attribute_map['genetictestscope']
+    genocolorectals = @handler.process_variants_from_record(@genotype, normal_fs_record)
+    assert_equal 13, genocolorectals.size
+    assert_equal 2744, genocolorectals[0].attribute_map['gene']
+    assert_equal 1, genocolorectals[0].attribute_map['teststatus']
+    assert_equal 2804, genocolorectals[1].attribute_map['gene']
+    assert_equal 1, genocolorectals[1].attribute_map['teststatus']
+    assert_equal 2808, genocolorectals[2].attribute_map['gene']
+    assert_equal 1, genocolorectals[2].attribute_map['teststatus']
+    assert_equal 3394, genocolorectals[3].attribute_map['gene']
+    assert_equal 1, genocolorectals[3].attribute_map['teststatus']
+    assert_equal 1432, genocolorectals[4].attribute_map['gene']
+    assert_equal 1, genocolorectals[4].attribute_map['teststatus']
+    assert_equal 358, genocolorectals[5].attribute_map['gene']
+    assert_equal 1, genocolorectals[5].attribute_map['teststatus']
+    assert_equal 2850, genocolorectals[6].attribute_map['gene']
+    assert_equal 1, genocolorectals[6].attribute_map['teststatus']
+    assert_equal 577, genocolorectals[7].attribute_map['gene']
+    assert_equal 1, genocolorectals[7].attribute_map['teststatus']
+    assert_equal 62, genocolorectals[8].attribute_map['gene']
+    assert_equal 1, genocolorectals[8].attribute_map['teststatus']
+    assert_equal 3408, genocolorectals[9].attribute_map['gene']
+    assert_equal 1, genocolorectals[9].attribute_map['teststatus']
+    assert_equal 5000, genocolorectals[10].attribute_map['gene']
+    assert_equal 1, genocolorectals[10].attribute_map['teststatus']
+    assert_equal 72, genocolorectals[11].attribute_map['gene']
+    assert_equal 1, genocolorectals[11].attribute_map['teststatus']
+    assert_equal 76, genocolorectals[12].attribute_map['gene']
+    assert_equal 1, genocolorectals[12].attribute_map['teststatus']
   end
 
-
   test 'add_colorectal_from_incomplete_test_full_screen' do
-    @genotype.attribute_map['genetictestscope'] = 'Full screen Colorectal Lynch or MMR'
     incomplete_fs_record = build_raw_record('pseudo_id1' => 'bob')
     incomplete_fs_record.mapped_fields['genetictestscope'] = 'Colorectal cancer panel'
     incomplete_fs_record.raw_fields['karyotypingmethod'] = 'MLH1 MSH2 & MSH6'
     incomplete_fs_record.raw_fields['genotype'] = 'Incomplete analysis - see below'
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for negative test for: MLH1')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for MLH1')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for negative test for: MSH2')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH2')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for negative test for: MSH6')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH6')
-    @handler.add_colorectal_from_raw_test(@genotype, incomplete_fs_record)
+    @handler.add_test_scope_from_geno_karyo(@genotype, incomplete_fs_record)
+    assert_equal 'Full screen Colorectal Lynch or MMR', @genotype.attribute_map['genetictestscope']
+    genocolorectals = @handler.process_variants_from_record(@genotype, incomplete_fs_record)
+    assert_equal 2744, genocolorectals[0].attribute_map['gene']
+    assert_equal 2804, genocolorectals[1].attribute_map['gene']
+    assert_equal 2808, genocolorectals[2].attribute_map['gene']
+    assert_equal 4, genocolorectals[0].attribute_map['teststatus']
+    assert_equal 4, genocolorectals[1].attribute_map['teststatus']
+    assert_equal 4, genocolorectals[2].attribute_map['teststatus']
   end
 
   test 'add_colorectal_from_multiple_genes_full_screen' do
-    @genotype.attribute_map['genetictestscope'] = 'Full screen Colorectal Lynch or MMR'
     multiplegenes_fs_record = build_raw_record('pseudo_id1' => 'bob')
     multiplegenes_fs_record.mapped_fields['genetictestscope'] = 'Colorectal cancer panel'
     multiplegenes_fs_record.raw_fields['karyotypingmethod'] = 'Full panel'
     multiplegenes_fs_record.raw_fields['genotype'] = '"SMAD4:c.[1573A>G];[=]  p.[(Ile525Val)];[(=)] MUTYH: c.[1014G>C ];[=]  p.[(Glu338His)];[(=)] -See below'
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for negative test for: MLH1')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for MLH1')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for negative test for: MSH2')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH2')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for negative test for: MSH6')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH6')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for negative test for: PMS2')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for PMS2')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for negative test for: EPCAM')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for EPCAM')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for negative test for: APC')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for APC')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for negative test for: BMPR1A')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for BMPR1A')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for negative test for: PTEN')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for PTEN')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for negative test for: POLD1')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for POLD1')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for negative test for: POLE')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for POLE')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for negative test for: STK11')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for STK11')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for SMAD4')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for MUTYH')
-    @handler.add_colorectal_from_raw_test(@genotype, multiplegenes_fs_record)
+    @handler.add_test_scope_from_geno_karyo(@genotype, multiplegenes_fs_record)
+    assert_equal 'Full screen Colorectal Lynch or MMR', @genotype.attribute_map['genetictestscope']
+    genocolorectals = @handler.process_variants_from_record(@genotype, multiplegenes_fs_record)
+    assert_equal 13, genocolorectals.size
+    assert_equal 'c.1573A>G', genocolorectals[0].attribute_map['codingdnasequencechange']
+    assert_equal 'c.1014G>C', genocolorectals[1].attribute_map['codingdnasequencechange']
+    assert_equal 'p.Ile525Val', genocolorectals[0].attribute_map['proteinimpact']
+    assert_equal 'p.Glu338His', genocolorectals[1].attribute_map['proteinimpact']
+    assert_equal 72, genocolorectals[0].attribute_map['gene']
+    assert_equal 2850, genocolorectals[1].attribute_map['gene']
+    assert_equal 2, genocolorectals[0].attribute_map['teststatus']
+    assert_equal 2, genocolorectals[1].attribute_map['teststatus']
+    assert_nil genocolorectals[10].attribute_map['codingdnasequencechange']
+    assert_nil genocolorectals[12].attribute_map['codingdnasequencechange']
+    assert_nil genocolorectals[10].attribute_map['proteinimpact']
+    assert_nil genocolorectals[12].attribute_map['proteinimpact']
+    assert_equal 3408, genocolorectals[10].attribute_map['gene']
+    assert_equal 76, genocolorectals[12].attribute_map['gene']
+    assert_equal 1, genocolorectals[10].attribute_map['teststatus']
+    assert_equal 1, genocolorectals[12].attribute_map['teststatus']
   end
 
   test 'add_colorectal_from_multiple_genes_karyofield_full_screen' do
-
-    @genotype.attribute_map['genetictestscope'] = 'Full screen Colorectal Lynch or MMR'
     normalmultiplekaryo_fs_record = build_raw_record('pseudo_id1' => 'bob')
-    normalmultiplekaryo_fs_record.mapped_fields['genetictestscope'] = 'R209 :: Inherited colorectal cancer (with or without polyposis)'
+    normalmultiplekaryo_fs_record.raw_fields['genetictestscope'] = 'R209 :: Inherited colorectal cancer (with or without polyposis)'
     normalmultiplekaryo_fs_record.raw_fields['karyotypingmethod'] = 'R209.1 :: NGS - APC and MUTYH only'
     normalmultiplekaryo_fs_record.raw_fields['genotype'] = 'No pathogenic mutation detected'
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for APC')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for MUTYH')
-    @handler.add_colorectal_from_raw_test(@genotype, normalmultiplekaryo_fs_record)
+    @handler.add_test_scope_from_geno_karyo(@genotype, normalmultiplekaryo_fs_record)
+    assert_equal 'Full screen Colorectal Lynch or MMR', @genotype.attribute_map['genetictestscope']
+    genocolorectals = @handler.process_variants_from_record(@genotype, normalmultiplekaryo_fs_record)
+    assert_equal 2, genocolorectals.size
+    assert_equal 1, genocolorectals[0].attribute_map['teststatus']
+    assert_equal 1, genocolorectals[1].attribute_map['teststatus']
+    assert_equal 358, genocolorectals[0].attribute_map['gene']
+    assert_equal 2850, genocolorectals[1].attribute_map['gene']
   end
-  
-  
-  test 'add_colorectal_from_raw_test_targeted' do
 
-    @genotype.attribute_map['genetictestscope'] = 'Targeted Colorectal Lynch or MMR'
+  test 'add_colorectal_from_raw_test_targeted' do
     targeted_record = build_raw_record('pseudo_id1' => 'bob')
-    targeted_record.mapped_fields['genetictestscope'] = 'R210 :: Inherited MMR deficiency (Lynch syndrome)'
+    targeted_record.raw_fields['genetictestscope'] = 'R210 :: Inherited MMR deficiency (Lynch syndrome)'
     targeted_record.raw_fields['karyotypingmethod'] = 'R242.1 :: Predictive testing'
     targeted_record.raw_fields['genotype'] = 'c.[2079dup];[2079=]  p.[(Cys694fs)];[(Cys694=)] MSH6 '
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH6')
-    @logger.expects(:debug).with('SUCCESSFUL cdna change parse for: 2079dup')
-    @logger.expects(:debug).with('SUCCESSFUL protein change parse for: Cys694fs')
-    @handler.add_colorectal_from_raw_test(@genotype, targeted_record)
+    @handler.add_test_scope_from_geno_karyo(@genotype, targeted_record)
+    genocolorectals = @handler.process_variants_from_record(@genotype, targeted_record)
+    assert_equal 1, genocolorectals.size
+    assert_equal 2, genocolorectals[0].attribute_map['teststatus']
+    assert_equal 'c.2079dup', genocolorectals[0].attribute_map['codingdnasequencechange']
+    assert_equal 'p.Cys694fs', genocolorectals[0].attribute_map['proteinimpact']
+    assert_equal 2808, genocolorectals[0].attribute_map['gene']
   end
 
   test 'add_colorectal_from_null_test_targeted' do
-    @genotype.attribute_map['genetictestscope'] = 'Targeted Colorectal Lynch or MMR'
     targeted_record = build_raw_record('pseudo_id1' => 'bob')
-    targeted_record.mapped_fields['genetictestscope'] = 'R210 :: Inherited MMR deficiency (Lynch syndrome)'
+    targeted_record.raw_fields['genetictestscope'] = 'R210 :: Inherited MMR deficiency (Lynch syndrome)'
     targeted_record.raw_fields['karyotypingmethod'] = 'R242.1 :: Predictive testing'
     targeted_record.raw_fields['genotype'] = 'Familial likely pathogenic mutation NOT detected'
-    @logger.expects(:error).with('Bad input type given for colorectal extraction: ')
-    @handler.add_colorectal_from_raw_test(@genotype, targeted_record)
-    @logger.expects(:error).with('Bad input type given for colorectal extraction: ')
-    assert_equal 1, @handler.add_colorectal_from_raw_test(@genotype, targeted_record)[0].attribute_map['teststatus']
-  end
-
-  test 'process_teststatus' do
-    @handler.process_teststatus(@genotype, @record)
-    assert_equal 2, @genotype.attribute_map['teststatus']
+    @handler.add_test_scope_from_geno_karyo(@genotype, targeted_record)
+    genocolorectals = @handler.process_variants_from_record(@genotype, targeted_record)
+    assert_equal 1, genocolorectals[0].attribute_map['teststatus']
+    assert_nil genocolorectals[0].attribute_map['gene']
   end
 
   test 'process_cdna_change' do
     @logger.expects(:debug).with('SUCCESSFUL cdna change parse for: 1653dup')
-    @handler.process_cdna_change(@genotype, @record)
+    @handler.process_cdna_change(@genotype, @record.raw_fields['genotype'])
     assert_equal 'c.1653dup', @genotype.attribute_map['codingdnasequencechange']
+  end
+
+  test 'only_protein_impact' do
+    only_protein_record = build_raw_record('pseudo_id1' => 'bob')
+    only_protein_record.raw_fields['genetictestscope'] = 'FAP'
+    only_protein_record.raw_fields['karyotypingmethod'] = 'APC gene sequencing'
+    only_protein_record.raw_fields['genotype'] = 'p.([Arg302*];[=])'
+    only_protein_record.raw_fields['moleculartestingtype'] = 'Diagnostic testing'
+    @handler.add_test_scope_from_geno_karyo(@genotype, only_protein_record)
+    genocolorectals = @handler.process_variants_from_record(@genotype, only_protein_record)
+    assert_equal 1, genocolorectals.size
+    assert_equal 'Full screen Colorectal Lynch or MMR', genocolorectals[0].attribute_map['genetictestscope']
+    assert_equal 'p.Arg302', genocolorectals[0].attribute_map['proteinimpact']
+    assert_equal 'c.', genocolorectals[0].attribute_map['codingdnasequencechange']
+    assert_equal 358, genocolorectals[0].attribute_map['gene']
+  end
+
+  test 'exon deletion record' do
+    exon_record = build_raw_record('pseudo_id1' => 'bob')
+    exon_record.raw_fields['genetictestscope'] = 'R209 :: Inherited colorectal cancer (with or without polyposis)'
+    exon_record.raw_fields['karyotypingmethod'] = 'R209.1 :: Small panel in Leeds'
+    exon_record.raw_fields['genotype'] = 'PMS2-PMS2 ex9-10 deletion-Heterozygous-UV5'
+    exon_record.raw_fields['moleculartestingtype'] = 'Diagnostic testing'
+    @handler.add_test_scope_from_geno_karyo(@genotype, exon_record)
+    genocolorectals = @handler.process_variants_from_record(@genotype, exon_record)
+    assert_equal 13, genocolorectals.size
+    assert_equal 'Full screen Colorectal Lynch or MMR', genocolorectals[0].attribute_map['genetictestscope']
+    assert_nil genocolorectals[0].attribute_map['proteinimpact']
+    assert_nil genocolorectals[0].attribute_map['codingdnasequencechange']
+    assert_equal '9-10', genocolorectals[0].attribute_map['exonintroncodonnumber']
+    assert_equal 3, genocolorectals[0].attribute_map['sequencevarianttype']
+    assert_equal 3394, genocolorectals[0].attribute_map['gene']
+    assert_equal 1, genocolorectals[0].attribute_map['variantgenotype']
   end
 
   def clinical_json
