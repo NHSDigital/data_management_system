@@ -9,3 +9,10 @@ Rails.application.config.assets.version = '1.0'
 # Precompile additional assets.
 # application.js, application.css, and all non-JS/CSS in app/assets folder are already added.
 # Rails.application.config.assets.precompile += %w( search.js )
+
+#  We've experienced segmentation faults when pre-compiling assets with libsass.
+# Disabling Sprockets 4's export_concurrent setting seems to resolve the issues
+# see: https://github.com/rails/sprockets/issues/633
+Rails.application.config.assets.configure do |env|
+  env.export_concurrent = false if env.respond_to?(:export_concurrent=)
+end
