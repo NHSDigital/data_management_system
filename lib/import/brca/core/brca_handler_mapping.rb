@@ -14,7 +14,6 @@ module Import
           'RCU' => Import::Brca::Providers::Sheffield::SheffieldHandler,
           'R0A' => Import::Brca::Providers::Manchester::ManchesterHandler,
           'RJ1' => Import::Brca::Providers::Guys::GuysHandler,
-          # 'RQ3' => Import::Brca::Providers::Birmingham::BirminghamHandler,
           'RGT' => Import::Brca::Providers::Cambridge::CambridgeHandler,
           'RTH' => Import::Brca::Providers::Oxford::OxfordHandler,
           'RJ7' => Import::Brca::Providers::StGeorge::StGeorgeHandler,
