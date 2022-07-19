@@ -28,7 +28,7 @@ class SalisburyHandlerColorectalTest < ActiveSupport::TestCase
     Import::Brca::Core::RawRecord.new(default_options.merge!(options))
   end
 
-  test 'process_multiple_tested_genes' do
+  test 'process_multigene_normal_record' do
     multigene_normal_record = build_raw_record('pseudo_id1' => 'bob')
     multigene_normal_record.raw_fields['test'] = 'MLH1 and MSH2 test'
     multigene_normal_record.raw_fields['status'] = 'Normal'
@@ -39,6 +39,9 @@ class SalisburyHandlerColorectalTest < ActiveSupport::TestCase
     assert_equal 1, res[0].attribute_map['teststatus']
     assert_equal 2804, res[1].attribute_map['gene']
     assert_equal 1, res[1].attribute_map['teststatus']
+  end
+
+  test 'process_multigene_failed_record' do
     multigene_failed_record = build_raw_record('pseudo_id1' => 'bob')
     multigene_failed_record.raw_fields['test'] = 'MLH1 and MSH2 test'
     multigene_failed_record.raw_fields['status'] = 'Fail'
@@ -49,6 +52,9 @@ class SalisburyHandlerColorectalTest < ActiveSupport::TestCase
     assert_equal 9, res[0].attribute_map['teststatus']
     assert_equal 2804, res[1].attribute_map['gene']
     assert_equal 9, res[1].attribute_map['teststatus']
+  end
+
+  test 'process_multigene_multicnv_variant_record' do
     multigene_multicnv_variants_record = build_raw_record('pseudo_id1' => 'bob')
     multigene_multicnv_variants_record.raw_fields['test'] = 'MLH1 and MSH2 test'
     multigene_multicnv_variants_record.raw_fields['status'] = 'Pathogenic'
@@ -64,6 +70,9 @@ class SalisburyHandlerColorectalTest < ActiveSupport::TestCase
     assert_equal 1432, res[2].attribute_map['gene']
     assert_equal 2, res[2].attribute_map['teststatus']
     assert_equal '9', res[2].attribute_map['exonintroncodonnumber']
+  end
+
+  test 'process_multigene_singlecnv_record' do
     multigene_onecnv_variant_record = build_raw_record('pseudo_id1' => 'bob')
     multigene_onecnv_variant_record.raw_fields['test'] = 'MLH1 and MSH2 test'
     multigene_onecnv_variant_record.raw_fields['status'] = 'Pathogenic'
@@ -75,6 +84,9 @@ class SalisburyHandlerColorectalTest < ActiveSupport::TestCase
     assert_equal 2804, res[1].attribute_map['gene']
     assert_equal 2, res[1].attribute_map['teststatus']
     assert_equal '9', res[1].attribute_map['exonintroncodonnumber']
+  end
+
+  test 'process_multigene_positivecnv_noinfo_record' do
     multigene_noinformation_variant_record = build_raw_record('pseudo_id1' => 'bob')
     multigene_noinformation_variant_record.raw_fields['test'] = 'MLH1 and MSH2 test'
     multigene_noinformation_variant_record.raw_fields['status'] = 'Pathogenic'
