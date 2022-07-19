@@ -4,6 +4,9 @@ module Import
   module Colorectal
     module Providers
       module Salisbury
+        # rubocop:disable Metrics/ClassLength
+        # rubocop:disable Metrics/AbcSize
+        # rubocop:disable Metrics/MethodLength
         # Process Salisbury-specific record details into generalized internal genotype format
         class SalisburyHandlerColorectal < Import::Brca::Core::ProviderHandler
           TEST_SCOPE_MAPPING_COLO = {
@@ -264,6 +267,9 @@ module Import
             end
             genotypes
           end
+          # rubocop:enable Metrics/ClassLength
+          # rubocop:enable Metrics/AbcSize
+          # rubocop:enable Metrics/MethodLength
         end
       end
     end
