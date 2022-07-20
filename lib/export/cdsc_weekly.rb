@@ -201,7 +201,7 @@ module Export
     # Export data to file, returns number of records emitted
     def export
       i = 0
-      CSV.open(@filename, 'wb', csv_options) do |csv|
+      CSV.open(@filename, 'wb', **csv_options) do |csv|
         header_rows.each { |row| csv << row }
         meth = @ppats.respond_to?(:find_each) ? :find_each : :each
         @ppats.includes(:death_data, :ppatient_rawdata).send(meth) do |ppat|
