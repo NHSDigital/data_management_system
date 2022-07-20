@@ -44,7 +44,7 @@ module Import
                                                 POLE|
                                                 PTEN|
                                                 SMAD4|
-                                                STK11)/xi.freeze # Added by
+                                                STK11)/xi.freeze
 
           def process_fields(record)
             genocolorectal = Import::Colorectal::Core::Genocolorectal.new(record)
@@ -72,26 +72,26 @@ module Import
           end
 
           def normal_test?(record)
-            return if record.raw_fields['status'].nil?
+            return false if record.raw_fields['status'].nil?
 
             record.raw_fields['status'].scan(/No mutation detected|benign|normal/i).size.positive?
           end
 
           def failed_test?(record)
-            return if record.raw_fields['status'].nil?
+            return false if record.raw_fields['status'].nil?
 
             record.raw_fields['status'].scan(FAILED_TEST).size.positive?
           end
 
           def exon_variant?(geno_string)
-            return if geno_string.nil?
+            return false if geno_string.nil?
 
             geno_string.scan(DEL_DUP_REGEX).size.positive? &&
               geno_string.scan(EXON_LOCATION_REGEX).size.positive?
           end
 
           def cdna_variant?(geno_string)
-            return if geno_string.nil?
+            return false if geno_string.nil?
 
             geno_string.scan(GENE_LOCATION_REGEX).size.positive?
           end
@@ -125,26 +125,26 @@ module Import
           end
 
           def positive_test?(record)
-            return if record.raw_fields['status'].nil?
+            return false if record.raw_fields['status'].nil?
 
             record.raw_fields['status'].scan(POSITIVE_TEST).size.positive?
           end
 
           def multiple_tested_genes?(colo_string)
-            return if colo_string.scan(COLORECTAL_GENES_REGEX).empty?
+            return false if colo_string.scan(COLORECTAL_GENES_REGEX).empty?
 
             colo_string.scan(COLORECTAL_GENES_REGEX).size > 1
           end
 
           def one_cnv_multiple_genes_multiple_exons?(geno_string)
-            return if geno_string.nil?
+            return false if geno_string.nil?
 
             geno_string.scan(DEL_DUP_REGEX).flatten.compact.size == 1 &&
               geno_string.scan(COLORECTAL_GENES_REGEX).flatten.compact.size > 1
           end
 
           def one_cnv_one_gene?(geno_string)
-            return if geno_string.nil?
+            return false if geno_string.nil?
 
             geno_string.scan(DEL_DUP_REGEX).flatten.compact.size == 1 &&
               geno_string.scan(COLORECTAL_GENES_REGEX).flatten.compact.size == 1
@@ -207,10 +207,30 @@ module Import
             end
           end
 
+          def process_positive_multigene_record(geno_string, genotypes, genocolorectal,
+                                                negative_genes, positive_genes)
+            return if geno_string.nil?
+
+            process_negative_genes(genotypes, genocolorectal, negative_genes)
+            if one_cnv_multiple_genes_multiple_exons?(geno_string)
+              process_one_cnv_multiple_genes_multiple_exons(genotypes, positive_genes,
+                                                            genocolorectal, geno_string)
+            elsif one_cnv_one_gene?(geno_string)
+              process_one_cnv_one_gene(genotypes, positive_genes,
+                                       genocolorectal, geno_string)
+
+            else
+              positive_genes.each do |gene|
+                dup_genocolorectal = genocolorectal.dup_colo
+                dup_genocolorectal.add_gene_colorectal(gene)
+                dup_genocolorectal.add_status(:positive)
+                genotypes << dup_genocolorectal
+              end
+            end
+          end
+
           def process_multiple_tested_genes(genotypes, record, genocolorectal,
                                             colo_string, geno_string)
-            # return if geno_string.nil?
-
             tested_genes = colo_string.scan(COLORECTAL_GENES_REGEX).flatten.compact
             positive_genes = if geno_string.present?
                                geno_string.scan(COLORECTAL_GENES_REGEX).flatten.compact
@@ -223,26 +243,21 @@ module Import
             elsif failed_test?(record)
               process_failed_record(colo_string, genocolorectal, genotypes)
             elsif positive_test?(record)
-              return if geno_string.nil?
-
-              process_negative_genes(genotypes, genocolorectal, negative_genes)
-              if one_cnv_multiple_genes_multiple_exons?(geno_string)
-                process_one_cnv_multiple_genes_multiple_exons(genotypes, positive_genes,
-                                                              genocolorectal, geno_string)
-              elsif one_cnv_one_gene?(geno_string)
-                process_one_cnv_one_gene(genotypes, positive_genes,
-                                         genocolorectal, geno_string)
-
-              else
-                positive_genes.each do |gene|
-                  dup_genocolorectal = genocolorectal.dup_colo
-                  dup_genocolorectal.add_gene_colorectal(gene)
-                  dup_genocolorectal.add_status(:positive)
-                  genotypes << dup_genocolorectal
-                end
-              end
+              process_positive_multigene_record(geno_string, genotypes, genocolorectal,
+                                                negative_genes, positive_genes)
             end
             genotypes
+          end
+
+          def process_positive_singlegene_record(colo_string, geno_string, genotypes,
+                                                 genocolorectal)
+            if geno_string.blank?
+              process_false_positive(colo_string, genocolorectal, genotypes)
+            elsif exon_variant?(geno_string)
+              process_single_exon_variant(geno_string, genocolorectal, genotypes)
+            elsif cdna_variant?(geno_string)
+              process_single_cdna_variant(colo_string, geno_string, genocolorectal, genotypes)
+            end
           end
 
           def add_colorectal_from_raw_test(genocolorectal, record)
@@ -257,13 +272,8 @@ module Import
             elsif failed_test?(record)
               process_failed_record(colo_string, genocolorectal, genotypes)
             elsif positive_test?(record)
-              if geno_string.blank?
-                process_false_positive(colo_string, genocolorectal, genotypes)
-              elsif exon_variant?(geno_string)
-                process_single_exon_variant(geno_string, genocolorectal, genotypes)
-              elsif cdna_variant?(geno_string)
-                process_single_cdna_variant(colo_string, geno_string, genocolorectal, genotypes)
-              end
+              process_positive_singlegene_record(colo_string, geno_string, genotypes,
+                                                 genocolorectal)
             end
             genotypes
           end
