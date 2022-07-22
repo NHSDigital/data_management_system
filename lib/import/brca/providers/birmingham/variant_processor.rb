@@ -19,46 +19,17 @@ module Import
           end
 
           def process_variants_from_report
-            if @posnegtest.upcase == 'P'
+            if ['P', '?'].include? @posnegtest.upcase
               @logger.debug 'ABNORMAL TEST'
-              if brca_genes_from_test_result.empty?
-                process_result_without_brca_genes
-              elsif @testresult.scan(/no evidence(?!\.).+[^.]|no further(?!\.).+[^.]/i).join.size.positive?
-                process_noevidence_records
-              elsif @testresult.scan(CDNA_REGEX).size.positive?
-                process_testresult_cdna_variants
-              elsif @testresult.scan(CHR_VARIANTS_REGEX).size.positive?
-                process_chr_variants
-              elsif @testresult.scan(CDNA_REGEX).blank? &&
-                    @testresult.scan(BRCA_REGEX).size.positive? &&
-                    @testreport.scan(BRCA_REGEX).size.positive?
-                process_positive_malformed_variants
-              elsif @testreport.scan(BRCA_REGEX).blank? &&
-                    @testresult.scan(BRCA_REGEX).size.positive?
-                @logger.debug 'TESTREPORT EMPTY: EXTRACTING ONLY FROM TESTRESULTS'
-                process_empty_testreport_results
-              end
+              process_positive_records
             elsif @posnegtest.upcase == 'N' &&
                   @testresult.scan(/INTERNAL REPORT/i).size.zero? &&
                   !@testreport.nil?
+              @logger.debug 'NORMAL TEST FOUND'
               process_negative_records
             end
 
             @genotypes
-          end
-
-          private
-
-          def process_result_without_brca_genes
-            if @testreport.scan(CDNA_REGEX).size.positive?
-              process_testreport_cdna_variants
-            elsif @testreport.scan(CHR_VARIANTS_REGEX).size.positive?
-              process_chromosomal_variant(@testreport)
-            end
-          end
-
-          def brca_genes_from_test_result
-            @testresult.scan(BRCA_REGEX)
           end
         end
       end

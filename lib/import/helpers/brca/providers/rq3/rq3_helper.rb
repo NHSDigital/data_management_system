@@ -3,22 +3,22 @@ module Import
     module Brca
       module Providers
         module Rq3
+          # Helper methods for Brimingham Germline extractor
           module Rq3Helper
             include Import::Helpers::Brca::Providers::Rq3::Rq3Constants
 
             def process_genetictestscope(genotype, record)
               indication = record.raw_fields['indication']
               reason = record.raw_fields['reason']
-              report = record.raw_fields['report'] unless record.raw_fields['report'].nil?
-              moltesttype = record.raw_fields['moleculartestingtype']
-              if indication == 'AZOVCA'
+              report = record.raw_fields['report']
+              moltesttype = record.raw_fields['moleculartestingtype']&.downcase&.strip
+              if (indication == 'AZOVCA') || (reason == 'Mainstreaming Test')
                 genotype.add_test_scope(:full_screen)
-              elsif reason == 'Mainstreaming Test'
-                genotype.add_test_scope(:full_screen)
-              elsif !report.nil? && report =~ /previously identified in this family|previously reported in this family|previously found in an affected relative/
+              elsif !report.nil? && report =~ REPORT_GENETICTESTSCOPE_REGEX
                 genotype.add_test_scope(:targeted_mutation)
-              elsif TEST_SCOPE_MAP_BRCA[moltesttype.downcase.strip]
-                scope = TEST_SCOPE_MAP_BRCA[moltesttype.strip.downcase]
+              else
+                scope = TEST_SCOPE_MAP_BRCA[moltesttype]
+                scope = :no_genetictestscope if scope.blank?
                 genotype.add_test_scope(scope)
               end
             end
@@ -27,161 +27,121 @@ module Import
               genotype.attribute_map['organisationcode_testresult'] = '699F0'
             end
 
-            def process_noevidence_records
-              no_evidence = @testresult.scan(/no evidence(?!\.).+[^.]|no further(?!\.).+[^.]/i).join
-              true_variant = @testresult.gsub(/no evidence(?!\.).+[^.]|no further(?!\.).+[^.]/i, '')
-              negativegenes = no_evidence.scan(BRCA_REGEX).flatten - true_variant.scan(BRCA_REGEX).flatten
-              process_negative_genes(negativegenes)
-              @genotype.add_gene(unique_brca_genes_from(true_variant).join)
-              @genotype.add_gene_location(true_variant.scan(CDNA_REGEX).join)
-              @genotype.add_status(2)
-              if true_variant.scan(PROTEIN_REGEX).size.positive?
-                @genotype.add_protein_impact(true_variant.scan(PROTEIN_REGEX).join)
+            # rubocop:disable Metrics/AbcSize to maintain readability
+            def process_positive_records
+              if @testresult.scan(BRCA_REGEX).empty?
+                process_result_without_brca_genes
+              elsif @testresult.scan(NO_EVIDENCE_REGEX).join.size.positive?
+                process_noevidence_records
+              elsif check_cdna_variant?
+                process_testresult_cdna_variants
+              elsif @testresult.scan(CHR_VARIANTS_REGEX).size.positive?
+                process_chr_variants
+              elsif @testresult.scan(CHR_MALFORMED_REGEX).size.positive?
+                process_chr_malformed_variants
+              elsif check_malformed_cdna_variant?
+                process_positive_malformed_variants
+              elsif check_emptyreport_result?
+                process_empty_testreport_results
               end
+            end
+            # rubocop:enable Metrics/AbcSize
+
+            def check_cdna_variant?
+              @testresult.scan(CDNA_REGEX).size.positive? ||
+                @testresult.scan(MUTATION_REGEX).size.positive? ||
+                @testresult.scan(MALFORMED_MUTATION_REGEX).size.positive?
+            end
+
+            def check_malformed_cdna_variant?
+              @testresult.scan(CDNA_REGEX).blank? &&
+                @testresult.scan(BRCA_REGEX).size.positive? &&
+                @testreport.scan(BRCA_REGEX).size.positive?
+            end
+
+            def check_emptyreport_result?
+              @testreport.scan(BRCA_REGEX).blank? &&
+                @testresult.scan(BRCA_REGEX).size.positive?
+            end
+
+            def process_result_without_brca_genes
+              positive_gene = BRCA_MALFORMED_GENE_MAPPING[@testresult]
+              if full_screen?
+                genelist = sometimes_tested? ? unique_brca_genes_from(@testreport) : @genelist
+                negativegenes = genelist - [positive_gene]
+                process_negative_genes(negativegenes)
+              end
+              @genotype.add_gene(positive_gene)
+              @genotype.add_gene_location(get_cdna_for_positive_cases(@testresult))
+              @genotype.add_protein_impact(get_protein_impact(@testresult))
+              @genotype.add_status(2)
               @genotypes.append(@genotype)
             end
 
-            def process_testreport_cdna_variants
-              case @testreport.scan(CDNA_REGEX).size
-              when 1
-                if testreport.scan(BRCA_REGEX).uniq.size == 1
-                  genocolorectal.add_gene_colorectal(unique_colorectal_genes_from(testreport).join)
-                  genocolorectal.add_gene_location(testreport.scan(CDNA_REGEX).join)
-                  genocolorectal.add_status(2)
-                  if @testreport.scan(PROTEIN_REGEX).size.positive?
-                    genocolorectal.add_protein_impact(@testreport.scan(PROTEIN_REGEX).join)
-                  end
-                  @genotypes.append(genocolorectal)
-                end
-              when 2
-                if @testreport.scan(BRCA_REGEX).uniq.size == 2
-                  genes = brca_genes_from(@testreport)
-                  cdnas = @testreport.scan(CDNA_REGEX).flatten
-                  proteins = @testreport.scan(PROTEIN_REGEX).flatten
-                  positive_results = genes.zip(cdnas, proteins)
-                  positive_multiple_cdna_variants(positive_results, @genotypes, genocolorectal)
-                end
-              end
-            end
-
-            def process_empty_testreport_results
-              @genotype.add_status(2)
-              @genotype.add_gene(brca_genes_from(@testresult).join)
-              @genotype.add_gene_location('')
+            def process_noevidence_records
+              # regex looks for first period to extract no evidence statement
+              # so if not already there, we add it
+              @testresult += '.'
+              no_evidence = @testresult.scan(NO_EVIDENCE_REGEX).join
+              true_variant = @testresult.gsub(NO_EVIDENCE_REGEX, '')
+              negativegenes = no_evidence.scan(BRCA_REGEX).flatten - true_variant.
+                              scan(BRCA_REGEX).flatten
+              process_negative_genes(negativegenes)
+              @genotype.add_gene(unique_brca_genes_from(true_variant).join)
+              process_cdna(true_variant, @genotype)
+              process_protein_impact(true_variant, @genotype)
+              process_exon(true_variant, @genotype)
               @genotypes.append(@genotype)
             end
 
             def process_testresult_cdna_variants
-              if @testresult.scan(CDNA_REGEX).size == 1
-                process_testresult_single_cdnavariant
-              else
+              if (@testresult.scan(CDNA_REGEX).size > 1) ||
+                 (@testresult.scan(MUTATION_REGEX).size > 1) ||
+                 (@testresult.scan(MALFORMED_MUTATION_REGEX).size > 1)
                 process_testresult_multiple_cdnavariant
+              else
+                process_testresult_single_cdnavariant
               end
             end
 
             def process_testresult_single_cdnavariant
+              process_full_screen_negative_genes
               if unique_brca_genes_from(@testresult).one?
-                if full_screen?
-                  genelist = sometimes_tested? ? unique_brca_genes_from(@testreport) : @genelist
-                  negativegenes = genelist - unique_brca_genes_from(@testresult)
-                  process_negative_genes(negativegenes)
-                end
                 @genotype.add_gene(unique_brca_genes_from(@testresult).join)
+                process_cdna(@testresult, @genotype)
+                process_protein_impact(@testresult, @genotype)
+                process_exon(@testresult, @genotype)
+                @genotypes.append(@genotype)
               else
-                if full_screen?
-                  if sometimes_tested?
-                    genelist = unique_brca_genes_from(@testreport)
-                    negativegenes = genelist - unique_brca_genes_from(@testresult)
-                  else
-                    negativegenes = @genelist - [unique_brca_genes_from(@testresult)[0]]
-                  end
-                  process_negative_genes(negativegenes)
-                end
-                @genotype.add_gene(unique_brca_genes_from(@testresult)[0])
+                process_multigene_multivariants
               end
-              @genotype.add_gene_location(@testresult.scan(CDNA_REGEX).join)
-              if @testresult.scan(PROTEIN_REGEX).size.positive?
-                @genotype.add_protein_impact(@testresult.scan(PROTEIN_REGEX).join)
-              end
-              @genotype.add_status(2)
-              @genotypes.append(@genotype)
             end
 
             def process_testresult_multiple_cdnavariant
-              if @testresult.scan(BRCA_REGEX).uniq.size > 1
-                if full_screen?
-                  genelist = sometimes_tested? ? unique_brca_genes_from(@testreport) : @genelist
-                  negativegenes = genelist - unique_brca_genes_from(@testresult)
-                  process_negative_genes(negativegenes)
-                end
-                genes = brca_genes_from(@testresult)
-                cdnas = @testresult.scan(CDNA_REGEX).flatten
-                proteins = @testresult.scan(PROTEIN_REGEX).flatten
-                positive_results = genes.zip(cdnas, proteins)
-                positive_multiple_cdna_variants(positive_results)
-              elsif unique_brca_genes_from(@testresult).one?
-                if full_screen?
-                  genelist = sometimes_tested? ? unique_brca_genes_from(@testreport) : @genelist
-                  negativegenes = genelist - unique_brca_genes_from(@testresult)
-                  process_negative_genes(negativegenes)
-                end
-                if @testresult.scan(/known as #{CDNA_REGEX}/i).size.positive?
-                  false_cdnas = @testresult.scan(/known as #{CDNA_REGEX}/i).flatten
-                  cdnas = @testresult.scan(CDNA_REGEX).flatten - false_cdnas
-                else cdnas = @testresult.scan(CDNA_REGEX).flatten
-                end
-                genes = unique_brca_genes_from(@testresult) * cdnas.size
-                proteins = @testresult.scan(PROTEIN_REGEX).flatten
-                positive_results = genes.zip(cdnas, proteins)
-                positive_multiple_cdna_variants(positive_results)
+              process_full_screen_negative_genes
+              genes = unique_brca_genes_from(@testresult)
+              if genes.size > 1
+                cdnas = collect_cdnas
+              elsif genes.one?
+                cdnas = check_false_cdnas
+                genes *= cdnas.size
               end
+              proteins = @testresult.scan(PROTEIN_REGEX).flatten.compact
+              if cdnas.size > proteins.size && !proteins.size.zero?
+                proteins = [] # to avoid assosciating wrong protein with mutation
+              end
+              positive_results = genes.zip(cdnas, proteins)
+              positive_multiple_cdna_variants(positive_results)
             end
 
-            def process_chr_variants
-              if full_screen?
-                genelist = if sometimes_tested?
-                             unique_brca_genes_from(@testreport)
-                           else
-                             BRCA_GENES_MAP[@record.raw_fields['indication']]
-                           end
-                negativegenes = genelist - unique_brca_genes_from(@testresult)
-                process_negative_genes(negativegenes)
+            def check_false_cdnas
+              if @testresult.scan(/known as #{CDNA_REGEX}/i).size.positive?
+                false_cdnas = @testresult.scan(/known as #{CDNA_REGEX}/i).flatten.compact
+                cdnas = @testresult.scan(CDNA_REGEX).flatten.compact - false_cdnas
+              else
+                cdnas = collect_cdnas
               end
-              process_chromosomal_variant(@testresult)
-            end
-
-            def process_chromosomal_variant(testcolumn)
-              brca_genes = unique_brca_genes_from(testcolumn)
-              if brca_genes.one?
-                @genotype.add_gene(brca_genes.join)
-                if testcolumn.scan(CHR_VARIANTS_REGEX).size == 1
-                  @genotype.add_variant_type(testcolumn.scan(CHR_VARIANTS_REGEX).join)
-                else
-                  @genotype.add_variant_type(testcolumn.scan(CHR_VARIANTS_REGEX)[1])
-                end
-                @genotype.add_status(2)
-                @genotypes.append(@genotype)
-              elsif brca_genes.size > 1
-                genes = brca_genes_from(testcolumn)
-                if testcolumn.scan(CHR_VARIANTS_REGEX).size == 1
-                  chromosomalvariants = testcolumn.scan(CHR_VARIANTS_REGEX).flatten * genes.size
-                else
-                  genes = brca_genes_from(testcolumn)
-                  chromosomalvariants = testcolumn.scan(CHR_VARIANTS_REGEX).flatten
-                end
-                positive_results = genes.zip(chromosomalvariants)
-                positive_multiple_chromosomal_variants(positive_results)
-              end
-            end
-
-            def positive_multiple_chromosomal_variants(positive_results)
-              positive_results.each do |gene, chromosomalvariant|
-                abnormal_genotype = @genotype.dup
-                abnormal_genotype.add_gene(gene)
-                abnormal_genotype.add_status(2)
-                abnormal_genotype.add_variant_type(chromosomalvariant)
-                @genotypes.append(abnormal_genotype)
-              end
+              cdnas
             end
 
             def positive_multiple_cdna_variants(positive_results)
@@ -195,12 +155,110 @@ module Import
               end
             end
 
-            def unique_brca_genes_from(string)
-              brca_genes_from(string).uniq
+            def process_multigene_multivariants
+              testresult_str = @testresult.remove("\n",
+                                                  'BRCA1 and BRCA2 mutation analysis complete.')
+              split_gene = unique_brca_genes_from(testresult_str)[0]
+              testresult_arr = testresult_str.split(split_gene, 2)
+              testresult_arr[0] += split_gene
+              testresult_arr.each do |testresult|
+                genotype_dup = @genotype.dup
+                genes = unique_brca_genes_from(testresult)
+                gene = genes.one? ? genes : genes - [split_gene]
+                genotype_dup.add_gene(gene[0])
+                process_split_testresult(testresult, genotype_dup)
+                @genotypes.append(genotype_dup)
+              end
             end
 
-            def brca_genes_from(string)
-              string.scan(BRCA_REGEX).flatten
+            def process_split_testresult(testresult, genotype)
+              if positive_malformed_cdna?(testresult) ||
+                 positive_exonvariant?(testresult) ||
+                 positive_cdna?(testresult)
+                process_cdna(testresult, genotype)
+                process_protein_impact(testresult, genotype)
+                process_exon(testresult, genotype)
+              else
+                genotype.add_status(1)
+              end
+            end
+
+            def process_chr_variants
+              process_full_screen_negative_genes
+              process_chromosomal_variant(@testresult)
+            end
+
+            def process_chromosomal_variant(testcolumn)
+              brca_genes = unique_brca_genes_from(testcolumn)
+              @genotype.add_gene(brca_genes.join)
+              @genotype.add_variant_type(testcolumn.scan(CHR_VARIANTS_REGEX).uniq.join)
+              process_exon(@testresult, @genotype)
+              @genotype.add_status(2)
+              @genotypes.append(@genotype)
+            end
+
+            def process_chr_malformed_variants
+              process_full_screen_negative_genes
+              gene = unique_brca_genes_from(@testresult)
+              duplicated_genotype = @genotype.dup
+              duplicated_genotype.add_status(2)
+              duplicated_genotype.add_gene(gene.join)
+              duplicated_genotype.add_gene_location(get_cdna_for_positive_cases(@testresult))
+              process_protein_impact(@testresult, duplicated_genotype)
+              process_exon(@testresult, duplicated_genotype)
+              @genotypes.append(duplicated_genotype)
+            end
+
+            def process_positive_malformed_variants
+              if !@testreport.nil? &&
+                 @testresult.scan(CDNA_REGEX).blank? &&
+                 @testreport.scan(CDNA_REGEX).blank? &&
+                 @testreport.scan(BRCA_REGEX).size.positive?
+                process_full_screen_negative_genes
+                genes = unique_brca_genes_from(@testresult)
+                genes.each do |gene|
+                  duplicated_genotype = @genotype.dup
+                  duplicated_genotype.add_status(2)
+                  duplicated_genotype.add_gene(gene)
+                  duplicated_genotype.add_gene_location('')
+                  @genotypes.append(duplicated_genotype)
+                end
+              end
+            end
+
+            def process_empty_testreport_results
+              @genotype.add_status(2)
+              @genotype.add_gene(unique_brca_genes_from(@testresult).join)
+              @genotype.add_gene_location('')
+              @genotypes.append(@genotype)
+            end
+
+            def unique_brca_genes_from(string)
+              string.scan(BRCA_REGEX).flatten.uniq
+            end
+
+            def full_screen?
+              return if @genotype.attribute_map['genetictestscope'].nil?
+
+              @genotype.attribute_map['genetictestscope'].scan(/Full screen/i).size.positive?
+            end
+
+            def process_negative_records
+              if full_screen?
+                negativegenes = sometimes_tested? ? unique_brca_genes_from(@testreport) : @genelist
+              else
+                testreport_genes = unique_brca_genes_from(@testreport)
+                negativegenes = testreport_genes.flatten.uniq
+              end
+              process_negative_genes(negativegenes)
+            end
+
+            def process_full_screen_negative_genes
+              return unless full_screen?
+
+              genelist = sometimes_tested? ? unique_brca_genes_from(@testreport) : @genelist
+              negativegenes = genelist - unique_brca_genes_from(@testresult)
+              process_negative_genes(negativegenes)
             end
 
             def process_negative_genes(negativegenes)
@@ -215,44 +273,70 @@ module Import
               end
             end
 
-            def full_screen?
-              @genotype.attribute_map['genetictestscope'] == 'Full screen BRCA1 and BRCA2'
+            def positive_cdna?(testresult)
+              testresult.scan(CDNA_REGEX).size.positive? ||
+                testresult.scan(MUTATION_REGEX).size.positive?
             end
 
-            def process_negative_records
-              @logger.debug 'NORMAL TEST FOUND'
-              if full_screen?
-                negativegenes = if sometimes_tested?
-                                  unique_brca_genes_from(@testreport)
-                                else
-                                  @genelist
-                                end
+            def positive_malformed_cdna?(testresult)
+              testresult.scan(MALFORMED_MUTATION_REGEX).size.positive?
+            end
+
+            def positive_exonvariant?(testresult)
+              testresult.scan(EXON_LOCATION).size.positive?
+            end
+
+            def process_cdna(testcolumn, genotype)
+              if testcolumn.scan(CDNA_REGEX).size.positive?
+                genotype.add_status(2)
+                genotype.add_gene_location($LAST_MATCH_INFO[:cdna])
+              elsif testcolumn.scan(MUTATION_REGEX).size.positive?
+                genotype.add_status(2)
+                genotype.add_gene_location($LAST_MATCH_INFO[:mutation])
+              elsif testcolumn.scan(MALFORMED_MUTATION_REGEX).size.positive?
+                genotype.add_status(2)
+                genotype.add_gene_location($LAST_MATCH_INFO[:cdnamutation])
+              end
+            end
+
+            def get_cdna_for_positive_cases(testcolumn)
+              if testcolumn.scan(CDNA_REGEX).size.positive?
+                $LAST_MATCH_INFO[:cdna]
+              elsif testcolumn.scan(MUTATION_REGEX).size.positive?
+                $LAST_MATCH_INFO[:mutation]
+              elsif testcolumn.scan(MALFORMED_MUTATION_REGEX).size.positive?
+                $LAST_MATCH_INFO[:cdnamutation]
               else
-                testreport_genes = unique_brca_genes_from(@testreport)
-                negativegenes = testreport_genes.flatten.uniq
+                ''
               end
-              process_negative_genes(negativegenes)
             end
 
-            def process_positive_malformed_variants
-              if !@testreport.nil? &&
-                 @testresult.scan(CDNA_REGEX).blank? &&
-                 @testreport.scan(CDNA_REGEX).blank? &&
-                 @testreport.scan(BRCA_REGEX).size.positive?
-                if full_screen?
-                  genelist = sometimes_tested? ? unique_brca_genes_from(@testreport) : @genelist
-                  negativegenes = genelist - unique_brca_genes_from(@testresult)
-                  process_negative_genes(negativegenes)
-                end
-                genes = brca_genes_from(@testreport)
-                genes.uniq do |gene|
-                  duplicated_genotype = @genotype.dup
-                  duplicated_genotype.add_status(2)
-                  duplicated_genotype.add_gene(gene)
-                  duplicated_genotype.add_gene_location('')
-                  @genotypes.append(duplicated_genotype)
-                end
+            def get_protein_impact(testcolumn)
+              testcolumn.match(PROTEIN_REGEX)
+              $LAST_MATCH_INFO[:impact] unless $LAST_MATCH_INFO.nil?
+            end
+
+            def collect_cdnas
+              cdnas = @testresult.scan(CDNA_REGEX).flatten.compact
+              cdnas = @testresult.scan(MUTATION_REGEX).flatten.compact unless cdnas.size.positive?
+              unless cdnas.size.positive?
+                cdnas = @testresult.scan(MALFORMED_MUTATION_REGEX).flatten.compact
               end
+              cdnas
+            end
+
+            def process_protein_impact(testcolumn, genotype)
+              return unless testcolumn.scan(PROTEIN_REGEX).size.positive?
+
+              genotype.add_status(2)
+              genotype.add_protein_impact($LAST_MATCH_INFO[:impact])
+            end
+
+            def process_exon(testcolumn, genotype)
+              return unless testcolumn.scan(EXON_LOCATION).size.positive?
+
+              genotype.add_status(2)
+              genotype.add_exon_location($LAST_MATCH_INFO[:exons])
             end
 
             def sometimes_tested?
