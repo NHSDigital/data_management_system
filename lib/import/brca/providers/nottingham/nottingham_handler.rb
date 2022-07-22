@@ -21,8 +21,13 @@ module Import
                              'BRCA1/BRCA2 PST'                                    => :targeted_mutation,
                              'Cancer PST'                                         => :targeted_mutation
             
-          }
+                            }.freeze
 
+          TEST_SCOPE_TTYPE_MAP = { 'Diagnostic' => :full_screen,
+                                   'Indirect'   => :full_screen,
+                                   'Predictive' => :targeted_mutation
+          }
+          
           PASS_THROUGH_FIELDS = %w[age authoriseddate
                                    receiveddate
                                    specimentype
@@ -48,7 +53,8 @@ module Import
                                             record.raw_fields,
                                             PASS_THROUGH_FIELDS)
             add_simple_fields(genotype, record)
-            add_complex_fields(genotype, record)
+            # add_complex_fields(genotype, record)
+            assign_test_scope(record, genotype)
             process_gene(genotype, record) # Added by Francesco
             process_cdna_change(genotype, record)
             process_varpathclass(genotype, record)
@@ -62,7 +68,6 @@ module Import
           end
 
           def add_simple_fields(genotype, record)
-            binding.pry
             testingtype = record.raw_fields['moleculartestingtype']
             genotype.add_molecular_testing_type_strict(TEST_TYPE_MAP[testingtype.downcase.strip])
             # variant_path_class = record.raw_fields['teststatus']
@@ -71,12 +76,15 @@ module Import
             genotype.add_received_date(received_date.downcase) unless received_date.nil?
           end
 
-          # def assign_test_scope(record, genotype)
-          #   testscopefield = record.raw_fields['disease']
-          #   testtypefield = record.raw_fields['moleculartestingtype']
-          #   if TEST_SCOPE_MAP[record.raw_fields['disease']].present?
-          #     genotype.add_test_
-          # end
+          def assign_test_scope(record, genotype)
+            testscopefield = record.raw_fields['disease']
+            testtypefield = record.raw_fields['moleculartestingtype']
+            if TEST_SCOPE_MAP[testscopefield].present?
+              genotype.add_test_scope(TEST_SCOPE_MAP[testscopefield])
+            elsif %w[PALB2 CDH1 TP53].include? testscopefield
+               genotype.add_test_scope(TEST_SCOPE_TTYPE_MAP[testtypefield])
+            end
+          end
 
           def add_complex_fields(genotype, record)
             Maybe(record.raw_fields['disease']).each do |disease|
