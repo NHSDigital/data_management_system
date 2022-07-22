@@ -1,6 +1,7 @@
 # User model. Used by devise.
 class User < ActiveRecord::Base
-  class_attribute :special_users, default: {}
+  class_attribute :special_users,    default: {}
+  class_attribute :internal_domains, default: Rails.application.config.x.user.internal_domains
 
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable and :omniauthable
@@ -89,7 +90,14 @@ class User < ActiveRecord::Base
               merge(SystemRole.cas_manager_and_access_approvers))
   }
 
-  scope :internal, -> { where(arel_table[:email].matches('%@phe.gov.uk')) }
+  scope :internal, lambda {
+    where(
+      arel_table[:email].matches_any(
+        internal_domains.map { |domain| "%@#{domain}" }
+      )
+    )
+  }
+
   validates :username,      uniqueness: { conditions: -> { where.not(username: nil) } }
   validates :first_name,    presence: true
   validates :last_name,     presence: true
@@ -205,7 +213,13 @@ class User < ActiveRecord::Base
   end
 
   def internal?
-    email&.downcase&.end_with?('@phe.gov.uk') || false
+    return false if email.blank?
+
+    email_address = email.downcase
+
+    internal_domains.any? do |domain|
+      email_address.end_with?("@#{domain}")
+    end
   end
 
   def external?

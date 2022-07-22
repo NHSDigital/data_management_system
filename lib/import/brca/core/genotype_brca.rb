@@ -33,8 +33,8 @@ module Import
                      'NF1' => 54,
                      'NF2' => 55,
                      'SMARCB1' => 74,
-                     'LZTR1' => 4952
-                   }.freeze
+                     'LZTR1' => 4952,
+                     'CDH1' => 794 }.freeze
 
         BRCA_REGEX = /(?<atm>ATM|P041|P042)|
                       (?<epcam>EPCAM)|
@@ -60,6 +60,7 @@ module Import
                       (?<nf1>NF1)|
                       (?<nf2>NF2)|
                       (?<smarcb1>SMARCB1)|
+                      (?<cdh1>CDH1)|
                       (?<lztr1>LZTR1)/ix.freeze # Added by Francesco
 
         def other_gene
@@ -87,7 +88,7 @@ module Import
 
         def process_integer_imput(brca_input)
           if [7, 8, 72, 79, 451, 865, 3186, 2744, 1432, 2804, 2808, 3394, 62, 76,
-              590, 2912, 3615, 3616, 2850, 54, 55, 74, 4952, 18, 20].include? brca_input
+              590, 2912, 3615, 3616, 2850, 54, 55, 74, 4952, 18, 20, 794].include? brca_input
             @attribute_map['gene'] = brca_input
             @logger.debug "SUCCESSFUL gene parse for #{brca_input}"
           elsif (1..2).cover? brca_input
@@ -132,6 +133,8 @@ module Import
             @attribute_map['genetictestscope'] = 'AJ BRCA screen'
           when :polish_screen
             @attribute_map['genetictestscope'] = 'Polish BRCA screen'
+          when :no_genetictestscope
+            @attribute_map['genetictestscope'] = 'Unable to assign BRCA genetictestscope'
           else
             @logger.warn "Bad key given to addTestScope: #{scope}"
           end

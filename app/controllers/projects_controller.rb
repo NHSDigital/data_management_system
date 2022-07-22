@@ -239,7 +239,7 @@ class ProjectsController < ApplicationController
   def project_params
     params.require(:project).permit(:alternative_data_access_address,
                                     :alternative_data_access_postcode,
-                                    :application_date,
+                                    :application_date, :application_log,
                                     :first_contact_date,
                                     :data_access_address,
                                     :data_access_postcode, :description, :end_data_date,
