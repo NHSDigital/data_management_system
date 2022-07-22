@@ -31,6 +31,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: Remove mini_racer CentOS 7 shim from Gemfile.lock
+      run: sed -i.bak -e '/mini_racer (0.6.2-x86_64-linux)/,+1d' Gemfile.lock
+    - name: Remove tests confirming mini_racer CentOS 7 shim in Gemfile.lock
+      run: rm -f test/lib/gemfile_test.rb
     - name: Set up Ruby + Bundle
       uses: ruby/setup-ruby@v1
       with:
@@ -49,6 +53,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: Remove mini_racer CentOS 7 shim from Gemfile.lock
+      run: sed -i.bak -e '/mini_racer (0.6.2-x86_64-linux)/,+1d' Gemfile.lock
     - name: Set up Ruby + Bundle
       uses: ruby/setup-ruby@v1
       with:
@@ -61,6 +67,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: Remove mini_racer CentOS 7 shim from Gemfile.lock
+      run: sed -i.bak -e '/mini_racer (0.6.2-x86_64-linux)/,+1d' Gemfile.lock
     - name: Set up Ruby + Bundle
       uses: ruby/setup-ruby@v1
       with:
