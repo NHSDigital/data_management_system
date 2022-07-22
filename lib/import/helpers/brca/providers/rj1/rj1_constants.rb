@@ -54,7 +54,7 @@ module Import
                                           'B2'     => 'BRCA2',
                                           'BRCA 2' => 'BRCA2' }.freeze
 
-            DEPRECATED_BRCA_NAMES_REGEX = /B1|BR1|BRCA\s1|B2|BR2|BRCA\s2/i.freeze
+            DEPRECATED_BRCA_NAMES_REGEX = /B1|BR1|BRCA\s1|B2|BR2|BRCA\s2/i
 
             BRCA1_MUTATIONS = ['het c.68_69delAG (p.Glu23fs)', 'het c.5266dupC (p.Gln1756fs) (M)',
                                'Het c.68_69delAG p.(Glu23fs) (M)', 'c.302-1g>t (M)'].freeze
