@@ -13,6 +13,16 @@ module Import
                             'family studies' => :predictive,
                             'indirect' => :predictive } .freeze
 
+          TEST_SCOPE_MAP = { 'Hereditary Breast and Ovarian Cancer (BRCA1/BRCA2)' => :full_screen,
+                             'BRCA1 + BRCA2 + PALB2'                              => :full_screen,
+                             'Breast Cancer Core Panel'                           => :full_screen,
+                             'Breast Cancer Full Panel'                           => :full_screen,
+                             'Breast Core Panel'                                  => :full_screen,
+                             'BRCA1/BRCA2 PST'                                    => :targeted_mutation,
+                             'Cancer PST'                                         => :targeted_mutation
+            
+          }
+
           PASS_THROUGH_FIELDS = %w[age authoriseddate
                                    receiveddate
                                    specimentype
@@ -52,6 +62,7 @@ module Import
           end
 
           def add_simple_fields(genotype, record)
+            binding.pry
             testingtype = record.raw_fields['moleculartestingtype']
             genotype.add_molecular_testing_type_strict(TEST_TYPE_MAP[testingtype.downcase.strip])
             # variant_path_class = record.raw_fields['teststatus']
