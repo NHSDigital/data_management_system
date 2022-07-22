@@ -167,7 +167,7 @@ module ActiveSupport
       end
     end
 
-    require 'mocha/mini_test'
+    require 'mocha/minitest'
   end
 end
 

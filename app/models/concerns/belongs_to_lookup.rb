@@ -3,11 +3,11 @@ module BelongsToLookup
   extend ActiveSupport::Concern
 
   class_methods do
-    def belongs_to_lookup(attribute, lookup_class, options = {})
+    def belongs_to_lookup(attribute, lookup_class, **options)
       defaults = { class_name: lookup_class.name, foreign_key: attribute, optional: true }
       scope    = options.delete(:scope)
 
-      belongs_to :"#{attribute}_lookup", scope, defaults.merge!(options)
+      belongs_to :"#{attribute}_lookup", scope, **defaults.merge!(options)
 
       define_singleton_method("#{attribute}_lookup_class") { lookup_class }
       delegate "#{attribute}_lookup_class", to: :class

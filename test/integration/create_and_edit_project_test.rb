@@ -363,6 +363,44 @@ class CreateAndEditProjectTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test 'should update ODR ref for ODR projects' do
+    User.any_instance.stubs(application_manager?: false)
+
+    visit team_path(@team)
+    within('#projects-panel') do
+      click_button 'New'
+      click_link 'EOI'
+    end
+
+    assert(has_no_content?('ODR Ref'), 'Should only display ODR Ref to application managers.')
+
+    User.any_instance.stubs(application_manager?: true)
+
+    visit team_path(@team)
+    within('#projects-panel') do
+      click_button 'New'
+      click_link 'EOI'
+    end
+
+    fill_in 'project_first_contact_date', with: '06/06/2022'
+    fill_in 'project_name', with: 'EOI project test'
+    fill_in 'project_project_purpose', with: 'more details here'
+    click_link 'Add Dataset'
+    click_button 'Create EOI'
+
+    eoi_project = Project.find_by(name: 'EOI project test')
+    visit project_path(eoi_project)
+
+    click_on 'Edit'
+    fill_in 'project_application_log', with: 'ODR2223_100', fill_options: { clear: :backspace }
+    click_on 'Update EOI'
+
+    assert has_content? 'ODR Reference: ODR2223_100'
+
+    eoi_project.reload
+    assert eoi_project.application_log, 'ODR2223_100'
+  end
+
   private
 
   def fill_in_project_data
