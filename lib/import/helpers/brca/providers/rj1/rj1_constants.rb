@@ -18,8 +18,8 @@ module Import
             ].freeze
 
             # rubocop:disable Lint/MixedRegexpCaptureTypes
-            CDNA_REGEX = /(\w+\s)?c\.\s?(?<cdna>[^\s]+)|(?<cdna>^[0-9].+)\s?\(M\)/i.freeze
-            PROTEIN_REGEX = /p\.\(?(?<impact>[a-z]+[0-9]+[a-z]+)\)?/i.freeze
+            CDNA_REGEX = /(\w+\s)?c\.\s?(?<cdna>[^\s]+)|(?<cdna>^[0-9].+)\s?\(M\)/i
+            PROTEIN_REGEX = /p\.\(?(?<impact>[a-z]+[0-9]+[a-z]+)\)?/i
             EXON_REGEX = /(?<zygosity>het|hom)?\.?\s(?<deldup>del(etion)?|dup(lication)?)\.?[\s\w]+?
                           ex(on)?\s?(?<exons>[0-9]+(?<otherexon>-[0-9]+)?)|ex(on)?\s?
                           (?<exons>[0-9]+(?<otherexon>-[0-9]+)?)\s?(?<zygosity>het|hom)?\.?\s?
@@ -27,9 +27,9 @@ module Import
                           (?<zygosity>het|hom)?\s?(?<deldup>del|dup)\s?ex(?<ons>ons)?\s?
                           (?<exons>[0-9]+(?<otherexon>-[0-9]+)?)|
                           (?<zygosity>het|hom)?\s?del\s
-                          ex(on)?(?<exons>[0-9]+(?<otherexon>-[0-9]+)?)/ix.freeze
+                          ex(on)?(?<exons>[0-9]+(?<otherexon>-[0-9]+)?)/ix
 
-            MALFORMED_CDNA_REGEX = /(?<donotgrep>het|BRCA1|BRCA2)?\s?(?<cdna>[^\s]+)/i.freeze
+            MALFORMED_CDNA_REGEX = /(?<donotgrep>het|BRCA1|BRCA2)?\s?(?<cdna>[^\s]+)/i
             # rubocop:enable Lint/MixedRegexpCaptureTypes
             BRCA_GENES_REGEX = /(?<brca>BRCA1|
                                        BRCA2|
@@ -45,7 +45,7 @@ module Import
                                        NF1|
                                        NF2|
                                        SMARCB1|
-                                       LZTR1)/xi.freeze
+                                       LZTR1)/xi
 
             DEPRECATED_BRCA_NAMES_MAP = { 'BR1'    => 'BRCA1',
                                           'B1'     => 'BRCA1',
