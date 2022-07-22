@@ -71,6 +71,13 @@ module Import
             genotype.add_received_date(received_date.downcase) unless received_date.nil?
           end
 
+          # def assign_test_scope(record, genotype)
+          #   testscopefield = record.raw_fields['disease']
+          #   testtypefield = record.raw_fields['moleculartestingtype']
+          #   if TEST_SCOPE_MAP[record.raw_fields['disease']].present?
+          #     genotype.add_test_
+          # end
+
           def add_complex_fields(genotype, record)
             Maybe(record.raw_fields['disease']).each do |disease|
               case disease.downcase.strip
