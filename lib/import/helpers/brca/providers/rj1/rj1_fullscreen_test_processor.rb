@@ -44,6 +44,8 @@ module Import
               @brca2_seq_result.scan(CDNA_REGEX).size.zero?) && @brca2_mutation.nil?
             end
 
+            # rubocop:disable Style/GuardClause
+            # Disabled this complaint as I need the method as it is. Changing it would change result
             def process_fullscreen_result_cdnavariant
               return if @fullscreen_result.nil?
 
@@ -57,6 +59,7 @@ module Import
                                                 1, :full_screen)
               end
             end
+            # rubocop:enable Style/GuardClause
 
             def create_split_records(detected_genes)
               split_records = @fullscreen_result.split(detected_genes[-1])
