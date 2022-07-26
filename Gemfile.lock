@@ -543,6 +543,7 @@ DEPENDENCIES
   railroady
   rails (~> 6.0.5.1)
   regexp-examples
+  rexml
   sass-rails
   simplecov
   spring
