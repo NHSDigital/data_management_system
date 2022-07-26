@@ -4,7 +4,7 @@
 ---
 beta:
   branch: 'main'
-  ruby: 3.0.4
+  ruby: 2.7.3
 live:
   branch: 'main'
   ruby: 2.7.3
