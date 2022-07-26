@@ -77,7 +77,6 @@ gem 'ndr_workflow', '~> 1.2', '>= 1.2.2'
 gem 'ndr_ui'
 gem 'ndr_pseudonymise', '~> 0.2.6'
 gem 'ndr_authenticate', '0.2.3.1'
-gem 'rexml' # Needed by ruby-saml 1.14.0 but not included as a dependency
 
 gem 'axlsx'
 gem 'bootstrap-table-rails'
