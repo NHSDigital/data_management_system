@@ -34,7 +34,6 @@ public/system/project_attachments/
 .rubocop-https---raw-githubusercontent-com-PublicHealthEngland-ndr-dev-support-master--rubocop-yml
 public/assets/*
 
-
 /public/packs
 /public/packs-test
 /node_modules
