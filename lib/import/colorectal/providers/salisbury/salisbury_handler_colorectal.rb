@@ -27,11 +27,11 @@ module Import
                                         authoriseddate
                                         requesteddate].freeze
 
-          POSITIVE_TEST = /variant|pathogenic|deletion/i.freeze
-          FAILED_TEST = /Fail*+|gaps/i.freeze
-          GENE_LOCATION_REGEX = /.*c\.(?<cdna>[^ ]+)(?: p\.\((?<impact>.*)\))?.*/i.freeze
-          EXON_LOCATION_REGEX = /exons? (\d+[a-z]*(?: ?- ?\d+[a-z]*)?)/i.freeze
-          DEL_DUP_REGEX = /(?:\W*(del)(?:etion|[^\W])?)|(?:\W*(dup)(?:lication|[^\W])?)/i.freeze
+          POSITIVE_TEST = /variant|pathogenic|deletion/i
+          FAILED_TEST = /Fail*+|gaps/i
+          GENE_LOCATION_REGEX = /.*c\.(?<cdna>[^ ]+)(?: p\.\((?<impact>.*)\))?.*/i
+          EXON_LOCATION_REGEX = /exons? (\d+[a-z]*(?: ?- ?\d+[a-z]*)?)/i
+          DEL_DUP_REGEX = /(?:\W*(del)(?:etion|[^\W])?)|(?:\W*(dup)(?:lication|[^\W])?)/i
           COLORECTAL_GENES_REGEX = /(?<colorectal>APC|
                                                 BMPR1A|
                                                 EPCAM|
@@ -44,7 +44,7 @@ module Import
                                                 POLE|
                                                 PTEN|
                                                 SMAD4|
-                                                STK11)/xi.freeze
+                                                STK11)/xi
 
           def process_fields(record)
             genocolorectal = Import::Colorectal::Core::Genocolorectal.new(record)
