@@ -1,18 +1,18 @@
 require 'test_helper'
-#require 'import/genotype.rb'
-#require 'import/colorectal/core/genotype_mmr.rb'
-#require 'import/brca/core/provider_handler'
-#require 'import/storage_manager/persister'
+# require 'import/genotype.rb'
+# require 'import/colorectal/core/genotype_mmr.rb'
+# require 'import/brca/core/provider_handler'
+# require 'import/storage_manager/persister'
 
 class SalisburyHandlerColorectalTest < ActiveSupport::TestCase
   def setup
     @record   = build_raw_record('pseudo_id1' => 'bob')
     @genotype = Import::Colorectal::Core::Genocolorectal.new(@record)
-    # TODO: Fully qualify CambridgeHandler in cambridge_handler.rb
+    @logger = Import::Log.get_logger
+    @logger.level = Logger::INFO
     @importer_stdout, @importer_stderr = capture_io do
       @handler = Import::Colorectal::Providers::Salisbury::SalisburyHandlerColorectal.new(EBatch.new)
     end
-    @logger = Import::Log.get_logger
   end
 
   private
@@ -28,63 +28,134 @@ class SalisburyHandlerColorectalTest < ActiveSupport::TestCase
     Import::Brca::Core::RawRecord.new(default_options.merge!(options))
   end
 
-  test 'extract_variant' do
-    @handler.extract_variant(@record.raw_fields['genotype'], @genotype)
-    assert_equal 'c.1621A>C', @genotype.attribute_map['codingdnasequencechange']
-    broken_record = build_raw_record('pseudo_id1' => 'bob')
-    broken_record.raw_fields['genotype'] = 'Cabbage'
-    @logger.expects(:warn).with('Cannot extract gene location from raw test: Cabbage')
-    @handler.extract_variant(broken_record.raw_fields['genotype'], @genotype)
-    nil_record = build_raw_record('pseudo_id1' => 'bob')
-    nil_record.raw_fields['genotype'] = ''
-    @handler.extract_variant(nil_record.raw_fields['genotype'], @genotype)
-    assert_equal 1, @genotype.attribute_map['teststatus']
+  test 'process_multigene_normal_record' do
+    multigene_normal_record = build_raw_record('pseudo_id1' => 'bob')
+    multigene_normal_record.raw_fields['test'] = 'MLH1 and MSH2 test'
+    multigene_normal_record.raw_fields['status'] = 'Normal'
+    multigene_normal_record.raw_fields['genotype'] = ''
+    res = @handler.add_colorectal_from_raw_test(@genotype, multigene_normal_record)
+    assert_equal 2, res.size
+    assert_equal 2744, res[0].attribute_map['gene']
+    assert_equal 1, res[0].attribute_map['teststatus']
+    assert_equal 2804, res[1].attribute_map['gene']
+    assert_equal 1, res[1].attribute_map['teststatus']
   end
 
-  test 'add_colorectal_from_raw_test' do
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH6')
-    @logger.expects(:debug).with('SUCCESSFUL gene change parse for: MSH6')
-    @handler.add_colorectal_from_raw_test(@genotype, @record)
-    assert_equal 2808, @genotype.attribute_map['gene']
-    multigene_record = build_raw_record('pseudo_id1' => 'bob')
-    multigene_record.raw_fields['test'] = 'MLH1 and MSH2 test'
-    @logger.expects(:error).with('Multiple genes detected in input string: MLH1 and MSH2 test;')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for MLH1')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH2')
-    @handler.add_colorectal_from_raw_test(@genotype, multigene_record)
-    cabbage_record = build_raw_record('pseudo_id1' => 'bob')
-    cabbage_record.raw_fields['test'] = 'COO-COO!'
-    @logger.expects(:debug).with('FAILED cdna channge parse for  COO-COO!')
-    @handler.add_colorectal_from_raw_test(@genotype, cabbage_record)
+  test 'process_multigene_failed_record' do
+    multigene_failed_record = build_raw_record('pseudo_id1' => 'bob')
+    multigene_failed_record.raw_fields['test'] = 'MLH1 and MSH2 test'
+    multigene_failed_record.raw_fields['status'] = 'Fail'
+    multigene_failed_record.raw_fields['genotype'] = ''
+    res = @handler.add_colorectal_from_raw_test(@genotype, multigene_failed_record)
+    assert_equal 2, res.size
+    assert_equal 2744, res[0].attribute_map['gene']
+    assert_equal 9, res[0].attribute_map['teststatus']
+    assert_equal 2804, res[1].attribute_map['gene']
+    assert_equal 9, res[1].attribute_map['teststatus']
   end
 
-  test 'extract_teststatus' do
-    @logger.expects(:debug).with('POSITIVE status for : Likely pathogenic')
-    @handler.extract_teststatus(@genotype, @record)
-    assert_equal 2, @genotype.attribute_map['teststatus']
+  test 'process_multigene_multicnv_variant_record' do
+    multigene_multicnv_variants_record = build_raw_record('pseudo_id1' => 'bob')
+    multigene_multicnv_variants_record.raw_fields['test'] = 'MLH1 and MSH2 test'
+    multigene_multicnv_variants_record.raw_fields['status'] = 'Pathogenic'
+    multigene_multicnv_variants_record.raw_fields['genotype'] = 'Heterozygous deletion including '\
+                                                                'MSH2 exons 1-7 and EPCAM exon 9'
+    res = @handler.add_colorectal_from_raw_test(@genotype, multigene_multicnv_variants_record)
+    assert_equal 3, res.size
+    assert_equal 2744, res[0].attribute_map['gene']
+    assert_equal 1, res[0].attribute_map['teststatus']
+    assert_equal 2804, res[1].attribute_map['gene']
+    assert_equal 2, res[1].attribute_map['teststatus']
+    assert_equal '1-7', res[1].attribute_map['exonintroncodonnumber']
+    assert_equal 1432, res[2].attribute_map['gene']
+    assert_equal 2, res[2].attribute_map['teststatus']
+    assert_equal '9', res[2].attribute_map['exonintroncodonnumber']
+  end
 
-    failed_record = build_raw_record('pseudo_id1' => 'bob')
-    failed_record.raw_fields['status'] = 'Failed'
-    @logger.expects(:debug).with('FAILED status for : Failed')
-    @handler.extract_teststatus(@genotype, failed_record)
-    assert_equal 9, @genotype.attribute_map['teststatus']
+  test 'process_multigene_singlecnv_record' do
+    multigene_onecnv_variant_record = build_raw_record('pseudo_id1' => 'bob')
+    multigene_onecnv_variant_record.raw_fields['test'] = 'MLH1 and MSH2 test'
+    multigene_onecnv_variant_record.raw_fields['status'] = 'Pathogenic'
+    multigene_onecnv_variant_record.raw_fields['genotype'] = 'Deletion of MSH2 exons 9, 10 and 11'
+    res = @handler.add_colorectal_from_raw_test(@genotype, multigene_onecnv_variant_record)
+    assert_equal 2, res.size
+    assert_equal 2744, res[0].attribute_map['gene']
+    assert_equal 1, res[0].attribute_map['teststatus']
+    assert_equal 2804, res[1].attribute_map['gene']
+    assert_equal 2, res[1].attribute_map['teststatus']
+    assert_equal '9', res[1].attribute_map['exonintroncodonnumber']
+  end
 
-    normal_record = build_raw_record('pseudo_id1' => 'bob')
-    normal_record.raw_fields['status'] = 'Normal'
-    @logger.expects(:debug).with('POSITIVE status for : Normal')
-    @handler.extract_teststatus(@genotype, normal_record)
-    assert_equal 1, @genotype.attribute_map['teststatus']
+  test 'process_multigene_positivecnv_noinfo_record' do
+    multigene_noinformation_variant_record = build_raw_record('pseudo_id1' => 'bob')
+    multigene_noinformation_variant_record.raw_fields['test'] = 'MLH1 and MSH2 test'
+    multigene_noinformation_variant_record.raw_fields['status'] = 'Pathogenic'
+    multigene_noinformation_variant_record.raw_fields['genotype'] = 'EPCAM and MSH2 exon 1-5'
+    res = @handler.add_colorectal_from_raw_test(@genotype, multigene_noinformation_variant_record)
+    assert_equal 3, res.size
+    assert_equal 2744, res[0].attribute_map['gene']
+    assert_equal 1, res[0].attribute_map['teststatus']
+    assert_equal 1432, res[1].attribute_map['gene']
+    assert_equal 2, res[1].attribute_map['teststatus']
+    assert_equal 2804, res[2].attribute_map['gene']
+    assert_equal 2, res[2].attribute_map['teststatus']
+  end
 
-    nomut_record = build_raw_record('pseudo_id1' => 'bob')
-    nomut_record.raw_fields['status'] = 'No mutation detected'
-    @logger.expects(:debug).with('POSITIVE status for : No mutation detected')
-    @handler.extract_teststatus(@genotype, nomut_record)
-    assert_equal 1, @genotype.attribute_map['teststatus']
+  test 'process_singlegene_normal_record' do
+    singlegene_normal_record = build_raw_record('pseudo_id1' => 'bob')
+    singlegene_normal_record.raw_fields['test'] = 'hMSH2 exon 14'
+    singlegene_normal_record.raw_fields['status'] = 'Normal'
+    singlegene_normal_record.raw_fields['genotype'] = ''
+    res = @handler.add_colorectal_from_raw_test(@genotype, singlegene_normal_record)
+    assert_equal 1, res.size
+    assert_equal 2804, res[0].attribute_map['gene']
+    assert_equal 1, res[0].attribute_map['teststatus']
+  end
 
-    cabbage_record = build_raw_record('pseudo_id1' => 'bob')
-    cabbage_record.raw_fields['status'] = 'Cabbage'
-    @logger.expects(:debug).with('Cannot determine test status for : Cabbage')
-    @handler.extract_teststatus(@genotype, cabbage_record)
+  test 'process_singlegene_failed_record' do
+    singlegene_failed_record = build_raw_record('pseudo_id1' => 'bob')
+    singlegene_failed_record.raw_fields['test'] = 'MLH1 mutation analysis'
+    singlegene_failed_record.raw_fields['status'] = 'Gaps present'
+    singlegene_failed_record.raw_fields['genotype'] = ''
+    res = @handler.add_colorectal_from_raw_test(@genotype, singlegene_failed_record)
+    assert_equal 1, res.size
+    assert_equal 2744, res[0].attribute_map['gene']
+    assert_equal 9, res[0].attribute_map['teststatus']
+  end
+
+  test 'process_singlegene_falsepositive_record' do
+    singlegene_falsepositive_record = build_raw_record('pseudo_id1' => 'bob')
+    singlegene_falsepositive_record.raw_fields['test'] = 'MSH6 mutation analysis'
+    singlegene_falsepositive_record.raw_fields['status'] = 'Pathogenic'
+    singlegene_falsepositive_record.raw_fields['genotype'] = ''
+    res = @handler.add_colorectal_from_raw_test(@genotype, singlegene_falsepositive_record)
+    assert_equal 1, res.size
+    assert_equal 2808, res[0].attribute_map['gene']
+    assert_equal 1, res[0].attribute_map['teststatus']
+  end
+
+  test 'process_singlegene_exonvariant_record' do
+    singlegene_exonvariant_record = build_raw_record('pseudo_id1' => 'bob')
+    singlegene_exonvariant_record.raw_fields['test'] = 'PMS2 MLPA'
+    singlegene_exonvariant_record.raw_fields['status'] = 'Pathogenic'
+    singlegene_exonvariant_record.raw_fields['genotype'] = 'Heterozygous deletion of PMS2 exons 6-8'
+    res = @handler.add_colorectal_from_raw_test(@genotype, singlegene_exonvariant_record)
+    assert_equal 1, res.size
+    assert_equal 3394, res[0].attribute_map['gene']
+    assert_equal 2, res[0].attribute_map['teststatus']
+    assert_equal '6-8', res[0].attribute_map['exonintroncodonnumber']
+  end
+
+  test 'process_singlegene_cdnavariant_record' do
+    singlegene_exonvariant_record = build_raw_record('pseudo_id1' => 'bob')
+    singlegene_exonvariant_record.raw_fields['test'] = 'hMSH6 exon 4F'
+    singlegene_exonvariant_record.raw_fields['status'] = 'Pathogenic'
+    singlegene_exonvariant_record.raw_fields['genotype'] = 'c.2665C>T p.(Glu889Ter)'
+    res = @handler.add_colorectal_from_raw_test(@genotype, singlegene_exonvariant_record)
+    assert_equal 1, res.size
+    assert_equal 2808, res[0].attribute_map['gene']
+    assert_equal 2, res[0].attribute_map['teststatus']
+    assert_equal 'c.2665C>T', res[0].attribute_map['codingdnasequencechange']
   end
 
   def clinical_json
@@ -105,7 +176,7 @@ class SalisburyHandlerColorectalTest < ActiveSupport::TestCase
       providercode: 'DNA Laboratory (Guys)',
       consultantname: 'Dr Very Good',
       servicereportidentifier: 'W1234567',
-      "service level": 'NHS',
+      'service level': 'NHS',
       moleculartestingtype: 'HNPCC predictives',
       requesteddate: '2018-11-22 00:00:00',
       receiveddate: '2018-11-22 00:00:00',
