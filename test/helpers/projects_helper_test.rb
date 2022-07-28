@@ -70,6 +70,14 @@ class ProjectsHelperTest < ActionView::TestCase
     assert_equal 'Something not in en.yml', friendly_type_name('Something not in en.yml')
   end
 
+  test 'project_managed_by_alert' do
+    @project.project_type = ProjectType.find_by(name: 'Application')
+    @project.datasets.first.update!(managing_organisation: organisations(:test_organisation_ukhsa))
+
+    assert_equal(%w[UKHSA], @project.managed_by.collect(&:name))
+    assert_match(/Project managed by UKHSA/, project_managed_by_alert(@project))
+  end
+
   test 'odr_reference' do
     assert_nil odr_reference(@project)
 

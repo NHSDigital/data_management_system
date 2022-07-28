@@ -16,3 +16,14 @@ test_organisation_two:
   country_id: XKU
   organisation_type_id: 9
   organisation_type_other: Intergalactic Empire
+
+test_organisation_ukhsa:
+  # name needs to be listed in ProjectsHelper::STATE_ALERT_CLASSES
+  name: UKHSA
+  add1: Address1
+  add2: Address2
+  city: Somewhere
+  postcode: ZZ99 9ZZ
+  country_id: XKU
+  organisation_type_id: 6
+  organisation_type_other: Intergalactic Empire
