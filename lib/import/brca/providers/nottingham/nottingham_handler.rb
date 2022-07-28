@@ -20,8 +20,20 @@ module Import
                              'Breast Core Panel'                                  => :full_screen,
                              'BRCA1/BRCA2 PST'                                    => :targeted_mutation,
                              'Cancer PST'                                         => :targeted_mutation
-            
                             }.freeze
+          
+          TEST_STATUS_MAP = { '1: Clearly not pathogenic' => :negative,
+                              '2: likely not pathogenic' => :negative,
+                              '2: likely not pathogenic variant' => :negative,
+                              'Class 2 Likely Neutral' => :negative,
+                              'Class 2 likely neutral variant' => :negative,
+                              '3: variant of unknown significance (VUS)' => :positive,
+                              '4: likely pathogenic' => :positive,
+                              '4:likely pathogenic' => :positive,
+                              '4: Likely Pathogenic' => :positive,
+                              '5: clearly pathogenic' => :positive
+                            }.freeze
+
 
           TEST_SCOPE_TTYPE_MAP = { 'Diagnostic' => :full_screen,
                                    'Indirect'   => :full_screen,
@@ -59,7 +71,7 @@ module Import
             process_cdna_change(genotype, record)
             process_varpathclass(genotype, record)
             add_organisationcode_testresult(genotype)
-            extract_teststatus(genotype, record) # added by Francesco
+            assign_test_status(record, genotype) # added by Francesco
             @persister.integrate_and_store(genotype)
           end
 
@@ -101,11 +113,28 @@ module Import
             # end
           end
 
-          def extract_teststatus(genotype, record)
-            case record.raw_fields['teststatus'].to_s.downcase
-            when /normal|completed/i
+          # def extract_teststatus(genotype, record)
+          #   case record.raw_fields['teststatus'].to_s.downcase
+          #   when /normal|completed/i
+          #     genotype.add_status(:negative)
+          #   else genotype.add_status(:positive)
+          #   end
+          # end
+
+          def assign_test_status(record, genotype)
+            teststatusfield = record.raw_fields['teststatus']
+            variantfield = record.raw_fields['genotype']
+            if TEST_STATUS_MAP[teststatusfield].present?
+              genotype.add_status(TEST_STATUS_MAP[teststatusfield])
+            elsif teststatusfield == 'Normal' && variantfield.nil?
               genotype.add_status(:negative)
-            else genotype.add_status(:positive)
+            elsif teststatusfield == 'Completed' && variantfield.nil?
+              genotype.add_status(:negative)
+            elsif teststatusfield == 'Normal' && variantfield.scan(CDNA_REGEX).size.positive?
+              genotype.add_status(:positive)
+            elsif teststatusfield == 'Completed' && variantfield.scan(CDNA_REGEX).size.positive?
+              genotype.add_status(:positive)
+            # else binding.pry
             end
           end
 
