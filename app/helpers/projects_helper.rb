@@ -114,7 +114,7 @@ module ProjectsHelper
     default_options = {
       class: ['label', STATE_LABEL_CLASSES.fetch(state, 'label-default')]
     }
-    tag.span(state, html_options.merge(default_options))
+    tag.span(state, **html_options.merge(default_options))
   end
 
   def project_managed_by_alert(project)
