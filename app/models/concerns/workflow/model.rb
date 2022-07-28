@@ -168,13 +168,13 @@ module Workflow
     end
 
     def reasons_not_to_transition_to_dpia_review
-      return {} if dpias.joins(:attachment).exists?
+      return {} if global_dpias.joins(:attachment).exists?
 
       { base: :no_attached_dpia }
     end
 
     def reasons_not_to_transition_to_contract_draft
-      return {} if contracts.joins(:attachment).exists?
+      return {} if global_contracts.joins(:attachment).exists?
 
       { base: :no_attached_contract }
     end
