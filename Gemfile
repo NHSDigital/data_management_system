@@ -1,8 +1,8 @@
 source 'https://rubygems.org'
 
-# Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 6.0.4.8'
-gem 'activemodel-caution', '6.0.4.8'
+gem 'activemodel-caution', '6.0.5.1' # must match rails version
+gem 'rails', '~> 6.0.5.1'
+
 # Use postgresql as the database for Active Record
 # gem 'pg', '>= 0.18', '< 2.0'
 gem 'pg', '~> 1.2.3' # Support old CentOS 7 PostgreSQL client 9.2.24

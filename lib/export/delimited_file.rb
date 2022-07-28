@@ -25,7 +25,7 @@ module Export
     # Export data to file, returns number of records emitted
     def export
       i = 0
-      CSV.open(@filename, 'wb', csv_options) do |csv|
+      CSV.open(@filename, 'wb', **csv_options) do |csv|
         header_rows.each { |row| csv << row }
         # Prefer data from demographics to DeathData, in case identifiable fields
         # are in demographics, but accidentally also listed in DeathData table.

@@ -115,6 +115,8 @@ module Import
             @attribute_map['genetictestscope'] = 'AJ Colorectal Lynch or MMR'
           when :polish_screen
             @attribute_map['genetictestscope'] = 'Polish Colorectal Lynch or MMR'
+          when :no_genetictestscope
+            @attribute_map['genetictestscope'] = 'Unable to assign genetictestscope'
           else
             @logger.warn "Bad key given to addTestScope: #{scope}"
           end
