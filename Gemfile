@@ -70,7 +70,7 @@ gem 'pry'
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
 
-gem 'ndr_support', '~> 5.8.4'
+gem 'ndr_support', '~> 5.9'
 gem 'ndr_import'
 gem 'ndr_error', '~> 2.0'
 gem 'ndr_workflow', '~> 1.2', '>= 1.2.2'

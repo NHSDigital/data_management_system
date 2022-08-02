@@ -5,7 +5,7 @@ OIFS="$IFS"
 IFS=$'\n'
 DIRPATH=$1
 echo $DIRPATH
-#DIRPATH=~/work/data_management_system
+#DIRPATH=~/work/dms
 #FILEPATH="private/pseudonymised_data/updated_files/"
 FILEPATH=$2
 echo $FILEPATH
@@ -54,10 +54,21 @@ for x in $(find  $DIRPATH/$FILEPATH -type f -name "*.pseudo" -path "*/$PROV/*"  
 ! -name "0ca547381e5644e9bfafc86ed56ba317a5a00b84_28.12.2019 to 30.11.2020_MMR 281219_301120.xlsx.pseudo" )
 do
 IFS="$OIFS"
-$BRAKE import:brca fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
+bundle exec rake import:brca fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
 done
 }
 
+RR8_2 () {
+PROV='RR8'
+IFS=$'\n'
+for x in $(find  $DIRPATH/$FILEPATH  -type f  \
+( -name "cadc0b639036cbbce5a1bc51e630bde90e8d1ee0_01.10.2018 to 27.12.2019_other cancers 011018_271219.xlsx.pseudo" -o -name "4d5700e750e232c4b598de579d478191d3d4a528_28.12.2019 to 30.11.2020_other cancers and familial tests 281219_301120.xlsx.pseudo" \
+) -path "*/$PROV/*" )
+do
+IFS="$OIFS"
+bundle exec rake import:brca fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
+done
+}
 
 RNZ () {
 MBIS=$1
@@ -95,7 +106,7 @@ for x in $(find  $DIRPATH/$FILEPATH -type f -name "*.pseudo" -path "*/$PROV/*" -
 ! -name "6143beeed638c81f50dc60118086e5f4ad5ebfeb_01.10.2020 to 31.12.2020_Bowel Oct2020_Dec2020v3.xlsx.pseudo" )
 do
 IFS="$OIFS"
-$BRAKE import:brca fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
+bundle exec rake import:brca fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
 done
 }
 
@@ -132,7 +143,8 @@ RJ1 () {
 MBIS=$1
 PROV='RJ1'
 IFS=$'\n'
-for x in $(find  $DIRPATH/$FILEPATH -type f -name "*.pseudo" -path "*/$PROV/*"  )
+for x in $(find  $DIRPATH/$FILEPATH -type f -name "*.pseudo" -path "*/$PROV/*" \
+! -name ""Dummy_Pseudo_RJ1.pseudo)
 do
 IFS="$OIFS"
 $BRAKE import:brca fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV

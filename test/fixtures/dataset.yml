@@ -83,6 +83,7 @@
     time: *11
   dataset_type_id: 4
   team: mbis
+  managing_organisation: test_organisation_ukhsa
 80:
   id: 80
   name: Death Transaction
