@@ -13,30 +13,29 @@ module Import
           #                   'family studies' => :predictive,
           #                   'indirect' => :predictive } .freeze
 
-            TEST_TYPE_MAP = { 'Carrier Screen' => '',
-                              'Confirmation' => :diagnostic,
-                              'Confirmation Of Familial Mutation' => :diagnostic,
-                              'Confirmation of previous result' => :diagnostic,
-                              'Diagnostic' => :diagnostic,
-                              'Extract and Store' => '',
-                              'Family Studies' => '',
-                              'Indirect' => :predictive,
-                              'Informativeness' => '',
-                              'Mutation Screen' => '',
-                              'Other' => '',
-                              'Predictive' => :predictive,
-                              'Store' => '',
-                              'Variant Update' => ''}
-          
+          TEST_TYPE_MAP = { 'Carrier Screen' => '',
+                            'Confirmation' => :diagnostic,
+                            'Confirmation Of Familial Mutation' => :diagnostic,
+                            'Confirmation of previous result' => :diagnostic,
+                            'Diagnostic' => :diagnostic,
+                            'Extract and Store' => '',
+                            'Family Studies' => '',
+                            'Indirect' => :predictive,
+                            'Informativeness' => '',
+                            'Mutation Screen' => '',
+                            'Other' => '',
+                            'Predictive' => :predictive,
+                            'Store' => '',
+                            'Variant Update' => '' }.freeze
+
           TEST_SCOPE_MAP = { 'Hereditary Breast and Ovarian Cancer (BRCA1/BRCA2)' => :full_screen,
                              'BRCA1 + BRCA2 + PALB2'                              => :full_screen,
                              'Breast Cancer Core Panel'                           => :full_screen,
                              'Breast Cancer Full Panel'                           => :full_screen,
                              'Breast Core Panel'                                  => :full_screen,
                              'BRCA1/BRCA2 PST'                                    => :targeted_mutation,
-                             'Cancer PST'                                         => :targeted_mutation
-                            }.freeze
-          
+                             'Cancer PST'                                         => :targeted_mutation }.freeze
+
           TEST_STATUS_MAP = { '1: Clearly not pathogenic' => :negative,
                               '2: likely not pathogenic' => :negative,
                               '2: likely not pathogenic variant' => :negative,
@@ -47,35 +46,32 @@ module Import
                               '4:likely pathogenic' => :positive,
                               '4: Likely Pathogenic' => :positive,
                               '5: clearly pathogenic' => :positive,
-                              'Mutation identified' => :positive
-                            }.freeze
-
+                              'Mutation identified' => :positive }.freeze
 
           TEST_SCOPE_TTYPE_MAP = { 'Diagnostic' => :full_screen,
                                    'Indirect'   => :full_screen,
-                                   'Predictive' => :targeted_mutation
-          }
-          
+                                   'Predictive' => :targeted_mutation }.freeze
+
           PASS_THROUGH_FIELDS = %w[age authoriseddate
                                    receiveddate
                                    specimentype
                                    providercode
                                    consultantcode
-                                   servicereportidentifier] .freeze
+                                   servicereportidentifier].freeze
 
           NEGATIVE_TEST = /Normal/i.freeze
-          VARPATHCLASS_REGEX = /(?<varpathclass>[0-9](?=\:))/
+          VARPATHCLASS_REGEX = /(?<varpathclass>[0-9](?=:))/.freeze
           # CDNA_REGEX = /c\.(?<cdna>[0-9]+[^\s|^, ]+)/i
-          CDNA_REGEX = /c\.(?<cdna>.?[0-9]+[^\s|^, ]+)/i
-          EXON_REGEX = /ex(?<ons>[a-z]+)?\s?(?<exons>[0-9]+(?<otherexons>\-[0-9]+)?)\s
+          CDNA_REGEX = /c\.(?<cdna>.?[0-9]+[^\s|^, ]+)/i.freeze
+          EXON_REGEX = /ex(?<ons>[a-z]+)?\s?(?<exons>[0-9]+(?<otherexons>-[0-9]+)?)\s
                         (?<vartype>del|dup)|(?<vartype>del[a-z]+|dup[a-z]+)(\sof)?\sexon(s)?\s
-                        (?<exons>[0-9]+(?<otherexons>\-[0-9]+)?)/xi
-          PROTEIN_REGEX = /p\..(?<impact>.+)\)/i
+                        (?<exons>[0-9]+(?<otherexons>-[0-9]+)?)/xi.freeze
+          PROTEIN_REGEX = /p\..(?<impact>.+)\)/i.freeze
 
           def initialize(batch)
             @failed_genotype_parse_counter = 0
             @genotype_counter = 0
-            #@ex = LocationExtractor.new
+            # @ex = LocationExtractor.new
             super
           end
 
@@ -117,7 +113,69 @@ module Import
             if TEST_SCOPE_MAP[testscopefield].present?
               genotype.add_test_scope(TEST_SCOPE_MAP[testscopefield])
             elsif %w[PALB2 CDH1 TP53].include? testscopefield
-               genotype.add_test_scope(TEST_SCOPE_TTYPE_MAP[testtypefield])
+              genotype.add_test_scope(TEST_SCOPE_TTYPE_MAP[testtypefield])
+            end
+          end
+
+          def normaltest_nullvariantfield?(record, teststatusfield, variantfield)
+            return false if record.raw_fields['teststatus'].nil?
+
+            teststatusfield == 'Normal' && variantfield.nil?
+          end
+
+          def normaltest_controlvariantfield?(record, teststatusfield, variantfield)
+            return false if record.raw_fields['teststatus'].nil? &&
+                            record.raw_fields['genotype'].nil?
+
+            teststatusfield == 'Normal' && variantfield.scan(/normal|control/i).size.positive?
+          end
+
+          def normaltest_cdnavariantpositive?(record, teststatusfield, variantfield)
+            return false if record.raw_fields['teststatus'].nil? &&
+                            record.raw_fields['genotype'].nil?
+
+            teststatusfield == 'Normal' && variantfield.scan(CDNA_REGEX).size.positive?
+          end
+
+          def normaltest_cnvvariantpositive?(record, teststatusfield, variantfield)
+            return false if record.raw_fields['teststatus'].nil? &&
+                            record.raw_fields['genotype'].nil?
+
+            teststatusfield == 'Normal' && variantfield.scan(/del|dup/i).size.positive?
+          end
+
+          def completedtest_nullvariantfield?(record, teststatusfield, variantfield)
+            return false if record.raw_fields['teststatus'].nil?
+
+            teststatusfield == 'Completed' && variantfield.nil?
+          end
+
+          def completedtest_cdnavariantpositive?(record, teststatusfield, variantfield)
+            return false if record.raw_fields['teststatus'].nil? &&
+                            record.raw_fields['genotype'].nil?
+
+            teststatusfield == 'Completed' && variantfield.scan(CDNA_REGEX).size.positive?
+          end
+
+          def assign_conditional_teststatus(record, teststatusfield, variantfield, genotype)
+            if normaltest_nullvariantfield?(record, teststatusfield, variantfield)
+              # teststatusfield == 'Normal' && variantfield.nil?
+              genotype.add_status(:negative)
+            elsif normaltest_controlvariantfield?(record, teststatusfield, variantfield)
+              # teststatusfield == 'Normal' && variantfield.scan(/normal|control/i).size.positive?
+              genotype.add_status(:negative)
+            elsif completedtest_nullvariantfield?(record, teststatusfield, variantfield)
+              # teststatusfield == 'Completed' && variantfield.nil?
+              genotype.add_status(:negative)
+            elsif normaltest_cdnavariantpositive?(record, teststatusfield, variantfield)
+              # teststatusfield == 'Normal' && variantfield.scan(CDNA_REGEX).size.positive?
+              genotype.add_status(:positive)
+            elsif completedtest_cdnavariantpositive?(record, teststatusfield, variantfield)
+              # teststatusfield == 'Completed' && variantfield.scan(CDNA_REGEX).size.positive?
+              genotype.add_status(:positive)
+            elsif normaltest_cnvvariantpositive?(record, teststatusfield, variantfield)
+              # teststatusfield == 'Normal' && variantfield.scan(/del|dup/i).size.positive?
+              genotype.add_status(:positive)
             end
           end
 
@@ -127,18 +185,25 @@ module Import
 
             if TEST_STATUS_MAP[teststatusfield].present?
               genotype.add_status(TEST_STATUS_MAP[teststatusfield])
-            elsif teststatusfield == 'Normal' && variantfield.nil?
-              genotype.add_status(:negative)
-            elsif teststatusfield == 'Normal' && variantfield.scan(/normal|control/i).size.positive?
-              genotype.add_status(:negative)
-            elsif teststatusfield == 'Completed' && variantfield.nil?
-              genotype.add_status(:negative)
-            elsif teststatusfield == 'Normal' && variantfield.scan(CDNA_REGEX).size.positive?
-              genotype.add_status(:positive)
-            elsif teststatusfield == 'Completed' && variantfield.scan(CDNA_REGEX).size.positive?
-              genotype.add_status(:positive)
-            elsif teststatusfield == 'Normal' && variantfield.scan(/del|dup/i).size.positive?
-              genotype.add_status(:positive)
+            elsif assign_conditional_teststatus(record, teststatusfield, variantfield, genotype)
+            # elsif normaltest_nullvariantfield?(teststatusfield, variantfield)
+            #   #teststatusfield == 'Normal' && variantfield.nil?
+            #   genotype.add_status(:negative)
+            # elsif normaltest_controlvariantfield?(teststatusfield, variantfield)
+            #   #teststatusfield == 'Normal' && variantfield.scan(/normal|control/i).size.positive?
+            #   genotype.add_status(:negative)
+            # elsif completedtest_nullvariantfield?(teststatusfield, variantfield)
+            #   #teststatusfield == 'Completed' && variantfield.nil?
+            #   genotype.add_status(:negative)
+            # elsif normaltest_cdnavariantpositive?(teststatusfield, variantfield)
+            #   #teststatusfield == 'Normal' && variantfield.scan(CDNA_REGEX).size.positive?
+            #   genotype.add_status(:positive)
+            # elsif completedtest_cdnavariantpositive?(teststatusfield, variantfield)
+            #   #teststatusfield == 'Completed' && variantfield.scan(CDNA_REGEX).size.positive?
+            #   genotype.add_status(:positive)
+            # elsif normaltest_cnvvariantpositive?(teststatusfield, variantfield)
+            #   #teststatusfield == 'Normal' && variantfield.scan(/del|dup/i).size.positive?
+            #   genotype.add_status(:positive)
             elsif teststatusfield.nil? && variantfield.nil?
               genotype.add_status(4)
             end
@@ -146,6 +211,7 @@ module Import
 
           def process_protein_impact(genotype, record)
             return if record.raw_fields['genotype'].nil?
+
             variantfield = record.raw_fields['genotype']
             if variantfield.scan(PROTEIN_REGEX).size.positive?
               genotype.add_protein_impact(variantfield.match(PROTEIN_REGEX)[:impact])
@@ -154,9 +220,9 @@ module Import
 
           def process_cdna_change(genotype, record)
             return if record.raw_fields['genotype'].nil?
-            
+
             variantfield = record.raw_fields['genotype']
-            
+
             if variantfield.scan(CDNA_REGEX).size.positive?
               genotype.add_gene_location(variantfield.match(CDNA_REGEX)[:cdna])
             elsif variantfield.scan(EXON_REGEX).size.positive?
@@ -164,7 +230,7 @@ module Import
               genotype.add_exon_location(variantfield.match(EXON_REGEX)[:exons])
             end
           end
-    
+
           def process_varpathclass(genotype, record)
             case record.raw_fields['teststatus']
             when VARPATHCLASS_REGEX
@@ -177,11 +243,10 @@ module Import
             genotype.add_gene(gene) unless gene.nil?
           end
 
-
           def summarize
             @logger.info '***************** Handler Report ******************'
             @logger.info "Num failed genotype parses: #{@failed_genotype_parse_counter}"\
-                         'of #{@genotype_counter}'
+                         "of #{@genotype_counter}"
             @logger.info "Total lines processed: #{@lines_processed}"
           end
         end
@@ -189,4 +254,3 @@ module Import
     end
   end
 end
-
