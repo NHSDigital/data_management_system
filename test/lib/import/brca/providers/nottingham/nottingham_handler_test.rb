@@ -10,30 +10,64 @@ class NottinghamHandlerTest < ActiveSupport::TestCase
       @handler = Import::Brca::Providers::Nottingham::NottinghamHandler.new(EBatch.new)
     end
     @logger = Import::Log.get_logger
-  end
-
-  test 'stdout reports missing extract path' do
-    assert_match(/could not extract path to corrections file for/i, @importer_stdout)
+    @logger.level = Logger::WARN
   end
 
   test 'process_cdna_change' do
-    @logger.expects(:debug).with('SUCCESSFUL cdna change parse for: 8492T>C')
-    @handler.process_cdna_change(@genotype, @record)
+    @handler.process_cdna_or_exonic_variants(@genotype, @record)
     assert_equal 2, @genotype.attribute_map['teststatus']
     assert_equal 'c.8492T>C', @genotype.attribute_map['codingdnasequencechange']
   end
 
+  test 'process_exonic_variant' do
+    exonicvariant_record = build_raw_record('pseudo_id1' => 'bob')
+    exonicvariant_record.raw_fields['genotype'] = 'BRCA1 exons 1-2 deletion'
+    @handler.process_cdna_or_exonic_variants(@genotype, exonicvariant_record)
+    assert_equal 2, @genotype.attribute_map['teststatus']
+    assert_equal 3, @genotype.attribute_map['sequencevarianttype']
+    assert_equal '1-2', @genotype.attribute_map['exonintroncodonnumber']
+  end
+
+
   test 'process_varpathclass' do
-    @logger.expects(:debug).with('SUCCESSFUL variantpathclass parse for: 3')
     @handler.process_varpathclass(@genotype, @record)
     assert_equal 3, @genotype.attribute_map['variantpathclass']
   end
 
+  test 'assign_test_scope' do
+    @handler.assign_test_scope(@record, @genotype)
+    assert_equal 'Full screen BRCA1 and BRCA2', @genotype.attribute_map['genetictestscope']
+  end
+
+  test 'assign_conditional_test_scope' do
+    conditionaltestscope_record = build_raw_record('pseudo_id1' => 'bob')
+    conditionaltestscope_record.raw_fields['disease'] = 'TP53'
+    conditionaltestscope_record.raw_fields['moleculartestingtype'] = 'Predictive'
+    @handler.assign_test_scope(conditionaltestscope_record, @genotype)
+    assert_equal 'Targeted BRCA mutation test', @genotype.attribute_map['genetictestscope']
+  end
+
+  test 'assign_conditional_test_status' do
+    positivetest_normalgenotype_record = build_raw_record('pseudo_id1' => 'bob')
+    positivetest_normalgenotype_record.raw_fields['teststatus'] = 'Normal'
+    @handler.assign_test_status(positivetest_normalgenotype_record, @genotype)
+    assert_equal 2, @genotype.attribute_map['teststatus']
+    
+    positivetest_nogenotype_record = build_raw_record('pseudo_id1' => 'bob')
+    positivetest_nogenotype_record.raw_fields['teststatus'] = 'Normal'
+    positivetest_nogenotype_record.raw_fields['genotype'] = ''
+    @handler.assign_test_status(positivetest_nogenotype_record, @genotype)
+    assert_equal 1, @genotype.attribute_map['teststatus']
+  end
+
+  test 'process_protein_impat' do
+    @handler.process_protein_impact(@genotype, @record)
+    assert_equal 'p.Met283Thr', @genotype.attribute_map['proteinimpact']
+  end
+  
   test 'process_gene' do
-    @importer_stdout, @importer_stderr = capture_io do
       @handler.process_gene(@genotype, @record)
       assert_equal 8, @genotype.attribute_map['gene']
-    end
   end
 
   private
@@ -71,7 +105,7 @@ class NottinghamHandlerTest < ActiveSupport::TestCase
       consultantname: 'Consultant Name',
       servicereportidentifier: 'Service Report Identifier',
       patient_type: 'NHS',
-      disease: 'hereditary breast and ovarian cancer (brca1/brca2)',
+      disease: 'Hereditary Breast and Ovarian Cancer (BRCA1/BRCA2)',
       moleculartestingtype: 'Diagnostic',
       gene: 'BRCA2',
       genotype: 'c.8492T>C p.(Met283Thr)',
