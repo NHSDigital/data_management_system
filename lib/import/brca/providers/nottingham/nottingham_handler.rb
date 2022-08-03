@@ -61,11 +61,14 @@ module Import
 
           NEGATIVE_TEST = /Normal/i.freeze
           VARPATHCLASS_REGEX = /(?<varpathclass>[0-9](?=:))/.freeze
+
           # CDNA_REGEX = /c\.(?<cdna>[0-9]+[^\s|^, ]+)/i
           CDNA_REGEX = /c\.(?<cdna>.?[0-9]+[^\s|^, ]+)/i.freeze
+
           EXON_REGEX = /ex(?<ons>[a-z]+)?\s?(?<exons>[0-9]+(?<otherexons>-[0-9]+)?)\s
-                        (?<vartype>del|dup)|(?<vartype>del[a-z]+|dup[a-z]+)(\sof)?\sexon(s)?\s
-                        (?<exons>[0-9]+(?<otherexons>-[0-9]+)?)/xi.freeze
+                        (?<vartype>del|dup)|(?<vartype>del[a-z]+|dup[a-z]+)(?<of>\sof)?\s
+                        exon(?<s>s)?\s(?<exons>[0-9]+(?<otherexons>-[0-9]+)?)/xi.freeze
+
           PROTEIN_REGEX = /p\..(?<impact>.+)\)/i.freeze
 
           def initialize(batch)
@@ -82,14 +85,13 @@ module Import
                                             record.raw_fields,
                                             PASS_THROUGH_FIELDS)
             add_moleculartestingtype(record, genotype)
-            add_receiveddate(record, genotype)
             assign_test_scope(record, genotype)
             process_gene(genotype, record) # Added by Francesco
-            process_cdna_change(genotype, record)
+            process_cdna_or_exonic_variants(genotype, record)
             process_protein_impact(genotype, record)
             process_varpathclass(genotype, record)
             add_organisationcode_testresult(genotype)
-            assign_test_status(record, genotype) # added by Francesco
+            assign_test_status(record, genotype)
             @persister.integrate_and_store(genotype)
           end
 
@@ -100,11 +102,6 @@ module Import
           def add_moleculartestingtype(record, genotype)
             testingtype = record.raw_fields['moleculartestingtype']
             genotype.add_molecular_testing_type_strict(TEST_TYPE_MAP[testingtype])
-          end
-
-          def add_receiveddate(record, genotype)
-            received_date = record.raw_fields['sample received in lab date']
-            genotype.add_received_date(received_date.downcase) unless received_date.nil?
           end
 
           def assign_test_scope(record, genotype)
@@ -120,7 +117,7 @@ module Import
           def normaltest_nullvariantfield?(record, teststatusfield, variantfield)
             return false if record.raw_fields['teststatus'].nil?
 
-            teststatusfield == 'Normal' && variantfield.nil?
+            teststatusfield == 'Normal' && variantfield.blank?
           end
 
           def normaltest_controlvariantfield?(record, teststatusfield, variantfield)
@@ -147,7 +144,7 @@ module Import
           def completedtest_nullvariantfield?(record, teststatusfield, variantfield)
             return false if record.raw_fields['teststatus'].nil?
 
-            teststatusfield == 'Completed' && variantfield.nil?
+            teststatusfield == 'Completed' && variantfield.blank?
           end
 
           def completedtest_cdnavariantpositive?(record, teststatusfield, variantfield)
@@ -180,7 +177,6 @@ module Import
             variantfield = record.raw_fields['genotype']
 
             if TEST_STATUS_MAP[teststatusfield].present?
-              binding.pry
               genotype.add_status(TEST_STATUS_MAP[teststatusfield])
             elsif nil_variantfield_teststatusfield?(record, teststatusfield, variantfield)
               genotype.add_status(4)
@@ -224,7 +220,7 @@ module Import
             # end
           end
 
-          def process_cdna_change(genotype, record)
+          def process_cdna_or_exonic_variants(genotype, record)
             return if record.raw_fields['genotype'].nil?
 
             variantfield = record.raw_fields['genotype']
