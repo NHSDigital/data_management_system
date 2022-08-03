@@ -9,8 +9,6 @@ module Import
           include Import::Helpers::Brca::Providers::Rnz::RnzConstants
 
           def process_fields(record)
-            return if record.raw_fields['moleculartestingtype'] == 'Lynch syndrome 3 gene panel'
-
             genotype = Import::Brca::Core::GenotypeBrca.new(record)
             genotype.add_passthrough_fields(record.mapped_fields,
                                             record.raw_fields,
