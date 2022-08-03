@@ -43,15 +43,13 @@ module Import
             test_str = record.raw_fields['test']
             gene = extract_gene(test_str, variant, record)
             genotype.add_gene(gene[0])
-
-            process_variants(genotype, variant) if positive_rec?(genotype) && variant.present?
-
-            unless test_str.scan(CONFIRMATION_SEQ_NGS_CASE).size.positive? && gene.blank?
-              genotypes.append(genotype)
-            end
-
             if test_str.scan(CONFIRMATION_SEQ_NGS_CASE).size.positive?
               add_fs_negative_gene(gene, genotype, genotypes)
+            end
+
+            process_variants(genotype, variant) if positive_rec?(genotype) && variant.present?
+            unless test_str.scan(CONFIRMATION_SEQ_NGS_CASE).size.positive? && gene.blank?
+              genotypes.append(genotype)
             end
 
             genotypes
@@ -90,7 +88,7 @@ module Import
             negative_genes&.each do |brca_gene|
               genotype_dup = genotype.dup
               genotype_dup.add_gene(brca_gene)
-              genotype.add_status(:negative)
+              genotype_dup.add_status(:negative)
               genotypes.append(genotype_dup)
             end
           end
