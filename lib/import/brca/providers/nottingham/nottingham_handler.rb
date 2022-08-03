@@ -157,24 +157,20 @@ module Import
             teststatusfield == 'Completed' && variantfield.scan(CDNA_REGEX).size.positive?
           end
 
+          def nil_variantfield_teststatusfield?(_record, teststatusfield, variantfield)
+            return false if teststatusfield.present? || variantfield.present?
+
+            teststatusfield.nil? && variantfield.nil?
+          end
+
           def assign_conditional_teststatus(record, teststatusfield, variantfield, genotype)
-            if normaltest_nullvariantfield?(record, teststatusfield, variantfield)
-              # teststatusfield == 'Normal' && variantfield.nil?
+            if normaltest_nullvariantfield?(record, teststatusfield, variantfield) ||
+               normaltest_controlvariantfield?(record, teststatusfield, variantfield) ||
+               completedtest_nullvariantfield?(record, teststatusfield, variantfield)
               genotype.add_status(:negative)
-            elsif normaltest_controlvariantfield?(record, teststatusfield, variantfield)
-              # teststatusfield == 'Normal' && variantfield.scan(/normal|control/i).size.positive?
-              genotype.add_status(:negative)
-            elsif completedtest_nullvariantfield?(record, teststatusfield, variantfield)
-              # teststatusfield == 'Completed' && variantfield.nil?
-              genotype.add_status(:negative)
-            elsif normaltest_cdnavariantpositive?(record, teststatusfield, variantfield)
-              # teststatusfield == 'Normal' && variantfield.scan(CDNA_REGEX).size.positive?
-              genotype.add_status(:positive)
-            elsif completedtest_cdnavariantpositive?(record, teststatusfield, variantfield)
-              # teststatusfield == 'Completed' && variantfield.scan(CDNA_REGEX).size.positive?
-              genotype.add_status(:positive)
-            elsif normaltest_cnvvariantpositive?(record, teststatusfield, variantfield)
-              # teststatusfield == 'Normal' && variantfield.scan(/del|dup/i).size.positive?
+            elsif normaltest_cdnavariantpositive?(record, teststatusfield, variantfield) ||
+                  completedtest_cdnavariantpositive?(record, teststatusfield, variantfield) ||
+                  normaltest_cnvvariantpositive?(record, teststatusfield, variantfield)
               genotype.add_status(:positive)
             end
           end
@@ -184,38 +180,48 @@ module Import
             variantfield = record.raw_fields['genotype']
 
             if TEST_STATUS_MAP[teststatusfield].present?
+              binding.pry
               genotype.add_status(TEST_STATUS_MAP[teststatusfield])
-            elsif assign_conditional_teststatus(record, teststatusfield, variantfield, genotype)
-            # elsif normaltest_nullvariantfield?(teststatusfield, variantfield)
-            #   #teststatusfield == 'Normal' && variantfield.nil?
-            #   genotype.add_status(:negative)
-            # elsif normaltest_controlvariantfield?(teststatusfield, variantfield)
-            #   #teststatusfield == 'Normal' && variantfield.scan(/normal|control/i).size.positive?
-            #   genotype.add_status(:negative)
-            # elsif completedtest_nullvariantfield?(teststatusfield, variantfield)
-            #   #teststatusfield == 'Completed' && variantfield.nil?
-            #   genotype.add_status(:negative)
-            # elsif normaltest_cdnavariantpositive?(teststatusfield, variantfield)
-            #   #teststatusfield == 'Normal' && variantfield.scan(CDNA_REGEX).size.positive?
-            #   genotype.add_status(:positive)
-            # elsif completedtest_cdnavariantpositive?(teststatusfield, variantfield)
-            #   #teststatusfield == 'Completed' && variantfield.scan(CDNA_REGEX).size.positive?
-            #   genotype.add_status(:positive)
-            # elsif normaltest_cnvvariantpositive?(teststatusfield, variantfield)
-            #   #teststatusfield == 'Normal' && variantfield.scan(/del|dup/i).size.positive?
-            #   genotype.add_status(:positive)
-            elsif teststatusfield.nil? && variantfield.nil?
+            elsif nil_variantfield_teststatusfield?(record, teststatusfield, variantfield)
               genotype.add_status(4)
+            else
+              assign_conditional_teststatus(record, teststatusfield, variantfield, genotype)
             end
           end
+
+          #
+          # CONDITIONAL_TESTSTATUS_MAP = [
+          #   %i[normaltest_nullvariantfield? add_negative_genotype],
+          #   %i[normaltest_controlvariantfield? add_negative_genotype],
+          #   %i[completedtest_nullvariantfield? add_negative_genotype],
+          #   %i[normaltest_cdnavariantpositive? add_positive_genotype],
+          #   %i[normaltest_cnvvariantpositive? add_positive_genotype],
+          #   %i[completedtest_cdnavariantpositive? add_positive_genotype]
+          # ].freeze
+          #
+          # def process_condtional_teststatus(record, teststatusfield, variantfield)
+          #   params = {param1: record, param2: teststatusfield, param3: variantfield}
+          #
+          #   CONDITIONAL_TESTSTATUS_MAP.each do |condition, extraction|
+          #     send(extraction) if send(condition*params)
+          #   end
+          # end
+          #
+          # def add_negative_genotype(genotype)
+          #   genotype.add_status(:negative)
+          # end
+          #
+          # def add_positive_genotype(genotype)
+          #   genotype.add_status(:positive)
+          # end
 
           def process_protein_impact(genotype, record)
             return if record.raw_fields['genotype'].nil?
 
             variantfield = record.raw_fields['genotype']
-            if variantfield.scan(PROTEIN_REGEX).size.positive?
-              genotype.add_protein_impact(variantfield.match(PROTEIN_REGEX)[:impact])
-            end
+            genotype.add_protein_impact(variantfield.match(PROTEIN_REGEX)[:impact]) unless
+            variantfield.match(PROTEIN_REGEX).nil?
+            # end
           end
 
           def process_cdna_change(genotype, record)
