@@ -219,7 +219,7 @@ GEM
     msworddoc-extractor (0.2.0)
       ruby-ole
     multi_json (1.14.1)
-    ndr_authenticate (0.2.3.1)
+    ndr_authenticate (0.3.1)
       devise
       devise_saml_authenticatable
       ndr_ui (>= 2.3)
@@ -524,7 +524,7 @@ DEPENDENCIES
   mini_racer (~> 0.6.2)
   minitest
   mocha
-  ndr_authenticate (= 0.2.3.1)
+  ndr_authenticate (~> 0.3)
   ndr_dev_support (~> 6.0)
   ndr_error (~> 2.0)
   ndr_import
