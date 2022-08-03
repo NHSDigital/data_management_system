@@ -76,13 +76,8 @@ PROV='RNZ'
 IFS=$'\n'
 for x in $(find  $DIRPATH/$FILEPATH -type f -name "*.pseudo" -path "*/$PROV/*" \
 -not -path "*/2018-02-06/*" \
-! -name "32b125df2fd306c7b2b6b7a6ec1362d368a02536_2017_Lynch full and predictives 2017.xlsx.pseudo" \
-! -name "655e2321cd97be403ad7cf120b4132c52a26d79b_2018_Lynch full and predictives 2018.xlsx.pseudo" \
-! -name "d47bfb9be436f0132fedb88be4a1685a02709fcf_2016_Lynch full and predictives 2016.xlsx.pseudo" \
-! -name "ef6964b8789476f4e302b8ec199bd7718b1d101d_2019_Lynch full and predictives 2019.xlsx.pseudo" \
-! -name "89d0d99aaccbcb34797c16015267c4cadbee61de_2015_Lynch full and predictives 2015.xlsx.pseudo" \
-! -name "3a89d5a61f61b343adca31471ff39f8254226777_2019_PTEN full and predictives 2019.xlsx.pseudo" \
-! -name "e10489ceaf13fb0c6bc31ec2195ed6511752571b_01.01.2020 to 31.07.2020_Lynch full and predictives 2020 Jan to July inclusive.xlsx.pseudo" )
+! -name "*Lynch*" \
+! -name "*PTEN*"  )
 do
 IFS="$OIFS"
 $BRAKE import:brca fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
