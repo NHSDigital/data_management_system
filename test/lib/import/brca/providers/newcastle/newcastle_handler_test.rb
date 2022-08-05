@@ -12,9 +12,6 @@ class NewcastleHandlerTest < ActiveSupport::TestCase
     @logger = Import::Log.get_logger
   end
 
-  test 'stdout reports missing extract path' do
-    assert_match(/could not extract path to corrections file for/i, @importer_stdout)
-  end
 
   test 'process_protein_impact' do
     @logger.expects(:debug).with('FAILED protein parse for: c.2597G>A')
