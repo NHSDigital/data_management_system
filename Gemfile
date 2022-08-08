@@ -70,13 +70,13 @@ gem 'pry'
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
 
-gem 'ndr_support', '~> 5.9'
-gem 'ndr_import'
+gem 'ndr_authenticate', '~> 0.3'
 gem 'ndr_error', '~> 2.0'
-gem 'ndr_workflow', '~> 1.2', '>= 1.2.2'
-gem 'ndr_ui'
+gem 'ndr_import'
 gem 'ndr_pseudonymise', '~> 0.2.6'
-gem 'ndr_authenticate', '0.2.3.1'
+gem 'ndr_support', '~> 5.9'
+gem 'ndr_ui'
+gem 'ndr_workflow', '~> 1.2', '>= 1.2.2'
 
 gem 'axlsx'
 gem 'bootstrap-table-rails'
