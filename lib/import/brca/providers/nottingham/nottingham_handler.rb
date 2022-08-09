@@ -66,7 +66,6 @@ module Import
           NEGATIVE_TEST = /Normal/i
           VARPATHCLASS_REGEX = /(?<varpathclass>[0-9](?=:))/
 
-          # CDNA_REGEX = /c\.(?<cdna>[0-9]+[^\s|^, ]+)/i
           CDNA_REGEX = /c\.(?<cdna>.?[0-9]+[^\s|^, ]+)/i
 
           EXON_REGEX = /ex(?<ons>[a-z]+)?\s?(?<exons>[0-9]+(?<otherexons>-[0-9]+)?)\s
@@ -78,7 +77,6 @@ module Import
           def initialize(batch)
             @failed_genotype_parse_counter = 0
             @genotype_counter = 0
-            # @ex = LocationExtractor.new
             super
           end
 
@@ -90,7 +88,7 @@ module Import
                                             PASS_THROUGH_FIELDS)
             add_moleculartestingtype(record, genotype)
             assign_test_scope(record, genotype)
-            process_gene(genotype, record) # Added by Francesco
+            process_gene(genotype, record)
             process_cdna_or_exonic_variants(genotype, record)
             process_protein_impact(genotype, record)
             process_varpathclass(genotype, record)
