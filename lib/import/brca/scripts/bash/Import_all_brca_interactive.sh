@@ -5,7 +5,7 @@ OIFS="$IFS"
 IFS=$'\n'
 DIRPATH=$1
 echo $DIRPATH
-#DIRPATH=~/work/data_management_system
+#DIRPATH=~/work/dms
 #FILEPATH="private/pseudonymised_data/updated_files/"
 FILEPATH=$2
 echo $FILEPATH
@@ -89,7 +89,7 @@ for x in $(find  $DIRPATH/$FILEPATH -type f -name "*.pseudo" -path "*/$PROV/*" -
 ! -name "*Endo*")
 do
 IFS="$OIFS"
-bundle exec rake import:brca fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
+$BRAKE import:brca fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
 done
 }
 
