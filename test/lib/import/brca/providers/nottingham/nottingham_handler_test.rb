@@ -28,7 +28,6 @@ class NottinghamHandlerTest < ActiveSupport::TestCase
     assert_equal '1-2', @genotype.attribute_map['exonintroncodonnumber']
   end
 
-
   test 'process_varpathclass' do
     @handler.process_varpathclass(@genotype, @record)
     assert_equal 3, @genotype.attribute_map['variantpathclass']
@@ -52,7 +51,7 @@ class NottinghamHandlerTest < ActiveSupport::TestCase
     positivetest_normalgenotype_record.raw_fields['teststatus'] = 'Normal'
     @handler.assign_test_status(positivetest_normalgenotype_record, @genotype)
     assert_equal 2, @genotype.attribute_map['teststatus']
-    
+
     positivetest_nogenotype_record = build_raw_record('pseudo_id1' => 'bob')
     positivetest_nogenotype_record.raw_fields['teststatus'] = 'Normal'
     positivetest_nogenotype_record.raw_fields['genotype'] = ''
@@ -64,10 +63,10 @@ class NottinghamHandlerTest < ActiveSupport::TestCase
     @handler.process_protein_impact(@genotype, @record)
     assert_equal 'p.Met283Thr', @genotype.attribute_map['proteinimpact']
   end
-  
+
   test 'process_gene' do
-      @handler.process_gene(@genotype, @record)
-      assert_equal 8, @genotype.attribute_map['gene']
+    @handler.process_gene(@genotype, @record)
+    assert_equal 8, @genotype.attribute_map['gene']
   end
 
   private

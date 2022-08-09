@@ -5,6 +5,7 @@ module Import
     module Providers
       module Nottingham
         # Process Nottingham-specific record details into generalized internal genotype format
+        # rubocop:disable Metrics/ClassLength
         class NottinghamHandler < Import::Brca::Core::ProviderHandler
           # include ExtractionUtilities
           # TEST_TYPE_MAP = { 'confirmation' => :diagnostic,
@@ -28,6 +29,8 @@ module Import
                             'Store' => '',
                             'Variant Update' => '' }.freeze
 
+          # Disabling rubocop Layout/LineLength check because fixing it would disrupt alignment
+          # rubocop:disable Layout/LineLength
           TEST_SCOPE_MAP = { 'Hereditary Breast and Ovarian Cancer (BRCA1/BRCA2)' => :full_screen,
                              'BRCA1 + BRCA2 + PALB2'                              => :full_screen,
                              'Breast Cancer Core Panel'                           => :full_screen,
@@ -35,6 +38,7 @@ module Import
                              'Breast Core Panel'                                  => :full_screen,
                              'BRCA1/BRCA2 PST'                                    => :targeted_mutation,
                              'Cancer PST'                                         => :targeted_mutation }.freeze
+          # rubocop:enable Layout/LineLength
 
           TEST_STATUS_MAP = { '1: Clearly not pathogenic' => :negative,
                               '2: likely not pathogenic' => :negative,
@@ -59,17 +63,17 @@ module Import
                                    consultantcode
                                    servicereportidentifier].freeze
 
-          NEGATIVE_TEST = /Normal/i.freeze
-          VARPATHCLASS_REGEX = /(?<varpathclass>[0-9](?=:))/.freeze
+          NEGATIVE_TEST = /Normal/i
+          VARPATHCLASS_REGEX = /(?<varpathclass>[0-9](?=:))/
 
           # CDNA_REGEX = /c\.(?<cdna>[0-9]+[^\s|^, ]+)/i
-          CDNA_REGEX = /c\.(?<cdna>.?[0-9]+[^\s|^, ]+)/i.freeze
+          CDNA_REGEX = /c\.(?<cdna>.?[0-9]+[^\s|^, ]+)/i
 
           EXON_REGEX = /ex(?<ons>[a-z]+)?\s?(?<exons>[0-9]+(?<otherexons>-[0-9]+)?)\s
                         (?<vartype>del|dup)|(?<vartype>del[a-z]+|dup[a-z]+)(?<of>\sof)?\s
-                        exon(?<s>s)?\s(?<exons>[0-9]+(?<otherexons>-[0-9]+)?)/xi.freeze
+                        exon(?<s>s)?\s(?<exons>[0-9]+(?<otherexons>-[0-9]+)?)/xi
 
-          PROTEIN_REGEX = /p\..(?<impact>.+)\)/i.freeze
+          PROTEIN_REGEX = /p\..(?<impact>.+)\)/i
 
           def initialize(batch)
             @failed_genotype_parse_counter = 0
@@ -185,39 +189,12 @@ module Import
             end
           end
 
-          #
-          # CONDITIONAL_TESTSTATUS_MAP = [
-          #   %i[normaltest_nullvariantfield? add_negative_genotype],
-          #   %i[normaltest_controlvariantfield? add_negative_genotype],
-          #   %i[completedtest_nullvariantfield? add_negative_genotype],
-          #   %i[normaltest_cdnavariantpositive? add_positive_genotype],
-          #   %i[normaltest_cnvvariantpositive? add_positive_genotype],
-          #   %i[completedtest_cdnavariantpositive? add_positive_genotype]
-          # ].freeze
-          #
-          # def process_condtional_teststatus(record, teststatusfield, variantfield)
-          #   params = {param1: record, param2: teststatusfield, param3: variantfield}
-          #
-          #   CONDITIONAL_TESTSTATUS_MAP.each do |condition, extraction|
-          #     send(extraction) if send(condition*params)
-          #   end
-          # end
-          #
-          # def add_negative_genotype(genotype)
-          #   genotype.add_status(:negative)
-          # end
-          #
-          # def add_positive_genotype(genotype)
-          #   genotype.add_status(:positive)
-          # end
-
           def process_protein_impact(genotype, record)
             return if record.raw_fields['genotype'].nil?
 
             variantfield = record.raw_fields['genotype']
             genotype.add_protein_impact(variantfield.match(PROTEIN_REGEX)[:impact]) unless
             variantfield.match(PROTEIN_REGEX).nil?
-            # end
           end
 
           def process_cdna_or_exonic_variants(genotype, record)
@@ -252,6 +229,7 @@ module Import
             @logger.info "Total lines processed: #{@lines_processed}"
           end
         end
+        # rubocop:enable Metrics/ClassLength
       end
     end
   end
