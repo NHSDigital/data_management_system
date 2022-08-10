@@ -5,80 +5,8 @@ module Import
     module Providers
       module Nottingham
         # Process Nottingham-specific record details into generalized internal genotype format
-        # rubocop:disable Metrics/ClassLength
         class NottinghamHandler < Import::Brca::Core::ProviderHandler
-          # include ExtractionUtilities
-          # TEST_TYPE_MAP = { 'confirmation' => :diagnostic,
-          #                   'diagnostic' => :diagnostic,
-          #                   'predictive' => :predictive,
-          #                   'family studies' => :predictive,
-          #                   'indirect' => :predictive } .freeze
-
-          TEST_TYPE_MAP = { 'Carrier Screen' => '',
-                            'Confirmation' => :diagnostic,
-                            'Confirmation Of Familial Mutation' => :diagnostic,
-                            'Confirmation of previous result' => :diagnostic,
-                            'Diagnostic' => :diagnostic,
-                            'Extract and Store' => '',
-                            'Family Studies' => '',
-                            'Indirect' => :predictive,
-                            'Informativeness' => '',
-                            'Mutation Screen' => '',
-                            'Other' => '',
-                            'Predictive' => :predictive,
-                            'Store' => '',
-                            'Variant Update' => '' }.freeze
-
-          # Disabling rubocop Layout/LineLength check because fixing it would disrupt alignment
-          # rubocop:disable Layout/LineLength
-          TEST_SCOPE_MAP = { 'Hereditary Breast and Ovarian Cancer (BRCA1/BRCA2)' => :full_screen,
-                             'BRCA1 + BRCA2 + PALB2'                              => :full_screen,
-                             'Breast Cancer Core Panel'                           => :full_screen,
-                             'Breast Cancer Full Panel'                           => :full_screen,
-                             'Breast Core Panel'                                  => :full_screen,
-                             'BRCA1/BRCA2 PST'                                    => :targeted_mutation,
-                             'Cancer PST'                                         => :targeted_mutation }.freeze
-          # rubocop:enable Layout/LineLength
-
-          TEST_STATUS_MAP = { '1: Clearly not pathogenic' => :negative,
-                              '2: likely not pathogenic' => :negative,
-                              '2: likely not pathogenic variant' => :negative,
-                              'Class 2 Likely Neutral' => :negative,
-                              'Class 2 likely neutral variant' => :negative,
-                              '3: variant of unknown significance (VUS)' => :positive,
-                              '4: likely pathogenic' => :positive,
-                              '4:likely pathogenic' => :positive,
-                              '4: Likely Pathogenic' => :positive,
-                              '5: clearly pathogenic' => :positive,
-                              'Mutation identified' => :positive }.freeze
-
-          TEST_SCOPE_TTYPE_MAP = { 'Diagnostic' => :full_screen,
-                                   'Indirect'   => :full_screen,
-                                   'Predictive' => :targeted_mutation }.freeze
-
-          PASS_THROUGH_FIELDS = %w[age authoriseddate
-                                   receiveddate
-                                   specimentype
-                                   providercode
-                                   consultantcode
-                                   servicereportidentifier].freeze
-
-          NEGATIVE_TEST = /Normal/i
-          VARPATHCLASS_REGEX = /(?<varpathclass>[0-9](?=:))/
-
-          CDNA_REGEX = /c\.(?<cdna>.?[0-9]+[^\s|^, ]+)/i
-
-          EXON_REGEX = /ex(?<ons>[a-z]+)?\s?(?<exons>[0-9]+(?<otherexons>-[0-9]+)?)\s
-                        (?<vartype>del|dup)|(?<vartype>del[a-z]+|dup[a-z]+)(?<of>\sof)?\s
-                        exon(?<s>s)?\s(?<exons>[0-9]+(?<otherexons>-[0-9]+)?)/xi
-
-          PROTEIN_REGEX = /p\..(?<impact>.+)\)/i
-
-          def initialize(batch)
-            @failed_genotype_parse_counter = 0
-            @genotype_counter = 0
-            super
-          end
+          include Import::Helpers::Brca::Providers::Rx1::Rx1Constants
 
           def process_fields(record)
             @lines_processed += 1
@@ -116,60 +44,56 @@ module Import
             end
           end
 
-          def normaltest_nullvariantfield?(record, teststatusfield, variantfield)
-            return false if record.raw_fields['teststatus'].nil?
+          def normaltest_nullvariantfield?(teststatusfield, variantfield)
+            return false if teststatusfield.nil?
 
             teststatusfield == 'Normal' && variantfield.blank?
           end
 
-          def normaltest_controlvariantfield?(record, teststatusfield, variantfield)
-            return false if record.raw_fields['teststatus'].nil? &&
-                            record.raw_fields['genotype'].nil?
+          def normaltest_controlvariantfield?(teststatusfield, variantfield)
+            return false if teststatusfield.nil? && variantfield.nil?
 
             teststatusfield == 'Normal' && variantfield.scan(/normal|control/i).size.positive?
           end
 
-          def normaltest_cdnavariantpositive?(record, teststatusfield, variantfield)
-            return false if record.raw_fields['teststatus'].nil? &&
-                            record.raw_fields['genotype'].nil?
+          def normaltest_cdnavariantpositive?(teststatusfield, variantfield)
+            return false if teststatusfield.nil? && variantfield.nil?
 
             teststatusfield == 'Normal' && variantfield.scan(CDNA_REGEX).size.positive?
           end
 
-          def normaltest_cnvvariantpositive?(record, teststatusfield, variantfield)
-            return false if record.raw_fields['teststatus'].nil? &&
-                            record.raw_fields['genotype'].nil?
+          def normaltest_cnvvariantpositive?(teststatusfield, variantfield)
+            return false if teststatusfield.nil? && variantfield.nil?
 
             teststatusfield == 'Normal' && variantfield.scan(/del|dup/i).size.positive?
           end
 
-          def completedtest_nullvariantfield?(record, teststatusfield, variantfield)
-            return false if record.raw_fields['teststatus'].nil?
+          def completedtest_nullvariantfield?(teststatusfield, variantfield)
+            return false if teststatusfield.nil?
 
             teststatusfield == 'Completed' && variantfield.blank?
           end
 
-          def completedtest_cdnavariantpositive?(record, teststatusfield, variantfield)
-            return false if record.raw_fields['teststatus'].nil? &&
-                            record.raw_fields['genotype'].nil?
+          def completedtest_cdnavariantpositive?(teststatusfield, variantfield)
+            return false if teststatusfield.nil? && variantfield.nil?
 
             teststatusfield == 'Completed' && variantfield.scan(CDNA_REGEX).size.positive?
           end
 
-          def nil_variantfield_teststatusfield?(_record, teststatusfield, variantfield)
+          def nil_variantfield_teststatusfield?(teststatusfield, variantfield)
             return false if teststatusfield.present? || variantfield.present?
 
             teststatusfield.nil? && variantfield.nil?
           end
 
-          def assign_conditional_teststatus(record, teststatusfield, variantfield, genotype)
-            if normaltest_nullvariantfield?(record, teststatusfield, variantfield) ||
-               normaltest_controlvariantfield?(record, teststatusfield, variantfield) ||
-               completedtest_nullvariantfield?(record, teststatusfield, variantfield)
+          def assign_conditional_teststatus(teststatusfield, variantfield, genotype)
+            if normaltest_nullvariantfield?(teststatusfield, variantfield) ||
+               normaltest_controlvariantfield?(teststatusfield, variantfield) ||
+               completedtest_nullvariantfield?(teststatusfield, variantfield)
               genotype.add_status(:negative)
-            elsif normaltest_cdnavariantpositive?(record, teststatusfield, variantfield) ||
-                  completedtest_cdnavariantpositive?(record, teststatusfield, variantfield) ||
-                  normaltest_cnvvariantpositive?(record, teststatusfield, variantfield)
+            elsif normaltest_cdnavariantpositive?(teststatusfield, variantfield) ||
+                  completedtest_cdnavariantpositive?(teststatusfield, variantfield) ||
+                  normaltest_cnvvariantpositive?(teststatusfield, variantfield)
               genotype.add_status(:positive)
             end
           end
@@ -180,10 +104,10 @@ module Import
 
             if TEST_STATUS_MAP[teststatusfield].present?
               genotype.add_status(TEST_STATUS_MAP[teststatusfield])
-            elsif nil_variantfield_teststatusfield?(record, teststatusfield, variantfield)
+            elsif nil_variantfield_teststatusfield?(teststatusfield, variantfield)
               genotype.add_status(4)
             else
-              assign_conditional_teststatus(record, teststatusfield, variantfield, genotype)
+              assign_conditional_teststatus(teststatusfield, variantfield, genotype)
             end
           end
 
@@ -219,15 +143,7 @@ module Import
             gene = record.mapped_fields['gene'].to_i
             genotype.add_gene(gene) unless gene.nil?
           end
-
-          def summarize
-            @logger.info '***************** Handler Report ******************'
-            @logger.info "Num failed genotype parses: #{@failed_genotype_parse_counter}"\
-                         "of #{@genotype_counter}"
-            @logger.info "Total lines processed: #{@lines_processed}"
-          end
         end
-        # rubocop:enable Metrics/ClassLength
       end
     end
   end
