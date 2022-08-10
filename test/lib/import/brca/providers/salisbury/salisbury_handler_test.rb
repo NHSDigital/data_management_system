@@ -10,7 +10,6 @@ class SalisburyHandlerTest < ActiveSupport::TestCase
     end
 
     @logger = Import::Log.get_logger
-    @logger.level = Logger::FATAL
   end
 
   test 'extract_gene' do
