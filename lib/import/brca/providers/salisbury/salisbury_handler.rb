@@ -13,26 +13,41 @@ module Import
             genotype.add_passthrough_fields(record.mapped_fields,
                                             record.raw_fields,
                                             PASS_THROUGH_FIELDS)
-            mol_testing_type = record.raw_fields['moleculartestingtype']&.downcase
-            process_molecular_testing(genotype, mol_testing_type)
+
+            process_molecular_testing(genotype, record)
             add_organisationcode_testresult(genotype)
             extract_teststatus(genotype, record)
             res = process_variant_record(genotype, record)
             res.each { |cur_genotype| @persister.integrate_and_store(cur_genotype) }
           end
 
-          def process_molecular_testing(genotype, mol_testing_type)
+          def process_molecular_testing(genotype, record)
+            mol_testing_type = record.raw_fields['moleculartestingtype']&.downcase
             genotype.add_molecular_testing_type_strict(TEST_TYPE_MAPPING[mol_testing_type])
-            scope = TEST_SCOPE_MAPPING[mol_testing_type]
-            if scope
-              genotype.add_test_scope(scope)
-            else
-              genotype.add_test_scope(:no_genetictestscope)
-            end
+            scope = TEST_SCOPE_MAPPING[mol_testing_type].presence || :no_genetictestscope
+            genotype.add_test_scope(scope)
           end
 
           def add_organisationcode_testresult(genotype)
             genotype.attribute_map['organisationcode_testresult'] = '699H0'
+          end
+
+          def extract_teststatus(genotype, record)
+            status = record.raw_fields['status']&.downcase
+            geno_str = record.raw_fields['genotype']
+            if POSITIVE_STATUS.include?(status)
+              genotype.add_status(:positive)
+            elsif NEGATIVE_STATUS.include?(status)
+              genotype.add_status(:negative)
+            elsif FAILED_TEST.match(record.raw_fields['status'])
+              genotype.add_status(:failed)
+            elsif UNKNOWN_STATUS.include?(status)
+              genotype.add_status(:unknown)
+            elsif GENO_DEPEND_STATUS.include?(status)
+              teststatus = geno_str.blank? ? :negative : :positive
+              genotype.add_status(teststatus)
+            end
+            @logger.debug "#{genotype.attribute_map['teststatus']} status for : #{status}"
           end
 
           def process_variant_record(genotype, record)
@@ -41,12 +56,12 @@ module Import
             test_str = record.raw_fields['test']
             gene = extract_gene(test_str, variant, record)
             genotype.add_gene(gene[0])
-            if test_str.scan(CONFIRMATION_SEQ_NGS_CASE).size.positive?
+            if test_str.scan(CONFIRM_SEQ_NGS).size.positive?
               add_fs_negative_gene(gene, genotype, genotypes)
             end
 
             process_variants(genotype, variant) if positive_rec?(genotype) && variant.present?
-            unless test_str.scan(CONFIRMATION_SEQ_NGS_CASE).size.positive? && gene.blank?
+            unless test_str.scan(CONFIRM_SEQ_NGS).size.positive? && gene.blank?
               genotypes.append(genotype)
             end
 
@@ -100,11 +115,8 @@ module Import
             positive_gene = []
             positive_gene << 'BRCA1' if record.raw_fields['servicereportidentifier'] == 'W1715894'
 
-            gene_string = if test_string.scan(CONFIRMATION_SEQ_NGS_CASE).size.positive?
-                            geno_str
-                          else
-                            test_string
-                          end
+            gene_string = test_string.scan(CONFIRM_SEQ_NGS).size.positive? ? geno_str : test_string
+
             case gene_string
             when /BRCA1|BC1/i
               positive_gene << 'BRCA1'
@@ -124,24 +136,6 @@ module Import
             positive_gene
           end
           # rubocop:enable Metrics/MethodLength, Metrics/CyclomaticComplexity
-
-          def extract_teststatus(genotype, record)
-            status = record.raw_fields['status']&.downcase
-            geno_str = record.raw_fields['genotype']
-            if POSITIVE_STATUS.include?(status)
-              genotype.add_status(:positive)
-            elsif NEGATIVE_STATUS.include?(status)
-              genotype.add_status(:negative)
-            elsif FAILED_TEST.match(record.raw_fields['status'])
-              genotype.add_status(:failed)
-            elsif UNKNOWN_STATUS.include?(status)
-              genotype.add_status(:unknown)
-            elsif GENO_DEPEND_STATUS.include?(status)
-              teststatus = geno_str.blank? ? :negative : :positive
-              genotype.add_status(teststatus)
-            end
-            @logger.debug "#{genotype.attribute_map['teststatus']} status for : #{status}"
-          end
         end
       end
     end

@@ -60,7 +60,7 @@ module Import
             BRCA_REGEX = /(?<brca>BRCA1|BRCA2|PALB2|ATM|CHEK2|TP53|MLH1|CDH1|
                                   MSH2|MSH6|PMS2|STK11|PTEN|BRIP1|NBN|RAD51C|RAD51D)/ix
 
-            CONFIRMATION_SEQ_NGS_CASE = /Confirmation\sSequencing|NGS\sResults/ix
+            CONFIRM_SEQ_NGS = /Confirmation\sSequencing|NGS\sResults/ix
             # rubocop:disable Lint/MixedRegexpCaptureTypes
             CDNA_REGEX = /c\.\[?(?<cdna>
                                 ([0-9]+[+>_-][0-9][+>_-][0-9]+[+>_-][0-9][ACGTdelinsup]+)|
