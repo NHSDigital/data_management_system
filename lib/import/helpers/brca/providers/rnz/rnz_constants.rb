@@ -61,7 +61,7 @@ module Import
                                   MSH2|MSH6|PMS2|STK11|PTEN|BRIP1|NBN|RAD51C|RAD51D)/ix
 
             CONFIRM_SEQ_NGS = /Confirmation\sSequencing|NGS\sResults/ix
-            
+
             # rubocop:disable Lint/MixedRegexpCaptureTypes
             CDNA_REGEX = /c\.\[?(?<cdna>
                                 ([0-9]+[+>_-][0-9][+>_-][0-9]+[+>_-][0-9][ACGTdelinsup]+)|

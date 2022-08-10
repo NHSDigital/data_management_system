@@ -74,7 +74,7 @@ module Import
             process_protein_impact(genotype, variant)
           end
 
-         def process_exonic_variant(genotype, variant)
+          def process_exonic_variant(genotype, variant)
             return unless variant.scan(EXON_VARIANT_REGEX).size.positive?
 
             genotype.add_exon_location($LAST_MATCH_INFO[:exons])
