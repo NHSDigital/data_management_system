@@ -46,7 +46,7 @@ class SalisburyHandlerTest < ActiveSupport::TestCase
     ngs_fs_record.raw_fields['test'] = 'NGS results'
     ngs_fs_record.raw_fields['genotype'] = nil
     mol_testing_type = ngs_fs_record.raw_fields['moleculartestingtype']&.downcase
-    @handler.process_molecular_testing(@genotype, mol_testing_type)
+    @handler.process_molecular_testing(@genotype, ngs_fs_record)
     @handler.extract_teststatus(@genotype, ngs_fs_record)
     genotypes = @handler.process_variant_record(@genotype, ngs_fs_record)
     assert_equal 2, genotypes.size
@@ -65,7 +65,7 @@ class SalisburyHandlerTest < ActiveSupport::TestCase
     targ_rec.raw_fields['test'] = 'BC2_11J'
     targ_rec.raw_fields['genotype'] = nil
     mol_testing_type = targ_rec.raw_fields['moleculartestingtype']&.downcase
-    @handler.process_molecular_testing(@genotype, mol_testing_type)
+    @handler.process_molecular_testing(@genotype, targ_rec)
     @handler.extract_teststatus(@genotype, targ_rec)
     genotypes = @handler.process_variant_record(@genotype, targ_rec)
     assert_equal 1, genotypes.size
@@ -81,7 +81,7 @@ class SalisburyHandlerTest < ActiveSupport::TestCase
     targ_rec_path.raw_fields['test'] = 'BC2_02'
     targ_rec_path.raw_fields['genotype'] = 'c.51_52delAC p.(Arg18LeufsTer12)'
     mol_testing_type = targ_rec_path.raw_fields['moleculartestingtype']&.downcase
-    @handler.process_molecular_testing(@genotype, mol_testing_type)
+    @handler.process_molecular_testing(@genotype, targ_rec_path)
     @handler.extract_teststatus(@genotype, targ_rec_path)
     genotypes = @handler.process_variant_record(@genotype, targ_rec_path)
     assert_equal 1, genotypes.size
@@ -99,7 +99,7 @@ class SalisburyHandlerTest < ActiveSupport::TestCase
     fs_rec_path.raw_fields['test'] = 'BRCA2 mutation analysis'
     fs_rec_path.raw_fields['genotype'] = 'c.68-7T>A'
     mol_testing_type = fs_rec_path.raw_fields['moleculartestingtype']&.downcase
-    @handler.process_molecular_testing(@genotype, mol_testing_type)
+    @handler.process_molecular_testing(@genotype, fs_rec_path)
     @handler.extract_teststatus(@genotype, fs_rec_path)
     genotypes = @handler.process_variant_record(@genotype, fs_rec_path)
     assert_equal 1, genotypes.size
