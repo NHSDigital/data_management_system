@@ -140,7 +140,7 @@ module Import
           end
 
           def process_gene(genotype, record)
-            gene = record.mapped_fields['gene'].to_i
+            gene = record.mapped_fields['gene']&.to_i
             genotype.add_gene(gene) unless gene.nil?
           end
         end
