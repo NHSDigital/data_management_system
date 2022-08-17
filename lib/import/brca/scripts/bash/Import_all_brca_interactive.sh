@@ -232,6 +232,18 @@ $BRAKE import:brca fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1
 done
 }
 
-RTD; RQ3; RR8; RNZ; RVJ; RX1; RCU; RJ1; RGT; RPY; R0A; RJ7; RTH; R1K; RP4
+REP () {
+echo $DIRPATH/$FILEPATH 
+PROV='REP'
+IFS=$'\n'
+for x in $(find  $DIRPATH/$FILEPATH -type f -name "*.pseudo" -path "*/$PROV/*")
+do
+IFS="$OIFS"
+bundle exec rake import:brca fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
+done
+}
+
+
+RTD; RQ3; RR8; RNZ; RVJ; RX1; RCU; RJ1; RGT; RPY; R0A; RJ7; RTH; R1K; RP4; REP
 
 
