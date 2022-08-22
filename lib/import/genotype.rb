@@ -178,6 +178,17 @@ module Import
       end
     end
 
+    def add_geneticinheritance(inheritance_string)
+      return if inheritance_string.blank?
+
+      case inheritance_string
+      when :mosaic
+        @attribute_map['geneticinheritance'] = 6
+      else
+        @logger.warn "Unable to add geneticinheritance: #{inheritance_string}"
+      end
+    end
+
 #     def add_gene(brca_input)
 #       case brca_input
 #       when Integer

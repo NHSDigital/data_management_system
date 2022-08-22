@@ -76,13 +76,8 @@ PROV='RNZ'
 IFS=$'\n'
 for x in $(find  $DIRPATH/$FILEPATH -type f -name "*.pseudo" -path "*/$PROV/*" \
 -not -path "*/2018-02-06/*" \
-! -name "32b125df2fd306c7b2b6b7a6ec1362d368a02536_2017_Lynch full and predictives 2017.xlsx.pseudo" \
-! -name "655e2321cd97be403ad7cf120b4132c52a26d79b_2018_Lynch full and predictives 2018.xlsx.pseudo" \
-! -name "d47bfb9be436f0132fedb88be4a1685a02709fcf_2016_Lynch full and predictives 2016.xlsx.pseudo" \
-! -name "ef6964b8789476f4e302b8ec199bd7718b1d101d_2019_Lynch full and predictives 2019.xlsx.pseudo" \
-! -name "89d0d99aaccbcb34797c16015267c4cadbee61de_2015_Lynch full and predictives 2015.xlsx.pseudo" \
-! -name "3a89d5a61f61b343adca31471ff39f8254226777_2019_PTEN full and predictives 2019.xlsx.pseudo" \
-! -name "e10489ceaf13fb0c6bc31ec2195ed6511752571b_01.01.2020 to 31.07.2020_Lynch full and predictives 2020 Jan to July inclusive.xlsx.pseudo" )
+! -name "*Lynch*" \
+! -name "*PTEN*"  )
 do
 IFS="$OIFS"
 $BRAKE import:brca fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
@@ -95,18 +90,12 @@ MBIS=$1
 PROV='RX1'
 IFS=$'\n'
 for x in $(find  $DIRPATH/$FILEPATH -type f -name "*.pseudo" -path "*/$PROV/*" -not -path "*/2017-06-14/*" \
-! -name "89201abfdac7685739944b5a6ea314065ec95d41_01.07.2018 to 01.12.2018_Lynch Challenge July2018_Dec2018v9.xlsx.pseudo" \
-! -name "a67fbd953bb8a2df2b9b2ed793a74c6f4ab2efe5_01.01.2010 to 30.06.2018_Lynch Challenge Jan2010_June2018v19.xlsx.pseudo" \
-! -name "c7005f8821f316a795e007bff866eaab5e1b0b0d_01.01.2019 to 30.11.2019_Lynch Challenge Jan2019_Nov2019v3.xlsx.pseudo" \
-! -name "dc7887680a728a55cb0ae04d1209f963f3d9f429_12.2019_Lynch Challenge Dec2019v7.xlsx.pseudo" \
-! -name "4101dd36f57f03ebc1711ec74dba30e15760612d_01.01.2018 to 30.06.2018_Lynch Challenge Jan2018_June2018 additional genes v10.xlsx.pseudo" \
-! -name "5108ccb441cb1bf07ab87a580c747aeb644151f6_01.01.2020 to 31.03.2020_Bowel Jan2020_March2020v6.xlsx.pseudo" \
-! -name "04401b8fe2742e875d0ce7ebd53ffad7b73954c8_01.04.2020 to 30.06.2020_Bowel April2020_June2020v6.xlsx.pseudo" \
-! -name "2781c1ff8d9be78a711016b5348cd1f78a8365cc_01.07.2020 to 30.09.2020_Bowel Julyl2020_Sept2020v5.xlsx.pseudo" \
-! -name "6143beeed638c81f50dc60118086e5f4ad5ebfeb_01.10.2020 to 31.12.2020_Bowel Oct2020_Dec2020v3.xlsx.pseudo" )
+! -name "*Lynch*" \
+! -name "*Bowel*" \
+! -name "*Endo*")
 do
 IFS="$OIFS"
-bundle exec rake import:brca fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
+$BRAKE import:brca fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
 done
 }
 
@@ -165,7 +154,7 @@ for x in $(find  $DIRPATH/$FILEPATH -type f -name "*.pseudo" -path "*/$PROV/*" \
 ! -name "ea90909e3b33dc27f5e265bee8a583a56773cd29_01.08.2019 to 27.04.2020_Lynch_190801_200427_UPLOAD.csv.pseudo" )
 do
 IFS="$OIFS"
-$BRAKE import:brca fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
+bundle exec rake import:brca fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
 done
 }
 
@@ -243,6 +232,18 @@ $BRAKE import:brca fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1
 done
 }
 
-RTD; RQ3; RR8; RNZ; RVJ; RX1; RCU; RJ1; RGT; RPY; R0A; RJ7; RTH; R1K; RP4
+REP () {
+echo $DIRPATH/$FILEPATH 
+PROV='REP'
+IFS=$'\n'
+for x in $(find  $DIRPATH/$FILEPATH -type f -name "*.pseudo" -path "*/$PROV/*")
+do
+IFS="$OIFS"
+bundle exec rake import:brca fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
+done
+}
+
+
+RTD; RQ3; RR8; RNZ; RVJ; RX1; RCU; RJ1; RGT; RPY; R0A; RJ7; RTH; R1K; RP4; REP
 
 

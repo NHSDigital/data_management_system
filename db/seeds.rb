@@ -632,7 +632,7 @@ DataSourceItem.find_or_create_by!(name: 'WARDRM', description: 'Ward code of usu
 
 # Using 'XDC04' to remain consistent with Encore
 Zprovider.find_or_create_by!(zproviderid: 'XDC04', shortdesc: 'ONS', description: 'Office of National Statistics', exportid: 'XDC04')
-%w[X25 RR8 RNZ RVJ RTD RX1 RCU RW3 RJ1 RGT RQ3 R0A RJ7 RPY RTH R1K RP4].each do |zpid|
+%w[X25 RR8 RNZ RVJ RTD RX1 RCU RW3 RJ1 RGT RQ3 R0A RJ7 RPY RTH R1K RP4 REP].each do |zpid|
   Zprovider.find_or_create_by!(zproviderid: zpid) unless Zprovider.exists?(zpid)
 end
 
