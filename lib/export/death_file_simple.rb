@@ -42,7 +42,7 @@ module Export
     end
 
     # Emit the value for a particular field, including extract-specific tweaks
-    # TODO: Refector with CancerMortalityFile, into DeathFile
+    # TODO: Refactor with CancerMortalityFile, into DeathFile
     def extract_field(ppat, field)
       # Special fields not in the original spec
       val = super(ppat, field)
