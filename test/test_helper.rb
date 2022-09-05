@@ -177,6 +177,22 @@ def empty_schema(output)
   schema
 end
 
+# Add Germline test helper common methods.
+module GermlineImportTestHelper
+  def build_raw_record(options = {})
+    default_options = {
+      'pseudo_id1' => '',
+      'pseudo_id2' => '',
+      'encrypted_demog' => '',
+      'clinical.to_json' => clinical_json,
+      'encrypted_rawtext_demog' => '',
+      'rawtext_clinical.to_json' => rawtext_clinical_json
+    }
+
+    Import::Brca::Core::RawRecord.new(default_options.merge!(options))
+  end
+end
+
 # Adds some PaperTrail based helpers and assertions.
 module PaperTrailHelper
   # Allow auditing to be temporarily enabled for a test case.
@@ -278,6 +294,8 @@ require 'integration_test_helper'
 ActionDispatch::IntegrationTest.include(IntegrationTestHelper)
 
 ActiveSupport::TestCase.include(PaperTrailHelper)
+ActiveSupport::TestCase.include(GermlineImportTestHelper)
+
 ActionDispatch::IntegrationTest.include(PaperTrailHelper)
 ActionDispatch::IntegrationTest.include(ActionMailerHelper)
 ActionMailer::TestCase.include(ActionMailerHelper)

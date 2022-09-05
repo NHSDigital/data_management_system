@@ -15,19 +15,6 @@ class NottinghamHandlerColorectalTest < ActiveSupport::TestCase
     @logger = Import::Log.get_logger
   end
 
-  private
-
-  def build_raw_record(options = {})
-    default_options = { 'pseudo_id1' => '',
-                        'pseudo_id2' => '',
-                        'encrypted_demog' => '',
-                        'clinical.to_json' => clinical_json,
-                        'encrypted_rawtext_demog' => '',
-                        'rawtext_clinical.to_json' => rawtext_clinical_json }
-
-    Import::Brca::Core::RawRecord.new(default_options.merge!(options))
-  end
-
   test 'add_test_type' do
     @handler.add_test_type(@genotype, @record)
     assert_equal 2, @genotype.attribute_map['moleculartestingtype']
@@ -69,6 +56,8 @@ class NottinghamHandlerColorectalTest < ActiveSupport::TestCase
     @logger.expects(:debug).with('FAILED VARPATHCLASS parse for: Cabbage')
     @handler.extract_variantclass_from_genotype(@genotype, novarpathclass_record)
   end
+
+  private
 
   def clinical_json
     { sex: '2',

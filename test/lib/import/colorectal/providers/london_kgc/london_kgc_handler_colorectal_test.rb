@@ -15,18 +15,6 @@ class LondonKgcHandlerColorectalTest < ActiveSupport::TestCase
     @logger = Import::Log.get_logger
   end
 
-  private
-
-  def build_raw_record(options = {})
-    default_options = { 'pseudo_id1' => '',
-                        'pseudo_id2' => '',
-                        'encrypted_demog' => '',
-                        'clinical.to_json' => clinical_json,
-                        'encrypted_rawtext_demog' => '',
-                        'rawtext_clinical.to_json' => rawtext_clinical_json }
-
-    Import::Brca::Core::RawRecord.new(default_options.merge!(options))
-  end
 
   test 'process_lynchgenes with no mutation' do
     genemutation_lynch_record = build_raw_record('pseudo_id1' => 'bob')
@@ -374,6 +362,8 @@ class LondonKgcHandlerColorectalTest < ActiveSupport::TestCase
     @handler.process_union_lynchgenes(raw_genotype, clinicomm, @genotype, genotypes)
     assert_equal 9, genotypes.size
   end
+
+  private
 
   def clinical_json
     { sex: '2',

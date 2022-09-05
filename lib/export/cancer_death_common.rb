@@ -23,32 +23,39 @@ module Export
               670\z|671\z|672\z|673\z|674.*\z|675.*\z|678\z|680\z|6810\z|6821\z|683\z|684\z|
               685\z|7400\z|752\z|753.*\z|760\z|7643\z|765\z|7660\z|7662\z|7671\z|825.*\z|8280\z|
               8281\z|833\z|845\z|846\z|8911\z|899\z|95.*\z).*)\z
-    /x.freeze
+    /x
     # Rare disease pattern, plan.io task #14947, details in #match_rare_disease_row?
     # Extract used until 2020-10
     # RD_PATTERN = /\A(D761|D762|D763|E830|M313|M317|M301|M314|I776|I778|M352|M315|M316|M321|
     #   M330|M332|M331|M339|M340|M341|M348|M349|M083|M084|M082|M080|M300|M308|J991|N085|N164|
     #   M328|M329|M609|G724|M608|M089|G903)\z
-    # /x.freeze
+    # /x
     # Updated criteria implemented 2021-10, cf. plan.io #14947#note-18
     # RD_PATTERN = /\A(E009|E030|E031|E700|E701|M313|M317|M301|M314|I776|I778|M352|M315|M316|
     #   M321|M330|M332|M331|M339|M340|M341|M348|M349|M083|M084|M082|M080|M300|M308|J991|N085|
     #   N164|M328|M329|M609|G724|M608|M089|M360)\z
-    # /x.freeze
+    # /x
     # Updated criteria implemented 2021-11, cf. plan.io #14947#note-21
-    RD_PATTERN = /\A(D761|D762|D763|U10.*|M303|E752)\z
-    /x.freeze
+    # RD_PATTERN = /\A(D761|D762|D763|U10.*|M303|E752)\z
+    # /x
+    # Updated criteria implemented 2022-09, cf. plan.io #30091 and #14947
+    RD_PATTERN = /\A(E009|E030|E031|G724|I776|I778|J991|M080|M082|M083|M084|M089|M300|M301|M303|
+      M308|M313|M314|M315|M316|M317|M321|M328|M329|M330|M331|M332|M339|M340|M341|M348|M349|M352|
+      M360|M608|M609|N085|N164|I777|E700|E701|E752|E830|E880|G903|G232|G233|Q850)\z
+    /x
     # Extract used until 2020-11
-    # RD_PATTERN_POST_2015 = /\A(Q.*)\z/.freeze
+    # RD_PATTERN_POST_2015 = /\A(Q.*)\z/
     # Updated criteria implemented 2021-11, cf. plan.io #14947#note-21
-    RD_PATTERN_POST_2015 = /\AZZZZZZ\z/.freeze # match no ICD codes
+    # RD_PATTERN_POST_2015 = /\AZZZZZZ\z/ # match no ICD codes
+    # Updated criteria implemented 2022-09, cf. plan.io #30091 and #14947
+    RD_PATTERN_POST_2015 = /\A(Q.*)\z/
     # Extract used until 2020-10
     # RD_STRING_PATTERNS = [[/LSTR/, /SYND/],
     #                       [/MENK/],
     #                       [/WOLFRAM/],
     #                       [/DIDMOAD/],
     #                       [/MULTI/, /ATROPHY/]].freeze
-    # Updated criteria implemented 2021-10, cf. plan.io #14947#note-18
+    # Updated criteria implemented 202x1-10, cf. plan.io #14947#note-18
     RD_STRING_PATTERNS = [].freeze
     # C / D00-D48, confirmed as sufficient against early 2017 cancer death files
     SURVEILLANCE_CODES = { 'cd' => /^(C|D[0123]|D4[0-8])/, # New cancer deaths (only cancer causes)
@@ -208,12 +215,8 @@ module Export
     def extract_field(ppat, field)
       # Special fields not in the original spec
       case field
-      when 'creg_fnamd' # First 3 forenames, space separated at 20 character intervals
-        # (The specification says delimiter present at position 21, but this isn't reflected in
-        #  the historical cancer deaths files received)
-        # return %w[fnamd1 fnamd2 fnamd3].collect { |f| [super(ppat, f)].pack('A20') }.join(' ')
-        return %w[fnamd1 fnamd2 fnamd3].collect { |f| [super(ppat, f)].pack('A19') }.join(' ').
-               rstrip
+      when 'creg_fnamd' # First 3 forenames, space separated
+        return %w[fnamd1 fnamd2 fnamd3].collect { |f| super(ppat, f) }.compact.join(' ')
       when 'creg_aliasd_all' # Concatenate all aliases
         return [super(ppat, 'aliasd_1'), super(ppat, 'aliasd_2')].compact.join(' ')
       when 'creg_sex'
@@ -222,18 +225,16 @@ module Export
       end
       val = super(ppat, field)
       case field
-      when 'addrdt', 'podt' # Commas replaced with slashes in weekly cancer deaths extract
-        val = val.to_s.tr(',', '/')
+      when 'addrdt', 'podt'
         # Remove leading spaces from addresses in LEDR extracts
-        val = val.sub(/\A +/, '')
+        val = val&.sub(/\A +/, '')
       when 'namec' # Blank if inquest type not = 1, 2 or 9
         val = '' unless [1, 2, 9].include?(death_field(ppat, 'inqcert'))
-      when 'snamd'
-        val = "#{val}/"
       when 'inqcert'
         val = '' if val == 0 # Make LEDR extract more like M204: LEDR sends explicit 0's here
-      when 'pcdr' # Remove spaces from 7 character postcodes, have 2 spaces in e.g. "A1  1AA"
-        val = val&.postcodeize(:db)
+      when 'agec' # Remove leading zeros
+        # TODO: Refactor with CancerMortalityFile, DeathFileSimple, into DeathFile
+        val = val.to_i.to_s if val.present?
       end
       val
     end

@@ -10,18 +10,6 @@ class SheffieldHandlerColorectalTest < ActiveSupport::TestCase
     @logger = Import::Log.get_logger
   end
 
-  private
-
-  def build_raw_record(options = {})
-    default_options = { 'pseudo_id1' => '',
-                        'pseudo_id2' => '',
-                        'encrypted_demog' => '',
-                        'clinical.to_json' => clinical_json,
-                        'encrypted_rawtext_demog' => '',
-                        'rawtext_clinical.to_json' => rawtext_clinical_json }
-
-    Import::Brca::Core::RawRecord.new(default_options.merge!(options))
-  end
 
   test 'add_test_scope_from_karyo_fullscreen' do
     @handler.add_test_scope_from_geno_karyo(@genotype, @record)
@@ -206,6 +194,8 @@ class SheffieldHandlerColorectalTest < ActiveSupport::TestCase
     assert_equal 3394, genocolorectals[0].attribute_map['gene']
     assert_equal 1, genocolorectals[0].attribute_map['variantgenotype']
   end
+
+  private
 
   def clinical_json
     { sex: '2',

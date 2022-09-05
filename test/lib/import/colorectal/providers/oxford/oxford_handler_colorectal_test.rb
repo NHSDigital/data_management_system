@@ -123,20 +123,7 @@ class OxfordHandlerColorectalTest < ActiveSupport::TestCase
 
   private
 
-  def build_raw_record(options = {})
-    default_options = {
-      'pseudo_id1' => '',
-      'pseudo_id2' => '',
-      'encrypted_demog' => '',
-      'clinical.to_json' => clinical_to_json,
-      'encrypted_rawtext_demog' => '',
-      'rawtext_clinical.to_json' => rawtext_to_clinical_to_json
-    }
-
-    Import::Brca::Core::RawRecord.new(default_options.merge!(options))
-  end
-
-  def clinical_to_json
+  def clinical_json
     { sex: '1',
       consultantcode: 'ConsultantCode',
       providercode: 'ProviderCode',
@@ -150,10 +137,10 @@ class OxfordHandlerColorectalTest < ActiveSupport::TestCase
       codingdnasequencechange: 'c.[7638_7646del]+[=]',
       proteinimpact: 'p.[Arg2547_Ser2549del]+[=]',
       variantpathclass: '5: Clearly pathogenic',
-      age: 999 } .to_json
+      age: 999 }.to_json
   end
 
-  def rawtext_to_clinical_to_json
+  def rawtext_clinical_json
     { sex: 'Male',
       providercode: 'Oxford Centre for Genomic Medicine',
       consultantname: 'Ms Subhashini Balasingham',

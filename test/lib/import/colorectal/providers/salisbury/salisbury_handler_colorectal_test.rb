@@ -15,19 +15,6 @@ class SalisburyHandlerColorectalTest < ActiveSupport::TestCase
     end
   end
 
-  private
-
-  def build_raw_record(options = {})
-    default_options = { 'pseudo_id1' => '',
-                        'pseudo_id2' => '',
-                        'encrypted_demog' => '',
-                        'clinical.to_json' => clinical_json,
-                        'encrypted_rawtext_demog' => '',
-                        'rawtext_clinical.to_json' => rawtext_clinical_json }
-
-    Import::Brca::Core::RawRecord.new(default_options.merge!(options))
-  end
-
   test 'process_multigene_normal_record' do
     multigene_normal_record = build_raw_record('pseudo_id1' => 'bob')
     multigene_normal_record.raw_fields['test'] = 'MLH1 and MSH2 test'
@@ -157,6 +144,8 @@ class SalisburyHandlerColorectalTest < ActiveSupport::TestCase
     assert_equal 2, res[0].attribute_map['teststatus']
     assert_equal 'c.2665C>T', res[0].attribute_map['codingdnasequencechange']
   end
+
+  private
 
   def clinical_json
     { sex: '1',
