@@ -1014,20 +1014,7 @@ class GuysHandlerTest < ActiveSupport::TestCase
     assert_equal 'Full screen BRCA1 and BRCA2', res[1].attribute_map['genetictestscope']
   end
 
-  def build_raw_record(options = {})
-    default_options = { 'pseudo_id1' => '',
-                        'pseudo_id2' => '',
-                        'encrypted_demog' => '',
-                        'clinical.to_json' => clinical_json,
-                        'encrypted_rawtext_demog' => '',
-                        'rawtext_clinical.to_json' => rawtext_clinical_json }
-
-    Import::Brca::Core::RawRecord.new(default_options.merge!(options))
-  end
-
-  # def variant_processor_for(record)
-  #   Import::Brca::Providers::Birmingham::VariantProcessor.new(@genotype, record, @logger)
-  # end
+  private
 
   def clinical_json
     { sex: '2',

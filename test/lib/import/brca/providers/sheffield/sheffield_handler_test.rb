@@ -276,21 +276,9 @@ class SheffieldHandlerTest < ActiveSupport::TestCase
     assert_equal 'Targeted BRCA mutation test', genotypes[0].attribute_map['genetictestscope']
   end
 
-  # TODO: DRY this method up into a helper
-  def build_raw_record(options = {})
-    default_options = {
-      'pseudo_id1' => '',
-      'pseudo_id2' => '',
-      'encrypted_demog' => '',
-      'clinical.to_json' => clinical_to_json,
-      'encrypted_rawtext_demog' => '',
-      'rawtext_clinical.to_json' => rawtext_to_clinical_to_json
-    }
+  private
 
-    Import::Brca::Core::RawRecord.new(default_options.merge!(options))
-  end
-
-  def clinical_to_json
+  def clinical_json
     { sex: '1',
       consultantcode: 'Consultant Code',
       providercode: 'Provider Code',
@@ -306,7 +294,7 @@ class SheffieldHandlerTest < ActiveSupport::TestCase
       age: 63 }.to_json
   end
 
-  def rawtext_to_clinical_to_json
+  def rawtext_clinical_json
     { sex: 'Male',
       servicereportidentifier: 'Service Report Identifier',
       providercode: 'Provider Address',

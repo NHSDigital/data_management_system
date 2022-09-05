@@ -10,18 +10,6 @@ class NewcastleHandlerColorectalTest < ActiveSupport::TestCase
     @logger = Import::Log.get_logger
   end
 
-  private
-
-  def build_raw_record(options = {})
-    default_options = { 'pseudo_id1' => '',
-                        'pseudo_id2' => '',
-                        'encrypted_demog' => '',
-                        'clinical.to_json' => clinical_json,
-                        'encrypted_rawtext_demog' => '',
-                        'rawtext_clinical.to_json' => rawtext_clinical_json }
-
-    Import::Brca::Core::RawRecord.new(default_options.merge!(options))
-  end
 
   test 'add_test_status' do
     positive_record = build_raw_record('pseudo_id1' => 'bob')
@@ -166,6 +154,8 @@ class NewcastleHandlerColorectalTest < ActiveSupport::TestCase
     assert_equal 1, genocolorectals[1].attribute_map['teststatus']
     assert_equal 2804, genocolorectals[1].attribute_map['gene']
   end
+
+  private
 
   def clinical_json
     { sex: '2',

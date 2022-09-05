@@ -92,19 +92,6 @@ class CambridgeHandlerTest < ActiveSupport::TestCase
 
   private
 
-  def build_raw_record(options = {})
-    default_options = {
-      'pseudo_id1' => '',
-      'pseudo_id2' => '',
-      'encrypted_demog' => '',
-      'clinical.to_json' => clinical_json,
-      'encrypted_rawtext_demog' => '',
-      'rawtext_clinical.to_json' => rawtext_clinical_json
-    }
-
-    Import::Brca::Core::RawRecord.new(default_options.merge!(options))
-  end
-
   def clinical_json
     { sex: '1',
       consultantcode: 'Consultant Code',

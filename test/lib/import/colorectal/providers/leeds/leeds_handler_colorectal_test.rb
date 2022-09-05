@@ -15,19 +15,6 @@ class LeedsHandlerColorectalTest < ActiveSupport::TestCase
     @logger = Import::Log.get_logger
   end
 
-  private
-
-  def build_raw_record(options = {})
-    default_options = { 'pseudo_id1' => '',
-                        'pseudo_id2' => '',
-                        'encrypted_demog' => '',
-                        'clinical.to_json' => clinical_json,
-                        'encrypted_rawtext_demog' => '',
-                        'rawtext_clinical.to_json' => rawtext_clinical_json }
-
-    Import::Brca::Core::RawRecord.new(default_options.merge!(options))
-  end
-
   test 'add_positive_teststatus' do
     @logger.expects(:debug).with('Cannot determine test status for : Diagnostic APC +ve a priori')
     @handler.add_positive_teststatus(@genotype, @record)
@@ -73,6 +60,8 @@ class LeedsHandlerColorectalTest < ActiveSupport::TestCase
     @handler.process_scope(@record.mapped_fields['genetictestscope'], @genotype, @record)
     assert_equal 'Full screen Colorectal Lynch or MMR', @genotype.attribute_map['genetictestscope']
   end
+
+  private
 
   def clinical_json
     { sex: '1',

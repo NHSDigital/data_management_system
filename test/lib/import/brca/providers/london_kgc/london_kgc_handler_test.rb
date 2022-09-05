@@ -10,8 +10,6 @@ class LondonKgcHandlerTest < ActiveSupport::TestCase
     @logger = Import::Log.get_logger
   end
 
-  private
-
   test 'process record with no mutation' do
     nomutation_record = build_raw_record('pseudo_id1' => 'bob')
     @logger.expects(:debug).with('SUCCESSFUL gene parse for negative test for: BRCA1')
@@ -104,16 +102,7 @@ class LondonKgcHandlerTest < ActiveSupport::TestCase
     assert_equal 3, genotypes.size
   end
 
-  def build_raw_record(options = {})
-    default_options = { 'pseudo_id1' => '',
-                        'pseudo_id2' => '',
-                        'encrypted_demog' => '',
-                        'clinical.to_json' => clinical_json,
-                        'encrypted_rawtext_demog' => '',
-                        'rawtext_clinical.to_json' => rawtext_clinical_json }
-
-    Import::Brca::Core::RawRecord.new(default_options.merge!(options))
-  end
+  private
 
   def clinical_json
     { sex: '2',
