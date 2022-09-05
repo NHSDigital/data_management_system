@@ -3,25 +3,37 @@ module Export
   # Specification in plan.io #14702:
   # Initially to be filtered against cases identified from the data lake
   # The regular rare disease extract for CARA data loading is in lib/export/cancer_death_common.rb
-  class RareDiseaseDeathsFile < DeathFileSimple
-    SURVEILLANCE_PATTERN = /
-       \A(E830|M313|M301|M317|G12|Q87|Q80|Q81|Q85|Q86|Q87|Q78|Q928|D821|D57|D56)
-    /x
+  # Filter options:
+  # cd: New cancer deaths (only cancer causes) including patients with previous non-cancer causes
+  #     who are now cancer deaths.
+  # ncd: New non-cancer deaths (only non-cancer causes)
+  # new: All new coded cancer and non-cancer deaths
+  # all: Everything, including repeats of the same patient, and patients with no causes of death
+  # cara: New congenital anomaly deaths, cf. https://ncr.plan.io/issues/15123
+  # cara_all: All congenital anomaly deaths
+  # rd: New rare disease deaths, cf. https://ncr.plan.io/issues/14947
+  # rd_all: All rare disease deaths
+  class RareDiseaseDeathsFile < CancerDeathCommon
+    # TODO: Make CancerDeathCommon override SimpleCsv
 
     def initialize(filename, e_type, ppats, filter, ppatid_rowids: nil)
-      if filter.start_with?('rd_') # Allow 'rd_' prefix to filter to limit to rare diseases
-        filter = filter.sub('rd_', '')
-        @pattern = SURVEILLANCE_PATTERN
-      else
-        @pattern = nil
-      end
-      super(filename, e_type, ppats, filter, ppatid_rowids: ppatid_rowids)
-      # Fields to check for matches
-      @icd_fields_f = (1..20).collect { |i| ["icdf_#{i}", "icdpvf_#{i}"] }.flatten + %w[icduf]
-      @icd_fields = (1..20).collect { |i| ["icd_#{i}", "icdpv_#{i}"] }.flatten + %w[icdu]
+      super
+      @fields = fields
     end
 
     private
+
+    def header_rows
+      [@fields.collect(&:upcase)]
+    end
+
+    def csv_encoding
+      'windows-1252:utf-8'
+    end
+
+    def csv_options
+      { col_sep: ',', row_sep: "\r\n", force_quotes: false }
+    end
 
     # Fields to extract
     def fields
@@ -51,15 +63,13 @@ module Export
         %w[patientid] # Matched record id
     end
 
-    def match_row?(ppat, _surveillance_code = nil)
-      # TODO: Refactor with match_row? in DeathFileSimple
-      if @pattern
-        icd_fields = @icd_fields_f
-        # Check only final codes, if any present, otherwise provisional codes
-        icd_fields = @icd_fields if icd_fields.none? { |f| ppat.death_data.send(f).present? }
-        return false if icd_fields.none? { |f| ppat.death_data.send(f) =~ @pattern }
-      end
-      super
+    # Emit the value for a particular field, including extract-specific tweaks
+    # TODO: Refector with CancerMortalityFile, into DeathFile
+    def extract_field(ppat, field)
+      # Special fields not in the original spec
+      val = super(ppat, field)
+      val = nil if val == '' # Remove unnecessary double quoted fields in output
+      val
     end
   end
 end
