@@ -9,7 +9,7 @@ class GuysHandlerTest < ActiveSupport::TestCase
       @handler = Import::Brca::Providers::Guys::GuysHandler.new(EBatch.new)
     end
     @logger = Import::Log.get_logger
-    @logger.level = Logger::WARN
+    # @logger.level = Logger::WARN
   end
 
   test 'normal_ashkenazi_test' do

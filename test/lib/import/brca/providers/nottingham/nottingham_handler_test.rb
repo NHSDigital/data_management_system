@@ -10,7 +10,7 @@ class NottinghamHandlerTest < ActiveSupport::TestCase
       @handler = Import::Brca::Providers::Nottingham::NottinghamHandler.new(EBatch.new)
     end
     @logger = Import::Log.get_logger
-    @logger.level = Logger::WARN
+    # @logger.level = Logger::WARN
   end
 
   test 'process_cdna_change' do

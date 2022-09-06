@@ -1,6 +1,4 @@
 require 'test_helper'
-#require 'import/genotype.rb'
-#require 'import/brca/core/provider_handler'
 
 class BristolHandlerTest < ActiveSupport::TestCase
   def setup
@@ -10,19 +8,42 @@ class BristolHandlerTest < ActiveSupport::TestCase
       @handler = Import::Brca::Providers::Bristol::BristolHandler.new(EBatch.new)
     end
     @logger = Import::Log.get_logger
+    # @logger.level = Logger::WARN
   end
 
-  PROTEIN_REGEX = /p.(?:\((?<impact>.*)\))/ .freeze
+  PROTEIN_REGEX = /p.(?:\((?<impact>.*)\))/
 
   test 'stdout reports missing extract path' do
     assert_match(/could not extract path to corrections file for/i, @importer_stdout)
   end
 
   test 'process_cdna_change' do
-    @logger.expects(:debug).with('SUCCESSFUL cdna change parse for: 8167G>C')
     @handler.process_cdna_change(@genotype, @record)
     assert_equal 2, @genotype.attribute_map['teststatus']
     assert_equal 'c.8167G>C', @genotype.attribute_map['codingdnasequencechange']
+  end
+
+  test 'process_mutated_and_normal_gene' do
+    @handler.process_cdna_change(@genotype, @record)
+    res = @handler.process_gene(@genotype, @record)
+    assert_equal 2, res.size
+    assert_equal 1, res[0].attribute_map['teststatus']
+    assert_equal 2, res[1].attribute_map['teststatus']
+  end
+
+  test 'process_normal_record' do
+    normal_record = build_raw_record('pseudo_id1' => 'bob')
+    normal_record.raw_fields['variantpathclass'] = 'Benign'
+    @handler.process_test_status(@genotype, normal_record)
+    res = @handler.process_gene(@genotype, normal_record)
+    assert_equal 2, res.size
+    assert_equal 1, res[0].attribute_map['teststatus']
+    assert_equal 1, res[1].attribute_map['teststatus']
+  end
+
+  test 'process_protein_impact' do
+    @handler.add_protein_impact(@genotype, @record)
+    assert_equal 'p.Asp2723His', @genotype.attribute_map['proteinimpact']
   end
 
   test 'process_genomic_change' do
