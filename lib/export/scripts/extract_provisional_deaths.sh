@@ -5,16 +5,20 @@ if [ -z "$EXPORT_KLASS" ]; then
     export EXPORT_KLASS
 fi
 
-if [ "$EXPORT_KLASS" == "Export::CancerDeathWeekly" ]; then
+if [ "$EXPORT_KLASS" == "Export::CancerDeathWeekly" -o "$EXPORT_KLASS" == "Export::RareDiseaseDeathsFile" ]; then
   # FILTER_PREFIX=rd # Only records for Rare Diseases (for example)
   # FILTER_PREFIX='' # All records
   if [ -z "$FILTER_PREFIX" ]; then
-      read -rp "Enter FILTER_PREFIX (blank for all records, e.g. rd_ for Rare Disease only): " FILTER_PREFIX
+      read -rp "Enter FILTER_PREFIX (blank for all records, e.g. rd for Rare Disease only): " FILTER_PREFIX
       export FILTER_PREFIX
   fi
 	FILTER_ALL="${FILTER_PREFIX}_all"
 	FILTER_NEW="${FILTER_PREFIX}"
-  DOR_COLUMN="REGISTRATION_DETAILS"
+  if [ "$EXPORT_KLASS" == "Export::CancerDeathWeekly" ]; then
+     DOR_COLUMN="REGISTRATION_DETAILS"
+  else
+     DOR_COLUMN="DODYR"
+  fi
 else
   # NHS_SUFFIX=_nhs # Only records with NHS numbers
   # NHS_SUFFIX='' # All records, with / without NHS numbers
