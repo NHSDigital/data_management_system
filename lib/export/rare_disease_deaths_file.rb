@@ -27,10 +27,6 @@ module Export
       [@fields.collect(&:upcase)]
     end
 
-    def csv_encoding
-      'windows-1252:utf-8'
-    end
-
     def csv_options
       { col_sep: ',', row_sep: "\r\n", force_quotes: false }
     end

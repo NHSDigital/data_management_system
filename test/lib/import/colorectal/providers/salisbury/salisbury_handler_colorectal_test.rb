@@ -9,7 +9,7 @@ class SalisburyHandlerColorectalTest < ActiveSupport::TestCase
     @record   = build_raw_record('pseudo_id1' => 'bob')
     @genotype = Import::Colorectal::Core::Genocolorectal.new(@record)
     @logger = Import::Log.get_logger
-    @logger.level = Logger::INFO
+    # @logger.level = Logger::INFO
     @importer_stdout, @importer_stderr = capture_io do
       @handler = Import::Colorectal::Providers::Salisbury::SalisburyHandlerColorectal.new(EBatch.new)
     end
