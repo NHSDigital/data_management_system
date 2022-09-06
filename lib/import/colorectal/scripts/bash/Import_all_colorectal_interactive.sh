@@ -151,4 +151,15 @@ $BRAKE import:colorectal fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.
 done
 }
 
-RR8; RR8_2; RNZ; RTD; RX1; RCU; RGT; R0A; R1K; RX1_2; RPY; RP4; RTH; RQ3
+REP () {
+PROV='REP'
+IFS=$'\n'
+for x in $(find  $DIRPATH/$FILEPATH -type f -name "*.pseudo" -path "*/$PROV/*")
+do
+IFS="$OIFS"
+bundle exec rake import:colorectal fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
+done
+}
+
+
+RR8; RR8_2; RNZ; RTD; RX1; RCU; RGT; R0A; R1K; RX1_2; RPY; RP4; RTH; RQ3; REP

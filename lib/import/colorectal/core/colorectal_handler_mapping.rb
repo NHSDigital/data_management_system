@@ -1,17 +1,3 @@
-# TODO: Needed?
-# require 'import/colorectal/providers/leeds/leeds_handler_colorectal'
-# require 'import/colorectal/providers/salisbury/salisbury_handler_colorectal'
-# require 'import/colorectal/providers/newcastle/newcastle_handler_colorectal'
-# require 'import/colorectal/providers/nottingham/nottingham_handler_colorectal'
-# require 'import/colorectal/providers/sheffield/sheffield_handler_colorectal'
-# require 'import/colorectal/providers/cambridge/cambridge_handler_colorectal'
-# require 'import/colorectal/providers/manchester/manchester_handler_colorectal'
-# require 'import/colorectal/providers/london_kgc/london_kgc_handler_colorectal'
-# require 'import/colorectal/providers/royal_marsden/royal_marsden_handler_colorectal'
-# require 'import/colorectal/providers/london_gosh/london_gosh_handler_colorectal'
-# require 'import/colorectal/providers/birmingham/birmingham_handler_colorectal'
-# require 'import/colorectal/providers/oxford/oxford_handler_colorectal'
-
 module Import
   module Colorectal
     module Core
@@ -29,7 +15,8 @@ module Import
           'RPY' => Import::Colorectal::Providers::RoyalMarsden::RoyalMarsdenHandlerColorectal,
           'RP4' => Import::Colorectal::Providers::LondonGosh::LondonGoshHandlerColorectal,
           'RQ3' => Import::Colorectal::Providers::Birmingham::BirminghamHandlerColorectal,
-          'RTH' => Import::Colorectal::Providers::Oxford::OxfordHandlerColorectal
+          'RTH' => Import::Colorectal::Providers::Oxford::OxfordHandlerColorectal,
+          'REP' => Import::Colorectal::Providers::Liverpool::LiverpoolHandlerColorectal
         }.freeze
 
         def self.get_handler(provider_code)
