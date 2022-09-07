@@ -10,6 +10,9 @@ module Import
           include Import::Helpers::Colorectal::Providers::Rtd::RtdConstants
 
           def process_fields(record)
+            # return for brca cases
+            return if record.raw_fields['investigation code'].match(/BRCA/i)
+
             genocolorectal = Import::Colorectal::Core::Genocolorectal.new(record)
             genocolorectal.add_passthrough_fields(record.mapped_fields,
                                                   record.raw_fields,

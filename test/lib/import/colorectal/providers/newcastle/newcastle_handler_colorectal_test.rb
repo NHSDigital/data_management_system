@@ -10,7 +10,6 @@ class NewcastleHandlerColorectalTest < ActiveSupport::TestCase
     @logger = Import::Log.get_logger
   end
 
-
   test 'add_test_status' do
     positive_record = build_raw_record('pseudo_id1' => 'bob')
     @handler.add_test_status(@genotype, positive_record)
@@ -153,6 +152,21 @@ class NewcastleHandlerColorectalTest < ActiveSupport::TestCase
     assert_equal 2744, genocolorectals[0].attribute_map['gene']
     assert_equal 1, genocolorectals[1].attribute_map['teststatus']
     assert_equal 2804, genocolorectals[1].attribute_map['gene']
+  end
+
+  test 'do_not_process_brca_records' do
+    brca_record = build_raw_record('pseudo_id1' => 'bob')
+    brca_record.raw_fields['service category'] = 'A2'
+    brca_record.raw_fields['moleculartestingtype'] = 'Diagnostic'
+    brca_record.raw_fields['investigation code'] = 'BRCA-PRED'
+    brca_record.raw_fields['gene'] = 'BRCA2'
+    brca_record.raw_fields['genotype'] = 'c.3847_3848delGT (p.Val1283Lysfs*2)*'
+    brca_record.raw_fields['variantpathclass'] = ''
+    brca_record.raw_fields['teststatus'] = 'het'
+
+    assert_no_difference -> { Pseudo::GeneticTestResult.count } do
+      @handler.process_fields(brca_record)
+    end
   end
 
   private
