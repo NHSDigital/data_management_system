@@ -146,7 +146,7 @@ class PdfApplicationFacade
       end
     end
 
-    # PDF attributes arrive as e.g. `6a`, `9b` (previous form versions have also
+    # PDF attributes arrive as e.g. `6a`, `9b` (previous form versions have also
     # included the `article_` prefix, but that seems to have since been lost).
     def metaprogramme_lawful_bases
       Lookups::LawfulBasis.find_each do |lawful_basis|
