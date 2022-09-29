@@ -25,7 +25,7 @@ class DateValidator < ActiveModel::EachValidator
   def validate_no_future(record, attribute, value)
     return unless options[:no_future] && value > Time.zone.today
 
-    record.errors.add(attribute, :no_future, options)
+    record.errors.add(attribute, :no_future, **options)
   end
 
   def evaluate_options_value(record)
@@ -38,14 +38,14 @@ class DateValidator < ActiveModel::EachValidator
   end
 
   def compare(mode, record, attribute, value)
-    fail ArgumentError unless COMPARATOR.key?(mode)
+    raise ArgumentError unless COMPARATOR.key?(mode)
     return unless options.key?(mode)
 
     comparison = comparative_value(options[mode], record)
     return unless comparison && value.send(COMPARATOR[mode], comparison)
 
     human_name = comparative_name(options[mode], record)
-    record.errors.add(attribute, mode, options.except().merge!(comparison: human_name))
+    record.errors.add(attribute, mode, **options.except().merge!(comparison: human_name))
   end
 
   def comparative_value(comparative_option, record)

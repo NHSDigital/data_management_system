@@ -79,7 +79,7 @@ module Workflow
     def textual_reasons_not_to_transition_to(state)
       # ... yuk
       reasons_not_to_transition_to(state).map do |attr, reason|
-        message = errors.send(:normalize_message, attr, reason, {})
+        message = errors.generate_message(attr, reason)
         errors.send(:full_message, attr, message)
       end
     end

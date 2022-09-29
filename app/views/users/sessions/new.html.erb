@@ -14,8 +14,9 @@
 
     <% if Rails.env.development? %>
       <br/>Connecting to
-      <%= ActiveRecord::Base.configurations[Rails.env].
-      to_hash.select{|k,v| ['host','database'].include?(k)}.
+      <% config = ActiveRecord::Base.configurations.
+                  configs_for(env_name: Rails.env, spec_name: 'primary').config %>
+      <%= config.to_hash.select{|k,v| ['host','database'].include?(k)}.
       collect{|k,v| "#{k}: #{v}"}.sort.join(", ") %><br/>
       Subversion revision: <%= @svn_revision %>
       <br/>Rails version: <%= Rails.version %>
