@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
-gem 'activemodel-caution', '6.0.5.1' # must match rails version
-gem 'rails', '~> 6.0.5.1'
+gem 'activemodel-caution', '6.1.7' # must match rails version
+gem 'rails', '~> 6.1.7'
 
 # Use postgresql as the database for Active Record
 # gem 'pg', '>= 0.18', '< 2.0'
@@ -56,7 +56,7 @@ gem 'devise', '~> 4.7', '>=  4.7.1'
 gem 'cancancan', '~> 3.0'
 gem 'highline'
 gem 'cocoon'
-gem 'paper_trail', '~> 10.0'
+gem 'paper_trail', '~> 12.0'
 gem 'paper_trail-association_tracking'
 gem 'will_paginate'
 gem 'possibly'

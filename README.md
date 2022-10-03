@@ -1,14 +1,14 @@
 # Data Management System [![Build Status](https://github.com/publichealthengland/data_management_system/workflows/Test/badge.svg)](https://github.com/publichealthengland/data_management_system/actions?query=workflow%3Atest)
 
-* Rails version 6.0.3.2
-* Ruby version is 2.6.3
+* Rails version 6.0.5.1
+* Ruby version is 3.0.4
 
 ## System dependencies
 
-  * ndr_dev_support ~> 5.7
+  * ndr_dev_support ~> 6.0
   * ndr_error '~> 2.0'
-  * ndr_support '~> 5.3'
-  * ndr_ui (1.4.0)
+  * ndr_support '~> 5.9'
+  * ndr_ui (3.2.0)
 
 ## Configuration
 
@@ -17,6 +17,7 @@ Create and edit `config/database.yml` and `config/secrets.yml`
 ### Database creation
 ```
 $ rails db:create
+$ rails db:setup
 $ rails db:migrate
 ```
 ### Database initialization
