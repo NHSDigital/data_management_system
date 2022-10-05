@@ -6,7 +6,7 @@ module Import
     module Providers
       module Newcastle
         # Process Newcastle-specific record details into generalized internal genotype format
-        class NewcastleHandlerColorectal < Import::Brca::Core::ProviderHandler
+        class NewcastleHandlerColorectal < Import::Germline::ProviderHandler
           include Import::Helpers::Colorectal::Providers::Rtd::RtdConstants
 
           def process_fields(record)

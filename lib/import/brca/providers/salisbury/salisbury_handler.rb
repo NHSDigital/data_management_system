@@ -5,7 +5,7 @@ module Import
     module Providers
       module Salisbury
         # Process Salisbury-specific record details into generalized internal genotype format
-        class SalisburyHandler < Import::Brca::Core::ProviderHandler
+        class SalisburyHandler < Import::Germline::ProviderHandler
           include Import::Helpers::Brca::Providers::Rnz::RnzConstants
 
           def process_fields(record)

@@ -3,7 +3,7 @@ module Import
     module Providers
       module Oxford
         # Process Oxford-specific record details into generalized internal genotype format
-        class OxfordHandler < Import::Brca::Core::ProviderHandler
+        class OxfordHandler < Import::Germline::ProviderHandler
           TEST_SCOPE_MAP = { 'brca_multiplicom'           => :full_screen,
                              'breast-tp53 panel'          => :full_screen,
                              'breast-uterine-ovary panel' => :full_screen,

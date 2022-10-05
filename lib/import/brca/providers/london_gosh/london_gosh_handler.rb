@@ -3,7 +3,7 @@ module Import
     module Providers
       module LondonGosh
         # BRCA extractor for London Gosh provider
-        class LondonGoshHandler < Import::Brca::Core::ProviderHandler
+        class LondonGoshHandler < Import::Germline::ProviderHandler
           PASS_THROUGH_FIELDS = %w[age consultantcode servicereportidentifier providercode
                                    authoriseddate requesteddate collecteddate
                                    receiveddate practitionercode genomicchange

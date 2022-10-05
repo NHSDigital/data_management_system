@@ -10,9 +10,6 @@ class CambridgeHandlerTest < ActiveSupport::TestCase
     @logger = Import::Log.get_logger
   end
 
-  test 'stdout reports missing extract path' do
-    assert_match(/could not extract path to corrections file for/i, @importer_stdout)
-  end
 
   test 'process_cdna_change' do
     @logger.expects(:debug).with('SUCCESSFUL cdna change parse for: 7994A>G')

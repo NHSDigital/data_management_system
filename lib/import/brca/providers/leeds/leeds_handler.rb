@@ -5,7 +5,7 @@ module Import
     module Providers
       module Leeds
         # Process Leeds-specific record details into generalized internal genotype format
-        class LeedsHandler < Import::Brca::Core::ProviderHandler
+        class LeedsHandler < Import::Germline::ProviderHandler
           TEST_SCOPE_MAP = { 'diagnostic' => :full_screen,
                              'mutation screening' => :full_screen,
                              'confirmation' => :targeted_mutation,

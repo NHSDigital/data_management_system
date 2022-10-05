@@ -3,7 +3,7 @@ module Import
     module Providers
       module Oxford
         # Process Oxford-specific record details into generalized internal genotype format
-        class OxfordHandlerColorectal < Import::Brca::Core::ProviderHandler
+        class OxfordHandlerColorectal < Import::Germline::ProviderHandler
           TEST_METHOD_MAP = { 'Sequencing, Next Generation Panel (NGS)' => :ngs,
                               'Sequencing, Dideoxy / Sanger'            => :sanger }.freeze
 

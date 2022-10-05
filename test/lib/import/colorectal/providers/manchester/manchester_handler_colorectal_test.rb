@@ -353,7 +353,7 @@ class ManchesterHandlerColorectalTest < ActiveSupport::TestCase
                         'clinical.to_json' => clinical_json,
                         'encrypted_rawtext_demog' => '',
                         'rawtext_clinical.to_json' => rawtext_clinical_json(genotypes_exon_molttype_groups) }
-    Import::Brca::Core::RawRecord.new(default_options.merge!(options))
+    Import::Germline::RawRecord.new(default_options.merge!(options))
   end
 
   def clinical_json

@@ -5,7 +5,7 @@ module Import
     module Providers
       module Guys
         # Process Guys/St Thomas-specific record details into generalized internal genotype format
-        class GuysHandler < Import::Brca::Core::ProviderHandler
+        class GuysHandler < Import::Germline::ProviderHandler
           include Import::Helpers::Brca::Providers::Rj1::Rj1Constants
           include Import::Helpers::Brca::Providers::Rj1::Rj1TestsProcessor
           include Import::Helpers::Brca::Providers::Rj1::Rj1AshkenaziTestProcessor

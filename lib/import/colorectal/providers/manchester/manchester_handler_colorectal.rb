@@ -1,10 +1,9 @@
-
 module Import
   module Colorectal
     module Providers
       module Manchester
         # Manchester R0A importer
-        class ManchesterHandlerColorectal < Import::Brca::Core::ProviderHandler
+        class ManchesterHandlerColorectal < Import::Germline::ProviderHandler
           include Import::Helpers::Colorectal::Providers::R0a::R0aConstants
           include Import::Helpers::Colorectal::Providers::R0a::R0aHelper
           def initialize(batch)

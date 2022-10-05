@@ -5,7 +5,7 @@ module Import
     module Providers
       module Nottingham
         # Process Nottingham-specific record details into generalized internal genotype format
-        class NottinghamHandler < Import::Brca::Core::ProviderHandler
+        class NottinghamHandler < Import::Germline::ProviderHandler
           include Import::Helpers::Brca::Providers::Rx1::Rx1Constants
 
           def process_fields(record)

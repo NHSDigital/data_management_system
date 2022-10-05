@@ -6,7 +6,7 @@ module Import
     module Providers
       module Birmingham
         # Process Birmingham-specific record details into generalized internal genotype format
-        class BirminghamHandlerNewformat < Import::Brca::Core::ProviderHandler
+        class BirminghamHandlerNewformat < Import::Germline::ProviderHandler
           include Import::Helpers::Brca::Providers::Rq3::Rq3Constants
           include Import::Helpers::Brca::Providers::Rq3::Rq3Helper
 

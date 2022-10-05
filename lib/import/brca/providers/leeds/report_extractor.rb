@@ -1,5 +1,4 @@
 require 'pry'
-
 module Import
   module Brca
     module Providers
@@ -7,7 +6,7 @@ module Import
         module ReportExtractor
           # Parent class which encapsulates parsing logic associated with common Leeds
           # genotype forms
-          class GenotypePattern < Import::ExtractionUtilities::CommonUtility
+          class GenotypePattern < Import::Utility::ExtractionUtilities::CommonUtility
             def initialize
               @failed_report_parse_counter = 0
               @report_parse_attempt_counter = 0

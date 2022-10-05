@@ -6,7 +6,7 @@ module Import
     module Providers
       module Sheffield
         # Process Sheffield-specific record details into generalized internal genotype format
-        class SheffieldHandler < Import::Brca::Core::ProviderHandler
+        class SheffieldHandler < Import::Germline::ProviderHandler
           include Import::Helpers::Brca::Providers::Rcu::RcuConstants
 
           def process_fields(record)

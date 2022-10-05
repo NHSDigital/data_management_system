@@ -5,8 +5,7 @@ module Import
     module Providers
       module Nottingham
         # Process Nottingham-specific record details into generalized internal genotype format
-        class NottinghamHandlerColorectal < Import::Brca::Core::ProviderHandler
-          include ExtractionUtilities
+        class NottinghamHandlerColorectal < Import::Germline::ProviderHandler
           TEST_TYPE_MAP_COLO = { 'confirmation' => :diagnostic,
                                  'confirmation of familial mutation' => :diagnostic,
                                  'diagnostic' => :diagnostic,
@@ -56,7 +55,6 @@ module Import
           def initialize(batch)
             @failed_genotype_parse_counter = 0
             @genotype_counter = 0
-            @ex = LocationExtractor.new
             super
           end
 

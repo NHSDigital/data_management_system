@@ -37,7 +37,7 @@ module Import
 
           # Parse JSON fields, and pass of to handler to extract and store relevant fields
           if fields.size > 2
-            @handler.process_and_correct_fields(RawRecord.new(fields))
+            @handler.process_and_correct_fields(Germline::RawRecord.new(fields))
           else
             @logger.warn "Skipping record with fewer than two fields: #{fields}"
           end

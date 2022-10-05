@@ -11,10 +11,6 @@ class LeedsHandlerTest < ActiveSupport::TestCase
     @logger = Import::Log.get_logger
   end
 
-  test 'stdout reports missing extract path' do
-    assert_match(/could not extract path to corrections file for/i, @importer_stdout)
-  end
-
   test 'add_cdna_change_from_report' do
     @logger.expects(:debug).with('SUCCESSFUL cdna change parse for: 5198A>G')
     @handler.add_cdna_change_from_report(@genotype, @record)
@@ -70,7 +66,7 @@ class LeedsHandlerTest < ActiveSupport::TestCase
       'rawtext_clinical.to_json' => rawtext_clinical_json_normal
     }
 
-    Import::Brca::Core::RawRecord.new(default_options.merge!(options))
+    Import::Germline::RawRecord.new(default_options.merge!(options))
   end
 
   def clinical_json

@@ -3,7 +3,7 @@ module Import
     module Providers
       module Manchester
         # Manchester R0A importer
-        class ManchesterHandler < Import::Brca::Core::ProviderHandler
+        class ManchesterHandler < Import::Germline::ProviderHandler
           include Import::Helpers::Brca::Providers::R0a::R0aConstants
           include Import::Helpers::Brca::Providers::R0a::R0aHelper
           include Import::Helpers::Brca::Providers::R0a::R0aNondosageHelper

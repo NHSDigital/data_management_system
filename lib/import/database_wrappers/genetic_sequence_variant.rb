@@ -39,7 +39,7 @@ module Import
       end
 
       def similar!(genotype)
-        @representative_genotype.similar_record(genotype, @field_names - ['age'])
+        @representative_genotype.similar_record(genotype, @field_names - ['age'], strict: true)
       end
     end
   end

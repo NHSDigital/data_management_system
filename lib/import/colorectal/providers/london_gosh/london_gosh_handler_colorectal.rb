@@ -6,7 +6,7 @@ module Import
     module Providers
       module LondonGosh
         # Royal Marsden Colorectal Importer
-        class LondonGoshHandlerColorectal < Import::Brca::Core::ProviderHandler
+        class LondonGoshHandlerColorectal < Import::Germline::ProviderHandler
           PASS_THROUGH_FIELDS_COLO = %w[age consultantcode servicereportidentifier providercode
                                         authoriseddate requesteddate collecteddate
                                         receiveddate practitionercode genomicchange

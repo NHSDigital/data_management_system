@@ -188,7 +188,7 @@ module GermlineImportTestHelper
       'rawtext_clinical.to_json' => rawtext_clinical_json
     }
 
-    Import::Brca::Core::RawRecord.new(default_options.merge!(options))
+    Import::Germline::RawRecord.new(default_options.merge!(options))
   end
 end
 

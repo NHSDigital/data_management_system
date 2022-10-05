@@ -6,7 +6,7 @@ module Import
     module Providers
       module Liverpool
         # Process Liverpool-specific record details into generalized internal genotype format
-        class LiverpoolHandler < Import::Brca::Core::ProviderHandler
+        class LiverpoolHandler < Import::Germline::ProviderHandler
           include Import::Helpers::Brca::Providers::Rep::Constants
 
           def process_fields(record)

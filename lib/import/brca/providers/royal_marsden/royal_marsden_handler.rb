@@ -6,7 +6,7 @@ module Import
     module Providers
       module RoyalMarsden
         # BRCA importer for Royal Marsden Trust
-        class RoyalMarsdenHandler < Import::Brca::Core::ProviderHandler
+        class RoyalMarsdenHandler < Import::Germline::ProviderHandler
           PASS_THROUGH_FIELDS = %w[age consultantcode servicereportidentifier providercode
                                    authoriseddate requesteddate practitionercode genomicchange
                                    specimentype].freeze

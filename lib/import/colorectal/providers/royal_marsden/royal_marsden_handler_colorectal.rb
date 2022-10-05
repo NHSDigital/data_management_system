@@ -6,7 +6,7 @@ module Import
     module Providers
       module RoyalMarsden
         # Royal Marsden Colorectal Importer
-        class RoyalMarsdenHandlerColorectal < Import::Brca::Core::ProviderHandler
+        class RoyalMarsdenHandlerColorectal < Import::Germline::ProviderHandler
           PASS_THROUGH_FIELDS_COLO = %w[age consultantcode servicereportidentifier providercode
                                         authoriseddate requesteddate practitionercode genomicchange
                                         specimentype].freeze

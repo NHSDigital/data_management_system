@@ -5,14 +5,14 @@ module Import
   module Brca
     module Providers
       module Newcastle
+        # rubocop:disable Metrics/ClassLength
         # Process Newcastle-specific record details into generalized internal genotype format
-        class NewcastleHandler < Import::Brca::Core::ProviderHandler
+        class NewcastleHandler < Import::Germline::ProviderHandler
           include Import::Helpers::Brca::Providers::Rtd::RtdConstants
 
           def initialize(batch)
             @failed_variant_counter = 0
             @variants_processed_counter = 0
-            @ex = Import::ExtractionUtilities::LocationExtractor.new
             super
           end
 
@@ -249,6 +249,7 @@ module Import
                          "#{@variants_processed_counter} processed"
           end
         end
+        # rubocop:enable Metrics/ClassLength
       end
     end
   end

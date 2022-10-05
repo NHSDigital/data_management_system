@@ -5,8 +5,9 @@ module Import
   module Brca
     module Providers
       module StGeorge
+        # rubocop:disable Metrics/ClassLength
         # Process St George-specific record details into generalized internal genotype format
-        class StGeorgeHandler < Import::Brca::Core::ProviderHandler
+        class StGeorgeHandler < Import::Germline::ProviderHandler
           PASS_THROUGH_FIELDS = %w[age sex consultantcode collecteddate
                                    receiveddate authoriseddate servicereportidentifier
                                    providercode receiveddate sampletype].freeze
@@ -428,6 +429,7 @@ module Import
               record.raw_fields['moleculartestingtype'] == 'Store'
           end
         end
+        # rubocop:enable Metrics/ClassLength
       end
     end
   end

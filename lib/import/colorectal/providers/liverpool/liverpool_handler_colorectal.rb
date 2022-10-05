@@ -6,7 +6,7 @@ module Import
     module Providers
       module Liverpool
         # Process Liverpool-specific record details into generalized internal genocolorectal format
-        class LiverpoolHandlerColorectal < Import::Brca::Core::ProviderHandler
+        class LiverpoolHandlerColorectal < Import::Germline::ProviderHandler
           include Import::Helpers::Colorectal::Providers::Rep::Constants
 
           def process_fields(record)
