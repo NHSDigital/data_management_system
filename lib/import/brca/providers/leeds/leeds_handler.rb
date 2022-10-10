@@ -121,6 +121,7 @@ module Import
             super
           end
 
+          # rubocop:disable Metrics/AbcSize
           def process_fields(record)
             genotype = Import::Brca::Core::GenotypeBrca.new(record)
             genotype.add_passthrough_fields(record.mapped_fields,
@@ -140,8 +141,8 @@ module Import
             sample_type = record.raw_fields['sampletype']
             genotype.add_specimen_type(sample_type) unless sample_type.nil?
             mtype = record.raw_fields['moleculartestingtype']
-            genotype.add_molecular_testing_type_strict(TEST_TYPE_MAP[mtype.downcase.strip]) unless mtype.
-                                                                                                   nil?
+            genotype.add_molecular_testing_type_strict(TEST_TYPE_MAP[mtype.downcase.strip]) \
+                                                    unless mtype.nil?
             report = Maybe([record.raw_fields['report'],
                             record.mapped_fields['report'],
                             record.raw_fields['firstofreport']].
@@ -150,9 +151,13 @@ module Import
                    or_else(Maybe(record.raw_fields['report_result']).
                    or_else(''))
             process_scope(geno, genotype, record)
+            if genotype.attribute_map['genetictestscope'].nil?
+              genotype.add_test_scope(:no_genetictestscope)
+            end
             res = @extractor.process(geno, report, genotype)
             res.map { |cur_genotype| @persister.integrate_and_store(cur_genotype) }
           end
+          # rubocop:enable Metrics/AbcSize
 
           def add_organisationcode_testresult(genotype)
             genotype.attribute_map['organisationcode_testresult'] = '699C0'

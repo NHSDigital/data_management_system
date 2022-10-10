@@ -27,8 +27,8 @@ module Import
                                                 STK11|
                                                 NTHL1)/xi . freeze # Added by Francesco
 
-          TEST_SCOPE_MAP_COLO_COLO = { 'full gene' => :full_screen,
-                                       'specific mutation' => :targeted_mutation } .freeze
+          TEST_SCOPE_MAP_COLO = { 'full gene' => :full_screen,
+                                  'specific mutation' => :targeted_mutation }.freeze
 
           VARIANT_PATH_CLASS_COLO = { 'pathogenic mutation' => 5,
                                       '1A' => 5,

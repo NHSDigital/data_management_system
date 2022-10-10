@@ -41,6 +41,8 @@ module Import
               genotype.add_test_scope(TEST_SCOPE_MAP[testscopefield])
             elsif %w[PALB2 CDH1 TP53].include? testscopefield
               genotype.add_test_scope(TEST_SCOPE_TTYPE_MAP[testtypefield])
+            else
+              genotype.add_test_scope(:no_genetictestscope)
             end
           end
 
