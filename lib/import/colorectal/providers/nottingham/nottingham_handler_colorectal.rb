@@ -88,13 +88,12 @@ module Import
           def add_scope(genotype, record)
             Maybe(record.raw_fields['disease']).each do |disease|
               case disease.downcase.strip
-              when 'bowel cancer panel'
-                genotype.add_test_scope(:full_screen)
-              when 'hereditary non-polyposis colorectal cancer'
+              when 'bowel cancer panel', 'hereditary non-polyposis colorectal cancer'
                 genotype.add_test_scope(:full_screen)
               when 'hnpcc pst'
                 genotype.add_test_scope(:targeted_mutation)
-              else @logger.debug 'UNSUCCESSFUL TEST SCOPE PARSE'
+              else
+                genotype.add_test_scope(:no_genetictestscope)
               end
             end
           end

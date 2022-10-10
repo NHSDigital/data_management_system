@@ -107,7 +107,8 @@ module Import
               genotype.add_test_scope(:full_screen)
             elsif null_testscope?(record)
               targeted_scope_from_nullscope(genotype, record)
-            else @logger.debug 'Unable to determine genetic test scope'
+            else
+              genotype.add_test_scope(:no_genetictestscope)
             end
           end
 
@@ -220,9 +221,9 @@ module Import
           end
 
           def targeted_scope_from_nullscope(genotype, record)
-            return if record.raw_fields['scope / limitations of test'].nil?
+            return if record.raw_fields['moleculartestingtype'].nil?
 
-            testtype = record.raw_fields['scope / limitations of test']
+            testtype = record.raw_fields['moleculartestingtype']
             if testtype.scan(/symptomatic/i)
               genotype.add_test_scope(:targeted_mutation)
             elsif testtype.scan(/diagnostic/i)

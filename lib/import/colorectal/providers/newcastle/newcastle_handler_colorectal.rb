@@ -45,6 +45,10 @@ module Import
               add_scope_from_inv_code_mol_type(investigationcode, moleculartestingtype,
                                                genocolorectal)
             end
+
+            return if genocolorectal.attribute_map['genetictestscope'].present?
+
+            genocolorectal.add_test_scope(:no_genetictestscope)
           end
 
           def add_scope_from_service_category(service_category, genocolorectal)

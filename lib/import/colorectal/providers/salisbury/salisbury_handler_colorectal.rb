@@ -43,6 +43,7 @@ module Import
                                                 SMAD4|
                                                 STK11)/xi
 
+          # rubocop:disable Metrics/AbcSize
           def process_fields(record)
             genocolorectal = Import::Colorectal::Core::Genocolorectal.new(record)
             genocolorectal.add_passthrough_fields(record.mapped_fields,
@@ -54,8 +55,8 @@ module Import
                   ttype.downcase.strip
                 ]
               )
-              scope = TEST_SCOPE_MAPPING_COLO[ttype.downcase.strip]
-              genocolorectal.add_test_scope(scope) if scope
+              scope = TEST_SCOPE_MAPPING_COLO[ttype.downcase.strip].presence || :no_genetictestscope
+              genocolorectal.add_test_scope(scope)
             end
             genocolorectal.add_specimen_type(record.mapped_fields['specimentype'])
             genocolorectal.add_received_date(record.raw_fields['date of receipt'])
@@ -63,6 +64,7 @@ module Import
             res = add_colorectal_from_raw_test(genocolorectal, record)
             res.map { |cur_genotype| @persister.integrate_and_store(cur_genotype) }
           end
+          # rubocop:enable Metrics/AbcSize
 
           def add_organisationcode_testresult(genocolorectal)
             genocolorectal.attribute_map['organisationcode_testresult'] = '699H0'

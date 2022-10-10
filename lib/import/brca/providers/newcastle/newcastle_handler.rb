@@ -64,6 +64,10 @@ module Import
             else
               add_scope_from_inv_code_mol_type(investigationcode, moleculartestingtype, genotype)
             end
+
+            return if genotype.attribute_map['genetictestscope'].present?
+
+            genotype.add_test_scope(:no_genetictestscope)
           end
 
           def process_test_status(genotype, record)
