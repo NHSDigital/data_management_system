@@ -33,6 +33,10 @@ class OxfordHandlerTest < ActiveSupport::TestCase
     targeted_record.raw_fields['scope / limitations of test'] = 'proband'
     @handler.assign_test_scope(@genotype, targeted_record)
     assert_equal 'Targeted BRCA mutation test', @genotype.attribute_map['genetictestscope']
+    no_scope_record = build_raw_record('pseudo_id1' => 'bob')
+    no_scope_record.raw_fields['scope / limitations of test'] = 'CNV analysis only'
+    @handler.assign_test_scope(@genotype, no_scope_record)
+    assert_equal 'Unable to assign BRCA genetictestscope', @genotype.attribute_map['genetictestscope']
   end
 
   test 'process_gene' do

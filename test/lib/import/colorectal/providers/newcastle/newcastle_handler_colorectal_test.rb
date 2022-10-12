@@ -35,6 +35,11 @@ class NewcastleHandlerColorectalTest < ActiveSupport::TestCase
     targeted_record.raw_fields['moleculartestingtype'] = 'carrier'
     @handler.add_test_scope(@genotype, targeted_record)
     assert_equal 'Targeted Colorectal Lynch or MMR', @genotype.attribute_map['genetictestscope']
+    no_scope_record = build_raw_record('pseudo_id1' => 'bob')
+    no_scope_record.raw_fields['service category'] = 'B1'
+    no_scope_record.raw_fields['moleculartestingtype'] = 'Unknown/Other'
+    @handler.add_test_scope(@genotype, no_scope_record)
+    assert_equal 'Unable to assign Colorectal Lynch or MMR genetictestscope', @genotype.attribute_map['genetictestscope']
   end
 
   test 'process_variant_records' do

@@ -24,6 +24,14 @@ class SheffieldHandlerColorectalTest < ActiveSupport::TestCase
     assert_equal 'Targeted Colorectal Lynch or MMR', @genotype.attribute_map['genetictestscope']
   end
 
+  test 'add_no_scope_from_karyo_targeted' do
+    no_scope_record = build_raw_record('pseudo_id1' => 'bob')
+    no_scope_record.raw_fields['genetictestscope'] = 'XYZ'
+    no_scope_record.raw_fields['karyotypingmethod'] = 'ABC'
+    @handler.add_test_scope_from_geno_karyo(@genotype, no_scope_record)
+    assert_equal 'Unable to assign Colorectal Lynch or MMR genetictestscope', @genotype.attribute_map['genetictestscope']
+  end
+
   test 'add_colorectal_from_raw_test_full_screen' do
     @handler.add_test_scope_from_geno_karyo(@genotype, @record)
     raw_test = @handler.process_variants_from_record(@genotype, @record)

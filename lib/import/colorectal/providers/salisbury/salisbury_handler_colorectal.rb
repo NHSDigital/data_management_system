@@ -43,28 +43,31 @@ module Import
                                                 SMAD4|
                                                 STK11)/xi
 
-          # rubocop:disable Metrics/AbcSize
           def process_fields(record)
             genocolorectal = Import::Colorectal::Core::Genocolorectal.new(record)
             genocolorectal.add_passthrough_fields(record.mapped_fields,
                                                   record.raw_fields,
                                                   PASS_THROUGH_FIELDS_COLO)
-            Maybe(record.raw_fields['moleculartestingtype']).each do |ttype|
-              genocolorectal.add_molecular_testing_type_strict(
-                TEST_TYPE_MAPPING_COLO[
-                  ttype.downcase.strip
-                ]
-              )
-              scope = TEST_SCOPE_MAPPING_COLO[ttype.downcase.strip].presence || :no_genetictestscope
-              genocolorectal.add_test_scope(scope)
-            end
+            process_molecular_testing(genocolorectal, record)
             genocolorectal.add_specimen_type(record.mapped_fields['specimentype'])
             genocolorectal.add_received_date(record.raw_fields['date of receipt'])
             add_organisationcode_testresult(genocolorectal)
             res = add_colorectal_from_raw_test(genocolorectal, record)
             res.map { |cur_genotype| @persister.integrate_and_store(cur_genotype) }
           end
-          # rubocop:enable Metrics/AbcSize
+
+          def process_molecular_testing(genocolorectal, record)
+            Maybe(record.raw_fields['moleculartestingtype']).each do |ttype|
+              genocolorectal.add_molecular_testing_type_strict(
+                TEST_TYPE_MAPPING_COLO[
+                  ttype&.downcase&.strip
+                ]
+              )
+              scope = TEST_SCOPE_MAPPING_COLO[ttype&.downcase&.strip].
+                      presence || :no_genetictestscope
+              genocolorectal.add_test_scope(scope)
+            end
+          end
 
           def add_organisationcode_testresult(genocolorectal)
             genocolorectal.attribute_map['organisationcode_testresult'] = '699H0'

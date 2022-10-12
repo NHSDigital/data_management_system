@@ -93,7 +93,7 @@ class ManchesterHandlerTest < ActiveSupport::TestCase
                                       Import::Helpers::Brca::Providers::R0a::R0aConstants::PASS_THROUGH_FIELDS_COLO)
       @handler.process_fields(record)
       testscope =  @handler.testscope_from_rawfields(genotype, record)
-      assert_equal 'Targeted BRCA mutation test', testscope
+      assert_equal 'Targeted BRCA mutation test', genotype.attribute_map['genetictestscope']
       mutations = @handler.assign_gene_mutation(genotype, record)
       assert_equal 3, mutations.size
       assert_equal 9, mutations[0].attribute_map['teststatus']
@@ -465,6 +465,22 @@ class ManchesterHandlerTest < ActiveSupport::TestCase
       assert_not mutations.one?
       assert_equal 1, mutations[0].attribute_map['teststatus']
       assert_equal 1, mutations[1].attribute_map['teststatus']
+    end
+  end
+
+  test 'no genetictestscope' do
+    @importer_stdout, @importer_stderr = capture_io do
+      genotypes_exon_molttype_groups = [
+        ['c.5319G>C p.(Glu1773Asp)', 'c.5319G>C p.(Glu1773Asp)', 'BRCA2ex11Eint', 'BRCA 1 Unclassified Variant Loss of Heterozygosity Studies from Archive Material']
+      ]
+      record = build_raw_record(genotypes_exon_molttype_groups, 'pseudo_id1' => 'bob')
+      genotype = Import::Brca::Core::GenotypeBrca.new(record)
+      genotype.add_passthrough_fields(record.mapped_fields,
+                                      record.raw_fields,
+                                      Import::Helpers::Brca::Providers::R0a::R0aConstants::PASS_THROUGH_FIELDS_COLO)
+      @handler.process_fields(record)
+      @handler.testscope_from_rawfields(genotype, record)
+      assert_equal 'Unable to assign BRCA genetictestscope', genotype.attribute_map['genetictestscope']
     end
   end
 
