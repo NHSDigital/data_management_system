@@ -135,7 +135,7 @@ module Import
 
           def process_test_scope(genocolorectal, record)
             tscope = record.raw_fields['genetictestscope']
-            scope = TEST_SCOPE_MAP_COLO[tscope.downcase.strip].presence || :no_genetictestscope
+            scope = TEST_SCOPE_MAP_COLO[tscope&.downcase&.strip].presence || :no_genetictestscope
             genocolorectal.add_test_scope(scope)
           end
 

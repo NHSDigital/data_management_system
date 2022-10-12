@@ -45,6 +45,9 @@ class NottinghamHandlerColorectalTest < ActiveSupport::TestCase
   test 'add_scope' do
     @handler.add_scope(@genotype, @record)
     assert_equal 'Targeted Colorectal Lynch or MMR', @genotype.attribute_map['genetictestscope']
+    @record.raw_fields['disease'] = 'Cancer PST'
+    @handler.add_scope(@genotype, @record)
+    assert_equal 'Unable to assign Colorectal Lynch or MMR genetictestscope', @genotype.attribute_map['genetictestscope']
   end
 
   test 'extract_variantclass_from_genotype' do

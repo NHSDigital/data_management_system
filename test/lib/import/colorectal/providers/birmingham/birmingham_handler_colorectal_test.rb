@@ -18,6 +18,9 @@ class BirminghamHandlerColorectalTest < ActiveSupport::TestCase
   test 'process_genetictestscope' do
     @handler.process_genetictestscope(@genotype, @record)
     assert_equal 'Full screen Colorectal Lynch or MMR', @genotype.attribute_map['genetictestscope']
+    @record.raw_fields['moleculartestingtype'] = 'RNA studies'
+    @handler.process_genetictestscope(@genotype, @record)
+    assert_equal 'Unable to assign Colorectal Lynch or MMR genetictestscope', @genotype.attribute_map['genetictestscope']
   end
 
   test 'process_multiple_tests_from_fullscreen' do

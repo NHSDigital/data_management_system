@@ -68,13 +68,17 @@ class RoyalMarsdenHandlerTest < ActiveSupport::TestCase
     nil_record = build_raw_record('pseudo_id1' => 'bob')
     nil_record.raw_fields['genetictestscope'] = nil
     @handler.process_test_scope(@genotype, nil_record)
-    assert_nil @genotype.attribute_map['genetictestscope']
+    assert_equal 'Unable to assign BRCA genetictestscope', @genotype.attribute_map['genetictestscope']
     @handler.process_test_scope(@genotype, @record)
     assert_equal 'Full screen BRCA1 and BRCA2', @genotype.attribute_map['genetictestscope']
     targeted_record = build_raw_record('pseudo_id1' => 'bob')
     targeted_record.raw_fields['genetictestscope'] = 'specific mutation'
     @handler.process_test_scope(@genotype, targeted_record)
     assert_equal 'Targeted BRCA mutation test', @genotype.attribute_map['genetictestscope']
+    no_scope_record = build_raw_record('pseudo_id1' => 'bob')
+    no_scope_record.raw_fields['genetictestscope'] = 'xyz'
+    @handler.process_test_scope(@genotype, no_scope_record)
+    assert_equal 'Unable to assign BRCA genetictestscope', @genotype.attribute_map['genetictestscope']
   end
 
   test 'process_large_deldup' do

@@ -36,7 +36,7 @@ class StGeorgeHandlerTest < ActiveSupport::TestCase
     assert_equal true, @handler.void_genetictestscope?(void_record)
     @logger.expects(:debug).with('Unknown moleculartestingtype')
     @handler.process_genetictestcope(@genotype, void_record)
-    assert_nil(@genotype.attribute_map['genetictestscope'])
+    assert_equal 'Unable to assign BRCA genetictestscope', @genotype.attribute_map['genetictestscope']
 
     ashkenazi_record = build_raw_record('pseudo_id1' => 'bob')
     ashkenazi_record.raw_fields['moleculartestingtype'] = 'Ashkenazi'

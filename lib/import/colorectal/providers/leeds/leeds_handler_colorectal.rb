@@ -8,19 +8,19 @@ module Import
         # rubocop:disable Metrics/ClassLength
         # Leeds importer for colorectal
         class LeedsHandlerColorectal < Import::Germline::ProviderHandler
-          TEST_SCOPE_MAP_COLO_COLO = { 'carrier test' => :targeted_mutation,
-                                       'diagnostic' => :full_screen,
-                                       'diagnostic; fap' => :full_screen,
-                                       'diagnostic; lynch' => :full_screen,
-                                       'diagnostic; pms2' => :full_screen,
-                                       'confirmation' => :targeted_mutation,
-                                       'predictive' => :targeted_mutation,
-                                       'predictive test' => :targeted_mutation,
-                                       'familial' => :targeted_mutation,
-                                       'r209' => :full_screen,
-                                       'r209.1' => :full_screen,
-                                       'r210.2' => :full_screen,
-                                       'r211.1' => :full_screen } .freeze
+          TEST_SCOPE_MAP_COLO = { 'carrier test' => :targeted_mutation,
+                                  'diagnostic' => :full_screen,
+                                  'diagnostic; fap' => :full_screen,
+                                  'diagnostic; lynch' => :full_screen,
+                                  'diagnostic; pms2' => :full_screen,
+                                  'confirmation' => :targeted_mutation,
+                                  'predictive' => :targeted_mutation,
+                                  'predictive test' => :targeted_mutation,
+                                  'familial' => :targeted_mutation,
+                                  'r209' => :full_screen,
+                                  'r209.1' => :full_screen,
+                                  'r210.2' => :full_screen,
+                                  'r211.1' => :full_screen }.freeze
 
           TEST_TYPE_MAP_COLO = { 'carrier test' => :carrier,
                                  'diagnostic' => :diagnostic,
