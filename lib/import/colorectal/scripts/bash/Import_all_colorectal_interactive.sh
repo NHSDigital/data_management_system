@@ -34,7 +34,7 @@ done
 RR8_2 () {
 PROV='RR8'
 IFS=$'\n'
-for x in $(find  $DIRPATH/$FILEPATH  -type f  \( -name "cadc0b639036cbbce5a1bc51e630bde90e8d1ee0_01.10.2018 to 27.12.2019_other cancers 011018_271219.xlsx.pseudo" -o -name "4d5700e750e232c4b598de579d478191d3d4a528_28.12.2019 to 30.11.2020_other cancers and familial tests 281219_301120.xlsx.pseudo" \) -path "*/$PROV/*" )
+for x in $(find  $DIRPATH/$FILEPATH  -type f  -name "*other*pseudo" -path "*/$PROV/*" )
 do
 IFS="$OIFS"
 $BRAKE import:colorectal fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
