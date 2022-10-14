@@ -53,6 +53,9 @@ module Import
               end
 
               add_test_scope_to(genotype, moltesttypes, genera, exons)
+              return if genotype.attribute_map['genetictestscope'].present?
+
+              genotype.add_test_scope(:no_genetictestscope)
             end
 
             # Switching rubocop off for this method as reduced method length as

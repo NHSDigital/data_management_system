@@ -91,6 +91,7 @@ module Import
               genotype.add_test_scope(:full_screen)
             elsif void_genetictestscope?(record)
               @logger.debug 'Unknown moleculartestingtype'
+              genotype.add_test_scope(:no_genetictestscope)
             end
           end
 

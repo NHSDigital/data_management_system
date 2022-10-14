@@ -9,8 +9,10 @@ module Import
 
             def process_genetictestscope(genocolorectal, record)
               Maybe(record.raw_fields['moleculartestingtype']).each do |tscope|
-                if TEST_SCOPE_MAP_COLO_COLO[tscope.downcase.strip]
-                  genocolorectal.add_test_scope(TEST_SCOPE_MAP_COLO_COLO[tscope.downcase.strip])
+                if TEST_SCOPE_MAP_COLO[tscope.downcase.strip]
+                  genocolorectal.add_test_scope(TEST_SCOPE_MAP_COLO[tscope.downcase.strip])
+                else
+                  genocolorectal.add_test_scope(:no_genetictestscope)
                 end
               end
             end
@@ -21,7 +23,7 @@ module Import
 
             def full_screen?(record)
               moleculartestingtype = record.raw_fields['moleculartestingtype'].downcase.strip
-              testscope = TEST_SCOPE_MAP_COLO_COLO[moleculartestingtype]
+              testscope = TEST_SCOPE_MAP_COLO[moleculartestingtype]
               testscope == :full_screen
             end
 

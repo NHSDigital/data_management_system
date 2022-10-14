@@ -8,16 +8,16 @@ module Import
                                           providercode authoriseddate receiveddate
                                           moleculartestingtype specimentype].freeze
 
-            TEST_SCOPE_MAP_COLO_COLO = { '100kgp confirmation' => :full_screen,
-                                         'carrier testing' => :targeted_mutation,
-                                         'confirmation' => :targeted_mutation,
-                                         'diagnosis' => :full_screen,
-                                         'family studies' => :targeted_mutation,
-                                         'follow-up' => :targeted_mutation,
-                                         'indirect testing' => :full_screen,
-                                         'pold1/ pole analysis' => :full_screen,
-                                         'prenatal diagnosis' => :targeted_mutation,
-                                         'presymptomatic' => :targeted_mutation }.freeze
+            TEST_SCOPE_MAP_COLO = { '100kgp confirmation' => :full_screen,
+                                    'carrier testing' => :targeted_mutation,
+                                    'confirmation' => :targeted_mutation,
+                                    'diagnosis' => :full_screen,
+                                    'family studies' => :targeted_mutation,
+                                    'follow-up' => :targeted_mutation,
+                                    'indirect testing' => :full_screen,
+                                    'pold1/ pole analysis' => :full_screen,
+                                    'prenatal diagnosis' => :targeted_mutation,
+                                    'presymptomatic' => :targeted_mutation }.freeze
 
             COLORECTAL_GENES_MAP = { 'PJS' => %w[STK11],
                                      'PHTS' => %w[PTEN],

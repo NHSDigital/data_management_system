@@ -106,6 +106,14 @@ class SalisburyHandlerTest < ActiveSupport::TestCase
     assert_equal 1, genotypes[0].attribute_map['sequencevarianttype']
   end
 
+  test 'no_scope_rec' do
+    no_scope_rec = build_raw_record('pseudo_id1' => 'bob')
+    no_scope_rec.raw_fields['moleculartestingtype'] = 'Ovarian cancer targeted testing profile'
+    no_scope_rec.raw_fields['status'] = 'No mutation detected'
+    @handler.process_molecular_testing(@genotype, no_scope_rec)
+    assert_equal 'Unable to assign BRCA genetictestscope', @genotype.attribute_map['genetictestscope']
+  end
+
   private
 
   def clinical_json

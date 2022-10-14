@@ -116,7 +116,8 @@ module Import
                 genocolorectal.add_test_scope(:targeted_mutation)
               elsif full_screen?(ttype)
                 genocolorectal.add_test_scope(:full_screen)
-              else @logger.debug 'Unable to parse genetic test scope'
+              else
+                genocolorectal.add_test_scope(:no_genetictestscope)
               end
             end
           end

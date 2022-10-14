@@ -23,11 +23,10 @@ class SheffieldHandlerTest < ActiveSupport::TestCase
     assert_equal 'Full screen BRCA1 and BRCA2', @genotype.attribute_map['genetictestscope']
 
     nogenetictest_record = build_raw_record('pseudo_id1' => 'bob')
-    nogenetictest_record.raw_fields['genetictestscope'] = 'R208 :: Inherited breast cancer and ovarian cancer'
-    nogenetictest_record.raw_fields['karyotypingmethod'] = 'R208.1 :: NGS in Leeds'
-    @logger.expects(:debug).with('ADDED FULL_SCREEN TEST for: R208.1 :: NGS in Leeds')
+    nogenetictest_record.raw_fields['genetictestscope'] = 'R216 :: Li Fraumeni Syndrome - SDGS'
+    nogenetictest_record.raw_fields['karyotypingmethod'] = 'R216.1 :: TP53 NGS in Leeds Analysis only'
     @handler.add_test_scope_from_geno_karyo(@genotype, nogenetictest_record)
-    assert_equal 'Full screen BRCA1 and BRCA2', @genotype.attribute_map['genetictestscope']
+    assert_equal 'Unable to assign BRCA genetictestscope', @genotype.attribute_map['genetictestscope']
   end
 
   test 'add_test_type' do

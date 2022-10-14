@@ -24,6 +24,12 @@ class LiverpoolHandlerColorectalTest < ActiveSupport::TestCase
     fs_record.raw_fields['testscope'] = 'Partial gene screen'
     @handler.add_genetictestscope(@genocolorectal, fs_record)
     assert_equal 'Full screen Colorectal Lynch or MMR', @genocolorectal.attribute_map['genetictestscope']
+
+    no_scope_record = build_raw_record('pseudo_id1' => 'bob')
+    no_scope_record.raw_fields['testscope'] = 'XYZ'
+    @genocolorectal = Import::Colorectal::Core::Genocolorectal.new(no_scope_record)
+    @handler.add_genetictestscope(@genocolorectal, no_scope_record)
+    assert_equal 'Unable to assign Colorectal Lynch or MMR genetictestscope', @genocolorectal.attribute_map['genetictestscope']
   end
 
   test 'process_teststatus' do

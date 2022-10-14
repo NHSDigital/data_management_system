@@ -127,8 +127,8 @@ module Import
 
           def process_test_scope(genotype, record)
             tscope = record.raw_fields['genetictestscope']
-            genotype.add_test_scope(TEST_SCOPE_MAP[tscope.downcase.strip]) \
-            unless tscope.nil?
+            scope = TEST_SCOPE_MAP[tscope&.downcase&.strip].presence || :no_genetictestscope
+            genotype.add_test_scope(scope)
           end
 
           def process_test_type(genotype, record)
