@@ -45,7 +45,7 @@ class SalisburyHandlerColorectalTest < ActiveSupport::TestCase
     multigene_multicnv_variants_record = build_raw_record('pseudo_id1' => 'bob')
     multigene_multicnv_variants_record.raw_fields['test'] = 'MLH1 and MSH2 test'
     multigene_multicnv_variants_record.raw_fields['status'] = 'Pathogenic'
-    multigene_multicnv_variants_record.raw_fields['genotype'] = 'Heterozygous deletion including '\
+    multigene_multicnv_variants_record.raw_fields['genotype'] = 'Heterozygous deletion including ' \
                                                                 'MSH2 exons 1-7 and EPCAM exon 9'
     res = @handler.add_colorectal_from_raw_test(@genotype, multigene_multicnv_variants_record)
     assert_equal 3, res.size

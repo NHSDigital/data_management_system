@@ -17,10 +17,10 @@ class BirminghamHandlerNewformatTest < ActiveSupport::TestCase
     @record.raw_fields['indication'] = 'BRCA'
     @record.raw_fields['reason'] = 'MLPA only'
     @record.raw_fields['moleculartestingtype'] = 'MLPA only -ve'
-    @record.raw_fields['report'] = 'Multiplex Ligation-dependent Probe Amplification (MLPA) '\
-    'analysis of all exons of BRCA1 and all exons except 5 and 23'\
-    ' of BRCA2 has been undertaken to detect deletions and duplications.'\
-    ' DNA from this patient has been stored.'
+    @record.raw_fields['report'] = 'Multiplex Ligation-dependent Probe Amplification (MLPA) ' \
+                                   'analysis of all exons of BRCA1 and all exons except 5 and 23' \
+                                   ' of BRCA2 has been undertaken to detect deletions and duplications.' \
+                                   ' DNA from this patient has been stored.'
     @handler.process_genetictestscope(@genotype, @record)
     assert_equal 'Unable to assign BRCA genetictestscope', @genotype.attribute_map['genetictestscope']
   end
