@@ -10,7 +10,6 @@ class SheffieldHandlerColorectalTest < ActiveSupport::TestCase
     @logger = Import::Log.get_logger
   end
 
-
   test 'add_test_scope_from_karyo_fullscreen' do
     @handler.add_test_scope_from_geno_karyo(@genotype, @record)
     assert_equal 'Full screen Colorectal Lynch or MMR', @genotype.attribute_map['genetictestscope']

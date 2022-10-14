@@ -12,7 +12,6 @@ class NewcastleHandlerTest < ActiveSupport::TestCase
     @logger = Import::Log.get_logger
   end
 
-
   test 'process_protein_impact' do
     @logger.expects(:debug).with('FAILED protein parse for: c.2597G>A')
     variant = @handler.get_variant(@record)

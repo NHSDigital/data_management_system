@@ -10,7 +10,6 @@ class CambridgeHandlerTest < ActiveSupport::TestCase
     @logger = Import::Log.get_logger
   end
 
-
   test 'process_cdna_change' do
     @logger.expects(:debug).with('SUCCESSFUL cdna change parse for: 7994A>G')
     @handler.process_cdna_change(@genotype, @record)
