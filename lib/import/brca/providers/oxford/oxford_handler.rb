@@ -224,9 +224,9 @@ module Import
             return if record.raw_fields['moleculartestingtype'].nil?
 
             testtype = record.raw_fields['moleculartestingtype']
-            if testtype.scan(/symptomatic/i)
+            if testtype.scan(/symptomatic/i).size.positive?
               genotype.add_test_scope(:targeted_mutation)
-            elsif testtype.scan(/diagnostic/i)
+            elsif testtype.scan(/diagnostic/i).size.positive?
               genotype.add_test_scope(:full_screen)
             end
           end

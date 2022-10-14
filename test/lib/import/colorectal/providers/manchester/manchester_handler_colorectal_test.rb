@@ -57,7 +57,7 @@ class ManchesterHandlerColorectalTest < ActiveSupport::TestCase
                                             record.raw_fields,
                                             Import::Helpers::Colorectal::Providers::R0a::R0aConstants::PASS_THROUGH_FIELDS_COLO)
       @handler.process_fields(record)
-      testscope = @handler.testscope_from_rawfields(genocolorectal, record)
+      @handler.testscope_from_rawfields(genocolorectal, record)
       assert_equal 'Targeted Colorectal Lynch or MMR', genocolorectal.attribute_map['genetictestscope']
       mutations = @handler.assign_gene_mutation(genocolorectal, record)
       assert_equal 'Targeted Colorectal Lynch or MMR', genocolorectal.attribute_map['genetictestscope']
@@ -83,7 +83,7 @@ class ManchesterHandlerColorectalTest < ActiveSupport::TestCase
                                             record.raw_fields,
                                             Import::Helpers::Colorectal::Providers::R0a::R0aConstants::PASS_THROUGH_FIELDS_COLO)
       @handler.process_fields(record)
-      testscope =  @handler.testscope_from_rawfields(genocolorectal, record)
+      @handler.testscope_from_rawfields(genocolorectal, record)
       assert_equal 'Targeted Colorectal Lynch or MMR', genocolorectal.attribute_map['genetictestscope']
       mutations = @handler.assign_gene_mutation(genocolorectal, record)
       assert_equal 'Targeted Colorectal Lynch or MMR', genocolorectal.attribute_map['genetictestscope']
@@ -166,7 +166,7 @@ class ManchesterHandlerColorectalTest < ActiveSupport::TestCase
       @handler.process_fields(record)
       mutations = @handler.assign_gene_mutation(genocolorectal, record)
       assert_equal 3, mutations.size
-      testscope =  @handler.testscope_from_rawfields(genocolorectal, record)
+      @handler.testscope_from_rawfields(genocolorectal, record)
       assert_equal 'Full screen Colorectal Lynch or MMR', genocolorectal.attribute_map['genetictestscope']
       assert_equal 2, mutations[0].attribute_map['teststatus']
       assert_equal 9, mutations[1].attribute_map['teststatus']

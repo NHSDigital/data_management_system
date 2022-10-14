@@ -3,7 +3,7 @@ require 'test_helper'
 
 class BrcaTest < ActiveSupport::TestCase
   test 'intialize' do
-    file = Rails.root.join('test', 'fixtures', 'files', 'DUMMY_PSEUDO.pseudo')
+    file = Rails.root.join('test/fixtures/files/DUMMY_PSEUDO.pseudo')
     fw   = Import::Utility::PseudonymisedFileWrapper.new(file)
 
     # FIXME: Commit a dummy file suitable for testing and then remove this guard.

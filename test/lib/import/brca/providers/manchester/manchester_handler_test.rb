@@ -92,7 +92,7 @@ class ManchesterHandlerTest < ActiveSupport::TestCase
                                       record.raw_fields,
                                       Import::Helpers::Brca::Providers::R0a::R0aConstants::PASS_THROUGH_FIELDS_COLO)
       @handler.process_fields(record)
-      testscope =  @handler.testscope_from_rawfields(genotype, record)
+      @handler.testscope_from_rawfields(genotype, record)
       assert_equal 'Targeted BRCA mutation test', genotype.attribute_map['genetictestscope']
       mutations = @handler.assign_gene_mutation(genotype, record)
       assert_equal 3, mutations.size
