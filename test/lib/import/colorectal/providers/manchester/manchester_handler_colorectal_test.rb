@@ -1,8 +1,8 @@
 require 'test_helper'
-#require 'import/genotype'
-#require 'import/colorectal/core/genotype_mmr'
-#require 'import/brca/core/provider_handler'
-#require 'import/storage_manager/persister'
+# require 'import/genotype'
+# require 'import/colorectal/core/genotype_mmr'
+# require 'import/brca/core/provider_handler'
+# require 'import/storage_manager/persister'
 class ManchesterHandlerColorectalTest < ActiveSupport::TestCase
   def setup
     @importer_stdout, @importer_stderr = capture_io do
@@ -57,8 +57,8 @@ class ManchesterHandlerColorectalTest < ActiveSupport::TestCase
                                             record.raw_fields,
                                             Import::Helpers::Colorectal::Providers::R0a::R0aConstants::PASS_THROUGH_FIELDS_COLO)
       @handler.process_fields(record)
-      testscope = @handler.testscope_from_rawfields(genocolorectal, record)
-      assert_equal 'Targeted Colorectal Lynch or MMR', testscope
+      @handler.testscope_from_rawfields(genocolorectal, record)
+      assert_equal 'Targeted Colorectal Lynch or MMR', genocolorectal.attribute_map['genetictestscope']
       mutations = @handler.assign_gene_mutation(genocolorectal, record)
       assert_equal 'Targeted Colorectal Lynch or MMR', genocolorectal.attribute_map['genetictestscope']
       assert mutations.one?
@@ -83,8 +83,8 @@ class ManchesterHandlerColorectalTest < ActiveSupport::TestCase
                                             record.raw_fields,
                                             Import::Helpers::Colorectal::Providers::R0a::R0aConstants::PASS_THROUGH_FIELDS_COLO)
       @handler.process_fields(record)
-      testscope =  @handler.testscope_from_rawfields(genocolorectal, record)
-      assert_equal 'Targeted Colorectal Lynch or MMR', testscope
+      @handler.testscope_from_rawfields(genocolorectal, record)
+      assert_equal 'Targeted Colorectal Lynch or MMR', genocolorectal.attribute_map['genetictestscope']
       mutations = @handler.assign_gene_mutation(genocolorectal, record)
       assert_equal 'Targeted Colorectal Lynch or MMR', genocolorectal.attribute_map['genetictestscope']
       assert mutations.one?
@@ -166,8 +166,8 @@ class ManchesterHandlerColorectalTest < ActiveSupport::TestCase
       @handler.process_fields(record)
       mutations = @handler.assign_gene_mutation(genocolorectal, record)
       assert_equal 3, mutations.size
-      testscope =  @handler.testscope_from_rawfields(genocolorectal, record)
-      assert_equal 'Full screen Colorectal Lynch or MMR', testscope
+      @handler.testscope_from_rawfields(genocolorectal, record)
+      assert_equal 'Full screen Colorectal Lynch or MMR', genocolorectal.attribute_map['genetictestscope']
       assert_equal 2, mutations[0].attribute_map['teststatus']
       assert_equal 9, mutations[1].attribute_map['teststatus']
       assert_equal 1, mutations[2].attribute_map['teststatus']
@@ -344,6 +344,18 @@ class ManchesterHandlerColorectalTest < ActiveSupport::TestCase
     end
   end
 
+  test 'no genetictestscope' do
+    @importer_stdout, @importer_stderr = capture_io do
+      genotypes_exon_molttype_groups = [
+        ['Normal', nil, 'MLH1_MSH2 MLPA', 'INHERITED CANCER PANEL GENETIC TESTING REPORT\r\n@subpanel SUBPANEL']
+      ]
+      record = build_raw_record(genotypes_exon_molttype_groups, 'pseudo_id1' => 'bob')
+      genocolorectal = Import::Colorectal::Core::Genocolorectal.new(record)
+      @handler.testscope_from_rawfields(genocolorectal, record)
+      assert_equal 'Unable to assign Colorectal Lynch or MMR genetictestscope', genocolorectal.attribute_map['genetictestscope']
+    end
+  end
+
   private
 
   def build_raw_record(genotypes_exon_molttype_groups, options = {})
@@ -353,7 +365,7 @@ class ManchesterHandlerColorectalTest < ActiveSupport::TestCase
                         'clinical.to_json' => clinical_json,
                         'encrypted_rawtext_demog' => '',
                         'rawtext_clinical.to_json' => rawtext_clinical_json(genotypes_exon_molttype_groups) }
-    Import::Brca::Core::RawRecord.new(default_options.merge!(options))
+    Import::Germline::RawRecord.new(default_options.merge!(options))
   end
 
   def clinical_json

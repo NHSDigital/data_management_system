@@ -4,11 +4,8 @@ module Import
   module Colorectal
     module Providers
       module Salisbury
-        # rubocop:disable Metrics/ClassLength
-        # rubocop:disable Metrics/AbcSize
-        # rubocop:disable Metrics/MethodLength
         # Process Salisbury-specific record details into generalized internal genotype format
-        class SalisburyHandlerColorectal < Import::Brca::Core::ProviderHandler
+        class SalisburyHandlerColorectal < Import::Germline::ProviderHandler
           TEST_SCOPE_MAPPING_COLO = {
             'hnpcc mlpa' => :targeted_mutation,
             'hnpcc predictives' => :targeted_mutation,
@@ -51,20 +48,25 @@ module Import
             genocolorectal.add_passthrough_fields(record.mapped_fields,
                                                   record.raw_fields,
                                                   PASS_THROUGH_FIELDS_COLO)
-            Maybe(record.raw_fields['moleculartestingtype']).each do |ttype|
-              genocolorectal.add_molecular_testing_type_strict(
-                TEST_TYPE_MAPPING_COLO[
-                  ttype.downcase.strip
-                ]
-              )
-              scope = TEST_SCOPE_MAPPING_COLO[ttype.downcase.strip]
-              genocolorectal.add_test_scope(scope) if scope
-            end
+            process_molecular_testing(genocolorectal, record)
             genocolorectal.add_specimen_type(record.mapped_fields['specimentype'])
             genocolorectal.add_received_date(record.raw_fields['date of receipt'])
             add_organisationcode_testresult(genocolorectal)
             res = add_colorectal_from_raw_test(genocolorectal, record)
             res.map { |cur_genotype| @persister.integrate_and_store(cur_genotype) }
+          end
+
+          def process_molecular_testing(genocolorectal, record)
+            Maybe(record.raw_fields['moleculartestingtype']).each do |ttype|
+              genocolorectal.add_molecular_testing_type_strict(
+                TEST_TYPE_MAPPING_COLO[
+                  ttype&.downcase&.strip
+                ]
+              )
+              scope = TEST_SCOPE_MAPPING_COLO[ttype&.downcase&.strip].
+                      presence || :no_genetictestscope
+              genocolorectal.add_test_scope(scope)
+            end
           end
 
           def add_organisationcode_testresult(genocolorectal)
@@ -277,9 +279,6 @@ module Import
             end
             genotypes
           end
-          # rubocop:enable Metrics/ClassLength
-          # rubocop:enable Metrics/AbcSize
-          # rubocop:enable Metrics/MethodLength
         end
       end
     end

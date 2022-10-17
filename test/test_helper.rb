@@ -14,7 +14,6 @@ ENV['RAILS_ENV'] ||= 'test'
 require File.expand_path('../../config/environment', __FILE__)
 require 'rails/test_help'
 
-ENV['INTEGRATION_DRIVER'] ||= 'chrome_headless'
 require 'ndr_dev_support/integration_testing'
 
 require 'pry'
@@ -189,7 +188,7 @@ module GermlineImportTestHelper
       'rawtext_clinical.to_json' => rawtext_clinical_json
     }
 
-    Import::Brca::Core::RawRecord.new(default_options.merge!(options))
+    Import::Germline::RawRecord.new(default_options.merge!(options))
   end
 end
 

@@ -2,7 +2,7 @@ require 'test_helper'
 
 class GenotypeTest < ActiveSupport::TestCase
   test 'intialize' do
-    genotype = Import::Genotype.new(build_raw_record('pseudo_id1' => 'bob'))
+    genotype = Import::Germline::Genotype.new(build_raw_record('pseudo_id1' => 'bob'))
     assert_equal 'bob', genotype.pseudo_id1
   end
 
@@ -18,6 +18,6 @@ class GenotypeTest < ActiveSupport::TestCase
       'rawtext_clinical.to_json' => {}.to_json
     }
 
-    Import::Brca::Core::RawRecord.new(default_options.merge!(options))
+    Import::Germline::RawRecord.new(default_options.merge!(options))
   end
 end

@@ -3,7 +3,7 @@ module Import
     module Providers
       module Oxford
         # Process Oxford-specific record details into generalized internal genotype format
-        class OxfordHandlerColorectal < Import::Brca::Core::ProviderHandler
+        class OxfordHandlerColorectal < Import::Germline::ProviderHandler
           TEST_METHOD_MAP = { 'Sequencing, Next Generation Panel (NGS)' => :ngs,
                               'Sequencing, Dideoxy / Sanger'            => :sanger }.freeze
 
@@ -116,7 +116,8 @@ module Import
                 genocolorectal.add_test_scope(:targeted_mutation)
               elsif full_screen?(ttype)
                 genocolorectal.add_test_scope(:full_screen)
-              else @logger.debug 'Unable to parse genetic test scope'
+              else
+                genocolorectal.add_test_scope(:no_genetictestscope)
               end
             end
           end

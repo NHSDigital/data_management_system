@@ -12,7 +12,6 @@ class NewcastleHandlerTest < ActiveSupport::TestCase
     @logger = Import::Log.get_logger
   end
 
-
   test 'process_protein_impact' do
     @logger.expects(:debug).with('FAILED protein parse for: c.2597G>A')
     variant = @handler.get_variant(@record)
@@ -33,7 +32,6 @@ class NewcastleHandlerTest < ActiveSupport::TestCase
   end
 
   test 'process_test_scope' do
-    @logger.expects(:debug).with('Found O/C')
     @handler.process_test_scope(@genotype, @record)
     assert_equal 'Full screen BRCA1 and BRCA2', @genotype.attribute_map['genetictestscope']
     type_record = build_raw_record('pseudo_id1' => 'bob')
@@ -43,9 +41,13 @@ class NewcastleHandlerTest < ActiveSupport::TestCase
     targeted_record = build_raw_record('pseudo_id1' => 'bob')
     targeted_record.raw_fields['service category'] = 'B'
     targeted_record.raw_fields['moleculartestingtype'] = 'Carrier'
-    @logger.expects(:info).with('ADDED SCOPE FROM INVESTIGATION CODE/MOLECULAR TESTING TYPE')
     @handler.process_test_scope(@genotype, targeted_record)
     assert_equal 'Targeted BRCA mutation test', @genotype.attribute_map['genetictestscope']
+    no_scope_record = build_raw_record('pseudo_id1' => 'bob')
+    no_scope_record.raw_fields['service category'] = 'B1'
+    no_scope_record.raw_fields['moleculartestingtype'] = 'Unknown'
+    @handler.process_test_scope(@genotype, no_scope_record)
+    assert_equal 'Unable to assign BRCA genetictestscope', @genotype.attribute_map['genetictestscope']
   end
 
   test 'process_variant_records' do

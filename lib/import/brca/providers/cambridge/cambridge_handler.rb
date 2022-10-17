@@ -6,7 +6,7 @@ module Import
     module Providers
       module Cambridge
         # Process Cambridge-specific record details into generalized internal genotype format
-        class CambridgeHandler < Import::Brca::Core::ProviderHandler
+        class CambridgeHandler < Import::Germline::ProviderHandler
           PASS_THROUGH_FIELDS = %w[age consultantcode servicereportidentifier providercode
                                    authoriseddate requesteddate practitionercode genomicchange
                                    specimentype].freeze

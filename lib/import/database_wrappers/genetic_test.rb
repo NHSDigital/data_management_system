@@ -23,15 +23,17 @@ module Import
       end
 
       def similar!(genotype)
-        total_similarity = @representative_genotype.similar_record(genotype, @field_names)
+        total_similarity = @representative_genotype.similar_record(genotype, @field_names,
+                                                                   strict: true)
         partial_similarity = @representative_genotype.
-        similar_record(genotype, @field_names - ['karyotypingmethod'])
-        if total_similarity != partial_similarity
+                             similar_record(genotype, @field_names - ['karyotypingmethod'],
+                                            strict: true)
+        if total_similarity == partial_similarity
+          total_similarity
+        else
           @representative_genotype.add_method(:multiple_methods) # "multiple testing methods"
           genotype.add_method(:multiple_methods)
           true
-        else
-          total_similarity
         end
       end
     end

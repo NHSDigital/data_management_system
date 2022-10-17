@@ -5,7 +5,7 @@ module Import
     module Providers
       module LondonKgc
         # London KGC importer
-        class LondonKgcHandlerColorectal < Import::Brca::Core::ProviderHandler
+        class LondonKgcHandlerColorectal < Import::Germline::ProviderHandler
           include Import::Helpers::Colorectal::Providers::Kgc::KgcConstants
           include Import::Helpers::Colorectal::Providers::Kgc::KgcLynchHelper
           include Import::Helpers::Colorectal::Providers::Kgc::KgcLynchSpecificHelper

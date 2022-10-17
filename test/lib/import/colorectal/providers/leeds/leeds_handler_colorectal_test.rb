@@ -1,8 +1,8 @@
 require 'test_helper'
-#require 'import/genotype.rb'
-#require 'import/colorectal/core/genotype_mmr.rb'
-#require 'import/brca/core/provider_handler'
-#require 'import/storage_manager/persister'
+# require 'import/genotype.rb'
+# require 'import/colorectal/core/genotype_mmr.rb'
+# require 'import/brca/core/provider_handler'
+# require 'import/storage_manager/persister'
 
 class LeedsHandlerColorectalTest < ActiveSupport::TestCase
   def setup
@@ -21,10 +21,10 @@ class LeedsHandlerColorectalTest < ActiveSupport::TestCase
   end
 
   test 'failed_teststatus' do
-    @logger.expects(:debug).with('Cannot determine test status for : Analysis showed that this '\
-    'patient is heterozygous for the pathogenic APC mutation c.847C>T (p.Arg283X). '\
-    'This confirms a clinical diagnosis of FAP.\n\nThis result has important implications for '\
-    'other family members at risk and testing may be performed as appropriate. a priori')
+    @logger.expects(:debug).with('Cannot determine test status for : Analysis showed that this ' \
+                                 'patient is heterozygous for the pathogenic APC mutation c.847C>T (p.Arg283X). ' \
+                                 'This confirms a clinical diagnosis of FAP.\n\nThis result has important implications for ' \
+                                 'other family members at risk and testing may be performed as appropriate. a priori')
     @handler.failed_teststatus(@genotype, @record)
   end
 
@@ -37,14 +37,14 @@ class LeedsHandlerColorectalTest < ActiveSupport::TestCase
     assert_equal 'c.847C>T', @genotype.attribute_map['codingdnasequencechange']
     assert_equal 'p.Arg283x', @genotype.attribute_map['proteinimpact']
     normal_record = build_raw_record('pseudo_id1' => 'bob')
-    normal_record.raw_fields['report'] = 'This patient has been screened for MLH1, MSH2, MSH6 and '\
-    'PMS2 mutations by sequence and dosage analysis. No pathogenic mutation was identified.'\
-    '\n\n\n\nThis result does not exclude a diagnosis of Lynch syndrome.\n\nTesting for other '\
-    'genes involved in familial bowel cancer is available if appropriate.'
-    normal_record.mapped_fields['report'] = 'This patient has been screened for MLH1, MSH2, MSH6 and '\
-    'PMS2 mutations by sequence and dosage analysis. No pathogenic mutation was identified.'\
-    '\n\n\n\nThis result does not exclude a diagnosis of Lynch syndrome.\n\nTesting for other '\
-    'genes involved in familial bowel cancer is available if appropriate.'
+    normal_record.raw_fields['report'] = 'This patient has been screened for MLH1, MSH2, MSH6 and ' \
+                                         'PMS2 mutations by sequence and dosage analysis. No pathogenic mutation was identified.' \
+                                         '\n\n\n\nThis result does not exclude a diagnosis of Lynch syndrome.\n\nTesting for other ' \
+                                         'genes involved in familial bowel cancer is available if appropriate.'
+    normal_record.mapped_fields['report'] = 'This patient has been screened for MLH1, MSH2, MSH6 and ' \
+                                            'PMS2 mutations by sequence and dosage analysis. No pathogenic mutation was identified.' \
+                                            '\n\n\n\nThis result does not exclude a diagnosis of Lynch syndrome.\n\nTesting for other ' \
+                                            'genes involved in familial bowel cancer is available if appropriate.'
     @logger.expects(:debug).with('SUCCESSFUL gene parse for negative test for: ["MLH1"]')
     @logger.expects(:debug).with('SUCCESSFUL gene parse for MLH1')
     @logger.expects(:debug).with('SUCCESSFUL gene parse for negative test for: ["MSH2"]')
@@ -73,9 +73,9 @@ class LeedsHandlerColorectalTest < ActiveSupport::TestCase
       sortdate: '2010-08-05T00:00:00.000+01:00',
       genetictestscope: 'Diagnostic',
       specimentype: '5',
-      report: 'Analysis showed that this patient is heterozygous for the pathogenic'\
-              ' APC mutation c.847C>T (p.Arg283X). '\
-              'This confirms a clinical diagnosis of FAP.\n\nThis result has important implications '\
+      report: 'Analysis showed that this patient is heterozygous for the pathogenic' \
+              ' APC mutation c.847C>T (p.Arg283X). ' \
+              'This confirms a clinical diagnosis of FAP.\n\nThis result has important implications ' \
               'for other family members at risk and testing may be performed as appropriate.',
       requesteddate: '2010-08-05T00:00:00.000+01:00',
       age: 99999 }.to_json
@@ -93,9 +93,9 @@ class LeedsHandlerColorectalTest < ActiveSupport::TestCase
       moleculartestingtype: 'Diagnostic',
       indicationcategory: '17510',
       genotype: 'Diagnostic APC +ve',
-      report: 'Analysis showed that this patient is heterozygous for the pathogenic '\
-              'APC mutation c.847C>T (p.Arg283X). This confirms a clinical diagnosis of FAP.\n\n'\
-              'This result has important implications for other family members at risk and testing '\
+      report: 'Analysis showed that this patient is heterozygous for the pathogenic ' \
+              'APC mutation c.847C>T (p.Arg283X). This confirms a clinical diagnosis of FAP.\n\n' \
+              'This result has important implications for other family members at risk and testing ' \
               'may be performed as appropriate.',
       receiveddate: '2010-08-05 00:00:00',
       requesteddate: '2010-08-05 00:00:00',

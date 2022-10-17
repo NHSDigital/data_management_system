@@ -13,10 +13,6 @@ class BristolHandlerTest < ActiveSupport::TestCase
 
   PROTEIN_REGEX = /p.(?:\((?<impact>.*)\))/
 
-  test 'stdout reports missing extract path' do
-    assert_match(/could not extract path to corrections file for/i, @importer_stdout)
-  end
-
   test 'process_cdna_change' do
     @handler.process_cdna_change(@genotype, @record)
     assert_equal 2, @genotype.attribute_map['teststatus']

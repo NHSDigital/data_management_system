@@ -50,7 +50,7 @@ class GenotypeBrcaTest < ActiveSupport::TestCase
       'rawtext_clinical.to_json' => rawtext_clinical_to_json
     }
 
-    Import::Brca::Core::RawRecord.new(default_options.merge!(options))
+    Import::Germline::RawRecord.new(default_options.merge!(options))
   end
 
   def clinical_to_json

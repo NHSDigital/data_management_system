@@ -9,8 +9,10 @@ module Import
 
             def process_genetictestscope(genocolorectal, record)
               Maybe(record.raw_fields['moleculartestingtype']).each do |tscope|
-                if TEST_SCOPE_MAP_COLO_COLO[tscope.downcase.strip]
-                  genocolorectal.add_test_scope(TEST_SCOPE_MAP_COLO_COLO[tscope.downcase.strip])
+                if TEST_SCOPE_MAP_COLO[tscope.downcase.strip]
+                  genocolorectal.add_test_scope(TEST_SCOPE_MAP_COLO[tscope.downcase.strip])
+                else
+                  genocolorectal.add_test_scope(:no_genetictestscope)
                 end
               end
             end
@@ -21,7 +23,7 @@ module Import
 
             def full_screen?(record)
               moleculartestingtype = record.raw_fields['moleculartestingtype'].downcase.strip
-              testscope = TEST_SCOPE_MAP_COLO_COLO[moleculartestingtype]
+              testscope = TEST_SCOPE_MAP_COLO[moleculartestingtype]
               testscope == :full_screen
             end
 
@@ -208,23 +210,38 @@ module Import
               end
             end
 
-            def process_negative_records(genelist, genotypes, testresult,
-                                         testreport, record, genocolorectal)
+            def process_positive_records
+              @logger.debug 'ABNORMAL TEST'
+              if @testresult.scan(/MYH/).size.positive?
+                process_mutyh_specific_variants(@testresult, @genelist, @genotypes,
+                                                @genocolorectal, @record)
+              elsif colorectal_genes_from_test_result.empty?
+                process_result_without_colorectal_genes
+              elsif @testresult.scan(CDNA_REGEX).size.positive?
+                process_testresult_cdna_variants(@testresult, @testreport, @genelist,
+                                                 @genotypes, @record, @genocolorectal)
+              elsif @testresult.scan(CHR_VARIANTS_REGEX).size.positive?
+                process_chr_variants(@record, @testresult, @testreport, @genotypes,
+                                     @genocolorectal)
+              elsif @testresult.match(/No known pathogenic/i)
+                process_negative_genes(@genelist, @genotypes, @genocolorectal)
+              else
+                process_remainder
+              end
+            end
+
+            def process_negative_records
               @logger.debug 'NORMAL TEST FOUND'
-              if full_screen?(record)
-                if sometimes_tested?(record)
-                  negativegenes = unique_colorectal_genes_from(testreport)
-                else
-                  negativegenes = genelist
-                end
-              elsif !full_screen?(record) && testreport.match(/MYH/i)
+              if full_screen?(@record)
+                testreportgenes = unique_colorectal_genes_from(@testreport)
+                negativegenes = sometimes_tested?(@record) ? testreportgenes : @genelist
+              elsif !full_screen?(@record) && @testreport.match(/MYH/i)
                 negativegenes = ['MUTYH']
               else
-                testresultgenes = unique_colorectal_genes_from(testresult)
-                testreportgenes = unique_colorectal_genes_from(testreport)
+                testreportgenes = unique_colorectal_genes_from(@testreport)
                 negativegenes = testreportgenes.flatten.uniq
               end
-              process_negative_genes(negativegenes, genotypes, genocolorectal)
+              process_negative_genes(negativegenes, @genotypes, @genocolorectal)
             end
 
             def process_testresult_single_cdnavariant(testresult, testreport, record,

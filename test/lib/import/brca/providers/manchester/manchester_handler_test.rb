@@ -92,8 +92,8 @@ class ManchesterHandlerTest < ActiveSupport::TestCase
                                       record.raw_fields,
                                       Import::Helpers::Brca::Providers::R0a::R0aConstants::PASS_THROUGH_FIELDS_COLO)
       @handler.process_fields(record)
-      testscope =  @handler.testscope_from_rawfields(genotype, record)
-      assert_equal 'Targeted BRCA mutation test', testscope
+      @handler.testscope_from_rawfields(genotype, record)
+      assert_equal 'Targeted BRCA mutation test', genotype.attribute_map['genetictestscope']
       mutations = @handler.assign_gene_mutation(genotype, record)
       assert_equal 3, mutations.size
       assert_equal 9, mutations[0].attribute_map['teststatus']
@@ -468,6 +468,22 @@ class ManchesterHandlerTest < ActiveSupport::TestCase
     end
   end
 
+  test 'no genetictestscope' do
+    @importer_stdout, @importer_stderr = capture_io do
+      genotypes_exon_molttype_groups = [
+        ['c.5319G>C p.(Glu1773Asp)', 'c.5319G>C p.(Glu1773Asp)', 'BRCA2ex11Eint', 'BRCA 1 Unclassified Variant Loss of Heterozygosity Studies from Archive Material']
+      ]
+      record = build_raw_record(genotypes_exon_molttype_groups, 'pseudo_id1' => 'bob')
+      genotype = Import::Brca::Core::GenotypeBrca.new(record)
+      genotype.add_passthrough_fields(record.mapped_fields,
+                                      record.raw_fields,
+                                      Import::Helpers::Brca::Providers::R0a::R0aConstants::PASS_THROUGH_FIELDS_COLO)
+      @handler.process_fields(record)
+      @handler.testscope_from_rawfields(genotype, record)
+      assert_equal 'Unable to assign BRCA genetictestscope', genotype.attribute_map['genetictestscope']
+    end
+  end
+
   private
 
   def build_raw_record(genotypes_exon_molttype_groups, options = {})
@@ -477,7 +493,7 @@ class ManchesterHandlerTest < ActiveSupport::TestCase
                         'clinical.to_json' => clinical_json,
                         'encrypted_rawtext_demog' => '',
                         'rawtext_clinical.to_json' => rawtext_clinical_json(genotypes_exon_molttype_groups) }
-    Import::Brca::Core::RawRecord.new(default_options.merge!(options))
+    Import::Germline::RawRecord.new(default_options.merge!(options))
   end
 
   def clinical_json

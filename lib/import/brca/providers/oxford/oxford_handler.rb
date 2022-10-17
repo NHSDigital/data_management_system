@@ -3,7 +3,7 @@ module Import
     module Providers
       module Oxford
         # Process Oxford-specific record details into generalized internal genotype format
-        class OxfordHandler < Import::Brca::Core::ProviderHandler
+        class OxfordHandler < Import::Germline::ProviderHandler
           TEST_SCOPE_MAP = { 'brca_multiplicom'           => :full_screen,
                              'breast-tp53 panel'          => :full_screen,
                              'breast-uterine-ovary panel' => :full_screen,
@@ -107,7 +107,8 @@ module Import
               genotype.add_test_scope(:full_screen)
             elsif null_testscope?(record)
               targeted_scope_from_nullscope(genotype, record)
-            else @logger.debug 'Unable to determine genetic test scope'
+            else
+              genotype.add_test_scope(:no_genetictestscope)
             end
           end
 
@@ -220,12 +221,12 @@ module Import
           end
 
           def targeted_scope_from_nullscope(genotype, record)
-            return if record.raw_fields['scope / limitations of test'].nil?
+            return if record.raw_fields['moleculartestingtype'].nil?
 
-            testtype = record.raw_fields['scope / limitations of test']
-            if testtype.scan(/symptomatic/i)
+            testtype = record.raw_fields['moleculartestingtype']
+            if testtype.scan(/symptomatic/i).size.positive?
               genotype.add_test_scope(:targeted_mutation)
-            elsif testtype.scan(/diagnostic/i)
+            elsif testtype.scan(/diagnostic/i).size.positive?
               genotype.add_test_scope(:full_screen)
             end
           end

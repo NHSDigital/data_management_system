@@ -1,8 +1,8 @@
 require 'test_helper'
-#require 'import/genotype.rb'
-#require 'import/colorectal/core/genotype_mmr.rb'
-#require 'import/brca/core/provider_handler'
-#require 'import/storage_manager/persister'
+# require 'import/genotype.rb'
+# require 'import/colorectal/core/genotype_mmr.rb'
+# require 'import/brca/core/provider_handler'
+# require 'import/storage_manager/persister'
 
 class LondonKgcHandlerColorectalTest < ActiveSupport::TestCase
   def setup
@@ -14,7 +14,6 @@ class LondonKgcHandlerColorectalTest < ActiveSupport::TestCase
     end
     @logger = Import::Log.get_logger
   end
-
 
   test 'process_lynchgenes with no mutation' do
     genemutation_lynch_record = build_raw_record('pseudo_id1' => 'bob')

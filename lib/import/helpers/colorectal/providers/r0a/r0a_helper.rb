@@ -170,6 +170,9 @@ module Import
               end
 
               add_test_scope_to(genocolorectal, moltesttypes, genera, exons)
+              return if genocolorectal.attribute_map['genetictestscope'].present?
+
+              genocolorectal.add_test_scope(:no_genetictestscope)
             end
 
             # TODO: Boyscout

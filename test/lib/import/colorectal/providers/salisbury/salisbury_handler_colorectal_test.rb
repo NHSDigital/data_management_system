@@ -45,7 +45,7 @@ class SalisburyHandlerColorectalTest < ActiveSupport::TestCase
     multigene_multicnv_variants_record = build_raw_record('pseudo_id1' => 'bob')
     multigene_multicnv_variants_record.raw_fields['test'] = 'MLH1 and MSH2 test'
     multigene_multicnv_variants_record.raw_fields['status'] = 'Pathogenic'
-    multigene_multicnv_variants_record.raw_fields['genotype'] = 'Heterozygous deletion including '\
+    multigene_multicnv_variants_record.raw_fields['genotype'] = 'Heterozygous deletion including ' \
                                                                 'MSH2 exons 1-7 and EPCAM exon 9'
     res = @handler.add_colorectal_from_raw_test(@genotype, multigene_multicnv_variants_record)
     assert_equal 3, res.size
@@ -143,6 +143,23 @@ class SalisburyHandlerColorectalTest < ActiveSupport::TestCase
     assert_equal 2808, res[0].attribute_map['gene']
     assert_equal 2, res[0].attribute_map['teststatus']
     assert_equal 'c.2665C>T', res[0].attribute_map['codingdnasequencechange']
+  end
+
+  test 'process_molecular_testing_rec' do
+    no_scope_rec = build_raw_record('pseudo_id1' => 'bob')
+    no_scope_rec.raw_fields['moleculartestingtype'] = 'XYZ'
+    @handler.process_molecular_testing(@genotype, no_scope_rec)
+    assert_equal 'Unable to assign Colorectal Lynch or MMR genetictestscope', @genotype.attribute_map['genetictestscope']
+
+    fs_rec = build_raw_record('pseudo_id1' => 'bob')
+    fs_rec.raw_fields['moleculartestingtype'] = 'lynch syndrome 3 gene panel'
+    @handler.process_molecular_testing(@genotype, fs_rec)
+    assert_equal 'Full screen Colorectal Lynch or MMR', @genotype.attribute_map['genetictestscope']
+
+    targ_rec = build_raw_record('pseudo_id1' => 'bob')
+    targ_rec.raw_fields['moleculartestingtype'] = 'hnpcc mlpa'
+    @handler.process_molecular_testing(@genotype, targ_rec)
+    assert_equal 'Targeted Colorectal Lynch or MMR', @genotype.attribute_map['genetictestscope']
   end
 
   private

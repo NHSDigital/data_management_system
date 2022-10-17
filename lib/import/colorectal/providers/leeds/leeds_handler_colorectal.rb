@@ -5,21 +5,22 @@ module Import
   module Colorectal
     module Providers
       module Leeds
+        # rubocop:disable Metrics/ClassLength
         # Leeds importer for colorectal
-        class LeedsHandlerColorectal < Import::Brca::Core::ProviderHandler
-          TEST_SCOPE_MAP_COLO_COLO = { 'carrier test' => :targeted_mutation,
-                                       'diagnostic' => :full_screen,
-                                       'diagnostic; fap' => :full_screen,
-                                       'diagnostic; lynch' => :full_screen,
-                                       'diagnostic; pms2' => :full_screen,
-                                       'confirmation' => :targeted_mutation,
-                                       'predictive' => :targeted_mutation,
-                                       'predictive test' => :targeted_mutation,
-                                       'familial' => :targeted_mutation,
-                                       'r209' => :full_screen,
-                                       'r209.1' => :full_screen,
-                                       'r210.2' => :full_screen,
-                                       'r211.1' => :full_screen } .freeze
+        class LeedsHandlerColorectal < Import::Germline::ProviderHandler
+          TEST_SCOPE_MAP_COLO = { 'carrier test' => :targeted_mutation,
+                                  'diagnostic' => :full_screen,
+                                  'diagnostic; fap' => :full_screen,
+                                  'diagnostic; lynch' => :full_screen,
+                                  'diagnostic; pms2' => :full_screen,
+                                  'confirmation' => :targeted_mutation,
+                                  'predictive' => :targeted_mutation,
+                                  'predictive test' => :targeted_mutation,
+                                  'familial' => :targeted_mutation,
+                                  'r209' => :full_screen,
+                                  'r209.1' => :full_screen,
+                                  'r210.2' => :full_screen,
+                                  'r211.1' => :full_screen }.freeze
 
           TEST_TYPE_MAP_COLO = { 'carrier test' => :carrier,
                                  'diagnostic' => :diagnostic,
@@ -100,8 +101,8 @@ module Import
                                  [0-9]+[\W][0-9]+_[0-9]+[a-z]+|
                                  [0-9]+[\W][0-9]+[a-z]+|[0-9]+[\W][0-9]+_[0-9]+[\W][0-9]+[a-z]+|
                                  [\W][0-9]+[a-z]+>[a-z]+).+(heterozygous)?[\s\w]{2,}
-                                 (?<genes2>APC|BMPR1A|EPCAM|MLH1|MSH2|MSH6|MUTYH|PMS2|POLD1|POLE|PTEN|
-                                 SMAD4|STK11|GREM1|NTHL1)[\s\w]{2,}
+                                 (?<genes2>APC|BMPR1A|EPCAM|MLH1|MSH2|MSH6|MUTYH|PMS2|POLD1|POLE|
+                                 PTEN|SMAD4|STK11|GREM1|NTHL1)[\s\w]{2,}
                                  c\.(?<cdna2>[0-9]+[A-Z]+>[A-Z]+|[0-9]+_[0-9]+[a-z]+|[0-9]+[a-z]+|
                                  [0-9]+[\W][0-9]+[a-z]+>[a-z]+|
                                  [0-9]+_[0-9]+[\W][0-9]+[a-z]+[0-9]+_[0-9]+[a-z]+|
@@ -160,6 +161,7 @@ module Import
             super
           end
 
+          # rubocop:disable Metrics/AbcSize
           def process_fields(record)
             genocolorectal = Import::Colorectal::Core::Genocolorectal.new(record)
             genocolorectal.add_passthrough_fields(record.mapped_fields,
@@ -167,18 +169,22 @@ module Import
                                                   PASS_THROUGH_FIELDS,
                                                   FIELD_NAME_MAPPINGS)
             add_scope_and_type_from_genotype(genocolorectal, record)
-            mtype = record.raw_fields['moleculartestingtype']
-            genocolorectal.add_molecular_testing_type_strict(TEST_TYPE_MAP_COLO[mtype.downcase.strip]) \
+            mtype = record.raw_fields['moleculartestingtype']&.downcase&.strip
+            genocolorectal.add_molecular_testing_type_strict(TEST_TYPE_MAP_COLO[mtype]) \
                            unless mtype.nil?
-            genocolorectal.add_test_scope(TEST_SCOPE_MAP_COLO_COLO[mtype.downcase.strip]) \
+            genocolorectal.add_test_scope(TEST_SCOPE_MAP_COLO[mtype]) \
                            unless mtype.nil?
             add_positive_teststatus(genocolorectal, record)
             failed_teststatus(genocolorectal, record)
             add_benign_varclass(genocolorectal, record)
             add_organisationcode_testresult(genocolorectal)
+            if genocolorectal.attribute_map['genetictestscope'].nil?
+              genocolorectal.add_test_scope(:no_genetictestscope)
+            end
             res = add_gene_from_report(genocolorectal, record) # Added by Francesco
             res.map { |cur_genotype| @persister.integrate_and_store(cur_genotype) }
           end
+          # rubocop:enable Metrics/AbcSize
 
           def add_organisationcode_testresult(genocolorectal)
             genocolorectal.attribute_map['organisationcode_testresult'] = '699C0'
@@ -635,7 +641,7 @@ module Import
           def add_scope_and_type_from_genotype(genocolorectal, record)
             Maybe(record.raw_fields['genotype']).each do |typescopegeno|
               genocolorectal.add_molecular_testing_type_strict(TEST_TYPE_MAP_COLO[typescopegeno])
-              scope = TEST_SCOPE_MAP_COLO_COLO[typescopegeno]
+              scope = TEST_SCOPE_MAP_COLO[typescopegeno]
               genocolorectal.add_test_scope(scope) if scope
             end
           end
@@ -647,7 +653,7 @@ module Import
             if (geno.downcase.include? 'ashkenazi') || (geno.include? 'AJ')
               genocolorectal.add_test_scope(:aj_screen)
             else
-              stripped_scope = TEST_SCOPE_MAP_COLO_COLO[scope.downcase.strip]
+              stripped_scope = TEST_SCOPE_MAP_COLO[scope.downcase.strip]
               genocolorectal.add_test_scope(stripped_scope) if stripped_scope
             end
           end
@@ -682,6 +688,7 @@ module Import
             super
           end
         end
+        # rubocop:enable Metrics/ClassLength
       end
     end
   end

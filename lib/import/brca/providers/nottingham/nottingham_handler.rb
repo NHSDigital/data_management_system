@@ -5,7 +5,7 @@ module Import
     module Providers
       module Nottingham
         # Process Nottingham-specific record details into generalized internal genotype format
-        class NottinghamHandler < Import::Brca::Core::ProviderHandler
+        class NottinghamHandler < Import::Germline::ProviderHandler
           include Import::Helpers::Brca::Providers::Rx1::Rx1Constants
 
           def process_fields(record)
@@ -41,6 +41,8 @@ module Import
               genotype.add_test_scope(TEST_SCOPE_MAP[testscopefield])
             elsif %w[PALB2 CDH1 TP53].include? testscopefield
               genotype.add_test_scope(TEST_SCOPE_TTYPE_MAP[testtypefield])
+            else
+              genotype.add_test_scope(:no_genetictestscope)
             end
           end
 

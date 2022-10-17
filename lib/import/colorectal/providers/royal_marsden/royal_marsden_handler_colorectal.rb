@@ -6,7 +6,7 @@ module Import
     module Providers
       module RoyalMarsden
         # Royal Marsden Colorectal Importer
-        class RoyalMarsdenHandlerColorectal < Import::Brca::Core::ProviderHandler
+        class RoyalMarsdenHandlerColorectal < Import::Germline::ProviderHandler
           PASS_THROUGH_FIELDS_COLO = %w[age consultantcode servicereportidentifier providercode
                                         authoriseddate requesteddate practitionercode genomicchange
                                         specimentype].freeze
@@ -28,8 +28,8 @@ module Import
                                                 STK11|
                                                 NTHL1)/xi . freeze # Added by Francesco
 
-          TEST_SCOPE_MAP_COLO_COLO = { 'full gene' => :full_screen,
-                                       'specific mutation' => :targeted_mutation } .freeze
+          TEST_SCOPE_MAP_COLO = { 'full gene' => :full_screen,
+                                  'specific mutation' => :targeted_mutation }.freeze
 
           VARIANT_PATH_CLASS_COLO = { 'pathogenic mutation' => 5,
                                       '1a' => 5,
@@ -135,8 +135,8 @@ module Import
 
           def process_test_scope(genocolorectal, record)
             tscope = record.raw_fields['genetictestscope']
-            genocolorectal.add_test_scope(TEST_SCOPE_MAP_COLO_COLO[tscope.downcase.strip]) \
-            unless tscope.nil?
+            scope = TEST_SCOPE_MAP_COLO[tscope&.downcase&.strip].presence || :no_genetictestscope
+            genocolorectal.add_test_scope(scope)
           end
 
           def process_test_type(genocolorectal, record)

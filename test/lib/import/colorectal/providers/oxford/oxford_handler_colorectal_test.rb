@@ -1,8 +1,8 @@
 require 'test_helper'
-#require 'import/genotype.rb'
-#require 'import/colorectal/core/genotype_mmr.rb'
-#require 'import/brca/core/provider_handler'
-#require 'import/storage_manager/persister'
+# require 'import/genotype.rb'
+# require 'import/colorectal/core/genotype_mmr.rb'
+# require 'import/brca/core/provider_handler'
+# require 'import/storage_manager/persister'
 
 class OxfordHandlerColorectalTest < ActiveSupport::TestCase
   def setup
@@ -21,7 +21,6 @@ class OxfordHandlerColorectalTest < ActiveSupport::TestCase
 
     broken_record = build_raw_record('pseudo_id1' => 'bob')
     broken_record.raw_fields['scope / limitations of test'] = 'Cabbage'
-    @logger.expects(:debug).with('Unable to parse genetic test scope')
     @handler.assign_test_scope(@genotype, broken_record)
 
     targeted_record = build_raw_record('pseudo_id1' => 'bob')
@@ -38,6 +37,11 @@ class OxfordHandlerColorectalTest < ActiveSupport::TestCase
     polish_record.raw_fields['scope / limitations of test'] = 'Polish'
     @handler.assign_test_scope(@genotype, polish_record)
     assert_equal 'Polish Colorectal Lynch or MMR', @genotype.attribute_map['genetictestscope']
+
+    no_scope_record = build_raw_record('pseudo_id1' => 'bob')
+    no_scope_record.raw_fields['scope / limitations of test'] = 'exons 8-13 SNV and CNV'
+    @handler.assign_test_scope(@genotype, no_scope_record)
+    assert_equal 'Unable to assign Colorectal Lynch or MMR genetictestscope', @genotype.attribute_map['genetictestscope']
   end
 
   test 'assign_method' do

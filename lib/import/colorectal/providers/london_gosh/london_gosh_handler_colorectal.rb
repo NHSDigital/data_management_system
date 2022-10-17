@@ -6,7 +6,7 @@ module Import
     module Providers
       module LondonGosh
         # Royal Marsden Colorectal Importer
-        class LondonGoshHandlerColorectal < Import::Brca::Core::ProviderHandler
+        class LondonGoshHandlerColorectal < Import::Germline::ProviderHandler
           PASS_THROUGH_FIELDS_COLO = %w[age consultantcode servicereportidentifier providercode
                                         authoriseddate requesteddate collecteddate
                                         receiveddate practitionercode genomicchange
@@ -27,8 +27,8 @@ module Import
                                                 STK11|
                                                 NTHL1)/xi . freeze # Added by Francesco
 
-          TEST_SCOPE_MAP_COLO_COLO = { 'full gene' => :full_screen,
-                                       'specific mutation' => :targeted_mutation } .freeze
+          TEST_SCOPE_MAP_COLO = { 'full gene' => :full_screen,
+                                  'specific mutation' => :targeted_mutation }.freeze
 
           VARIANT_PATH_CLASS_COLO = { 'pathogenic mutation' => 5,
                                       '1A' => 5,

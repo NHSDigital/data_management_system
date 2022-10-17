@@ -1,8 +1,8 @@
 require 'test_helper'
-#require 'import/genotype.rb'
-#require 'import/colorectal/core/genotype_mmr.rb'
-#require 'import/brca/core/provider_handler'
-#require 'import/storage_manager/persister'
+# require 'import/genotype.rb'
+# require 'import/colorectal/core/genotype_mmr.rb'
+# require 'import/brca/core/provider_handler'
+# require 'import/storage_manager/persister'
 
 class RoyalMarsdenHandlerColorectalTest < ActiveSupport::TestCase
   def setup
@@ -56,6 +56,14 @@ class RoyalMarsdenHandlerColorectalTest < ActiveSupport::TestCase
   test 'process_test_scope' do
     @handler.process_test_scope(@genotype, @record)
     assert_equal 'Targeted Colorectal Lynch or MMR', @genotype.attribute_map['genetictestscope']
+    no_scope_record = build_raw_record('pseudo_id1' => 'bob')
+    no_scope_record.raw_fields['genetictestscope'] = 'xyz'
+    @handler.process_test_scope(@genotype, no_scope_record)
+    assert_equal 'Unable to assign Colorectal Lynch or MMR genetictestscope', @genotype.attribute_map['genetictestscope']
+    fs_record = build_raw_record('pseudo_id1' => 'bob')
+    fs_record.raw_fields['genetictestscope'] = 'full gene'
+    @handler.process_test_scope(@genotype, fs_record)
+    assert_equal 'Full screen Colorectal Lynch or MMR', @genotype.attribute_map['genetictestscope']
   end
 
   test 'process_large_deldup' do

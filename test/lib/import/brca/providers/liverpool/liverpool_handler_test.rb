@@ -18,13 +18,21 @@ class LiverpoolHandlerTest < ActiveSupport::TestCase
 
     ashkenazi_record = build_raw_record('pseudo_id1' => 'bob')
     ashkenazi_record.raw_fields['testscope'] = 'Targeted mutation panel'
+    @genotype = Import::Brca::Core::GenotypeBrca.new(ashkenazi_record)
     @handler.add_genetictestscope(@genotype, ashkenazi_record)
     assert_equal 'AJ BRCA screen', @genotype.attribute_map['genetictestscope']
 
     fs_record = build_raw_record('pseudo_id1' => 'bob')
     fs_record.raw_fields['testscope'] = 'Partial gene screen'
+    @genotype = Import::Brca::Core::GenotypeBrca.new(fs_record)
     @handler.add_genetictestscope(@genotype, fs_record)
     assert_equal 'Full screen BRCA1 and BRCA2', @genotype.attribute_map['genetictestscope']
+
+    no_scope_record = build_raw_record('pseudo_id1' => 'bob')
+    no_scope_record.raw_fields['testscope'] = 'XYZ'
+    @genotype = Import::Brca::Core::GenotypeBrca.new(no_scope_record)
+    @handler.add_genetictestscope(@genotype, no_scope_record)
+    assert_equal 'Unable to assign BRCA genetictestscope', @genotype.attribute_map['genetictestscope']
   end
 
   test 'process_teststatus' do

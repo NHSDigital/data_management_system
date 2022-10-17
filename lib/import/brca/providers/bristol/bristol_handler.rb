@@ -5,7 +5,7 @@ module Import
     module Providers
       module Bristol
         # Process Bristol-specific record details into generalized internal genotype format
-        class BristolHandler < Import::Brca::Core::ProviderHandler
+        class BristolHandler < Import::Germline::ProviderHandler
           include Import::Helpers::Brca::Providers::Rvj::RvjConstants
 
           # rubocop:disable  Metrics/MethodLength

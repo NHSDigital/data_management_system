@@ -26,7 +26,7 @@ module Import
       end
 
       def similar!(genotype)
-        @representative_genotype.similar_record(genotype, @field_names)
+        @representative_genotype.similar_record(genotype, @field_names, strict: true)
       end
     end
   end

@@ -5,8 +5,7 @@ module Import
     module Providers
       module Nottingham
         # Process Nottingham-specific record details into generalized internal genotype format
-        class NottinghamHandlerColorectal < Import::Brca::Core::ProviderHandler
-          include ExtractionUtilities
+        class NottinghamHandlerColorectal < Import::Germline::ProviderHandler
           TEST_TYPE_MAP_COLO = { 'confirmation' => :diagnostic,
                                  'confirmation of familial mutation' => :diagnostic,
                                  'diagnostic' => :diagnostic,
@@ -56,7 +55,6 @@ module Import
           def initialize(batch)
             @failed_genotype_parse_counter = 0
             @genotype_counter = 0
-            @ex = LocationExtractor.new
             super
           end
 
@@ -90,13 +88,12 @@ module Import
           def add_scope(genotype, record)
             Maybe(record.raw_fields['disease']).each do |disease|
               case disease.downcase.strip
-              when 'bowel cancer panel'
-                genotype.add_test_scope(:full_screen)
-              when 'hereditary non-polyposis colorectal cancer'
+              when 'bowel cancer panel', 'hereditary non-polyposis colorectal cancer'
                 genotype.add_test_scope(:full_screen)
               when 'hnpcc pst'
                 genotype.add_test_scope(:targeted_mutation)
-              else @logger.debug 'UNSUCCESSFUL TEST SCOPE PARSE'
+              else
+                genotype.add_test_scope(:no_genetictestscope)
               end
             end
           end

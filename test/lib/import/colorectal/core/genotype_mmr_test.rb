@@ -1,8 +1,8 @@
 require 'test_helper'
-#require 'import/genotype.rb'
-#require 'import/colorectal/core/genotype_mmr.rb'
-#require 'import/brca/core/provider_handler'
-#require 'import/storage_manager/persister'
+# require 'import/genotype.rb'
+# require 'import/colorectal/core/genotype_mmr.rb'
+# require 'import/brca/core/provider_handler'
+# require 'import/storage_manager/persister'
 
 class GenotypeMmrTest < ActiveSupport::TestCase
   def setup
@@ -37,7 +37,7 @@ class GenotypeMmrTest < ActiveSupport::TestCase
       'rawtext_clinical.to_json' => rawtext_clinical_to_json
     }
 
-    Import::Brca::Core::RawRecord.new(default_options.merge!(options))
+    Import::Germline::RawRecord.new(default_options.merge!(options))
   end
 
   def clinical_to_json

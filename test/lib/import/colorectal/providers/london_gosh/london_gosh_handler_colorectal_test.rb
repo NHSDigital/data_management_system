@@ -1,8 +1,8 @@
 require 'test_helper'
-#require 'import/genotype.rb'
-#require 'import/colorectal/core/genotype_mmr.rb'
-#require 'import/brca/core/provider_handler'
-#require 'import/storage_manager/persister'
+# require 'import/genotype.rb'
+# require 'import/colorectal/core/genotype_mmr.rb'
+# require 'import/brca/core/provider_handler'
+# require 'import/storage_manager/persister'
 
 class LondonGoshHandlerColorectalTest < ActiveSupport::TestCase
   def setup
@@ -43,8 +43,12 @@ class LondonGoshHandlerColorectalTest < ActiveSupport::TestCase
     cdna_record.raw_fields['acmg_protein_change'] = 'p.Val717Alafs*18'
     genotypes = []
     mutated_gene = cdna_record.raw_fields['gene']
-    all_genes = cdna_record.raw_fields['genes analysed'] unless cdna_record.raw_fields['genes analysed'].nil?
-    dna_variant = cdna_record.raw_fields['acmg_cdna'] unless cdna_record.raw_fields['acmg_cdna'].nil?
+    unless cdna_record.raw_fields['genes analysed'].nil?
+      all_genes = cdna_record.raw_fields['genes analysed']
+    end
+    unless cdna_record.raw_fields['acmg_cdna'].nil?
+      dna_variant = cdna_record.raw_fields['acmg_cdna']
+    end
     protein_variant = cdna_record.raw_fields['acmg_protein_change']
     @logger.expects(:debug).with('Found mutated gene MLH1')
     @logger.expects(:debug).with('Negative genes are ["EPCAM", "MSH2", "MSH6"]')
@@ -61,8 +65,12 @@ class LondonGoshHandlerColorectalTest < ActiveSupport::TestCase
     exon_record.raw_fields['codingdnasequencechange'] = 'MSH2 exon 11-16 deletion'
     genotypes = []
     mutated_gene = exon_record.raw_fields['gene']
-    all_genes = exon_record.raw_fields['genes analysed'] unless exon_record.raw_fields['genes analysed'].nil?
-    exonic_variant = exon_record.raw_fields['codingdnasequencechange'] unless exon_record.raw_fields['codingdnasequencechange'].nil?
+    unless exon_record.raw_fields['genes analysed'].nil?
+      all_genes = exon_record.raw_fields['genes analysed']
+    end
+    unless exon_record.raw_fields['codingdnasequencechange'].nil?
+      exonic_variant = exon_record.raw_fields['codingdnasequencechange']
+    end
     @logger.expects(:debug).with('Found mutated gene MLH1 for insertion deletion duplication')
     @logger.expects(:debug).with('Found mutated deletion for insertion deletion duplication')
     @logger.expects(:debug).with('Found exon(s) 11-16 for insertion deletion duplication')
@@ -80,7 +88,9 @@ class LondonGoshHandlerColorectalTest < ActiveSupport::TestCase
     negative_record.raw_fields['codingdnasequencechange'] = 'MSH2 exon 11-16 deletion'
     genotypes = []
     mutated_gene = negative_record.raw_fields['gene']
-    all_genes = negative_record.raw_fields['genes analysed'] unless negative_record.raw_fields['genes analysed'].nil?
+    unless negative_record.raw_fields['genes analysed'].nil?
+      all_genes = negative_record.raw_fields['genes analysed']
+    end
     @logger.expects(:debug).with('Negative genes are ["EPCAM", "MSH2", "MSH6"]')
     @logger.expects(:debug).with('SUCCESSFUL gene parse for EPCAM')
     @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH2')

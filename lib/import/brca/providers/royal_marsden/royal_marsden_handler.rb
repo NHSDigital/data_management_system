@@ -6,7 +6,7 @@ module Import
     module Providers
       module RoyalMarsden
         # BRCA importer for Royal Marsden Trust
-        class RoyalMarsdenHandler < Import::Brca::Core::ProviderHandler
+        class RoyalMarsdenHandler < Import::Germline::ProviderHandler
           PASS_THROUGH_FIELDS = %w[age consultantcode servicereportidentifier providercode
                                    authoriseddate requesteddate practitionercode genomicchange
                                    specimentype].freeze
@@ -127,8 +127,8 @@ module Import
 
           def process_test_scope(genotype, record)
             tscope = record.raw_fields['genetictestscope']
-            genotype.add_test_scope(TEST_SCOPE_MAP[tscope.downcase.strip]) \
-            unless tscope.nil?
+            scope = TEST_SCOPE_MAP[tscope&.downcase&.strip].presence || :no_genetictestscope
+            genotype.add_test_scope(scope)
           end
 
           def process_test_type(genotype, record)
