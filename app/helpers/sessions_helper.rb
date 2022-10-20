@@ -4,8 +4,8 @@ module SessionsHelper
     # Multiple databases can be specified in certain environments, whereas in others there
     # is no choice.
     config = ActiveRecord::Base.configurations.
-             configs_for(env_name: Rails.env, spec_name: 'primary').config
-    primary_database = config['database']
+             configs_for(env_name: Rails.env, name: 'primary').configuration_hash
+    primary_database = config[:database]
     primary_database !~ MIGRATION_DATABASE_PATTERN
   end
 
@@ -13,8 +13,8 @@ module SessionsHelper
     # A login message can be configured. If not supplied, defaults to a "this isn't live" warning,
     # unless this *is* live! Note the configuration file should be HTML-safe
     config = ActiveRecord::Base.configurations.
-             configs_for(env_name: Rails.env, spec_name: 'primary').config
-    login_message = config['login_message']
+             configs_for(env_name: Rails.env, name: 'primary').configuration_hash
+    login_message = config[:login_message]
     unless primary_is_live
       login_message ||= "This is NOT the live system, it is the #{Rails.env.upcase} version " \
                         'of the system used for development and testing.'

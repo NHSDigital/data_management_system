@@ -415,20 +415,20 @@ class ProjectTest < ActiveSupport::TestCase
 
   test 'CAS application does not require team' do
     application = Project.new(project_type: ProjectType.find_by(name: 'CAS')).tap(&:valid?)
-    refute_includes(application.errors.keys, :project)
+    refute_includes(application.errors.attribute_names, :project)
   end
 
   test 'MBIS application requires team' do
     application = Project.new(project_type: ProjectType.find_by(name: 'Project')).tap(&:valid?)
-    assert_includes(application.errors.keys, :project)
+    assert_includes(application.errors.attribute_names, :project)
   end
 
   test 'CAS application does not require name' do
     application = Project.new(project_type: ProjectType.find_by(name: 'EOI')).tap(&:valid?)
-    assert_includes(application.errors.keys, :project)
+    assert_includes(application.errors.attribute_names, :project)
 
     application = Project.new(project_type: ProjectType.find_by(name: 'CAS')).tap(&:valid?)
-    refute_includes(application.errors.keys, :project)
+    refute_includes(application.errors.attribute_names, :project)
   end
 
   test 'cas_dataset_approval scope should only return projects that user is allowed to approve' do
@@ -615,12 +615,12 @@ class ProjectTest < ActiveSupport::TestCase
 
   test 'first_contact_date not required for pdf import' do
     project = Project.new(project_type: project_types(:application)).tap(&:valid?)
-    assert_includes project.errors.messages.keys, :first_contact_date
+    assert_includes project.errors.attribute_names, :first_contact_date
 
     team = teams(:team_one)
     project = team.projects.build(project_type: project_types(:application))
     facade = PdfApplicationFacade.new(project)
-    refute_includes facade.errors.messages.keys, :first_contact_date
+    refute_includes facade.errors.attribute_names, :first_contact_date
   end
 
   test 'should calculate duration' do

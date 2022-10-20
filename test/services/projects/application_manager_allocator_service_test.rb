@@ -34,7 +34,7 @@ module Projects
 
       # Spoof an approved state...
       application_manager_two.assigned_projects.last.
-        project_states.last.update_column(:state_id, workflow_states(:approved))
+        project_states.last.update_column(:state_id, workflow_states(:approved).id)
 
       project = build_project(
         project_type: project_types(:eoi),
