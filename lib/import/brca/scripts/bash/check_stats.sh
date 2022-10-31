@@ -14,8 +14,8 @@ echo Data checksum: $(cd "$FILEPATH"; find . -type f -name '*.pseudo' -print0|LC
 
 echo Record counts: $(bundle exec rails runner "p [EBatch, Pseudo::Ppatient, Pseudo::GeneticTestResult, Pseudo::GeneticSequenceVariant].collect { |klass| [klass.name, klass.count] }.to_h" 2>/dev/null)
 
-PGPASSWORD=$(bundle exec rails runner "cfg=ActiveRecord::Base.configurations.configs_for(env_name: Rails.env, spec_name: 'primary').config; puts(cfg['password'])" 2>/dev/null)
-PSQL_OPTIONS=$(bundle exec rails runner "cfg=ActiveRecord::Base.configurations.configs_for(env_name: Rails.env, spec_name: 'primary').config; puts(cfg['database'] + ' -h ' + cfg['host'] + ' -U ' + cfg['username'])" 2>/dev/null)
+PGPASSWORD=$(bundle exec rails runner "cfg=ActiveRecord::Base.configurations.configs_for(env_name: Rails.env, name: 'primary').configuration_hash; puts(cfg[:password])" 2>/dev/null)
+PSQL_OPTIONS=$(bundle exec rails runner "cfg=ActiveRecord::Base.configurations.configs_for(env_name: Rails.env, name: 'primary').configuration_hash; puts(cfg[:database] + ' -h ' + cfg[:host] + ' -U ' + cfg[:username])" 2>/dev/null)
 
 function run_sql {
   PGPASSWORD="$PGPASSWORD" psql $PSQL_OPTIONS -e -c "$1" | cat
