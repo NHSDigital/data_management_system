@@ -57,7 +57,7 @@ class LeedsHandlerColorectalTest < ActiveSupport::TestCase
   end
 
   test 'process_scope' do
-    @handler.process_scope(@record.mapped_fields['genetictestscope'], @genotype, @record)
+    @handler.process_scope(@genotype, @record)
     assert_equal 'Full screen Colorectal Lynch or MMR', @genotype.attribute_map['genetictestscope']
   end
 
