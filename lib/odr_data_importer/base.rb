@@ -81,7 +81,7 @@ module OdrDataImporter
       new_eoi.name = new_eoi.name + ' - ' + new_eoi.application_log
       new_eoi.save!
     end
-      
+
     def build_eoi(attrs)
       eoi_attrs = attrs.reject { |k, _| eoi_fields.exclude? k }
       eoi_attrs.transform_keys! { |k| header_to_field_mapping[k] || k }
@@ -125,7 +125,7 @@ module OdrDataImporter
     end
 
     def app_man(email)
-      return if ['sean.mcphail@phe.gov.uk'].include? email
+      return if ['sean.mcphail1@nhs.net'].include? email
 
       User.find_by(email: email)
     rescue StandardError => e
@@ -146,7 +146,7 @@ module OdrDataImporter
     end
 
     def state_mapping
-      { 
+      {
         'Pending' => 'SUBMITTED',
         'Closed'  => 'REJECTED',
         'New'     => 'DRAFT'
@@ -195,7 +195,7 @@ module OdrDataImporter
         'Screening Programme - Fetal Anomaly' => 'Screening Programme - Fetal Anonaly',
         'PHE Screening - Bowel Screening Programme' => 'Screening Programme - Bowel',
         'PHE Screening - Newborn Hearing Screening Programme' => 'Screening Programme - Newborn Hearing'
-        
+
       }
     end
 
