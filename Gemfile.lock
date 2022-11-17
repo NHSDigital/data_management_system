@@ -274,7 +274,7 @@ GEM
       spreadsheet (= 1.2.6)
     ndr_pseudonymise (0.4.1)
       activesupport
-    ndr_support (5.9.1)
+    ndr_support (5.9.2)
       activerecord (>= 5.2.0, < 7)
       activesupport (>= 5.2.0, < 7)
     ndr_ui (3.2.0)
@@ -520,7 +520,7 @@ DEPENDENCIES
   jquery-ui-rails
   libv8-node (~> 16.10)
   loofah (>= 2.3.1)
-  mini_racer (~> 0.6.2)
+  mini_racer (= 0.6.2)
   minitest
   mocha
   ndr_authenticate (~> 0.3)
