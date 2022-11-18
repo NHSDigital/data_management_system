@@ -28,7 +28,14 @@ module Import
 
           # ??? Add progress monitoring block parameter
           begin
-            Import::DelimitedFile.new(file_name, e_batch).load
+            if keep
+              # load outside a transation
+              Import::DelimitedFile.new(file_name, e_batch).load
+            else
+              EBatch.transaction do
+                Import::DelimitedFile.new(file_name, e_batch).load
+              end
+            end
           rescue CSV::MalformedCSVError => e
             raise e if keep && e_batch.ppatients.any? # Rethrow
 
@@ -60,11 +67,20 @@ module Import
                       when 'PSDEATH' then 'private/mbis_data/deaths/MBISWEEKLY_Deaths_D[0-9]*.txt'
                       else raise "Unsupported e_type #{e_type}"
                       end
-            Dir.glob(pattern).sort.each do |fname0|
+            Dir.glob(pattern).each do |fname0|
               fname_stripped = fname0.sub('private/mbis_data/', '')
               filename = SafePath.new('mbis_data').join(fname_stripped)
-              # Has the file already been imported (same filename or digest)?
               digest = Digest::SHA1.file(SafeFile.safepath_to_string(filename)).hexdigest
+              # Delete previous failed imports (existing empty batches(
+              EBatch.where(e_type: e_type).
+                where(['original_filename = ? or digest = ?', fname_stripped, digest]).each do |eb|
+                next if eb.ppatients.any?
+
+                # logger.debug("Deleting failed import of file #{fname_stripped.inspect} " \
+                #              "with e_batchid #{eb.id}")
+                eb.destroy
+              end
+              # Has the file already been imported (same filename or digest)?
               if EBatch.where(e_type: e_type).
                  exists?(['original_filename = ? or digest = ?', fname_stripped, digest])
                 # logger.debug("Skipping already imported file #{fname_stripped.inspect}")
