@@ -1,14 +1,9 @@
 require 'test_helper'
-# require 'import/genotype.rb'
-# require 'import/colorectal/core/genotype_mmr.rb'
-# require 'import/brca/core/provider_handler'
-# require 'import/storage_manager/persister'
 
 class BirminghamHandlerColorectalTest < ActiveSupport::TestCase
   def setup
     @record   = build_raw_record('pseudo_id1' => 'bob')
     @genotype = Import::Colorectal::Core::Genocolorectal.new(@record)
-    # TODO: Fully qualify CambridgeHandler in cambridge_handler.rb
     @importer_stdout, @importer_stderr = capture_io do
       @handler = Import::Colorectal::Providers::Birmingham::BirminghamHandlerColorectal.new(EBatch.new)
     end
@@ -24,25 +19,20 @@ class BirminghamHandlerColorectalTest < ActiveSupport::TestCase
   end
 
   test 'process_multiple_tests_from_fullscreen' do
-    @logger.expects(:debug).with('ABNORMAL TEST')
-    @logger.expects(:debug).with('Found MSH2 for list ["MSH2", "EPCAM"]')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH2')
-    @logger.expects(:debug).with('Found EPCAM for list ["MSH2", "EPCAM"]')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for EPCAM')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH6')
-
+    @handler.process_genetictestscope(@genotype, @record)
     processor = variant_processor_for(@record)
-    assert_equal 3, processor.process_variants_from_report.size
+    genocolorectals = processor.process_variants_from_report
+    assert_equal 3, genocolorectals.size
+    assert_equal 2804, genocolorectals[0].attribute_map['gene']
+    assert_equal 1432, genocolorectals[1].attribute_map['gene']
+    assert_equal 2808, genocolorectals[2].attribute_map['gene']
+    assert_equal 1, genocolorectals[0].attribute_map['teststatus']
+    assert_equal 1, genocolorectals[1].attribute_map['teststatus']
+    assert_equal 2, genocolorectals[2].attribute_map['teststatus']
+    assert_equal 'Full screen Colorectal Lynch or MMR', genocolorectals[0].attribute_map['genetictestscope']
   end
 
   test 'process_mutation_from_fullscreen' do
-    @logger.expects(:debug).with('ABNORMAL TEST')
-    @logger.expects(:debug).with('Found MSH2 for list ["MSH2", "EPCAM"]')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH2')
-    @logger.expects(:debug).with('Found EPCAM for list ["MSH2", "EPCAM"]')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for EPCAM')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH6')
-
     processor = variant_processor_for(@record)
     assert_equal 'p.Lys145Asn', processor.process_variants_from_report[2].attribute_map['proteinimpact']
   end
@@ -50,16 +40,10 @@ class BirminghamHandlerColorectalTest < ActiveSupport::TestCase
   test 'negative_tests_from_fullscreen' do
     negative_record = build_raw_record('pseudo_id1' => 'bob')
     negative_record.raw_fields['overall2'] = 'N'
-    @logger.expects(:debug).with('NORMAL TEST FOUND')
-    @logger.expects(:debug).with('Found MSH2 for list ["MSH2", "MSH6", "EPCAM"]')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH2')
-    @logger.expects(:debug).with('Found MSH6 for list ["MSH2", "MSH6", "EPCAM"]')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH6')
-    @logger.expects(:debug).with('Found EPCAM for list ["MSH2", "MSH6", "EPCAM"]')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for EPCAM')
-
     processor = variant_processor_for(negative_record)
-    assert_equal 3, processor.process_variants_from_report.size
+    genocolorectals = processor.process_variants_from_report
+    assert_equal 3, genocolorectals.size
+    assert_equal 1, genocolorectals[2].attribute_map['teststatus']
   end
 
   test 'process_tests_from_empty_teststatus' do
@@ -67,67 +51,64 @@ class BirminghamHandlerColorectalTest < ActiveSupport::TestCase
     empty_teststatus_record.raw_fields['teststatus'] = 'Cabbage'
     empty_teststatus_record.raw_fields['report'] = 'A mutation in exon 13 of the APC gene, a C to T transition at codon 554, has previously been reported in the Oxford DNA lab- oratory in this patient family. This mutation is detectable by direct PCR/DGGE analysis of exon 13.'
     empty_teststatus_record.raw_fields['indication'] = 'FAP'
-    @logger.expects(:debug).with('ABNORMAL TEST')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for APC')
-
     processor = variant_processor_for(empty_teststatus_record)
-    assert_equal 358, processor.process_variants_from_report.first.attribute_map['gene']
+    genocolorectals = processor.process_variants_from_report
+    assert_equal 1, genocolorectals.size
+    assert_equal 358, genocolorectals[0].attribute_map['gene']
+    assert_equal 2, genocolorectals[0].attribute_map['teststatus']
   end
 
   test 'process_chromosomevariants_from_record' do
     chromovariants_record = build_raw_record('pseudo_id1' => 'bob')
     chromovariants_record.raw_fields['teststatus'] = 'Frameshift mutation in exon 15 of hMSH2 plus missense mutation in exon 1 of hMLH1 identified'
-    @logger.expects(:debug).with('ABNORMAL TEST')
-    @logger.expects(:debug).with('Found MSH6 for list ["MSH6", "EPCAM"]')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH6')
-    @logger.expects(:debug).with('Found EPCAM for list ["MSH6", "EPCAM"]')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for EPCAM')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH2')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for MLH1')
-
     processor = variant_processor_for(chromovariants_record)
-    assert_equal 4, processor.process_variants_from_report.size
+    genocolorectals = processor.process_variants_from_report
+    assert_equal 4, genocolorectals.size
+    assert_equal 10, genocolorectals[3].attribute_map['sequencevarianttype']
+    assert_equal 2, genocolorectals[3].attribute_map['teststatus']
+    assert_equal 2744, genocolorectals[3].attribute_map['gene']
+    assert_equal 10, genocolorectals[2].attribute_map['sequencevarianttype']
+    assert_equal 2, genocolorectals[2].attribute_map['teststatus']
+    assert_equal 2804, genocolorectals[2].attribute_map['gene']
   end
 
   test 'process_mutyh_specific_single_cdna_variants' do
     mutyh_record = build_raw_record('pseudo_id1' => 'bob')
-    mutyh_record.raw_fields['teststatus'] = 'Homozygous for the MYH gene mutation c.527A\\u003eG, p.Tyr176Cys.'
+    mutyh_record.raw_fields['teststatus'] = 'Homozygous for the MYH gene mutation c.527A>G, p.Tyr176Cys.'
     mutyh_record.raw_fields['indication'] = 'MAP'
-    @logger.expects(:debug).with('ABNORMAL TEST')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for MUTYH')
-
     processor = variant_processor_for(mutyh_record)
-    assert_equal 1, processor.process_variants_from_report.size
+    genocolorectals = processor.process_variants_from_report
+    assert_equal 1, genocolorectals.size
+    assert_equal 2, genocolorectals[0].attribute_map['teststatus']
+    assert_equal 'p.Tyr176Cys', genocolorectals[0].attribute_map['proteinimpact']
+    assert_equal 'c.527A>G', genocolorectals[0].attribute_map['codingdnasequencechange']
+    assert_equal 2850, genocolorectals[0].attribute_map['gene']
   end
 
   test 'process_multiple_variants_single_gene' do
     multiple_cdna_record = build_raw_record('pseudo_id1' => 'bob')
     multiple_cdna_record.raw_fields['teststatus'] = 'Heterozygous missense variant (c.1688G>T; p.Arg563Leu) identified in exon 11 of the PMS2 gene and a heterozygous intronic variant (c.251-20T>G) in intron 4 of the PMS2 gene.'
-    @logger.expects(:debug).with('ABNORMAL TEST')
-    @logger.expects(:debug).with('Found MSH2 for list ["MSH2", "MSH6", "EPCAM"]')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH2')
-    @logger.expects(:debug).with('Found MSH6 for list ["MSH2", "MSH6", "EPCAM"]')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH6')
-    @logger.expects(:debug).with('Found EPCAM for list ["MSH2", "MSH6", "EPCAM"]')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for EPCAM')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for PMS2')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for PMS2')
-
     processor = variant_processor_for(multiple_cdna_record)
-    assert_equal 5, processor.process_variants_from_report.size
+    genocolorectals = processor.process_variants_from_report
+    assert_equal 5, genocolorectals.size
+    assert_equal 'c.251-20T>G', genocolorectals[4].attribute_map['codingdnasequencechange']
+    assert_equal 2, genocolorectals[4].attribute_map['teststatus']
+    assert_equal 3394, genocolorectals[4].attribute_map['gene']
 
     multiple_cdna_multiple_genes_record = build_raw_record('pseudo_id1' => 'bob')
     multiple_cdna_multiple_genes_record.raw_fields['teststatus'] = 'Heterozygous missense variant (c.1688G>T; p.Arg563Leu) identified in exon 11 of the PMS2 gene and a heterozygous intronic variant (c.251-20T>G) in intron 4 of the MSH2 gene.'
-    @logger.expects(:debug).with('ABNORMAL TEST')
-    @logger.expects(:debug).with('Found MSH6 for list ["MSH6", "EPCAM"]')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH6')
-    @logger.expects(:debug).with('Found EPCAM for list ["MSH6", "EPCAM"]')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for EPCAM')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for PMS2')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH2')
 
     processor = variant_processor_for(multiple_cdna_multiple_genes_record)
-    assert_equal 4, processor.process_variants_from_report.size
+    genocolorectals = processor.process_variants_from_report
+    assert_equal 4, genocolorectals.size
+    assert_equal 'p.Arg563Leu', genocolorectals[2].attribute_map['proteinimpact']
+    assert_equal 'c.1688G>T', genocolorectals[2].attribute_map['codingdnasequencechange']
+    assert_equal 2, genocolorectals[2].attribute_map['teststatus']
+    assert_equal 3394, genocolorectals[2].attribute_map['gene']
+    assert_nil genocolorectals[3].attribute_map['proteinimpact']
+    assert_equal 'c.251-20T>G', genocolorectals[3].attribute_map['codingdnasequencechange']
+    assert_equal 2, genocolorectals[3].attribute_map['teststatus']
+    assert_equal 2804, genocolorectals[3].attribute_map['gene']
   end
 
   test 'process_chromosomic_variant_empty_teststatus' do
@@ -135,11 +116,43 @@ class BirminghamHandlerColorectalTest < ActiveSupport::TestCase
     empty_teststatus_chromovariant_record.raw_fields['teststatus'] = 'Cabbage'
     empty_teststatus_chromovariant_record.raw_fields['report'] = 'The protein truncation test (PTT) detects the presence of chain-terminating mutations in the APC gene. A truncation has previously been identified in this patient family in the region of exon 15E to 15J.'
     empty_teststatus_chromovariant_record.raw_fields['indication'] = 'FAP'
-    @logger.expects(:debug).with('ABNORMAL TEST')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for APC')
-
     processor = variant_processor_for(empty_teststatus_chromovariant_record)
-    assert_equal 1, processor.process_variants_from_report.size
+    genocolorectals = processor.process_variants_from_report
+    assert_equal 1, genocolorectals.size
+    assert_equal 358, genocolorectals[0].attribute_map['gene']
+    assert_equal 10, genocolorectals[0].attribute_map['sequencevarianttype']
+  end
+
+  test 'process_variants_from_report_new_format' do
+    pathogenic_record = build_raw_record('pseudo_id1' => 'bob')
+    pathogenic_record.raw_fields['indication'] = 'PHTS'
+    pathogenic_record.raw_fields['overall2'] = 'Pathogenic'
+    pathogenic_record.raw_fields['teststatus'] = 'The previously reported heterozygous splice site variant c.802-1G>C in the PTEN gene is now considered likely pathogenic.'
+    processor = variant_processor_for(pathogenic_record)
+    genocolorectals = processor.process_variants_from_report
+    assert_equal 2, genocolorectals[0].attribute_map['teststatus']
+    assert_nil genocolorectals[0].attribute_map['proteinimpact']
+    assert_equal 'c.802-1G>C', genocolorectals[0].attribute_map['codingdnasequencechange']
+    assert_equal 62, genocolorectals[0].attribute_map['gene']
+
+    normal_record = build_raw_record('pseudo_id1' => 'bob')
+    normal_record.raw_fields['indication'] = 'PHTS'
+    normal_record.raw_fields['overall2'] = 'Normal'
+    normal_record.raw_fields['teststatus'] = 'Molecular analysis shows no evidence of the familial pathogenic variant in the PTEN gene.'
+    processor = variant_processor_for(normal_record)
+    genocolorectals2 = processor.process_variants_from_report
+    assert_equal 1, genocolorectals2[0].attribute_map['teststatus']
+
+    uv_record = build_raw_record('pseudo_id1' => 'bob')
+    uv_record.raw_fields['indication'] = 'PHTS'
+    uv_record.raw_fields['overall2'] = 'UV'
+    uv_record.raw_fields['teststatus'] = 'Heterozygous inframe deletion variant of uncertain significance c.69_74del p.(Asp24_Leu25del) detected in the PTEN gene'
+    processor = variant_processor_for(uv_record)
+    genocolorectals3 =  processor.process_variants_from_report
+    assert_equal 2, genocolorectals3[0].attribute_map['teststatus']
+    assert_equal 3, genocolorectals3[0].attribute_map['variantpathclass']
+    assert_equal 'c.69_74delp', genocolorectals[0].attribute_map['codingdnasequencechange']
+    assert_equal 62, genocolorectals[0].attribute_map['gene']
   end
 
   private
