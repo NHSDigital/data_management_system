@@ -26,10 +26,14 @@ NdrAuthenticate.configure do |config|
   config.load_defaults(:phe)
 
   if ENV.key?('RAILS_MASTER_KEY') || File.exist?(Rails.root.join('config', 'master.key'))
-    config.devise.saml_config.private_key = Rails.application.credentials.saml[:private_key]
+    if Rails.application.credentials.saml
+      config.devise.saml_config.private_key = Rails.application.credentials.saml[:private_key]
+    end
 
-    config.yubikey_api_id  = Rails.application.credentials.yubikey[:api_id]
-    config.yubikey_api_key = Rails.application.credentials.yubikey[:api_key]
+    if Rails.application.credentials.yubikey
+      config.yubikey_api_id  = Rails.application.credentials.yubikey[:api_id]
+      config.yubikey_api_key = Rails.application.credentials.yubikey[:api_key]
+    end
   end
 
   config.invalid_otp_reasons = {
