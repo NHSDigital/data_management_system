@@ -34,7 +34,8 @@ module Import
                      'NF2' => 55,
                      'SMARCB1' => 74,
                      'LZTR1' => 4952,
-                     'CDH1' => 794 }.freeze
+                     'CDH1' => 794,
+                     'CDKN2A' => 20 }.freeze
 
         BRCA_REGEX = /(?<atm>ATM|P041|P042)|
                       (?<epcam>EPCAM)|
@@ -61,7 +62,8 @@ module Import
                       (?<nf2>NF2)|
                       (?<smarcb1>SMARCB1)|
                       (?<cdh1>CDH1)|
-                      (?<lztr1>LZTR1)/ix.freeze # Added by Francesco
+                      (?<lztr1>LZTR1)|
+                      (?<cdkn2a>CDKN2A)/ix # Added by Francesco
 
         def other_gene
           gene = @attribute_map['gene']

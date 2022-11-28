@@ -19,13 +19,9 @@ module Import
           end
 
           def process_variants_from_report
-            if ['P', '?'].include? @posnegtest.upcase
-              @logger.debug 'ABNORMAL TEST'
+            if check_positive_record?
               process_positive_records
-            elsif @posnegtest.upcase == 'N' &&
-                  @testresult.scan(/INTERNAL REPORT/i).size.zero? &&
-                  !@testreport.nil?
-              @logger.debug 'NORMAL TEST FOUND'
+            elsif check_negative_record?
               process_negative_records
             end
 

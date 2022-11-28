@@ -30,6 +30,7 @@ set :copy_exclude, %w(
   vendor/cache/*-darwin1?.gem
   vendor/cache/*-darwin-2?.gem
   vendor/cache/*-x86_64-darwin.gem
+  vendor/npm-packages-offline-cache
 )
 
 # Exclude gems from these bundler groups:
@@ -75,7 +76,13 @@ set :asset_script, <<~SHELL
   ruby -ryaml -e "puts YAML.dump('production' => { 'secret_key_base' => 'compile_me' })" > config/secrets.yml
   touch config/special_users.production.yml config/admin_users.yml config/odr_users.yml \
         config/user_yubikeys.yml
-  RAILS_ENV=production bundle exec rake assets:precompile
+  # Remove mini_racer CentOS 7 shim from Gemfile.lock unless needed
+  if [ -e /etc/os-release ] && \
+     [ 2 -ne $(grep -Ec '^(ID="centos"|VERSION_ID="7")$' /etc/os-release) ]; then
+    sed -i.bak -e '/mini_racer (0.6.2-x86_64-linux)/,+1d' Gemfile.lock
+  fi
+  printf 'disable-self-update-check true\\nyarn-offline-mirror "./vendor/npm-packages-offline-cache"\\nyarn-offline-mirror-pruning false\\n' > .yarnrc
+  RAILS_ENV=production bundle exec rake assets:clobber assets:precompile
   rm config/secrets.yml config/database.yml
 SHELL
 

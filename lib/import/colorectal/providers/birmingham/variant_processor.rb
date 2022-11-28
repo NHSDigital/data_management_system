@@ -22,9 +22,9 @@ module Import
             return @genotypes unless @genelist
 
             case @posnegtest.upcase
-            when 'P'
+            when 'P', '?', 'UV', 'PATHOGENIC'
               process_positive_records
-            when 'N'
+            when 'N', 'NORMAL'
               process_negative_records
             else
               @logger.debug "UNRECOGNISED TAG FOR #{@record.raw_fields['indication']}"
@@ -37,20 +37,16 @@ module Import
 
           def process_result_without_colorectal_genes
             if @testreport.scan(CDNA_REGEX).size.positive?
-              process_testreport_cdna_variants(@testreport, @genotypes, @genocolorectal)
+              process_testreport_cdna_variants
             elsif @testreport.scan(CHR_VARIANTS_REGEX).size.positive?
-              process_chromosomal_variant(@testreport, @genelist, @genotypes,
-                                          @record, @genocolorectal)
+              process_chromosomal_variant(@testreport)
             else
-              process_malformed_variants(@testresult, @testreport, @genelist, @genotypes,
-                                         @genocolorectal, @record)
+              process_malformed_variants
             end
           end
 
           def process_remainder
-            if full_screen?(@record)
-              process_full_screen(@record, @testresult, @testreport, @genotypes, @genocolorectal)
-            end
+            process_full_screen if full_screen?(@record)
             @genocolorectal.add_gene_colorectal(colorectal_genes_from_test_result.join)
             @genocolorectal.add_gene_location('')
             @genocolorectal.add_status(2)

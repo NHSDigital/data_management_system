@@ -144,7 +144,7 @@ done
 RQ3 () {
 PROV='RQ3'
 IFS=$'\n'
-for x in $(find  $DIRPATH/$FILEPATH -type f -name "*.pseudo" -path "*/$PROV/*")
+for x in $(find  $DIRPATH/$FILEPATH -type f -iname "*Colon*.pseudo"  -o -type f -iname "*Colorectal*.pseudo" -path "*/$PROV/*")
 do
 IFS="$OIFS"
 $BRAKE import:colorectal fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV

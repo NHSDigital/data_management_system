@@ -12,6 +12,7 @@ module Import
                                     'carrier testing' => :targeted_mutation,
                                     'confirmation' => :targeted_mutation,
                                     'diagnosis' => :full_screen,
+                                    'diagnosis-tissue' => :full_screen,
                                     'family studies' => :targeted_mutation,
                                     'follow-up' => :targeted_mutation,
                                     'indirect testing' => :full_screen,

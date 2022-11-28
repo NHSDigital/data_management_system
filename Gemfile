@@ -40,7 +40,8 @@ unless defined?(BUNDLER_OVERRIDE_MINI_RACER) && BUNDLER_OVERRIDE_MINI_RACER
     FileUtils.rm_f "vendor/cache/#{gem_fname}"
   end
   gem 'libv8-node', '~> 16.10'
-  gem 'mini_racer', '~> 0.6.2'
+  # gem 'mini_racer', '~> 0.6.2'
+  gem 'mini_racer', '0.6.2'
 end
 
 # Turbolinks makes following links in your web application faster. Read more: https://github.com/rails/turbolinks
