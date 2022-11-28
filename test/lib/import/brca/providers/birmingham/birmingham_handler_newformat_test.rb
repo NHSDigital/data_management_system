@@ -58,6 +58,30 @@ class BirminghamHandlerNewformatTest < ActiveSupport::TestCase
     assert_equal 1, genotypes[1].attribute_map['teststatus']
   end
 
+  test 'process_mutation_from_fullscreen_newformat' do
+    @genotype.attribute_map['genetictestscope'] = 'Full screen BRCA1 and BRCA2'
+    @record.raw_fields['overall2'] = 'UV'
+    processor = variant_processor_for(@record)
+    genotypes = processor.process_variants_from_report
+    assert_equal 8, genotypes[0].attribute_map['gene']
+    assert_equal 7, genotypes[1].attribute_map['gene']
+    assert_equal 2, genotypes[1].attribute_map['teststatus']
+    assert_equal 3, genotypes[1].attribute_map['variantpathclass']
+    assert_equal 'p.Thr1256Argfsx', genotypes[1].attribute_map['proteinimpact']
+  end
+
+  test 'negative_tests_from_fullscreen_newformat' do
+    negative_record_newformat = build_raw_record('pseudo_id1' => 'bob')
+    negative_record_newformat.raw_fields['overall2'] = 'Normal'
+    @handler.process_genetictestscope(@genotype, negative_record_newformat)
+    assert_equal 'Full screen BRCA1 and BRCA2', @genotype.attribute_map['genetictestscope']
+    processor = variant_processor_for(negative_record_newformat)
+    genotypes = processor.process_variants_from_report
+    assert_equal 2, genotypes.size
+    assert_equal 1, genotypes[0].attribute_map['teststatus']
+    assert_equal 1, genotypes[1].attribute_map['teststatus']
+  end
+
   test 'process_chromosomevariants_from_record' do
     chromovariants_record = build_raw_record('pseudo_id1' => 'bob')
     chromovariants_record.raw_fields['teststatus'] = 'Molecular analysis shows presence of a deletion (exon 16) in the BRCA1 gene'
@@ -305,6 +329,25 @@ class BirminghamHandlerNewformatTest < ActiveSupport::TestCase
     assert_nil genotypes[0].attribute_map['proteinimpact']
     # we do not capture proteins when cdnas are more than proteins to avoid wrong assosciation
     assert_nil genotypes[1].attribute_map['proteinimpact']
+  end
+
+  test 'process_sketchy_record' do
+    sketchy_record = build_raw_record('pseudo_id1' => 'bob')
+    sketchy_record.raw_fields['overall2'] = 'UV'
+    sketchy_record.raw_fields['reason'] = 'Variant update'
+    sketchy_record.raw_fields['moleculartestingtype'] = 'Variant update'
+    sketchy_record.raw_fields['indication'] = 'BRCA'
+    sketchy_record.raw_fields['report'] = 'Variants classified according to ACGS Best Practice Guidelines for Variant Classification in Rare Disease 2020.'
+    sketchy_record.raw_fields['teststatus'] = 'Previous molecular analysis has shown no evidence of the familial variant, however the previously reported heterozygous variant c.206-1G\u003eT in the BRIP1 gene is now considered a variant of unknown significance'
+    processor = variant_processor_for(sketchy_record)
+    @handler.process_genetictestscope(@genotype, sketchy_record)
+    genotypes = processor.process_variants_from_report
+    assert_equal 1, genotypes.size
+    assert_equal 'c.206-1G', genotypes[0].attribute_map['codingdnasequencechange']
+    assert_equal 590, genotypes[0].attribute_map['gene']
+    assert_equal 2, genotypes[0].attribute_map['teststatus']
+    assert_equal 3, genotypes[0].attribute_map['variantpathclass']
+    # we do not capture proteins when cdnas are more than proteins to avoid wrong assosciation
   end
 
   private
