@@ -23,6 +23,37 @@ module Export
       @fields_neonatal = fields1 + fields2_neonates + fields3
     end
 
+    # List of MBIS death fields needed (for NHSD migration)
+    RAW_FIELDS_USED = (%w[
+      dobyr dobmt dobdy
+      dodyr dodmt doddy
+      agec
+      agecunit
+      pcdr
+      cestrss
+      esttyped
+      hautr
+      hautpod
+      dor
+      sex
+    ] + (1..15).collect { |i| "icdpv_#{i}" } + %w[
+      icduf icdu
+      wigwo10
+      icdsc
+      ctyr
+      ctydr
+      wardr
+      gorr
+      hror
+      ctrypob
+      retindm
+      retindhf
+    ] + (1..15).collect { |i| "icd_#{i}" } +
+      (1..15).collect { |i| "lineno9_#{i}" } + %w[
+      soc2kdm
+      soc2khf
+      ] + (1..15).collect { |i| "cod10r_#{i}" }).freeze
+
     private
 
     def extract_row(ppat, _j)

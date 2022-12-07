@@ -16,6 +16,34 @@ module Export
   class RareDiseaseDeathsFile < CancerDeathCommon
     # TODO: Make CancerDeathCommon override SimpleCsv
 
+    # List of MBIS death fields needed (for NHSD migration)
+    # Copy of fields - ['patientid'], and replacing 'sex_statistical' with 'sex'
+    RAW_FIELDS_USED = (
+      %w[addrdt agec agecunit ageu1d] +
+        (1..5).collect { |i| "akfnamd_1_#{i}" } +
+        (1..5).collect { |i| "akfnamd_2_#{i}" } +
+        (1..5).collect { |i| "akfnamd_3_#{i}" } +
+        (1..5).collect { |i| "akfndi_#{i}" } +
+        (1..5).collect { |i| "aksnamd_#{i}" } +
+        %w[aliasd_1 aliasd_2 certifer certtype ceststay] +
+        (1..20).collect { |i| "cod10r_#{i}" } +
+        (1..20).collect { |i| "cod10rf_#{i}" } +
+        (1..65).collect { |i| "codfft_#{i}" } +
+        (1..5).collect { |i| "codt_#{i}" } +
+        %w[corareat corcertt ctrypob ctryr ctypod dobdy dobmt dobyr doddy dodmt dodyr
+           doinqt dor empsecdm esttyped fnamd1 fnamd2 fnamd3 fnamdx_1 fnamdx_2] +
+        (1..20).collect { |i| "icd_#{i}" } +
+        (1..20).collect { |i| "icdf_#{i}" } +
+        (1..20).collect { |i| "icdpv_#{i}" } +
+        (1..20).collect { |i| "icdpvf_#{i}" } +
+        %w[icdsc icdscf icdu icduf inddmt inqcert] +
+        (1..20).collect { |i| "lineno9_#{i}" } +
+        (1..20).collect { |i| "lineno9f_#{i}" } +
+        %w[mbisid namec namecon namem namemaid nhsind nhsno_1 nhsno_2 nhsno_3 nhsno_4 nhsno_5
+           occdt occfft_1 occfft_2 occfft_3 occfft_4 occhft occmt pcdpod pcdr pobt podt
+           postmort retindm sex snamd]
+    ).freeze
+
     def initialize(filename, e_type, ppats, filter, ppatid_rowids: nil)
       super
       @fields = fields
