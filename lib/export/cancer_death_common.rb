@@ -94,6 +94,44 @@ module Export
       'ageu1d' => 'ageu1d' # Needed for CARA, plan.io #15123
     }.freeze
 
+    # List of MBIS death fields needed (for NHSD migration)
+    RAW_FIELDS_USED = (%w[
+      snamd
+      namemaid
+      fnamd1 fnamd2 fnamd3 fnamdx_1 fnamdx_2
+      aliasd_1 aliasd_2
+      sex
+      pobt
+      dobyr dobmt dobdy
+      addrdt
+      pcdr
+      occdt
+      occmt
+      dodyr dodmt doddy
+      podt
+    ] + (1..5).collect { |i| "codt_#{i}" } +
+                  (1..65).collect { |i| "codfft_#{i}" } +
+                  (1..20).collect { |i| "cod10rf_#{i}" } +
+                  (1..20).collect { |i| "cod10r_#{i}" } +
+                  (1..20).collect { |i| "lineno9f_#{i}" } +
+                  (1..20).collect { |i| "lineno9_#{i}" } +
+                  (1..20).collect { |i| "icdf_#{i}" } +
+                  (1..20).collect { |i| "icdpvf_#{i}" } +
+                  (1..20).collect { |i| "icd_#{i}" } +
+                  (1..20).collect { |i| "icdpv_#{i}" } +
+                  %w[
+      icduf icdu
+      icdscf icdsc
+      dor
+      certifer
+      corcertt
+      namec
+      corareat
+      doinqt
+      inqcert
+                  ] + (1..5).collect { |i| "nhsno_#{i}" } +
+                  %w[ageu1d]).freeze
+
     def initialize(filename, e_type, ppats, filter = 'cd', ppatid_rowids: nil)
       super
       raise "Unknown pattern #{filter.inspect}" unless SURVEILLANCE_CODES.key?(filter)
