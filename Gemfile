@@ -46,6 +46,7 @@ end
 
 # Turbolinks makes following links in your web application faster. Read more: https://github.com/rails/turbolinks
 gem 'turbolinks', '~> 5.x'
+gem 'parser', '3.1.2.0' # supports ruby 3.0.4
 
 gem 'webpacker'
 
@@ -71,7 +72,7 @@ gem 'pry'
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
 
-gem 'ndr_authenticate', '~> 0.3'
+gem 'ndr_authenticate', '~> 0.3', '>= 0.3.3'
 gem 'ndr_error', '~> 2.0'
 gem 'ndr_import'
 gem 'ndr_pseudonymise', '~> 0.4.1'

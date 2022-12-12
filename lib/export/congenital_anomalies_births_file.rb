@@ -4,6 +4,19 @@ module Export
   class CongenitalAnomaliesBirthsFile < BirthFileSimple
     private
 
+    # List of MBIS birth fields needed (for NHSD migration)
+    # Copy of fields - ['patientid'], and replacing 'dobm_iso' with 'dobm' and 'dob_iso' with 'dob'
+    RAW_FIELDS_USED = (
+      (1..20).collect { |i| "icdpv_#{i}" } +
+        (1..20).collect { |i| "icdpvf_#{i}" } +
+        %w[fnamch1 fnamch2 fnamch3 fnamchx_1 snamch nhsno addrmt cestrss nhsind pcdpob pobt
+           esttypeb namemaid dobm dob pcdrm fnamm_1 fnammx_1 snamm
+           birthwgt multbth multtype sbind] +
+        (1..20).collect { |i| "cod10r_#{i}" } +
+        %w[deathlab wigwo10 sex empsecm empstm soc2km soc90m gestatn] +
+        (1..5).collect { |i| "codfft_#{i}" } + %w[ctrypobm]
+    ).freeze
+
     # Fields to extract
     def fields
       (1..20).collect { |i| "icdpv_#{i}" } +

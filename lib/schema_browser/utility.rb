@@ -157,7 +157,7 @@ module SchemaBrowser
     def contact_us
       tag(:div, class: 'span6') do
         tag(:p, class: 'text-left') do
-          tag(:a, href: 'COSD@phe.gov.uk ') do
+          tag(:a, href: 'nhsdigital.COSDEnquiries@nhs.net') do
             content('Contact Us')
           end
         end
