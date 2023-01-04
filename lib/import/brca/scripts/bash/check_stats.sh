@@ -99,6 +99,31 @@ select CASE WHEN gene='358' THEN  'APC'
 "
 run_sql "$SQL_TG_MMR"
 
+SQL_UNABLE_MMR="
+select CASE WHEN gene='358' THEN  'APC'
+ WHEN gene='577' THEN  'BMPR1A'
+ WHEN gene='1432' THEN  'EPCAM'
+ WHEN gene='2744' THEN  'MLH1'
+ WHEN gene='2804' THEN  'MSH2'
+ WHEN gene='2808' THEN  'MSH6'
+ WHEN gene='2850' THEN  'MUTYH'
+ WHEN gene='3394' THEN  'PMS2'
+ WHEN gene='3408' THEN  'POLD1'
+ WHEN gene='5000' THEN  'POLE'
+ WHEN gene='62' THEN  'PTEN'
+ WHEN gene='72' THEN  'SMAD4'
+ WHEN gene='76' THEN  'STK11'
+ WHEN gene='1882' THEN  'GREM1'
+ WHEN gene='3108' THEN  'NTHL1'
+ END AS gene,
+ count(distinct(pseudo_id1,pseudo_id2,servicereportidentifier))
+ FROM (molecular_data md INNER JOIN genetic_test_results gtr
+ ON md.molecular_dataid = gtr.molecular_data_id
+ INNER JOIN ppatients pp ON pp.id = md.ppatient_id
+ INNER JOIN e_batch   eb ON eb.e_batchid = pp.e_batch_id) where genetictestscope like '%Unable%MMR%' group by gene order by 1;
+"
+run_sql "$SQL_UNABLE_MMR"
+
 SQL_FS_BRCA="
 select CASE WHEN gene::integer=7 THEN 'BRCA1'
 WHEN gene::integer=8 THEN 'BRCA2'
@@ -170,6 +195,40 @@ END AS genes,
 run_sql "$SQL_TG_BRCA"
 
 
+SQL_UNABLE_BRCA="select CASE WHEN gene::integer=7 THEN 'BRCA1'
+WHEN gene::integer=8 THEN 'BRCA2'
+WHEN gene::integer=451 THEN 'ATM'
+WHEN gene::integer=865 THEN 'CHEK2'
+WHEN gene::integer=3186 THEN 'PALB2'
+WHEN gene::integer=79 THEN 'TP53'
+WHEN gene::integer=2744 THEN 'MLH1'
+WHEN gene::integer=2804 THEN 'MSH2'
+WHEN gene::integer=2808 THEN 'MSH6'
+WHEN gene::Integer=3394 THEN 'PMS2'
+WHEN gene::Integer=62 THEN 'PTEN'
+WHEN gene::Integer=76 THEN 'STK11'
+WHEN gene::Integer=590 THEN 'BRIP1'
+WHEN gene::Integer=2912 THEN 'NBN'
+WHEN gene::Integer=3615 THEN 'RAD51C'
+WHEN gene::Integer=3616 THEN 'RAD51D'
+WHEN gene::Integer=20 THEN 'CDKN2A'
+WHEN gene::Integer=18 THEN 'CDK4'
+WHEN gene::Integer=1432 THEN 'EPCAM'
+WHEN gene::Integer=2850 THEN 'MUTYH'
+WHEN gene::Integer=54 THEN 'NF1'
+WHEN gene::Integer=55 THEN 'NF2'
+WHEN gene::Integer=74 THEN 'SMARCB1'
+WHEN gene::Integer=4952 THEN 'LZTR1'
+WHEN gene::Integer=72 THEN 'SMAD4'
+END AS genes,
+ count(distinct(md.servicereportidentifier))
+ FROM (molecular_data md INNER JOIN genetic_test_results gtr
+ ON md.molecular_dataid = gtr.molecular_data_id
+ INNER JOIN ppatients pp ON pp.id = md.ppatient_id
+ INNER JOIN e_batch   eb ON eb.e_batchid = pp.e_batch_id) where genetictestscope like '%Unable%BRCA%' GROUP BY gene order by 1;
+"
+run_sql "$SQL_UNABLE_BRCA"
+
 SQL="
 select provider, count(distinct(pseudo_id1,pseudo_id2,servicereportidentifier))
 FROM (molecular_data md INNER JOIN genetic_test_results gtr
@@ -201,3 +260,5 @@ INNER JOIN e_batch   eb ON eb.e_batchid = pp.e_batch_id)
 GROUP BY provider, digest ORDER BY provider, digest;
 "
 run_sql "$SQL"
+
+
