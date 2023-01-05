@@ -95,7 +95,8 @@ module Import
                          else
                            raise "No mapping found for #{@batch.e_type}"
                          end
-          YAML.load_file(SafePath.new('mappings_config').join(mapping_file))
+          YAML.safe_load(File.read(SafePath.new('mappings_config').join(mapping_file)),
+                         permitted_classes: [NdrImport::Table])
         end
       end
     end
