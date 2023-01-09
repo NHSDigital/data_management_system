@@ -1,6 +1,6 @@
 # Data Management System [![Build Status](https://github.com/publichealthengland/data_management_system/workflows/Test/badge.svg)](https://github.com/publichealthengland/data_management_system/actions?query=workflow%3Atest)
 
-* Rails version 6.0.5.1
+* Rails version 6.1.7
 * Ruby version is 3.0.4
 
 ## System dependencies
@@ -8,7 +8,7 @@
   * ndr_dev_support ~> 6.0
   * ndr_error '~> 2.0'
   * ndr_support '~> 5.9'
-  * ndr_ui (3.2.0)
+  * ndr_ui (3.3.1)
 
 ## Configuration
 
@@ -159,3 +159,8 @@ $ bin/delayed_job run
 ```
 $ bin/delayed_job stop
 ```
+
+### Import / export of data files
+
+DMS supports import and export of birth / death data, pseudonymised molecular data and
+pseudonymised prescription data.

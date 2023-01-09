@@ -6,7 +6,17 @@ Rails.application.configure do
   # test suite. You never need to work with it otherwise. Remember that
   # your test database is "scratch space" for the test suite and is wiped
   # and recreated between test runs. Don't rely on the data there!
-  config.cache_classes = true
+
+  if defined?(Spring)
+    # If a test environment is being kept warm by spring, allow it to reload:
+    config.cache_classes = false
+    # ...but still cache templates (Rails 6.0.3 default):
+    config.action_view.cache_template_loading = true
+  else
+    # If not using spring, make sure class definitions don't get reloaded
+    # whilst tests are running.
+    config.cache_classes = true
+  end
 
   # Do not eager load code on boot. This avoids loading your whole application
   # just for the purpose of running a single test. If you are using a tool that
