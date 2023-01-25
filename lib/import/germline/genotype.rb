@@ -96,10 +96,27 @@ module Import
       end
 
       def full_screen?
-        scope = @attribute_map['genetictestscope']
-        return nil unless scope
+        return false if @attribute_map['genetictestscope'].nil?
 
-        scope == 'Full screen BRCA1 and BRCA2'
+        @attribute_map['genetictestscope'].scan(/Full screen/i).size.positive?
+      end
+
+      def targeted?
+        return false if @attribute_map['genetictestscope'].nil?
+
+        @attribute_map['genetictestscope'].scan(/Targeted/i).size.positive?
+      end
+
+      def no_scope?
+        return false if @attribute_map['genetictestscope'].nil?
+
+        @attribute_map['genetictestscope'].scan(/Unable/i).size.positive?
+      end
+
+      def ashkenazi?
+        return false if @attribute_map['genetictestscope'].nil?
+
+        @attribute_map['genetictestscope'].scan(/AJ/i).size.positive?
       end
 
       def reportidentifier

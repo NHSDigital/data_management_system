@@ -1,0 +1,193 @@
+---
+normal:
+- aj pre-screen neg
+- aj pre-screen neg 3seq
+- aj pre-screen/conf neg 3seq
+- normal b1/b2 - unaffected patient
+- aj pre-screen neg
+- aj pre-screen/conf neg 3seq
+- confirmation b1 seq neg
+- confirmation b2 seq neg
+- familial class 3 neg
+- pred b1 c4/c5 mlpa neg
+- pred b1 c4/c5 seq neg
+- pred b2 c4/c5 seq neg
+- pred b2 mlpa neg
+- pred class 4 seq negative
+- predictive aj neg
+- predictive aj neg 3seq
+- predictive brca1 mlpa neg
+- predictive brca1 seq neg
+- predictive brca2 mlpa neg
+- predictive brca2 seq neg
+- predictive ex13 dup neg
+- word report - normal
+- aj pre-screen neg
+- aj pre-screen/conf neg 3seq
+- b1 and b2 normal
+- ngs b1 and b2 normal
+- ngs b1 and b2 normal, mlpa fail
+- normal b1 and b2
+- normal b1 and b2, mlpa fail
+- normal b1/b2 - unaffected
+- normal b1/b2 - unaffected patient
+- screening failed; mlpa normal
+- word report - normal
+- brca - diagnostic normal
+- brca - diagnostic normal - unaffected
+- normal b1/b2
+- normal b1/b2 - unaffected
+- brca - conf b1 c4/c5 mlpa neg
+- brca - conf b1 c4/c5 seq neg
+- brca - conf b2 c4/c5 seq neg
+- brca - pred b1 c4/c5 mlpa neg
+- brca - pred b1 c4/c5 seq neg
+- brca - pred b2 c4/c5 mlpa neg
+- brca - pred b2 c4/c5 seq neg
+- brca - pred b2 mlpa neg
+- brca - predictive aj neg 3seq
+- r207 - normal
+- (v2) normal
+- (v2) normal (mlpa dosage)
+- brca - diagnostic normal
+- brca - diagnostic normal - unaffected
+- brca ms diag normal
+- brca#/palb2 - diag normal
+- brca/palb2 - diag normal
+- brca/palb2 diag normal - unaff
+- generic normal
+- generic normal (mlpa dosage)
+- r207 - normal
+- r208 ms_normal
+- r208 unaff_normal
+- r208_normal
+- r208_normal_apr22
+abnormal:
+- aj pre-screen pos
+- aj pre-screen/conf pos 3seq
+- aj pre-screen/conf pos 3seq
+- b1/b2 - c3 pos
+- conf b2 c4/c5 seq pos
+- confirmation aj pos
+- confirmation b1 mlpa pos
+- confirmation b1 seq pos
+- confirmation b2 mlpa pos
+- confirmation b2 seq pos
+- familial class 3 pos
+- pred b1 c4/c5 mlpa pos
+- pred b1 c4/c5 seq pos
+- pred b2 c4/c5 mlpa pos
+- pred b2 c4/c5 seq pos
+- pred class 4 seq pos
+- pred class 4 seq positive
+- predictive aj b1 pos 3seq
+- predictive aj b2 pos 3seq
+- predictive aj pos
+- predictive aj pos 3seq
+- predictive brca1 mlpa pos
+- predictive brca1 seq pos
+- predictive brca2 mlpa pos
+- predictive brca2 seq pos
+- predictive ex13 dup pos
+- b1 (multiple exon) mlpa+ve
+- b1 (single exon) mlpa+ve
+- b1 and b2 seq variant
+- b1 and b2 seq variants
+- b1 class 3 uv
+- b1 class 3a uv
+- b1 class 4 uv
+- b1 class 5 new
+- b1 class 5 uv
+- b1 class 5 uv - mlpa
+- b1 class 5 uv - unaffected patient
+- b1 class m
+- b1 mlpa+ve (mutiple exons)
+- b1 mlpa+ve (single exon)
+- b1 seq variant
+- b1 truncating/frameshift
+- b1/b2 - c4 pos
+- b2 class 3 uv
+- b2 class 3a uv
+- b2 class 3b uv
+- b2 class 4 uv
+- b2 class 5 new
+- b2 class 5 uv
+- b2 class 5 uv - mlpa
+- b2 class 5 uv - unaffected patient
+- b2 class m
+- b2 ptt shift
+- b2 seq variant
+- b2 truncating/frameshift
+- class 3 - unaffected
+- ngs b1 and b2 seq variant
+- ngs b1 class m
+- ngs b1 seq variant
+- ngs b1 seq variant - class 3
+- ngs b1 truncating/frameshift
+- ngs b1(multiple exon)mlpa+ve
+- ngs b1(single exon) mlpa+ve
+- ngs b2 class m
+- ngs b2 seq variant
+- ngs b2 seq variant - class 3
+- ngs b2 seq variant - class 4
+- ngs b2 truncating/frameshift
+- ngs b2(multiple exon)mlpa+ve
+- (v2) any gene c5 - unaffected patient
+- (v2) class 4
+- (v2) class 5 low penetrance gene
+- b1/b2 class 3 - unaffected
+- b1/b2 class 3 uv
+- b1/b2 class 4 uv
+- b1/b2 class 5 uv
+- brca - diagnostic class 5
+- brca - conf b1 c4/c5 mlpa pos
+- brca - conf b1 c4/c5 seq pos
+- brca - conf b2 c4/c5 mlpa pos
+- brca - conf b2 c4/c5 seq pos
+- brca - familial b1/b2 c3 pos
+- brca - pred b1 c4/c5 mlpa pos
+- brca - pred b1 c4/c5 seq pos
+- brca - pred b2 c4/c5 mlpa pos
+- brca - pred b2 c4/c5 seq pos
+- brca - predictive aj b1 pos 3seq
+- brca - predictive aj pos 3seq
+- r207 - brca diag c4/5
+- r207 - diag c4/5
+- brca - diagnostic class 3
+- brca - diagnostic class 4
+- brca - diagnostic class 5
+- brca - diagnostic class 5 - mlpa
+- brca - diagnostic class 5 - unaffected
+- brca ms - diag c3
+- brca ms - diag c4/5
+- brca ms diag c4/c5 - mlpa
+- brca/palb2 - diag c3
+- brca/palb2 - diag c3 unaff
+- brca/palb2 - diag c4/5
+- brca/palb2 - diag c4/5 mlpa
+- brca/palb2 diag c4/5 - unaff
+- generic c3 - unaffected
+- generic c4/5
+- r207 - brca diag c4/5
+- r207 - diag c4/5
+- r208 ms_c4/5
+- r208_atm/chek2_c4/5_apr22
+- r208_c4/5
+- r208_c4/c5_apr22
+fail:
+- mlpa only failƒ
+- ngs failed; mlpa normal
+- ngs screening failed
+- screening failed
+- brca/palb2 diag screening failed
+- fail/results not required
+norm_var:
+- b1 class 2 uv
+- b2 class 2 uv
+- ngs b1 seq variant - class 2
+- ngs b2 seq variant - class 2
+'not_tested':
+- not required
+unknown:
+- word report - abnormal
+- no report required

@@ -35,7 +35,19 @@ module Import
                      'SMARCB1' => 74,
                      'LZTR1' => 4952,
                      'CDH1' => 794,
-                     'CDKN2A' => 20 }.freeze
+                     'CDKN2A' => 20,
+                     'APC' => 358,
+                     'BAP1' => 517,
+                     'BMPR1A' => 577,
+                     'FH' => 1590,
+                     'FLCN' => 1603,
+                     'GREM1' => 1882,
+                     'MET' => 50,
+                     'NTHL1' => 3108,
+                     'POLD1' => 3408,
+                     'POLE' => 5000,
+                     'SDHB' => 68,
+                     'VHL' => 83 }.freeze
 
         BRCA_REGEX = /(?<atm>ATM|P041|P042)|
                       (?<epcam>EPCAM)|
@@ -63,7 +75,19 @@ module Import
                       (?<smarcb1>SMARCB1)|
                       (?<cdh1>CDH1)|
                       (?<lztr1>LZTR1)|
-                      (?<cdkn2a>CDKN2A)/ix # Added by Francesco
+                      (?<cdkn2a>CDKN2A)|
+                      (?<apc>APC)|
+                      (?<bap1>BAP1)|
+                      (?<bmpr1a>BMPR1A)|
+                      (?<fh>FH)|
+                      (?<flcn>FLCN)|
+                      (?<grem1>GREM1)|
+                      (?<met>MET)|
+                      (?<nthl1>NTHL1)|
+                      (?<pold1>POLD1)|
+                      (?<pole>POLE)|
+                      (?<sdhb>SDHB)|
+                      (?<vhl>VHL)/ix # Added by Francesco
 
         def other_gene
           gene = @attribute_map['gene']
