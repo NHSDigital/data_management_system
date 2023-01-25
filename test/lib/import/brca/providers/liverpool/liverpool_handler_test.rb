@@ -4,7 +4,6 @@ class LiverpoolHandlerTest < ActiveSupport::TestCase
   def setup
     @record   = build_raw_record('pseudo_id1' => 'bob')
     @genotype = Import::Brca::Core::GenotypeBrca.new(@record)
-    @extractor = Import::Brca::Providers::Leeds::ReportExtractor::GenotypeAndReportExtractor.new
     @importer_stdout, @importer_stderr = capture_io do
       @handler = Import::Brca::Providers::Liverpool::LiverpoolHandler.new(EBatch.new)
     end
