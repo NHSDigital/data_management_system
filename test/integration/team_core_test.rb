@@ -90,7 +90,9 @@ class TeamCoreTest < ActionDispatch::IntegrationTest
       click_button 'Search'
     end
 
-    assert find('tr.user', count: 1)
+    page.assert_selector('tr.user', count: 1)
+    # Gives much clearer error message than running:
+    # assert has_selector?('tr.user', count: 1)
     assert find('tr.user', text: 'Standard User1')
   end
 

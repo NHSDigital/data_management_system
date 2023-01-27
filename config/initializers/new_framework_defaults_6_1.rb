@@ -7,23 +7,23 @@
 # Read the Guide for Upgrading Ruby on Rails for more info on each option.
 
 # Support for inversing belongs_to -> has_many Active Record associations.
-# Rails.application.config.active_record.has_many_inversing = true
+Rails.application.config.active_record.has_many_inversing = true
 
 # Track Active Storage variants in the database.
-# Rails.application.config.active_storage.track_variants = true
+Rails.application.config.active_storage.track_variants = true
 
 # Apply random variation to the delay when retrying failed jobs.
-# Rails.application.config.active_job.retry_jitter = 0.15
+Rails.application.config.active_job.retry_jitter = 0.15
 
 # Stop executing `after_enqueue`/`after_perform` callbacks if
 # `before_enqueue`/`before_perform` respectively halts with `throw :abort`.
-# Rails.application.config.active_job.skip_after_callbacks_if_terminated = true
+Rails.application.config.active_job.skip_after_callbacks_if_terminated = true
 
 # Specify cookies SameSite protection level: either :none, :lax, or :strict.
 #
 # This change is not backwards compatible with earlier Rails versions.
 # It's best enabled when your entire app is migrated and stable on 6.1.
-# Rails.application.config.action_dispatch.cookies_same_site_protection = :lax
+Rails.application.config.action_dispatch.cookies_same_site_protection = :lax
 
 # Generate CSRF tokens that are encoded in URL-safe Base64.
 #
@@ -45,7 +45,7 @@
 # Rails.application.config.active_record.legacy_connection_handling = false
 
 # Make `form_with` generate non-remote forms by default.
-# Rails.application.config.action_view.form_with_generates_remote_forms = false
+Rails.application.config.action_view.form_with_generates_remote_forms = false
 
 # Set the default queue name for the analysis job to the queue adapter default.
 # Rails.application.config.active_storage.queues.analysis = nil
