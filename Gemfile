@@ -10,8 +10,6 @@ gem 'pg', '~> 1.2.3' # Support old CentOS 7 PostgreSQL client 9.2.24
 gem 'puma', '~> 4.0', '>= 4.3.5' # Bump to >= 4.3.5 in response to CVE-2020-11076 & CVE-2020-11077
 # Use SCSS for stylesheets
 gem 'sass-rails'
-# Use Uglifier as compressor for JavaScript assets
-gem 'uglifier', '>= 1.3.0'
 # Use CoffeeScript for .coffee assets and views
 gem 'coffee-rails'
 # See https://github.com/rails/execjs#readme for more supported runtimes
