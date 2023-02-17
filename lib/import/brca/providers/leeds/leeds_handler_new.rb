@@ -21,6 +21,7 @@ module Import
             @report = record.raw_fields['report'] || record.raw_fields['firstofreport']
             @moleculartestingtype = (record.raw_fields['moleculartestingtype'] ||
                                     record.raw_fields['reason'])&.downcase
+            @indicationcategory  = record.raw_fields['indicationcategory']&.downcase
             @genes_hash = YAML.safe_load(File.open(Rails.root.join(GENES_FILEPATH)))
             @status_hash = YAML.safe_load(File.open(Rails.root.join(STATUS_FILEPATH)))
           end
@@ -29,7 +30,7 @@ module Import
             filename = @batch.original_filename.split('/').last
             return true if filename.scan(/BRCA/i).size.positive?
             return true if filename.scan(/other|familial/i).size.positive? &&
-                           record.raw_fields['indicationcategory'] == 'Cancer' &&
+                           @indicationcategory == 'cancer' &&
                            @moleculartestingtype == 'familial' &&
                            (@geno&.scan(/BRCA/i)&.size&.positive? ||
                            @report&.scan(/BRCA1|BRCA2/i)&.size&.positive?)
@@ -96,8 +97,13 @@ module Import
           end
 
           def process_normal_records(genotype, _record, genotypes)
-            genes = get_genes_report(@report)
-            genes = %w[BRCA1 BRCA2] if genotype.ashkenazi?
+            allocate_genes_panel
+            if genotype.targeted?
+              norm_gene = TESTED_GENES_HASH[@geno]
+              genes = norm_gene.nil? ? fetch_targ_gene : norm_gene
+            else
+              genes = @genes_panel
+            end
             add_gene_info(genotype, genes, genotypes)
           end
 
@@ -119,19 +125,29 @@ module Import
           end
 
           def process_abnormal_records(genotype, record, genotypes)
-            genes = get_genes_report(@report)
+            pos_genes = get_genes_report(@report)
+            pos_genes = TESTED_GENES_HASH[@geno] if pos_genes.empty?
             allocate_variant_class
             allocate_genes_panel
-            if genes.size > 1
+
+            if pos_genes.nil?
+              # create an abnormal GTR for rec without gene info
+              genotype_dup = genotype.dup
+              process_cdna_variant(genotype_dup, @report)
+              process_exonic_variant(genotype_dup, @report)
+              process_protein_impact(genotype_dup, @report)
+              genotypes << genotype_dup
+            elsif pos_genes.size > 1
               process_multi_gene_abnormal(genotype, record, genotypes)
-            else
-              process_single_gene_abnormal(genotype, record, genotypes)
+            elsif pos_genes.size == 1
+              process_single_gene_abnormal(genotype, genotypes, pos_genes)
             end
           end
 
           def process_normal_variant_records(genotype, _record, genotypes)
             genes = %w[BRCA1 BRCA2]
-            gene_var = @report.scan(BRCA_REGEX).flatten.uniq unless @report.nil?
+            report_variants = @report.match(VARIANT_REPORT_REGEX)[:report] unless @report.nil?
+            gene_var = get_genes_report(report_variants)
             negative_genes = genes - gene_var
             process_negative_genes(negative_genes, genotype, genotypes)
 
@@ -141,6 +157,7 @@ module Import
             process_protein_impact(genotype_dup, @report)
             genotype_dup.add_gene(gene_var[0])
             genotype_dup.add_variant_class(2)
+            genotype_dup.add_status(10)
             genotypes << genotype_dup
           end
 
@@ -157,16 +174,15 @@ module Import
             end
           end
 
-          def process_single_gene_abnormal(genotype, record, genotypes)
+          def process_single_gene_abnormal(genotype, genotypes, pos_genes)
             if genotype.full_screen? || genotype.ashkenazi?
-              process_fs_ask_single_gene_abnormal(genotype, record, genotypes)
+              process_fs_ask_single_gene_abnormal(genotype, pos_genes, genotypes)
             else
               process_cdna_variant(genotype, @report)
               process_exonic_variant(genotype, @report)
               process_protein_impact(genotype, @report)
-              genes = @report.scan(BRCA_REGEX).flatten.uniq unless @report.nil?
               genotype.add_variant_class(@variant_class)
-              add_gene_info(genotype, genes, genotypes)
+              add_gene_info(genotype, pos_genes, genotypes)
             end
           end
 
@@ -243,9 +259,9 @@ module Import
             @genes_panel - [pos_genes]
           end
 
-          def process_fs_ask_single_gene_abnormal(genotype, _record, genotypes)
+          def process_fs_ask_single_gene_abnormal(genotype, pos_gene, genotypes)
             @genes_panel = %w[BRCA1 BRCA2] if genotype.ashkenazi?
-            pos_gene = get_genes_report(@report)
+
             negative_genes = @genes_panel - pos_gene
 
             process_negative_genes(negative_genes, genotype, genotypes)
@@ -260,7 +276,8 @@ module Import
           def allocate_genes_panel
             @genes_panel = get_genes_report(@report)
 
-            return unless @genes_panel.empty? || @genes_panel.size == 1
+            return unless @genes_panel.empty? || @genes_panel.size == 1 ||
+                          @report.scan(/panel/i).size.positive? || @geno == 'normal b1 and b2'
 
             GENES_PANEL.each do |panel_name, genes_panel|
               @genes_panel = genes_panel if @genes_hash[panel_name].include?(@geno)
@@ -271,6 +288,11 @@ module Import
             genes = report.scan(BRCA_REGEX).flatten.uniq unless @report.nil?
             genes -= ['Met'] if @report.scan(/p\.\(?\w*Met/).size.positive?
             genes
+          end
+
+          def fetch_targ_gene
+            @report.match(TARG_GENE_REGEX) || @report.match(BRCA_REGEX)
+            [$LAST_MATCH_INFO[:gene]]
           end
 
           def allocate_variant_class

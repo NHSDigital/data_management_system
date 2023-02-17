@@ -42,6 +42,60 @@ module Import
                                      'norm_var' => 10,
                                      'not_tested' => 8,
                                      'unknown' => 4 }.freeze
+            TESTED_GENES_HASH = {
+              'b1 (multiple exon) mlpa+ve' => ['BRCA1'],
+              'b1 (single exon) mlpa+ve' => ['BRCA1'],
+              'b1 class 3 uv' => ['BRCA1'],
+              'b1 class 3a uv' => ['BRCA1'],
+              'b1 class 4 uv' => ['BRCA1'],
+              'b1 class 5 new' => ['BRCA1'],
+              'b1 class 5 uv' => ['BRCA1'],
+              'b1 class 5 uv - mlpa' => ['BRCA1'],
+              'b1 class 5 uv - unaffected patient' => ['BRCA1'],
+              'b1 class m' => ['BRCA1'],
+              'b1 mlpa+ve (mutiple exons)' => ['BRCA1'],
+              'b1 mlpa+ve (single exon)' => ['BRCA1'],
+              'b1 truncating/frameshift' => ['BRCA1'],
+              'b1/b2 - c4 pos' => ['BRCA1'],
+              'b2 class 3 uv' => ['BRCA2'],
+              'b2 class 3a uv' => ['BRCA2'],
+              'b2 class 3b uv' => ['BRCA2'],
+              'b2 class 4 uv' => ['BRCA2'],
+              'b2 class 5 new' => ['BRCA2'],
+              'b2 class 5 uv' => ['BRCA2'],
+              'b2 class 5 uv - mlpa' => ['BRCA2'],
+              'b2 class 5 uv - unaffected patient' => ['BRCA2'],
+              'b2 class m' => ['BRCA2'],
+              'b2 ptt shift' => ['BRCA2'],
+              'b2 truncating/frameshift' => ['BRCA2'],
+              'class 3 - unaffected' => ['BRCA2'],
+              'ngs b1 class m' => ['BRCA1'],
+              'ngs b1 seq variant - class 3' => ['BRCA1'],
+              'ngs b1 truncating/frameshift' => ['BRCA1'],
+              'ngs b1(multiple exon)mlpa+ve' => ['BRCA1'],
+              'ngs b1(single exon) mlpa+ve' => ['BRCA1'],
+              'ngs b2 class m' => ['BRCA2'],
+              'ngs b2 seq variant - class 3' => ['BRCA2'],
+              'ngs b2 seq variant - class 4' => ['BRCA2'],
+              'ngs b2 truncating/frameshift' => ['BRCA2'],
+              'ngs b2(multiple exon)mlpa+ve' => ['BRCA2'],
+              'predictive brca1 seq pos' => ['BRCA1'],
+              'predictive brca1 mlpa pos' => ['BRCA1'],
+              'confirmation b1 seq neg' => ['BRCA1'],
+              'confirmation b2 seq neg' => ['BRCA2'],
+              'pred b1 c4/c5 mlpa neg' => ['BRCA1'],
+              'pred b1 c4/c5 seq neg' => ['BRCA1'],
+              'pred b2 c4/c5 seq neg' => ['BRCA2'],
+              'pred b2 mlpa neg' => ['BRCA2'],
+              'predictive brca1 mlpa neg' => ['BRCA1'],
+              'predictive brca1 seq neg' => ['BRCA1'],
+              'predictive brca2 mlpa neg' => ['BRCA2'],
+              'predictive brca2 seq neg' => ['BRCA2'],
+              'predictive ex13 dup neg' => ['BRCA1'],
+              'brca - pred b1 c4/c5 mlpa neg' => ['BRCA1'],
+              'brca - pred b2 c4/c5 seq neg' => ['BRCA2'],
+              'word report - normal' => []
+            }.freeze
 
             GENES_PANEL = { 'brca_1_2' => %w[BRCA1 BRCA2],
                             'brca_1_2_palb2' => %w[BRCA1 BRCA2 PALB2],
@@ -70,15 +124,18 @@ module Import
             PMS2|POLD1|POLE|PTEN|RAD51C|RAD51D|SDHB|SMAD4|STK11|TP53|VHL'.freeze
 
             # rubocop:disable Lint/MixedRegexpCaptureTypes
-            BRCA_REGEX = /(#{GENES})/ix
+            BRCA_REGEX = /(?<gene>#{GENES})/ix
 
-            ASSOC_GENE_REGEX = /((?<gene>(#{GENES}))[\s\w]+variant\sc\.(?<cdna>[\w+>*\-.]+)?\s(\(?p\.\(?(?<impact>\w+)\))?)/ix
+            ASSOC_GENE_REGEX = /((?<gene>(#{GENES}))[\s\w]+variant\sc\.(?<cdna>[\w+>*\-.]+)?\s
+                                (\(?p\.\(?(?<impact>\w+)\))?)/ix
 
             VARIANT_REPORT_REGEX = /(?<report>heterozygous[\w\s\-.>():=,']+)+/ix
 
             HETEROZYGOUS_GENE_REGEX = /heterozygous[\w\s]+(?<gene>#{GENES})[\w\s]+/ix
 
             CDNA_REGEX = /c\.(?<cdna>[\w+>*\-]+)?[\w\s.]+/ix
+
+            TARG_GENE_REGEX = /(?<gene>#{GENES})[\w\s]+(c\.(?<cdna>[\w+>*\-]+)?[\w\s.]+|exon)/ix
 
             PROTEIN_REGEX = /\(?p\.\(?(?<impact>\w+)\)?/ix
 

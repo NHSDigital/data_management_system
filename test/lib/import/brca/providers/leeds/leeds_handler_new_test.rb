@@ -14,30 +14,29 @@ class LeedsHandlerNewTest < ActiveSupport::TestCase
     @handler.populate_variables(@record)
     @handler.add_moleculartestingtype(@genotype, @record)
     assert_equal 1, @genotype.attribute_map['moleculartestingtype']
-    
+
     @handler.process_genetictestcope(@genotype, @record)
     assert_equal 'Full screen BRCA1 and BRCA2', @genotype.attribute_map['genetictestscope']
-    
+
     @handler.assign_teststatus(@genotype, @record)
     assert_equal 2, @genotype.attribute_map['teststatus']
-    
+
     genotypes = @handler.process_variants_from_record(@genotype, @record)
     assert_equal 2, genotypes.size
-    
+
     assert_equal 2, genotypes[0].attribute_map['teststatus']
     assert_equal 1, genotypes[1].attribute_map['teststatus']
-    
+
     assert_equal 'c.5198A>G', genotypes[0].attribute_map['codingdnasequencechange']
     assert_nil genotypes[1].attribute_map['codingdnasequencechange']
-    
+
     assert_equal 'p.Asp1733Gly', genotypes[0].attribute_map['proteinimpact']
     assert_nil genotypes[1].attribute_map['proteinimpact']
-    
+
     assert_equal 7, genotypes[0].attribute_map['gene']
     assert_equal 8, genotypes[1].attribute_map['gene']
-    
-    assert_nil genotypes[0].attribute_map['variantpathclass']
 
+    assert_nil genotypes[0].attribute_map['variantpathclass']
   end
 
   test 'process_normal_ask_record' do
@@ -50,22 +49,22 @@ class LeedsHandlerNewTest < ActiveSupport::TestCase
     @handler.populate_variables(norm_ask_record)
     @handler.add_moleculartestingtype(@genotype, norm_ask_record)
     assert_equal 2, @genotype.attribute_map['moleculartestingtype']
-    
+
     @handler.process_genetictestcope(@genotype, norm_ask_record)
     assert_equal 'AJ BRCA screen', @genotype.attribute_map['genetictestscope']
-    
+
     @handler.assign_teststatus(@genotype, norm_ask_record)
     assert_equal 1, @genotype.attribute_map['teststatus']
-    
+
     genotypes = @handler.process_variants_from_record(@genotype, norm_ask_record)
     assert_equal 2, genotypes.size
-    
+
     assert_equal 1, genotypes[0].attribute_map['teststatus']
     assert_equal 1, genotypes[1].attribute_map['teststatus']
     assert_equal 7, genotypes[0].attribute_map['gene']
     assert_equal 8, genotypes[1].attribute_map['gene']
   end
-  
+
   test 'process_failed_fs_record' do
     failed_fs_record = build_raw_record('pseudo_id1' => 'bob')
     failed_fs_record.raw_fields['moleculartestingtype'] = nil
@@ -78,26 +77,26 @@ class LeedsHandlerNewTest < ActiveSupport::TestCase
     @handler.populate_variables(failed_fs_record)
     @handler.add_moleculartestingtype(@genotype, failed_fs_record)
     assert_equal 1, @genotype.attribute_map['moleculartestingtype']
-    
+
     @handler.process_genetictestcope(@genotype, failed_fs_record)
     assert_equal 'Full screen BRCA1 and BRCA2', @genotype.attribute_map['genetictestscope']
-    
+
     @handler.assign_teststatus(@genotype, failed_fs_record)
     assert_equal 9, @genotype.attribute_map['teststatus']
-    
+
     genotypes = @handler.process_variants_from_record(@genotype, failed_fs_record)
     assert_equal 2, genotypes.size
-    
+
     assert_equal 9, genotypes[0].attribute_map['teststatus']
     assert_equal 9, genotypes[1].attribute_map['teststatus']
     assert_equal 7, genotypes[0].attribute_map['gene']
     assert_equal 8, genotypes[1].attribute_map['gene']
-    
+
     assert_nil genotypes[0].attribute_map['variantpathclass']
     assert_nil genotypes[1].attribute_map['variantpathclass']
   end
-  
-  test 'process_targeted_rec' do 
+
+  test 'process_targeted_rec' do
     targ_abnormal_record = build_raw_record('pseudo_id1' => 'bob')
     targ_abnormal_record.raw_fields['moleculartestingtype'] = 'Familial'
     targ_abnormal_record.raw_fields['genotype'] = 'Predictive BRCA1 seq pos'
@@ -107,16 +106,16 @@ class LeedsHandlerNewTest < ActiveSupport::TestCase
     @handler.populate_variables(targ_abnormal_record)
     @handler.add_moleculartestingtype(@genotype, targ_abnormal_record)
     assert_equal 2, @genotype.attribute_map['moleculartestingtype']
-    
+
     @handler.process_genetictestcope(@genotype, targ_abnormal_record)
     assert_equal 'Targeted BRCA mutation test', @genotype.attribute_map['genetictestscope']
-    
+
     @handler.assign_teststatus(@genotype, targ_abnormal_record)
     assert_equal 2, @genotype.attribute_map['teststatus']
-    
+
     genotypes = @handler.process_variants_from_record(@genotype, targ_abnormal_record)
     assert_equal 1, genotypes.size
-    
+
     assert_equal 2, genotypes[0].attribute_map['teststatus']
     assert_nil genotypes[0].attribute_map['codingdnasequencechange']
     assert_nil genotypes[0].attribute_map['proteinimpact']
@@ -125,7 +124,7 @@ class LeedsHandlerNewTest < ActiveSupport::TestCase
     assert_equal 7, genotypes[0].attribute_map['gene']
     assert_nil genotypes[0].attribute_map['variantpathclass']
   end
-  
+
   test 'process_multigene_report_record' do
     multi_gene_rec = build_raw_record('pseudo_id1' => 'bob')
     multi_gene_rec.raw_fields['moleculartestingtype'] = 'Diagnostic'
@@ -143,13 +142,13 @@ class LeedsHandlerNewTest < ActiveSupport::TestCase
     assert_equal 7, genotypes[0].attribute_map['gene']
     assert_equal 5, genotypes[0].attribute_map['variantpathclass']
     assert_equal '3', genotypes[0].attribute_map['exonintroncodonnumber']
-    
+
     assert_equal 1, genotypes[1].attribute_map['teststatus']
     assert_equal 8, genotypes[1].attribute_map['gene']
     assert_nil genotypes[1].attribute_map['variantpathclass']
   end
-  
-  test 'process_multivariant_rec' do 
+
+  test 'process_multivariant_rec' do
     multi_var_rec = build_raw_record('pseudo_id1' => 'bob')
     multi_var_rec.raw_fields['moleculartestingtype'] = 'Diagnostic'
     multi_var_rec.raw_fields['genotype'] = 'NGS B1 and B2 seq variant'
@@ -162,20 +161,19 @@ class LeedsHandlerNewTest < ActiveSupport::TestCase
     @handler.assign_teststatus(@genotype, multi_var_rec)
     genotypes = @handler.process_variants_from_record(@genotype, multi_var_rec)
     assert_equal 2, genotypes.size
-    
+
     assert_equal 2, genotypes[0].attribute_map['teststatus']
     assert_equal 7, genotypes[0].attribute_map['gene']
     assert_equal 'c.736T>G', genotypes[0].attribute_map['codingdnasequencechange']
     assert_equal 'p.Leu246Val', genotypes[0].attribute_map['proteinimpact']
-    
+
     assert_equal 2, genotypes[1].attribute_map['teststatus']
     assert_equal 8, genotypes[1].attribute_map['gene']
     assert_nil genotypes[1].attribute_map['variantpathclass']
     assert_equal 'c.4068G>A', genotypes[1].attribute_map['codingdnasequencechange']
     assert_equal 'p.Leu1356Leu', genotypes[1].attribute_map['proteinimpact']
-    
   end
-  
+
   private
 
   def clinical_json
@@ -228,5 +226,4 @@ class LeedsHandlerNewTest < ActiveSupport::TestCase
       authoriseddate: '2019-11-25 00:00:00',
       specimentype: 'Blood' }.to_json
   end
-
 end

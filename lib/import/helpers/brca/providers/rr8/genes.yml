@@ -1,6 +1,5 @@
 ---
 brca_1_2:
-- genotype (report_result)
 - aj pre-screen pos
 - aj pre-screen/conf pos 3seq
 - aj pre-screen/conf pos 3seq
@@ -68,7 +67,34 @@ brca_1_2:
 - brca ms diag c4/c5 - mlpa
 - brca/palb2 diag c4/5 - unaff
 - r208 ms_c4/5
-'brca_1_2_palb2':
+- aj pre-screen neg
+- aj pre-screen neg 3seq
+- aj pre-screen/conf neg 3seq
+- normal b1/b2 - unaffected patient
+- aj pre-screen neg
+- aj pre-screen/conf neg 3seq
+- predictive aj neg
+- predictive aj neg 3seq
+- aj pre-screen neg
+- aj pre-screen/conf neg 3seq
+- b1 and b2 normal
+- ngs b1 and b2 normal
+- ngs b1 and b2 normal, mlpa fail
+- normal b1 and b2
+- normal b1 and b2, mlpa fail
+- normal b1/b2 - unaffected
+- normal b1/b2 - unaffected patient
+- screening failed; mlpa normal
+- word report - normal
+- brca - diagnostic normal
+- brca - diagnostic normal - unaffected
+- normal b1/b2
+- normal b1/b2 - unaffected
+- brca - diagnostic normal
+- brca - diagnostic normal - unaffected
+- brca ms diag normal
+- r208 ms_normal
+brca_1_2_palb2:
 - brca#/palb2 - diag normal
 - brca/palb2 - diag c3
 - brca/palb2 - diag c3 unaff
@@ -85,14 +111,13 @@ r207_panel:
 - r207 - normal
 - r207 - brca diag c4/5
 - r207 - diag c4/5
-- r207 - normal
 r208_panel:
 - r208_c4/c5_apr22
 - r208_normal_apr22
 - r208_atm/chek2_c4/5_apr22
 norm_mlpa:
-- "(v2) normal (mlpa dosage)"
+- (v2) normal (mlpa dosage)
 normal:
-- "(v2) Normal"
+- (v2) Normal
 low_penetrance_panel:
-- "(v2) class 5 low penetrance gene"
+- (v2) class 5 low penetrance gene
