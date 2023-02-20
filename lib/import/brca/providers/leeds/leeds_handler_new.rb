@@ -21,12 +21,12 @@ module Import
             @report = record.raw_fields['report'] || record.raw_fields['firstofreport']
             @moleculartestingtype = (record.raw_fields['moleculartestingtype'] ||
                                     record.raw_fields['reason'])&.downcase
-            @indicationcategory  = record.raw_fields['indicationcategory']&.downcase
+            @indicationcategory = record.raw_fields['indicationcategory']&.downcase
             @genes_hash = YAML.safe_load(File.open(Rails.root.join(GENES_FILEPATH)))
             @status_hash = YAML.safe_load(File.open(Rails.root.join(STATUS_FILEPATH)))
           end
 
-          def should_process(record)
+          def should_process(_record)
             filename = @batch.original_filename.split('/').last
             return true if filename.scan(/BRCA/i).size.positive?
             return true if filename.scan(/other|familial/i).size.positive? &&
