@@ -4,8 +4,6 @@ normal:
 - aj pre-screen neg 3seq
 - aj pre-screen/conf neg 3seq
 - normal b1/b2 - unaffected patient
-- aj pre-screen neg
-- aj pre-screen/conf neg 3seq
 - confirmation b1 seq neg
 - confirmation b2 seq neg
 - familial class 3 neg
@@ -22,17 +20,13 @@ normal:
 - predictive brca2 seq neg
 - predictive ex13 dup neg
 - word report - normal
-- aj pre-screen neg
-- aj pre-screen/conf neg 3seq
 - b1 and b2 normal
 - ngs b1 and b2 normal
 - ngs b1 and b2 normal, mlpa fail
 - normal b1 and b2
 - normal b1 and b2, mlpa fail
 - normal b1/b2 - unaffected
-- normal b1/b2 - unaffected patient
 - screening failed; mlpa normal
-- word report - normal
 - brca - diagnostic normal
 - brca - diagnostic normal - unaffected
 - normal b1/b2
@@ -62,6 +56,8 @@ normal:
 - r208 unaff_normal
 - r208_normal
 - r208_normal_apr22
+- confirmation class 5 -ve
+- lynch pred seq class 5 -ve
 abnormal:
 - aj pre-screen pos
 - aj pre-screen/conf pos 3seq
@@ -187,7 +183,7 @@ norm_var:
 - b2 class 2 uv
 - ngs b1 seq variant - class 2
 - ngs b2 seq variant - class 2
-'not_tested':
+not_tested:
 - not required
 unknown:
 - word report - abnormal
