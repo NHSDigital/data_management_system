@@ -6,7 +6,7 @@ module Import
       # Provides the handler appropriate for the dataformat from each center
       class BrcaHandlerMapping
         HANDLER_MAPPING = {
-          'RR8' => Import::Brca::Providers::Leeds::LeedsHandler,
+          'RR8' => Import::Brca::Providers::Leeds::LeedsHandlerNew,
           'RNZ' => Import::Brca::Providers::Salisbury::SalisburyHandler,
           'RVJ' => Import::Brca::Providers::Bristol::BristolHandler,
           'RTD' => Import::Brca::Providers::Newcastle::NewcastleHandler,

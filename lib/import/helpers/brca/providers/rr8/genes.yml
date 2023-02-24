@@ -1,0 +1,123 @@
+---
+brca_1_2:
+- aj pre-screen pos
+- aj pre-screen/conf pos 3seq
+- aj pre-screen/conf pos 3seq
+- predictive aj b1 pos 3seq
+- predictive aj b2 pos 3seq
+- predictive aj pos
+- predictive aj pos 3seq
+- b1 (multiple exon) mlpa+ve
+- b1 (single exon) mlpa+ve
+- b1 and b2 seq variant
+- b1 and b2 seq variants
+- b1 class 3 uv
+- b1 class 3a uv
+- b1 class 4 uv
+- b1 class 5 new
+- b1 class 5 uv
+- b1 class 5 uv - mlpa
+- b1 class 5 uv - unaffected patient
+- b1 class m
+- b1 mlpa+ve (mutiple exons)
+- b1 mlpa+ve (single exon)
+- b1 seq variant
+- b1 truncating/frameshift
+- b1/b2 - c4 pos
+- b2 class 3 uv
+- b2 class 3a uv
+- b2 class 3b uv
+- b2 class 4 uv
+- b2 class 5 new
+- b2 class 5 uv
+- b2 class 5 uv - mlpa
+- b2 class 5 uv - unaffected patient
+- b2 class m
+- b2 ptt shift
+- b2 seq variant
+- b2 truncating/frameshift
+- class 3 - unaffected
+- ngs b1 and b2 seq variant
+- ngs b1 class m
+- ngs b1 seq variant
+- ngs b1 seq variant - class 3
+- ngs b1 truncating/frameshift
+- ngs b1(multiple exon)mlpa+ve
+- ngs b1(single exon) mlpa+ve
+- ngs b2 class m
+- ngs b2 seq variant
+- ngs b2 seq variant - class 3
+- ngs b2 seq variant - class 4
+- ngs b2 truncating/frameshift
+- ngs b2(multiple exon)mlpa+ve
+- "(v2) any gene c5 - unaffected patient"
+- "(v2) class 4"
+- b1/b2 class 3 - unaffected
+- b1/b2 class 3 uv
+- b1/b2 class 4 uv
+- b1/b2 class 5 uv
+- brca - diagnostic class 5
+- brca - diagnostic class 3
+- brca - diagnostic class 4
+- brca - diagnostic class 5
+- brca - diagnostic class 5 - mlpa
+- brca - diagnostic class 5 - unaffected
+- brca ms - diag c3
+- brca ms - diag c4/5
+- brca ms diag c4/c5 - mlpa
+- brca/palb2 diag c4/5 - unaff
+- r208 ms_c4/5
+- aj pre-screen neg
+- aj pre-screen neg 3seq
+- aj pre-screen/conf neg 3seq
+- normal b1/b2 - unaffected patient
+- aj pre-screen neg
+- aj pre-screen/conf neg 3seq
+- predictive aj neg
+- predictive aj neg 3seq
+- aj pre-screen neg
+- aj pre-screen/conf neg 3seq
+- b1 and b2 normal
+- ngs b1 and b2 normal
+- ngs b1 and b2 normal, mlpa fail
+- normal b1 and b2
+- normal b1 and b2, mlpa fail
+- normal b1/b2 - unaffected
+- normal b1/b2 - unaffected patient
+- screening failed; mlpa normal
+- word report - normal
+- brca - diagnostic normal
+- brca - diagnostic normal - unaffected
+- normal b1/b2
+- normal b1/b2 - unaffected
+- brca - diagnostic normal
+- brca - diagnostic normal - unaffected
+- brca ms diag normal
+- r208 ms_normal
+brca_1_2_palb2:
+- brca#/palb2 - diag normal
+- brca/palb2 - diag c3
+- brca/palb2 - diag c3 unaff
+- brca/palb2 - diag c4/5
+- brca/palb2 - diag c4/5 mlpa
+- brca/palb2 - diag normal
+- brca/palb2 diag screening failed
+- r208 unaff_normal
+- r208_c4/5
+- r208_normal
+r207_panel:
+- r207 - brca diag c4/5
+- r207 - diag c4/5
+- r207 - normal
+- r207 - brca diag c4/5
+- r207 - diag c4/5
+r208_panel:
+- r208_c4/c5_apr22
+- r208_normal_apr22
+- r208_atm/chek2_c4/5_apr22
+norm_mlpa:
+- (v2) normal (mlpa dosage)
+normal:
+- (v2) Normal
+low_penetrance_panel:
+- (v2) class 5 low penetrance gene
