@@ -53,7 +53,13 @@ jobs:
     - name: Prepare the database
       run: bin/rails db:setup
     - name: Precompile assets
-      run: bin/rails assets:precompile
+      # Since ruby/setup-ruby@v1 moved to Node.js v18 we need the extra options
+      # until we move to newer webpacker / stop using it.
+      # I've tried using a newer hash function in config/webpack/environment.js
+      # by adding the following line, but this didn't help with github actions
+      # # environment.config.set('output.hashFunction', 'sha256')
+      # https://stackoverflow.com/questions/69692842/error-message-error0308010cdigital-envelope-routinesunsupported/73465262#73465262
+      run: NODE_OPTIONS=--openssl-legacy-provider bin/rails assets:precompile
     - name: Run tests
       run: bin/rails test
 
