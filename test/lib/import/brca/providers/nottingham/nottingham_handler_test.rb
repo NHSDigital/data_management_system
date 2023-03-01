@@ -39,7 +39,7 @@ class NottinghamHandlerTest < ActiveSupport::TestCase
     @record.raw_fields['disease'] = 'R207 Inherited Ovarian Cancer'
     @record.raw_fields['moleculartestingtype'] = 'Diagnostic'
     @handler.assign_test_scope(@record, @genotype)
-    assert_equal 'Unable to assign BRCA genetictestscope', @genotype.attribute_map['genetictestscope']
+    assert_equal 'Full screen BRCA1 and BRCA2', @genotype.attribute_map['genetictestscope']
   end
 
   test 'assign_conditional_test_scope' do
