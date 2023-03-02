@@ -27,7 +27,8 @@ module Import
                                'Breast Cancer Full Panel'                           => :full_screen,
                                'Breast Core Panel'                                  => :full_screen,
                                'BRCA1/BRCA2 PST'                                    => :targeted_mutation,
-                               'Cancer PST'                                         => :targeted_mutation }.freeze
+                               'Cancer PST'                                         => :targeted_mutation,
+                               'R207 Inherited Ovarian Cancer'                      => :full_screen }.freeze
             # rubocop:enable Layout/LineLength
 
             TEST_STATUS_MAP = { '1: Clearly not pathogenic' => :negative,
