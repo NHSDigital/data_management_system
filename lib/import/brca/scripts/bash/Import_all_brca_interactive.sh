@@ -45,9 +45,8 @@ IFS=$'\n'
 for x in $(find  $DIRPATH/$FILEPATH -type f -name "*.pseudo" -path "*/$PROV/*"  \
 -not -path "*/2017-03-17/*" \
   ! -name "3a4d3dc703789864fa6d2b8f5d9fe60749205979_01.01.2013 to 30.09.2018_010113_300918.xlsx.pseudo" \
-  ! -name *MMR* \
-  ! -name *other* \
-  ! -name *Colorectal*)
+  ! -name "*MMR*" \
+  ! -name "*Colorectal*")
 do
 IFS="$OIFS"
 $BRAKE import:brca fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
@@ -176,6 +175,8 @@ PROV='RJ7'
 IFS=$'\n'
 for x in $(find  $DIRPATH/$FILEPATH -type f -name "*.pseudo" -path "*/$PROV/*" \
 -not -path "*/2021/*" \
+-not -path "*/2022/*" \
+-not -path "*/2023/*" \
 ! -name "c466c80823235315f4df98bb4a14c4937ee5cbc4_08.2020_STG HBOC PHE reported till 28082020.xlsx.pseudo")
 do
 IFS="$OIFS"
