@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
-gem 'activemodel-caution', '6.1.7.1' # must match rails version
-gem 'rails', '~> 6.1.7.1'
+gem 'activemodel-caution', '6.1.7.3' # must match rails version
+gem 'rails', '~> 6.1.7.3'
 
 # Use postgresql as the database for Active Record
 # gem 'pg', '>= 0.18', '< 2.0'
