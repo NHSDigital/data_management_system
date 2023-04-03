@@ -107,7 +107,7 @@ after 'deploy:start',   'delayed_job:start'
 after 'deploy:restart', 'delayed_job:restart'
 
 before 'ndr_dev_support:update_out_of_bundle_gems' do
-  set :out_of_bundle_gems, webapp_deployment ? %w[puma nio4r] : %w[]
+  set :out_of_bundle_gems, webapp_deployment ? %w[puma rack nio4r] : %w[]
 end
 
 namespace :ndr_dev_support do
