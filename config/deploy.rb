@@ -86,6 +86,16 @@ set :asset_script, <<~SHELL
   rm config/secrets.yml config/database.yml
 SHELL
 
+namespace :delayed_job do
+  # Redefine deplayed_job:restart to first sudo to the application user.
+  # In Capistrano v2, the original task is replaced.
+  desc 'Restart the delayed_job process'
+  task :restart, roles: lambda { roles } do
+    run "sudo -i -n -u #{application_user} " \
+        "bash -c 'cd #{current_path} && #{rails_env} #{delayed_job_command} restart #{args}'"
+  end
+end
+
 # ==========================================[ DEPLOY ]==========================================
 
 namespace :deploy do
