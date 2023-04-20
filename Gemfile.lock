@@ -112,7 +112,6 @@ GEM
       capybara (>= 1.0, < 4)
       launchy
     charlock_holmes (0.7.7)
-    childprocess (3.0.0)
     cocoon (1.2.10)
     coderay (1.1.3)
     coffee-rails (5.0.0)
@@ -199,6 +198,7 @@ GEM
     launchy (2.5.0)
       addressable (~> 2.7)
     libv8-node (16.10.0.0)
+    libv8-node (16.10.0.0-arm64-darwin)
     libv8-node (16.10.0.0-x86_64-darwin)
     libv8-node (16.10.0.0-x86_64-linux)
     listen (3.4.1)
@@ -314,6 +314,8 @@ GEM
     nio4r (2.5.8)
     nokogiri (1.14.3)
       mini_portile2 (~> 2.8.0)
+      racc (~> 1.4)
+    nokogiri (1.14.3-arm64-darwin)
       racc (~> 1.4)
     nokogiri (1.14.3-x86_64-darwin)
       racc (~> 1.4)
@@ -442,9 +444,10 @@ GEM
       sprockets (> 3.0)
       sprockets-rails
       tilt
-    selenium-webdriver (3.142.7)
-      childprocess (>= 0.5, < 4.0)
-      rubyzip (>= 1.2.2)
+    selenium-webdriver (4.8.6)
+      rexml (~> 3.2, >= 3.2.5)
+      rubyzip (>= 1.2.2, < 3.0)
+      websocket (~> 1.0)
     semantic_range (3.0.0)
     seven_zip_ruby (1.3.0)
     shellany (0.0.1)
@@ -485,15 +488,16 @@ GEM
       activemodel (>= 6.0.0)
       bindex (>= 0.4.0)
       railties (>= 6.0.0)
-    webdrivers (4.5.0)
+    webdrivers (5.2.0)
       nokogiri (~> 1.6)
       rubyzip (>= 1.3.0)
-      selenium-webdriver (>= 3.0, < 4.0)
+      selenium-webdriver (~> 4.0)
     webpacker (5.4.3)
       activesupport (>= 5.2)
       rack-proxy (>= 0.6.1)
       railties (>= 5.2)
       semantic_range (>= 2.3.0)
+    websocket (1.2.9)
     websocket-driver (0.7.5)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
@@ -507,6 +511,7 @@ GEM
       rubyzip (>= 1.0.0)
 
 PLATFORMS
+  arm64-darwin-22
   ruby
   x86_64-darwin-20
   x86_64-darwin-21
@@ -566,6 +571,7 @@ DEPENDENCIES
   terminal-notifier-guard
   turbolinks (~> 5.x)
   web-console
+  webdrivers (>= 5.2.0)
   webpacker
   will_paginate
   zip-zip
