@@ -17,6 +17,15 @@ class OxfordHandlerTest < ActiveSupport::TestCase
     assert_equal '123456', @genotype.attribute_map['servicereportidentifier']
   end
 
+  test 'assign_varpathclass' do
+    @handler.extract_variantpathclass(@genotype, @record)
+    assert_equal 3, @genotype.attribute_map['variantpathclass']
+    varpath_record = build_raw_record('pseudo_id1' => 'bob')
+    varpath_record.mapped_fields['variantpathclass'] = 'C4'
+    @handler.extract_variantpathclass(@genotype, varpath_record)
+    assert_equal 4, @genotype.attribute_map['variantpathclass']
+  end
+
   test 'assign_test_type' do
     @handler.assign_test_type(@genotype, @record)
     assert_equal 1, @genotype.attribute_map['moleculartestingtype']
