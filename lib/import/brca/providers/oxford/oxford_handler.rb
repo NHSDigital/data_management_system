@@ -208,7 +208,7 @@ module Import
 
             varpathclass = record.mapped_fields['variantpathclass']&.downcase
             varpath = varpathclass.to_i
-            if varpath.positive? && varpath <= 9
+            if varpath.positive? && varpath <= 5
               # we have right varpath to be assigned
             else
               varpath = VAR_PATH_CLASS_MAP[varpathclass]
