@@ -113,7 +113,10 @@ def bootstrap_download_helper
     end
 
     # Chrome >= 77
-    browser_options.add_preference(:download, default_directory: DownloadHelpers.directory)
+    # cf. https://github.com/renuo/so_many_devices/blob/main/lib/so_many_devices.rb
+    browser_options.add_preference(:download, prompt_for_download: false,
+                                              default_directory: DownloadHelpers.directory.to_s)
+    browser_options.add_preference(:browser, set_download_behavior: { behavior: 'allow' })
 
     Capybara::Selenium::Driver.new(app, browser: :chrome, options: browser_options).tap do |driver|
       # Chrome < 77
