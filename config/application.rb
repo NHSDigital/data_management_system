@@ -42,9 +42,9 @@ module Mbis
     smtp_fname = config.root.join('config', 'smtp_settings.yml')
     if File.exist?(smtp_fname)
       config.action_mailer.smtp_settings =
-        YAML.load_file(smtp_fname)[Rails.env]
+        YAML.safe_load(File.read(smtp_fname), permitted_classes: [Symbol], aliases: true)[Rails.env]
     elsif !Rails.env.test?
-      $stderr.puts 'Warning: Missing config/smtp_settings.yml -- some services may not work.'
+      warn 'Warning: Missing config/smtp_settings.yml -- some services may not work.'
     end
 
     config.active_job.queue_adapter = :delayed_job

@@ -4,49 +4,7 @@ module Import
       module Oxford
         # Process Oxford-specific record details into generalized internal genotype format
         class OxfordHandlerColorectal < Import::Germline::ProviderHandler
-          TEST_METHOD_MAP = { 'Sequencing, Next Generation Panel (NGS)' => :ngs,
-                              'Sequencing, Dideoxy / Sanger'            => :sanger }.freeze
-
-          PASS_THROUGH_FIELDS = %w[age consultantcode
-                                   servicereportidentifier
-                                   providercode
-                                   authoriseddate
-                                   requesteddate
-                                   sampletype
-                                   referencetranscriptid].freeze
-
-          COLORECTAL_GENES_REGEX = /(?<colorectal>APC|
-                                                BMPR1A|
-                                                EPCAM|
-                                                MLH1|
-                                                MSH2|
-                                                MSH6|
-                                                MUTYH|
-                                                GREM1|
-                                                PMS2|
-                                                POLD1|
-                                                POLE|
-                                                PTEN|
-                                                SMAD4|
-                                                STK11|
-                                                NTHL1)/xi.freeze
-
-          FULL_SCREEN_REGEX = /(?<fullscreen>Panel|
-          full\sgene\sscreen|
-          full.+screen|
-          full.+screem|
-          fullscreen|
-          BRCA_Multiplicom|
-          HCS|
-          BRCA1|
-          BRCA2)/xi .freeze
-
-          PROTEIN_REGEX            = /p\.\[(?<impact>(.*?))\]|p\..+/i.freeze
-          CDNA_REGEX               = /c\.\[?(?<cdna>[0-9]+.+[a-z])\]?/i.freeze
-          GENOMICCHANGE_REGEX      = /Chr(?<chromosome>\d+)\.hg(?<genome_build>\d+)
-                                     :g\.(?<effect>.+)/xi.freeze
-          VARPATHCLASS_REGEX       = /[1-5]/i.freeze
-          CHROMOSOME_VARIANT_REGEX = /(?<chromvar>del|ins|dup)/i.freeze
+          include Import::Helpers::Colorectal::Providers::Rth::Constants
 
           def process_fields(record)
             genocolorectal = Import::Colorectal::Core::Genocolorectal.new(record)
@@ -90,11 +48,16 @@ module Import
           end
 
           def assign_variantpathclass(genocolorectal, record)
-            Maybe(record.mapped_fields['variantpathclass']).each do |varpathclass|
-              if (1..5).cover? varpathclass.scan(VARPATHCLASS_REGEX).join.to_i
-                genocolorectal.add_variant_class(varpathclass.scan(VARPATHCLASS_REGEX).join.to_i)
-              end
+            return if record.mapped_fields['variantpathclass'].nil?
+
+            varpathclass = record.mapped_fields['variantpathclass']&.downcase
+            varpath = varpathclass.to_i
+            if varpath.positive? && varpath <= 5
+              # we have right varpath to be assigned
+            else
+              varpath = VAR_PATH_CLASS_MAP[varpathclass]
             end
+            genocolorectal.add_variant_class(varpath)
           end
 
           def assign_servicereportidentifier(genocolorectal, record)

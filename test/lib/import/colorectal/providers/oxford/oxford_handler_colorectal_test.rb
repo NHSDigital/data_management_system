@@ -125,6 +125,15 @@ class OxfordHandlerColorectalTest < ActiveSupport::TestCase
     @handler.assign_genomic_change(@genotype, broken_record)
   end
 
+  test 'assign_varpathclass' do
+    @handler.assign_variantpathclass(@genotype, @record)
+    assert_equal 5, @genotype.attribute_map['variantpathclass']
+    varpath_record = build_raw_record('pseudo_id1' => 'bob')
+    varpath_record.mapped_fields['variantpathclass'] = 'C4'
+    @handler.assign_variantpathclass(@genotype, varpath_record)
+    assert_equal 4, @genotype.attribute_map['variantpathclass']
+  end
+
   private
 
   def clinical_json

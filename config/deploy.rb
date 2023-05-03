@@ -3,7 +3,7 @@ require 'ndr_dev_support/capistrano/ndr_model'
 require 'delayed/recipes'
 
 set :application, 'mbis_front'
-set :repository, 'https://github.com/publichealthengland/data_management_system.git'
+set :repository, 'https://github.com/NHSDigital/data_management_system.git'
 set :scm, :git
 ssh_options[:compression] = 'none' # Avoid pointless zlib warning
 
