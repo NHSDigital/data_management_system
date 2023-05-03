@@ -4,59 +4,8 @@ module Import
       module Oxford
         # Process Oxford-specific record details into generalized internal genotype format
         class OxfordHandler < Import::Germline::ProviderHandler
-          TEST_SCOPE_MAP = { 'brca_multiplicom'           => :full_screen,
-                             'breast-tp53 panel'          => :full_screen,
-                             'breast-uterine-ovary panel' => :full_screen,
-                             'targeted'                   => :targeted_mutation }.freeze
+          include Import::Helpers::Brca::Providers::Rth::Constants
 
-          TEST_METHOD_MAP = { 'Sequencing, Next Generation Panel (NGS)' => :ngs,
-                              'Sequencing, Dideoxy / Sanger'            => :sanger }.freeze
-
-          PASS_THROUGH_FIELDS = %w[age consultantcode
-                                   servicereportidentifier
-                                   providercode
-                                   authoriseddate
-                                   requesteddate
-                                   variantpathclass
-                                   sampletype
-                                   referencetranscriptid].freeze
-
-          BRCA_REGEX = /(?<brca>BRCA1|
-                                BRCA2|
-                                BRIP1|
-                                CDK4|
-                                CDKN2A|
-                                CHEK2|
-                                MLH1|
-                                MSH2|
-                                MSH6|
-                                PALB2|
-                                PMS2|
-                                PTEN|
-                                RAD51C|
-                                RAD51D|
-                                STK11|
-                                TP53)/ix.freeze
-
-          RECORD_EXEMPTIONS = ['c.[-835C>T]+[=]', 'Deletion of whole PTEN gene',
-                               'c.[-904_-883dup ]+[=]', 'whole gene deletion',
-                               'Deletion partial exon 11 and exons 12-15',
-                               'deletion BRCA1 exons 21-24', 'deletion BRCA1 exons 21-24',
-                               'deletion BRCA1 exons 1-17', 'whole gene duplication'].freeze
-
-          PROTEIN_REGEX = /p\.\[?\(?(?<impact>.+)(?:\))|
-                           p\.\[(?<impact>[a-z0-9*]+)\]|
-                           p\.(?<impact>[a-z]+[0-9]+[a-z]+)/ix.freeze
-
-          CDNA_REGEX = /c\.\[?(?<cdna>[0-9]+.+[a-z]+)\]?/i.freeze
-
-          EXON_REGEX = /(?<variant>del|inv|dup).+ion\s(?<of>of\s)?
-                        exon(?<s>s)?\s?(?<location>[0-9]+(?<moreexon>-[0-9]+)?)|
-                        exon(?<s>s)?\s?(?<location>[0-9]+(?<moreexon>-[0-9]+)?)
-                        \s(?<variant>del|inv|dup).+ion/ix.freeze
-
-          GENOMICCHANGE_REGEX = /Chr(?<chromosome>\d+)\.hg
-                                 (?<genome_build>\d+):g\.(?<effect>.+)/ix.freeze
           def process_fields(record)
             genotype = Import::Brca::Core::GenotypeBrca.new(record)
             genotype.add_passthrough_fields(record.mapped_fields,
@@ -255,11 +204,16 @@ module Import
           end
 
           def extract_variantpathclass(genotype, record)
-            return if record.mapped_fields['variantpathclass'].nil? ||
-                      record.mapped_fields['variantpathclass'].to_i.zero?
+            return if record.mapped_fields['variantpathclass'].nil?
 
-            varpathclass = record.mapped_fields['variantpathclass'].to_i
-            genotype.add_variant_class(varpathclass)
+            varpathclass = record.mapped_fields['variantpathclass']&.downcase
+            varpath = varpathclass.to_i
+            if varpath.positive? && varpath <= 5
+              # we have right varpath to be assigned
+            else
+              varpath = VAR_PATH_CLASS_MAP[varpathclass]
+            end
+            genotype.add_variant_class(varpath)
           end
         end
       end
