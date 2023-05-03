@@ -174,6 +174,21 @@ class NewcastleHandlerColorectalTest < ActiveSupport::TestCase
     end
   end
 
+  test 'variantpathclass assignes to only gene in raw[gene]' do
+    @handler.add_test_scope(@genotype, @record)
+    genotypes = @handler.process_variant_records(@genotype, @record)
+    assert_nil genotypes[0].attribute_map['variantpathclass']
+    assert_equal 2744, genotypes[0].attribute_map['gene']
+    assert_nil genotypes[1].attribute_map['variantpathclass']
+    assert_equal 2808, genotypes[1].attribute_map['gene']
+    assert_nil genotypes[2].attribute_map['variantpathclass']
+    assert_equal 3394, genotypes[2].attribute_map['gene']
+    assert_nil genotypes[3].attribute_map['variantpathclass']
+    assert_equal 1432, genotypes[3].attribute_map['gene']
+    assert_equal 5, genotypes[4].attribute_map['variantpathclass']
+    assert_equal 2804, genotypes[4].attribute_map['gene']
+  end
+
   private
 
   def clinical_json

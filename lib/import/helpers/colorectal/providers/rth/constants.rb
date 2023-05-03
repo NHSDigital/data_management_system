@@ -43,7 +43,7 @@ module Import
             BRCA2)/xi
             # rubocop:disable Lint/MixedRegexpCaptureTypes
             PROTEIN_REGEX            = /p\.\[(?<impact>(.*?))\]|p\..+/i
-            CDNA_REGEX               = /c\.\[?(?<cdna>[0-9]+.+[a-z])\]?/i
+            CDNA_REGEX               = /c\.\[?(?<cdna>[-0-9?.>_+a-z]+)\]?/i
             GENOMICCHANGE_REGEX      = /Chr(?<chromosome>\d+)\.hg(?<genome_build>\d+)
                                        :g\.(?<effect>.+)/xi
             VAR_PATH_CLASS_MAP = {
@@ -53,7 +53,7 @@ module Import
               '10' => '',
               'n/a' => ''
             }.freeze
-            CHROMOSOME_VARIANT_REGEX = /(?<chromvar>del|ins|dup)/i
+            CHROMOSOME_VARIANT_REGEX = /(?<chromvar>del|ins|dup|inv)/i
             # rubocop:enable Lint/MixedRegexpCaptureTypes
           end
         end

@@ -1,0 +1,14 @@
+.ruby-version
+.git
+.svn
+ci-scripts
+config/deploy.rb
+doc
+private
+test
+vendor/cache/*-darwin-1?.gem
+vendor/cache/*-darwin1?.gem
+vendor/cache/*-darwin-2?.gem
+vendor/cache/*-x86_64-darwin.gem
+vendor/npm-packages-offline-cache
+.env

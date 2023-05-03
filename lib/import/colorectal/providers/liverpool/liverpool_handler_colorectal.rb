@@ -11,7 +11,7 @@ module Import
 
           def process_fields(record)
             # return for brca cases
-            return if record.raw_fields['investigation'].match(/BRCA/i)
+            return if record.raw_fields['investigation'].match(/BRCA|Familial\sBreast\sCancer/i)
 
             genocolorectal = Import::Colorectal::Core::Genocolorectal.new(record)
             genocolorectal.add_passthrough_fields(record.mapped_fields,

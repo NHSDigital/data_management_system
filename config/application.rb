@@ -1,3 +1,5 @@
+TIME_PROCESS_STARTED = Time.now
+
 require_relative 'boot'
 
 require 'rails/all'
@@ -11,7 +13,7 @@ require 'ndr_error/middleware/public_exceptions'
 module Mbis
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 6.0
+    config.load_defaults 6.1
 
     # Configuration for the application, engines, and railties goes here.
     #
@@ -39,10 +41,17 @@ module Mbis
     Rails.autoloaders.main.ignore("#{config.root}/lib/schema_browser/Template")
 
     config.action_mailer.delivery_method = :smtp
-    smtp_fname = config.root.join('config', 'smtp_settings.yml')
+    smtp_fname = config.root.join('config/smtp_settings.yml')
     if File.exist?(smtp_fname)
+      smtp_config = ERB.new(File.read(smtp_fname)).result
       config.action_mailer.smtp_settings =
-        YAML.safe_load(File.read(smtp_fname), permitted_classes: [Symbol], aliases: true)[Rails.env]
+        YAML.safe_load(smtp_config, permitted_classes: [Symbol], aliases: true)[Rails.env]
+      if ENV['SMTP_USERNAME'].present?
+        config.action_mailer.smtp_settings[:user_name] = ENV['SMTP_USERNAME']
+      end
+      if ENV['SMTP_PASSWORD'].present?
+        config.action_mailer.smtp_settings[:password] = ENV['SMTP_PASSWORD']
+      end
     elsif !Rails.env.test?
       warn 'Warning: Missing config/smtp_settings.yml -- some services may not work.'
     end
@@ -58,5 +67,8 @@ module Mbis
     # TODO: Would be nice to push this out to a YAML file and access via `config_for`
     # so that we can avoid hardcoding...
     config.x.user.internal_domains = ['phe.gov.uk', 'ukhsa.gov.uk']
+
+    # TODO: Old Rails 6.0 default; disable this
+    ActiveSupport.utc_to_local_returns_utc_offset_times = false
   end
 end

@@ -1,23 +1,35 @@
+# Avoid spurious deprecation warning on STDERR with capistrano 2 and bundler 2.x
+set :bundle_cmd, 'BUNDLE_SILENCE_DEPRECATIONS=true bundle'
+
 require 'bundler/capistrano'
 require 'ndr_dev_support/capistrano/ndr_model'
 require 'delayed/recipes'
+require 'resolv'
 
 set :application, 'mbis_front'
-set :repository, 'https://github.com/publichealthengland/data_management_system.git'
+set :repository, 'https://github.com/NHSDigital/data_management_system.git'
 set :scm, :git
 ssh_options[:compression] = 'none' # Avoid pointless zlib warning
 
 set :delayed_job_command, 'bin/delayed_job'
 # set :delayed_job_args,    '-n 1'
 
-# Use private repository for some configuration files
-set :secondary_repo, 'https://ndr-svn.phe.gov.uk/svn/non-era/mbis'
-# Private repository for encrypted credentials
-# TODO: Add support for per-deployment encrypted credentials to ndr_dev_support
-set :credentials_repo, 'https://ndr-svn.phe.gov.uk/svn/encrypted-credentials-store/mbis_front/base'
+if Resolv.getaddresses('ndr-svn.phe.gov.uk').any?
+  # Use private repository for some configuration files
+  set :secondary_repo, 'https://ndr-svn.phe.gov.uk/svn/non-era/mbis'
+  # Private repository for encrypted credentials
+  # TODO: Add support for per-deployment encrypted credentials to ndr_dev_support
+  set :credentials_repo,
+      'https://ndr-svn.phe.gov.uk/svn/encrypted-credentials-store/mbis_front/base'
+else
+  # For off-premise deployments, configuration will be provided to the startup script
+  # in Base64-encoded environment variables.
+  set :secondary_repo, nil
+  set :credentials_repo, nil
+end
 
 # Exclude these files from the deployment:
-set :copy_exclude, %w(
+set :copy_exclude, %w[
   .ruby-version
   .git
   .svn
@@ -31,20 +43,29 @@ set :copy_exclude, %w(
   vendor/cache/*-darwin-2?.gem
   vendor/cache/*-x86_64-darwin.gem
   vendor/npm-packages-offline-cache
-)
+]
 
 # Exclude gems from these bundler groups:
 set :bundle_without, [:development, :test]
 
 set :application, 'mbis_front'
 
+# Configuration files that are configured from secondary_repo, or created separately
+set :secondary_repo_paths, %w[
+  config/special_users.production.yml config/admin_users.yml config/odr_users.yml
+  config/user_yubikeys.yml config/regular_extracts.csv
+]
+
+# Configuration files that are configured from credentials_repoo, or created separately
+set :credentials_repo_paths, %w[
+  config/credentials.yml.enc
+]
+
 # Paths that are symlinked for each release to the "shared" directory:
-set :shared_paths, %w(
+set :shared_paths, %w[
   config/database.yml
   config/excluded_mbisids.yml.enc
   config/keys
-  config/puma.rb
-  config/secrets.yml
   config/smtp_settings.yml
   config/master.key
   config/certificates
@@ -52,23 +73,29 @@ set :shared_paths, %w(
   private/mbis_data
   private/pseudonymised_data
   tmp
-)
+] + secondary_repo_paths + credentials_repo_paths
 
 # paths in shared/ that the application can write to:
-set :explicitly_writeable_shared_paths, %w( log tmp tmp/pids )
+set :explicitly_writeable_shared_paths, %w[config log tmp tmp/pids]
 
-set :build_script, <<~SHELL
-  set -e
-  for fname in config/special_users.production.yml config/admin_users.yml config/odr_users.yml \
-               config/user_yubikeys.yml config/regular_extracts.csv; do
-    rm -f "$fname"
-    svn export --force "#{secondary_repo}/$fname" "$fname"
-  done
-  for fname in config/credentials.yml.enc; do
-    rm -f "$fname"
-    svn export --force "#{credentials_repo}/$fname" "$fname"
-  done
-SHELL
+if secondary_repo && credentials_repo
+  set :build_script, <<~SHELL
+    set -e
+    for fname in #{secondary_repo_paths.collect { |fname| Shellwords.escape(fname) }.join(' ')}; do
+      rm -f "$fname"
+      svn export --force "#{secondary_repo}/$fname" "$fname"
+    done
+    for fname in #{credentials_repo_paths.collect { |fname| Shellwords.escape(fname) }.join(' ')}; do
+      rm -f "$fname"
+      svn export --force "#{credentials_repo}/$fname" "$fname"
+    done
+  SHELL
+else
+  set :build_script, <<~SHELL
+    echo 'Warning: Cannot connect to secondary_repo / credentials_repo. Configuration'
+    echo 'files may be stale, or will need to be specified in environment variables.'
+  SHELL
+end
 
 set :asset_script, <<~SHELL
   set -e
@@ -96,6 +123,28 @@ namespace :delayed_job do
   end
 end
 
+namespace :app do
+  desc <<-DESC
+      [internal] Setup shared files for the just deployed release.
+  DESC
+  task :move_shared, except: { no_release: true } do
+    # Move configuration files from deployment directory to shared location
+    fnames = (secondary_repo ? secondary_repo_paths : []) +
+             (credentials_repo ? credentials_repo_paths : [])
+    escaped_fnames = fnames.collect { |fname| Shellwords.escape(fname) }
+    run <<~CMD.gsub(/\n */, ' ') # replaces line breaks below with single spaces
+      for fname in #{escaped_fnames.join(' ')}; do
+        if [ -e "#{release_path}/$fname" ]; then
+          mv "#{release_path}/$fname" "#{shared_path}/$fname";
+          chgrp "#{application_group}" "#{shared_path}/$fname";
+        fi;
+      done
+    CMD
+  end
+end
+
+before 'ndr_dev_support:filesystem_tweaks', 'app:move_shared'
+
 # ==========================================[ DEPLOY ]==========================================
 
 namespace :deploy do
@@ -117,7 +166,7 @@ after 'deploy:start',   'delayed_job:start'
 after 'deploy:restart', 'delayed_job:restart'
 
 before 'ndr_dev_support:update_out_of_bundle_gems' do
-  set :out_of_bundle_gems, webapp_deployment ? %w[puma rack nio4r] : %w[]
+  set :out_of_bundle_gems, webapp_deployment ? %w[puma puma-daemon rack nio4r] : %w[]
 end
 
 namespace :ndr_dev_support do
@@ -137,6 +186,10 @@ namespace :bundle do
   end
 end
 before 'bundle:install', 'bundle:configure'
+
+after 'ndr_dev_support:prepare' do
+  set :synchronise_sysadmin_scripts, webapp_deployment
+end
 
 # ==========================================[ TARGETS ]==========================================
 
