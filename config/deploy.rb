@@ -43,7 +43,6 @@ set :shared_paths, %w(
   config/database.yml
   config/excluded_mbisids.yml.enc
   config/keys
-  config/puma.rb
   config/secrets.yml
   config/smtp_settings.yml
   config/master.key
