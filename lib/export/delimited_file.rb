@@ -5,6 +5,8 @@ module Export
   # Export and de-pseudonymises delimited MBIS data
   # (in the original file format)
   class DelimitedFile
+    include Helpers::SchemaDump
+
     def initialize(filename, e_type, ppats)
       @filename = filename
       @e_type = e_type
@@ -64,7 +66,6 @@ module Export
     def header_rows
       if @e_type == 'PSDEATH'
         [
-          [' '],
           @col_fields.collect do |col, _field|
             case col
             when 'record id' then 'Record ID'
@@ -76,7 +77,6 @@ module Export
         ]
       else
         [
-          [' '],
           @col_fields.collect do |col, _field|
             col.upcase
           end
@@ -85,9 +85,8 @@ module Export
     end
 
     def footer_rows(i)
-      if @e_type == 'PSDEATH'
-        [["COUNT IN = #{i}"],
-         ["COUNT OT = #{i}"]]
+      if %w[PSBIRTH PSDEATH].include?(@e_type)
+        [["Total of Extracted records = #{i}"]]
       else []
       end
     end
