@@ -37,7 +37,7 @@
 PUMA_CMD=pumactl
 
 # Path to puma configuration, relative to deployment:
-PUMA_CONFIG=config/puma.rb
+PUMA_CONFIG=config/puma_production.rb
 
 CURRENT=$HOME/mbis_front/current
 

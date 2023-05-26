@@ -137,6 +137,10 @@ namespace :bundle do
 end
 before 'bundle:install', 'bundle:configure'
 
+after 'ndr_dev_support:prepare' do
+  set :synchronise_sysadmin_scripts, webapp_deployment
+end
+
 # ==========================================[ TARGETS ]==========================================
 
 TARGETS = [
