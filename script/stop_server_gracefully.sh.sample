@@ -13,6 +13,8 @@
 #   sudo -i -u mbis_beta ./stop_server_gracefully.sh
 # ===========================================================
 
+export RAILS_ENV="${RAILS_ENV:-production}"
+
 PUMA_CMD=pumactl
 
 # Path to puma configuration, relative to deployment:
