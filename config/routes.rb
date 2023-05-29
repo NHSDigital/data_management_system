@@ -115,6 +115,7 @@ Rails.application.routes.draw do
     end
   end
 
+  get :servicestatus, to: 'home#servicestatus'
   resources :home, only: [:index]
 
   resources :terms_and_conditions, only: [:index, :create]
