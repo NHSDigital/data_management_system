@@ -1,0 +1,22 @@
+<div class="col-xs-6 col-xs-offset-3">
+    <h1>Data Management System service status</h1>
+
+  <%= bootstrap_panel_tag '' do %>
+    <table class="table table-hover table-condensed table-striped">
+      <thead>
+        <tr>
+          <th>Key</th>
+          <th>Value</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @status.each do |k, v| %>
+          <tr>
+            <td><code><%= k %></code></td>
+            <td><code><%= v %></code></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% end %>
+</div>

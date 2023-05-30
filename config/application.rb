@@ -1,3 +1,5 @@
+TIME_PROCESS_STARTED = Time.now
+
 require_relative 'boot'
 
 require 'rails/all'
