@@ -43,7 +43,6 @@ set :shared_paths, %w(
   config/database.yml
   config/excluded_mbisids.yml.enc
   config/keys
-  config/puma.rb
   config/secrets.yml
   config/smtp_settings.yml
   config/master.key
@@ -137,6 +136,10 @@ namespace :bundle do
   end
 end
 before 'bundle:install', 'bundle:configure'
+
+after 'ndr_dev_support:prepare' do
+  set :synchronise_sysadmin_scripts, webapp_deployment
+end
 
 # ==========================================[ TARGETS ]==========================================
 
