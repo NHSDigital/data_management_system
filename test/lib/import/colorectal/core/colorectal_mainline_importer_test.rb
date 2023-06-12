@@ -12,7 +12,9 @@ class ColorectalMainlineImporterTest < ActiveSupport::TestCase
       assert_difference('Pseudo::GeneticTestResult.count', + 2) do
         assert_difference('Pseudo::GeneticSequenceVariant.count', + 1) do
           @importer_stdout, @importer_stderr = capture_io do
-            importer.load
+            Import::Log.print_output(true) do
+              importer.load
+            end
           end
         end
       end
@@ -80,7 +82,9 @@ class ColorectalMainlineImporterTest < ActiveSupport::TestCase
       assert_difference('Pseudo::GeneticTestResult.count', + 6) do
         assert_difference('Pseudo::GeneticSequenceVariant.count', + 2) do
           @importer_stdout, @importer_stderr = capture_io do
-            importer.load
+            Import::Log.print_output(true) do
+              importer.load
+            end
           end
         end
       end

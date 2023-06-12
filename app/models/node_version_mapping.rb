@@ -4,8 +4,7 @@
 # e.g NHSNumber => NhsNumber, CR0000 => CR0001
 class NodeVersionMapping < ApplicationRecord
   belongs_to :node, foreign_key: 'node_id', inverse_of: :node_version_mappings
-  belongs_to :previous_node, class_name: 'Node', foreign_key: 'previous_node_id',
-                             inverse_of: :node_version_mappings
+  belongs_to :previous_node, class_name: 'Node', foreign_key: 'previous_node_id'
 
   validates :node_id, uniqueness: { scope: :previous_node_id }
   validate :mapped_nodes_belong_to_same_dataset

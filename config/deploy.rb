@@ -1,3 +1,6 @@
+# Avoid spurious deprecation warning on STDERR with capistrano 2 and bundler 2.x
+set :bundle_cmd, 'BUNDLE_SILENCE_DEPRECATIONS=true bundle'
+
 require 'bundler/capistrano'
 require 'ndr_dev_support/capistrano/ndr_model'
 require 'delayed/recipes'
