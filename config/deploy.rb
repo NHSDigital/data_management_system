@@ -20,7 +20,7 @@ set :secondary_repo, 'https://ndr-svn.phe.gov.uk/svn/non-era/mbis'
 set :credentials_repo, 'https://ndr-svn.phe.gov.uk/svn/encrypted-credentials-store/mbis_front/base'
 
 # Exclude these files from the deployment:
-set :copy_exclude, %w(
+set :copy_exclude, %w[
   .ruby-version
   .git
   .svn
@@ -34,19 +34,29 @@ set :copy_exclude, %w(
   vendor/cache/*-darwin-2?.gem
   vendor/cache/*-x86_64-darwin.gem
   vendor/npm-packages-offline-cache
-)
+]
 
 # Exclude gems from these bundler groups:
 set :bundle_without, [:development, :test]
 
 set :application, 'mbis_front'
 
+# Configuration files that are configured from secondary_repo, or created separately
+set :secondary_repo_paths, %w[
+  config/special_users.production.yml config/admin_users.yml config/odr_users.yml
+  config/user_yubikeys.yml config/regular_extracts.csv
+]
+
+# Configuration files that are configured from credentials_repoo, or created separately
+set :credentials_repo_paths, %w[
+  config/credentials.yml.enc
+]
+
 # Paths that are symlinked for each release to the "shared" directory:
-set :shared_paths, %w(
+set :shared_paths, %w[
   config/database.yml
   config/excluded_mbisids.yml.enc
   config/keys
-  config/secrets.yml
   config/smtp_settings.yml
   config/master.key
   config/certificates
@@ -54,19 +64,18 @@ set :shared_paths, %w(
   private/mbis_data
   private/pseudonymised_data
   tmp
-)
+] + secondary_repo_paths + credentials_repo_paths
 
 # paths in shared/ that the application can write to:
-set :explicitly_writeable_shared_paths, %w( log tmp tmp/pids )
+set :explicitly_writeable_shared_paths, %w[config log tmp tmp/pids]
 
 set :build_script, <<~SHELL
   set -e
-  for fname in config/special_users.production.yml config/admin_users.yml config/odr_users.yml \
-               config/user_yubikeys.yml config/regular_extracts.csv; do
+  for fname in #{secondary_repo_paths.collect { |fname| Shellwords.escape(fname) }.join(' ')}; do
     rm -f "$fname"
     svn export --force "#{secondary_repo}/$fname" "$fname"
   done
-  for fname in config/credentials.yml.enc; do
+  for fname in #{credentials_repo_paths.collect { |fname| Shellwords.escape(fname) }.join(' ')}; do
     rm -f "$fname"
     svn export --force "#{credentials_repo}/$fname" "$fname"
   done
@@ -97,6 +106,27 @@ namespace :delayed_job do
         "bash -c 'cd #{current_path} && #{rails_env} #{delayed_job_command} restart #{args}'"
   end
 end
+
+namespace :app do
+  desc <<-DESC
+      [internal] Setup shared files for the just deployed release.
+  DESC
+  task :move_shared, except: { no_release: true } do
+    # Move configuration files from deployment directory to shared location
+    fnames = secondary_repo_paths + credentials_repo_paths
+    escaped_fnames = fnames.collect { |fname| Shellwords.escape(fname) }
+    run <<~CMD.gsub(/\n */, ' ') # replaces line breaks below with single spaces
+      for fname in #{escaped_fnames.join(' ')}; do
+        if [ -e "#{release_path}/$fname" ]; then
+          mv "#{release_path}/$fname" "#{shared_path}/$fname";
+          chgrp "#{application_group}" "#{shared_path}/$fname";
+        fi;
+      done
+    CMD
+  end
+end
+
+before 'ndr_dev_support:filesystem_tweaks', 'app:move_shared'
 
 # ==========================================[ DEPLOY ]==========================================
 
