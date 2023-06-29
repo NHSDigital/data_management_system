@@ -41,10 +41,17 @@ module Mbis
     Rails.autoloaders.main.ignore("#{config.root}/lib/schema_browser/Template")
 
     config.action_mailer.delivery_method = :smtp
-    smtp_fname = config.root.join('config', 'smtp_settings.yml')
+    smtp_fname = config.root.join('config/smtp_settings.yml')
     if File.exist?(smtp_fname)
+      smtp_config = ERB.new(File.read(smtp_fname)).result
       config.action_mailer.smtp_settings =
-        YAML.safe_load(File.read(smtp_fname), permitted_classes: [Symbol], aliases: true)[Rails.env]
+        YAML.safe_load(smtp_config, permitted_classes: [Symbol], aliases: true)[Rails.env]
+      if ENV['SMTP_USERNAME'].present?
+        config.action_mailer.smtp_settings[:user_name] = ENV['SMTP_USERNAME']
+      end
+      if ENV['SMTP_PASSWORD'].present?
+        config.action_mailer.smtp_settings[:password] = ENV['SMTP_PASSWORD']
+      end
     elsif !Rails.env.test?
       warn 'Warning: Missing config/smtp_settings.yml -- some services may not work.'
     end

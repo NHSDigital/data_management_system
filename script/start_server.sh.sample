@@ -27,6 +27,8 @@
 #     | DATABASE_URL             | none; required               |
 #     | RAILS_MASTER_KEY         | none; required               |
 #     | SECRET_KEY_BASE          | defaults to random           |
+#     | SMTP_USERNAME            | none                         |
+#     | SMTP_PASSWORD            | none                         |
 #     | STACK                  * | attempts to derive from user |
 #     | PUMA_PORT                | 5001                         |
 #     | RAILS_MIN_THREADS        | 5                            |
