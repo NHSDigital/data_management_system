@@ -128,9 +128,6 @@ end
 # Bootstrap for the single process case:
 bootstrap_download_helper
 
-# Ensure the driver is installed in advance of any parallel testing.
-Webdrivers::Chromedriver.update
-
 module ActiveSupport
   class TestCase
     # Something about MBIS doesn't like parallel testing. Very noticeable on the CI
