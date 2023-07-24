@@ -16,24 +16,30 @@ class LondonGoshHandlerColorectalTest < ActiveSupport::TestCase
   end
 
   test 'process_gene_and_variant' do
-    @logger.expects(:debug).with('NO MUTATION FOUND')
-    @logger.expects(:debug).with('Negative genes are ["EPCAM", "MLH1", "MSH2", "MSH6"]')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for EPCAM')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for MLH1')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH2')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH6')
-    assert_equal 4, @handler.process_gene_and_variant(@genotype, @record).size
+    genocolorectals = @handler.process_gene_and_variant(@genotype, @record)
+    assert_equal 4, genocolorectals.size
+    assert_equal 1432, genocolorectals[0].attribute_map['gene']
+    assert_equal 2744, genocolorectals[1].attribute_map['gene']
+    assert_equal 2804, genocolorectals[2].attribute_map['gene']
+    assert_equal 2808, genocolorectals[3].attribute_map['gene']
+    # all are test status 1
+    assert_equal [1], genocolorectals.collect(&:attribute_map).pluck('teststatus').uniq
     cdna_record = build_raw_record('pseudo_id1' => 'bob')
     cdna_record.raw_fields['gene'] = 'MLH1'
     cdna_record.raw_fields['acmg_cdna'] = 'NM_000179.2:c.2960C>T'
     cdna_record.raw_fields['acmg_protein_change'] = 'p.Thr987Ile'
-    @logger.expects(:debug).with('Found mutated gene MLH1')
-    @logger.expects(:debug).with('Negative genes are ["EPCAM", "MSH2", "MSH6"]')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for EPCAM')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH2')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH6')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for MLH1')
-    assert_equal 4, @handler.process_gene_and_variant(@genotype, cdna_record).size
+    cdna_record.raw_fields['acmg_classification'] = '5'
+    genocolorectals_pos = @handler.process_gene_and_variant(@genotype, cdna_record)
+    assert_equal 4, genocolorectals_pos.size
+    assert_equal 1432, genocolorectals_pos[0].attribute_map['gene']
+    assert_equal 2804, genocolorectals_pos[1].attribute_map['gene']
+    assert_equal 2808, genocolorectals_pos[2].attribute_map['gene']
+    # MLH1 is positive now and assigned varpathclass
+    assert_equal 2744, genocolorectals_pos[3].attribute_map['gene']
+    assert_equal 2, genocolorectals_pos[3].attribute_map['teststatus']
+    assert_equal 5, genocolorectals_pos[3].attribute_map['variantpathclass']
+    assert_equal 'c.2960C>T', genocolorectals_pos[3].attribute_map['codingdnasequencechange']
+    assert_equal 'p.Thr987Ile', genocolorectals_pos[3].attribute_map['proteinimpact']
   end
 
   test 'coding_variant' do
@@ -50,19 +56,22 @@ class LondonGoshHandlerColorectalTest < ActiveSupport::TestCase
       dna_variant = cdna_record.raw_fields['acmg_cdna']
     end
     protein_variant = cdna_record.raw_fields['acmg_protein_change']
-    @logger.expects(:debug).with('Found mutated gene MLH1')
-    @logger.expects(:debug).with('Negative genes are ["EPCAM", "MSH2", "MSH6"]')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for EPCAM')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH2')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH6')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for MLH1')
-    assert_equal 4, @handler.coding_variant(@genotype, genotypes, mutated_gene, dna_variant, protein_variant, all_genes).size
+    @handler.coding_variant(@genotype, genotypes, mutated_gene, dna_variant, protein_variant, all_genes)
+    assert_equal 4, genotypes.size
+    assert_equal 1432, genotypes[0].attribute_map['gene']
+    assert_equal 2804, genotypes[1].attribute_map['gene']
+    assert_equal 2808, genotypes[2].attribute_map['gene']
+    # MLH1 is positive
+    assert_equal 2744, genotypes[3].attribute_map['gene']
+    assert_equal 'c.2960C>T', genotypes[3].attribute_map['codingdnasequencechange']
+    assert_equal 'p.Val717AlafsTer18', genotypes[3].attribute_map['proteinimpact']
+    assert_equal 2, genotypes[3].attribute_map['teststatus']
   end
 
   test 'exonic_variant' do
     exon_record = build_raw_record('pseudo_id1' => 'bob')
     exon_record.raw_fields['gene'] = 'MLH1'
-    exon_record.raw_fields['codingdnasequencechange'] = 'MSH2 exon 11-16 deletion'
+    exon_record.raw_fields['codingdnasequencechange'] = 'MLH1 exon 11-16 deletion'
     genotypes = []
     mutated_gene = exon_record.raw_fields['gene']
     unless exon_record.raw_fields['genes analysed'].nil?
@@ -71,31 +80,33 @@ class LondonGoshHandlerColorectalTest < ActiveSupport::TestCase
     unless exon_record.raw_fields['codingdnasequencechange'].nil?
       exonic_variant = exon_record.raw_fields['codingdnasequencechange']
     end
-    @logger.expects(:debug).with('Found mutated gene MLH1 for insertion deletion duplication')
-    @logger.expects(:debug).with('Found mutated deletion for insertion deletion duplication')
-    @logger.expects(:debug).with('Found exon(s) 11-16 for insertion deletion duplication')
-    @logger.expects(:debug).with('Negative genes are ["EPCAM", "MSH2", "MSH6"]')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for EPCAM')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH2')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH6')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for MLH1')
-    assert_equal 4, @handler.exonic_variant(@genotype, genotypes, mutated_gene, exonic_variant, all_genes).size
+    @handler.exonic_variant(@genotype, genotypes, mutated_gene, exonic_variant, all_genes)
+    assert_equal 4, genotypes.size
+    assert_equal 1432, genotypes[0].attribute_map['gene']
+    assert_equal 2804, genotypes[1].attribute_map['gene']
+    assert_equal 2808, genotypes[2].attribute_map['gene']
+    # MLH1 is positive
+    assert_equal 2744, genotypes[3].attribute_map['gene']
+    assert_equal '11-16', genotypes[3].attribute_map['exonintroncodonnumber']
+    assert_equal 2, genotypes[3].attribute_map['teststatus']
   end
 
   test 'negative_mutated_genes' do
     negative_record = build_raw_record('pseudo_id1' => 'bob')
     negative_record.raw_fields['gene'] = 'MLH1'
-    negative_record.raw_fields['codingdnasequencechange'] = 'MSH2 exon 11-16 deletion'
+    negative_record.raw_fields['codingdnasequencechange'] = 'MLH1 exon 11-16 deletion'
     genotypes = []
     mutated_gene = negative_record.raw_fields['gene']
     unless negative_record.raw_fields['genes analysed'].nil?
       all_genes = negative_record.raw_fields['genes analysed']
     end
-    @logger.expects(:debug).with('Negative genes are ["EPCAM", "MSH2", "MSH6"]')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for EPCAM')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH2')
-    @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH6')
-    assert_equal 3, @handler.negative_mutated_genes(@genotype, genotypes, all_genes, mutated_gene).size
+    @handler.negative_mutated_genes(@genotype, genotypes, all_genes, mutated_gene)
+    assert_equal 3, genotypes.size
+    assert_equal 1432, genotypes[0].attribute_map['gene']
+    assert_equal 2804, genotypes[1].attribute_map['gene']
+    assert_equal 2808, genotypes[2].attribute_map['gene']
+    # All marked as test status 1
+    assert_equal [1], genotypes.collect(&:attribute_map).pluck('teststatus').uniq
   end
 
   private

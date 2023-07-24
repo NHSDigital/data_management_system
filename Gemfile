@@ -108,9 +108,6 @@ group :development, :test do
   gem 'pry-rails'
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug'
-  # Explicit requirement needed until ndr_dev_support bumps the webdrivers dependency to the
-  # minimum required for Apple silicon machines
-  gem 'webdrivers', '>= 5.2.0'
   gem 'ndr_dev_support', '~> 7.0'
   # gem 'ndr_dev_support', branch: 'flakey_tests', git: 'https://github.com/PublicHealthEngland/ndr_dev_support.git'
 end
