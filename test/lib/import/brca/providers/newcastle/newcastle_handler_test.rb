@@ -294,12 +294,12 @@ class NewcastleHandlerTest < ActiveSupport::TestCase
     genotypes = @handler.process_variant_records(nmd_withmutation_genotype, nmd_withmutation_record)
     assert_equal 'Full screen BRCA1 and BRCA2', genotypes[0].attribute_map['genetictestscope']
     assert_equal 'Full screen BRCA1 and BRCA2', genotypes[1].attribute_map['genetictestscope']
-    assert_equal 4, genotypes[0].attribute_map['teststatus']
-    assert_equal 1, genotypes[1].attribute_map['teststatus']
-    assert_equal 7, genotypes[0].attribute_map['gene']
-    assert_equal 8, genotypes[1].attribute_map['gene']
-    assert_nil genotypes[0].attribute_map['codingdnasequencechange']
-    assert_nil genotypes[1].attribute_map['proteinimpact']
+    assert_equal 4, genotypes[1].attribute_map['teststatus']
+    assert_equal 1, genotypes[0].attribute_map['teststatus']
+    assert_equal 7, genotypes[1].attribute_map['gene']
+    assert_equal 8, genotypes[0].attribute_map['gene']
+    assert_nil genotypes[1].attribute_map['codingdnasequencechange']
+    assert_nil genotypes[0].attribute_map['proteinimpact']
   end
 
   test 'process_fs_rec_only_with_no_result_status' do
@@ -441,6 +441,15 @@ class NewcastleHandlerTest < ActiveSupport::TestCase
     assert_equal 1, genotypes[0].attribute_map['teststatus']
     assert_nil genotypes[0].attribute_map['gene']
     assert_nil genotypes[0].attribute_map['codingdnasequencechange']
+  end
+
+  test 'variantpathclass assignes to only gene in raw[gene]' do
+    @handler.process_test_scope(@genotype, @record)
+    genotypes = @handler.process_variant_records(@genotype, @record)
+    assert_nil genotypes[0].attribute_map['variantpathclass']
+    assert_equal 8, genotypes[0].attribute_map['gene']
+    assert_equal 3, genotypes[1].attribute_map['variantpathclass']
+    assert_equal 7, genotypes[1].attribute_map['gene']
   end
 
   private
