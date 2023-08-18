@@ -11,12 +11,17 @@ module Import
             TEST_SCOPE_MAP = { 'full gene screen' => :full_screen,
                                'partial gene screen' => :full_screen,
                                'targeted mutation analysis' => :targeted_mutation,
-                               'targeted mutation panel' => :aj_screen }.freeze
+                               'targeted mutation panel' => :aj_screen,
+                               'partial gene mutation screen' => :full_screen,
+                               'sanger sequence analysis and mlpa screen'=> :full_screen,
+                               'targeted mutation analysis - mlpa' => :targeted_mutation,
+                               'targeted mutation analysis - sanger sequencing' => :targeted_mutation }.freeze
 
             TEST_STATUS_MAP = { 'no variants detected' => 1,
                                 'heterozygous variant detected' => 2,
                                 'heterozygous variant detected (mosaic)' => 2,
-                                'fail - cannot interpret data' => 9 }.freeze
+                                'fail - cannot interpret data' => 9,
+                                'fail' => 9 }.freeze
 
             BRCA_REGEX = /(?<brca>BRCA1|BRCA2|MLH1|MSH2|MSH6|PMS2|STK11)/ix
 
