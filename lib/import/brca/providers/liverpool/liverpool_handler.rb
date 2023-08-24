@@ -11,7 +11,8 @@ module Import
 
           def process_fields(record)
             # return for colorectal cases
-            return if record.raw_fields['investigation'].match(/HNPCC|Peutz(-|\s)Jegher\sSyndrome|Lynch\ssyndrome/i)
+            colorectal_cases = /HNPCC|Peutz(-|\s)Jegher\sSyndrome|Lynch\ssyndrome/i
+            return if record.raw_fields['investigation'].match(colorectal_cases)
 
             genotype = Import::Brca::Core::GenotypeBrca.new(record)
             genotype.add_passthrough_fields(record.mapped_fields,
