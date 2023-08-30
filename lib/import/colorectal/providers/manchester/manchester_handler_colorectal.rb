@@ -1,4 +1,3 @@
-require 'pry'
 module Import
   module Colorectal
     module Providers
