@@ -10,6 +10,29 @@ class LiverpoolHandlerTest < ActiveSupport::TestCase
     @logger = Import::Log.get_logger
   end
 
+  test 'process_fields_investigation' do
+    peutz_jegher_syndrome_record = build_raw_record('pseudo_id1' => 'bob')
+    peutz_jegher_syndrome_record.raw_fields['investigation'] = 'Peutz Jegher Syndrome'
+    peutz_jegher_syndrome_record.raw_fields['testscope'] = 'Partial gene screen'
+    peutz_jegher_syndrome_record.raw_fields['testresult'] = 'Fail'
+    results = @handler.process_fields(peutz_jegher_syndrome_record)
+    assert_nil results
+
+    lynch_syndrome_record = build_raw_record('pseudo_id1' => 'bob')
+    lynch_syndrome_record.raw_fields['investigation'] = 'Lynch syndrome'
+    lynch_syndrome_record.raw_fields['testscope'] = 'Partial gene screen'
+    lynch_syndrome_record.raw_fields['testresult'] = 'Fail'
+    results = @handler.process_fields(lynch_syndrome_record)
+    assert_nil results
+
+    familial_breast_cancer_record = build_raw_record('pseudo_id1' => 'bob')
+    familial_breast_cancer_record.raw_fields['investigation'] = 'Familial Breast Cancer'
+    familial_breast_cancer_record.raw_fields['testscope'] = 'Partial gene screen'
+    familial_breast_cancer_record.raw_fields['testresult'] = 'Fail'
+    results = @handler.process_fields(familial_breast_cancer_record)
+    assert_not_nil results
+  end
+
   test 'process_genetictestscope' do
     targ_record = build_raw_record('pseudo_id1' => 'bob')
     @handler.add_genetictestscope(@genotype, targ_record)
@@ -77,7 +100,7 @@ class LiverpoolHandlerTest < ActiveSupport::TestCase
 
     fail_cannot_interpret_data_record = build_raw_record('pseudo_id1' => 'bob')
     fail_cannot_interpret_data_record.raw_fields['testresult'] = 'Fail - Cannot Interpret Data'
-    @handler.add_test_status(@genotype, fail_cannot_interpret_data_record )
+    @handler.add_test_status(@genotype, fail_cannot_interpret_data_record)
     assert_equal 9, @genotype.attribute_map['teststatus']
 
     fail_record = build_raw_record('pseudo_id1' => 'bob')
