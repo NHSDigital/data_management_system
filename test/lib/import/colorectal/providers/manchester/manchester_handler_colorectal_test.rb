@@ -27,16 +27,17 @@ class ManchesterHandlerColorectalTest < ActiveSupport::TestCase
       ]
 
       record = build_raw_record(genotypes_exon_molttype_groups, 'pseudo_id1' => 'bob')
+      genocolorectals = []
       genocolorectal = Import::Colorectal::Core::Genocolorectal.new(record)
       genocolorectal.add_passthrough_fields(record.mapped_fields,
                                             record.raw_fields,
                                             Import::Helpers::Colorectal::Providers::R0a::R0aConstants::PASS_THROUGH_FIELDS_COLO)
       @handler.process_fields(record)
-      @handler.testscope_from_rawfields(genocolorectal, record)
-      mutations = @handler.assign_gene_mutation(genocolorectal, record)
-      assert_equal 'Targeted Colorectal Lynch or MMR', genocolorectal.attribute_map['genetictestscope']
-      assert mutations.one?
-      assert_equal 'c.81C>T', mutations[0].attribute_map['codingdnasequencechange']
+      @handler.assign_testscope_group(genocolorectal)
+      @handler.assign_gene(genocolorectal, record, genocolorectals)
+      assert_equal 'Targeted Colorectal Lynch or MMR', genocolorectals[0].attribute_map['genetictestscope']
+      assert genocolorectals.one?
+      assert_equal 'c.81C>T', genocolorectals[0].attribute_map['codingdnasequencechange']
     end
   end
 
@@ -57,12 +58,12 @@ class ManchesterHandlerColorectalTest < ActiveSupport::TestCase
                                             record.raw_fields,
                                             Import::Helpers::Colorectal::Providers::R0a::R0aConstants::PASS_THROUGH_FIELDS_COLO)
       @handler.process_fields(record)
-      @handler.testscope_from_rawfields(genocolorectal, record)
-      assert_equal 'Targeted Colorectal Lynch or MMR', genocolorectal.attribute_map['genetictestscope']
-      mutations = @handler.assign_gene_mutation(genocolorectal, record)
-      assert_equal 'Targeted Colorectal Lynch or MMR', genocolorectal.attribute_map['genetictestscope']
-      assert mutations.one?
-      assert_equal 1, mutations[0].attribute_map['teststatus']
+      @handler.assign_testscope_group(genocolorectal)
+      genocolorectals = []
+      @handler.assign_gene(genocolorectal, record, genocolorectals)
+      assert_equal 'Targeted Colorectal Lynch or MMR', genocolorectals[0].attribute_map['genetictestscope']
+      assert genocolorectals.one?
+      assert_equal 1, genocolorectals[0].attribute_map['teststatus']
     end
   end
 
@@ -83,12 +84,12 @@ class ManchesterHandlerColorectalTest < ActiveSupport::TestCase
                                             record.raw_fields,
                                             Import::Helpers::Colorectal::Providers::R0a::R0aConstants::PASS_THROUGH_FIELDS_COLO)
       @handler.process_fields(record)
-      @handler.testscope_from_rawfields(genocolorectal, record)
-      assert_equal 'Targeted Colorectal Lynch or MMR', genocolorectal.attribute_map['genetictestscope']
-      mutations = @handler.assign_gene_mutation(genocolorectal, record)
-      assert_equal 'Targeted Colorectal Lynch or MMR', genocolorectal.attribute_map['genetictestscope']
-      assert mutations.one?
-      assert_equal 9, mutations[0].attribute_map['teststatus']
+      @handler.assign_testscope_group(genocolorectal)
+      genocolorectals = []
+      @handler.assign_gene(genocolorectal, record, genocolorectals)
+      assert_equal 'Targeted Colorectal Lynch or MMR', genocolorectals[0].attribute_map['genetictestscope']
+      assert genocolorectals.one?
+      assert_equal 9, genocolorectals[0].attribute_map['teststatus']
     end
   end
 
@@ -109,41 +110,14 @@ class ManchesterHandlerColorectalTest < ActiveSupport::TestCase
                                             record.raw_fields,
                                             Import::Helpers::Colorectal::Providers::R0a::R0aConstants::PASS_THROUGH_FIELDS_COLO)
       @handler.process_fields(record)
-      @handler.testscope_from_rawfields(genocolorectal, record)
-      mutations = @handler.assign_gene_mutation(genocolorectal, record)
-      assert_equal 'Targeted Colorectal Lynch or MMR', genocolorectal.attribute_map['genetictestscope']
-      assert_not mutations.one?
-      assert_equal 2, mutations[0].attribute_map['teststatus']
-      assert_equal 2, mutations[1].attribute_map['teststatus']
-      assert_equal 2, mutations[2].attribute_map['teststatus']
-    end
-  end
-
-  test 'Targeted MSH6 false positive non dosage record' do
-    @importer_stdout, @importer_stderr = capture_io do
-      genotypes_exon_molttype_groups = [
-        ['Normal', 'c.81C>T', 'MSH6 Ex10', 'HNPCC PREDICTIVE TESTING REPORT'],
-        ['c.628-55C>T poly het', 'Fail', 'MSH2 Ex4a', 'HNPCC PREDICTIVE TESTING REPORT'],
-        ['Normal', 'Normal', 'MSH6 Ex4c', 'HNPCC PREDICTIVE TESTING REPORT'],
-        ['Fail', 'Fail', 'MSH6 Ex2', 'HNPCC PREDICTIVE TESTING REPORT'],
-        ['c.2633T>A p.V878A', 'Normal', 'MLH1 Ex4d', 'HNPCC PREDICTIVE TESTING REPORT'],
-        ['Normal', 'Normal', 'MLH1 Ex5', 'HNPCC PREDICTIVE TESTING REPORT'],
-        ['Normal', 'MLH1 c.81C>T', 'MSH6 Ex10', 'HNPCC PREDICTIVE TESTING REPORT']
-      ]
-
-      record = build_raw_record(genotypes_exon_molttype_groups, 'pseudo_id1' => 'bob')
-      genocolorectal = Import::Colorectal::Core::Genocolorectal.new(record)
-      genocolorectal.add_passthrough_fields(record.mapped_fields,
-                                            record.raw_fields,
-                                            Import::Helpers::Colorectal::Providers::R0a::R0aConstants::PASS_THROUGH_FIELDS_COLO)
-      @handler.process_fields(record)
-      @handler.testscope_from_rawfields(genocolorectal, record)
-      mutations = @handler.assign_gene_mutation(genocolorectal, record)
-      assert_equal 'Targeted Colorectal Lynch or MMR', genocolorectal.attribute_map['genetictestscope']
-      assert_not mutations.one?
-      assert_equal 1, mutations[0].attribute_map['teststatus']
-      assert_equal 2, mutations[1].attribute_map['teststatus']
-      assert_equal 2, mutations[2].attribute_map['teststatus']
+      @handler.assign_testscope_group(genocolorectal)
+      genocolorectals = []
+      @handler.assign_gene(genocolorectal, record, genocolorectals)
+      assert_equal 'Targeted Colorectal Lynch or MMR', genocolorectals[0].attribute_map['genetictestscope']
+      assert_equal 3, genocolorectals.size
+      assert_equal 2, genocolorectals[0].attribute_map['teststatus']
+      assert_equal 2, genocolorectals[1].attribute_map['teststatus']
+      assert_equal 2, genocolorectals[2].attribute_map['teststatus']
     end
   end
 
@@ -164,17 +138,22 @@ class ManchesterHandlerColorectalTest < ActiveSupport::TestCase
                                             record.raw_fields,
                                             Import::Helpers::Colorectal::Providers::R0a::R0aConstants::PASS_THROUGH_FIELDS_COLO)
       @handler.process_fields(record)
-      mutations = @handler.assign_gene_mutation(genocolorectal, record)
-      assert_equal 3, mutations.size
-      @handler.testscope_from_rawfields(genocolorectal, record)
-      assert_equal 'Full screen Colorectal Lynch or MMR', genocolorectal.attribute_map['genetictestscope']
-      assert_equal 2, mutations[0].attribute_map['teststatus']
-      assert_equal 9, mutations[1].attribute_map['teststatus']
-      assert_equal 1, mutations[2].attribute_map['teststatus']
+      @handler.assign_testscope_group(genocolorectal)
+      genocolorectals = []
+      @handler.assign_gene(genocolorectal, record, genocolorectals)
+      assert_equal 3, genocolorectals.size
+
+      assert_equal 'Full screen Colorectal Lynch or MMR', genocolorectals.collect { |obj| obj.attribute_map['genetictestscope'] }.uniq.first
+      assert_equal 2, genocolorectals[0].attribute_map['teststatus']
+      assert_equal 2808, genocolorectals[0].attribute_map['gene'] # MSH6
+      assert_equal 1, genocolorectals[1].attribute_map['teststatus']
+      assert_equal 2744, genocolorectals[1].attribute_map['gene'] # MSH2
+      assert_equal 9, genocolorectals[2].attribute_map['teststatus']
+      assert_equal 2804, genocolorectals[2].attribute_map['gene'] # MLH1
     end
   end
 
-  test 'Full Screen MSH6 positive MSH2 false positive for MLH1 Tests non dosage record' do
+  test 'Full Screen MSH6 false positive for MLH1/MSH2/EPCAM Tests non dosage record' do
     @importer_stdout, @importer_stderr = capture_io do
       genotypes_exon_molttype_groups = [
         ['Normal', 'c.81C>T', 'MSH6 Ex10 NGS', 'HNPCC MUTATION SCREENING REPORT'],
@@ -190,21 +169,17 @@ class ManchesterHandlerColorectalTest < ActiveSupport::TestCase
       genocolorectal.add_passthrough_fields(record.mapped_fields,
                                             record.raw_fields,
                                             Import::Helpers::Colorectal::Providers::R0a::R0aConstants::PASS_THROUGH_FIELDS_COLO)
-      @logger.expects(:debug).with('STARTING PARSING')
-      @logger.expects(:debug).with('IDENTIFIED FALSE POSITIVE FOR MSH2, MLH1, 2633T>A from ["Normal", "Fail", "MLH1 c.2633T>A p.V878A"]')
-      @logger.expects(:debug).with('IDENTIFIED MSH2, NORMAL TEST from ["Normal", "Fail", "MLH1 c.2633T>A p.V878A"]')
-      @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH2')
-      @logger.expects(:debug).with('IDENTIFIED MLH1, NORMAL TEST from ["Normal"]')
-      @logger.expects(:debug).with('SUCCESSFUL gene parse for MLH1')
-      @logger.expects(:debug).with('DONE TEST')
       @handler.process_fields(record)
-      @logger.expects(:debug).with('IDENTIFIED FALSE POSITIVE FOR MSH2, MLH1, 2633T>A from ["Normal", "Fail", "MLH1 c.2633T>A p.V878A"]')
-      @logger.expects(:debug).with('IDENTIFIED MSH2, NORMAL TEST from ["Normal", "Fail", "MLH1 c.2633T>A p.V878A"]')
-      @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH2')
-      @logger.expects(:debug).with('IDENTIFIED MLH1, NORMAL TEST from ["Normal"]')
-      @logger.expects(:debug).with('SUCCESSFUL gene parse for MLH1')
-      @handler.assign_gene_mutation(genocolorectal, record)
-      assert @importer_stderr.blank?
+      @handler.assign_testscope_group(genocolorectal)
+      genocolorectals = []
+      @handler.assign_gene(genocolorectal, record, genocolorectals)
+      assert_equal 2, genocolorectals.size
+
+      assert_equal 'Full screen Colorectal Lynch or MMR', genocolorectals.collect { |obj| obj.attribute_map['genetictestscope'] }.uniq.first
+      assert_equal 2, genocolorectals[0].attribute_map['teststatus']
+      assert_equal 2744, genocolorectals[0].attribute_map['gene'] # MLH1
+      assert_equal 1, genocolorectals[1].attribute_map['teststatus']
+      assert_equal 2804, genocolorectals[1].attribute_map['gene'] # MSH2
     end
   end
 
@@ -223,25 +198,20 @@ class ManchesterHandlerColorectalTest < ActiveSupport::TestCase
       genocolorectal.add_passthrough_fields(record.mapped_fields,
                                             record.raw_fields,
                                             Import::Helpers::Colorectal::Providers::R0a::R0aConstants::PASS_THROUGH_FIELDS_COLO)
-      @logger.expects(:debug).with('STARTING PARSING')
-      @logger.expects(:debug).with('IDENTIFIED FALSE POSITIVE FOR MLH1, MSH2, 762T>C from ["MSH2 c.762T>C p.(Asn254Asn) HET", "NGS Normal", "Normal"]')
-      @logger.expects(:debug).with('IDENTIFIED MLH1, NORMAL TEST from ["MSH2 c.762T>C p.(Asn254Asn) HET", "NGS Normal", "Normal"]')
-      @logger.expects(:debug).with('SUCCESSFUL gene parse for MLH1')
-      @logger.expects(:debug).with('IDENTIFIED MSH2, NORMAL TEST from ["Normal", "NGS Normal", "Fail"]')
-      @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH2')
-      @logger.expects(:debug).with('IDENTIFIED MSH6, NORMAL TEST from ["Normal", "NGS Normal", "Fail"]')
-      @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH6')
-      @logger.expects(:debug).with('DONE TEST')
       @handler.process_fields(record)
-      @logger.expects(:debug).with('IDENTIFIED FALSE POSITIVE FOR MLH1, MSH2, 762T>C from ["MSH2 c.762T>C p.(Asn254Asn) HET", "NGS Normal", "Normal"]')
-      @logger.expects(:debug).with('IDENTIFIED MLH1, NORMAL TEST from ["MSH2 c.762T>C p.(Asn254Asn) HET", "NGS Normal", "Normal"]')
-      @logger.expects(:debug).with('SUCCESSFUL gene parse for MLH1')
-      @logger.expects(:debug).with('IDENTIFIED MSH2, NORMAL TEST from ["Normal", "NGS Normal", "Fail"]')
-      @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH2')
-      @logger.expects(:debug).with('IDENTIFIED MSH6, NORMAL TEST from ["Normal", "NGS Normal", "Fail"]')
-      @logger.expects(:debug).with('SUCCESSFUL gene parse for MSH6')
-      @handler.assign_gene_mutation(genocolorectal, record)
-      assert @importer_stderr.blank?
+      @handler.assign_testscope_group(genocolorectal)
+      genocolorectals = []
+      @handler.assign_gene(genocolorectal, record, genocolorectals)
+      assert_equal 3, genocolorectals.size
+      assert_equal 'Full screen Colorectal Lynch or MMR', genocolorectals.collect { |obj| obj.attribute_map['genetictestscope'] }.uniq.first
+      assert_equal 1, genocolorectals[0].attribute_map['teststatus']
+      assert_equal 2808, genocolorectals[0].attribute_map['gene'] # MSH6
+      assert_equal 1, genocolorectals[1].attribute_map['teststatus']
+      assert_equal 2744, genocolorectals[1].attribute_map['gene'] # MLH1
+      assert_equal 2, genocolorectals[2].attribute_map['teststatus']
+      assert_equal 2804, genocolorectals[2].attribute_map['gene'] # MSH2
+      assert_equal 'c.762T>C', genocolorectals[2].attribute_map['codingdnasequencechange']
+      assert_equal 'p.Asn254Asn', genocolorectals[2].attribute_map['proteinimpact']
     end
   end
 
@@ -258,11 +228,15 @@ class ManchesterHandlerColorectalTest < ActiveSupport::TestCase
                                             record.raw_fields,
                                             Import::Helpers::Colorectal::Providers::R0a::R0aConstants::PASS_THROUGH_FIELDS_COLO)
       @handler.process_fields(record)
-      mutations = @handler.assign_gene_mutation(genocolorectal, record)
-      @handler.testscope_from_rawfields(genocolorectal, record)
-      assert_equal 'Full screen Colorectal Lynch or MMR', genocolorectal.attribute_map['genetictestscope']
-      assert_not mutations.one?
-      assert_equal 2, mutations[0].attribute_map['teststatus']
+      @handler.assign_testscope_group(genocolorectal)
+      genocolorectals = []
+      @handler.assign_gene(genocolorectal, record, genocolorectals)
+      assert_equal 'Full screen Colorectal Lynch or MMR', genocolorectals[0].attribute_map['genetictestscope']
+      assert_equal 2, genocolorectals.size
+      assert_equal 2, genocolorectals[0].attribute_map['teststatus']
+      assert_equal 2804, genocolorectals[0].attribute_map['gene'] # MSH2
+      assert_equal 1, genocolorectals[1].attribute_map['teststatus']
+      assert_equal 2744, genocolorectals[1].attribute_map['gene'] # MLH1
     end
   end
 
@@ -285,37 +259,15 @@ class ManchesterHandlerColorectalTest < ActiveSupport::TestCase
                                             record.raw_fields,
                                             Import::Helpers::Colorectal::Providers::R0a::R0aConstants::PASS_THROUGH_FIELDS_COLO)
       @handler.process_fields(record)
-      @handler.testscope_from_rawfields(genocolorectal, record)
-      mutations = @handler.assign_gene_mutation(genocolorectal, record)
+      genocolorectals = []
+      @handler.assign_testscope_group(genocolorectal)
+      @handler.assign_gene(genocolorectal, record, genocolorectals)
       assert_equal 'Full screen Colorectal Lynch or MMR', genocolorectal.attribute_map['genetictestscope']
-      assert mutations.one?
-      assert_equal 1, mutations[0].attribute_map['teststatus']
-    end
-  end
-
-  test 'Multiple mutations single gene' do
-    @importer_stdout, @importer_stderr = capture_io do
-      genotypes_exon_molttype_groups = [
-        ['Normal', 'c.81C>T', 'MSH6 Ex10', 'HNPCC PREDICTIVE TESTING REPORT'],
-        ['c.628-55C>T poly het', 'Fail', 'MSH2 Ex4a', 'HNPCC PREDICTIVE TESTING REPORT'],
-        ['Normal', 'Normal', 'MSH6 Ex4c', 'HNPCC PREDICTIVE TESTING REPORT'],
-        ['Fail', 'Fail', 'MSH6 Ex2', 'HNPCC PREDICTIVE TESTING REPORT'],
-        ['c.2633T>A p.V878A', 'Normal', 'MLH1 Ex4d', 'HNPCC PREDICTIVE TESTING REPORT'],
-        ['c.666A>G', 'Normal', 'MLH1 Ex5', 'HNPCC PREDICTIVE TESTING REPORT']
-      ]
-
-      record = build_raw_record(genotypes_exon_molttype_groups, 'pseudo_id1' => 'bob')
-      genocolorectal = Import::Colorectal::Core::Genocolorectal.new(record)
-      genocolorectal.add_passthrough_fields(record.mapped_fields,
-                                            record.raw_fields,
-                                            Import::Helpers::Colorectal::Providers::R0a::R0aConstants::PASS_THROUGH_FIELDS_COLO)
-      @handler.process_fields(record)
-      mutations = @handler.assign_gene_mutation(genocolorectal, record)
-      assert_equal 4, mutations.size
-      assert_equal 2744, mutations[2].attribute_map['gene']
-      assert_equal 'c.2633T>A', mutations[2].attribute_map['codingdnasequencechange']
-      assert_equal 2744, mutations[3].attribute_map['gene']
-      assert_equal 'c.666A>G', mutations[3].attribute_map['codingdnasequencechange']
+      assert genocolorectals.one?
+      assert_equal 2, genocolorectals[0].attribute_map['teststatus']
+      assert_equal 2808, genocolorectals[0].attribute_map['gene'] # MSH6
+      assert_equal 'c.2633T>A', genocolorectals[0].attribute_map['codingdnasequencechange']
+      assert_equal 'p.v878a', genocolorectals[0].attribute_map['proteinimpact']
     end
   end
 
@@ -336,24 +288,48 @@ class ManchesterHandlerColorectalTest < ActiveSupport::TestCase
                                             record.raw_fields,
                                             Import::Helpers::Colorectal::Providers::R0a::R0aConstants::PASS_THROUGH_FIELDS_COLO)
       @handler.process_fields(record)
-      mutations = @handler.assign_gene_mutation(genocolorectal, record)
-      assert_equal 3, mutations.size
-      assert_equal 2808, mutations[0].attribute_map['gene']
-      assert_equal 2804, mutations[1].attribute_map['gene']
-      assert_equal 2744, mutations[2].attribute_map['gene']
+      genocolorectals = []
+      @handler.assign_testscope_group(genocolorectal)
+      @handler.assign_gene(genocolorectal, record, genocolorectals)
+      assert_equal 3, genocolorectals.size
+      assert_equal 2808, genocolorectals[0].attribute_map['gene']
+      assert_equal 2804, genocolorectals[1].attribute_map['gene']
+      assert_equal 2744, genocolorectals[2].attribute_map['gene']
     end
   end
 
-  test 'no genetictestscope' do
-    @importer_stdout, @importer_stderr = capture_io do
-      genotypes_exon_molttype_groups = [
-        ['Normal', nil, 'MLH1_MSH2 MLPA', 'INHERITED CANCER PANEL GENETIC TESTING REPORT\r\n@subpanel SUBPANEL']
-      ]
-      record = build_raw_record(genotypes_exon_molttype_groups, 'pseudo_id1' => 'bob')
-      genocolorectal = Import::Colorectal::Core::Genocolorectal.new(record)
-      @handler.testscope_from_rawfields(genocolorectal, record)
-      assert_equal 'Unable to assign Colorectal Lynch or MMR genetictestscope', genocolorectal.attribute_map['genetictestscope']
-    end
+  test 'EPCAM gene presence' do
+    genotypes_exon_molttype_groups = [
+      ['MSH2 Ex1-1 to Ex7 del HET;  EPCAM(Ex9-1) to EPCAM (Ex9-2) also del HET', nil, 'MLH1_MSH2 MLPA', 'LYNCH SYNDROME (@gene) - PREDICTIVE TESTING REPORT'],
+      ['MSH2 Ex1-1 to Ex7 del HET;  EPCAM(Ex9-1) to EPCAM (Ex9-2) also del HET', nil, 'MLH1_MSH2 MLPA', 'LYNCH SYNDROME (@gene) - PREDICTIVE TESTING REPORT']
+    ]
+
+    record = build_raw_record(genotypes_exon_molttype_groups, 'pseudo_id1' => 'bob')
+    genocolorectal = Import::Colorectal::Core::Genocolorectal.new(record)
+    genocolorectal.add_passthrough_fields(record.mapped_fields,
+                                          record.raw_fields,
+                                          Import::Helpers::Colorectal::Providers::R0a::R0aConstants::PASS_THROUGH_FIELDS_COLO)
+    @handler.process_fields(record)
+    genocolorectals = []
+    @handler.assign_testscope_group(genocolorectal)
+    @handler.assign_gene(genocolorectal, record, genocolorectals)
+    assert_equal 2, genocolorectals.size
+    assert_equal 2, genocolorectals[0].attribute_map['teststatus']
+    assert_equal 1432, genocolorectals[0].attribute_map['gene'] # EPCAM
+    assert_equal 'ex-9-2', genocolorectals[0].attribute_map['exonintroncodonnumber']
+    assert_equal 2, genocolorectals[1].attribute_map['teststatus']
+    assert_equal 'ex-1-1-ex-7-del', genocolorectals[1].attribute_map['exonintroncodonnumber']
+    assert_equal 2, genocolorectals[1].attribute_map['teststatus']
+    assert_equal 2804, genocolorectals[1].attribute_map['gene'] # MSH2
+  end
+
+  test 'do_not_import_cases' do
+    genotypes_exon_molttype_groups = [
+      ['Normal', 'c.81C>T', 'MSH6 Ex10', 'BRCA2 VARIANT CONFIRMATION REPORT']
+    ]
+    record = build_raw_record(genotypes_exon_molttype_groups, 'pseudo_id1' => 'bob')
+    @handler.do_not_import(record)
+    assert_empty record.raw_fields
   end
 
   private

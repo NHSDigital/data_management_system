@@ -30,7 +30,8 @@ module Import
                            'SMAD4' => 72,
                            'STK11' => 76,
                            'GREM1' => 1882,
-                           'NTHL1' => 3108 }.freeze
+                           'NTHL1' => 3108,
+                           'CDH1' => 794 }.freeze
 
         COLORECTAL_REGEX = /(?<apc>APC)|
                             (?<bmpr>BMPR1A)|
@@ -47,7 +48,8 @@ module Import
                             (?<smad>SMAD4)|
                             (?<stk>STK11)|
                             (?<grem>GREM1)|
-                            (?<nthl>NTHL1)/ix # Added by Francesco
+                            (?<nthl>NTHL1)|
+                            (?<cdh1>CDH1)/ix # Added by Francesco
 
         # ------------------------ Interogators ------------------------------
 
@@ -59,11 +61,18 @@ module Import
           scope == 'Full screen Colorectal Lynch or MMR'
         end
 
+        def targeted?
+          scope = @attribute_map['genetictestscope']
+          return nil unless scope
+
+          scope == 'Targeted Colorectal Lynch or MMR'
+        end
+
         def add_gene_colorectal(colorectal_input)
           case colorectal_input
           when Integer
             if [1432, 358, 577, 2744, 2804, 2808, 2850, 3394,
-                3408, 5000, 62, 72, 76, 1882, 3108].include? colorectal_input
+                3408, 5000, 62, 72, 76, 1882, 3108, 794].include? colorectal_input
 
               @attribute_map['gene'] = colorectal_input
               @logger.debug "SUCCESSFUL gene parse for #{colorectal_input}"
