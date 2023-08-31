@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
-gem 'activemodel-caution', '6.1.7.4' # must match rails version
-gem 'rails', '~> 6.1.7.4'
+gem 'activemodel-caution', '6.1.7.6' # must match rails version
+gem 'rails', '~> 6.1.7.6'
 
 # Use old psych for YAML on Ruby 3.1 until we move to Rails 7.0.4
 # so that we can continue to use aliases in config/locales/en.yml
