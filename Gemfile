@@ -50,9 +50,9 @@ unless defined?(BUNDLER_OVERRIDE_MINI_RACER) && BUNDLER_OVERRIDE_MINI_RACER
   gem 'mini_racer', '0.6.2'
 end
 
+gem 'parser', '3.1.2.0' # supports ruby 3.0.4
 # Turbolinks makes following links in your web application faster. Read more: https://github.com/rails/turbolinks
 gem 'turbolinks', '~> 5.x'
-gem 'parser', '3.1.2.0' # supports ruby 3.0.4
 
 gem 'webpacker'
 
@@ -60,15 +60,15 @@ gem 'daemons'
 gem 'delayed_job', '~> 4.1'
 gem 'delayed_job_active_record'
 
-gem 'devise', '~> 4.7', '>=  4.7.1'
 gem 'cancancan', '~> 3.0'
-gem 'highline'
 gem 'cocoon'
+gem 'devise', '~> 4.7', '>=  4.7.1'
+gem 'highline'
 gem 'paper_trail', '~> 12.0'
 gem 'paper_trail-association_tracking'
-gem 'will_paginate'
 gem 'possibly'
 gem 'pry'
+gem 'will_paginate'
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 
@@ -90,9 +90,9 @@ gem 'axlsx'
 gem 'bootstrap-table-rails'
 gem 'zip-zip' # annoying backwards compatibility for old axlsx version
 
-gem 'regexp-examples'
 gem 'loofah', '>= 2.3.1' # address CVE-2019-15587
 gem 'nokogiri', '~> 1.11'
+gem 'regexp-examples'
 
 gem 'jquery-rails'
 gem 'jquery-ui-rails'
@@ -102,9 +102,11 @@ group :test do
 
   gem 'minitest'
 
-  gem 'mocha'
-  gem "capistrano", ">= 2.5.0", "< 3.0", :require => false # Capistrano 3.0 has some potentially incompatible changes. Leave version unchanged until move to Rails 3 complete
+  # Capistrano 3.0 has some potentially incompatible changes.
+  # Leave version unchanged workarounds can be found
+  gem 'capistrano', '>= 2.5.0', '< 3.0', require: false
   gem 'capybara-email'
+  gem 'mocha'
 end
 
 group :development, :test do
@@ -117,10 +119,10 @@ end
 
 group :development do
   gem 'guard'
+  gem 'guard-livereload', '~> 2.5', require: false
   gem 'guard-rubocop'
   gem 'guard-shell'
   gem 'guard-test'
-  gem 'guard-livereload', '~> 2.5', require: false
   # Conditionally requiring ensures that the Gemfile.lock remains consistent cross-platform.
   mac_osx = (RUBY_PLATFORM =~ /darwin/)
   gem 'terminal-notifier-guard', require: (mac_osx ? 'terminal-notifier-guard' : false)
@@ -130,8 +132,8 @@ group :development do
 
   gem 'rack-mini-profiler'
 
+  gem 'railroady'
   # Spring speeds up development by keeping your application running in the background.
   # Read more: https://github.com/rails/spring
   gem 'spring'
-  gem 'railroady'
 end
