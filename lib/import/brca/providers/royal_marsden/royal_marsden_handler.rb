@@ -22,6 +22,10 @@ module Import
                                  '2b' => 2,
                                  '2c' => 3,
                                  'variant' => 2 }.freeze
+          NON_PATH_VARIANT_CLASS= {'2a' => 1,
+                                   '2b' => 2,
+                                   'variant' => 2 }.freeze
+
 
           TEST_TYPE_MAP = { 'affected' => :diagnostic,
                             'unaffected' => :predictive }.freeze
@@ -98,13 +102,19 @@ module Import
             end
 
             teststatus = record.raw_fields['teststatus']
+            nonpathvarclass = record.raw_fields['variantpathclass'].downcase.strip
             # unless record.raw_fields['teststatus'].nil?
-            if normal_test?(teststatus)
-              genotype.add_status(1)
-            elsif failed_test?(teststatus)
+            if failed_test?(teststatus)
               genotype.add_status(9)
+              genotype.add_variant_class(nil)
+            elsif non_pathogenic_variant_test?(teststatus, nonpathvarclass)
+              genotype.add_status(10)
             elsif positive_test?(teststatus)
               genotype.add_status(2)
+            elsif normal_test?(teststatus)
+              genotype.add_status(1)
+            elsif borderline_test?(teststatus)
+                genotype.add_status(7)
             end
           end
 
@@ -162,9 +172,20 @@ module Import
 
           def positive_test?(teststatus)
             /c\..+/.match(teststatus) ||
-              /Deletion*/.match(teststatus) ||
-              /Duplication*/.match(teststatus) ||
-              /Exon*/i.match(teststatus)
+              /Deletion.*/.match(teststatus) ||
+              /Duplication.*/.match(teststatus) ||
+              /Exon.*/i.match(teststatus) ||
+              /Del.*ex\s?1*/i.match(teststatus) ||
+              /Ex.*del/i.match(teststatus) ||
+              /BRCA.*exon.*Deletion/i.match(teststatus)
+          end
+
+          def borderline_test?(teststatus)
+            /borderline/.match(teststatus)  
+          end
+
+          def non_pathogenic_variant_test?(teststatus, nonpathvarclass)
+            /non-pathogenic\svariant\sdetected/i.match(teststatus) || NON_PATH_VARIANT_CLASS[nonpathvarclass].present?
           end
         end
       end
