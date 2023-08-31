@@ -11,8 +11,11 @@ gem 'psych', '3.3.2' # Exactly match the version on Ruby 3.0
 # Use postgresql as the database for Active Record
 # gem 'pg', '>= 0.18', '< 2.0'
 gem 'pg', '~> 1.2.3' # Support old CentOS 7 PostgreSQL client 9.2.24
+
 # use Puma as the app server
-gem 'puma', '~> 4.0', '>= 4.3.5' # Bump to >= 4.3.5 in response to CVE-2020-11076 & CVE-2020-11077
+gem 'puma', '~> 6.0'
+gem 'puma-daemon', require: false
+
 # Use SCSS for stylesheets
 gem 'sass-rails'
 # Use CoffeeScript for .coffee assets and views
