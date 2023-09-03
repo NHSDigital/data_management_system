@@ -81,6 +81,10 @@ gem 'will_paginate'
 # net-imap (via ndr_error) requires date. Puma needs us to stick to the ruby default version.
 gem 'date', '3.1.3' # Lock to Ruby 3.0 version of gem for live service
 
+# TODO 2023-09-03: Updating mail to 2.8.1 causes tests failures
+#                  After resolving these, the whole of the following line can be removed.
+gem 'mail', '>= 2.1.1', '< 2.8.0' # mail 2.8.0 and 2.8.0.1 have major hidden bugs
+
 gem 'ndr_authenticate', '~> 0.3', '>= 0.3.3'
 gem 'ndr_error', '~> 2.0'
 gem 'ndr_import'
@@ -104,7 +108,8 @@ gem 'jquery-ui-rails'
 group :test do
   gem 'simplecov'
 
-  gem 'minitest'
+  # TODO 2023-09-03: Updating minitest to 5.19.0 causes tests failures
+  gem 'minitest', '~> 5.14.4'
 
   # Capistrano 3.0 has some potentially incompatible changes.
   # Leave version unchanged workarounds can be found
