@@ -222,7 +222,7 @@ GEM
       libv8-node (~> 16.10.0.0)
     mini_racer (0.6.2-x86_64-linux)
       libv8-node (~> 16.10.0.0)
-    minitest (5.14.4)
+    minitest (5.18.1)
     mocha (2.1.0)
       ruby2_keywords (>= 0.0.5)
     msworddoc-extractor (0.2.0)
@@ -521,10 +521,11 @@ GEM
       rubyzip (>= 1.0.0)
 
 PLATFORMS
+  arm64-darwin
   arm64-darwin-22
   ruby
-  x86_64-darwin-20
   x86_64-darwin-21
+  x86_64-darwin-22
   x86_64-linux
 
 DEPENDENCIES
@@ -554,7 +555,7 @@ DEPENDENCIES
   loofah (>= 2.3.1)
   mail (>= 2.1.1, < 2.8.0)
   mini_racer (= 0.6.2)
-  minitest (~> 5.14.4)
+  minitest
   mocha
   ndr_authenticate (~> 0.3, >= 0.3.3)
   ndr_dev_support (~> 7.0)

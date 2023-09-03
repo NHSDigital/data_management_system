@@ -108,8 +108,7 @@ gem 'jquery-ui-rails'
 group :test do
   gem 'simplecov'
 
-  # TODO 2023-09-03: Updating minitest to 5.19.0 causes tests failures
-  gem 'minitest', '~> 5.14.4'
+  gem 'minitest'
 
   # Capistrano 3.0 has some potentially incompatible changes.
   # Leave version unchanged workarounds can be found
