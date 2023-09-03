@@ -37,7 +37,7 @@ module Import
             end
 
             def rejected_genotype?(raw_record)
-              raw_record['genotype'] =~ /NC/i
+              %w[NC nc].include? raw_record['genotype']
             end
 
             def rejected_exon?(raw_record)
@@ -105,9 +105,35 @@ module Import
                 process_exons(genocolorectal_dup, genotype)
                 genocolorectal_dup.add_status(get_status(genotype))
                 genocolorectal_dup.add_gene_colorectal(gene)
-                @genes -= [gene]
                 genocolorectals << genocolorectal_dup
               end
+            end
+
+            def deduplicate_genocolorectals(genocolorectals)
+              genocolorectals.each do |obj1|
+                genocolorectals.each do |obj2|
+                  if obj1 != obj2 && same_genocolorectal_object(obj1, obj2)
+                    genocolorectals -= [obj1]
+                  end
+                end
+              end
+              genocolorectals
+            end
+
+            def same_genocolorectal_object(obj1, obj2)
+              result = true
+              obj1_cdna = obj1.attribute_map['codingdnasequencechange'].to_s
+              if obj1_cdna.include? obj2.attribute_map['codingdnasequencechange'].to_s
+                %w[gene teststatus genetictestscope exonintroncodonnumber].each do |attribute|
+                  unless obj1.attribute_map[attribute] == obj2.attribute_map[attribute]
+                    result = false
+                    break
+                  end
+                end
+              else
+                result = false
+              end
+              result
             end
 
             def normal_test_logging_for(selected_genes, gene, genetic_info)

@@ -31,8 +31,8 @@ module Import
             fix_genes(record)
             assign_testscope_group(genocolorectal)
             genocolorectals = []
-            assign_gene(genocolorectal, record, genocolorectals)
-            genocolorectals.each { |genotype| @persister.integrate_and_store(genotype) }
+            genocolorectals_dedup = assign_gene(genocolorectal, record, genocolorectals)
+            genocolorectals_dedup.each { |genotype| @persister.integrate_and_store(genotype) }
             @lines_processed += 1 # TODO: factor this out to be automatic across handlers
             @logger.debug('DONE TEST')
           end
@@ -86,27 +86,23 @@ module Import
                                                                          MUTYH CDH1]
             genes_found = extract_genes_from_raw_fields
             @genes = genes_found.flatten.intersection(valid_genes)
+
             process_records(record, genocolorectal, genocolorectals)
+            deduplicate_genocolorectals(genocolorectals)
           end
 
           def process_records(_record, genocolorectal, genocolorectals)
             variant_recs = get_status_records(@raw_fields, Regexp.union(CDNA_REGEX, EXON_REGEX))
+            variant_recs&.uniq!
             normal_recs = get_status_records(@raw_fields - variant_recs, NORMAL_STATUS)
-            failed_recs = get_status_records(@raw_fields - normal_recs, FAIL_STATUS)
-
+            failed_recs = get_status_records(@raw_fields - (variant_recs + normal_recs),
+                                             FAIL_STATUS)
             process_status_recs(variant_recs, Regexp.union(CDNA_REGEX, EXON_REGEX),
                                 genocolorectal, genocolorectals)
             process_status_recs(normal_recs, NORMAL_STATUS, genocolorectal, genocolorectals)
             process_status_recs(failed_recs, FAIL_STATUS, genocolorectal, genocolorectals)
 
-            # Left over records
-            remaining_raw_records = @raw_fields.reject { |h| failed_recs.include?(h) }
-            remaining_raw_records.each do |rec|
-              genotype_column = rec['genotype'].blank? ? 'genotype2' : 'genotype'
-              process_genotypes(rec, genotype_column, genocolorectal, genocolorectals)
-            end
-
-            return if @genes.empty? || !genocolorectal.full_screen?
+            return if @genes.empty?
 
             # mark left genes as normal
             mark_genes_normal(genocolorectal, genocolorectals)
@@ -120,6 +116,7 @@ module Import
               genes_exon = rec['exon'].scan(COLORECTAL_GENES_REGEX).flatten.uniq
               genes_to_process = genes_genotype.size.positive? ? genes_genotype : genes_exon
               relevant_genes = genes_to_process & @genes
+              @genes_processed << relevant_genes
               process_relevant_genes(relevant_genes, genocolorectal, genocolorectals, genotype)
             end
           end
@@ -181,10 +178,13 @@ module Import
           end
 
           def process_status_recs(status_recs, status, genocolorectal, genocolorectals)
+            @genes_processed = []
             status_recs&.each do |status_rec|
               genotype_column = get_genotype_column(status_rec, status)
               process_genotypes(status_rec, genotype_column, genocolorectal, genocolorectals)
             end
+            @genes_processed&.uniq!
+            @genes -= @genes_processed&.flatten
           end
 
           def get_gene_seprated_array(genes_present, rec, genotype_column)

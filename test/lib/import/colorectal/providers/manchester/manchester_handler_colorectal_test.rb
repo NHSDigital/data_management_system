@@ -34,7 +34,7 @@ class ManchesterHandlerColorectalTest < ActiveSupport::TestCase
                                             Import::Helpers::Colorectal::Providers::R0a::R0aConstants::PASS_THROUGH_FIELDS_COLO)
       @handler.process_fields(record)
       @handler.assign_testscope_group(genocolorectal)
-      @handler.assign_gene(genocolorectal, record, genocolorectals)
+      genocolorectals = @handler.assign_gene(genocolorectal, record, genocolorectals)
       assert_equal 'Targeted Colorectal Lynch or MMR', genocolorectals[0].attribute_map['genetictestscope']
       assert genocolorectals.one?
       assert_equal 'c.81C>T', genocolorectals[0].attribute_map['codingdnasequencechange']
@@ -60,7 +60,7 @@ class ManchesterHandlerColorectalTest < ActiveSupport::TestCase
       @handler.process_fields(record)
       @handler.assign_testscope_group(genocolorectal)
       genocolorectals = []
-      @handler.assign_gene(genocolorectal, record, genocolorectals)
+      genocolorectals = @handler.assign_gene(genocolorectal, record, genocolorectals)
       assert_equal 'Targeted Colorectal Lynch or MMR', genocolorectals[0].attribute_map['genetictestscope']
       assert genocolorectals.one?
       assert_equal 1, genocolorectals[0].attribute_map['teststatus']
@@ -86,7 +86,7 @@ class ManchesterHandlerColorectalTest < ActiveSupport::TestCase
       @handler.process_fields(record)
       @handler.assign_testscope_group(genocolorectal)
       genocolorectals = []
-      @handler.assign_gene(genocolorectal, record, genocolorectals)
+      genocolorectals = @handler.assign_gene(genocolorectal, record, genocolorectals)
       assert_equal 'Targeted Colorectal Lynch or MMR', genocolorectals[0].attribute_map['genetictestscope']
       assert genocolorectals.one?
       assert_equal 9, genocolorectals[0].attribute_map['teststatus']
@@ -112,7 +112,7 @@ class ManchesterHandlerColorectalTest < ActiveSupport::TestCase
       @handler.process_fields(record)
       @handler.assign_testscope_group(genocolorectal)
       genocolorectals = []
-      @handler.assign_gene(genocolorectal, record, genocolorectals)
+      genocolorectals = @handler.assign_gene(genocolorectal, record, genocolorectals)
       assert_equal 'Targeted Colorectal Lynch or MMR', genocolorectals[0].attribute_map['genetictestscope']
       assert_equal 3, genocolorectals.size
       assert_equal 2, genocolorectals[0].attribute_map['teststatus']
@@ -140,7 +140,7 @@ class ManchesterHandlerColorectalTest < ActiveSupport::TestCase
       @handler.process_fields(record)
       @handler.assign_testscope_group(genocolorectal)
       genocolorectals = []
-      @handler.assign_gene(genocolorectal, record, genocolorectals)
+      genocolorectals = @handler.assign_gene(genocolorectal, record, genocolorectals)
       assert_equal 3, genocolorectals.size
 
       assert_equal 'Full screen Colorectal Lynch or MMR', genocolorectals.collect { |obj| obj.attribute_map['genetictestscope'] }.uniq.first
@@ -172,7 +172,7 @@ class ManchesterHandlerColorectalTest < ActiveSupport::TestCase
       @handler.process_fields(record)
       @handler.assign_testscope_group(genocolorectal)
       genocolorectals = []
-      @handler.assign_gene(genocolorectal, record, genocolorectals)
+      genocolorectals = @handler.assign_gene(genocolorectal, record, genocolorectals)
       assert_equal 2, genocolorectals.size
 
       assert_equal 'Full screen Colorectal Lynch or MMR', genocolorectals.collect { |obj| obj.attribute_map['genetictestscope'] }.uniq.first
@@ -201,7 +201,7 @@ class ManchesterHandlerColorectalTest < ActiveSupport::TestCase
       @handler.process_fields(record)
       @handler.assign_testscope_group(genocolorectal)
       genocolorectals = []
-      @handler.assign_gene(genocolorectal, record, genocolorectals)
+      genocolorectals = @handler.assign_gene(genocolorectal, record, genocolorectals)
       assert_equal 3, genocolorectals.size
       assert_equal 'Full screen Colorectal Lynch or MMR', genocolorectals.collect { |obj| obj.attribute_map['genetictestscope'] }.uniq.first
       assert_equal 1, genocolorectals[0].attribute_map['teststatus']
@@ -230,7 +230,7 @@ class ManchesterHandlerColorectalTest < ActiveSupport::TestCase
       @handler.process_fields(record)
       @handler.assign_testscope_group(genocolorectal)
       genocolorectals = []
-      @handler.assign_gene(genocolorectal, record, genocolorectals)
+      genocolorectals = @handler.assign_gene(genocolorectal, record, genocolorectals)
       assert_equal 'Full screen Colorectal Lynch or MMR', genocolorectals[0].attribute_map['genetictestscope']
       assert_equal 2, genocolorectals.size
       assert_equal 2, genocolorectals[0].attribute_map['teststatus']
@@ -261,7 +261,7 @@ class ManchesterHandlerColorectalTest < ActiveSupport::TestCase
       @handler.process_fields(record)
       genocolorectals = []
       @handler.assign_testscope_group(genocolorectal)
-      @handler.assign_gene(genocolorectal, record, genocolorectals)
+      genocolorectals = @handler.assign_gene(genocolorectal, record, genocolorectals)
       assert_equal 'Full screen Colorectal Lynch or MMR', genocolorectal.attribute_map['genetictestscope']
       assert genocolorectals.one?
       assert_equal 2, genocolorectals[0].attribute_map['teststatus']
@@ -290,11 +290,40 @@ class ManchesterHandlerColorectalTest < ActiveSupport::TestCase
       @handler.process_fields(record)
       genocolorectals = []
       @handler.assign_testscope_group(genocolorectal)
-      @handler.assign_gene(genocolorectal, record, genocolorectals)
+      genocolorectals = @handler.assign_gene(genocolorectal, record, genocolorectals)
+      
       assert_equal 3, genocolorectals.size
       assert_equal 2808, genocolorectals[0].attribute_map['gene']
       assert_equal 2804, genocolorectals[1].attribute_map['gene']
       assert_equal 2744, genocolorectals[2].attribute_map['gene']
+    end
+  end
+
+  test 'Multiple mutations single gene' do
+    @importer_stdout, @importer_stderr = capture_io do
+      genotypes_exon_molttype_groups = [
+        ['Normal', 'c.81C>T', 'MSH6 Ex10', 'HNPCC PREDICTIVE TESTING REPORT'],
+        ['c.628-55C>T poly het', 'Fail', 'MSH2 Ex4a', 'HNPCC PREDICTIVE TESTING REPORT'],
+        ['Normal', 'Normal', 'MSH6 Ex4c', 'HNPCC PREDICTIVE TESTING REPORT'],
+        ['Fail', 'Fail', 'MSH6 Ex2', 'HNPCC PREDICTIVE TESTING REPORT'],
+        ['c.2633T>A p.V878A', 'Normal', 'MLH1 Ex4d', 'HNPCC PREDICTIVE TESTING REPORT'],
+        ['c.666A>G', 'Normal', 'MLH1 Ex5', 'HNPCC PREDICTIVE TESTING REPORT']
+      ]
+
+      record = build_raw_record(genotypes_exon_molttype_groups, 'pseudo_id1' => 'bob')
+      genocolorectal = Import::Colorectal::Core::Genocolorectal.new(record)
+      genocolorectal.add_passthrough_fields(record.mapped_fields,
+                                            record.raw_fields,
+                                            Import::Helpers::Colorectal::Providers::R0a::R0aConstants::PASS_THROUGH_FIELDS_COLO)
+      @handler.process_fields(record)
+      genocolorectals = []
+      @handler.assign_testscope_group(genocolorectal)
+      genocolorectals = @handler.assign_gene(genocolorectal, record, genocolorectals)
+      assert_equal 4, genocolorectals.size
+      assert_equal 2744, genocolorectals[2].attribute_map['gene']
+      assert_equal 'c.2633T>A', genocolorectals[2].attribute_map['codingdnasequencechange']
+      assert_equal 2744, genocolorectals[3].attribute_map['gene']
+      assert_equal 'c.666A>G', genocolorectals[3].attribute_map['codingdnasequencechange']
     end
   end
 
@@ -312,8 +341,8 @@ class ManchesterHandlerColorectalTest < ActiveSupport::TestCase
     @handler.process_fields(record)
     genocolorectals = []
     @handler.assign_testscope_group(genocolorectal)
-    @handler.assign_gene(genocolorectal, record, genocolorectals)
-    assert_equal 2, genocolorectals.size
+    genocolorectals = @handler.assign_gene(genocolorectal, record, genocolorectals)
+    assert_equal 3, genocolorectals.size
     assert_equal 2, genocolorectals[0].attribute_map['teststatus']
     assert_equal 1432, genocolorectals[0].attribute_map['gene'] # EPCAM
     assert_equal 'ex-9-2', genocolorectals[0].attribute_map['exonintroncodonnumber']
@@ -321,6 +350,8 @@ class ManchesterHandlerColorectalTest < ActiveSupport::TestCase
     assert_equal 'ex-1-1-ex-7-del', genocolorectals[1].attribute_map['exonintroncodonnumber']
     assert_equal 2, genocolorectals[1].attribute_map['teststatus']
     assert_equal 2804, genocolorectals[1].attribute_map['gene'] # MSH2
+    assert_equal 1, genocolorectals[2].attribute_map['teststatus']
+    assert_equal 2744, genocolorectals[2].attribute_map['gene'] # MLH1
   end
 
   test 'do_not_import_cases' do
