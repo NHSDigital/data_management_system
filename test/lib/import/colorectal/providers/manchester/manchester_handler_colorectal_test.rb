@@ -291,7 +291,6 @@ class ManchesterHandlerColorectalTest < ActiveSupport::TestCase
       genocolorectals = []
       @handler.assign_testscope_group(genocolorectal)
       genocolorectals = @handler.assign_gene(genocolorectal, record, genocolorectals)
-      
       assert_equal 3, genocolorectals.size
       assert_equal 2808, genocolorectals[0].attribute_map['gene']
       assert_equal 2804, genocolorectals[1].attribute_map['gene']

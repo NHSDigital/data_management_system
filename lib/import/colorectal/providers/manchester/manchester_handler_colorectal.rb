@@ -39,15 +39,12 @@ module Import
 
           def fix_genes(_record)
             @raw_fields.each do |rec|
-              rec['genotype']&.gsub!('MHS2', 'MSH2')
-              rec['genotype']&.gsub!('MLA1', 'MLH1')
-              rec['genotype']&.gsub!('MHS6', 'MSH6')
-              rec['genotype2']&.gsub!('MHS2', 'MSH2')
-              rec['genotype2']&.gsub!('MLA1', 'MLH1')
-              rec['genotype2']&.gsub!('MHS6', 'MSH6')
-              rec['exon']&.gsub!('MHS2', 'MSH2')
-              rec['exon']&.gsub!('MLA1', 'MLH1')
-              rec['exon']&.gsub!('MHS6', 'MSH6')
+              replacement_map = { 'MHS2' => 'MSH2', 'MLA1' => 'MLH1', 'MHS6' => 'MSH6' }
+              replacement_map.each do |k, v|
+                rec['genotype']&.gsub!(k, v)
+                rec['genotype2']&.gsub!(k, v)
+                rec['exon']&.gsub!(k, v)
+              end
             end
           end
 
