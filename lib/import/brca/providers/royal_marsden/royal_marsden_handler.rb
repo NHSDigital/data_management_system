@@ -162,7 +162,6 @@ module Import
 
           def normal_test?(teststatus)
             %r{NO PATHOGENIC (VARIANT|DEL/DUP) IDENTIFIED}.match(teststatus) ||
-              /non-pathogenic variant detected/.match(teststatus) ||
               /No mutation detected/.match(teststatus)
           end
 
