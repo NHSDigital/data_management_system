@@ -22,19 +22,18 @@ module Import
                                  '2b' => 2,
                                  '2c' => 3,
                                  'variant' => 2 }.freeze
-          NON_PATH_VARIANT_CLASS= {'2a' => 1,
-                                   '2b' => 2,
-                                   'variant' => 2 }.freeze
-
+          NON_PATH_VARIANT_CLASS = { '2a' => 1,
+                                     '2b' => 2,
+                                     'variant' => 2 }.freeze
 
           TEST_TYPE_MAP = { 'affected' => :diagnostic,
                             'unaffected' => :predictive }.freeze
 
-          CDNA_REGEX_PROT = /c\.(?<cdna>.+)(?=(?<separtors>_|;.)p\.(?<impact>.+))/i.freeze
-          CDNA_REGEX_NOPROT = /c\.(?<cdna>.+)/i.freeze
+          CDNA_REGEX_PROT = /c\.(?<cdna>.+)(?=(?<separtors>_|;.)p\.(?<impact>.+))/i
+          CDNA_REGEX_NOPROT = /c\.(?<cdna>.+)/i
           DEL_DUP_REGEX = /(?<deldup>Deletion|Duplication)\sexon(?<s>s)?\s(?<exon>\d+(?<d>-\d+)?)|
                            exon(?<s>s)?\s(?<exon>\d+(?<d>-\d+)?)
-                           \s(?<deldup>Deletion|Duplication)/ix.freeze
+                           \s(?<deldup>Deletion|Duplication)/ix
 
           def initialize(batch)
             @failed_genotype_counter = 0
@@ -100,10 +99,13 @@ module Import
               @logger.debug 'UNABLE TO DETERMINE TESTSTATUS'
               return
             end
-
             teststatus = record.raw_fields['teststatus']
             nonpathvarclass = record.raw_fields['variantpathclass'].downcase.strip
             # unless record.raw_fields['teststatus'].nil?
+            process_assign_teststatus(genotype, teststatus, nonpathvarclass)
+          end
+
+          def process_assign_teststatus(genotype, teststatus, nonpathvarclass)
             if failed_test?(teststatus)
               genotype.add_status(9)
               genotype.add_variant_class(nil)
@@ -114,7 +116,7 @@ module Import
             elsif normal_test?(teststatus)
               genotype.add_status(1)
             elsif borderline_test?(teststatus)
-                genotype.add_status(7)
+              genotype.add_status(7)
             end
           end
 
@@ -180,11 +182,12 @@ module Import
           end
 
           def borderline_test?(teststatus)
-            /borderline/.match(teststatus)  
+            /borderline/.match(teststatus)
           end
 
           def non_pathogenic_variant_test?(teststatus, nonpathvarclass)
-            /non-pathogenic\svariant\sdetected/i.match(teststatus) || NON_PATH_VARIANT_CLASS[nonpathvarclass].present?
+            /non-pathogenic\svariant\sdetected/i.match(teststatus) ||
+              NON_PATH_VARIANT_CLASS[nonpathvarclass].present?
           end
         end
       end

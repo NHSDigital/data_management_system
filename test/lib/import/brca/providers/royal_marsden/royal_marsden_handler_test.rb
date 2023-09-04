@@ -63,7 +63,7 @@ class RoyalMarsdenHandlerTest < ActiveSupport::TestCase
     non_path_record.raw_fields['variantpathclass'] = 'variant'
     @handler.process_teststatus(@genotype, non_path_record)
     assert_equal 10, @genotype.attribute_map['teststatus']
-    
+
     path_record = build_raw_record('pseudo_id1' => 'bob')
     path_record.raw_fields['teststatus'] = 'Ex Del'
     path_record.raw_fields['variantpathclass'] = '1b'
@@ -93,8 +93,6 @@ class RoyalMarsdenHandlerTest < ActiveSupport::TestCase
     path_record.raw_fields['variantpathclass'] = '1b'
     @handler.process_teststatus(@genotype, path_record)
     assert_equal 10, @genotype.attribute_map['teststatus']
-    
-
   end
 
   test 'process_variant' do
