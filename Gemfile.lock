@@ -222,7 +222,7 @@ GEM
       libv8-node (~> 16.10.0.0)
     mini_racer (0.6.2-x86_64-linux)
       libv8-node (~> 16.10.0.0)
-    minitest (5.18.1)
+    minitest (5.19.0)
     mocha (2.1.0)
       ruby2_keywords (>= 0.0.5)
     msworddoc-extractor (0.2.0)
@@ -235,7 +235,7 @@ GEM
       net-ldap
       rails (>= 6.0, < 7.1)
       yubikey
-    ndr_dev_support (7.2.0)
+    ndr_dev_support (7.2.1)
       activesupport (>= 6.1, < 7.1)
       brakeman (>= 4.7.1)
       bundler-audit
