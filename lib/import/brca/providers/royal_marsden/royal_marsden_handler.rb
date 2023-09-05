@@ -100,7 +100,11 @@ module Import
               return
             end
             teststatus = record.raw_fields['teststatus']
-            nonpathvarclass = record.raw_fields['variantpathclass'].downcase.strip
+            if record.raw_fields['variantpathclass'].nil?
+              nonpathvarclass = nil
+            else
+              nonpathvarclass = record.raw_fields['variantpathclass'].downcase.strip
+            end
             # unless record.raw_fields['teststatus'].nil?
             process_assign_teststatus(genotype, teststatus, nonpathvarclass)
           end
