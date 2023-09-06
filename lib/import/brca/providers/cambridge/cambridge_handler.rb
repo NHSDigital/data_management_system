@@ -54,7 +54,7 @@ module Import
             when CDNA_REGEX
               genotype.add_gene_location($LAST_MATCH_INFO[:cdna])
               @logger.debug "SUCCESSFUL cdna change parse for: #{$LAST_MATCH_INFO[:cdna]}"
-              non_pathogenic_status(genotype, variantpathclass)
+              non_pathogenic_status?(genotype, variantpathclass)
             else
               @logger.debug 'FAILED cdna change parse for: ' \
                             "#{record.raw_fields['codingdnasequencechange']}"
