@@ -31,8 +31,8 @@ module Import
                                             PASS_THROUGH_FIELDS)
             # genotype.add_gene(record.mapped_fields['gene'].to_i) # TODO: wrap in option for safety
             variantpathclass = record.raw_fields['variantpathclass'].to_i
-            process_gene(genotype, record, variantpathclass)
-            process_cdna_change(genotype, record)
+            process_gene(genotype, record)
+            process_cdna_change(genotype, record, variantpathclass)
             add_protein_impact(genotype, record)
             genotype.add_variant_class(variantpathclass)
             process_genomic_change(genotype, record)
