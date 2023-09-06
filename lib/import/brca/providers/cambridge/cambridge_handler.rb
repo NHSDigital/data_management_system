@@ -30,10 +30,11 @@ module Import
                                             record.raw_fields,
                                             PASS_THROUGH_FIELDS)
             # genotype.add_gene(record.mapped_fields['gene'].to_i) # TODO: wrap in option for safety
-            process_gene(genotype, record)
+            variantpathclass = record.raw_fields['variantpathclass'].to_i
+            process_gene(genotype, record, variantpathclass)
             process_cdna_change(genotype, record)
             add_protein_impact(genotype, record)
-            genotype.add_variant_class(record.raw_fields['variantpathclass'].to_i)
+            genotype.add_variant_class(variantpathclass)
             process_genomic_change(genotype, record)
             # genotype.add_received_date(record.raw_fields['received date'])
             genotype.add_test_scope(:full_screen)
@@ -48,13 +49,17 @@ module Import
             genotype.attribute_map['organisationcode_testresult'] = '69860'
           end
 
-          def process_cdna_change(genotype, record)
+          def process_cdna_change(genotype, record, variantpathclass)
             case record.raw_fields['codingdnasequencechange']
             when CDNA_REGEX
               genotype.add_gene_location($LAST_MATCH_INFO[:cdna])
               @logger.debug "SUCCESSFUL cdna change parse for: #{$LAST_MATCH_INFO[:cdna]}"
-              @positive_test += 1
-              genotype.add_status(:positive) # Added after coding
+              if variantpathclass==1 || variantpathclass==2
+                genotype.add_status(:nonpathogenic)
+              else
+                genotype.add_status(:positive) # Added after coding
+                @positive_test += 1
+              end
             else
               @logger.debug 'FAILED cdna change parse for: ' \
               "#{record.raw_fields['codingdnasequencechange']}"

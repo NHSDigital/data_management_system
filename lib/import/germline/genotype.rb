@@ -410,6 +410,8 @@ module Import
           @attribute_map['teststatus'] = 9 # added recently by Francesco
         when :unknown
           @attribute_map['teststatus'] = 4 # added recently by Francesco
+        when :nonpathogenic
+          @attribute_map['teststatus'] = 10
         else
           @logger.error("Bad type given for addStatus; value: #{status} of type: #{status.class}")
         end
