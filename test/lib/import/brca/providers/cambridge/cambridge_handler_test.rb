@@ -12,13 +12,27 @@ class CambridgeHandlerTest < ActiveSupport::TestCase
 
   test 'process_cdna_change' do
     @logger.expects(:debug).with('SUCCESSFUL cdna change parse for: 7994A>G')
-    @handler.process_cdna_change(@genotype, @record)
+    @handler.process_cdna_change(@genotype, @record, 6)
     assert_equal 2, @genotype.attribute_map['teststatus']
     broken_record = build_raw_record('pseudo_id1' => 'bob')
     broken_record.raw_fields['codingdnasequencechange'] = 'Cabbage'
     @logger.expects(:debug).with('FAILED cdna change parse for: Cabbage')
-    @handler.process_cdna_change(@genotype, broken_record)
+    @handler.process_cdna_change(@genotype, broken_record, 6)
     assert_equal 1, @genotype.attribute_map['teststatus']
+
+    record_varpathclass_1 = build_raw_record('pseudo_id1' => 'bob')
+    record_varpathclass_1.raw_fields['codingdnasequencechange'] = 'c.12345A>G'
+    @logger.expects(:debug).with('SUCCESSFUL cdna change parse for: 12345A>G')
+    @handler.process_cdna_change(@genotype, record_varpathclass_1, 1)
+    assert_equal 10, @genotype.attribute_map['teststatus']
+
+    record_varpathclass_2 = build_raw_record('pseudo_id1' => 'bob')
+    record_varpathclass_2.raw_fields['codingdnasequencechange'] = 'c.12345A>G'
+    @logger.expects(:debug).with('SUCCESSFUL cdna change parse for: 12345A>G')
+    @handler.process_cdna_change(@genotype, record_varpathclass_2, 2)
+    assert_equal 10, @genotype.attribute_map['teststatus']
+
+
   end
 
   test 'add_protein_impact' do
