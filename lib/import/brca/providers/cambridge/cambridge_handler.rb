@@ -66,7 +66,7 @@ module Import
 
           def non_pathogenic_status?(genotype, variantpathclass)
             if [1, 2].include?(variantpathclass)
-              genotype.add_status(:nonpathogenic)
+              genotype.add_status(10)
             else
               genotype.add_status(:positive) # Added after coding
               @positive_test += 1
