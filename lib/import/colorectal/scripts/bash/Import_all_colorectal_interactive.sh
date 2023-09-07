@@ -94,7 +94,7 @@ done
 R0A () {
 PROV='R0A'
 IFS=$'\n'
-for x in $(find  $DIRPATH/$FILEPATH -type f -name "*HNPCC*.pseudo" -path "*/$PROV/*")
+for x in $(find  $DIRPATH/$FILEPATH -type f -iname "*HNPCC*.pseudo" -path "*/$PROV/*" -o -type f -iname "*FAP*.pseudo" -path "*/$PROV/*")
 do
 IFS="$OIFS"
 $BRAKE import:colorectal fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
