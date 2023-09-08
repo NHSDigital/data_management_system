@@ -121,11 +121,12 @@ module Import
 
           def add_zygosity(genotype, record)
             zygosity = record.raw_fields['variantgenotype'] # unless zygosity.nil?
-            if zygosity == '0/1'
+            case zygosity
+            when '0/1'
               genotype.add_zygosity('het')
               @logger.debug 'SUCCESSFUL zygosity parse for: ' \
                             "#{record.raw_fields['variantgenotype'].to_str}"
-            elsif zygosity == '0/0'
+            when '0/0'
               genotype.add_zygosity('homo')
               @logger.debug 'SUCCESSFUL zygosity parse for: ' \
                             "#{record.raw_fields['variantgenotype'].to_str}"
