@@ -26,8 +26,7 @@ module Import
 
           def process_fields(record)
             genotype = Import::Brca::Core::GenotypeBrca.new(record)
-            genotype.add_passthrough_fields(record.mapped_fields,
-                                            record.raw_fields,
+            genotype.add_passthrough_fields(record.mapped_fields, record.raw_fields,
                                             PASS_THROUGH_FIELDS)
             # genotype.add_gene(record.mapped_fields['gene'].to_i) # TODO: wrap in option for safety
             variantpathclass = record.raw_fields['variantpathclass'].to_i
