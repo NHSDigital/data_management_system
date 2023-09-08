@@ -64,12 +64,9 @@ module Import
                                                   record.raw_fields,
                                                   PASS_THROUGH_FIELDS_COLO)
             genocolorectal.add_test_scope(:full_screen)
-            process_varpathclass(genocolorectal, record)
             add_organisationcode_testresult(genocolorectal)
-            # process_gene_and_variant(genocolorectal, record)
             res = process_gene_and_variant(genocolorectal, record)
             res.map { |cur_genotype| @persister.integrate_and_store(cur_genotype) }
-            # @persister.integrate_and_store(genocolorectal)
           end
 
           def add_organisationcode_testresult(genocolorectal)
@@ -79,16 +76,21 @@ module Import
           def process_gene_and_variant(genocolorectal, record)
             genotypes = []
             mutated_gene = record.raw_fields['gene']
-            all_genes = record.raw_fields['genes analysed'] unless record.raw_fields['genes analysed'].nil?
+            unless record.raw_fields['genes analysed'].nil?
+              all_genes = record.raw_fields['genes analysed']
+            end
             dna_variant = record.raw_fields['acmg_cdna'] unless record.raw_fields['acmg_cdna'].nil?
             protein_variant = record.raw_fields['acmg_protein_change']
-            exonic_variant = record.raw_fields['codingdnasequencechange'] unless record.raw_fields['codingdnasequencechange'].nil?
+            unless record.raw_fields['codingdnasequencechange'].nil?
+              exonic_variant = record.raw_fields['codingdnasequencechange']
+            end
             if COLORECTAL_GENES_REGEX.match(mutated_gene)
               if CDNA_REGEX.match(dna_variant)
                 coding_variant(genocolorectal, genotypes, mutated_gene, dna_variant, protein_variant, all_genes)
               elsif DEL_DUP_REGEX.match(exonic_variant)
                 exonic_variant(genocolorectal, genotypes, mutated_gene, exonic_variant, all_genes)
               end
+              process_varpathclass(genocolorectal, record)
             else
               negative_genes(genocolorectal, genotypes, all_genes)
             end

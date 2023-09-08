@@ -1,4 +1,3 @@
-require 'pry'
 require 'possibly'
 
 module Import
@@ -23,7 +22,6 @@ module Import
             add_organisationcode_testresult(genocolorectal)
             add_test_scope(genocolorectal, record)
             add_test_type(genocolorectal, record)
-            add_variant_class(genocolorectal, record)
             add_test_status(genocolorectal, record)
             res = process_variant_records(genocolorectal, record) # Added by Francesco
             res.each { |cur_genotype| @persister.integrate_and_store(cur_genotype) }
@@ -135,6 +133,7 @@ module Import
             else # for other status null gene record
               process_null_gene_rec(genocolorectal, genocolorectals)
             end
+            add_variant_class(genocolorectal, record)
           end
 
           def add_fs_negative_genes(gene, genocolorectal, genocolorectals, _record)
@@ -164,6 +163,7 @@ module Import
             gene = get_gene(record)
             genocolorectal.add_gene_colorectal(gene)
             process_variants(genocolorectal, variant) if positive_rec?(genocolorectal)
+            add_variant_class(genocolorectal, record)
             genocolorectals.append(genocolorectal)
           end
 

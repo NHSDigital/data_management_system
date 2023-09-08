@@ -23,7 +23,6 @@ module Import
                                             PASS_THROUGH_FIELDS,
                                             FIELD_NAME_MAPPINGS)
             add_organisationcode_testresult(genotype)
-            add_variantpathclass(genotype, record)
             process_test_scope(genotype, record)
             process_test_status(genotype, record)
             final_results = process_variant_records(genotype, record)
@@ -117,17 +116,14 @@ module Import
             gene = get_gene(record)
             genotype.add_gene(gene)
             variant = get_variant(record)
-            if positive_rec?(record)
+            if positive_rec?(record) || gene.present?
               add_fs_negative_gene(genotype, genotypes)
-              process_variants(genotype, variant)
+              process_variants(genotype, variant) if positive_rec?(record)
+              add_variantpathclass(genotype, record)
               genotypes.append(genotype)
-            elsif gene.present? # for other status records
-              genotypes.append(genotype)
-              add_fs_negative_gene(genotype, genotypes)
             else
               process_null_gene_rec(genotype, genotypes)
             end
-
             genotypes
           end
 
@@ -160,6 +156,7 @@ module Import
             genotype.add_gene(get_gene(record))
             variant = get_variant(record)
             process_variants(genotype, variant) if positive_rec?(record)
+            add_variantpathclass(genotype, record)
             genotypes.append(genotype)
             genotypes
           end

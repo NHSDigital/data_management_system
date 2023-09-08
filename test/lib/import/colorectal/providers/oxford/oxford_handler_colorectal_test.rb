@@ -134,6 +134,18 @@ class OxfordHandlerColorectalTest < ActiveSupport::TestCase
     assert_equal 4, @genotype.attribute_map['variantpathclass']
   end
 
+  test 'assign positive test status to records with exon inversion and c.?' do
+    genotypes = []
+    inv_record = build_raw_record('pseudo_id1' => 'bob')
+    inv_record.raw_fields['codingdnasequencechange'] = 'Exons 1-7 inversion'
+    @handler.process_cdna_change(inv_record, @genotype, genotypes)
+    assert_equal 2, @genotype.attribute_map['teststatus']
+    pos_rec = build_raw_record('pseudo_id1' => 'bob')
+    pos_rec.raw_fields['codingdnasequencechange'] = 'c.?'
+    @handler.process_cdna_change(pos_rec, @genotype, genotypes)
+    assert_equal 2, @genotype.attribute_map['teststatus']
+  end
+
   private
 
   def clinical_json

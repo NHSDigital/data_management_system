@@ -24,12 +24,28 @@
 #     | variable                 | default                      |
 #     +--------------------------+-----------------------       +
 #     | RAILS_ENV                | "production"                 |
-#     | MBIS_DATABASE_USERNAME * | none; required               |
-#     | MBIS_DATABASE_PASSWORD * | none; required               |
-#     | SECRET_KEY_BASE        * | defaults to random           |
+#     | DATABASE_URL             | none; required               |
+#     | RAILS_MASTER_KEY         | none; required               |
+#     | SECRET_KEY_BASE          | defaults to random           |
+#     | SMTP_USERNAME            | none                         |
+#     | SMTP_PASSWORD            | none                         |
 #     | STACK                  * | attempts to derive from user |
+#     | PUMA_PORT                | 5001                         |
+#     | RAILS_MIN_THREADS        | 5                            |
+#     | RAILS_MAX_THREADS        | 5                            |
+#     | WEB_CONCURRENCY          | 10                           |
+#     |                          |                              |
+#     | ADMIN_USERS_BASE64       | none; required;              |
+#     | DATABASE_BASE64          | none; required;              |
+#     | CREDENTIALS_BASE64       | none; required;              |
+#     | EXCLUDED_MBISIDS_BASE64  | none; required;              |
+#     | ODR_USERS_BASE64         | none; required;              |
+#     | SMTP_SETTINGS_BASE64     | none; required;              |
+#     | SPECIAL_USERS_BASE64     | none; required;              |
+#     | USER_YUBIKEYS_BASE64     | none; required;              |
+#     | PUBLIC_KEY_BASE64        | none; required;              |
 #     +--------------------------+-----------------------       +
-#     | * not use yet                                           |
+#     | * not used yet                                          |
 #     +--------------------------------------------------       +
 #
 # ===========================================================
@@ -50,6 +66,18 @@ if ! command -v $PUMA_CMD 2>&1 >/dev/null; then
   echo "$PUMA_CMD not found in PATH!"
   exit 1
 fi
+
+CONFIG="$CURRENT/config"
+
+# =================================================================================================
+# Puma configuration
+
+export PUMA_PORT="${PUMA_PORT:-5001}"
+export RAILS_MIN_THREADS="${RAILS_MIN_THREADS:-5}"
+export RAILS_MAX_THREADS="${RAILS_MAX_THREADS:-5}"
+export WEB_CONCURRENCY="${WEB_CONCURRENCY:-10}"
+
+# =================================================================================================
 
 # Pick a system stack:
 # UNCOMMENT AS REQUIRED ON NON SAMPLE FILE
@@ -74,7 +102,22 @@ else
 fi
 
 # =================================================================================================
-# UNCOMMENT THIS TO ALLOW SECRET KEY GENERATION / SUPPLY (currently, its hardcoded)
+# UNCOMMENT THIS TO ALLOW GATHERING OF RAILS_MASTER_KEY
+#
+if [ -z "$RAILS_MASTER_KEY" -a ! -e "$CONFIG/master.key" ]; then
+  # Prompt for master key if not present.
+  if tty -s; then
+    echo "RAILS_MASTER_KEY is in TeamPass, in NDR Deployment / MBIS RAILS_MASTER_KEY"
+    read -rsp "Enter RAILS_MASTER_KEY: " RAILS_MASTER_KEY
+    echo ''
+  fi
+fi
+
+export RAILS_MASTER_KEY
+# =================================================================================================
+
+# =================================================================================================
+# UNCOMMENT THIS TO ALLOW SECRET KEY GENERATION / SUPPLY
 #
 # if [ -z "$SECRET_KEY_BASE" ]; then
 #   # Prompt for a secret key if we haven't got one, and it's possible to do so:
@@ -93,15 +136,58 @@ fi
 # =================================================================================================
 
 # =================================================================================================
-# UNCOMMENT THIS TO ALLOW GATHERING OF DATABASE CREDENTIALS (currently, they're hardcoded)
+# UNCOMMENT THIS TO ALLOW GATHERING OF DATABASE CREDENTIALS
 #
-# echo You need to enter valid credientials for the three databases.
-# echo ''
-# [ -n "MBIS_DATABASE_USERNAME" ] || read -rep "database username: " MBIS_DATABASE_USERNAME
-# [ -n "MBIS_DATABASE_PASSWORD" ] || read -rsp "database password: " MBIS_DATABASE_PASSWORD
+if [ "$HOSTNAME" != "ncr-prescr-app1" -a "$HOSTNAME" != "ncr-prescr-app2" ]; then
+  # This is not needed on the existing servers
+  if [ -z "$DATABASE_URL" ]; then
+    if tty -s; then
+      echo You may need to enter valid credentials for the database. Leave blank to use config/database.yml entries.
+      echo E.g. postgres://username:password@localhost/myrailsdb
+      read -rsp "Enter DATABASE_URL: " DATABASE_URL
+      echo ''
+    fi
+  fi
+  if [ -n "$DATABASE_URL" ]; then
+    export DATABASE_URL
+  fi
+fi
+# =================================================================================================
+
+# =================================================================================================
+# Config files
 #
-# export MBIS_DATABASE_USERNAME
-# export MBIS_DATABASE_PASSWORD
+# Can be supplied as Base64 encoded strings via ENV vars and will be written to file.
+#
+
+# Helper function to avoid repetitive code. Takes a Base64 payload (first arg) and writes
+# the decoded output to disk (file path is the second arg).
+# If the second argument is a symlink, the decoded output will be written to its destination.
+function decode64 {
+  if [ -n "$1" -a -n "$2" ]; then
+    echo "$1" | base64 --decode > "$2"
+  fi
+}
+
+decode64 "$ADMIN_USERS_BASE64" "$CONFIG/admin_users.yml"
+decode64 "$DATABASE_BASE64" "$CONFIG/database.yml"
+decode64 "$CREDENTIALS_BASE64" "$CONFIG/credentials.yml.enc"
+decode64 "$EXCLUDED_MBISIDS_BASE64" "$CONFIG/excluded_mbisids.yml.enc"
+decode64 "$ODR_USERS_BASE64" "$CONFIG/odr_users.yml"
+decode64 "$SMTP_SETTINGS_BASE64" "$CONFIG/smtp_settings.yml"
+decode64 "$SPECIAL_USERS_BASE64" "$CONFIG/special_users.production.yml"
+decode64 "$USER_YUBIKEYS_BASE64" "$CONFIG/user_yubikeys.yml"
+
+# Not needed for webapps, only for god services:
+# decode64 "$REGULAR_EXTRACTS_BASE64" "$CONFIG/regular_extracts.csv"
+
+mkdir -p "$CONFIG/keys"
+decode64 $PUBLIC_KEY_BASE64 "$CONFIG/keys/mbis_project_data_passwords_20180323_public.pem"
+
+# Not needed on AWS
+mkdir -p "$CONFIG/certificates/saml"
+# decode64 $CERTIFICATES_ENCRYPTION_BASE64 "$CONFIG/certificates/saml/encryption.phe.adfs.pem"
+# decode64 $CERTIFICATES_SIGNING_BASE64 "$CONFIG/certificates/saml/signing.phe.adfs.pem"
 # =================================================================================================
 
 export RAILS_ENV="${RAILS_ENV:-production}"

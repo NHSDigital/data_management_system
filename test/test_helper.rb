@@ -128,9 +128,6 @@ end
 # Bootstrap for the single process case:
 bootstrap_download_helper
 
-# Ensure the driver is installed in advance of any parallel testing.
-Webdrivers::Chromedriver.update
-
 module ActiveSupport
   class TestCase
     # Something about MBIS doesn't like parallel testing. Very noticeable on the CI
@@ -241,14 +238,14 @@ end
 module ActionMailerHelper
   # Override :assert_enqueued_email_with to be aware of our own mailer config injection
   # (see ApplicationMailer), for convenience.
-  def assert_enqueued_email_with(mailer, method, args: nil, queue: 'mailers', &block)
+  def assert_enqueued_email_with(mailer, method, args: nil, queue: 'default', &block)
     args.merge!(url_options: ActionMailer::Base.default_url_options) if args.is_a?(Hash)
 
     super
   end
 
-  # Inverse of :assert_enqueued_email_with. Not present in Rails (<= 6.0.3.7).
-  def refute_enqueued_email_with(mailer, method, args: nil, queue: 'mailers', &block)
+  # Inverse of :assert_enqueued_email_with. Not present in Rails (<= 6.1.7.3).
+  def refute_enqueued_email_with(mailer, method, args: nil, queue: 'default', &block)
     args =
       if args.is_a?(Hash)
         args.merge!(url_options: ActionMailer::Base.default_url_options)
@@ -260,7 +257,7 @@ module ActionMailerHelper
     refute_enqueued_with(job: mailer.delivery_job, args: args, queue: queue, &block)
   end
 
-  # Inverse of :assert_enqueued_with from ActiveJob::TestHelper. Not present in Rails (<= 6.0.3.7).
+  # Inverse of :assert_enqueued_with from ActiveJob::TestHelper. Not present in Rails (<= 6.1.7.3).
   def refute_enqueued_with(job: nil, args: nil, at: nil, queue: nil)
     expected = { job: job, args: args, at: at, queue: queue }.compact
     expected_args = prepare_args_for_assertion(expected)
