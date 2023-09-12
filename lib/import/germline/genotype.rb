@@ -37,7 +37,7 @@ module Import
                             'unclassified variant' => 3,
                             'vus' => 3,
                             'likely benign' => 2,
-                            'normal' => nil, # Useful for non-variants
+                            #'normal' => nil, # Useful for non-variants
                             'non-pathological variant' => 1,
                             'benign' => 1 }.freeze
 
@@ -345,6 +345,10 @@ module Import
         elsif variant.is_a?(String)
           if VARIANT_CLASS_MAP[variant.downcase.strip]
             @attribute_map['variantpathclass'] = VARIANT_CLASS_MAP[variant.downcase.strip]
+          elsif variant.downcase.strip =='normal'
+            @attribute_map['variantpathclass']= nil
+          elsif variant.downcase.strip =='invalidvariantpathclass'
+            @attribute_map['variantpathclass']= nil
           else
             @logger.warn "Bad variant class string given: #{variant}; cannot process"
           end
