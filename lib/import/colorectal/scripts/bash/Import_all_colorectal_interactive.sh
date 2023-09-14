@@ -13,7 +13,7 @@ echo $FILEPATH
 RTD () {
 PROV='RTD'
 IFS=$'\n'
-for x in $(find  $DIRPATH/$FILEPATH -type f -name "*Colorectal*pseudo" -path "*/$PROV/*" )
+for x in $(find  $DIRPATH/$FILEPATH -not -path "*/API_BETA_RETRIEVED/*" -type f -name "*Colorectal*pseudo" -path "*/$PROV/*" )
 do
 IFS="$OIFS"
 $BRAKE import:colorectal fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
@@ -23,7 +23,7 @@ done
 RR8 () {
 PROV='RR8'
 IFS=$'\n'
-for x in $(find  $DIRPATH/$FILEPATH -type f -name "*MMR*.pseudo" -path "*/$PROV/*")
+for x in $(find  $DIRPATH/$FILEPATH  -not -path "*/API_BETA_RETRIEVED/*" -type f -name "*MMR*.pseudo" -path "*/$PROV/*")
 do
 IFS="$OIFS"
 $BRAKE import:colorectal fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
@@ -34,7 +34,7 @@ done
 RR8_2 () {
 PROV='RR8'
 IFS=$'\n'
-for x in $(find  $DIRPATH/$FILEPATH  -type f  -name "*other*pseudo" -path "*/$PROV/*" )
+for x in $(find  $DIRPATH/$FILEPATH -not -path "*/API_BETA_RETRIEVED/*"  -type f  -name "*other*pseudo" -path "*/$PROV/*" )
 do
 IFS="$OIFS"
 $BRAKE import:colorectal fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
@@ -44,7 +44,7 @@ done
 RNZ () {
 PROV='RNZ'
 IFS=$'\n'
-for x in $(find $DIRPATH/$FILEPATH -type f -name "*Lynch*.pseudo" -path "*/$PROV/*" )
+for x in $(find $DIRPATH/$FILEPATH -not -path "*/API_BETA_RETRIEVED/*" -type f -name "*Lynch*.pseudo" -path "*/$PROV/*" )
 do
 IFS="$OIFS"
 $BRAKE import:colorectal fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
@@ -54,7 +54,7 @@ done
 RX1 () {
 PROV='RX1'
 IFS=$'\n'
-for x in $(find  $DIRPATH/$FILEPATH -type f -name "*Lynch*.pseudo" -path "*/$PROV/*" )
+for x in $(find  $DIRPATH/$FILEPATH -not -path "*/API_BETA_RETRIEVED/*" -type f -name "*Lynch*.pseudo" -path "*/$PROV/*" )
 do
 IFS="$OIFS"
 $BRAKE import:colorectal fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
@@ -64,7 +64,7 @@ done
 RX1_2 () {
 PROV='RX1'
 IFS=$'\n'
-for x in $(find  $DIRPATH/$FILEPATH -type f -name "*Bowel*.pseudo" -path "*/$PROV/*" )
+for x in $(find  $DIRPATH/$FILEPATH -not -path "*/API_BETA_RETRIEVED/*" -type f -name "*Bowel*.pseudo" -path "*/$PROV/*" )
 do
 IFS="$OIFS"
 $BRAKE import:colorectal fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
@@ -74,7 +74,7 @@ done
 RCU () {
 PROV='RCU'
 IFS=$'\n'
-for x in $(find  $DIRPATH/$FILEPATH -type f -name "*.pseudo" -path "*/$PROV/*")
+for x in $(find  $DIRPATH/$FILEPATH -not -path "*/API_BETA_RETRIEVED/*" -type f -name "*.pseudo" -path "*/$PROV/*")
 do
 IFS="$OIFS"
 bundle exec rake import:colorectal fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
@@ -84,7 +84,7 @@ done
 RGT () {
 PROV='RGT'
 IFS=$'\n'
-for x in $(find  $DIRPATH/$FILEPATH -type f -name "*Lynch*.pseudo" -path "*/$PROV/*" )
+for x in $(find  $DIRPATH/$FILEPATH -not -path "*/API_BETA_RETRIEVED/*" -type f -name "*Lynch*.pseudo" -path "*/$PROV/*" )
 do
 IFS="$OIFS"
 $BRAKE import:colorectal fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
@@ -104,7 +104,7 @@ done
 R1K () {
 PROV='R1K'
 IFS=$'\n'
-for x in $(find  $DIRPATH/$FILEPATH -type f -name "*.pseudo" -path "*/$PROV/*")
+for x in $(find  $DIRPATH/$FILEPATH -not -path "*/API_BETA_RETRIEVED/*" -type f -name "*.pseudo" -path "*/$PROV/*")
 do
 IFS="$OIFS"
 $BRAKE import:colorectal fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
@@ -114,7 +114,7 @@ done
 RPY () {
 PROV='RPY'
 IFS=$'\n'
-for x in $(find  $DIRPATH/$FILEPATH -type f -name "*.pseudo" -path "*/$PROV/*")
+for x in $(find  $DIRPATH/$FILEPATH -not -path "*/API_BETA_RETRIEVED/*" -type f -name "*.pseudo" -path "*/$PROV/*")
 do
 IFS="$OIFS"
 $BRAKE import:colorectal fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
@@ -124,7 +124,7 @@ done
 RP4 () {
 PROV='RP4'
 IFS=$'\n'
-for x in $(find  $DIRPATH/$FILEPATH -type f -name "*CRC*.pseudo" -path "*/$PROV/*")
+for x in $(find  $DIRPATH/$FILEPATH -not -path "*/API_BETA_RETRIEVED/*" -type f -name "*CRC*.pseudo" -path "*/$PROV/*")
 do
 IFS="$OIFS"
 $BRAKE import:colorectal fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
@@ -134,7 +134,7 @@ done
 RTH () {
 PROV='RTH'
 IFS=$'\n'
-for x in $(find  $DIRPATH/$FILEPATH -type f -name "*.pseudo" -path "*/$PROV/*")
+for x in $(find  $DIRPATH/$FILEPATH -not -path "*/API_BETA_RETRIEVED/*" -type f -name "*.pseudo" -path "*/$PROV/*")
 do
 IFS="$OIFS"
 $BRAKE import:colorectal fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
@@ -144,7 +144,7 @@ done
 RQ3 () {
 PROV='RQ3'
 IFS=$'\n'
-for x in $(find  $DIRPATH/$FILEPATH -type f -iname "*Colon*.pseudo"  -o -type f -iname "*Colorectal*.pseudo" -path "*/$PROV/*")
+for x in $(find  $DIRPATH/$FILEPATH -not -path "*/API_BETA_RETRIEVED/*" -type f -iname "*Colon*.pseudo"  -o -type f -iname "*Colorectal*.pseudo" -path "*/$PROV/*")
 do
 IFS="$OIFS"
 $BRAKE import:colorectal fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
@@ -154,12 +154,23 @@ done
 REP () {
 PROV='REP'
 IFS=$'\n'
-for x in $(find  $DIRPATH/$FILEPATH -type f -name "*.pseudo" -path "*/$PROV/*")
+for x in $(find  $DIRPATH/$FILEPATH -not -path "*/API_BETA_RETRIEVED/*" -type f -name "*.pseudo" -path "*/$PROV/*")
 do
 IFS="$OIFS"
-bundle exec rake import:colorectal fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
+$BRAKE import:colorectal fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
 done
 }
 
+R1H () {
+PROV='R1H'	
+IFS=$'\n'
+for x in $(find  $DIRPATH/$FILEPATH -not -path "*/API_BETA_RETRIEVED/*" -type f -name "*.pseudo" -path "*/$PROV/*" \
+-not -path "*/2021/*" \
+)
+do
+IFS="$OIFS"
+$BRAKE import:colorectal fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
+done
+}
 
-RR8; RR8_2; RNZ; RTD; RX1; RCU; RGT; R0A; R1K; RX1_2; RPY; RP4; RTH; RQ3; REP
+RR8; RR8_2; RNZ; RTD; RX1; RCU; RGT; R0A; R1K; RX1_2; RPY; RP4; RTH; RQ3; REP; R1H
