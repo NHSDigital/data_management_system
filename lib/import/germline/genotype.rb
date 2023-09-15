@@ -340,15 +340,13 @@ module Import
       end
 
       def add_variant_class(variant)
-        if variant.is_a?(Integer) && variant >= 1 && variant <= 10
+        if variant.is_a?(Integer) && variant >= 1 && variant <= 5
           @attribute_map['variantpathclass'] = variant
         elsif variant.is_a?(String)
           if VARIANT_CLASS_MAP[variant.downcase.strip]
             @attribute_map['variantpathclass'] = VARIANT_CLASS_MAP[variant.downcase.strip]
-          elsif variant.downcase.strip =='normal'
-            @attribute_map['variantpathclass']= nil
-          elsif variant.downcase.strip =='invalidvariantpathclass'
-            @attribute_map['variantpathclass']= nil
+          elsif %w[invalidvariantpathclass normal].include? variant.downcase.strip
+            @attribute_map['variantpathclass'] = nil
           else
             @logger.warn "Bad variant class string given: #{variant}; cannot process"
           end
