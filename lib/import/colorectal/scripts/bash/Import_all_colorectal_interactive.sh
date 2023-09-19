@@ -1,4 +1,14 @@
 #!/bin/bash
+if [ $# != 2 -o "$1" == "--help" ]; then
+    CMD="`basename "$0"`"
+    echo "Usage: $CMD DIRPATH FILEPATH"
+    echo "  DIRPATH: the base directory of the data_management_system codebase"
+    echo "  FILEPATH: the relative directory of the files to import"
+    echo "Sample usage:"
+    echo "$CMD ~/work/data_management_system private/pseudonymised_data/updated_files/"
+    exit 1
+fi
+
 BRAKE='bundle exec rake'
 #db_cycle
 OIFS="$IFS"
