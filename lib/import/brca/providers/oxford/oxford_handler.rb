@@ -12,9 +12,9 @@ module Import
                                             record.raw_fields,
                                             PASS_THROUGH_FIELDS)
             assign_test_scope(genotype, record)
-            extract_variantpathclass(genotype, record)
+            variantpathclass = extract_variantpathclass(genotype, record)
             assign_test_type(genotype, record)
-            process_variants(genotype, record)
+            process_variants(genotype, record, variantpathclass)
             process_protein_impact(genotype, record)
             assign_genomic_change(genotype, record)
             assign_servicereportidentifier(genotype, record)
@@ -32,7 +32,8 @@ module Import
 
             if record.raw_fields['moleculartestingtype'] == 'pre-symptomatic'
               genotype.add_molecular_testing_type('predictive')
-            else genotype.add_molecular_testing_type('diagnostic')
+            else
+              genotype.add_molecular_testing_type('diagnostic')
             end
           end
 
@@ -61,24 +62,32 @@ module Import
             end
           end
 
-          def process_variants(genotype, record)
+          def process_variants(genotype, record, variantpathclass)
             return if record.mapped_fields['codingdnasequencechange'].nil?
 
             if CDNA_REGEX.match(record.mapped_fields['codingdnasequencechange'])
               genotype.add_gene_location($LAST_MATCH_INFO[:cdna])
-              genotype.add_status(2)
+              non_pathogenic_variant?(genotype, variantpathclass)
               @logger.debug "SUCCESSFUL cdna change parse for: #{$LAST_MATCH_INFO[:cdna]}"
             elsif EXON_REGEX.match(record.mapped_fields['codingdnasequencechange'])
               # genotype.add_variant_type($LAST_MATCH_INFO[:variant])
               # genotype.add_exon_location($LAST_MATCH_INFO[:location])
               # genotype.add_status(2)
-              add_exonic_variant(record, genotype)
+              add_exonic_variant(record, genotype, variantpathclass)
             elsif normal?(record)
               genotype.add_status(1)
             elsif RECORD_EXEMPTIONS.include? record.mapped_fields['codingdnasequencechange']
-              extract_exemptions_from_record(genotype, record)
+              extract_exemptions_from_record(genotype, record, variantpathclass)
             else
               @logger.debug 'FAILED cdna change parse'
+            end
+          end
+
+          def non_pathogenic_variant?(genotype, variantpathclass)
+            if [1, 2].include?(variantpathclass)
+              genotype.add_status(10)
+            else
+              genotype.add_status(2)
             end
           end
 
@@ -122,34 +131,34 @@ module Import
           end
 
           def normal?(record)
-            return if record.mapped_fields['codingdnasequencechange'].nil?
+            return false if record.mapped_fields['codingdnasequencechange'].nil?
 
             record.mapped_fields['codingdnasequencechange'].scan(%r{N/A|normal}i).size.positive?
           end
 
           def full_screen?(record)
-            return if record.raw_fields['scope / limitations of test'].nil?
+            return false if record.raw_fields['scope / limitations of test'].nil?
 
             geneticscope = record.raw_fields['scope / limitations of test']
             geneticscope.scan(/panel|scree(n|m)|brca|hcs|panel/i).size.positive?
           end
 
           def targeted?(record)
-            return if record.raw_fields['scope / limitations of test'].nil?
+            return false if record.raw_fields['scope / limitations of test'].nil?
 
             geneticscope = record.raw_fields['scope / limitations of test']
             geneticscope.scan(/targeted|proband/i).size.positive?
           end
 
           def ashkenazi?(record)
-            return if record.raw_fields['scope / limitations of test'].nil?
+            return false if record.raw_fields['scope / limitations of test'].nil?
 
             geneticscope = record.raw_fields['scope / limitations of test']
             geneticscope.scan(/ashkenazi/i).size.positive?
           end
 
           def polish?(record)
-            return if record.raw_fields['scope / limitations of test'].nil?
+            return false if record.raw_fields['scope / limitations of test'].nil?
 
             geneticscope = record.raw_fields['scope / limitations of test']
             geneticscope.scan(/polish/i).size.positive?
@@ -160,13 +169,13 @@ module Import
             geneticscope.nil?
           end
 
-          def add_exonic_variant(record, genotype)
+          def add_exonic_variant(record, genotype, variantpathclass)
             return if record.raw_fields['scope / limitations of test'].nil?
 
             exon_info = record.mapped_fields['codingdnasequencechange']
             genotype.add_variant_type(EXON_REGEX.match(exon_info)[:variant])
             genotype.add_exon_location(EXON_REGEX.match(exon_info)[:location])
-            genotype.add_status(2)
+            non_pathogenic_variant?(genotype, variantpathclass)
           end
 
           def targeted_scope_from_nullscope(genotype, record)
@@ -180,19 +189,19 @@ module Import
             end
           end
 
-          def extract_exemptions_from_record(genotype, record)
+          def extract_exemptions_from_record(genotype, record, variantpathclass)
             return if record.mapped_fields['codingdnasequencechange'].nil?
 
             exemptions = record.mapped_fields['codingdnasequencechange']
-            if exemptions.scan(/c\./).size.positive?
+            if exemptions.scan('c.').size.positive?
               genotype.add_gene_location(exemptions.gsub(/[\[\]+=]+/, ''))
-              genotype.add_status(2)
+              non_pathogenic_variant?(genotype, variantpathclass)
             elsif exemptions.scan(/(?<delinsdup>del|ins|dup)/i).size.positive?
               genotype.add_variant_type($LAST_MATCH_INFO[:delinsdup])
               if exemptions.scan(/(?<exno>[0-9]+-[0-9]+)/i).size.positive?
                 genotype.add_exon_location($LAST_MATCH_INFO[:exno])
               end
-              genotype.add_status(2)
+              non_pathogenic_variant?(genotype, variantpathclass)
             end
             genotype
           end
