@@ -11,6 +11,8 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     name: Upload to AWS
+    env:
+      AWS_DEFAULT_REGION: eu-west-2
     steps:
       - name: Git checkout
         uses: actions/checkout@v3
@@ -18,9 +20,9 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          role-to-assume: ${{ secrets.CI_PRD_DEPLOY_IAM_ROLE }}
+          role-to-assume: arn:aws:iam::930039174803:role/dms-github-actions-deploy-role
           role-session-name: GitHubActions-${{ github.run_id }}
-          aws-region: eu-west-2
+          aws-region: ${{env.AWS_DEFAULT_REGION}}
 
       - name: Zip artifacts
         uses: thedoctor0/zip-release@master
@@ -31,4 +33,4 @@ jobs:
       - name: Upload to AWS S3
         run: |
           echo "Uploading artifacts to $env.PROFILE environment."
-          aws s3 cp ../../mbis_app.zip s3://${{ secrets.CI_DEV_ARTIFACTS_BUCKET }}/
+          aws s3 cp mbis_app.zip s3://ndrs-mbis-eu-west-2-930039174803-state-bucket/

@@ -3,21 +3,10 @@
 - hosts: localhost
   connection: local
   gather_facts: true
-  vars:
-    ANSIBLE_VERBOSITY: 3
   vars_files:
     - "./vars/main.yml"
 
   tasks:
-    - name: Get ODR USERS from ssm parameter store
-      set_fact:
-        mbis_odr_users: "{{ lookup('aws_ssm', '/mbis/dev/odr_users.yml') }}"
-      ignore_errors: true
-      no_log: true
-
-    - name: show ODR USERS
-      debug: msg="{{ 'the secret was:' ~ mbis_odr_users | default('could not access secret') }}"
-
     - name: Install the 'Development tools' package group
       ansible.builtin.yum:
         name: "@Development tools"
@@ -47,6 +36,10 @@
           - xz
           - bzip2
           - ruby
+          - jq
+          - python-pip
+          - python-devel
+          - openldap-devel 
         state: present
 
     - name: Install Libuv
@@ -118,14 +111,13 @@
       with_items:
         - "{{ application_users }}"
 
-    # - name: Copy /etc/skel to application and other users
-    #   copy:
-    #     src: /etc/skel
-    #     dest: "{{ item.home_directory }}"
-    #     remote_src: yes
-    #   with_items:
-    #     - "{{ application_users }}"
-
+    - name: Copy /etc/skel to application and other users
+      copy:
+        src: /etc/skel
+        dest: "{{ item.home_directory }}"
+        remote_src: yes
+      with_items:
+        - "{{ application_users }}"
 
     - name: Create File System
       community.general.filesystem:
@@ -158,13 +150,6 @@
       vars:
         rbenv_users:
           "{{ ruby_env_users }}"
-
-
-    # - name: Enable Apache on system reboot
-    #   service:
-    #     name: httpd
-    #     enabled: yes
-    #   notify: restart apache
 
     - name: Make .ssh folder
       become_user: mbis_app
@@ -238,10 +223,6 @@
       args:
         chdir: /home/mbis_app/data_management_system
       shell: sed -i.bak '/mini_racer (0.6.2-x86_64-linux/,+1d' Gemfile.lock
-
-    # - name: Make Local bin folder on mbis_app
-    #   become_user: mbis_app
-    #   shell: mkdir -p ~/.local/bin
 
     - name: symlink cmake3 to cmake
       become: true
@@ -327,52 +308,6 @@
             source /home/mbis_app/.bash_profile && /home/mbis_app/.rbenv/shims/bundle  exec cap localhost_live deploy:cold
           register: deploy_cold
           ignore_errors: true
-
-        # - name: Move appspec file
-        #   shell: |
-        #     cp appspec.yml ../mbis_front/
-        #   args:
-        #     chdir: /home/mbis_app/data_management_system
-
-        # - name: ensures {{ project_root }}/conf dir exists
-        #   file:
-        #     path: "{{ project_root }}/conf"
-        #     state: directory
-
-      #   - name: Copy files to config directory
-      #     template:
-      #       src: "{{ item.src }}"
-      #       dest: "{{ item.dest }}"
-      #       owner: "{{ item.owner }}"
-      #       group: "{{ item.group }}"
-      #       mode: "{{ item.mode }}"
-      #     with_items:
-      #       - { src: "templates/mbis/config/admin_users.yml.j2", dest: "mbis_front/current/config/admin_users.yml", owner: "mbis_app", group: "mbis_app", mode: 0644 }
-      #       - { src: "templates/mbis/config/odr_users.yml.j2", dest: "mbis_front/current/config/odr_users.yml", owner: "mbis_app", group: "mbis_app", mode: 0640}
-      #       - { src: "templates/mbis/config/special_users.production.yml.j2", dest: "mbis_front/current/config/special_users.production.yml", owner: "mbis_app", group: "mbis_app", mode: 0644 }
-      #       - { src: "templates/mbis/config/user_yubikeys.yml.j2", dest: "mbis_front/current/config/user_yubikeys.yml", owner: "mbis_app", group: "mbis_app", mode: 0644 }
-      #       # - { src: "templates/mbis/config/regular_extracts.csv.j2", dest: "mbis_front/current/config/regular_extracts.csv", owner: "mbis_app", group: "mbis_app", mode: 0644 }
-
-    # - name: install awscli
-    #   pip:
-    #     name: awscli
-    #     state: present
-
-    # - name: Zip mbis_front and package modules and send to bucket
-    #   become: yes
-    #   become_user: mbis_app
-    #   shell: |
-    #     zip -r ../mbis_app.zip .
-    #   args:
-    #     chdir: /home/mbis_app/mbis_front
-
-    # - name: Upload mbis_app.zip file to "{{ aws_artifacts_bucket }}" bucket
-    #   become_user: mbis_app
-    #   become: yes
-    #   shell: |
-    #     aws s3 cp mbis_app.zip s3://{{ aws_artifacts_bucket }}/
-    #   args:
-    #     chdir: /home/mbis_app
 
     - name: Delete content & directory
       become_user: mbis_app

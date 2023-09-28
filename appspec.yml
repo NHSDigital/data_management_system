@@ -6,7 +6,7 @@ files:
 file_exists_behavior: OVERWRITE
 hooks:
   ApplicationStop:
-    - location: script/code-deploy/ApplicationStop/stop.sh
+    - location: script/code-deploy/ApplicationStop/stop_server.sh
       timeout: 300
   # BeforeInstall:
   #   - location: mbis_front/current/script/migrate_database.sh
