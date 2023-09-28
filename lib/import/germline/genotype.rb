@@ -350,8 +350,8 @@ module Import
             @logger.warn "Bad variant class string given: #{variant}; cannot process"
           end
         else
-          @logger.error("Input: #{variant} given for variant class of improper"\
-          "type (#{variant.class}), or out of range")
+          @logger.error("Input: #{variant} given for variant class of improper" \
+                        "type (#{variant.class}), or out of range")
         end
       end
 
