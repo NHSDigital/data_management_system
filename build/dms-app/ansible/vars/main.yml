@@ -1,0 +1,43 @@
+---
+
+machine_groups: 
+  - deployer
+
+
+application_users:
+  - name: mbis_app
+    home_directory: /home/mbis_app
+    home_directory_owner: mbis_app
+    home_directory_group: mbis_app
+    home_directory_octal_permissions: '0740'
+    home_directory_state: directory
+    state: present
+
+other_users:
+
+
+fstab_mounts:
+  - src: /dev/xvdb
+    path: /home/mbis_app
+    fstype: xfs
+    opts: noauto,bind
+    dump: 0
+    passno: 0
+    state: mounted
+
+rbenv_clean_up: false
+rbenv:
+  env: user
+  version: v1.1.1
+  default_ruby: 3.0.4
+  rubies:
+    - version: 3.0.4
+ruby_installed: true
+ruby_env_users:
+  - mbis_app
+
+GITHUB_CODE: https://github.com/NHSDigital/data_management_system.git
+
+aws_artifacts_bucket: ndrs-dms-pipeline-archivefiles
+
+

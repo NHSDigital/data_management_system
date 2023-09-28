@@ -13,6 +13,9 @@
 #   sudo -i -u mbis_beta ./stop_server_gracefully.sh
 # ===========================================================
 
+export DATABASE_URL=$(aws ssm get-parameters --names '/mbis/dev/DATABASE_URL'  --with-decryption | jq -r '.Parameters[]' | jq -r '.Value')
+export SECRET_KEY_BASE=$(aws  ssm get-parameters --names '/mbis/dev/SECRET_KEY_BASE'  --with-decryption | jq -r '.Parameters[]' | jq -r '.Value')
+
 export RAILS_ENV="${RAILS_ENV:-production}"
 
 PUMA_CMD=pumactl

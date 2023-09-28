@@ -1,1 +1,5 @@
 require: ndr_dev_support
+
+AllCops:
+  Exclude:
+    - 'build/**/*'

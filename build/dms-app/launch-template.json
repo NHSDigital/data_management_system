@@ -1,0 +1,85 @@
+{
+    "LaunchTemplateVersion": {
+        "LaunchTemplateId": "lt-003522770a8bdebd9",
+        "LaunchTemplateName": "ec2-dms-20230405142946931100000002",
+        "VersionNumber": 19,
+        "VersionDescription": "ami-068d7be414a7072dd",
+        "CreateTime": "2023-04-18T14:24:34.000Z",
+        "CreatedBy": "arn:aws:sts::930039174803:assumed-role/NHSDAdminRole/test",
+        "DefaultVersion": false,
+        "LaunchTemplateData": {
+            "EbsOptimized": true,
+            "IamInstanceProfile": {
+                "Name": "ssm-iam-dms-eu-west-2-development-instance-profile"
+            },
+            "BlockDeviceMappings": [
+                {
+                    "DeviceName": "/dev/xvdb",
+                    "Ebs": {
+                        "VolumeSize": 40
+                    }
+                },
+                {
+                    "DeviceName": "/dev/xvda",
+                    "Ebs": {
+                        "VolumeSize": 10
+                    }
+                }
+            ],
+            "NetworkInterfaces": [
+                {
+                    "DeviceIndex": 0,
+                    "Groups": [
+                        "sg-0c0b7547ffb6928b3"
+                    ],
+                    "SubnetId": "subnet-0b850dc9e07259abb",
+                    "NetworkCardIndex": 0
+                }
+            ],
+            "ImageId": "ami-068d7be414a7072dd",
+            "InstanceType": "t3.medium",
+            "KeyName": "dms-key-pair",
+            "Monitoring": {
+                "Enabled": true
+            },
+            "Placement": {
+                "AvailabilityZone": "eu-west-2a"
+            },
+            "TagSpecifications": [
+                {
+                    "ResourceType": "instance",
+                    "Tags": [
+                        {
+                            "Key": "Name",
+                            "Value": "launch-template-dms-eu-west-2-development"
+                        },
+                        {
+                            "Key": "Owner",
+                            "Value": "NDRS IT Activities"
+                        },
+                        {
+                            "Key": "AppStack",
+                            "Value": "dms"
+                        },
+                        {
+                            "Key": "Environment",
+                            "Value": "Development"
+                        },
+                        {
+                            "Key": "Project",
+                            "Value": "DMS Project"
+                        },
+                        {
+                            "Key": "Terraform",
+                            "Value": "true"
+                        }
+                    ]
+                }
+            ],
+            "CpuOptions": {
+                "CoreCount": 1,
+                "ThreadsPerCore": 2
+            }
+        }
+    }
+}

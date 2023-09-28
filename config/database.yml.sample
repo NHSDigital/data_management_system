@@ -80,6 +80,4 @@ test:
 #
 production:
   <<: *default
-  database: mbis_production
-  username: <%= ENV['MBIS_DATABASE_USERNAME'] %>
-  password: <%= ENV['MBIS_DATABASE_PASSWORD'] %>
+  url: <%= ENV['DATABASE_URL'] %>

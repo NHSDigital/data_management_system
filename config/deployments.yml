@@ -1,7 +1,7 @@
 # This file tracks which SVN branch should be deployed to which targets, under which Ruby version.
-# The format is <ENV>: { branch: <BRANCH>, ruby: <RUBY> }, where all deployment targets can be
-# stratified by <ENV>, <BRANCH> is branch of the MBIS project and <RUBY> is the server Ruby.
----
+current:
+  branch: e968f5d27e650c20d61d0946aeb7f5a75687fa9f
+  ruby: 3.0.4
 beta:
   branch: 'main'
   ruby: 3.0.4

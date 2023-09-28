@@ -1,0 +1,381 @@
+---
+
+- hosts: localhost
+  connection: local
+  gather_facts: true
+  vars:
+    ANSIBLE_VERBOSITY: 3
+  vars_files:
+    - "./vars/main.yml"
+
+  tasks:
+    - name: Get ODR USERS from ssm parameter store
+      set_fact:
+        mbis_odr_users: "{{ lookup('aws_ssm', '/mbis/dev/odr_users.yml') }}"
+      ignore_errors: true
+      no_log: true
+
+    - name: show ODR USERS
+      debug: msg="{{ 'the secret was:' ~ mbis_odr_users | default('could not access secret') }}"
+
+    - name: Install the 'Development tools' package group
+      ansible.builtin.yum:
+        name: "@Development tools"
+        state: present
+
+    - name: Enable amazon-linux-extras packages
+      shell: amazon-linux-extras install postgresql14 vim epel -y
+
+    - name: Remove Libuv Package from Amazon Linux2
+      yum:
+        name: libuv
+        state: absent
+
+    - name: Install Packages
+      yum:
+        name:
+          - httpd
+          - mod_ssl
+          - gcc
+          - readline-devel
+          - zlib-devel
+          - net-tools
+          - openssl
+          - p7zip
+          - subversion
+          - vim-common
+          - xz
+          - bzip2
+          - ruby
+        state: present
+
+    - name: Install Libuv
+      yum:
+        name: libuv
+        state: present
+        disable_plugin: priorities
+
+    - name: Install rbenv packages
+      yum:
+        name:
+          # - git
+          - git-svn
+          - openssl-devel
+          # - gcc
+          # - gcc-c++
+          - libyaml-devel
+          - libffi-devel
+          # - readline-devel
+          # - zlib-devel
+          - gdbm-devel
+          # - ncurses-devel
+          - libicu-devel
+          - libxml2-devel
+          - libxslt-devel
+          # - patch
+          - cmake3
+          - libxml2-devel
+          - libxslt-devel
+          - postgresql-devel
+          # - postgresql
+          # - nodejs
+          - npm
+          - java-1.8.0-openjdk-headless
+          - python-cryptography
+          - python-boto3
+          - wget
+
+    - name: install Nodejs
+      yum:
+        name: nodejs
+        state: present
+
+    - name:  Install Yarn with npm
+      community.general.npm:
+        name: yarn
+        global: true
+        state: present
+
+    - name: Allow sudoers deployers group
+      become: true
+      template:
+        src: templates/deployers.j2
+        dest: /etc/sudoers.d/deployers
+
+    - name: Make Deployer Group
+      group:
+        name: "{{ item }}"
+      with_items:
+        "{{ machine_groups }}"
+
+    - name: Create Application and other Users
+      user:
+        name: "{{ item.name }}"
+        state: "{{ item.state }}"
+        shell: /bin/bash
+        create_home: yes
+        groups: deployer
+      with_items:
+        - "{{ application_users }}"
+
+    # - name: Copy /etc/skel to application and other users
+    #   copy:
+    #     src: /etc/skel
+    #     dest: "{{ item.home_directory }}"
+    #     remote_src: yes
+    #   with_items:
+    #     - "{{ application_users }}"
+
+
+    - name: Create File System
+      community.general.filesystem:
+        fstype: xfs
+        dev: /dev/xvdb
+
+    - name: Mount File System
+      mount:
+        path: "{{ item.path }}"
+        src: "{{ item.src }}"
+        fstype: "{{ item.fstype }}"
+        state: mounted
+      with_items:
+        "{{ fstab_mounts }}"
+
+    - name: Make Group Permission
+      become: true
+      file:
+        name: "{{ item.home_directory }}"
+        state: "{{ item.home_directory_state }}"
+        owner: "{{ item.home_directory_owner }}"
+        group: "{{ item.home_directory_group }}"
+        mode: "{{ item.home_directory_octal_permissions }}"
+      with_items:
+        "{{ application_users }}"
+
+    - name: Create Ruby Application
+      import_role:
+        name: zzet.rbenv
+      vars:
+        rbenv_users:
+          "{{ ruby_env_users }}"
+
+
+    # - name: Enable Apache on system reboot
+    #   service:
+    #     name: httpd
+    #     enabled: yes
+    #   notify: restart apache
+
+    - name: Make .ssh folder
+      become_user: mbis_app
+      file:
+        path: ~/tmp/.ssh
+        state: directory
+        mode: 0700
+        owner: mbis_app
+        group: mbis_app
+
+    - name: generate SSH key for mbis_app directory
+      become_user: mbis_app
+      openssh_keypair:
+        path: ~/tmp/.ssh/id_rsa
+        type: rsa
+        size: 4096
+        state: present
+        force: no
+
+    - name: create authorized_keys file to mbis_app directory
+      become_user: mbis_app
+      file:
+        path: ~/.ssh
+        state: directory
+        mode: 0700
+        owner: mbis_app
+        group: mbis_app
+
+    - name: create authorized_keys file to mbis_app directory
+      become_user: mbis_app
+      file:
+        path: ~/.ssh/authorized_keys
+        state: touch
+        mode: 0600
+        owner: mbis_app
+        group: mbis_app
+
+    - name:  add mbis_app to authorized_key
+      become_user: mbis_app
+      shell: cat ~/tmp/.ssh/id_rsa.pub > ~/.ssh/authorized_keys
+
+    - name: copy .id_rsa keys to .ssh directory
+      become_user: mbis_app
+      copy:
+        src:  ~/tmp/.ssh/id_rsa
+        dest:  ~/.ssh/id_rsa
+        owner: mbis_app
+        group: mbis_app
+        mode: 0400
+        remote_src: true
+
+    - name: Delete content & directory
+      become_user: mbis_app
+      file:
+        state: absent
+        path: /home/mbis_app/data_management_system
+
+    - name: Copy Code to mbis_app directory
+      become_user: mbis_app
+      copy:
+        src:  /tmp/mbis_front/
+        dest: /home/mbis_app/data_management_system/
+        owner: mbis_app
+        group: mbis_app
+        mode: 0770
+        remote_src: true
+
+    - name: Remove Mini Racer from Gemfile.lock
+      become_user: mbis_app
+      become: true
+      args:
+        chdir: /home/mbis_app/data_management_system
+      shell: sed -i.bak '/mini_racer (0.6.2-x86_64-linux/,+1d' Gemfile.lock
+
+    # - name: Make Local bin folder on mbis_app
+    #   become_user: mbis_app
+    #   shell: mkdir -p ~/.local/bin
+
+    - name: symlink cmake3 to cmake
+      become: true
+      file:
+        src: /usr/bin/cmake3
+        dest: /home/mbis_app/.rbenv/bin/cmake
+        owner: mbis_app
+        group: mbis_app
+        state: link
+
+    - name: Make mbis_front
+      become: true
+      become_user: mbis_app
+      block:
+        - name: Create .bash_profile on mbis_app home
+          become_user: mbis_app
+          template:
+            src: bash_profile.j2
+            dest: /home/mbis_app/.bash_profile
+            owner: mbis_app
+            group: mbis_app
+
+        - name: Source Bash profile
+          shell: source /home/mbis_app/.bash_profile
+
+        - name: bundle install
+          become_user: mbis_app
+          shell: source /home/mbis_app/.bash_profile && /home/mbis_app/.rbenv/shims/bundle install --local
+          args:
+            chdir: /home/mbis_app/data_management_system/
+
+        - name: bundle check
+          args:
+            chdir: /home/mbis_app/data_management_system/
+          shell: source /home/mbis_app/.bash_profile && /home/mbis_app/.rbenv/shims/bundle check
+
+        - name: Copy config.deploy.rb.j2 to config/deploy.rb
+          template:
+            src: config.deploy.rb.j2
+            dest: /home/mbis_app/data_management_system/config/deploy.rb
+            owner: mbis_app
+            group: mbis_app
+
+        - name: Get Current branch
+          shell: |
+            git rev-parse --abbrev-ref HEAD
+          args:
+            chdir: /home/mbis_app/data_management_system
+          register: current_branch
+
+        - name: Get facts
+          set_fact: current_branch=current_branch.stdout
+
+        - name: Move Deployments file
+          shell: |
+            (head -1 config/deployments.yml; printf "current:\n  branch: `git rev-parse HEAD`\n  ruby: `cat .ruby-version`\n"; tail -n+5 config/deployments.yml) > config/deployments.yml2
+            mv config/deployments.yml2 config/deployments.yml
+          args:
+            chdir: /home/mbis_app/data_management_system
+
+        - name: Move all config file
+          shell: |
+            cp config/secrets.yml.sample config/secrets.yml
+            cp config/smtp_settings.yml.sample config/smtp_settings.yml
+            cp config/database.yml.sample config/database.yml
+          args:
+            chdir: /home/mbis_app/data_management_system
+
+        - name: Clear Known hosts
+          shell: |
+            echo "" > /home/mbis_app/.ssh/known_hosts
+
+        - name: Bundle exec cap deploy:setup
+          args:
+            chdir: /home/mbis_app/data_management_system
+          shell: |
+            source /home/mbis_app/.bash_profile && /home/mbis_app/.rbenv/shims/bundle exec cap localhost_live deploy:setup
+
+        - name: Bundle exec cap deploy:cold
+          args:
+            chdir: /home/mbis_app/data_management_system
+          shell: |
+            source /home/mbis_app/.bash_profile && /home/mbis_app/.rbenv/shims/bundle  exec cap localhost_live deploy:cold
+          register: deploy_cold
+          ignore_errors: true
+
+        # - name: Move appspec file
+        #   shell: |
+        #     cp appspec.yml ../mbis_front/
+        #   args:
+        #     chdir: /home/mbis_app/data_management_system
+
+        # - name: ensures {{ project_root }}/conf dir exists
+        #   file:
+        #     path: "{{ project_root }}/conf"
+        #     state: directory
+
+      #   - name: Copy files to config directory
+      #     template:
+      #       src: "{{ item.src }}"
+      #       dest: "{{ item.dest }}"
+      #       owner: "{{ item.owner }}"
+      #       group: "{{ item.group }}"
+      #       mode: "{{ item.mode }}"
+      #     with_items:
+      #       - { src: "templates/mbis/config/admin_users.yml.j2", dest: "mbis_front/current/config/admin_users.yml", owner: "mbis_app", group: "mbis_app", mode: 0644 }
+      #       - { src: "templates/mbis/config/odr_users.yml.j2", dest: "mbis_front/current/config/odr_users.yml", owner: "mbis_app", group: "mbis_app", mode: 0640}
+      #       - { src: "templates/mbis/config/special_users.production.yml.j2", dest: "mbis_front/current/config/special_users.production.yml", owner: "mbis_app", group: "mbis_app", mode: 0644 }
+      #       - { src: "templates/mbis/config/user_yubikeys.yml.j2", dest: "mbis_front/current/config/user_yubikeys.yml", owner: "mbis_app", group: "mbis_app", mode: 0644 }
+      #       # - { src: "templates/mbis/config/regular_extracts.csv.j2", dest: "mbis_front/current/config/regular_extracts.csv", owner: "mbis_app", group: "mbis_app", mode: 0644 }
+
+    # - name: install awscli
+    #   pip:
+    #     name: awscli
+    #     state: present
+
+    # - name: Zip mbis_front and package modules and send to bucket
+    #   become: yes
+    #   become_user: mbis_app
+    #   shell: |
+    #     zip -r ../mbis_app.zip .
+    #   args:
+    #     chdir: /home/mbis_app/mbis_front
+
+    # - name: Upload mbis_app.zip file to "{{ aws_artifacts_bucket }}" bucket
+    #   become_user: mbis_app
+    #   become: yes
+    #   shell: |
+    #     aws s3 cp mbis_app.zip s3://{{ aws_artifacts_bucket }}/
+    #   args:
+    #     chdir: /home/mbis_app
+
+    - name: Delete content & directory
+      become_user: mbis_app
+      file:
+        state: absent
+        path: /home/mbis_app/data_management_system

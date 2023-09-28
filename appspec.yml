@@ -1,0 +1,29 @@
+version: 0.0
+os: linux
+files:
+  - source:  /
+    destination: /tmp/mbis_front
+file_exists_behavior: OVERWRITE
+hooks:
+  ApplicationStop:
+    - location: script/code-deploy/ApplicationStop/stop.sh
+      timeout: 300
+  # BeforeInstall:
+  #   - location: mbis_front/current/script/migrate_database.sh
+  #      timeout: 300
+  #      runas: mbis_app
+  AfterInstall:
+    - location: script/code-deploy/AfterInstall/install_dependencies.sh
+      timeout: 1800
+  ApplicationStart:
+    - location: script/code-deploy/AfterInstall/start_server.sh
+      timeout: 300
+      runas: mbis_app
+
+  # AfterBlockTraffic
+  # BeforeAllowTraffic
+  # AfterAllowTraffic
+  #   ValidateService:
+  #     - location: Scripts/MonitorService.sh
+  #       timeout: 3600
+  #       runas: codedeployuser

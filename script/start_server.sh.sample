@@ -50,6 +50,24 @@
 #
 # ===========================================================
 
+mkdir -p $HOME/.aws
+echo $'[default] \nregion=eu-west-2' > ~/.aws/config
+
+export DATABASE_URL=$(aws ssm get-parameters --names '/mbis/dev/DATABASE_URL'  --with-decryption | jq -r '.Parameters[]' | jq -r '.Value')
+export SECRET_KEY_BASE=$(aws  ssm get-parameters --names '/mbis/dev/SECRET_KEY_BASE'  --with-decryption | jq -r '.Parameters[]' | jq -r '.Value')
+export ODR_USERS_BASE64=$(aws  ssm get-parameters --names '/mbis/dev/odr_users.yml'  --with-decryption | jq -r '.Parameters[]' | jq -r '.Value')
+export USER_YUBIKEYS_BASE64=$(aws  ssm get-parameters --names '/mbis/dev/users_yubikey.yml'  --with-decryption | jq -r '.Parameters[]' | jq -r '.Value')
+export RAILS_MASTER_KEY=$(aws  ssm get-parameters --names '/mbis/dev/RAILS_MASTER_KEY'  --with-decryption | jq -r '.Parameters[]' | jq -r '.Value')
+export SMTP_SETTINGS_BASE64=$(aws  ssm get-parameters --names '/mbis/dev/smtp_settings'  --with-decryption | jq -r '.Parameters[]' | jq -r '.Value')
+export SPECIAL_USERS_BASE64=$(aws  ssm get-parameters --names '/mbis/dev/special_users'  --with-decryption | jq -r '.Parameters[]' | jq -r '.Value')
+export EXCLUDED_MBISIDS_BASE64=$(aws  ssm get-parameters --names '/mbis/dev/excluded_mbisids'  --with-decryption | jq -r '.Parameters[]' | jq -r '.Value')
+export ADMIN_USERS_BASE64=$(aws  ssm get-parameters --names '/mbis/dev/admin_users'  --with-decryption | jq -r '.Parameters[]' | jq -r '.Value')
+# CREDENTIALS=$(aws  ssm get-parameters --names '/mbis/dev/credentials'  --with-decryption | jq -r '.Parameters[]' | jq -r '.Value')
+export PUBLIC_KEY_BASE64=$(aws  ssm get-parameters --names '/mbis/dev/public_key'  --with-decryption | jq -r '.Parameters[]' | jq -r '.Value')
+
+
+export STACK=live
+
 PUMA_CMD=pumactl
 
 # Path to puma configuration, relative to deployment:
@@ -82,7 +100,7 @@ export WEB_CONCURRENCY="${WEB_CONCURRENCY:-10}"
 # Pick a system stack:
 # UNCOMMENT AS REQUIRED ON NON SAMPLE FILE
 # STACK="beta"
-# STACK="live"
+STACK="live"
 
 # If not given, attempt to derive stack from application user:
 if [ -z "$STACK" ]; then
@@ -169,6 +187,8 @@ function decode64 {
   fi
 }
 
+SHARED="$CURRENT/../../shared"
+mkdir -p "$SHARED/config/keys" "$SHARED/config/certificates/saml"
 decode64 "$ADMIN_USERS_BASE64" "$CONFIG/admin_users.yml"
 decode64 "$DATABASE_BASE64" "$CONFIG/database.yml"
 decode64 "$CREDENTIALS_BASE64" "$CONFIG/credentials.yml.enc"
@@ -178,17 +198,27 @@ decode64 "$SMTP_SETTINGS_BASE64" "$CONFIG/smtp_settings.yml"
 decode64 "$SPECIAL_USERS_BASE64" "$CONFIG/special_users.production.yml"
 decode64 "$USER_YUBIKEYS_BASE64" "$CONFIG/user_yubikeys.yml"
 
+for FN in database secrets; do
+  if [ ! -e "$SHARED/config/$FN.yml" ]; then
+    cp -p "$CONFIG/$FN.yml.sample" "$SHARED/config/$FN.yml"
+  fi
+done
+
 # Not needed for webapps, only for god services:
 # decode64 "$REGULAR_EXTRACTS_BASE64" "$CONFIG/regular_extracts.csv"
 
-mkdir -p "$CONFIG/keys"
 decode64 $PUBLIC_KEY_BASE64 "$CONFIG/keys/mbis_project_data_passwords_20180323_public.pem"
 
 # Not needed on AWS
-mkdir -p "$CONFIG/certificates/saml"
 # decode64 $CERTIFICATES_ENCRYPTION_BASE64 "$CONFIG/certificates/saml/encryption.phe.adfs.pem"
 # decode64 $CERTIFICATES_SIGNING_BASE64 "$CONFIG/certificates/saml/signing.phe.adfs.pem"
 # =================================================================================================
+
+# DATABASE URL CREDENDTIALS
+export DATABASE_URL="${DATABASE_URL}"
+
+# SMTP CREDENTIALS
+export SMTP_PASSWORD="${SMTP_PASSWORD}"
 
 export RAILS_ENV="${RAILS_ENV:-production}"
 export STACK
@@ -197,8 +227,16 @@ echo 'Checking credentials...'
 if (cd "$CURRENT" && bundle exec rails runner "User.count; puts 'Credentials OK.'"); then
   true
 else
-  echo 'Warning: invalid credentials detected! Press enter to continue anyway, or Ctrl-C to abort'
-  read
+  if [ -t 1 ] ; then
+    echo 'Warning: invalid credentials detected! Press enter to continue anyway, or Ctrl-C to abort'
+    read
+  else
+    # The above produces a very long stack trace, which may be truncated in CodeDeploy logging.
+    echo 'Error summary:'
+    (cd "$CURRENT" && bundle exec rails runner "User.count; puts 'Credentials OK.'") 2>&1 | head -5
+    echo 'Error: invalid credentials detected or database error, aborting!'
+    exit 1
+  fi
 fi
 
 # Start Delayed Job backend process:
