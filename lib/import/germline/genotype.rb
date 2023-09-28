@@ -37,7 +37,6 @@ module Import
                             'unclassified variant' => 3,
                             'vus' => 3,
                             'likely benign' => 2,
-                            #'normal' => nil, # Useful for non-variants
                             'non-pathological variant' => 1,
                             'benign' => 1 }.freeze
 
