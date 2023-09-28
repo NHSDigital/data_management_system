@@ -1,0 +1,34 @@
+name: Upload Artifacts to S3
+on:
+  push:
+    branches: [infra, develop]
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: Upload to AWS
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ secrets.CI_PRD_DEPLOY_IAM_ROLE }}
+          role-session-name: GitHubActions-${{ github.run_id }}
+          aws-region: eu-west-2
+
+      - name: Zip artifacts
+        uses: thedoctor0/zip-release@master
+        with:
+          type: "zip"
+          filename: "mbis_app.zip"
+
+      - name: Upload to AWS S3
+        run: |
+          echo "Uploading artifacts to $env.PROFILE environment."
+          aws s3 cp ../../mbis_app.zip s3://${{ secrets.CI_DEV_ARTIFACTS_BUCKET }}/
