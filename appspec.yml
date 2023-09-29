@@ -21,7 +21,6 @@ hooks:
     - location: script/code-deploy/ApplicationStart/start_server.sh
       timeout: 300
       runas: mbis_app
-
   # AfterBlockTraffic
   # BeforeAllowTraffic
   # AfterAllowTraffic

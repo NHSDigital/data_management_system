@@ -12,7 +12,7 @@ max_threads_count = ENV.fetch('RAILS_MAX_THREADS', 5)
 threads min_threads_count, max_threads_count
 
 # Accept requests from:
-bind "tcp://127.0.0.1:#{ENV.fetch('PUMA_PORT', 5001)}"
+bind "tcp://0.0.0.0:#{ENV.fetch('PUMA_PORT', 5001)}"
 
 # Specifies the number of `workers` to boot in clustered mode.
 # Workers are forked web server processes. If using threads and workers together
