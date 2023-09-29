@@ -8,13 +8,15 @@ hooks:
   ApplicationStop:
     - location: script/code-deploy/ApplicationStop/stop_server.sh
       timeout: 300
-  # BeforeInstall:
-  #   - location: mbis_front/current/script/migrate_database.sh
+  #BeforeInstall:
+  #   - location: mbis_front/current/script/backup.sh
   #      timeout: 300
-  #      runas: mbis_app
   AfterInstall:
     - location: script/code-deploy/AfterInstall/install_dependencies.sh
       timeout: 1800
+  #   - location: mbis_front/current/script/migrate_database.sh
+  #      timeout: 300
+  #      runas: mbis_app
   ApplicationStart:
     - location: script/code-deploy/ApplicationStart/start_server.sh
       timeout: 300
