@@ -16,7 +16,7 @@ hooks:
     - location: script/code-deploy/AfterInstall/install_dependencies.sh
       timeout: 1800
   ApplicationStart:
-    - location: script/code-deploy/AfterInstall/start_server.sh
+    - location: script/code-deploy/ApplicationStart/start_server.sh
       timeout: 300
       runas: mbis_app
 
