@@ -195,14 +195,13 @@ module Import
             exemptions = record.mapped_fields['codingdnasequencechange']
             if exemptions.scan('c.').size.positive?
               genotype.add_gene_location(exemptions.gsub(/[\[\]+=]+/, ''))
-              non_pathogenic_variant?(genotype, variantpathclass)
             elsif exemptions.scan(/(?<delinsdup>del|ins|dup)/i).size.positive?
               genotype.add_variant_type($LAST_MATCH_INFO[:delinsdup])
               if exemptions.scan(/(?<exno>[0-9]+-[0-9]+)/i).size.positive?
                 genotype.add_exon_location($LAST_MATCH_INFO[:exno])
               end
-              non_pathogenic_variant?(genotype, variantpathclass)
             end
+            non_pathogenic_variant?(genotype, variantpathclass)
             genotype
           end
 
@@ -223,6 +222,7 @@ module Import
               varpath = VAR_PATH_CLASS_MAP[varpathclass]
             end
             genotype.add_variant_class(varpath)
+            varpath
           end
         end
       end
