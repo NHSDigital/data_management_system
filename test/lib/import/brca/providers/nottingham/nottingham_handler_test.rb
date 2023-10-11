@@ -73,6 +73,22 @@ class NottinghamHandlerTest < ActiveSupport::TestCase
     assert_equal 8, @genotype.attribute_map['gene']
   end
 
+  test 'assign test status 10 for variantpath class 1 or 2 cases' do
+    varpath1rec = build_raw_record('pseudo_id1' => 'bob')
+    varpath1rec.raw_fields['teststatus'] = '1: Clearly not pathogenic'
+    @handler.assign_test_status(varpath1rec, @genotype)
+    @handler.process_varpathclass(@genotype, varpath1rec)
+    assert_equal 10, @genotype.attribute_map['teststatus']
+    assert_equal 1, @genotype.attribute_map['variantpathclass']
+
+    varpath2rec = build_raw_record('pseudo_id1' => 'bob')
+    varpath2rec.raw_fields['teststatus'] = '2: likely not pathogenic variant'
+    @handler.assign_test_status(varpath2rec, @genotype)
+    @handler.process_varpathclass(@genotype, varpath2rec)
+    assert_equal 10, @genotype.attribute_map['teststatus']
+    assert_equal 2, @genotype.attribute_map['variantpathclass']
+  end
+
   private
 
   def clinical_json
