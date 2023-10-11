@@ -56,10 +56,10 @@ module Import
                           c\.(?<cdna>[0-9]+[A-Za-z]+)|
                           c\.(?<cdna>[0-9]+.[0-9]+[A-Za-z]+)|
                           c\.(?<cdna>.[0-9]+[A-Za-z]+>[A-Za-z]+)|
-                          c\.(?<cdna>.[\W][0-9]+[\W]+[0-9]+[a-z]+)/ix
+                          c\.(?<cdna>.\W[0-9]+\W+[0-9]+[a-z]+)/ix
 
-            ADHOC_CDNA_REGEX = /c\.(?<cdna>[\W][0-9]+..[0-9]+[a-z]+)|
-                                c\.(?<cdna>[\W][0-9]+[a-z]+)|
+            ADHOC_CDNA_REGEX = /c\.(?<cdna>\W[0-9]+..[0-9]+[a-z]+)|
+                                c\.(?<cdna>\W[0-9]+[a-z]+)|
                                 c\.(?<cdna>[0-9]+.[0-9]+.[0-9]+.[0-9]+[a-z]+)/xi
 
             SPACE_CDNA_REGEX = /c\.(?<cdna>.+\s[A-Z]>[A-Z])/i
