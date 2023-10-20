@@ -67,7 +67,7 @@ module Import
 
             if CDNA_REGEX.match(record.mapped_fields['codingdnasequencechange'])
               genotype.add_gene_location($LAST_MATCH_INFO[:cdna])
-              non_pathogenic_variant?(genotype, variantpathclass)
+              add_teststatus_from_variantpathclass(genotype, variantpathclass)
               @logger.debug "SUCCESSFUL cdna change parse for: #{$LAST_MATCH_INFO[:cdna]}"
             elsif EXON_REGEX.match(record.mapped_fields['codingdnasequencechange'])
               # genotype.add_variant_type($LAST_MATCH_INFO[:variant])
@@ -83,7 +83,7 @@ module Import
             end
           end
 
-          def non_pathogenic_variant?(genotype, variantpathclass)
+          def add_teststatus_from_variantpathclass(genotype, variantpathclass)
             if [1, 2].include?(variantpathclass)
               genotype.add_status(10)
             else
@@ -175,7 +175,7 @@ module Import
             exon_info = record.mapped_fields['codingdnasequencechange']
             genotype.add_variant_type(EXON_REGEX.match(exon_info)[:variant])
             genotype.add_exon_location(EXON_REGEX.match(exon_info)[:location])
-            non_pathogenic_variant?(genotype, variantpathclass)
+            add_teststatus_from_variantpathclass(genotype, variantpathclass)
           end
 
           def targeted_scope_from_nullscope(genotype, record)
@@ -201,7 +201,7 @@ module Import
                 genotype.add_exon_location($LAST_MATCH_INFO[:exno])
               end
             end
-            non_pathogenic_variant?(genotype, variantpathclass)
+            add_teststatus_from_variantpathclass(genotype, variantpathclass)
             genotype
           end
 
