@@ -34,7 +34,9 @@ class BristolHandlerTest < ActiveSupport::TestCase
     res = @handler.process_gene(@genotype, normal_record)
     assert_equal 2, res.size
     assert_equal 1, res[0].attribute_map['teststatus']
-    assert_equal 1, res[1].attribute_map['teststatus']
+    assert_equal 7, res[0].attribute_map['gene']
+    assert_equal 10, res[1].attribute_map['teststatus']
+    assert_equal 8, res[1].attribute_map['gene']
   end
 
   test 'process_protein_impact' do
