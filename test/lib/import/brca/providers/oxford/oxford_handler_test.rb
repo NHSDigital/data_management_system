@@ -112,6 +112,12 @@ class OxfordHandlerTest < ActiveSupport::TestCase
     assert_equal 10, @genotype.attribute_map['sequencevarianttype']
     assert_equal 10, @genotype.attribute_map['teststatus']
 
+    exemptions_del_record = build_raw_record('pseudo_id1' => 'bob')
+    exemptions_del_record.mapped_fields['codingdnasequencechange'] = 'deletion BRCA1 exons 1-17'
+    @handler.process_variants(@genotype, exemptions_del_record, 5)
+    assert_equal '1-17', @genotype.attribute_map['exonintroncodonnumber']
+    assert_equal 2, @genotype.attribute_map['teststatus']
+
     nonpath_exemptions_record = build_raw_record('pseudo_id1' => 'bob')
     nonpath_exemptions_record.mapped_fields['codingdnasequencechange'] = 'c.[-835C>T]+[=]'
     @handler.process_variants(@genotype, nonpath_exemptions_record, 1)
