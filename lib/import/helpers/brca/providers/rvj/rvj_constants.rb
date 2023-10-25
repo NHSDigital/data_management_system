@@ -15,8 +15,8 @@ module Import
             CDNA_REGEX = /c\.(?<cdna>[0-9]+[^\s|^, ]+)/
             PROTEIN_REGEX = /p.\(?(?<impact>.*)\)?/
 
-            TESTSTATUS_MAP = { 'Benign' => :negative,
-                               'Likely Benign' => :negative,
+            TESTSTATUS_MAP = { 'Benign' => 10,
+                               'Likely Benign' => 10,
                                'Deleterious' => :positive,
                                'Likely Deleterious' => :positive,
                                'Likely Pathogenic' => :positive,
