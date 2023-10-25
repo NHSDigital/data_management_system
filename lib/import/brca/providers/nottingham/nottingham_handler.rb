@@ -138,6 +138,8 @@ module Import
             case record.raw_fields['teststatus']
             when VARPATHCLASS_REGEX
               genotype.add_variant_class($LAST_MATCH_INFO[:varpathclass].to_i)
+            when 'VUS'
+              genotype.add_variant_class(3)
             end
           end
 
