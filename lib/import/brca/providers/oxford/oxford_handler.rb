@@ -140,14 +140,14 @@ module Import
             return false if record.raw_fields['scope / limitations of test'].nil?
 
             geneticscope = record.raw_fields['scope / limitations of test']
-            geneticscope.scan(/panel|scree(n|m)|brca|hcs|panel/i).size.positive?
+            geneticscope.scan(/panel|scree(n|m)|brca|hcs|panel|SNV.*ONLY|CNV.*only|CNV.*analysis|Whole\sgene\sscreen.*|Full\sgene/i).size.positive?
           end
 
           def targeted?(record)
             return false if record.raw_fields['scope / limitations of test'].nil?
 
             geneticscope = record.raw_fields['scope / limitations of test']
-            geneticscope.scan(/targeted|proband/i).size.positive?
+            geneticscope.scan(/targeted|proband|HNPCC\sFamilial|c.1100\sonly/i).size.positive?
           end
 
           def ashkenazi?(record)
