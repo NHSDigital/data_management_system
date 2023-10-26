@@ -568,7 +568,7 @@ DEPENDENCIES
   nokogiri (~> 1.11)
   paper_trail (~> 12.0)
   paper_trail-association_tracking
-  parser (= 3.1.2.0)
+  parser
   pg (~> 1.2.3)
   possibly
   pry
