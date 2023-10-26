@@ -37,7 +37,6 @@ module Import
                             'unclassified variant' => 3,
                             'vus' => 3,
                             'likely benign' => 2,
-                            'normal' => nil, # Useful for non-variants
                             'non-pathological variant' => 1,
                             'benign' => 1 }.freeze
 
@@ -340,17 +339,19 @@ module Import
       end
 
       def add_variant_class(variant)
-        if variant.is_a?(Integer) && variant >= 1 && variant <= 10
+        if variant.is_a?(Integer) && variant >= 1 && variant <= 5
           @attribute_map['variantpathclass'] = variant
         elsif variant.is_a?(String)
           if VARIANT_CLASS_MAP[variant.downcase.strip]
             @attribute_map['variantpathclass'] = VARIANT_CLASS_MAP[variant.downcase.strip]
+          elsif %w[invalidvariantpathclass normal].include? variant.downcase.strip
+            @attribute_map['variantpathclass'] = nil
           else
             @logger.warn "Bad variant class string given: #{variant}; cannot process"
           end
         else
-          @logger.error("Input: #{variant} given for variant class of improper"\
-          "type (#{variant.class}), or out of range")
+          @logger.error("Input: #{variant} given for variant class of improper" \
+                        "type (#{variant.class}), or out of range")
         end
       end
 
