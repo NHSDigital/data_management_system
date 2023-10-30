@@ -35,7 +35,20 @@ module Import
                                   RAD51C|
                                   RAD51D|
                                   STK11|
-                                  TP53)/ix
+                                  TP53|
+                                  APC|
+                                  ATM|
+                                  BMPR1A|
+                                  CDH1|
+                                  EPCAM|
+                                  FH|
+                                  GREM1|
+                                  MUTYH|
+                                  NTHL1|
+                                  POLD1|
+                                  POLE|
+                                  RNF43|
+                                  SMAD4)/ix
 
             RECORD_EXEMPTIONS = ['c.[-835C>T]+[=]', 'Deletion of whole PTEN gene',
                                  'c.[-904_-883dup ]+[=]', 'whole gene deletion',
