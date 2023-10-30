@@ -24,6 +24,11 @@ class OxfordHandlerTest < ActiveSupport::TestCase
     varpath_record.mapped_fields['variantpathclass'] = 'C4'
     @handler.extract_variantpathclass(@genotype, varpath_record)
     assert_equal 4, @genotype.attribute_map['variantpathclass']
+
+    varpath_record = build_raw_record('pseudo_id1' => 'bob')
+    varpath_record.mapped_fields['variantpathclass'] = '10'
+    @handler.extract_variantpathclass(@genotype, varpath_record)
+    assert_nil @genotype.attribute_map['variantpathclass']
   end
 
   test 'assign_test_type' do
@@ -75,25 +80,49 @@ class OxfordHandlerTest < ActiveSupport::TestCase
 
   test 'process_variants' do
     @logger.expects(:debug).with('SUCCESSFUL cdna change parse for: 7928C>T')
-    @handler.process_variants(@genotype, @record)
+    @handler.process_variants(@genotype, @record, 5)
     assert_equal 'c.7928C>T', @genotype.attribute_map['codingdnasequencechange']
     assert_equal 2, @genotype.attribute_map['teststatus']
     exon_variant_record = build_raw_record('pseudo_id1' => 'bob')
     exon_variant_record.mapped_fields['codingdnasequencechange'] = 'Deletion of exon 12-24'
-    @handler.process_variants(@genotype, exon_variant_record)
+    @handler.process_variants(@genotype, exon_variant_record, 5)
     assert_equal '12-24', @genotype.attribute_map['exonintroncodonnumber']
     assert_equal 10, @genotype.attribute_map['sequencevarianttype']
     assert_equal 2, @genotype.attribute_map['teststatus']
     normal_record = build_raw_record('pseudo_id1' => 'bob')
     normal_record.raw_fields['codingdnasequencechange'] = 'N/A'
     normal_record.mapped_fields['codingdnasequencechange'] = 'N/A'
-    @handler.process_variants(@genotype, normal_record)
+    @handler.process_variants(@genotype, normal_record, 5)
     assert_equal 1, @genotype.attribute_map['teststatus']
     exemptions_record = build_raw_record('pseudo_id1' => 'bob')
     exemptions_record.mapped_fields['codingdnasequencechange'] = 'c.[-835C>T]+[=]'
-    @handler.process_variants(@genotype, exemptions_record)
+    @handler.process_variants(@genotype, exemptions_record, 5)
     assert_equal 'c.-835C>T', @genotype.attribute_map['codingdnasequencechange']
     assert_equal 2, @genotype.attribute_map['teststatus']
+
+    @logger.expects(:debug).with('SUCCESSFUL cdna change parse for: 7928C>T')
+    @handler.process_variants(@genotype, @record, 2)
+    assert_equal 'c.7928C>T', @genotype.attribute_map['codingdnasequencechange']
+    assert_equal 10, @genotype.attribute_map['teststatus']
+
+    nonpath_exon_variant_record = build_raw_record('pseudo_id1' => 'bob')
+    nonpath_exon_variant_record.mapped_fields['codingdnasequencechange'] = 'Deletion of exon 12-24'
+    @handler.process_variants(@genotype, nonpath_exon_variant_record, 2)
+    assert_equal '12-24', @genotype.attribute_map['exonintroncodonnumber']
+    assert_equal 10, @genotype.attribute_map['sequencevarianttype']
+    assert_equal 10, @genotype.attribute_map['teststatus']
+
+    exemptions_del_record = build_raw_record('pseudo_id1' => 'bob')
+    exemptions_del_record.mapped_fields['codingdnasequencechange'] = 'deletion BRCA1 exons 1-17'
+    @handler.process_variants(@genotype, exemptions_del_record, 5)
+    assert_equal '1-17', @genotype.attribute_map['exonintroncodonnumber']
+    assert_equal 2, @genotype.attribute_map['teststatus']
+
+    nonpath_exemptions_record = build_raw_record('pseudo_id1' => 'bob')
+    nonpath_exemptions_record.mapped_fields['codingdnasequencechange'] = 'c.[-835C>T]+[=]'
+    @handler.process_variants(@genotype, nonpath_exemptions_record, 1)
+    assert_equal 'c.-835C>T', @genotype.attribute_map['codingdnasequencechange']
+    assert_equal 10, @genotype.attribute_map['teststatus']
   end
 
   test 'process_protein_impact' do

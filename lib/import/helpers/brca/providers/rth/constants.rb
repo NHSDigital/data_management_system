@@ -61,8 +61,8 @@ module Import
               'c3' => 3,
               'c4' => 4,
               'c5' => 5,
-              '10' => '',
-              'n/a' => ''
+              '10' => 'invalidvariantpathclass',
+              'n/a' => 'invalidvariantpathclass'
             }.freeze
           end
         end
