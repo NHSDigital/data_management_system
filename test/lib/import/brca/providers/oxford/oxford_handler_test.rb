@@ -47,11 +47,48 @@ class OxfordHandlerTest < ActiveSupport::TestCase
     targeted_record.raw_fields['scope / limitations of test'] = 'proband'
     @handler.assign_test_scope(@genotype, targeted_record)
     assert_equal 'Targeted BRCA mutation test', @genotype.attribute_map['genetictestscope']
+
+    targeted_record2 = build_raw_record('pseudo_id1' => 'bob')
+    targeted_record2.raw_fields['scope / limitations of test'] = 'HNPCC Familial'
+    @handler.assign_test_scope(@genotype, targeted_record2)
+    assert_equal 'Targeted BRCA mutation test', @genotype.attribute_map['genetictestscope']
+
+    targeted_record3 = build_raw_record('pseudo_id1' => 'bob')
+    targeted_record3.raw_fields['scope / limitations of test'] = 'c.1100 only'
+    @handler.assign_test_scope(@genotype, targeted_record3)
+    assert_equal 'Targeted BRCA mutation test', @genotype.attribute_map['genetictestscope']
+
     no_scope_record = build_raw_record('pseudo_id1' => 'bob')
-    no_scope_record.raw_fields['scope / limitations of test'] = 'CNV analysis only'
+    no_scope_record.raw_fields['scope / limitations of test'] = 'no scope'
     @handler.assign_test_scope(@genotype, no_scope_record)
     assert_equal 'Unable to assign BRCA genetictestscope', @genotype.attribute_map['genetictestscope']
-  end
+
+    full_screen_record1 = build_raw_record('pseudo_id1' => 'bob')
+    full_screen_record1.raw_fields['scope / limitations of test'] = 'SNV analysis ONLY'
+    @handler.assign_test_scope(@genotype, full_screen_record1 )
+    assert_equal 'Full screen BRCA1 and BRCA2', @genotype.attribute_map['genetictestscope']
+
+    full_screen_record2 = build_raw_record('pseudo_id1' => 'bob')
+    full_screen_record2.raw_fields['scope / limitations of test'] = 'CNV testing only'
+    @handler.assign_test_scope(@genotype, full_screen_record2 )
+    assert_equal 'Full screen BRCA1 and BRCA2', @genotype.attribute_map['genetictestscope']
+
+    full_screen_record3 = build_raw_record('pseudo_id1' => 'bob')
+    full_screen_record3.raw_fields['scope / limitations of test'] = 'CNV analysis testing'
+    @handler.assign_test_scope(@genotype, full_screen_record3 )
+    assert_equal 'Full screen BRCA1 and BRCA2', @genotype.attribute_map['genetictestscope']
+
+    full_screen_record4 = build_raw_record('pseudo_id1' => 'bob')
+    full_screen_record4.raw_fields['scope / limitations of test'] = 'Whole gene screen'
+    @handler.assign_test_scope(@genotype, full_screen_record4 )
+    assert_equal 'Full screen BRCA1 and BRCA2', @genotype.attribute_map['genetictestscope']
+
+    full_screen_record5 = build_raw_record('pseudo_id1' => 'bob')
+    full_screen_record5.raw_fields['scope / limitations of test'] = 'Full gene'
+    @handler.assign_test_scope(@genotype, full_screen_record5)
+    assert_equal 'Full screen BRCA1 and BRCA2', @genotype.attribute_map['genetictestscope']
+
+    end
 
   test 'process_gene' do
     @logger.expects(:debug).with('SUCCESSFUL gene parse for 8')
