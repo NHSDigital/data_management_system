@@ -1,0 +1,88 @@
+---
+# This file ensures that the codebase is compatible with newer ruby and gem versions
+
+name: Future proof
+
+on:
+  pull_request:
+    types: [opened, ready_for_review, review_requested]
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  future_proof_matrix:
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby-version:
+          - '3.0' # Latest ruby 3.0.x
+          - '3.1' # Latest ruby 3.1.x
+
+    name: "Ruby ${{ matrix.ruby-version }} Smoke Tests"
+
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_USER: rails
+          POSTGRES_PASSWORD: ra1ls_password
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+          --name postgres
+        ports:
+          - 5432:5432
+
+    env:
+      DB_HOST: localhost
+      DB_PORT: 5432
+      DB_USERNAME: rails
+      DB_PASSWORD: ra1ls_password
+
+      # Prep the whole stack in test-only mode:
+      RAILS_ENV: test
+      # TODO: Install apache-arrow, parquet-glib-devel etc., remove rdc from the following line:
+      # TODO: Install oracle client libraries, remove oracle from the following line:
+      BUNDLE_WITHOUT: rdc:oracle
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Remove Gemfile.lock so we get the latest gems
+        run: rm Gemfile.lock
+      - name: Set up Ruby + Bundle
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+          ruby-version: ${{ matrix.ruby-version }}
+      - name: Inject configuration
+        run: cp config/database.yml{.ci,}
+      - name: Prepare the database
+        run: bin/rails db:setup
+      - name: Precompile assets
+        # Since ruby/setup-ruby@v1 moved to Node.js v18 we need the extra options
+        # until we move to newer webpacker / stop using it.
+        # I've tried using a newer hash function in config/webpack/environment.js
+        # by adding the following line, but this didn't help with github actions
+        # # environment.config.set('output.hashFunction', 'sha256')
+        # https://stackoverflow.com/questions/69692842/error-message-error0308010cdigital-envelope-routinesunsupported/73465262#73465262
+        run: NODE_OPTIONS=--openssl-legacy-provider RAILS_GROUPS=assets RAILS_ENV=test bin/rails assets:clobber assets:precompile
+      - name: Run smoke tests with latest gems and ruby
+        run: bin/rake smoke_test
+
+  # A utility job upon which Branch Protection can depend,
+  # thus remaining agnostic of the matrix.
+  future_proofs:
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    # name: Matrix
+    needs: future_proof_matrix
+    steps:
+      - name: Check build matrix status
+        if: ${{ needs.future_proof_matrix.result != 'success' }}
+        run: exit 1
