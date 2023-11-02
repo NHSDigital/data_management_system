@@ -98,6 +98,8 @@ module Import
             teststatus = record.raw_fields['teststatus']
             if gene.present? && variant.present? && pathogenic?(record)
               genocolorectal.add_status(2)
+            elsif gene.present? && variant.present? && non_pathogenic?(record)
+              genotype.add_status(10)
             elsif gene.present? && variant.blank?
               genocolorectal.add_status(4)
             elsif teststatus.present? && teststatus.scan(/fail/i).size.positive?
@@ -170,7 +172,7 @@ module Import
           def get_gene(record)
             gene = record.raw_fields['gene']
             positive_genes = gene.nil? ? [] : gene.scan(COLORECTAL_GENES_REGEX).flatten.uniq
-            if positive_genes.size.zero?
+            if positive_genes.empty?
               positive_genes = record.raw_fields['investigation code'].
                                scan(COLORECTAL_GENES_REGEX).flatten.uniq
             end
@@ -197,7 +199,17 @@ module Import
 
           def pathogenic?(record)
             varpathclass = record.raw_fields['variantpathclass']&.downcase
-            NON_PATHEGENIC_CODES.exclude? varpathclass
+            if (NON_PATHEGENIC_CODES.exclude? varpathclass) \
+              && (NO_MUTATION_DETECTED_CODES.exclude? varpathclass)
+              true
+            end
+          end
+
+          def non_pathogenic?(record)
+            varpathclass = record.raw_fields['variantpathclass']&.downcase
+            return true if NON_PATHEGENIC_CODES.include? varpathclass
+
+            false
           end
 
           def process_variants(genocolorectal, variant)

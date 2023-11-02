@@ -48,8 +48,10 @@ module Import
                                      consultantcode
                                      servicereportidentifier].freeze
 
-            NON_PATHEGENIC_CODES = ['nmd',
-                                    'likely benign',
+
+            NO_MUTATION_DETECTED_CODES= ['nmd']
+
+            NON_PATHEGENIC_CODES = ['likely benign',
                                     'benign',
                                     'non-pathological variant'].freeze
 
