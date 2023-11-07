@@ -189,7 +189,7 @@ class NewcastleHandlerTest < ActiveSupport::TestCase
     assert_nil nostatus_genotype.attribute_map['codingdnasequencechange']
   end
 
-  test 'process_noscope_with_gene_mutation' do
+  test 'process_noscope_with_non_pathological_gene_mutation' do
     noscope_genemutation_record = build_raw_record('pseudo_id1' => 'bob')
     noscope_genemutation_record.raw_fields['moleculartestingtype'] = 'Unknown / other'
     noscope_genemutation_record.raw_fields['service category'] = 'B'
@@ -203,7 +203,47 @@ class NewcastleHandlerTest < ActiveSupport::TestCase
     @handler.process_test_status(noscope_genotype, noscope_genemutation_record)
     genotypes = @handler.process_variant_records(noscope_genotype, noscope_genemutation_record)
     assert_equal 'Unable to assign BRCA genetictestscope', noscope_genotype.attribute_map['genetictestscope']
-    assert_equal 1, genotypes[0].attribute_map['teststatus']
+    assert_equal 10, genotypes[0].attribute_map['teststatus']
+    assert_equal 8, genotypes[0].attribute_map['gene']
+    assert_nil genotypes[0].attribute_map['codingdnasequencechange']
+  end
+
+
+  test 'process_noscope_with_likely_benign_gene_mutation' do
+    noscope_genemutation_record = build_raw_record('pseudo_id1' => 'bob')
+    noscope_genemutation_record.raw_fields['moleculartestingtype'] = 'Unknown / other'
+    noscope_genemutation_record.raw_fields['service category'] = 'B'
+    noscope_genemutation_record.raw_fields['investigation code'] = 'BRCA'
+    noscope_genemutation_record.raw_fields['gene'] = 'BRCA2'
+    noscope_genemutation_record.raw_fields['genotype'] = 'c.8850G>T'
+    noscope_genemutation_record.raw_fields['variantpathclass'] = 'likely benign'
+    noscope_genemutation_record.raw_fields['teststatus'] = 'het'
+    noscope_genotype = Import::Brca::Core::GenotypeBrca.new(noscope_genemutation_record)
+    @handler.process_test_scope(noscope_genotype, noscope_genemutation_record)
+    @handler.process_test_status(noscope_genotype, noscope_genemutation_record)
+    genotypes = @handler.process_variant_records(noscope_genotype, noscope_genemutation_record)
+    assert_equal 'Unable to assign BRCA genetictestscope', noscope_genotype.attribute_map['genetictestscope']
+    assert_equal 10, genotypes[0].attribute_map['teststatus']
+  end
+
+
+
+
+  test 'process_noscope_with_benign_gene_mutation' do
+    noscope_genemutation_record = build_raw_record('pseudo_id1' => 'bob')
+    noscope_genemutation_record.raw_fields['moleculartestingtype'] = 'Unknown / other'
+    noscope_genemutation_record.raw_fields['service category'] = 'B'
+    noscope_genemutation_record.raw_fields['investigation code'] = 'BRCA'
+    noscope_genemutation_record.raw_fields['gene'] = 'BRCA2'
+    noscope_genemutation_record.raw_fields['genotype'] = 'c.8850G>T'
+    noscope_genemutation_record.raw_fields['variantpathclass'] = 'benign'
+    noscope_genemutation_record.raw_fields['teststatus'] = 'het'
+    noscope_genotype = Import::Brca::Core::GenotypeBrca.new(noscope_genemutation_record)
+    @handler.process_test_scope(noscope_genotype, noscope_genemutation_record)
+    @handler.process_test_status(noscope_genotype, noscope_genemutation_record)
+    genotypes = @handler.process_variant_records(noscope_genotype, noscope_genemutation_record)
+    assert_equal 'Unable to assign BRCA genetictestscope', noscope_genotype.attribute_map['genetictestscope']
+    assert_equal 10, genotypes[0].attribute_map['teststatus']
     assert_equal 8, genotypes[0].attribute_map['gene']
     assert_nil genotypes[0].attribute_map['codingdnasequencechange']
   end
