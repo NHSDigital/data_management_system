@@ -99,7 +99,7 @@ module Import
             if gene.present? && variant.present? && pathogenic?(record)
               genocolorectal.add_status(2)
             elsif gene.present? && variant.present? && non_pathogenic?(record)
-              genotype.add_status(10)
+              genocolorectal.add_status(10)
             elsif gene.present? && variant.blank?
               genocolorectal.add_status(4)
             elsif teststatus.present? && teststatus.scan(/fail/i).size.positive?
