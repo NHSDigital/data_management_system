@@ -208,7 +208,6 @@ class NewcastleHandlerTest < ActiveSupport::TestCase
     assert_nil genotypes[0].attribute_map['codingdnasequencechange']
   end
 
-
   test 'process_noscope_with_likely_benign_gene_mutation' do
     noscope_genemutation_record = build_raw_record('pseudo_id1' => 'bob')
     noscope_genemutation_record.raw_fields['moleculartestingtype'] = 'Unknown / other'
@@ -225,9 +224,6 @@ class NewcastleHandlerTest < ActiveSupport::TestCase
     assert_equal 'Unable to assign BRCA genetictestscope', noscope_genotype.attribute_map['genetictestscope']
     assert_equal 10, genotypes[0].attribute_map['teststatus']
   end
-
-
-
 
   test 'process_noscope_with_benign_gene_mutation' do
     noscope_genemutation_record = build_raw_record('pseudo_id1' => 'bob')
