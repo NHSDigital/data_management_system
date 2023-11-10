@@ -57,7 +57,7 @@ module Import
               'tp53' => %w[TP53]
             }.freeze
 
-            NO_MUTATION_DETECTED_CODES= ['nmd']
+            NO_MUTATION_DETECTED_CODES = ['nmd'].freeze
 
             NON_PATHEGENIC_CODES = ['likely benign',
                                     'benign',
