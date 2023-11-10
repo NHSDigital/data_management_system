@@ -75,6 +75,8 @@ module Import
             teststatus = record.raw_fields['teststatus']
             if gene.present? && variant.present? && pathogenic?(record)
               genotype.add_status(2)
+            elsif gene.present? && variant.present? && non_pathogenic?(record)
+              genotype.add_status(10)
             elsif gene.present? && variant.blank?
               genotype.add_status(4)
             elsif teststatus.present? && teststatus.scan(/fail/i).size.positive?
@@ -165,7 +167,7 @@ module Import
             positive_genes = []
             gene = record.raw_fields['gene']
             positive_genes = gene.scan(BRCA_REGEX).flatten.uniq unless gene.nil?
-            if positive_genes.size.zero?
+            if positive_genes.empty?
               positive_genes = record.raw_fields['investigation code'].scan(BRCA_REGEX).flatten.uniq
             end
             positive_genes[0] unless positive_genes.nil?
@@ -215,7 +217,17 @@ module Import
 
           def pathogenic?(record)
             varpathclass = record.raw_fields['variantpathclass']&.downcase
-            return true if NON_PATHEGENIC_CODES.exclude? varpathclass
+            if (NON_PATHEGENIC_CODES.exclude? varpathclass) \
+              && (NO_MUTATION_DETECTED_CODES.exclude? varpathclass)
+              return true
+            end
+
+            false
+          end
+
+          def non_pathogenic?(record)
+            varpathclass = record.raw_fields['variantpathclass']&.downcase
+            return true if NON_PATHEGENIC_CODES.include? varpathclass
 
             false
           end
@@ -246,7 +258,7 @@ module Import
 
           def summarize
             @logger.info ' ************** Handler Summary **************** '
-            @logger.info "Num bad variants: #{@failed_variant_counter} of "\
+            @logger.info "Num bad variants: #{@failed_variant_counter} of " \
                          "#{@variants_processed_counter} processed"
           end
         end
