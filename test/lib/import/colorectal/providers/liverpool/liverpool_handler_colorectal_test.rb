@@ -10,6 +10,29 @@ class LiverpoolHandlerColorectalTest < ActiveSupport::TestCase
     @logger = Import::Log.get_logger
   end
 
+  test 'process_fields_investigation' do
+    peutz_jegher_syndrome_record = build_raw_record('pseudo_id1' => 'bob')
+    peutz_jegher_syndrome_record.raw_fields['investigation'] = 'Peutz Jegher Syndrome'
+    peutz_jegher_syndrome_record.raw_fields['testscope'] = 'Partial gene screen'
+    peutz_jegher_syndrome_record.raw_fields['testresult'] = 'Fail'
+    results = @handler.process_fields(peutz_jegher_syndrome_record)
+    assert_not_nil results
+
+    lynch_syndrome_record = build_raw_record('pseudo_id1' => 'bob')
+    lynch_syndrome_record.raw_fields['investigation'] = 'Lynch syndrome'
+    lynch_syndrome_record.raw_fields['testscope'] = 'Partial gene screen'
+    lynch_syndrome_record.raw_fields['testresult'] = 'Fail'
+    results = @handler.process_fields(lynch_syndrome_record)
+    assert_not_nil results
+
+    familial_breast_cancer_record = build_raw_record('pseudo_id1' => 'bob')
+    familial_breast_cancer_record.raw_fields['investigation'] = 'Familial Breast Cancer'
+    familial_breast_cancer_record.raw_fields['testscope'] = 'Partial gene screen'
+    familial_breast_cancer_record.raw_fields['testresult'] = 'Fail'
+    results = @handler.process_fields(familial_breast_cancer_record)
+    assert_nil results
+  end
+
   test 'process_genetictestscope' do
     targ_record = build_raw_record('pseudo_id1' => 'bob')
     @handler.add_genetictestscope(@genocolorectal, targ_record)
@@ -24,6 +47,26 @@ class LiverpoolHandlerColorectalTest < ActiveSupport::TestCase
     fs_record.raw_fields['testscope'] = 'Partial gene screen'
     @handler.add_genetictestscope(@genocolorectal, fs_record)
     assert_equal 'Full screen Colorectal Lynch or MMR', @genocolorectal.attribute_map['genetictestscope']
+
+    partial_gene_mutation_screen_record = build_raw_record('pseudo_id1' => 'bob')
+    partial_gene_mutation_screen_record.raw_fields['testscope'] = 'Partial gene mutation screen'
+    @handler.add_genetictestscope(@genocolorectal, partial_gene_mutation_screen_record)
+    assert_equal 'Full screen Colorectal Lynch or MMR', @genocolorectal.attribute_map['genetictestscope']
+
+    sanger_mlpa_record = build_raw_record('pseudo_id1' => 'bob')
+    sanger_mlpa_record.raw_fields['testscope'] = 'Sanger Sequence analysis and MLPA screen'
+    @handler.add_genetictestscope(@genocolorectal, sanger_mlpa_record)
+    assert_equal 'Full screen Colorectal Lynch or MMR', @genocolorectal.attribute_map['genetictestscope']
+
+    mlpa_record = build_raw_record('pseudo_id1' => 'bob')
+    mlpa_record.raw_fields['testscope'] = 'targeted mutation analysis - mlpa'
+    @handler.add_genetictestscope(@genocolorectal,  mlpa_record)
+    assert_equal 'Targeted Colorectal Lynch or MMR', @genocolorectal.attribute_map['genetictestscope']
+
+    sanger_record = build_raw_record('pseudo_id1' => 'bob')
+    sanger_record.raw_fields['testscope'] = 'targeted mutation analysis - sanger sequencing'
+    @handler.add_genetictestscope(@genocolorectal, sanger_record)
+    assert_equal 'Targeted Colorectal Lynch or MMR', @genocolorectal.attribute_map['genetictestscope']
 
     no_scope_record = build_raw_record('pseudo_id1' => 'bob')
     no_scope_record.raw_fields['testscope'] = 'XYZ'
@@ -49,8 +92,13 @@ class LiverpoolHandlerColorectalTest < ActiveSupport::TestCase
     assert @handler.abnormal?(@genocolorectal)
     assert_equal 6, @genocolorectal.attribute_map['geneticinheritance']
 
+    fail_cannot_interpret_data_record = build_raw_record('pseudo_id1' => 'bob')
+    fail_cannot_interpret_data_record.raw_fields['testresult'] = 'Fail - Cannot Interpret Data'
+    @handler.add_test_status(@genocolorectal, fail_cannot_interpret_data_record)
+    assert_equal 9, @genocolorectal.attribute_map['teststatus']
+
     fail_record = build_raw_record('pseudo_id1' => 'bob')
-    fail_record.raw_fields['testresult'] = 'Fail - Cannot Interpret Data'
+    fail_record.raw_fields['testresult'] = 'Fail'
     @handler.add_test_status(@genocolorectal, fail_record)
     assert_equal 9, @genocolorectal.attribute_map['teststatus']
   end

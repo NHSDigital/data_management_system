@@ -31,17 +31,19 @@ module Import
                                'R207 Inherited Ovarian Cancer'                      => :full_screen }.freeze
             # rubocop:enable Layout/LineLength
 
-            TEST_STATUS_MAP = { '1: Clearly not pathogenic' => :negative,
-                                '2: likely not pathogenic' => :negative,
-                                '2: likely not pathogenic variant' => :negative,
-                                'Class 2 Likely Neutral' => :negative,
-                                'Class 2 likely neutral variant' => :negative,
-                                '3: variant of unknown significance (VUS)' => :positive,
-                                '4: likely pathogenic' => :positive,
-                                '4:likely pathogenic' => :positive,
-                                '4: Likely Pathogenic' => :positive,
-                                '5: clearly pathogenic' => :positive,
-                                'Mutation identified' => :positive }.freeze
+            TEST_STATUS_MAP = { '1: Clearly not pathogenic' => 10,
+                                '2: likely not pathogenic' => 10,
+                                '2: likely not pathogenic variant' => 10,
+                                'Class 2 Likely Neutral' => 10,
+                                'Class 2 likely neutral variant' => 10,
+                                '3: variant of unknown significance (VUS)' => 2,
+                                '4: likely pathogenic' => 2,
+                                '4:likely pathogenic' => 2,
+                                '4: Likely Pathogenic' => 2,
+                                '5: clearly pathogenic' => 2,
+                                'Mutation identified' => 2,
+                                'VUS' => 2,
+                                'Fail' => 9 }.freeze
 
             TEST_SCOPE_TTYPE_MAP = { 'Diagnostic' => :full_screen,
                                      'Indirect'   => :full_screen,

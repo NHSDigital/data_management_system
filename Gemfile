@@ -50,7 +50,7 @@ unless defined?(BUNDLER_OVERRIDE_MINI_RACER) && BUNDLER_OVERRIDE_MINI_RACER
   gem 'mini_racer', '0.6.2'
 end
 
-gem 'parser', '3.1.2.0' # supports ruby 3.0.4
+gem 'parser'
 # Turbolinks makes following links in your web application faster. Read more: https://github.com/rails/turbolinks
 gem 'turbolinks', '~> 5.x'
 
@@ -78,6 +78,12 @@ gem 'will_paginate'
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
 
+# net-imap (via ndr_error) requires date. Puma needs us to stick to the ruby default version.
+gem 'date', '3.1.3' # Lock to Ruby 3.0 version of gem for live service
+
+# TODO: 2023-09-03: Updating mail to 2.8.1 causes tests failures on Rails 6.1
+gem 'mail', '>= 2.1.1', '< 2.8.0' # mail 2.8.0 and 2.8.0.1 have major hidden bugs
+
 gem 'ndr_authenticate', '~> 0.3', '>= 0.3.3'
 gem 'ndr_error', '~> 2.0'
 gem 'ndr_import'
@@ -87,7 +93,8 @@ gem 'ndr_ui'
 gem 'ndr_workflow', '~> 1.2', '>= 1.2.2'
 
 gem 'axlsx'
-gem 'bootstrap-table-rails'
+# TODO: 2023-09-03: bootstrap-table-rails fails `rake assets:precompile` if updated to 1.20.2
+gem 'bootstrap-table-rails', '~> 1.11.1'
 gem 'zip-zip' # annoying backwards compatibility for old axlsx version
 
 gem 'loofah', '>= 2.3.1' # address CVE-2019-15587

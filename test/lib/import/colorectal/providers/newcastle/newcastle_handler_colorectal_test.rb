@@ -15,7 +15,8 @@ class NewcastleHandlerColorectalTest < ActiveSupport::TestCase
     @handler.add_test_status(@genotype, positive_record)
     assert_equal 2, @genotype.attribute_map['teststatus']
     fail_record = build_raw_record('pseudo_id1' => 'bob')
-    fail_record.raw_fields['variantpathclass'] = 'benign'
+    fail_record.raw_fields['gene'] = ''
+    fail_record.raw_fields['variantpathclass'] = ''
     fail_record.raw_fields['teststatus'] = 'fail'
     @handler.add_test_status(@genotype, fail_record)
     assert_equal 9, @genotype.attribute_map['teststatus']
@@ -25,6 +26,24 @@ class NewcastleHandlerColorectalTest < ActiveSupport::TestCase
     unknown_record.raw_fields['variantpathclass'] = 'nmd'
     @handler.add_test_status(@genotype, unknown_record)
     assert_equal 4, @genotype.attribute_map['teststatus']
+    benign_record = build_raw_record('pseudo_id1' => 'bob')
+    benign_record.raw_fields['gene'] = 'APC'
+    benign_record.raw_fields['genotype'] = 'het'
+    benign_record.raw_fields['variantpathclass'] = 'benign'
+    @handler.add_test_status(@genotype, benign_record)
+    assert_equal 10, @genotype.attribute_map['teststatus']
+    likely_benign_record = build_raw_record('pseudo_id1' => 'bob')
+    likely_benign_record.raw_fields['gene'] = 'APC'
+    likely_benign_record.raw_fields['genotype'] = 'het'
+    likely_benign_record.raw_fields['variantpathclass'] = 'likely benign'
+    @handler.add_test_status(@genotype, likely_benign_record)
+    assert_equal 10, @genotype.attribute_map['teststatus']
+    non_pathogenic_record = build_raw_record('pseudo_id1' => 'bob')
+    non_pathogenic_record.raw_fields['gene'] = 'APC'
+    non_pathogenic_record.raw_fields['genotype'] = 'het'
+    non_pathogenic_record.raw_fields['variantpathclass'] = 'non-pathological variant'
+    @handler.add_test_status(@genotype, non_pathogenic_record)
+    assert_equal 10, @genotype.attribute_map['teststatus']
   end
 
   test 'add_test_scope' do
