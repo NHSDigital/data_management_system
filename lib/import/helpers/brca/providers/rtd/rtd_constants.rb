@@ -48,8 +48,7 @@ module Import
                                      consultantcode
                                      servicereportidentifier].freeze
 
-
-            NO_MUTATION_DETECTED_CODES= ['nmd']
+            NO_MUTATION_DETECTED_CODES = ['nmd'].freeze
 
             NON_PATHEGENIC_CODES = ['likely benign',
                                     'benign',
@@ -64,9 +63,9 @@ module Import
             # rubocop:disable Lint/MixedRegexpCaptureTypes
             PROTEIN_REGEX = /p\.\((?<impact>.+)\)|
                             \(p\.(?<impact>[A-Za-z]+.+)\)|
-                            p\.(?<impact>[A-Za-z]+.+)/ix.freeze # Added by Francesco
+                            p\.(?<impact>[A-Za-z]+.+)/ix # Added by Francesco
             BRCA_REGEX = /(?<brca>BRCA1|BRCA2|PALB2|ATM|CHEK2|TP53|MLH1|CDH1|
-                                  MSH2|MSH6|PMS2|STK11|PTEN|BRIP1|NBN|RAD51C|RAD51D)/ix.freeze
+                                  MSH2|MSH6|PMS2|STK11|PTEN|BRIP1|NBN|RAD51C|RAD51D)/ix
             CDNA_REGEX = /c\.\*?(?<cdna>
                                  [0-9]+[a-z]+>[a-z]+|
                                  [0-9]+_[0-9]+[ACGTdelinsup]+|
@@ -76,7 +75,7 @@ module Import
                                  [0-9]+[a-z]+|
                                  [0-9]+[+>_-][0-9]+[+>_-][0-9]+[+>_-][0-9]+[ACGTdelinsup]+|
                                  [0-9]+[+>_-][0-9]+[+>_-][0-9]+[ACGTdelinsup]+|
-                                 [0-9]+.[0-9]+[a-z]+>[a-z]+)\s?/ix.freeze
+                                 [0-9]+.[0-9]+[a-z]+>[a-z]+)\s?/ix
 
             EXON_VARIANT_REGEX = /(?<variant>del|dup|ins).+ex(?<on>on)?(?<s>s)?\s
                                   (?<exons>[0-9]+(?<dgs>-[0-9]+)?)|
@@ -90,7 +89,7 @@ module Import
                                 ex(?<on>on)?(?<s>s)?\s(?<exons>[0-9]+(?<dgs>\sto\s[0-9]+)?)\s
                                 (?<variant>del|dup|ins)|
                                 x(?<exons>[0-9]+-?[0-9]+)\s?(?<variant>del|dup|ins)|
-                                x(?<exons>[0-9]+-?[0-9]?)\s?(?<variant>del|dup|ins)/ix.freeze
+                                x(?<exons>[0-9]+-?[0-9]?)\s?(?<variant>del|dup|ins)/ix
             # rubocop:enable Lint/MixedRegexpCaptureTypes
           end
         end
