@@ -51,8 +51,8 @@ module Import
                                             record.raw_fields,
                                             PASS_THROUGH_FIELDS)
             process_varpathclass(genotype, record)
-            process_teststatus(genotype, record)
             process_variant(genotype, record)
+            process_teststatus(genotype, record)
             process_large_deldup(genotype, record)
             process_test_scope(genotype, record)
             process_test_type(genotype, record)
@@ -86,6 +86,8 @@ module Import
               @logger.debug 'NO VARIANT PATHCLASS DETECTED'
               return
             end
+  
+
             varpathclass = record.raw_fields['variantpathclass'].downcase.strip
             # unless record.raw_fields['variantpathclass'].nil?
             # if varpathclass.present? && VARIANT_PATH_CLASS[varpathclass]
@@ -99,6 +101,7 @@ module Import
               @logger.debug 'UNABLE TO DETERMINE TESTSTATUS'
               return
             end
+            nonpathvarclass = nil
             teststatus = record.raw_fields['teststatus']
             if record.raw_fields['variantpathclass'].nil?
               nonpathvarclass = nil
@@ -190,8 +193,8 @@ module Import
           end
 
           def non_pathogenic_variant_test?(teststatus, nonpathvarclass)
-            /non-pathogenic\svariant\sdetected/i.match(teststatus) ||
-              NON_PATH_VARIANT_CLASS[nonpathvarclass].present?
+            /non-pathogenic\svariant\sdetected/i.match(teststatus) || 
+            NON_PATH_VARIANT_CLASS[nonpathvarclass]
           end
         end
       end
