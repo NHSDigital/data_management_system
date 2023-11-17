@@ -7,20 +7,53 @@ module Import
           include Import::Helpers::Colorectal::Providers::Rth::Constants
 
           def process_fields(record)
-            genocolorectal = Import::Colorectal::Core::Genocolorectal.new(record)
-            genocolorectal.add_passthrough_fields(record.mapped_fields,
+            if is_colorectal_file?
+              genocolorectal = Import::Colorectal::Core::Genocolorectal.new(record)
+              genocolorectal.add_passthrough_fields(record.mapped_fields,
                                                   record.raw_fields,
                                                   PASS_THROUGH_FIELDS)
-            assign_method(genocolorectal, record)
-            assign_test_scope(genocolorectal, record)
-            assign_test_type(genocolorectal, record)
-            assign_genomic_change(genocolorectal, record)
-            assign_servicereportidentifier(genocolorectal, record)
-            assign_variantpathclass(genocolorectal, record)
-            add_organisationcode_testresult(genocolorectal)
-            res = process_records(genocolorectal, record)
-            res.each { |cur_genotype| @persister.integrate_and_store(cur_genotype) }
+              assign_method(genocolorectal, record)
+              assign_test_scope(genocolorectal, record)
+              assign_test_type(genocolorectal, record)
+              assign_genomic_change(genocolorectal, record)
+              assign_servicereportidentifier(genocolorectal, record)
+              assign_variantpathclass(genocolorectal, record)
+              add_organisationcode_testresult(genocolorectal)
+              res = process_records(genocolorectal, record)
+              res.each { |cur_genotype| @persister.integrate_and_store(cur_genotype) }
+            end
           end
+
+          def is_colorectal_file?
+            file_name = @batch.original_filename
+            file_path = file_name.slice(0, file_name.rindex('/'))
+            file_path_array = file_name.split("/")
+            psuedo_file_name= file_path_array[((file_path_array.length)-1)]
+            matching_month=/(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sept|Oct|Nov|Dec)+/i.match(psuedo_file_name)
+            directory = "#{Rails.root}/private/pseudonymised_data/#{file_path}"
+            csv_files = Dir.glob("#{directory}/*#{matching_month}*_pretty.csv")
+            if csv_files.nil?
+            else
+              csv = CSV.read(csv_files[0], :headers=>true)
+              brca1_count = csv["mapped:gene"].tally["7"]
+              apc_count = csv["mapped:gene"].tally["358"]
+              mlh1_count = csv["mapped:gene"].tally["2744"]
+              mlh1_count= convert_nil_to_zero(mlh1_count)
+              brca1_count = convert_nil_to_zero(brca1_count)
+              apc_count = convert_nil_to_zero(apc_count)
+
+              mlh1_count + apc_count > brca1_count
+            end
+          end
+
+          def convert_nil_to_zero(count)
+            if count.nil?
+              count = 0
+            end
+            count
+          end
+
+
 
           def add_organisationcode_testresult(genocolorectal)
             genocolorectal.attribute_map['organisationcode_testresult'] = '698C0'

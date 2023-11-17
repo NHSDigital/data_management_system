@@ -7,21 +7,55 @@ module Import
           include Import::Helpers::Brca::Providers::Rth::Constants
 
           def process_fields(record)
-            genotype = Import::Brca::Core::GenotypeBrca.new(record)
-            genotype.add_passthrough_fields(record.mapped_fields,
+            if is_brca_file?
+              genotype = Import::Brca::Core::GenotypeBrca.new(record)
+              genotype.add_passthrough_fields(record.mapped_fields,
                                             record.raw_fields,
                                             PASS_THROUGH_FIELDS)
-            assign_test_scope(genotype, record)
-            variantpathclass = extract_variantpathclass(genotype, record)
-            assign_test_type(genotype, record)
-            process_variants(genotype, record, variantpathclass)
-            process_protein_impact(genotype, record)
-            assign_genomic_change(genotype, record)
-            assign_servicereportidentifier(genotype, record)
-            add_organisationcode_testresult(genotype)
-            res = process_gene(genotype, record)
-            res&.each { |cur_genotype| @persister.integrate_and_store(cur_genotype) }
+              assign_test_scope(genotype, record)
+              variantpathclass = extract_variantpathclass(genotype, record)
+              assign_test_type(genotype, record)
+              process_variants(genotype, record, variantpathclass)
+              process_protein_impact(genotype, record)
+              assign_genomic_change(genotype, record)
+              assign_servicereportidentifier(genotype, record)
+              add_organisationcode_testresult(genotype)
+              res = process_gene(genotype, record)
+              res&.each { |cur_genotype| @persister.integrate_and_store(cur_genotype) }
+            else
+            end
           end
+
+          def is_brca_file?
+            file_name = @batch.original_filename
+            file_path = file_name.slice(0, file_name.rindex('/'))
+            file_path_array = file_name.split("/")
+            psuedo_file_name= file_path_array[((file_path_array.length)-1)]
+            matching_month=/(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sept|Oct|Nov|Dec)+/i.match(psuedo_file_name)
+            directory = "#{Rails.root}/private/pseudonymised_data/#{file_path}"
+            csv_files = Dir.glob("#{directory}/*#{matching_month}*_pretty.csv")
+            if csv_files.nil?
+            else
+              csv = CSV.read(csv_files[0], :headers=>true)
+              brca1_count = csv["mapped:gene"].tally["7"]
+              apc_count = csv["mapped:gene"].tally["358"]
+              mlh1_count = csv["mapped:gene"].tally["2744"]
+              mlh1_count= convert_nil_to_zero(mlh1_count)
+              brca1_count = convert_nil_to_zero(brca1_count)
+              apc_count = convert_nil_to_zero(apc_count)
+
+              mlh1_count + apc_count < brca1_count
+            end
+          end
+
+          def convert_nil_to_zero(count)
+            if count.nil?
+              count = 0
+            end
+            count
+          end
+
+
 
           def add_organisationcode_testresult(genotype)
             genotype.attribute_map['organisationcode_testresult'] = '698C0'
