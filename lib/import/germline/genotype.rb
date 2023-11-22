@@ -227,18 +227,20 @@ module Import
       def add_variant_type(location)
         return nil unless location.is_a? String
 
-        @attribute_map['sequencevarianttype'] = if location.include?('delins') ||
-                                                   location.include?('indel')
+        location_downcase = location&.downcase
+        @attribute_map['sequencevarianttype'] = if location_downcase.include?('delins') ||
+                                                   location_downcase.include?('indel')
                                                   6
-                                                elsif location.include? 'dup'
+                                                elsif location_downcase.include? 'dup'
                                                   4
-                                                elsif location.include? 'del'
+                                                elsif location_downcase.include? 'del'
                                                   3
-                                                elsif location.include? '>'
+                                                elsif location_downcase.include? '>'
                                                   1
-                                                elsif location.include? 'ins'
+                                                elsif location_downcase.include? 'ins'
                                                   2
-                                                else 10
+                                                else
+                                                  10
                                                 end
       end
 

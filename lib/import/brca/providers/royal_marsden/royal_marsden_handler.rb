@@ -28,9 +28,10 @@ module Import
 
           CDNA_REGEX_PROT = /c\.(?<cdna>.+)(?=(?<separtors>_|;.)p\.(?<impact>.+))/i.freeze
           CDNA_REGEX_NOPROT = /c\.(?<cdna>.+)/i.freeze
-          DEL_DUP_REGEX = /(?<deldup>Deletion|Duplication)\sexon(?<s>s)?\s(?<exon>\d+(?<d>-\d+)?)|
-                           exon(?<s>s)?\s(?<exon>\d+(?<d>-\d+)?)
-                           \s(?<deldup>Deletion|Duplication)/ix.freeze
+          DEL_DUP_REGEX = /(?<deldup>Deletion|Duplication)\s(ex|exon)s?\s?
+                           (?<exon>\d+([a-z -]+\d+)?)|
+                           (exon|ex)s?\s?(?<exon>\d+([a-z -]+\d+)?)\s?
+                           (?<deldup>Deletion|Duplication)/ix
 
           def initialize(batch)
             @failed_genotype_counter = 0
