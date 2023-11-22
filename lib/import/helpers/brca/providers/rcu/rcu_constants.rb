@@ -193,16 +193,12 @@ module Import
             PROTEIN_REGEX = /p\.(\[\()?(?<impact>.([a-z]+[0-9]+[a-z]+([^[:alnum:]][0-9]+)?)|
                                    ([a-z]+[0-9]+[^[:alnum:]]))(\)\])?/ix.freeze
 
-            EXON_VARIANT_REGEX = /(?<ex>(?<zygosity>het|homo)[a-z ]+)?
+            EXON_VARIANT_REGEX = /((?<zygosity>het|homo)[a-z ]+)?
                                   (?<mutationtype>deletion|duplication|duplicated)\s?
-                                  ([a-z 0-9]+ (exon|exons)\s
-                                  (?<exons>[0-9]+([a-z -]+[0-9]+)?))|
-                                  (?<ex>(?<zygosity>het|homo)[a-z ]+)?
-                                  (?<ex>(?<nm>exon|exons)\s(?<exons>[0-9]+([a-z -]+[0-9]+)?))
-                                  ([a-z ]+
-                                  (?<mutationtype>deletion|duplication|duplicated))?/ix.freeze
-
-            DEL_DUP_REGEX = /(?:\W*(del)(?:etion|[^\W])?)|(?:\W*(dup)(?:lication|[^\W])?)/i.freeze
+                                  ([a-z 0-9]+(?<nm>exon|exons)\s(?<exons>[0-9]+((to|and|-|\s)+[0-9]+)?))|
+                                  ((?<zygosity>het|homo)[a-z ]+)?
+                                  (?<nm>exon|exons)\s(?<exons>[0-9]+((to|and|-|\s)+[0-9]+)?)
+                                  ([a-z ]+(?<mutationtype>deletion|duplication|duplicated))?/ix
 
             NORMAL_VAR_REGEX = %r{(?<not>no|not)[a-z /]+
                                   (?<det>detect|report|detet|mutation)+}ix.freeze
