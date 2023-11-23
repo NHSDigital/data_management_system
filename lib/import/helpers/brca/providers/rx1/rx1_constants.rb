@@ -61,9 +61,8 @@ module Import
 
             CDNA_REGEX = /c\.(?<cdna>.?[0-9]+[^\s|^, ]+)/i
 
-            EXON_REGEX = /ex(?<ons>[a-z]+)?\s?(?<exons>[0-9]+(?<otherexons>-[0-9]+)?)\s
-                          (?<vartype>del|dup)|(?<vartype>del[a-z]+|dup[a-z]+)(?<of>\sof)?\s
-                          exon(?<s>s)?\s(?<exons>[0-9]+(?<otherexons>-[0-9]+)?)/xi
+            EXON_REGEX = /ex([a-z ]+)?(?<exons>\d+([a-z -]+\d+)?)\s+(?<vartype>del|dup)|
+                          (?<vartype>del[a-z ]+|dup[a-z ]+)exon(s)?\s(?<exons>\d+([a-z -]+\d+)?)/xi
 
             PROTEIN_REGEX = /p\..(?<impact>.+)\)/i
           end
