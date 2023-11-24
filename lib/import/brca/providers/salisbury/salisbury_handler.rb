@@ -78,7 +78,7 @@ module Import
             return unless variant.scan(EXON_VARIANT_REGEX).size.positive?
 
             genotype.add_exon_location($LAST_MATCH_INFO[:exons])
-            genotype.add_variant_type($LAST_MATCH_INFO[:mutationtype]&.downcase)
+            genotype.add_variant_type($LAST_MATCH_INFO[:mutationtype].to_s)
             @logger.debug "SUCCESSFUL exon variant parse for: #{variant}"
           end
 
