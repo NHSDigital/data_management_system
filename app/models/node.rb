@@ -1,6 +1,6 @@
 # node class
 # TODO: node.name cannot contain spaces. breaks xsd and existing item view div_ids
-class Node < ApplicationRecord
+class Node < ApplicationRecord # rubocop:disable Metrics/ClassLength
   include Xsd::Generator
 
   belongs_to :dataset_version, optional: true
@@ -383,7 +383,11 @@ class Node < ApplicationRecord
   end
 
   def preload_tree(children)
-    ActiveRecord::Associations::Preloader.new.preload(children, :child_nodes)
+    if Rails.version =~ /\A6\.1/
+      ActiveRecord::Associations::Preloader.new.preload(children, :child_nodes)
+    else
+      ActiveRecord::Associations::Preloader.new(records: children, associations: :child_nodes)
+    end
     grandchildren = children.flat_map(&:child_nodes)
 
     if grandchildren.any?
@@ -396,7 +400,12 @@ class Node < ApplicationRecord
   def preloaded_descendants
     descendants = preload_tree(child_nodes)
     descendants.group_by(&:class).each do |klass, instances|
-      ActiveRecord::Associations::Preloader.new.preload(instances, klass.preload_strategy)
+      if Rails.version =~ /\A6\.1/
+        ActiveRecord::Associations::Preloader.new.preload(instances, klass.preload_strategy)
+      else
+        ActiveRecord::Associations::Preloader.new(records: instances,
+                                                  associations: klass.preload_strategy)
+      end
     end
     descendants
   end
