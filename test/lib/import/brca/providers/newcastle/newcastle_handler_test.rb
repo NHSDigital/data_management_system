@@ -479,13 +479,28 @@ class NewcastleHandlerTest < ActiveSupport::TestCase
     assert_nil genotypes[0].attribute_map['codingdnasequencechange']
   end
 
-  test 'variantpathclass assignes to only gene in raw[gene]' do
+  test 'variantpathclass assigns to only gene in raw[gene]' do
     @handler.process_test_scope(@genotype, @record)
     genotypes = @handler.process_variant_records(@genotype, @record)
     assert_nil genotypes[0].attribute_map['variantpathclass']
     assert_equal 8, genotypes[0].attribute_map['gene']
     assert_equal 3, genotypes[1].attribute_map['variantpathclass']
     assert_equal 7, genotypes[1].attribute_map['gene']
+  end
+
+  test 'exonic variant records are populating attributes' do
+    exonic_var_rec = build_raw_record('pseudo_id1' => 'bob')
+    exonic_var_rec.raw_fields['moleculartestingtype'] = 'presymptomatic'
+    exonic_var_rec.raw_fields['service category'] = 'B'
+    exonic_var_rec.raw_fields['investigationcode'] = 'BRCA-PRED'
+    exonic_var_rec.raw_fields['gene'] = 'BRCA1'
+    exonic_var_rec.raw_fields['genotype'] = 'del ex2-24'
+    @handler.process_test_scope(@genotype, exonic_var_rec)
+    genotypes = @handler.process_variant_records(@genotype, exonic_var_rec)
+    assert_equal 3, genotypes[0].attribute_map['sequencevarianttype']
+    assert_equal '2-24', genotypes[0].attribute_map['exonintroncodonnumber']
+    assert_equal 1, genotypes[0].attribute_map['variantlocation']
+    assert_equal 7, genotypes[0].attribute_map['gene']
   end
 
   private

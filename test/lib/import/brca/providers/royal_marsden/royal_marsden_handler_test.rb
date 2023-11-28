@@ -86,6 +86,8 @@ class RoyalMarsdenHandlerTest < ActiveSupport::TestCase
     deldup_record.raw_fields['teststatus'] = 'Exon 9-10 deletion'
     @handler.process_large_deldup(@genotype, deldup_record)
     assert_equal '9-10', @genotype.attribute_map['exonintroncodonnumber']
+    assert_equal 3, @genotype.attribute_map['sequencevarianttype']
+    assert_equal 1, @genotype.attribute_map['variantlocation']
   end
 
   test 'process_test_type' do
