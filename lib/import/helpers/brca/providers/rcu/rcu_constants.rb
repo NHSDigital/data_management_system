@@ -18,10 +18,10 @@ module Import
               'BRCA1 and 2 gene analysis' => :process_scope_gene_analysis,
               'Breast & Ovarian cancer panel' => :process_scope_ovarian_panel,
               'Breast Ovarian & Colorectal cancer panel' => :process_scope_colo_ovarian_panel,
-              'R205 :: Inherited breast cancer'\
-              ' (without ovarian cancer) at very high familial risk' => :process_scope_r205,
-              'R206 :: Inherited breast cancer'\
-              ' and ovarian cancer at high familial risk levels' => :process_scope_r206,
+              'R205 :: Inherited breast cancer ' \
+              '(without ovarian cancer) at very high familial risk' => :process_scope_r205,
+              'R206 :: Inherited breast cancer ' \
+              'and ovarian cancer at high familial risk levels' => :process_scope_r206,
               'R207 :: Inherited ovarian cancer (without breast cancer)' => :process_scope_r207,
               'R208 :: BRCA1 and BRCA2 testing at high familial risk' => :process_scope_r208,
               'R208 :: Inherited breast cancer and ovarian cancer' => :process_scope_r208,
@@ -174,7 +174,7 @@ module Import
                               'R365 :: Fumarate hydratase-related tumour syndromes'].freeze
 
             BRCA_REGEX = /(?<brca>BRCA1|BRCA2|PALB2|ATM|CHEK2|TP53|MLH1|CDH1|
-                          MSH2|MSH6|PMS2|STK11|PTEN|BRIP1|NBN|RAD51C|RAD51D)/ix.freeze
+                          MSH2|MSH6|PMS2|STK11|PTEN|BRIP1|NBN|RAD51C|RAD51D)/ix
 
             # rubocop:disable Lint/MixedRegexpCaptureTypes
             CDNA_REGEX = /c\.\[?(?<cdna>
@@ -186,26 +186,23 @@ module Import
                                 ([0-9]+[+>_-][0-9]+[+>_-][0-9]+[0-9]+[ACGTdelinsup]+)|
                                 ([0-9]+[?+>_-]+[0-9]+[?+>_-]+[ACGTdelinsup]+)|
                                 ([0-9]+[ACGTdelinsup]+)
-                                )\]?/ix.freeze
+                                )\]?/ix
 
-            MLPA_FAIL_REGEX = /#{BRCA_REGEX}\s(?<mlpa>MLPA?\sfail)+/ix.freeze
+            MLPA_FAIL_REGEX = /#{BRCA_REGEX}\s(?<mlpa>MLPA?\sfail)+/ix
 
             PROTEIN_REGEX = /p\.(\[\()?(?<impact>.([a-z]+[0-9]+[a-z]+([^[:alnum:]][0-9]+)?)|
-                                   ([a-z]+[0-9]+[^[:alnum:]]))(\)\])?/ix.freeze
+                                   ([a-z]+[0-9]+[^[:alnum:]]))(\)\])?/ix
 
-            EXON_VARIANT_REGEX = /(?<ex>(?<zygosity>het|homo)[a-z ]+)?
+            EXON_VARIANT_REGEX = /((?<zygosity>het|homo)[a-z ]+)?
                                   (?<mutationtype>deletion|duplication|duplicated)\s?
-                                  ([a-z 0-9]+ (exon|exons)\s
-                                  (?<exons>[0-9]+([a-z -]+[0-9]+)?))|
-                                  (?<ex>(?<zygosity>het|homo)[a-z ]+)?
-                                  (?<ex>(?<nm>exon|exons)\s(?<exons>[0-9]+([a-z -]+[0-9]+)?))
-                                  ([a-z ]+
-                                  (?<mutationtype>deletion|duplication|duplicated))?/ix.freeze
-
-            DEL_DUP_REGEX = /(?:\W*(del)(?:etion|[^\W])?)|(?:\W*(dup)(?:lication|[^\W])?)/i.freeze
+                                  ([a-z 0-9]+(?<nm>exon|exons)\s
+                                  (?<exons>[0-9]+((to|and|-|\s)+[0-9]+)?))|
+                                  ((?<zygosity>het|homo)[a-z ]+)?
+                                  (?<nm>exon|exons)\s(?<exons>[0-9]+((to|and|-|\s)+[0-9]+)?)
+                                  ([a-z ]+(?<mutationtype>deletion|duplication|duplicated))?/ix
 
             NORMAL_VAR_REGEX = %r{(?<not>no|not)[a-z /]+
-                                  (?<det>detect|report|detet|mutation)+}ix.freeze
+                                  (?<det>detect|report|detet|mutation)+}ix
             # rubocop:enable Lint/MixedRegexpCaptureTypes
           end
         end

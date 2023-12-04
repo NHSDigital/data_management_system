@@ -170,7 +170,6 @@ MBIS=$1
 PROV='RPY'
 IFS=$'\n'
 for x in $(find  $DIRPATH/$FILEPATH -type f -name "*.pseudo" -path "*/$PROV/*" \
-! -name "*TRIP13*" \
 ! -name "8f98012da7c87b12ca1221dd3dc9d34a10952720_05.2019_BRCA only TGL data_cleaned2.xlsx.pseudo")
 do
 IFS="$OIFS"
