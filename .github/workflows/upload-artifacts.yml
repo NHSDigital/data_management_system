@@ -20,7 +20,10 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          role-to-assume: arn:aws:iam::930039174803:role/dms-github-actions-deploy-role
+          # role-to-assume: arn:aws:iam::[aws-account-id]:role/dms-github-actions-deploy-role
+          # To find the role name, login to AWS Openstack Dev IAM and search for
+          # dms-github-actions-deploy-role
+          role-to-assume: ${{ secrets.AWS_GITHUB_ACTIONS_DEPLOY_ROLE }}
           role-session-name: GitHubActions-${{ github.run_id }}
           aws-region: ${{env.AWS_DEFAULT_REGION}}
 
@@ -33,4 +36,6 @@ jobs:
       - name: Upload to AWS S3
         run: |
           echo "Uploading artifacts to $env.PROFILE environment."
-          aws s3 cp mbis_app.zip s3://ndrs-mbis-eu-west-2-930039174803-state-bucket/
+          # aws s3 cp mbis_app.zip s3://ndrs-mbis-eu-west-2-[aws-account-id]-state-bucket/
+          # To find the account id, use AWS Openstack Dev
+          aws s3 cp mbis_app.zip "${{ secrets.AWS_GITHUB_ACTIONS_S3_BUCKET }}"
