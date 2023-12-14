@@ -1,1 +1,7 @@
 require: ndr_dev_support
+
+AllCops:
+  # All cops should ignore files in the following locations:
+  Exclude:
+  - 'build/dms-app/ansible/collections/**/*'
+  - 'build/dms-app/ansible/roles/**/*'

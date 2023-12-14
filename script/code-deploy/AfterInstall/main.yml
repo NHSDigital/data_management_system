@@ -1,0 +1,88 @@
+---
+
+- hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: get uname
+      shell: |
+        uname -a
+
+    - name: Make Directory
+      file:
+        path: /home/mbis_app/mbis_front
+        state: directory
+        owner: mbis_app
+        group: mbis_app
+        mode: 0750
+
+    # # Current folder not being written
+    # - name: Copy Folder
+    #   become: true
+    #   become_user: mbis_app
+    #   synchronize:
+    #     # example of location /opt/codedeploy-agent/deployment-root/1837119a-3753-4fe5-bcf8-0a2c553c4628/d-0ZIYEP67O/deployment-archive/
+    #     src: "../../../../{{ item }}/"
+    #     dest: "/home/mbis_app/mbis_front/{{ item }}/"
+    #     recursive: true
+    #     links: true
+    #     delete: true
+    #   with_items:
+    #     - current
+    #     - releases
+    #     - shared
+
+    # - name: Copy Folder
+    #   command: rsync -azPv --delete-excluded ../../../../{{ item }}/ /home/mbis_app/mbis_front/{{ item }}
+    #   with_items:
+    #     - current
+    #     - releases
+    #     - shared
+
+    - name: Fix user 'mbis_app' permissions
+      become: true
+      file:
+        path: /home/mbis_app/mbis_front
+        owner: mbis_app
+        group: deployer
+        mode: 0770
+        state: directory
+        recurse: yes
+
+    - name: Copy Start_server.sh file
+      become: true
+      copy:
+        remote_src: true
+        src: /home/mbis_app/mbis_front/current/script/start_server.sh.sample
+        dest: /home/mbis_app/start_server.sh
+        owner: mbis_app
+        group: deployer
+        mode: 0764
+
+    - name: Copy stop_server.sh file
+      become: true
+      copy:
+        remote_src: true
+        src: /home/mbis_app/mbis_front/current/script/stop_server_gracefully.sh.sample
+        dest: /home/mbis_app/stop_server_gracefully.sh
+        owner: mbis_app
+        group: deployer
+        mode: 0764
+
+    # - name: Copy files for mbis_app
+    #   become_user: mbis_app
+    #   copy:
+    #     remote_src: true
+    #     src: "/home/mbis_app/mbis_front/current/config/{{ item }}.sample"
+    #     dest: "/home/mbis_app/mbis_front/shared/config/{{ item }}.yml"
+    #     owner: mbis_app
+    #     group: deployer
+    #     mode: 0740
+    #   with_items:
+    #     # - admin_users.yml
+    #     # - odr_users.yml
+    #     # - smtp_settings.yml
+    #     # - special_users.development.yml
+    #     # - user_yubikeys.yml
+    #     - database.yml
+    #     - secrets.yml
