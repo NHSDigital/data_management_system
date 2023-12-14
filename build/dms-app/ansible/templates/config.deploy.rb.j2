@@ -1,3 +1,9 @@
+# NOTE: We think most of the changes in this file have now been
+#       included in the upstream config/deploy.rb
+#       Instead of copying this file, we should be using sed to
+#       change the :repository line in the file, or setting that
+#       through an environment variable.
+
 require 'bundler/capistrano'
 require 'ndr_dev_support/capistrano/ndr_model'
 require 'delayed/recipes'
