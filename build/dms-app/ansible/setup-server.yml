@@ -39,7 +39,7 @@
           - jq
           - python-pip
           - python-devel
-          - openldap-devel 
+          - openldap-devel
         state: present
 
     - name: Install Libuv

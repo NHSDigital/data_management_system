@@ -32,7 +32,7 @@
     #     - releases
     #     - shared
 
-    # - name: Copy Folder  
+    # - name: Copy Folder
     #   command: rsync -azPv --delete-excluded ../../../../{{ item }}/ /home/mbis_app/mbis_front/{{ item }}
     #   with_items:
     #     - current
@@ -69,9 +69,9 @@
         group: deployer
         mode: 0764
 
-    # - name: Copy files for mbis_app 
+    # - name: Copy files for mbis_app
     #   become_user: mbis_app
-    #   copy: 
+    #   copy:
     #     remote_src: true
     #     src: "/home/mbis_app/mbis_front/current/config/{{ item }}.sample"
     #     dest: "/home/mbis_app/mbis_front/shared/config/{{ item }}.yml"
@@ -86,8 +86,3 @@
     #     # - user_yubikeys.yml
     #     - database.yml
     #     - secrets.yml
-    
-
-
-
-

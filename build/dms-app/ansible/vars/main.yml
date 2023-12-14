@@ -1,6 +1,6 @@
 ---
 
-machine_groups: 
+machine_groups:
   - deployer
 
 
@@ -39,5 +39,3 @@ ruby_env_users:
 GITHUB_CODE: https://github.com/NHSDigital/data_management_system.git
 
 aws_artifacts_bucket: ndrs-dms-pipeline-archivefiles
-
-
