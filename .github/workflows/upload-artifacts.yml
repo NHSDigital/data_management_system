@@ -17,6 +17,9 @@ jobs:
       - name: Git checkout
         uses: actions/checkout@v3
 
+      - name: Confirm AWS destinations for deployments
+        run: echo AWS_GITHUB_ACTIONS_DEPLOY_ROLE=${{ secrets.AWS_GITHUB_ACTIONS_DEPLOY_ROLE }}, AWS_GITHUB_ACTIONS_S3_BUCKET=${{ secrets.AWS_GITHUB_ACTIONS_S3_BUCKET }}
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
