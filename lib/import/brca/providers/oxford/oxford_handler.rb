@@ -31,7 +31,7 @@ module Import
             file_path = file_name.slice(0, file_name.rindex('/'))
             file_path_array = file_name.split("/")
             psuedo_file_name= file_path_array[((file_path_array.length)-1)]
-            matching_month=/(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sept|Oct|Nov|Dec)+/i.match(psuedo_file_name)
+            matching_month=/(\d\d\.\d\d\.\d\d\d\d|\d\d\.\d\d\d\d|Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sept|Oct|Nov|Dec)/i.match(psuedo_file_name)
             directory = "#{Rails.root}/private/pseudonymised_data/#{file_path}"
             csv_files = Dir.glob("#{directory}/*#{matching_month}*_pretty.csv")
             if csv_files.nil?
@@ -174,14 +174,14 @@ module Import
             return false if record.raw_fields['scope / limitations of test'].nil?
 
             geneticscope = record.raw_fields['scope / limitations of test']
-            geneticscope.scan(/panel|scree(n|m)|brca|hcs|panel|SNV.*ONLY|CNV.*only|CNV.*analysis|Whole\sgene\sscreen.*|Full\sgene/i).size.positive?
+            geneticscope.scan(/panel|full\s?scree(n|m)|full\sgene\sscreen|brca_multiplicom|hcs|brca1|brca2|CNV.*only|CNV.*analysis|SNV.*ONLY|Whole\sgene\sscreen/i).size.positive?
           end
 
           def targeted?(record)
             return false if record.raw_fields['scope / limitations of test'].nil?
 
             geneticscope = record.raw_fields['scope / limitations of test']
-            geneticscope.scan(/targeted|proband|HNPCC\sFamilial|c.1100\sonly/i).size.positive?
+            geneticscope.scan(/targeted|RD\sproband\sconfirmation\s|HNPCC\sFamilial|c.1100\sonly/i).size.positive?
           end
 
           def ashkenazi?(record)
@@ -216,7 +216,7 @@ module Import
             return if record.raw_fields['moleculartestingtype'].nil?
 
             testtype = record.raw_fields['moleculartestingtype']
-            if testtype.scan(/symptomatic/i).size.positive?
+            if testtype.scan(/pre-symptomatic/i).size.positive?
               genotype.add_test_scope(:targeted_mutation)
             elsif testtype.scan(/diagnostic/i).size.positive?
               genotype.add_test_scope(:full_screen)
