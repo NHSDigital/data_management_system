@@ -29,7 +29,7 @@ module Import
             file_path = file_name.slice(0, file_name.rindex('/'))
             file_path_array = file_name.split("/")
             psuedo_file_name= file_path_array[((file_path_array.length)-1)]
-            matching_month=/(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sept|Oct|Nov|Dec)+/i.match(psuedo_file_name)
+            matching_month=/(\d\d\.\d\d\.\d\d\d\d|\d\d\.\d\d\d\d|Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sept|Oct|Nov|Dec)+/i.match(psuedo_file_name)
             directory = "#{Rails.root}/private/pseudonymised_data/#{file_path}"
             csv_files = Dir.glob("#{directory}/*#{matching_month}*_pretty.csv")
             if csv_files.nil?
@@ -127,7 +127,7 @@ module Import
           end
 
           def targeted?(scopecolumn)
-            scopecolumn.match(/targeted/i) || scopecolumn == 'RD Proband Confirmation'
+            scopecolumn.match(/targeted|Familial/i)
           end
 
           def full_screen?(scopecolumn)
