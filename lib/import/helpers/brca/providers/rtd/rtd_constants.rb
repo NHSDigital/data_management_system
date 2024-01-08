@@ -48,8 +48,9 @@ module Import
                                      consultantcode
                                      servicereportidentifier].freeze
 
-            NON_PATHEGENIC_CODES = ['nmd',
-                                    'likely benign',
+            NO_MUTATION_DETECTED_CODES = ['nmd'].freeze
+
+            NON_PATHEGENIC_CODES = ['likely benign',
                                     'benign',
                                     'non-pathological variant'].freeze
 
@@ -62,9 +63,9 @@ module Import
             # rubocop:disable Lint/MixedRegexpCaptureTypes
             PROTEIN_REGEX = /p\.\((?<impact>.+)\)|
                             \(p\.(?<impact>[A-Za-z]+.+)\)|
-                            p\.(?<impact>[A-Za-z]+.+)/ix.freeze # Added by Francesco
+                            p\.(?<impact>[A-Za-z]+.+)/ix # Added by Francesco
             BRCA_REGEX = /(?<brca>BRCA1|BRCA2|PALB2|ATM|CHEK2|TP53|MLH1|CDH1|
-                                  MSH2|MSH6|PMS2|STK11|PTEN|BRIP1|NBN|RAD51C|RAD51D)/ix.freeze
+                                  MSH2|MSH6|PMS2|STK11|PTEN|BRIP1|NBN|RAD51C|RAD51D)/ix
             CDNA_REGEX = /c\.\*?(?<cdna>
                                  [0-9]+[a-z]+>[a-z]+|
                                  [0-9]+_[0-9]+[ACGTdelinsup]+|
@@ -74,21 +75,15 @@ module Import
                                  [0-9]+[a-z]+|
                                  [0-9]+[+>_-][0-9]+[+>_-][0-9]+[+>_-][0-9]+[ACGTdelinsup]+|
                                  [0-9]+[+>_-][0-9]+[+>_-][0-9]+[ACGTdelinsup]+|
-                                 [0-9]+.[0-9]+[a-z]+>[a-z]+)\s?/ix.freeze
+                                 [0-9]+.[0-9]+[a-z]+>[a-z]+)\s?/ix
 
-            EXON_VARIANT_REGEX = /(?<variant>del|dup|ins).+ex(?<on>on)?(?<s>s)?\s
-                                  (?<exons>[0-9]+(?<dgs>-[0-9]+)?)|
-                                ex(?<on>on)?(?<s>s)?\s?(?<exons>[0-9]+(?<dgs>-[0-9]+)?)\s?
-                                (?<variant>del|dup|ins)|
-                                (?<variant>del|dup|ins)\sexon(?<s>s)?\s
-                                (?<exons>[0-9]+(?<dgs>\sto\s[0-9]+))|
-                                ex(on)?(s)?\s?(?<exons>[0-9]+\s?(\s?-\s?[0-9]+)?)\s?
-                                (?<variant>del|dup|ins)?|
-                                (?<variant>del|dup|ins)(?<s>\s)?(?<exons>[0-9]+(?<dgs>-[0-9]+)?)|
-                                ex(?<on>on)?(?<s>s)?\s(?<exons>[0-9]+(?<dgs>\sto\s[0-9]+)?)\s
-                                (?<variant>del|dup|ins)|
-                                x(?<exons>[0-9]+-?[0-9]+)\s?(?<variant>del|dup|ins)|
-                                x(?<exons>[0-9]+-?[0-9]?)\s?(?<variant>del|dup|ins)/ix.freeze
+            EXON_VARIANT_REGEX = /(?<variant>del|dup|ins).+ex(on)?s?\s?
+                                  (?<exons>[0-9]+((to|and|-|\s)+[0-9]+)?)|
+                                  ex(on)?s?\s?(?<exons>[0-9]+((to|and|-|\s)+[0-9]+)?)\s?
+                                  (?<variant>del|dup|ins)?|
+                                  x(?<exons>[0-9+-? ]+)+(?<variant>del|dup|ins)|
+                                  ^(?<variant>del|dup|ins)\s?(?<exons>[0-9]+((to|and|-|\s)+[0-9]+)?)
+                                  /ix
             # rubocop:enable Lint/MixedRegexpCaptureTypes
           end
         end

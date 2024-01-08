@@ -1,0 +1,49 @@
+name: Upload Artifacts to S3
+on:
+  push:
+    branches: [infra, develop]
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: Upload to AWS
+    env:
+      AWS_DEFAULT_REGION: eu-west-2
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v3
+
+      - name: Confirm AWS destinations for deployments
+        run: echo AWS_GITHUB_ACTIONS_DEPLOY_ROLE="${{ secrets.AWS_GITHUB_ACTIONS_DEPLOY_ROLE }}", AWS_GITHUB_ACTIONS_S3_BUCKET="${{ secrets.AWS_GITHUB_ACTIONS_S3_BUCKET }}"
+
+      - run: 'echo -n "$AWS_GITHUB_ACTIONS_DEPLOY_ROLE" | wc'
+        shell: bash
+        env:
+          AWS_GITHUB_ACTIONS_DEPLOY_ROLE: ${{secrets.AWS_GITHUB_ACTIONS_DEPLOY_ROLE}}
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          # role-to-assume: arn:aws:iam::[aws-account-id]:role/dms-github-actions-deploy-role
+          # To find the role name, login to AWS Openstack Dev IAM and search for
+          # dms-github-actions-deploy-role
+          role-to-assume: ${{ secrets.AWS_GITHUB_ACTIONS_DEPLOY_ROLE }}
+          role-session-name: GitHubActions-${{ github.run_id }}
+          aws-region: ${{env.AWS_DEFAULT_REGION}}
+
+      - name: Zip artifacts
+        uses: thedoctor0/zip-release@master
+        with:
+          type: "zip"
+          filename: "mbis_app.zip"
+
+      - name: Upload to AWS S3
+        run: |
+          echo "Uploading artifacts to $env.PROFILE environment."
+          # aws s3 cp mbis_app.zip s3://ndrs-mbis-eu-west-2-[aws-account-id]-state-bucket/
+          # To find the account id, use AWS Openstack Dev
+          aws s3 cp mbis_app.zip "${{ secrets.AWS_GITHUB_ACTIONS_S3_BUCKET }}"

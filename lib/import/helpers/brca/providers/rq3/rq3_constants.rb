@@ -66,8 +66,10 @@ module Import
                                   substitution|
                                   Splice site mutation|
                                   Nonsense/ix
-            EXON_LOCATION = /([a-z (]+)(exon|exons)\s(?<exons>[0-9]+
-                             ([a-z -,]+[0-9]+[a-z -]*[0-9]?)?)?/x
+            EXON_LOCATION = /(?<variant>del|dup|ins).+ex(on)?s?\s?
+                             (?<exons>[0-9]+((to|and|-|\s)+[0-9]+)?)|
+                             ex(on)?s?\s?(?<exons>[0-9]+((to|and|-|\s)+[0-9]+)?)\s?
+                             (?<variant>del|dup|ins)?/x
             MUTATION_REGEX = /(?<mutation>[0-9_-]+(del|ins)[a-z0-9]+)/ix
             MALFORMED_MUTATION_REGEX = %r{(?<cdnamutation>[0-9-]+[ACGT]>[ACGT]+|
             [0-9-]+[ACGT]/[ACGT]+)}ix

@@ -97,6 +97,8 @@ class BirminghamHandlerNewformatTest < ActiveSupport::TestCase
     assert_equal 7, genotypes[1].attribute_map['gene']
     assert_equal 2, genotypes[1].attribute_map['teststatus']
     assert_equal '16', genotypes[1].attribute_map['exonintroncodonnumber']
+    assert_equal 3, genotypes[1].attribute_map['sequencevarianttype']
+    assert_equal 1, genotypes[1].attribute_map['variantlocation']
   end
 
   test 'process_multiple_variants_single_gene' do
@@ -348,6 +350,21 @@ class BirminghamHandlerNewformatTest < ActiveSupport::TestCase
     assert_equal 2, genotypes[0].attribute_map['teststatus']
     assert_equal 3, genotypes[0].attribute_map['variantpathclass']
     # we do not capture proteins when cdnas are more than proteins to avoid wrong assosciation
+  end
+
+  test 'process exonic record' do
+    exonic_rec = build_raw_record('pseudo_id1' => 'bob')
+    exonic_rec.raw_fields['moleculartestingtype'] = 'confirmation'
+    exonic_rec.raw_fields['teststatus'] = 'Molecular analysis shows presence of a pathogenic deletion (exons 14 to 20) in the BRCA1 gene.'
+    processor = variant_processor_for(exonic_rec)
+    @handler.process_genetictestscope(@genotype, exonic_rec)
+    genotypes = processor.process_variants_from_report
+    assert_equal 1, genotypes.size
+    assert_equal '14-20', genotypes[0].attribute_map['exonintroncodonnumber']
+    assert_equal 3, genotypes[0].attribute_map['sequencevarianttype']
+    assert_equal 1, genotypes[0].attribute_map['variantlocation']
+    assert_equal 7, genotypes[0].attribute_map['gene']
+    assert_equal 2, genotypes[0].attribute_map['teststatus']
   end
 
   private

@@ -50,7 +50,7 @@ unless defined?(BUNDLER_OVERRIDE_MINI_RACER) && BUNDLER_OVERRIDE_MINI_RACER
   gem 'mini_racer', '0.6.2'
 end
 
-gem 'parser', '3.1.2.0' # supports ruby 3.0.4
+gem 'parser'
 # Turbolinks makes following links in your web application faster. Read more: https://github.com/rails/turbolinks
 gem 'turbolinks', '~> 5.x'
 

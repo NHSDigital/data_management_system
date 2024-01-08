@@ -1,0 +1,20 @@
+# .bash_profile
+
+# Get the aliases and functions
+if [ -f ~/.bashrc ]; then
+	. ~/.bashrc
+fi
+
+# User specific environment and startup programs
+
+PATH=$PATH:$HOME/.local/bin:$HOME/bin:$HOME/.rbenv/bin:/usr/local/bin
+
+export PATH
+#export NLS_LANG="AMERICAN_AMERICA.UTF8"
+#export LD_LIBRARY_PATH="$LD_LIBRARY_PATH":/usr/lib/oracle/12.1/client64/lib
+eval "$(rbenv init -)"
+
+#export NDR_AUTH=true
+
+APP_USER="mbis_app"
+export DEPLOYER="$APP_USER"

@@ -41,6 +41,8 @@ public/assets/*
 yarn-debug.log*
 .yarn-integrity
 
+build/dms-app/ansible/collections
+
 vendor/cache/mini_racer-0.6.2-x86_64-linux.gem
 
 # Ignore master key for decrypting credentials and more.

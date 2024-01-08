@@ -189,21 +189,57 @@ class NewcastleHandlerTest < ActiveSupport::TestCase
     assert_nil nostatus_genotype.attribute_map['codingdnasequencechange']
   end
 
-  test 'process_noscope_with_gene_mutation' do
-    noscope_genemutation_record = build_raw_record('pseudo_id1' => 'bob')
-    noscope_genemutation_record.raw_fields['moleculartestingtype'] = 'Unknown / other'
-    noscope_genemutation_record.raw_fields['service category'] = 'B'
-    noscope_genemutation_record.raw_fields['investigation code'] = 'BRCA'
-    noscope_genemutation_record.raw_fields['gene'] = 'BRCA2'
-    noscope_genemutation_record.raw_fields['genotype'] = 'c.8850G>T'
-    noscope_genemutation_record.raw_fields['variantpathclass'] = 'non-pathological variant'
-    noscope_genemutation_record.raw_fields['teststatus'] = 'het'
-    noscope_genotype = Import::Brca::Core::GenotypeBrca.new(noscope_genemutation_record)
-    @handler.process_test_scope(noscope_genotype, noscope_genemutation_record)
-    @handler.process_test_status(noscope_genotype, noscope_genemutation_record)
-    genotypes = @handler.process_variant_records(noscope_genotype, noscope_genemutation_record)
-    assert_equal 'Unable to assign BRCA genetictestscope', noscope_genotype.attribute_map['genetictestscope']
-    assert_equal 1, genotypes[0].attribute_map['teststatus']
+  test 'process_non_pathological_gene_mutation_record' do
+    non_pathological_record = build_raw_record('pseudo_id1' => 'bob')
+    non_pathological_record.raw_fields['moleculartestingtype'] = 'Unknown / other'
+    non_pathological_record.raw_fields['service category'] = 'B'
+    non_pathological_record.raw_fields['investigation code'] = 'BRCA'
+    non_pathological_record.raw_fields['gene'] = 'BRCA2'
+    non_pathological_record.raw_fields['genotype'] = 'c.8850G>T'
+    non_pathological_record.raw_fields['variantpathclass'] = 'non-pathological variant'
+    non_pathological_record.raw_fields['teststatus'] = 'het'
+    non_pathological_genotype = Import::Brca::Core::GenotypeBrca.new(non_pathological_record)
+    @handler.process_test_scope(non_pathological_genotype, non_pathological_record)
+    @handler.process_test_status(non_pathological_genotype, non_pathological_record)
+    genotypes = @handler.process_variant_records(non_pathological_genotype, non_pathological_record)
+    assert_equal 'Unable to assign BRCA genetictestscope', non_pathological_genotype.attribute_map['genetictestscope']
+    assert_equal 10, genotypes[0].attribute_map['teststatus']
+    assert_equal 8, genotypes[0].attribute_map['gene']
+    assert_nil genotypes[0].attribute_map['codingdnasequencechange']
+  end
+
+  test 'process_likely_benign_record' do
+    likely_benign_record = build_raw_record('pseudo_id1' => 'bob')
+    likely_benign_record.raw_fields['moleculartestingtype'] = 'Unknown / other'
+    likely_benign_record.raw_fields['service category'] = 'B'
+    likely_benign_record.raw_fields['investigation code'] = 'BRCA'
+    likely_benign_record.raw_fields['gene'] = 'BRCA2'
+    likely_benign_record.raw_fields['genotype'] = 'c.8850G>T'
+    likely_benign_record.raw_fields['variantpathclass'] = 'likely benign'
+    likely_benign_record.raw_fields['teststatus'] = 'het'
+    likely_benign_genotype = Import::Brca::Core::GenotypeBrca.new(likely_benign_record)
+    @handler.process_test_scope(likely_benign_genotype, likely_benign_record)
+    @handler.process_test_status(likely_benign_genotype, likely_benign_record)
+    genotypes = @handler.process_variant_records(likely_benign_genotype, likely_benign_record)
+    assert_equal 'Unable to assign BRCA genetictestscope', likely_benign_genotype.attribute_map['genetictestscope']
+    assert_equal 10, genotypes[0].attribute_map['teststatus']
+  end
+
+  test 'process_benign_record' do
+    benign_record = build_raw_record('pseudo_id1' => 'bob')
+    benign_record.raw_fields['moleculartestingtype'] = 'Unknown / other'
+    benign_record.raw_fields['service category'] = 'B'
+    benign_record.raw_fields['investigation code'] = 'BRCA'
+    benign_record.raw_fields['gene'] = 'BRCA2'
+    benign_record.raw_fields['genotype'] = 'c.8850G>T'
+    benign_record.raw_fields['variantpathclass'] = 'benign'
+    benign_record.raw_fields['teststatus'] = 'het'
+    benign_genotype = Import::Brca::Core::GenotypeBrca.new(benign_record)
+    @handler.process_test_scope(benign_genotype, benign_record)
+    @handler.process_test_status(benign_genotype, benign_record)
+    genotypes = @handler.process_variant_records(benign_genotype, benign_record)
+    assert_equal 'Unable to assign BRCA genetictestscope', benign_genotype.attribute_map['genetictestscope']
+    assert_equal 10, genotypes[0].attribute_map['teststatus']
     assert_equal 8, genotypes[0].attribute_map['gene']
     assert_nil genotypes[0].attribute_map['codingdnasequencechange']
   end
@@ -443,13 +479,28 @@ class NewcastleHandlerTest < ActiveSupport::TestCase
     assert_nil genotypes[0].attribute_map['codingdnasequencechange']
   end
 
-  test 'variantpathclass assignes to only gene in raw[gene]' do
+  test 'variantpathclass assigns to only gene in raw[gene]' do
     @handler.process_test_scope(@genotype, @record)
     genotypes = @handler.process_variant_records(@genotype, @record)
     assert_nil genotypes[0].attribute_map['variantpathclass']
     assert_equal 8, genotypes[0].attribute_map['gene']
     assert_equal 3, genotypes[1].attribute_map['variantpathclass']
     assert_equal 7, genotypes[1].attribute_map['gene']
+  end
+
+  test 'exonic variant records are populating attributes' do
+    exonic_var_rec = build_raw_record('pseudo_id1' => 'bob')
+    exonic_var_rec.raw_fields['moleculartestingtype'] = 'presymptomatic'
+    exonic_var_rec.raw_fields['service category'] = 'B'
+    exonic_var_rec.raw_fields['investigationcode'] = 'BRCA-PRED'
+    exonic_var_rec.raw_fields['gene'] = 'BRCA1'
+    exonic_var_rec.raw_fields['genotype'] = 'del ex2-24'
+    @handler.process_test_scope(@genotype, exonic_var_rec)
+    genotypes = @handler.process_variant_records(@genotype, exonic_var_rec)
+    assert_equal 3, genotypes[0].attribute_map['sequencevarianttype']
+    assert_equal '2-24', genotypes[0].attribute_map['exonintroncodonnumber']
+    assert_equal 1, genotypes[0].attribute_map['variantlocation']
+    assert_equal 7, genotypes[0].attribute_map['gene']
   end
 
   private

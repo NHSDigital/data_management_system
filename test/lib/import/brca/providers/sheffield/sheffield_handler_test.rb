@@ -172,6 +172,8 @@ class SheffieldHandlerTest < ActiveSupport::TestCase
     assert_equal 2, genotypes[0].attribute_map['teststatus']
     assert_equal 7, genotypes[0].attribute_map['gene']
     assert_equal '1and2', genotypes[0].attribute_map['exonintroncodonnumber']
+    assert_equal 3, genotypes[0].attribute_map['sequencevarianttype']
+    assert_equal 1, genotypes[0].attribute_map['variantlocation']
 
     assert_equal 2, genotypes[1].attribute_map['teststatus']
     assert_equal 8, genotypes[1].attribute_map['gene']
