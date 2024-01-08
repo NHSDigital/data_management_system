@@ -11,20 +11,19 @@ module Import
       def initialize(genotype)
         @representative_genotype = genotype
         @field_names = Pseudo::GeneticSequenceVariant.column_names -
-         # %w[geneticsequencevariantid genetictestresultid raw_record]
-        %w[geneticsequencevariantid
-          genetic_test_result_id
-          humangenomebuild
-          referencetranscriptid
-          genomicchange
-          clinvarid
-          cosmicid
-          variantlocation
-          variantgenotype
-          variantallelefrequency
-          variantreport
-          raw_record
-          age]
+                       # %w[geneticsequencevariantid genetictestresultid raw_record]
+                       %w[geneticsequencevariantid
+                          genetic_test_result_id
+                          humangenomebuild
+                          referencetranscriptid
+                          genomicchange
+                          clinvarid
+                          cosmicid
+                          variantgenotype
+                          variantallelefrequency
+                          variantreport
+                          raw_record
+                          age]
       end
 
       # Should not produce a variant record unless there actually is a variant

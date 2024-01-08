@@ -87,7 +87,7 @@ class OxfordHandlerTest < ActiveSupport::TestCase
     exon_variant_record.mapped_fields['codingdnasequencechange'] = 'Deletion of exon 12-24'
     @handler.process_variants(@genotype, exon_variant_record, 5)
     assert_equal '12-24', @genotype.attribute_map['exonintroncodonnumber']
-    assert_equal 10, @genotype.attribute_map['sequencevarianttype']
+    assert_equal 3, @genotype.attribute_map['sequencevarianttype']
     assert_equal 2, @genotype.attribute_map['teststatus']
     normal_record = build_raw_record('pseudo_id1' => 'bob')
     normal_record.raw_fields['codingdnasequencechange'] = 'N/A'
@@ -109,7 +109,7 @@ class OxfordHandlerTest < ActiveSupport::TestCase
     nonpath_exon_variant_record.mapped_fields['codingdnasequencechange'] = 'Deletion of exon 12-24'
     @handler.process_variants(@genotype, nonpath_exon_variant_record, 2)
     assert_equal '12-24', @genotype.attribute_map['exonintroncodonnumber']
-    assert_equal 10, @genotype.attribute_map['sequencevarianttype']
+    assert_equal 3, @genotype.attribute_map['sequencevarianttype']
     assert_equal 10, @genotype.attribute_map['teststatus']
 
     exemptions_del_record = build_raw_record('pseudo_id1' => 'bob')

@@ -225,21 +225,18 @@ module Import
       end
 
       def add_variant_type(location)
-        return nil unless location.is_a? String
+        return nil unless location.is_a?(String)
 
-        @attribute_map['sequencevarianttype'] = if location.include?('delins') ||
-                                                   location.include?('indel')
-                                                  6
-                                                elsif location.include? 'dup'
-                                                  4
-                                                elsif location.include? 'del'
-                                                  3
-                                                elsif location.include? '>'
-                                                  1
-                                                elsif location.include? 'ins'
-                                                  2
-                                                else 10
-                                                end
+        type = case location.downcase
+               when /delins|indel/ then 6
+               when /dup/ then 4
+               when /del/ then 3
+               when />/ then 1
+               when /ins/ then 2
+               else 10
+               end
+
+        @attribute_map['sequencevarianttype'] = type
       end
 
       def add_exon_location(location_string)

@@ -1,0 +1,12 @@
+---
+- name: install build depends
+  yum:
+    name: '{{ rbenv_yum_packages }}'
+    state: present
+  become: true
+
+- name: install extra build depends
+  yum:
+    name: '{{ rbenv_extra_depends }}'
+    state: present
+  become: true

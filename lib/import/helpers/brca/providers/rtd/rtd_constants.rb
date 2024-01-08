@@ -77,19 +77,13 @@ module Import
                                  [0-9]+[+>_-][0-9]+[+>_-][0-9]+[ACGTdelinsup]+|
                                  [0-9]+.[0-9]+[a-z]+>[a-z]+)\s?/ix
 
-            EXON_VARIANT_REGEX = /(?<variant>del|dup|ins).+ex(?<on>on)?(?<s>s)?\s
-                                  (?<exons>[0-9]+(?<dgs>-[0-9]+)?)|
-                                ex(?<on>on)?(?<s>s)?\s?(?<exons>[0-9]+(?<dgs>-[0-9]+)?)\s?
-                                (?<variant>del|dup|ins)|
-                                (?<variant>del|dup|ins)\sexon(?<s>s)?\s
-                                (?<exons>[0-9]+(?<dgs>\sto\s[0-9]+))|
-                                ex(on)?(s)?\s?(?<exons>[0-9]+\s?(\s?-\s?[0-9]+)?)\s?
-                                (?<variant>del|dup|ins)?|
-                                (?<variant>del|dup|ins)(?<s>\s)?(?<exons>[0-9]+(?<dgs>-[0-9]+)?)|
-                                ex(?<on>on)?(?<s>s)?\s(?<exons>[0-9]+(?<dgs>\sto\s[0-9]+)?)\s
-                                (?<variant>del|dup|ins)|
-                                x(?<exons>[0-9]+-?[0-9]+)\s?(?<variant>del|dup|ins)|
-                                x(?<exons>[0-9]+-?[0-9]?)\s?(?<variant>del|dup|ins)/ix
+            EXON_VARIANT_REGEX = /(?<variant>del|dup|ins).+ex(on)?s?\s?
+                                  (?<exons>[0-9]+((to|and|-|\s)+[0-9]+)?)|
+                                  ex(on)?s?\s?(?<exons>[0-9]+((to|and|-|\s)+[0-9]+)?)\s?
+                                  (?<variant>del|dup|ins)?|
+                                  x(?<exons>[0-9+-? ]+)+(?<variant>del|dup|ins)|
+                                  ^(?<variant>del|dup|ins)\s?(?<exons>[0-9]+((to|and|-|\s)+[0-9]+)?)
+                                  /ix
             # rubocop:enable Lint/MixedRegexpCaptureTypes
           end
         end

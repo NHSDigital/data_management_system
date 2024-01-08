@@ -33,6 +33,15 @@ class SalisburyHandlerTest < ActiveSupport::TestCase
     assert_equal 1, @genotype.attribute_map['sequencevarianttype']
   end
 
+  test 'process_exonic_variants' do
+    exonic_record = build_raw_record('pseudo_id1' => 'bob')
+    exonic_record.raw_fields['genotype'] = 'exons 21-24'
+    @handler.process_variants(@genotype, exonic_record.raw_fields['genotype'])
+    assert_equal '21-24', @genotype.attribute_map['exonintroncodonnumber']
+    assert_equal 10, @genotype.attribute_map['sequencevarianttype']
+    assert_equal 1, @genotype.attribute_map['variantlocation']
+  end
+
   test 'add_organisationcode_testresult' do
     @handler.add_organisationcode_testresult(@genotype)
     assert_equal '699H0', @genotype.attribute_map['organisationcode_testresult']
