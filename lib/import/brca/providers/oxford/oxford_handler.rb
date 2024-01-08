@@ -124,9 +124,8 @@ module Import
           def process_gene(genotype, record)
             genotypes = []
             gene      = record.mapped_fields['gene'].to_i
-            synonym   = record.raw_fields['sinonym'].to_s
-            if [7, 8, 79, 865, 3186, 2744, 2804, 3394, 62, 76,
-                590, 3615, 3616, 20, 18].include? gene
+            #TO DO!!!!!!! ADD RNF43 to this list and variant counts table creation
+            if [7, 8, 590, 18, 20, 865, 2744, 2804, 2808, 3186, 3394, 62, 3615, 3616, 76, 79, 358, 451, 577, 794, 1432, 1590, 1882, 2850, 3108, 3408, 5000, 72].include? gene
               add_oxford_gene(gene, genotype, genotypes)
             elsif BRCA_REGEX.match(synonym)
               add_oxford_gene(BRCA_REGEX.match(synonym)[:brca], genotype, genotypes)
@@ -160,6 +159,7 @@ module Import
             return false if record.raw_fields['scope / limitations of test'].nil?
 
             geneticscope = record.raw_fields['scope / limitations of test']
+            #TO DO!!!!!!!! check if it can be fullscreem with no space
             geneticscope.scan(/panel|full\s?scree(n|m)|full\sgene\sscreen|brca_multiplicom|hcs|brca1|brca2|CNV.*only|CNV.*analysis|SNV.*ONLY|Whole\sgene\sscreen/i).size.positive?
           end
 
