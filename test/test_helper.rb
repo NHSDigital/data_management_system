@@ -118,10 +118,7 @@ def bootstrap_download_helper
                                               default_directory: DownloadHelpers.directory.to_s)
     browser_options.add_preference(:browser, set_download_behavior: { behavior: 'allow' })
 
-    Capybara::Selenium::Driver.new(app, browser: :chrome, options: browser_options).tap do |driver|
-      # Chrome < 77
-      driver.browser.download_path = DownloadHelpers.directory
-    end
+    Capybara::Selenium::Driver.new(app, browser: :chrome, options: browser_options)
   end
 end
 
