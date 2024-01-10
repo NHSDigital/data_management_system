@@ -73,9 +73,10 @@ module Import
 
             FULL_SCREEN_REGEX = /(?<fullscreen>Panel|
                                 full\sgene|
-                                full\s?scree(n|m)|
-                                exons\s8\-13|
-                                exons\s9\-14|
+                                full\s?screen|
+                                full\sscreem|
+                                exons\s8-13|
+                                exons\s9-14|
                                 APC\sCNV\sanalysis|
                                 HCS|
                                 CNV.*only|

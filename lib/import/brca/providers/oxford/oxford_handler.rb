@@ -37,10 +37,15 @@ module Import
             raise "Pretty CSV file not able to map for #{psuedo_file}" if csv_files.empty?
 
             csv = CSV.read(csv_files[0], headers: true)
+            brca1_count, apc_count, mlh1_count = get_csv_counts(csv)
+            mlh1_count + apc_count < brca1_count
+          end
+
+          def get_csv_counts(csv)
             brca1_count = csv['mapped:gene'].tally['7'].to_i
             apc_count = csv['mapped:gene'].tally['358'].to_i
             mlh1_count = csv['mapped:gene'].tally['2744'].to_i
-            mlh1_count + apc_count < brca1_count
+            [brca1_count, apc_count, mlh1_count]
           end
 
           def add_organisationcode_testresult(genotype)
@@ -124,8 +129,10 @@ module Import
           def process_gene(genotype, record)
             genotypes = []
             gene      = record.mapped_fields['gene'].to_i
-            #TO DO!!!!!!! ADD RNF43 to this list and variant counts table creation
-            if [7, 8, 590, 18, 20, 865, 2744, 2804, 2808, 3186, 3394, 62, 3615, 3616, 76, 79, 358, 451, 577, 794, 1432, 1590, 1882, 2850, 3108, 3408, 5000, 72].include? gene
+            synonym   = record.raw_fields['sinonym'].to_s
+            # TO DO!!!!!!! ADD RNF43 to this list and variant counts table creation
+            if [7, 8, 590, 18, 20, 865, 2744, 2804, 2808, 3186, 3394, 62, 3615, 3616, 76, 79, 358,
+                451, 577, 794, 1432, 1590, 1882, 2850, 3108, 3408, 5000, 72].include? gene
               add_oxford_gene(gene, genotype, genotypes)
             elsif BRCA_REGEX.match(synonym)
               add_oxford_gene(BRCA_REGEX.match(synonym)[:brca], genotype, genotypes)
@@ -159,15 +166,17 @@ module Import
             return false if record.raw_fields['scope / limitations of test'].nil?
 
             geneticscope = record.raw_fields['scope / limitations of test']
-            #TO DO!!!!!!!! check if it can be fullscreem with no space
-            geneticscope.scan(/panel|full\s?scree(n|m)|full\sgene\sscreen|brca_multiplicom|hcs|brca1|brca2|CNV.*only|CNV.*analysis|SNV.*ONLY|Whole\sgene\sscreen/i).size.positive?
+            geneticscope.scan(/panel|full\s?screen|full\sscreem|full\sgene\sscreen|
+                              brca_multiplicom|hcs|brca1|brca2|CNV.*only|CNV.*analysis|
+                              SNV.*ONLY|Whole\sgene\sscreen/i).size.positive?
           end
 
           def targeted?(record)
             return false if record.raw_fields['scope / limitations of test'].nil?
 
             geneticscope = record.raw_fields['scope / limitations of test']
-            geneticscope.scan(/targeted|RD\sproband\sconfirmation\s|HNPCC\sFamilial|c.1100\sonly/i).size.positive?
+            geneticscope.scan(/targeted|RD\sproband\sconfirmation\s|HNPCC\sFamilial
+                              |c.1100\sonly/i).size.positive?
           end
 
           def ashkenazi?(record)
