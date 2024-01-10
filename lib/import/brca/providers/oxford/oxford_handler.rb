@@ -130,9 +130,8 @@ module Import
             genotypes = []
             gene      = record.mapped_fields['gene'].to_i
             synonym   = record.raw_fields['sinonym'].to_s
-            # TO DO!!!!!!! ADD RNF43 to this list and variant counts table creation
             if [7, 8, 590, 18, 20, 865, 2744, 2804, 2808, 3186, 3394, 62, 3615, 3616, 76, 79, 358,
-                451, 577, 794, 1432, 1590, 1882, 2850, 3108, 3408, 5000, 72].include? gene
+                451, 577, 794, 1432, 1590, 1882, 2850, 3108, 3408, 5000, 5019, 72].include? gene
               add_oxford_gene(gene, genotype, genotypes)
             elsif BRCA_REGEX.match(synonym)
               add_oxford_gene(BRCA_REGEX.match(synonym)[:brca], genotype, genotypes)
