@@ -167,15 +167,15 @@ module Import
             geneticscope = record.raw_fields['scope / limitations of test']
             geneticscope.scan(/panel|full\s?screen|full\sscreem|full\sgene\sscreen|
                               brca_multiplicom|hcs|brca1|brca2|CNV.*only|CNV.*analysis|
-                              SNV.*ONLY|Whole\sgene\sscreen/i).size.positive?
+                              SNV.*ONLY|Whole\sgene\sscreen/xi).size.positive?
           end
 
           def targeted?(record)
             return false if record.raw_fields['scope / limitations of test'].nil?
 
             geneticscope = record.raw_fields['scope / limitations of test']
-            geneticscope.scan(/targeted|RD\sproband\sconfirmation\s|HNPCC\sFamilial
-                              |c.1100\sonly/i).size.positive?
+            geneticscope.scan(/targeted|RD\sproband\sconfirmation\s|HNPCC\sFamilial|
+                              c.1100\sonly/xi).size.positive?
           end
 
           def ashkenazi?(record)
