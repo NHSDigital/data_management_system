@@ -28,12 +28,12 @@ module Import
             file_name = @batch.original_filename
             file_path = file_name.slice(0, file_name.rindex('/'))
             file_path_array = file_name.split('/')
-            psuedo_file = file_path_array[file_path_array.length - 1]
-            pseduo_filename = psuedo_file.sub(/.xls[x]?.pseudo/, '')
+            pseudo_file = file_path_array[file_path_array.length - 1]
+            pseudo_filename = pseudo_file.sub(/.xls[x]?.pseudo/, '')
             directory = Rails.root.join("private/pseudonymised_data/#{file_path}").to_s
-            csv_files = Dir.glob("#{directory}/*#{pseduo_filename}*_pretty.csv")
+            csv_files = Dir.glob("#{directory}/*#{pseudo_filename}*_pretty.csv")
 
-            raise "Pretty CSV file not able to map for #{psuedo_file}" if csv_files.empty?
+            raise "Pretty CSV file not able to map for #{pseudo_file}" if csv_files.empty?
 
             csv = CSV.read(csv_files[0], headers: true)
             brca1_count, apc_count, mlh1_count = get_csv_counts(csv)
