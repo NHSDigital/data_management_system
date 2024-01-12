@@ -7,7 +7,7 @@ module Import
           include Import::Helpers::Colorectal::Providers::Rth::Constants
 
           def process_fields(record)
-            return unless is_colorectal_file?
+            return unless colorectal_file?
 
             genocolorectal = Import::Colorectal::Core::Genocolorectal.new(record)
             genocolorectal.add_passthrough_fields(record.mapped_fields,

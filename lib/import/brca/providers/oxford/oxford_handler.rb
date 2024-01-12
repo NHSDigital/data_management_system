@@ -174,7 +174,7 @@ module Import
             return false if record.raw_fields['scope / limitations of test'].nil?
 
             geneticscope = record.raw_fields['scope / limitations of test']
-            geneticscope.scan(/targeted|RD\sproband\sconfirmation\s|HNPCC\sFamilial|
+            geneticscope.scan(/targeted|RD\sproband\sconfirmation|HNPCC\sFamilial|
                               c.1100\sonly/xi).size.positive?
           end
 

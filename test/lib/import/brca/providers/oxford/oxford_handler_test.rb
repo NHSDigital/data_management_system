@@ -43,19 +43,25 @@ class OxfordHandlerTest < ActiveSupport::TestCase
   test 'assign_test_scope' do
     @handler.assign_test_scope(@genotype, @record)
     assert_equal 'Full screen BRCA1 and BRCA2', @genotype.attribute_map['genetictestscope']
-    targeted_record = build_raw_record('pseudo_id1' => 'bob')
-    targeted_record.raw_fields['scope / limitations of test'] = 'proband'
-    @handler.assign_test_scope(@genotype, targeted_record)
+
+    targeted_record1 = build_raw_record('pseudo_id1' => 'bob')
+    targeted_record1.raw_fields['scope / limitations of test'] = 'targeted'
+    @handler.assign_test_scope(@genotype, targeted_record1)
     assert_equal 'Targeted BRCA mutation test', @genotype.attribute_map['genetictestscope']
 
     targeted_record2 = build_raw_record('pseudo_id1' => 'bob')
-    targeted_record2.raw_fields['scope / limitations of test'] = 'HNPCC Familial'
+    targeted_record2.raw_fields['scope / limitations of test'] = 'RD proband confirmation'
     @handler.assign_test_scope(@genotype, targeted_record2)
     assert_equal 'Targeted BRCA mutation test', @genotype.attribute_map['genetictestscope']
 
     targeted_record3 = build_raw_record('pseudo_id1' => 'bob')
-    targeted_record3.raw_fields['scope / limitations of test'] = 'c.1100 only'
+    targeted_record3.raw_fields['scope / limitations of test'] = 'HNPCC Familial'
     @handler.assign_test_scope(@genotype, targeted_record3)
+    assert_equal 'Targeted BRCA mutation test', @genotype.attribute_map['genetictestscope']
+
+    targeted_record4 = build_raw_record('pseudo_id1' => 'bob')
+    targeted_record4.raw_fields['scope / limitations of test'] = 'c.1100 only'
+    @handler.assign_test_scope(@genotype, targeted_record4)
     assert_equal 'Targeted BRCA mutation test', @genotype.attribute_map['genetictestscope']
 
     no_scope_record = build_raw_record('pseudo_id1' => 'bob')
@@ -64,28 +70,63 @@ class OxfordHandlerTest < ActiveSupport::TestCase
     assert_equal 'Unable to assign BRCA genetictestscope', @genotype.attribute_map['genetictestscope']
 
     full_screen_record1 = build_raw_record('pseudo_id1' => 'bob')
-    full_screen_record1.raw_fields['scope / limitations of test'] = 'SNV analysis ONLY'
+    full_screen_record1.raw_fields['scope / limitations of test'] = 'panel'
     @handler.assign_test_scope(@genotype, full_screen_record1 )
     assert_equal 'Full screen BRCA1 and BRCA2', @genotype.attribute_map['genetictestscope']
 
     full_screen_record2 = build_raw_record('pseudo_id1' => 'bob')
-    full_screen_record2.raw_fields['scope / limitations of test'] = 'CNV testing only'
+    full_screen_record2.raw_fields['scope / limitations of test'] = 'fullscreen'
     @handler.assign_test_scope(@genotype, full_screen_record2 )
     assert_equal 'Full screen BRCA1 and BRCA2', @genotype.attribute_map['genetictestscope']
 
     full_screen_record3 = build_raw_record('pseudo_id1' => 'bob')
-    full_screen_record3.raw_fields['scope / limitations of test'] = 'CNV analysis testing'
+    full_screen_record3.raw_fields['scope / limitations of test'] = 'full screem'
     @handler.assign_test_scope(@genotype, full_screen_record3 )
     assert_equal 'Full screen BRCA1 and BRCA2', @genotype.attribute_map['genetictestscope']
 
     full_screen_record4 = build_raw_record('pseudo_id1' => 'bob')
-    full_screen_record4.raw_fields['scope / limitations of test'] = 'Whole gene screen'
+    full_screen_record4.raw_fields['scope / limitations of test'] = 'full gene screen'
     @handler.assign_test_scope(@genotype, full_screen_record4 )
     assert_equal 'Full screen BRCA1 and BRCA2', @genotype.attribute_map['genetictestscope']
 
     full_screen_record5 = build_raw_record('pseudo_id1' => 'bob')
-    full_screen_record5.raw_fields['scope / limitations of test'] = 'Full gene'
+    full_screen_record5.raw_fields['scope / limitations of test'] = 'brca_multiplicom'
     @handler.assign_test_scope(@genotype, full_screen_record5)
+    assert_equal 'Full screen BRCA1 and BRCA2', @genotype.attribute_map['genetictestscope']
+
+    full_screen_record6 = build_raw_record('pseudo_id1' => 'bob')
+    full_screen_record6.raw_fields['scope / limitations of test'] = 'hcs'
+    @handler.assign_test_scope(@genotype, full_screen_record6 )
+    assert_equal 'Full screen BRCA1 and BRCA2', @genotype.attribute_map['genetictestscope']
+
+    full_screen_record7 = build_raw_record('pseudo_id1' => 'bob')
+    full_screen_record7.raw_fields['scope / limitations of test'] = 'brca1'
+    @handler.assign_test_scope(@genotype, full_screen_record7 )
+    assert_equal 'Full screen BRCA1 and BRCA2', @genotype.attribute_map['genetictestscope']
+
+    full_screen_record8 = build_raw_record('pseudo_id1' => 'bob')
+    full_screen_record8.raw_fields['scope / limitations of test'] = 'brca2'
+    @handler.assign_test_scope(@genotype, full_screen_record8 )
+    assert_equal 'Full screen BRCA1 and BRCA2', @genotype.attribute_map['genetictestscope']
+
+    full_screen_record9 = build_raw_record('pseudo_id1' => 'bob')
+    full_screen_record9.raw_fields['scope / limitations of test'] = 'cnv only'
+    @handler.assign_test_scope(@genotype, full_screen_record9 )
+    assert_equal 'Full screen BRCA1 and BRCA2', @genotype.attribute_map['genetictestscope']
+
+    full_screen_record10 = build_raw_record('pseudo_id1' => 'bob')
+    full_screen_record10.raw_fields['scope / limitations of test'] = 'CNV analysis'
+    @handler.assign_test_scope(@genotype, full_screen_record10 )
+    assert_equal 'Full screen BRCA1 and BRCA2', @genotype.attribute_map['genetictestscope']
+
+    full_screen_record11 = build_raw_record('pseudo_id1' => 'bob')
+    full_screen_record11.raw_fields['scope / limitations of test'] = 'SNV analysis ONLY'
+    @handler.assign_test_scope(@genotype, full_screen_record11 )
+    assert_equal 'Full screen BRCA1 and BRCA2', @genotype.attribute_map['genetictestscope']
+
+    full_screen_record12 = build_raw_record('pseudo_id1' => 'bob')
+    full_screen_record12.raw_fields['scope / limitations of test'] = 'whole gene screen'
+    @handler.assign_test_scope(@genotype, full_screen_record12 )
     assert_equal 'Full screen BRCA1 and BRCA2', @genotype.attribute_map['genetictestscope']
 
     end

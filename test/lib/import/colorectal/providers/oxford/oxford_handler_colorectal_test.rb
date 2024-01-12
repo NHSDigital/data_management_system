@@ -28,6 +28,71 @@ class OxfordHandlerColorectalTest < ActiveSupport::TestCase
     @handler.assign_test_scope(@genotype, targeted_record)
     assert_equal 'Targeted Colorectal Lynch or MMR', @genotype.attribute_map['genetictestscope']
 
+    targeted_record2 = build_raw_record('pseudo_id1' => 'bob')
+    targeted_record2.raw_fields['scope / limitations of test'] = 'Familial'
+    @handler.assign_test_scope(@genotype, targeted_record2)
+    assert_equal 'Targeted Colorectal Lynch or MMR', @genotype.attribute_map['genetictestscope']
+
+    fullscreen_record1 = build_raw_record('pseudo_id1' => 'bob')
+    fullscreen_record1.raw_fields['scope / limitations of test'] = 'panel'
+    @handler.assign_test_scope(@genotype, fullscreen_record1)
+    assert_equal 'Full screen Colorectal Lynch or MMR', @genotype.attribute_map['genetictestscope']
+
+    fullscreen_record2 = build_raw_record('pseudo_id1' => 'bob')
+    fullscreen_record2.raw_fields['scope / limitations of test'] = 'full gene'
+    @handler.assign_test_scope(@genotype, fullscreen_record2)
+    assert_equal 'Full screen Colorectal Lynch or MMR', @genotype.attribute_map['genetictestscope']
+
+    fullscreen_record3 = build_raw_record('pseudo_id1' => 'bob')
+    fullscreen_record3.raw_fields['scope / limitations of test'] = 'full screen'
+    @handler.assign_test_scope(@genotype, fullscreen_record3)
+    assert_equal 'Full screen Colorectal Lynch or MMR', @genotype.attribute_map['genetictestscope']
+
+    fullscreen_record4 = build_raw_record('pseudo_id1' => 'bob')
+    fullscreen_record4.raw_fields['scope / limitations of test'] = 'full screem'
+    @handler.assign_test_scope(@genotype, fullscreen_record4)
+    assert_equal 'Full screen Colorectal Lynch or MMR', @genotype.attribute_map['genetictestscope']
+
+    fullscreen_record5 = build_raw_record('pseudo_id1' => 'bob')
+    fullscreen_record5.raw_fields['scope / limitations of test'] = 'exons 8-13'
+    @handler.assign_test_scope(@genotype, fullscreen_record5)
+    assert_equal 'Full screen Colorectal Lynch or MMR', @genotype.attribute_map['genetictestscope']
+
+    fullscreen_record6 = build_raw_record('pseudo_id1' => 'bob')
+    fullscreen_record6.raw_fields['scope / limitations of test'] = 'exons 9-14'
+    @handler.assign_test_scope(@genotype, fullscreen_record6)
+    assert_equal 'Full screen Colorectal Lynch or MMR', @genotype.attribute_map['genetictestscope']
+
+    fullscreen_record7 = build_raw_record('pseudo_id1' => 'bob')
+    fullscreen_record7.raw_fields['scope / limitations of test'] = 'APC CNV analysis'
+    @handler.assign_test_scope(@genotype, fullscreen_record7)
+    assert_equal 'Full screen Colorectal Lynch or MMR', @genotype.attribute_map['genetictestscope']
+    
+    fullscreen_record8 = build_raw_record('pseudo_id1' => 'bob')
+    fullscreen_record8.raw_fields['scope / limitations of test'] = 'HCS'
+    @handler.assign_test_scope(@genotype, fullscreen_record8)
+    assert_equal 'Full screen Colorectal Lynch or MMR', @genotype.attribute_map['genetictestscope']
+
+    fullscreen_record9 = build_raw_record('pseudo_id1' => 'bob')
+    fullscreen_record9.raw_fields['scope / limitations of test'] = 'CNV testing only'
+    @handler.assign_test_scope(@genotype, fullscreen_record9)
+    assert_equal 'Full screen Colorectal Lynch or MMR', @genotype.attribute_map['genetictestscope']
+
+    fullscreen_record10 = build_raw_record('pseudo_id1' => 'bob')
+    fullscreen_record10.raw_fields['scope / limitations of test'] = 'CNV analysis'
+    @handler.assign_test_scope(@genotype, fullscreen_record10)
+    assert_equal 'Full screen Colorectal Lynch or MMR', @genotype.attribute_map['genetictestscope']
+
+    fullscreen_record11 = build_raw_record('pseudo_id1' => 'bob')
+    fullscreen_record11.raw_fields['scope / limitations of test'] = 'SNV testing only'
+    @handler.assign_test_scope(@genotype, fullscreen_record11)
+    assert_equal 'Full screen Colorectal Lynch or MMR', @genotype.attribute_map['genetictestscope']
+
+    fullscreen_record12 = build_raw_record('pseudo_id1' => 'bob')
+    fullscreen_record12.raw_fields['scope / limitations of test'] = 'whole gene screen'
+    @handler.assign_test_scope(@genotype, fullscreen_record12)
+    assert_equal 'Full screen Colorectal Lynch or MMR', @genotype.attribute_map['genetictestscope']
+
     ashkenazi_record = build_raw_record('pseudo_id1' => 'bob')
     ashkenazi_record.raw_fields['scope / limitations of test'] = 'Ashkenazi'
     @handler.assign_test_scope(@genotype, ashkenazi_record)
@@ -39,7 +104,7 @@ class OxfordHandlerColorectalTest < ActiveSupport::TestCase
     assert_equal 'Polish Colorectal Lynch or MMR', @genotype.attribute_map['genetictestscope']
 
     no_scope_record = build_raw_record('pseudo_id1' => 'bob')
-    no_scope_record.raw_fields['scope / limitations of test'] = 'exons 8-13 SNV and CNV'
+    no_scope_record.raw_fields['scope / limitations of test'] = 'no scope'
     @handler.assign_test_scope(@genotype, no_scope_record)
     assert_equal 'Unable to assign Colorectal Lynch or MMR genetictestscope', @genotype.attribute_map['genetictestscope']
   end
