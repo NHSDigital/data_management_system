@@ -202,7 +202,14 @@ module Import
 
             exon_info = record.mapped_fields['codingdnasequencechange']
             genotype.add_variant_type(EXON_REGEX.match(exon_info)[:variant])
-            genotype.add_exon_location(EXON_REGEX.match(exon_info)[:location])
+            if EXON_REGEX.match(exon_info)[:moreexon]
+              location = EXON_REGEX.match(exon_info)[:location]
+              second_exon = EXON_REGEX.match(exon_info)[:moreexon]
+              genotype.add_exon_location("#{location}-#{second_exon}")
+            else
+              genotype.add_exon_location(EXON_REGEX.match(exon_info)[:location])
+            end
+
             add_teststatus_from_variantpathclass(genotype, variantpathclass)
           end
 

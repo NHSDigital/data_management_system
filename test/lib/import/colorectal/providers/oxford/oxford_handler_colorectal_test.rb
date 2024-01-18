@@ -67,7 +67,7 @@ class OxfordHandlerColorectalTest < ActiveSupport::TestCase
     fullscreen_record7.raw_fields['scope / limitations of test'] = 'APC CNV analysis'
     @handler.assign_test_scope(@genotype, fullscreen_record7)
     assert_equal 'Full screen Colorectal Lynch or MMR', @genotype.attribute_map['genetictestscope']
-    
+
     fullscreen_record8 = build_raw_record('pseudo_id1' => 'bob')
     fullscreen_record8.raw_fields['scope / limitations of test'] = 'HCS'
     @handler.assign_test_scope(@genotype, fullscreen_record8)

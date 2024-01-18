@@ -52,9 +52,7 @@ module Import
 
             RECORD_EXEMPTIONS = ['c.[-835C>T]+[=]', 'Deletion of whole PTEN gene',
                                  'c.[-904_-883dup ]+[=]', 'whole gene deletion',
-                                 'Deletion partial exon 11 and exons 12-15',
-                                 'deletion BRCA1 exons 21-24', 'deletion BRCA1 exons 21-24',
-                                 'deletion BRCA1 exons 1-17', 'whole gene duplication'].freeze
+                                 'Deletion partial exon 11 and exons 12-15', 'whole gene duplication'].freeze
 
             PROTEIN_REGEX = /p\.\[?\(?(?<impact>.+)(?:\))|
                              p\.\[(?<impact>[a-z0-9*]+)\]|
@@ -62,10 +60,14 @@ module Import
 
             CDNA_REGEX = /c\.\[?(?<cdna>[0-9]+.+[a-z]+)\]?/i
 
-            EXON_REGEX = /(?<variant>del|inv|dup).+ion\s(?<of>of\s)?
-                          exon(?<s>s)?\s?(?<location>[0-9]+(?<moreexon>-[0-9]+)?)|
-                          exon(?<s>s)?\s?(?<location>[0-9]+(?<moreexon>-[0-9]+)?)
-                          \s(?<variant>del|inv|dup).+ion/ix
+            EXON_REGEX = /(?<variant>del|inv|dup).+ion\s(?:of\s)?
+                         exons?\s?(?<location>[0-9]+(?:-[0-9]+)?)|
+                         ex(?:on)?\s?(?<location>[0-9]+(?:-[0-9]+)?)\s?(?<variant>del|inv|dup)|
+                         exons?\s?(?<location>[0-9]+(?:-[0-9]+)?)\s?(?<variant>del|inv|dup)|
+                         ex\s?(?<location>[0-9]+\+[0-9]+)\s?(?<variant>del|inv|dup)|
+                         (?<variant>del|inv|dup).+ion\sBRCA1\sexons?\s(?<location>[0-9]+-(?:[0-9]*))|
+                         exon\s?(?<location>[0-9]+)\s?-exon\s?(?<moreexon>[0-9]+)
+                         \s?(?<variant>del|inv|dup)/ix
 
             GENOMICCHANGE_REGEX = /Chr(?<chromosome>\d+)\.hg
                                    (?<genome_build>\d+):g\.(?<effect>.+)/ix
