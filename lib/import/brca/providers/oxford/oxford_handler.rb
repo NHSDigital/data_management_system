@@ -27,7 +27,7 @@ module Import
 
           def brca_file?
             file_name = @batch.original_filename
-            file_path = file_name.slice(0, file_name.rindex('/'))
+            file_path = File.dirname(file_name)
             file_path_array = file_name.split('/')
             pseudo_file = file_path_array[file_path_array.length - 1]
             pseudo_filename = pseudo_file.sub(/.xls[x]?.pseudo/, '')
