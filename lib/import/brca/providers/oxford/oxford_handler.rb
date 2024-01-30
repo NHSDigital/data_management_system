@@ -131,8 +131,7 @@ module Import
             genotypes = []
             gene      = record.mapped_fields['gene'].to_i
             synonym   = record.raw_fields['sinonym'].to_s
-            if [7, 8, 590, 18, 20, 865, 2744, 2804, 2808, 3186, 3394, 62, 3615, 3616, 76, 79, 358,
-                451, 577, 794, 1432, 1590, 1882, 2850, 3108, 3408, 5000, 5019, 72].include? gene
+            if GENE_VALUES.include? gene
               add_oxford_gene(gene, genotype, genotypes)
             elsif BRCA_REGEX.match(synonym)
               add_oxford_gene(BRCA_REGEX.match(synonym)[:brca], genotype, genotypes)
@@ -166,17 +165,14 @@ module Import
             return false if record.raw_fields['scope / limitations of test'].nil?
 
             geneticscope = record.raw_fields['scope / limitations of test']
-            geneticscope.scan(/panel|full\s?screen|full\sscreem|full\sgene\sscreen|
-                              brca_multiplicom|hcs|brca1|brca2|CNV.*only|CNV.*analysis|
-                              SNV.*ONLY|Whole\sgene\sscreen/xi).size.positive?
+            geneticscope.scan(FULL_SCREEN_REGEX).size.positive?
           end
 
           def targeted?(record)
             return false if record.raw_fields['scope / limitations of test'].nil?
 
             geneticscope = record.raw_fields['scope / limitations of test']
-            geneticscope.scan(/targeted|RD\sproband\sconfirmation|HNPCC\sFamilial|
-                              c.1100\sonly/xi).size.positive?
+            geneticscope.scan(TARGETED_REGEX).size.positive?
           end
 
           def ashkenazi?(record)

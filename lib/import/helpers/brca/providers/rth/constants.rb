@@ -50,6 +50,10 @@ module Import
                                   RNF43|
                                   SMAD4)/ix
 
+            # TODO: reference the Zgene table once this code is moved to Era.
+            GENE_VALUES=[7, 8, 590, 18, 20, 865, 2744, 2804, 2808, 3186, 3394, 62, 3615, 3616, 76, 79, 358,
+                        451, 577, 794, 1432, 1590, 1882, 2850, 3108, 3408, 5000, 5019, 72]
+
             RECORD_EXEMPTIONS = ['c.[-835C>T]+[=]', 'Deletion of whole PTEN gene',
                                  'c.[-904_-883dup ]+[=]', 'whole gene deletion',
                                  'Deletion partial exon 11 and exons 12-15', 'whole gene duplication'].freeze
@@ -71,6 +75,25 @@ module Import
 
             GENOMICCHANGE_REGEX = /Chr(?<chromosome>\d+)\.hg
                                    (?<genome_build>\d+):g\.(?<effect>.+)/ix
+
+            FULL_SCREEN_REGEX = /(?<fullscreen>panel|
+                                  full\s?screen|
+                                  full\sscreem|
+                                  full\sgene\sscreen|
+                                  brca_multiplicom|
+                                  hcs|
+                                  brca1|
+                                  brca2|
+                                  CNV.*only|
+                                  CNV.*analysis|
+                                  SNV.*ONLY|
+                                  Whole\sgene\sscreen)/xi
+
+            TARGETED_REGEX = /(?<targeted>targeted|
+                                RD\sproband\sconfirmation|
+                                HNPCC\sFamilial|
+                                c.1100\sonly)/xi
+
 
             VAR_PATH_CLASS_MAP = {
               'c3' => 3,

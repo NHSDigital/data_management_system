@@ -49,11 +49,6 @@ module Import
             [brca1_count, apc_count, mlh1_count]
           end
 
-          def convert_nil_to_zero(count)
-            count = 0 if count.nil?
-            count
-          end
-
           def add_organisationcode_testresult(genocolorectal)
             genocolorectal.attribute_map['organisationcode_testresult'] = '698C0'
           end
