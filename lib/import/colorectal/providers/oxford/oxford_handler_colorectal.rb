@@ -42,9 +42,10 @@ module Import
           end
 
           def get_csv_counts(csv)
-            brca1_count = csv['mapped:gene'].tally['7'].to_i
-            apc_count = csv['mapped:gene'].tally['358'].to_i
-            mlh1_count = csv['mapped:gene'].tally['2744'].to_i
+            gene_tally  = csv['mapped:gene'].tally
+            brca1_count = gene_tally['7'].to_i
+            apc_count = gene_tally['358'].to_i
+            mlh1_count = gene_tally['2744'].to_i
             [brca1_count, apc_count, mlh1_count]
           end
 
