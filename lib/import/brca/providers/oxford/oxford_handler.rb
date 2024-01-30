@@ -96,9 +96,6 @@ module Import
               add_teststatus_from_variantpathclass(genotype, variantpathclass)
               @logger.debug "SUCCESSFUL cdna change parse for: #{$LAST_MATCH_INFO[:cdna]}"
             elsif EXON_REGEX.match(record.mapped_fields['codingdnasequencechange'])
-              # genotype.add_variant_type($LAST_MATCH_INFO[:variant])
-              # genotype.add_exon_location($LAST_MATCH_INFO[:location])
-              # genotype.add_status(2)
               add_exonic_variant(record, genotype, variantpathclass)
             elsif normal?(record)
               genotype.add_status(1)
@@ -198,13 +195,13 @@ module Import
             return if record.raw_fields['scope / limitations of test'].nil?
 
             exon_info = record.mapped_fields['codingdnasequencechange']
-            genotype.add_variant_type(EXON_REGEX.match(exon_info)[:variant])
-            if EXON_REGEX.match(exon_info)[:moreexon]
-              location = EXON_REGEX.match(exon_info)[:location]
-              second_exon = EXON_REGEX.match(exon_info)[:moreexon]
+            genotype.add_variant_type(EXON_REGEX.match(exon_info)[:mutationtype])
+            if EXON_REGEX.match(exon_info)[:otherexon]
+              location = EXON_REGEX.match(exon_info)[:exons]
+              second_exon = EXON_REGEX.match(exon_info)[:otherexon]
               genotype.add_exon_location("#{location}-#{second_exon}")
             else
-              genotype.add_exon_location(EXON_REGEX.match(exon_info)[:location])
+              genotype.add_exon_location(EXON_REGEX.match(exon_info)[:exons])
             end
 
             add_teststatus_from_variantpathclass(genotype, variantpathclass)

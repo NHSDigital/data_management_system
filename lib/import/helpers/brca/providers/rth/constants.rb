@@ -51,8 +51,8 @@ module Import
                                   SMAD4)/ix
 
             # TODO: reference the Zgene table once this code is moved to Era.
-            GENE_VALUES=[7, 8, 590, 18, 20, 865, 2744, 2804, 2808, 3186, 3394, 62, 3615, 3616, 76, 79, 358,
-                        451, 577, 794, 1432, 1590, 1882, 2850, 3108, 3408, 5000, 5019, 72]
+            GENE_VALUES = [7, 8, 590, 18, 20, 865, 2744, 2804, 2808, 3186, 3394, 62, 3615, 3616, 76, 79, 358,
+                           451, 577, 794, 1432, 1590, 1882, 2850, 3108, 3408, 5000, 5019, 72].freeze
 
             RECORD_EXEMPTIONS = ['c.[-835C>T]+[=]', 'Deletion of whole PTEN gene',
                                  'c.[-904_-883dup ]+[=]', 'whole gene deletion',
@@ -64,14 +64,10 @@ module Import
 
             CDNA_REGEX = /c\.\[?(?<cdna>[0-9]+.+[a-z]+)\]?/i
 
-            EXON_REGEX = /(?<variant>del|inv|dup).+ion\s(?:of\s)?
-                         exons?\s?(?<location>[0-9]+(?:-[0-9]+)?)|
-                         ex(?:on)?\s?(?<location>[0-9]+(?:-[0-9]+)?)\s?(?<variant>del|inv|dup)|
-                         exons?\s?(?<location>[0-9]+(?:-[0-9]+)?)\s?(?<variant>del|inv|dup)|
-                         ex\s?(?<location>[0-9]+\+[0-9]+)\s?(?<variant>del|inv|dup)|
-                         (?<variant>del|inv|dup).+ion\sBRCA1\sexons?\s(?<location>[0-9]+-(?:[0-9]*))|
-                         exon\s?(?<location>[0-9]+)\s?-exon\s?(?<moreexon>[0-9]+)
-                         \s?(?<variant>del|inv|dup)/ix
+            EXON_REGEX = /(?<mutationtype>del|inv|dup).+ion\s(?:of\s)?exons?\s?(?<exons>[0-9]+(?:-[0-9]+)?)|
+                          ex(?:on|ons)?\s?(?<exons>[0-9]+(?:(?:-|\+)[0-9]+)?)\s?(?<mutationtype>del|inv|dup)|
+                          (?<mutationtype>del|inv|dup).+ion\sBRCA1\sexons?\s(?<exons>[0-9]+-(?:[0-9]*))|
+                          exon\s?(?<exons>[0-9]+)\s?-exon\s?(?<otherexon>[0-9]+)\s?(?<mutationtype>del|inv|dup)/ix
 
             GENOMICCHANGE_REGEX = /Chr(?<chromosome>\d+)\.hg
                                    (?<genome_build>\d+):g\.(?<effect>.+)/ix
@@ -93,7 +89,6 @@ module Import
                                 RD\sproband\sconfirmation|
                                 HNPCC\sFamilial|
                                 c.1100\sonly)/xi
-
 
             VAR_PATH_CLASS_MAP = {
               'c3' => 3,
