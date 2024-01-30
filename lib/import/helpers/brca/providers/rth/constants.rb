@@ -64,9 +64,8 @@ module Import
 
             CDNA_REGEX = /c\.\[?(?<cdna>[0-9]+.+[a-z]+)\]?/i
 
-            EXON_REGEX = /(?<mutationtype>del|inv|dup).+ion\s(?:of\s)?exons?\s?(?<exons>[0-9]+(?:-[0-9]+)?)|
+            EXON_REGEX = /(?<mutationtype>del|inv|dup).+ion\s[a-z 0-9]*\s?exons?\s?(?<exons>[0-9]+(?:-[0-9]+)?)|
                           ex(?:on|ons)?\s?(?<exons>[0-9]+(?:(?:-|\+)[0-9]+)?)\s?(?<mutationtype>del|inv|dup)|
-                          (?<mutationtype>del|inv|dup).+ion\sBRCA1\sexons?\s(?<exons>[0-9]+-(?:[0-9]*))|
                           exon\s?(?<exons>[0-9]+)\s?-exon\s?(?<otherexon>[0-9]+)\s?(?<mutationtype>del|inv|dup)/ix
 
             GENOMICCHANGE_REGEX = /Chr(?<chromosome>\d+)\.hg
