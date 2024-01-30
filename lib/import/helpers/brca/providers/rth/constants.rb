@@ -64,7 +64,7 @@ module Import
 
             CDNA_REGEX = /c\.\[?(?<cdna>[0-9]+.+[a-z]+)\]?/i
 
-            EXON_REGEX = /(?<mutationtype>del|inv|dup).+ion\s[a-z 0-9]*\s?exons?\s?(?<exons>[0-9]+(?:-[0-9]+)?)|
+            EXON_REGEX = /(?<mutationtype>del|inv|dup).+ion\s[a-z0-9]*\s?exons?\s?(?<exons>[0-9]+(?:-[0-9]+)?)|
                           ex(?:on|ons)?\s?(?<exons>[0-9]+(?:(?:-|\+)[0-9]+)?)\s?(?<mutationtype>del|inv|dup)|
                           exon\s?(?<exons>[0-9]+)\s?-exon\s?(?<otherexon>[0-9]+)\s?(?<mutationtype>del|inv|dup)/ix
 
