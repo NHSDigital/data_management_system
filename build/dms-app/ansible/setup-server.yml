@@ -119,19 +119,19 @@
       with_items:
         - "{{ application_users }}"
 
-    - name: Create File System
-      community.general.filesystem:
-        fstype: xfs
-        dev: /dev/xvdb
+    # - name: Create File System
+    #   community.general.filesystem:
+    #     fstype: xfs
+    #     dev: /dev/xvdb
 
-    - name: Mount File System
-      mount:
-        path: "{{ item.path }}"
-        src: "{{ item.src }}"
-        fstype: "{{ item.fstype }}"
-        state: mounted
-      with_items:
-        "{{ fstab_mounts }}"
+    # - name: Mount File System
+    #   mount:
+    #     path: "{{ item.path }}"
+    #     src: "{{ item.src }}"
+    #     fstype: "{{ item.fstype }}"
+    #     state: mounted
+    #   with_items:
+    #     "{{ fstab_mounts }}"
 
     - name: Make Group Permission
       become: true
@@ -268,6 +268,9 @@
 
         - name: Get Current branch
           shell: |
+            git init
+            git add * .[^.]*
+            git commit -qm 'Commit CodeDeploy checkout'
             git rev-parse --abbrev-ref HEAD
           args:
             chdir: /home/mbis_app/data_management_system
