@@ -7,6 +7,8 @@ module Import
           include Import::Helpers::Brca::Providers::Rth::Constants
 
           def process_fields(record)
+            return unless brca_file?
+
             genotype = Import::Brca::Core::GenotypeBrca.new(record)
             genotype.add_passthrough_fields(record.mapped_fields,
                                             record.raw_fields,
@@ -21,6 +23,30 @@ module Import
             add_organisationcode_testresult(genotype)
             res = process_gene(genotype, record)
             res&.each { |cur_genotype| @persister.integrate_and_store(cur_genotype) }
+          end
+
+          def brca_file?
+            file_name = @batch.original_filename
+            file_path = File.dirname(file_name)
+            file_path_array = file_name.split('/')
+            pseudo_file = file_path_array[file_path_array.length - 1]
+            pseudo_filename = pseudo_file.sub(/.xls[x]?.pseudo/, '')
+            directory = Rails.root.join("private/pseudonymised_data/#{file_path}").to_s
+            csv_files = Dir.glob("#{directory}/*#{pseudo_filename}*_pretty.csv")
+
+            raise "Pretty CSV file not able to map for #{pseudo_file}" if csv_files.empty?
+
+            csv = CSV.read(csv_files[0], headers: true)
+            brca1_count, apc_count, mlh1_count = get_csv_counts(csv)
+            mlh1_count + apc_count < brca1_count
+          end
+
+          def get_csv_counts(csv)
+            gene_tally  = csv['mapped:gene'].tally
+            brca1_count = gene_tally['7'].to_i
+            apc_count = gene_tally['358'].to_i
+            mlh1_count = gene_tally['2744'].to_i
+            [brca1_count, apc_count, mlh1_count]
           end
 
           def add_organisationcode_testresult(genotype)
@@ -70,9 +96,6 @@ module Import
               add_teststatus_from_variantpathclass(genotype, variantpathclass)
               @logger.debug "SUCCESSFUL cdna change parse for: #{$LAST_MATCH_INFO[:cdna]}"
             elsif EXON_REGEX.match(record.mapped_fields['codingdnasequencechange'])
-              # genotype.add_variant_type($LAST_MATCH_INFO[:variant])
-              # genotype.add_exon_location($LAST_MATCH_INFO[:location])
-              # genotype.add_status(2)
               add_exonic_variant(record, genotype, variantpathclass)
             elsif normal?(record)
               genotype.add_status(1)
@@ -105,8 +128,7 @@ module Import
             genotypes = []
             gene      = record.mapped_fields['gene'].to_i
             synonym   = record.raw_fields['sinonym'].to_s
-            if [7, 8, 79, 865, 3186, 2744, 2804, 3394, 62, 76,
-                590, 3615, 3616, 20, 18].include? gene
+            if GENE_VALUES.include? gene
               add_oxford_gene(gene, genotype, genotypes)
             elsif BRCA_REGEX.match(synonym)
               add_oxford_gene(BRCA_REGEX.match(synonym)[:brca], genotype, genotypes)
@@ -140,14 +162,14 @@ module Import
             return false if record.raw_fields['scope / limitations of test'].nil?
 
             geneticscope = record.raw_fields['scope / limitations of test']
-            geneticscope.scan(/panel|scree(n|m)|brca|hcs|panel/i).size.positive?
+            geneticscope.scan(FULL_SCREEN_REGEX).size.positive?
           end
 
           def targeted?(record)
             return false if record.raw_fields['scope / limitations of test'].nil?
 
             geneticscope = record.raw_fields['scope / limitations of test']
-            geneticscope.scan(/targeted|proband/i).size.positive?
+            geneticscope.scan(TARGETED_REGEX).size.positive?
           end
 
           def ashkenazi?(record)
@@ -173,8 +195,15 @@ module Import
             return if record.raw_fields['scope / limitations of test'].nil?
 
             exon_info = record.mapped_fields['codingdnasequencechange']
-            genotype.add_variant_type(EXON_REGEX.match(exon_info)[:variant])
-            genotype.add_exon_location(EXON_REGEX.match(exon_info)[:location])
+            genotype.add_variant_type(EXON_REGEX.match(exon_info)[:mutationtype])
+            if EXON_REGEX.match(exon_info)[:otherexon]
+              location = EXON_REGEX.match(exon_info)[:exons]
+              second_exon = EXON_REGEX.match(exon_info)[:otherexon]
+              genotype.add_exon_location("#{location}-#{second_exon}")
+            else
+              genotype.add_exon_location(EXON_REGEX.match(exon_info)[:exons])
+            end
+
             add_teststatus_from_variantpathclass(genotype, variantpathclass)
           end
 
@@ -182,7 +211,7 @@ module Import
             return if record.raw_fields['moleculartestingtype'].nil?
 
             testtype = record.raw_fields['moleculartestingtype']
-            if testtype.scan(/symptomatic/i).size.positive?
+            if testtype.scan(/pre-symptomatic/i).size.positive?
               genotype.add_test_scope(:targeted_mutation)
             elsif testtype.scan(/diagnostic/i).size.positive?
               genotype.add_test_scope(:full_screen)

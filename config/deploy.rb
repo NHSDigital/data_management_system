@@ -8,6 +8,8 @@ require 'resolv'
 
 set :application, 'mbis_front'
 set :repository, 'https://github.com/NHSDigital/data_management_system.git'
+# For AWS deployments, instead use:
+# set :repository, 'file:///home/mbis_app/data_management_system/.git'
 set :scm, :git
 ssh_options[:compression] = 'none' # Avoid pointless zlib warning
 
@@ -203,3 +205,6 @@ TARGETS = [
 TARGETS.each do |env, name, app, port, app_user, include_assets|
   add_target(env, name, app, port, app_user, include_assets)
 end
+
+# For AWS CodeDeploy deployments, using a local working copy checkout
+add_target(:current, :localhost_live, 'localhost', 22, 'mbis_app', true)

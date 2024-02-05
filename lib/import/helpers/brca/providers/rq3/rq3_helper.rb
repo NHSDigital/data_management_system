@@ -362,6 +362,7 @@ module Import
 
               genotype.add_status(2)
               genotype.add_exon_location($LAST_MATCH_INFO[:exons])
+              genotype.add_variant_type($LAST_MATCH_INFO[:variant])
             end
 
             def sometimes_tested?

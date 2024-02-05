@@ -281,5 +281,5 @@ Devise.setup do |config|
 
   config.saml_session_index_key = :session_index
 
-  config.allowed_clock_drift_in_seconds = 1.second
+  config.allowed_clock_drift_in_seconds = 5.minutes
 end

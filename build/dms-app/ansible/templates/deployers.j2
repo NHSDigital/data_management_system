@@ -1,0 +1,3 @@
+{% for item in application_users %}
+%{{ item.home_directory_group }} ALL=({{ item.name }}) NOPASSWD: ALL
+{% endfor %}
