@@ -268,10 +268,16 @@
 
         - name: Get Current branch
           shell: |
+            git config --global init.defaultBranch main
+            git config --global user.email "you@example.com"
+            git config --global user.name "Your Name"
             git init
+            rm -rf config/.git/
             git add * .[^.]*
             git commit -qm 'Commit CodeDeploy checkout'
             git rev-parse --abbrev-ref HEAD
+
+            # TODO: if config/.git exists, need to find the way to delete 
           args:
             chdir: /home/mbis_app/data_management_system
           register: current_branch
