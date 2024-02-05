@@ -53,21 +53,6 @@ module Import
 
         # ------------------------ Interogators ------------------------------
 
-        # this is present in Newcastle storage manager
-        def full_screen?
-          scope = @attribute_map['genetictestscope']
-          return nil unless scope
-
-          scope == 'Full screen Colorectal Lynch or MMR'
-        end
-
-        def targeted?
-          scope = @attribute_map['genetictestscope']
-          return nil unless scope
-
-          scope == 'Targeted Colorectal Lynch or MMR'
-        end
-
         def add_gene_colorectal(colorectal_input)
           case colorectal_input
           when Integer
