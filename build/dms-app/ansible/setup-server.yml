@@ -153,6 +153,7 @@
 
     - name: Make .ssh folder
       become_user: mbis_app
+      become: true
       file:
         path: ~/tmp/.ssh
         state: directory
@@ -162,6 +163,7 @@
 
     - name: generate SSH key for mbis_app directory
       become_user: mbis_app
+      become: true
       openssh_keypair:
         path: ~/tmp/.ssh/id_rsa
         type: rsa
@@ -169,8 +171,9 @@
         state: present
         force: no
 
-    - name: create authorized_keys file to mbis_app directory
+    - name: create .ssh directory
       become_user: mbis_app
+      become: true
       file:
         path: ~/.ssh
         state: directory
@@ -180,6 +183,7 @@
 
     - name: create authorized_keys file to mbis_app directory
       become_user: mbis_app
+      become: true
       file:
         path: ~/.ssh/authorized_keys
         state: touch
@@ -189,10 +193,12 @@
 
     - name:  add mbis_app to authorized_key
       become_user: mbis_app
+      become: true
       shell: cat ~/tmp/.ssh/id_rsa.pub > ~/.ssh/authorized_keys
 
     - name: copy .id_rsa keys to .ssh directory
       become_user: mbis_app
+      become: true
       copy:
         src:  ~/tmp/.ssh/id_rsa
         dest:  ~/.ssh/id_rsa
@@ -203,6 +209,7 @@
 
     - name: Delete content & directory
       become_user: mbis_app
+      become: true
       file:
         state: absent
         path: /home/mbis_app/data_management_system
