@@ -309,9 +309,7 @@
 
         - name: Clear Known hosts
           shell: |
-            touch /home/mbis_app/.ssh/known_hosts
-          args:
-            chdir: /home/mbis_app/data_management_system
+            echo "" > /home/mbis_app/.ssh/known_hosts
 
         - name: Bundle exec cap deploy:setup
           args:
