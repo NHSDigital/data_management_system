@@ -22,7 +22,6 @@ config/regular_extracts.csv
 config/special_users.development.yml
 config/special_users.production.yml
 config/user_yubikeys.yml
-config/xsd.yml
 config/idp.yml
 config/keys/*
 db/development_structure.sql
