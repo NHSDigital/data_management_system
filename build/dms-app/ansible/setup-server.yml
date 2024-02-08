@@ -266,13 +266,6 @@
             chdir: /home/mbis_app/data_management_system/
           shell: source /home/mbis_app/.bash_profile && /home/mbis_app/.rbenv/shims/bundle check
 
-        - name: Copy config.deploy.rb.j2 to config/deploy.rb
-          template:
-            src: config.deploy.rb.j2
-            dest: /home/mbis_app/data_management_system/config/deploy.rb
-            owner: mbis_app
-            group: mbis_app
-
         - name: Get Current branch
           shell: |
             git config --global init.defaultBranch main
@@ -315,13 +308,13 @@
           args:
             chdir: /home/mbis_app/data_management_system
           shell: |
-            source /home/mbis_app/.bash_profile && /home/mbis_app/.rbenv/shims/bundle exec cap localhost_live deploy:setup
+            source /home/mbis_app/.bash_profile && CAP_DEPLOY_REPOSITORY='file:///home/mbis_app/data_management_system/.git' /home/mbis_app/.rbenv/shims/bundle exec cap localhost_live deploy:setup
 
         - name: Bundle exec cap deploy:cold
           args:
             chdir: /home/mbis_app/data_management_system
           shell: |
-            source /home/mbis_app/.bash_profile && /home/mbis_app/.rbenv/shims/bundle  exec cap localhost_live deploy:cold
+            source /home/mbis_app/.bash_profile && CAP_DEPLOY_REPOSITORY='file:///home/mbis_app/data_management_system/.git' /home/mbis_app/.rbenv/shims/bundle exec cap localhost_live deploy:cold
           register: deploy_cold
           ignore_errors: true
 
