@@ -1,0 +1,80 @@
+module Import
+  module Helpers
+    module Brca
+      module Providers
+        module Rj7
+          module Constants
+            PASS_THROUGH_FIELDS = %w[age sex consultantcode requesteddate
+                                     authoriseddate servicereportidentifier
+                                     providercode receiveddate specimentype].freeze
+
+            TEST_TYPE_MAP =
+                            {
+                            'Diagnostic testing for known mutation(s)' => 'diagnostic',
+                            'Family follow-up testing to aid variant interpretation' => 'diagnostic',
+                            'Inherited breast cancer and ovarian cancer' => 'diagnostic',
+                            'Inherited ovarian cancer (without breast cancer)' => 'diagnostic',
+                            'Predictive testing for known familial mutation(s)' => 'predictive',
+                            }.freeze
+
+            TEST_SCOPE_MAP =
+                            {
+                            'Diagnostic testing for known mutation(s)' => 'targeted',
+                            'Family follow-up testing to aid variant interpretation' => 'targeted',
+                            'Inherited breast cancer and ovarian cancer' => 'fullscreen',
+                            'Inherited ovarian cancer (without breast cancer)' => 'fullscreen',
+                            'Predictive testing for known familial mutation(s)' => 'fullscreen',
+                            }.freeze
+
+            FULL_SCREEN_TESTS_MAP =
+                            {
+                            'BRCA1/2_V1' => ['BRCA1', 'BRCA2'],
+                            'CHEK2_v1' => ['CHEK2'],
+                            'HBOC_V1' => ['BRCA1', 'BRCA2', 'CHEK2', 'PALB2'],
+                            'HBOC_v2' => ['BRCA1', 'BRCA2', 'PALB2'],
+                            'TP53_V1' => ['TP53'],
+                            'MLPA' => [],
+                            'SANGER' => [],
+                            'VUS check' => [] ,
+                            'RPKM' => [],
+                            'R207' => ['BRCA1', 'BRCA2', 'BRIP1', 'MLH1', 'MSH2', 'MSH6', 'PALB2', 'RAD51C', 'RAD51D'],
+                            'R208+C' => ['BRCA1', 'BRCA2', 'CHEK2', 'PALB2'],
+                            }.freeze
+
+            BRCA_GENE_MAP={
+                        'ATM'=>['ATM'],
+                        'ATM-1'=>['ATM'],
+                        'BRCA1'=>['BRCA1'],
+                        'BR1'=>['BRCA1'],
+                        'BRCA1/2'=>['BRCA1', 'BRCA2'],
+                        'BRCA1+2'=>['BRCA1', 'BRCA2'],
+                        'BRCA2'=>['BRCA2'],
+                        'BR2'=>['BRCA2'],
+                        'BRIP1'=>['BRIP1'],
+                        'CHEK2'=>['CHEK2'],
+                        'CHECK2'=>['CHEK2'],
+                        'EPCAM'=>['EPCAM'],
+                        'MLH1'=>['MLH1'],
+                        'MSH2'=>['MSH2'],
+                        'MSH6'=>['MSH6'],
+                        'PALB2'=>['PALB2'],
+                        'PALB1'=>['PALB2'],
+                        'PLAB2'=>['PALB2'],
+                        'PMS2'=>['PMS2'],
+                        'RAD51C'=>['RAD51C'],
+                        'RAD51D'=>['RAD51D'],
+                        'TP53'=>['TP53'],
+                        }.freeze
+
+
+
+
+
+
+            # rubocop:enable Lint/MixedRegexpCaptureTypes
+        end
+    end
+  end
+end
+end
+end
