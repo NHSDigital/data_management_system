@@ -42,7 +42,8 @@ module Import
             testscope = TEST_SCOPE_MAP[record.raw_fields['moleculartestingtype']]
             if testscope == 'targeted'
               genotype.add_test_scope(:targeted_mutation)
-              process_genes(genotype, record)
+              assign_test_status_targeted(genotype, record)
+              process_genes(genotype, record, [])
               assign_test_status_targeted(genotype,record)
             elsif testscope == 'fullscreen'
               genotype.add_test_scope(:full_screen)
@@ -54,13 +55,17 @@ module Import
 
 
 
-          def process_genes(genotype, record)
-            genes=[]
+          def process_genes(genotype, record, genes)
+            genotypes=[]
             genes.append(BRCA_GENE_MAP[record.raw_fields['gene']])
             genes.append(BRCA_GENE_MAP[record.raw_fields['gene(other)']])
             genes.each do |gene|
               #TODO handle if more than one gene listed in gene field
+              genotype_dup = genotype.dup
+              genotype_dup.add_gene(gene)
+              genotypes.append(genotype_dup)
             end
+            genotypes
           end
 
 
@@ -71,7 +76,8 @@ module Import
             genes.append(BRCA_GENE_MAP[record.raw_fields['variant dna']])
             genes.append(BRCA_GENE_MAP[record.raw_fields['test/panel']])
             genes=process_R208(genotype, record, genes)
-            genes
+            genotypes= process_genes(genotype, record, genes)
+            genotypes
           end
 
           def process_R208(genotype, record, genes)
@@ -115,6 +121,11 @@ module Import
           end
 
           def assign_test_status_full_screen
+            if record.raw_fields['variant dna'].match(/Fail/ix)
+              genotype.add_status(9)
+            elsif record.raw_fields['variant dna']=='N'
+              genotype.add_status(1)
+            end
           end
 
           def process_variants(genotype, record)
