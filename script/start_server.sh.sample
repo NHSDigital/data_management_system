@@ -64,7 +64,7 @@ if command -v aws >/dev/null ; then
   export SPECIAL_USERS_BASE64=$(aws  ssm get-parameters --names '/mbis/dev/special_users'  --with-decryption | jq -r '.Parameters[]' | jq -r '.Value')
   export EXCLUDED_MBISIDS_BASE64=$(aws  ssm get-parameters --names '/mbis/dev/excluded_mbisids'  --with-decryption | jq -r '.Parameters[]' | jq -r '.Value')
   export ADMIN_USERS_BASE64=$(aws  ssm get-parameters --names '/mbis/dev/admin_users'  --with-decryption | jq -r '.Parameters[]' | jq -r '.Value')
-  # CREDENTIALS=$(aws  ssm get-parameters --names '/mbis/dev/credentials'  --with-decryption | jq -r '.Parameters[]' | jq -r '.Value')
+  export CREDENTIALS_BASE64=$(aws  ssm get-parameters --names '/mbis/dev/credentials'  --with-decryption | jq -r '.Parameters[]' | jq -r '.Value')
   export PUBLIC_KEY_BASE64=$(aws  ssm get-parameters --names '/mbis/dev/public_key'  --with-decryption | jq -r '.Parameters[]' | jq -r '.Value')
 
   export STACK=live
@@ -186,6 +186,7 @@ fi
 function decode64 {
   if [ -n "$1" -a -n "$2" ]; then
     echo "$1" | base64 --decode > "$2"
+    echo "decode64: updated file $2"
   fi
 }
 
