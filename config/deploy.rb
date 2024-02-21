@@ -7,9 +7,11 @@ require 'delayed/recipes'
 require 'resolv'
 
 set :application, 'mbis_front'
-set :repository, 'https://github.com/NHSDigital/data_management_system.git'
-# For AWS deployments, instead use:
-# set :repository, 'file:///home/mbis_app/data_management_system/.git'
+# AWS circular deployments can override the repository by setting environment variable
+# NDR_DEPLOY_REPOSITORY, e.g. 'file:///home/mbis_app/data_management_system/.git'
+# This allows local deployment from a git working copy snapshot.
+set :repository, ENV.fetch('CAP_DEPLOY_REPOSITORY',
+                           'https://github.com/NHSDigital/data_management_system.git')
 set :scm, :git
 ssh_options[:compression] = 'none' # Avoid pointless zlib warning
 
@@ -126,6 +128,32 @@ namespace :delayed_job do
 end
 
 namespace :app do
+  desc "Create start/stop scripts in the app user's $HOME directory"
+  task :create_sysadmin_scripts, except: { no_release: true } do
+    # TODO: Either make task ndr_dev_support:synchronise_sysadmin_scripts create these if
+    #       necessary, or move this method into ndr_dev_support gem
+    type    = fetch(:daemon_deployment) ? 'god' : 'server'
+    scripts = %W[start_#{type}.sh stop_#{type}_gracefully.sh]
+
+    touch_cmd, chmod_cmd =
+      if fetch(:out_of_bundle_gems_use_sudo, true)
+        ["sudo -i -n -u #{fetch(:application_user)} touch",
+         "sudo -i -n -u #{fetch(:application_user)} chmod 764"]
+      else
+        ['touch', 'chmod 764']
+      end
+    scripts.each do |script|
+      # source = File.join(release_path, 'script', "#{script}.sample")
+      dest = File.join(fetch(:application_home), script)
+
+      # Ensure the script exists, with the correct permissions (should be writeable
+      # by deployers, but only runnable by the application user, to prevent the wrong user
+      # attempting to start the processes.)
+      run "#{touch_cmd} #{dest}" # Ensure file exists
+      run "#{chmod_cmd} #{dest}" # Set file permissions
+    end
+  end
+
   desc <<-DESC
       [internal] Setup shared files for the just deployed release.
   DESC
@@ -145,6 +173,7 @@ namespace :app do
   end
 end
 
+after 'deploy:setup',                       'app:create_sysadmin_scripts'
 before 'ndr_dev_support:filesystem_tweaks', 'app:move_shared'
 
 # ==========================================[ DEPLOY ]==========================================

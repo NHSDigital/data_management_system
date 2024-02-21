@@ -15,7 +15,6 @@ application_users:
 
 other_users:
 
-
 fstab_mounts:
   - src: /dev/xvdb
     path: /home/mbis_app

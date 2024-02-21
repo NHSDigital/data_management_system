@@ -16,31 +16,73 @@ module Import
                                      sampletype
                                      referencetranscriptid].freeze
 
-            COLORECTAL_GENES_REGEX = /(?<colorectal>APC|
-                                                  BMPR1A|
-                                                  EPCAM|
-                                                  MLH1|
-                                                  MSH2|
-                                                  MSH6|
-                                                  MUTYH|
-                                                  GREM1|
-                                                  PMS2|
-                                                  POLD1|
-                                                  POLE|
-                                                  PTEN|
-                                                  SMAD4|
-                                                  STK11|
-                                                  NTHL1)/xi
+            COLORECTAL_GENES_REGEX = /(?<colorectal>ACD|
+                                      APC|
+                                      ATM|
+                                      BAP1|
+                                      BARD1|
+                                      BLM|
+                                      BMPR1A|
+                                      BRCA1|
+                                      BRCA2|
+                                      BRIP1|
+                                      CDH1|
+                                      CDK4|
+                                      CDKN2A|
+                                      CDKN2B|
+                                      CHEK2|
+                                      EPCAM|
+                                      FH|
+                                      FLCN|
+                                      GREM1|
+                                      KIT|
+                                      MEN1|
+                                      MET|
+                                      MLH1|
+                                      MRE11A|
+                                      MSH2|
+                                      MSH6|
+                                      MUTYH|
+                                      NBN|
+                                      NTHL1|
+                                      PALB2|
+                                      PDGFRA|
+                                      PMS2|
+                                      POLD1|
+                                      POLE|
+                                      POT1|
+                                      PTCH1|
+                                      PTEN|
+                                      RAD50|
+                                      RAD51C|
+                                      RAD51D|
+                                      RET|
+                                      RHOA|
+                                      RNF43|
+                                      SDHA|
+                                      SDHAF2|
+                                      SDHB|
+                                      SDHC|
+                                      SDHD|
+                                      SMAD4|
+                                      STK11|
+                                      TERF2IP|
+                                      TERT|
+                                      TP53|
+                                      VHL)/xi
 
             FULL_SCREEN_REGEX = /(?<fullscreen>Panel|
-            full\sgene\sscreen|
-            full.+screen|
-            full.+screem|
-            fullscreen|
-            BRCA_Multiplicom|
-            HCS|
-            BRCA1|
-            BRCA2)/xi
+                                full\sgene|
+                                full\s?screen|
+                                full\sscreem|
+                                exons\s8-13|
+                                exons\s9-14|
+                                APC\sCNV\sanalysis|
+                                HCS|
+                                CNV.*only|
+                                CNV.*analysis|
+                                SNV.*only|
+                                whole\sgene\sscreen)/xi
             # rubocop:disable Lint/MixedRegexpCaptureTypes
             PROTEIN_REGEX            = /p\.\[(?<impact>(.*?))\]|p\..+/i
             CDNA_REGEX               = /c\.\[?(?<cdna>[-0-9?.>_+a-z]+)\]?/i

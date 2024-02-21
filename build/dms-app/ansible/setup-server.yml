@@ -119,19 +119,19 @@
       with_items:
         - "{{ application_users }}"
 
-    - name: Create File System
-      community.general.filesystem:
-        fstype: xfs
-        dev: /dev/xvdb
+    # - name: Create File System
+    #   community.general.filesystem:
+    #     fstype: xfs
+    #     dev: /dev/xvdb
 
-    - name: Mount File System
-      mount:
-        path: "{{ item.path }}"
-        src: "{{ item.src }}"
-        fstype: "{{ item.fstype }}"
-        state: mounted
-      with_items:
-        "{{ fstab_mounts }}"
+    # - name: Mount File System
+    #   mount:
+    #     path: "{{ item.path }}"
+    #     src: "{{ item.src }}"
+    #     fstype: "{{ item.fstype }}"
+    #     state: mounted
+    #   with_items:
+    #     "{{ fstab_mounts }}"
 
     - name: Make Group Permission
       become: true
@@ -153,6 +153,7 @@
 
     - name: Make .ssh folder
       become_user: mbis_app
+      become: true
       file:
         path: ~/tmp/.ssh
         state: directory
@@ -162,6 +163,7 @@
 
     - name: generate SSH key for mbis_app directory
       become_user: mbis_app
+      become: true
       openssh_keypair:
         path: ~/tmp/.ssh/id_rsa
         type: rsa
@@ -169,8 +171,9 @@
         state: present
         force: no
 
-    - name: create authorized_keys file to mbis_app directory
+    - name: create .ssh directory
       become_user: mbis_app
+      become: true
       file:
         path: ~/.ssh
         state: directory
@@ -180,6 +183,7 @@
 
     - name: create authorized_keys file to mbis_app directory
       become_user: mbis_app
+      become: true
       file:
         path: ~/.ssh/authorized_keys
         state: touch
@@ -189,10 +193,12 @@
 
     - name:  add mbis_app to authorized_key
       become_user: mbis_app
+      become: true
       shell: cat ~/tmp/.ssh/id_rsa.pub > ~/.ssh/authorized_keys
 
     - name: copy .id_rsa keys to .ssh directory
       become_user: mbis_app
+      become: true
       copy:
         src:  ~/tmp/.ssh/id_rsa
         dest:  ~/.ssh/id_rsa
@@ -203,6 +209,7 @@
 
     - name: Delete content & directory
       become_user: mbis_app
+      become: true
       file:
         state: absent
         path: /home/mbis_app/data_management_system
@@ -259,16 +266,18 @@
             chdir: /home/mbis_app/data_management_system/
           shell: source /home/mbis_app/.bash_profile && /home/mbis_app/.rbenv/shims/bundle check
 
-        - name: Copy config.deploy.rb.j2 to config/deploy.rb
-          template:
-            src: config.deploy.rb.j2
-            dest: /home/mbis_app/data_management_system/config/deploy.rb
-            owner: mbis_app
-            group: mbis_app
-
         - name: Get Current branch
           shell: |
+            git config --global init.defaultBranch main
+            git config --global user.email "you@example.com"
+            git config --global user.name "Your Name"
+            git init
+            rm -rf config/.git/
+            git add * .[^.]*
+            git commit -qm 'Commit CodeDeploy checkout'
             git rev-parse --abbrev-ref HEAD
+
+            # TODO: if config/.git exists, need to find the way to delete 
           args:
             chdir: /home/mbis_app/data_management_system
           register: current_branch
@@ -299,13 +308,13 @@
           args:
             chdir: /home/mbis_app/data_management_system
           shell: |
-            source /home/mbis_app/.bash_profile && /home/mbis_app/.rbenv/shims/bundle exec cap localhost_live deploy:setup
+            source /home/mbis_app/.bash_profile && CAP_DEPLOY_REPOSITORY='file:///home/mbis_app/data_management_system/.git' /home/mbis_app/.rbenv/shims/bundle exec cap localhost_live deploy:setup
 
         - name: Bundle exec cap deploy:cold
           args:
             chdir: /home/mbis_app/data_management_system
           shell: |
-            source /home/mbis_app/.bash_profile && /home/mbis_app/.rbenv/shims/bundle  exec cap localhost_live deploy:cold
+            source /home/mbis_app/.bash_profile && CAP_DEPLOY_REPOSITORY='file:///home/mbis_app/data_management_system/.git' /home/mbis_app/.rbenv/shims/bundle exec cap localhost_live deploy:cold
           register: deploy_cold
           ignore_errors: true
 

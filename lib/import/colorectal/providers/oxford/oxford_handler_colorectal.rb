@@ -7,6 +7,8 @@ module Import
           include Import::Helpers::Colorectal::Providers::Rth::Constants
 
           def process_fields(record)
+            return unless colorectal_file?
+
             genocolorectal = Import::Colorectal::Core::Genocolorectal.new(record)
             genocolorectal.add_passthrough_fields(record.mapped_fields,
                                                   record.raw_fields,
@@ -20,6 +22,31 @@ module Import
             add_organisationcode_testresult(genocolorectal)
             res = process_records(genocolorectal, record)
             res.each { |cur_genotype| @persister.integrate_and_store(cur_genotype) }
+          end
+
+          def colorectal_file?
+            file_name = @batch.original_filename
+            file_path = File.dirname(file_name)
+            file_path_array = file_name.split('/')
+            pseudo_file = file_path_array[file_path_array.length - 1]
+            pseudo_filename = pseudo_file.sub(/.xls[x]?.pseudo/, '')
+            directory = Rails.root.join("private/pseudonymised_data/#{file_path}").to_s
+            csv_files = Dir.glob("#{directory}/*#{pseudo_filename}*_pretty.csv")
+
+            raise "Pretty CSV file not able to map for #{pseudo_file}" if csv_files.empty?
+
+            csv = CSV.read(csv_files[0], headers: true)
+            brca1_count, apc_count, mlh1_count = get_csv_counts(csv)
+
+            mlh1_count + apc_count > brca1_count
+          end
+
+          def get_csv_counts(csv)
+            gene_tally  = csv['mapped:gene'].tally
+            brca1_count = gene_tally['7'].to_i
+            apc_count = gene_tally['358'].to_i
+            mlh1_count = gene_tally['2744'].to_i
+            [brca1_count, apc_count, mlh1_count]
           end
 
           def add_organisationcode_testresult(genocolorectal)
@@ -94,7 +121,7 @@ module Import
           end
 
           def targeted?(scopecolumn)
-            scopecolumn.match(/targeted/i) || scopecolumn == 'RD Proband Confirmation'
+            scopecolumn.match(/targeted|Familial/i)
           end
 
           def full_screen?(scopecolumn)
