@@ -29,8 +29,8 @@ module Import
           TEST_TYPE_MAP = { 'affected' => :diagnostic,
                             'unaffected' => :predictive }.freeze
           # rubocop:disable Lint/MixedRegexpCaptureTypes
-          CDNA_REGEX_PROT = /c\.(?<cdna>.+)(?=(?<separtors>_|;.)p\.(?<impact>.+))/i.freeze
-          CDNA_REGEX_NOPROT = /c\.(?<cdna>.+)/i.freeze
+          CDNA_REGEX_PROT = /c\.(?<cdna>.+)(?=(?<separtors>_|;.)p\.(?<impact>.+))/i
+          CDNA_REGEX_NOPROT = /c\.(?<cdna>.+)/i
           DEL_DUP_REGEX = /(?<deldup>Deletion|Duplication)\s(ex|exon)s?\s?
                            (?<exon>\d+([a-z -]+\d+)?)|
                            (exon|ex)s?\s?(?<exon>\d+([a-z -]+\d+)?)\s?
@@ -88,7 +88,6 @@ module Import
               @logger.debug 'NO VARIANT PATHCLASS DETECTED'
               return
             end
-  
 
             varpathclass = record.raw_fields['variantpathclass'].downcase.strip
             # unless record.raw_fields['variantpathclass'].nil?
@@ -103,13 +102,8 @@ module Import
               @logger.debug 'UNABLE TO DETERMINE TESTSTATUS'
               return
             end
-            nonpathvarclass = nil
             teststatus = record.raw_fields['teststatus']
-            if record.raw_fields['variantpathclass'].nil?
-              nonpathvarclass = nil
-            else
-              nonpathvarclass = record.raw_fields['variantpathclass'].downcase.strip
-            end
+            nonpathvarclass = record.raw_fields['variantpathclass']&.downcase&.strip
             # unless record.raw_fields['teststatus'].nil?
             process_assign_teststatus(genotype, teststatus, nonpathvarclass)
           end
@@ -195,8 +189,8 @@ module Import
           end
 
           def non_pathogenic_variant_test?(teststatus, nonpathvarclass)
-            /non-pathogenic\svariant\sdetected/i.match(teststatus) || 
-            NON_PATH_VARIANT_CLASS[nonpathvarclass]
+            /non-pathogenic\svariant\sdetected/i.match(teststatus) ||
+              NON_PATH_VARIANT_CLASS[nonpathvarclass]
           end
         end
       end
