@@ -81,27 +81,202 @@ class StGeorgeTest < ActiveSupport::TestCase
     @handler.assign_test_scope(@genotype, fullscreen_record2)
     assert_equal 'Full screen BRCA1 and BRCA2', @genotype.attribute_map['genetictestscope']
 
-
   end
+
+
+  test 'assign_test_status_full_screen' do
+
+    full_screen_test_status = build_raw_record('pseudo_id1' => 'bob')
+    full_screen_test_status.raw_fields['variant dna'] = 'All genes have Failed'
+    @handler.assign_test_status_full_screen(full_screen_test_status, 'BRCA1', {'variant dna': ['BRCA1']}, @genotype, 'variant dna')
+    assert_equal 9, @genotype.attribute_map['teststatus']
+
+    full_screen_test_status = build_raw_record('pseudo_id1' => 'bob')
+    full_screen_test_status.raw_fields['variant dna'] = 'N'
+    @handler.assign_test_status_full_screen(full_screen_test_status, 'BRCA1', {'variant dna': ['BRCA1']}, @genotype, 'variant dna')
+    assert_equal 1, @genotype.attribute_map['teststatus']
+
+
+    full_screen_test_status = build_raw_record('pseudo_id1' => 'bob')
+    full_screen_test_status.raw_fields['variant dna'] = 'value'
+    full_screen_test_status.raw_fields['gene'] = 'BRCA1'
+    full_screen_test_status.raw_fields['gene(other)'] = nil
+    @handler.assign_test_status_full_screen(full_screen_test_status, 'BRCA1', {'gene': ['BRCA1'], 'gene(other)':[], 'variant dna': ['BRCA1']}, @genotype, 'gene')
+    assert_equal 2, @genotype.attribute_map['teststatus']
+
+    full_screen_test_status = build_raw_record('pseudo_id1' => 'bob')
+    full_screen_test_status.raw_fields['variant dna'] = 'value'
+    full_screen_test_status.raw_fields['gene'] = 'BRCA1'
+    full_screen_test_status.raw_fields['gene(other)'] = nil
+    @handler.assign_test_status_full_screen(full_screen_test_status, 'BRCA1', {'gene': ['BRCA1'], 'gene(other)':[], 'variant dna': ['BRCA1']}, @genotype, 'variant dna')
+    assert_equal 1, @genotype.attribute_map['teststatus']
+
+    #[Is not '*Fail*', 'N' or null] AND [raw:gene is not null] AND [raw:gene (other) is not null]
+    full_screen_test_status = build_raw_record('pseudo_id1' => 'bob')
+    full_screen_test_status.raw_fields['variant dna'] = 'BRCA1'
+    full_screen_test_status.raw_fields['gene'] = 'CHECK2'
+    full_screen_test_status.raw_fields['gene(other)'] = 'BRCA2'
+    @handler.assign_test_status_full_screen(full_screen_test_status, 'CHECK2', {'gene': ['CHECK2'], 'gene(other)':['BRCA2'], 'variant dna': ['BRCA1']}, @genotype, 'gene')
+    assert_equal 2, @genotype.attribute_map['teststatus']
+
+    full_screen_test_status = build_raw_record('pseudo_id1' => 'bob')
+    full_screen_test_status.raw_fields['variant dna'] = 'BRCA1'
+    full_screen_test_status.raw_fields['gene'] = 'CHECK2'
+    full_screen_test_status.raw_fields['gene(other)'] = 'BRCA1 BRCA2 FAIL'
+    @handler.assign_test_status_full_screen(full_screen_test_status, 'BRCA1', {'gene': ['CHECK2'], 'gene(other)':['BRCA1'], 'variant dna': ['BRCA1']}, @genotype, 'gene(other)')
+    assert_equal 1, @genotype.attribute_map['teststatus']
+
+    full_screen_test_status = build_raw_record('pseudo_id1' => 'bob')
+    full_screen_test_status.raw_fields['variant dna'] = 'BRCA1'
+    full_screen_test_status.raw_fields['gene'] = 'CHECK2'
+    full_screen_test_status.raw_fields['gene(other)'] = 'BRCA1 BRCA2 FAIL'
+    @handler.assign_test_status_full_screen(full_screen_test_status, 'BRCA1', {'gene': ['CHECK2'], 'gene(other)':['BRCA1'], 'variant dna': ['BRCA1']}, @genotype, 'gene(other)')
+    assert_equal 1, @genotype.attribute_map['teststatus']
+
+    full_screen_test_status = build_raw_record('pseudo_id1' => 'bob')
+    full_screen_test_status.raw_fields['variant dna'] = 'BRCA1'
+    full_screen_test_status.raw_fields['gene'] = 'CHECK2'
+    full_screen_test_status.raw_fields['gene(other)'] = 'BRCA1 BRCA2 FAIL'
+    @handler.assign_test_status_full_screen(full_screen_test_status, 'BRCA2', {'gene': ['CHECK2'], 'gene(other)':['BRCA1'], 'variant dna': ['BRCA1']}, @genotype, 'gene(other)')
+    assert_equal 9, @genotype.attribute_map['teststatus']
+
+    full_screen_test_status = build_raw_record('pseudo_id1' => 'bob')
+    full_screen_test_status.raw_fields['variant dna'] = 'BRCA1'
+    full_screen_test_status.raw_fields['gene'] = 'CHECK2'
+    full_screen_test_status.raw_fields['gene(other)'] = 'BRCA1/2 FAIL'
+    @handler.assign_test_status_full_screen(full_screen_test_status, 'BRCA1', {'gene': ['CHECK2'], 'gene(other)':['BRCA1'], 'variant dna': ['BRCA1']}, @genotype, 'gene(other)')
+    assert_equal 9, @genotype.attribute_map['teststatus']
+
+    full_screen_test_status = build_raw_record('pseudo_id1' => 'bob')
+    full_screen_test_status.raw_fields['variant dna'] = 'BRCA1'
+    full_screen_test_status.raw_fields['gene'] = 'CHECK2'
+    full_screen_test_status.raw_fields['gene(other)'] = 'BRCA1/2 FAIL'
+    @handler.assign_test_status_full_screen(full_screen_test_status, 'BRCA2', {'gene': ['CHECK2'], 'gene(other)':['BRCA1'], 'variant dna': ['BRCA1']}, @genotype, 'gene(other)')
+    assert_equal 9, @genotype.attribute_map['teststatus']
+
+
+
+    full_screen_test_status = build_raw_record('pseudo_id1' => 'bob')
+    full_screen_test_status.raw_fields['variant dna'] = ''
+    full_screen_test_status.raw_fields['gene'] = nil
+    full_screen_test_status.raw_fields['gene(other)'] = 'BRCA1 BRCA2'
+    @handler.assign_test_status_full_screen(full_screen_test_status, 'BRCA1', {'gene': ['CHECK2'], 'gene(other)':['BRCA1', 'BRCA2'], 'variant dna': ['BRCA1']}, @genotype, 'gene(other)')
+    assert_equal 1, @genotype.attribute_map['teststatus']
+
+    full_screen_test_status = build_raw_record('pseudo_id1' => 'bob')
+    full_screen_test_status.raw_fields['variant dna'] = ''
+    full_screen_test_status.raw_fields['gene'] = nil
+    full_screen_test_status.raw_fields['gene(other)'] = 'BRCA1 BRCA2'
+    @handler.assign_test_status_full_screen(full_screen_test_status, 'BRCA1', {'gene': ['CHECK2'], 'gene(other)':['BRCA1', 'BRCA2'], 'variant dna': ['BRCA1']}, @genotype, 'variant dna')
+    assert_equal 2, @genotype.attribute_map['teststatus']
+
+    full_screen_test_status = build_raw_record('pseudo_id1' => 'bob')
+    full_screen_test_status.raw_fields['variant dna'] = ''
+    full_screen_test_status.raw_fields['gene'] = nil
+    full_screen_test_status.raw_fields['gene(other)'] = 'BRCA1'
+    @handler.assign_test_status_full_screen(full_screen_test_status, 'BRCA1', {'gene': ['CHECK2'], 'gene(other)':['BRCA1'], 'variant dna': ['BRCA1']}, @genotype, 'gene(other)')
+    assert_equal 2, @genotype.attribute_map['teststatus']
+
+    full_screen_test_status = build_raw_record('pseudo_id1' => 'bob')
+    full_screen_test_status.raw_fields['variant dna'] = ''
+    full_screen_test_status.raw_fields['gene'] = nil
+    full_screen_test_status.raw_fields['gene(other)'] = 'BRCA1'
+    @handler.assign_test_status_full_screen(full_screen_test_status, 'BRCA1', {'gene': ['CHECK2'], 'gene(other)':['BRCA1'], 'variant dna': ['BRCA1']}, @genotype, 'variant dna')
+    assert_equal 1, @genotype.attribute_map['teststatus']
+
+    full_screen_test_status = build_raw_record('pseudo_id1' => 'bob')
+    full_screen_test_status.raw_fields['variant dna'] = nil
+    full_screen_test_status.raw_fields['gene'] = nil
+    full_screen_test_status.raw_fields['gene(other)'] = 'BRCA1/2 FAIL'
+    @handler.assign_test_status_full_screen(full_screen_test_status, 'BRCA2', {'gene': ['CHECK2'], 'gene(other)':['BRCA1'], 'variant dna': ['BRCA1']}, @genotype, 'gene(other)')
+    assert_equal 9, @genotype.attribute_map['teststatus']
+
+    full_screen_test_status = build_raw_record('pseudo_id1' => 'bob')
+    full_screen_test_status.raw_fields['variant dna'] = nil
+    full_screen_test_status.raw_fields['gene'] = nil
+    full_screen_test_status.raw_fields['gene(other)'] = 'ATM BRCA1/2 FAIL'
+    @handler.assign_test_status_full_screen(full_screen_test_status, 'ATM', {'gene': ['CHECK2'], 'gene(other)':['ATM', 'BRCA2', 'BRCA1'], 'variant dna': ['BRCA1']}, @genotype, 'gene(other)')
+    assert_equal 1, @genotype.attribute_map['teststatus']
+
+    full_screen_test_status = build_raw_record('pseudo_id1' => 'bob')
+    full_screen_test_status.raw_fields['variant dna'] = nil
+    full_screen_test_status.raw_fields['gene'] = nil
+    full_screen_test_status.raw_fields['gene(other)'] = 'ATM BRCA1/2 FAIL'
+    @handler.assign_test_status_full_screen(full_screen_test_status, 'BRCA1', {'gene': ['CHECK2'], 'gene(other)':['ATM', 'BRCA2', 'BRCA1'], 'variant dna': ['BRCA1']}, @genotype, 'gene(other)')
+    assert_equal 9, @genotype.attribute_map['teststatus']
+
+    full_screen_test_status = build_raw_record('pseudo_id1' => 'bob')
+    full_screen_test_status.raw_fields['variant dna'] = nil
+    full_screen_test_status.raw_fields['gene'] = nil
+    full_screen_test_status.raw_fields['gene(other)'] = 'FAIL'
+    @handler.assign_test_status_full_screen(full_screen_test_status, 'BRCA2', {'gene': ['CHECK2'], 'gene(other)':['BRCA1'], 'variant dna': ['BRCA1']}, @genotype, 'gene')
+    assert_equal 10, @genotype.attribute_map['teststatus']
+
+    full_screen_test_status = build_raw_record('pseudo_id1' => 'bob')
+    full_screen_test_status.raw_fields['variant dna'] = nil
+    full_screen_test_status.raw_fields['gene'] = nil
+    full_screen_test_status.raw_fields['gene(other)'] = 'FAIL'
+    @handler.assign_test_status_full_screen(full_screen_test_status, 'BRCA2', {'gene': ['CHECK2'], 'gene(other)':['BRCA1'], 'variant dna': ['BRCA1']}, @genotype, '')
+    assert_equal 1, @genotype.attribute_map['teststatus']
+
+
+    full_screen_test_status = build_raw_record('pseudo_id1' => 'bob')
+    full_screen_test_status.raw_fields['variant dna'] = nil
+    full_screen_test_status.raw_fields['gene'] = nil
+    full_screen_test_status.raw_fields['gene(other)'] = 'c.1234 ATM BRCA1/2'
+    @handler.assign_test_status_full_screen(full_screen_test_status, 'ATM', {'gene': ['CHECK2'], 'gene(other)':['ATM', 'BRCA2', 'BRCA1'], 'variant dna': ['BRCA1']}, @genotype, 'gene(other)')
+    assert_equal 2, @genotype.attribute_map['teststatus']
+
+    full_screen_test_status = build_raw_record('pseudo_id1' => 'bob')
+    full_screen_test_status.raw_fields['variant dna'] = nil
+    full_screen_test_status.raw_fields['gene'] = nil
+    full_screen_test_status.raw_fields['gene(other)'] = 'c.1234 ATM BRCA1/2'
+    @handler.assign_test_status_full_screen(full_screen_test_status, 'ATM', {'gene': ['CHECK2'], 'gene(other)':['ATM', 'BRCA2', 'BRCA1'], 'variant dna': ['BRCA1']}, @genotype, '')
+    assert_equal 1, @genotype.attribute_map['teststatus']
+
+
+    full_screen_test_status = build_raw_record('pseudo_id1' => 'bob')
+    full_screen_test_status.raw_fields['variant dna'] = nil
+    full_screen_test_status.raw_fields['gene'] = nil
+    full_screen_test_status.raw_fields['gene(other)'] = 'BRCA1 Class V, ATM N'
+    @handler.assign_test_status_full_screen(full_screen_test_status, 'ATM', {'gene': ['CHECK2'], 'gene(other)':['ATM', 'BRCA1'], 'variant dna': ['BRCA1']}, @genotype, '')
+    assert_equal 1, @genotype.attribute_map['teststatus']
+
+    full_screen_test_status = build_raw_record('pseudo_id1' => 'bob')
+    full_screen_test_status.raw_fields['variant dna'] = nil
+    full_screen_test_status.raw_fields['gene'] = nil
+    full_screen_test_status.raw_fields['gene(other)'] = 'BRCA1 Class V, ATM N'
+    @handler.assign_test_status_full_screen(full_screen_test_status, 'BRCA1', {'gene': ['CHECK2'], 'gene(other)':['ATM', 'BRCA1'], 'variant dna': ['BRCA1']}, @genotype, '')
+    assert_equal 2, @genotype.attribute_map['teststatus']
+
+    full_screen_test_status = build_raw_record('pseudo_id1' => 'bob')
+    full_screen_test_status.raw_fields['variant dna'] = nil
+    full_screen_test_status.raw_fields['gene'] = nil
+    full_screen_test_status.raw_fields['gene(other)'] = 'unknown'
+    @handler.assign_test_status_full_screen(full_screen_test_status, 'BRCA1', {'gene': ['CHECK2'], 'gene(other)':['ATM', 'BRCA1'], 'variant dna': ['BRCA1']}, @genotype, '')
+    assert_equal 4, @genotype.attribute_map['teststatus']
+  end
+
+
 
   test 'process_R208' do
     r208_first_panel = build_raw_record('pseudo_id1' => 'bob')
     r208_first_panel.raw_fields['test/panel'] = 'R208'
     r208_first_panel.raw_fields['authoriseddate'] = '09/07/2022'
     genes=@handler.process_R208(@genotype, r208_first_panel, [])
-    assert_equal [['BRCA1', 'BRCA2']], genes
+    assert_equal ['BRCA1', 'BRCA2'], genes
 
     r208_second_panel = build_raw_record('pseudo_id1' => 'bob')
     r208_second_panel.raw_fields['test/panel'] = 'R208'
     r208_second_panel.raw_fields['authoriseddate'] = '01/08/2022'
     genes=@handler.process_R208(@genotype, r208_second_panel, [])
-    assert_equal [['BRCA1', 'BRCA2', 'CHEK2', 'PALB2', 'ATM']], genes
+    assert_equal ['BRCA1', 'BRCA2', 'CHEK2', 'PALB2', 'ATM'], genes
 
     r208_third_panel = build_raw_record('pseudo_id1' => 'bob')
     r208_third_panel.raw_fields['test/panel'] = 'R208'
     r208_third_panel.raw_fields['authoriseddate'] = '01/01/2023'
     genes=@handler.process_R208(@genotype, r208_third_panel, [])
-    assert_equal [[ 'BRCA1', 'BRCA2', 'CHEK2', 'PALB2', 'ATM', 'RAD51C', 'RAD51D']], genes
+    assert_equal [ 'BRCA1', 'BRCA2', 'CHEK2', 'PALB2', 'ATM', 'RAD51C', 'RAD51D'], genes
 
 
   end

@@ -41,15 +41,20 @@ module Import
                             'R208+C' => ['BRCA1', 'BRCA2', 'CHEK2', 'PALB2'],
                             }.freeze
 
+
+            BRCA_GENE_REGEX=/ATM|ATM-1|BRCA1\/2|BRCA1\+2|BRCA1|BR1|BRCA1\/2|BRCA2|BR2|BRIP1|CHEK2
+                            |CHECK2|EPCAM|MLH1|MSH2|MSH6|PALB2|PALB1|PLAB2|PMS2|RAD51C|RAD51D|TP53/ix
+
+
             BRCA_GENE_MAP={
-                        'ATM'=>['ATM'],
-                        'ATM-1'=>['ATM'],
-                        'BRCA1'=>['BRCA1'],
-                        'BR1'=>['BRCA1'],
-                        'BRCA1/2'=>['BRCA1', 'BRCA2'],
-                        'BRCA1+2'=>['BRCA1', 'BRCA2'],
-                        'BRCA2'=>['BRCA2'],
-                        'BR2'=>['BRCA2'],
+                        'ATM' => ['ATM'],
+                        'ATM-1' => ['ATM'],
+                        'BRCA1/2' => ['BRCA1', 'BRCA2'],
+                        'BRCA1+2' => ['BRCA1', 'BRCA2'],
+                        'BRCA1' => ['BRCA1'],
+                        'BR1' => ['BRCA1'],
+                        'BRCA2' => ['BRCA2'],
+                        'BR2' => ['BRCA2'],
                         'BRIP1'=>['BRIP1'],
                         'CHEK2'=>['CHEK2'],
                         'CHECK2'=>['CHEK2'],
