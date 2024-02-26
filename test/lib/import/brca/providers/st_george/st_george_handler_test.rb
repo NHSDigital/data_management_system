@@ -281,6 +281,40 @@ class StGeorgeTest < ActiveSupport::TestCase
 
   end
 
+  test 'process_genes_targeted' do
+    targeted = build_raw_record('pseudo_id1' => 'bob')
+    targeted.raw_fields['gene']="BRCA1"
+    targeted.raw_fields['gene(other)']="unknown"
+    @handler.process_genes_targeted(@genotype, targeted)
+    assert_equal 7, @genotype.attribute_map['gene']
+
+  end
+
+
+  test 'handle_test_status_full_screen' do
+    targeted = build_raw_record('pseudo_id1' => 'bob')
+    targeted.raw_fields['gene']="BRCA1"
+    targeted.raw_fields['gene(other)']="unknown"
+    @handler.handle_test_status_full_screen(targeted, @genotype, {'gene': ["BRCA1"], 'gene(other)': [], 'variant dna': [], 'test/panel':[] })
+    assert_equal 7, @genotype.attribute_map['gene']
+
+    targeted = build_raw_record('pseudo_id1' => 'bob')
+    targeted.raw_fields['gene']="BRCA1"
+    targeted.raw_fields['gene(other)']="unknown"
+    @handler.handle_test_status_full_screen(targeted, @genotype, {"gene"=>["BRCA1"], "gene(other)"=>[]})
+    assert_equal 7, @genotype.attribute_map['gene']
+  end
+
+  test 'process_genes_full_screen' do
+    targeted = build_raw_record('pseudo_id1' => 'bob')
+    targeted.raw_fields['gene']="BRCA1"
+    targeted.raw_fields['gene(other)']="unknown"
+    @handler.process_genes_full_screen(@genotype, targeted)
+    assert_equal 7, @genotype.attribute_map['gene']
+  end
+
+
+
 
   def clinical_json
     {}.to_json
