@@ -16,15 +16,17 @@ module Import
                                             record.raw_fields,
                                             PASS_THROUGH_FIELDS)
             assign_test_type(genotype,record)
-            assign_test_scope(genotype, record)
-
-            res = process_variants_from_record(genotype, record)
-            res.each { |cur_genotype| @persister.integrate_and_store(cur_genotype) }
+            genotypes=assign_test_scope(genotype, record)
+            genotypes.each do |genotype|
+              @persister.integrate_and_store(genotype)
+            end
           end
 
 
           def new_format_file?
-              #TODO: FIlename needs to contain HBOC
+            file_name = @batch.original_filename
+            file_name.scan(%r{HBOC}i).size.positive?
+
           end
 
           def assign_test_type(genotype, record)
@@ -39,14 +41,32 @@ module Import
           end
 
 
-          def process_genes_targeted(genotype, record, genes)
+          def process_genes_targeted(genotype, record)
             genotypes=[]
-            genes.append(BRCA_GENE_MAP[record.raw_fields['gene']])
-            genes.append(BRCA_GENE_MAP[record.raw_fields['gene(other)']])
+            columns=['gene', 'gene(other)']
+            genes=[]
+            columns.each do |column|
+              gene_list= record.raw_fields[column]&.scan(BRCA_GENE_REGEX)
+              if gene_list!=nil
+                gene_list.each do |gene|
+                  gene=BRCA_GENE_MAP[gene]
+                   genes.append(gene)
+                end
+              end
+            end
+
+            counter=0
             genes.each do |gene|
-              genotype_dup = genotype.dup
-              genotype_dup.add_gene(gene)
-              genotypes.append(genotype_dup)
+              if gene!=nil 
+                gene.each do |gene_value|
+                  if counter>0
+                    genotype = genotype.dup
+                  end
+                  genotype.add_gene(gene_value)
+                  genotypes.append(genotype)
+                  counter=counter+1
+                end
+              end
             end
             genotypes
           end
@@ -56,35 +76,51 @@ module Import
             #TODO handle BRCA1 so record isn't made twice
             genotypes=[]
             genes_dict={}
-            columns=['gene', 'gene(other)', 'variant dna']
+            columns=['gene', 'gene(other)', 'variant dna', 'test/panel']
             columns.each do |column|
               genes=[]
-              gene_list= BRCA_GENE_REGEX.match(record.mapped_fields['gene'])
+              gene_list=[]
+              gene_list= record.raw_fields[column]&.scan(BRCA_GENE_REGEX)
               if column == 'test/panel'
-                genes_list.append(process_R208(genotype, record, genes))
+                r208= record.raw_fields[column]&.scan(/R208/)
+                  if r208!=nil
+                    gene_list.append(process_R208(genotype, record, genes))
+                  end
               end
-              gene_list.each do |gene|
-                 gene=BRCA_GENE_MAP[gene]
-                 genes.append(gene)
+              if gene_list!=nil
+                gene_list.each do |gene|
+                   BRCA_GENE_MAP[gene].each do |gene|
+                    genes.append(gene)
+                   end
+                end
+                genes_dict[column]=genes
               end
-              genes_dict[column]=genes
             end
-            handle_test_status_full_screen(record, genotype, genes_dict)
-
+            genotypes=handle_test_status_full_screen(record, genotype, genes_dict)
+          genotypes
           end
 
 
           def handle_test_status_full_screen(record, genotype, genes)
-            genotypes[]
-            columns=['gene', 'gene(other)','variant dna', 'test/panel' ]
+            genotypes=[]
+            puts genes
+            columns=['gene', 'gene(other)', 'variant dna', 'test/panel' ]
+            counter=0
             columns.each do |column|
-              genes[column].each do|gene|
-                genotype_dup = genotype.dup
-                genotype_dup.add_gene(gene)
-                assign_test_status_full_screen(record, gene, genes, genotype_dup, column)
-                genotypes.append(genotype_dup)
+              puts column
+              genes[column]&.each do |gene|
+                puts gene
+                if counter>0
+                  genotype = genotype.dup
+                end
+
+                genotype.add_gene(gene)
+                assign_test_status_full_screen(record, gene, genes, genotype, column)
+                genotypes.append(genotype)
+                counter=counter+1
               end
             end
+            genotypes
           end 
 
           def assign_test_scope(genotype, record)
@@ -92,14 +128,17 @@ module Import
             if testscope == 'targeted'
               genotype.add_test_scope(:targeted_mutation)
               assign_test_status_targeted(genotype, record)
-              process_genes_targeted(genotype, record, [])
-              assign_test_status_targeted(genotype,record)
+              genotypes=process_genes_targeted(genotype, record)
+              genotypes.each do |genotype|
+                  assign_test_status_targeted(genotype,record)
+              end
             elsif testscope == 'fullscreen'
               genotype.add_test_scope(:full_screen)
-             # process_genes_full_screen(genotype, record)
+              genotypes=process_genes_full_screen(genotype, record)
             else
               genotype.add_test_scope(:no_genetictestscope)
             end
+            genotypes
           end
 
           def assign_test_status_full_screen(record, gene, genes, genotype, column)
@@ -135,13 +174,13 @@ module Import
                     end
                   end
                 end
-              elsif record.raw_fields['gene']==nil && ((genes[:'gene(other)']).nil? ||(genes[:'gene(other)']).length > 1)
+              elsif record.raw_fields['gene']==nil && ((genes['gene(other)']).nil? ||(genes['gene(other)']).length > 1)
                 if column=='variant dna'
                   genotype.add_status(2)
                 else 
                   genotype.add_status(1)
                 end
-              elsif record.raw_fields['gene']==nil && (genes[:'gene(other)']).length == 1 
+              elsif record.raw_fields['gene']==nil && (genes['gene(other)']).length == 1 
                 if column=='gene(other)'
                   genotype.add_status(2)
                 else 
@@ -221,19 +260,19 @@ module Import
 
 
           def assign_test_status_targeted(genotype, record)
-            if record.raw_fields['gene(other)'].match(/Fail/ix)
+            if record.raw_fields['gene(other)']!=nil && record.raw_fields['gene(other)'].scan(/Fail/ix).size.positive?
               genotype.add_status(9)
-            elsif record.raw_fields['gene(other)'].match(/het|del|dup|c\./ix)
+            elsif record.raw_fields['gene(other)']!=nil && record.raw_fields['gene(other)'].scan(/het|del|dup|c\./ix)
               genotype.add_status(2)
-            elsif record.raw_fields['variant dna'].match(/Fail|Wrong\samplicon\stested/ix)
+            elsif record.raw_fields['variant dna']!=nil &&record.raw_fields['variant dna'].match(/Fail|Wrong\samplicon\stested/ix)
               genotype.add_status(9)
-            elsif record.raw_fields['variant dna']=='N'
+            elsif record.raw_fields['variant dna']!=nil && record.raw_fields['variant dna']=='N'
               genotype.add_status(1)
-            elsif record.raw_fields['variant dna'].match(/het|del|dup|c\./ix)
+            elsif record.raw_fields['variant dna']!=nil && record.raw_fields['variant dna'].match(/het|del|dup|c\./ix)
               genotype.add_status(2)
-            elsif record.raw_fields['variant protein']=='N'
+            elsif record.raw_fields['variant protein']!=nil && record.raw_fields['variant protein']=='N'
               genotype.add_status(1)
-            elsif record.raw_fields['variant protein'].blank?
+            elsif record.raw_fields['variant protein'].nil?
               genotype.add_status(4)
             else
               #TODO ask for rule here  
