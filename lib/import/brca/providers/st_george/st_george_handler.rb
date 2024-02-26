@@ -103,13 +103,10 @@ module Import
 
           def handle_test_status_full_screen(record, genotype, genes)
             genotypes=[]
-            puts genes
             columns=['gene', 'gene(other)', 'variant dna', 'test/panel' ]
             counter=0
             columns.each do |column|
-              puts column
               genes[column]&.each do |gene|
-                puts gene
                 if counter>0
                   genotype = genotype.dup
                 end
@@ -141,6 +138,27 @@ module Import
             genotypes
           end
 
+          def match_fail(gene, record, genotype)
+            gene_list= record.raw_fields['gene(other)'].scan(BRCA_GENE_REGEX)
+            if gene_list.length>=1
+              gene_list.each do |gene_value|
+                mapped_gene_values=[]
+                mapped_gene_values.append(BRCA_GENE_MAP[gene_value])
+                mapped_gene_values[0]&.each do |value|
+                  if  (value==gene)
+                    if /#{gene_value}\s?\(?fail\)?/i.match(record.raw_fields['gene(other)'])
+                      genotype.add_status(9)
+                    else
+                      genotype.add_status(1)
+                    end
+                  end
+                end
+              end
+            return true
+            end
+          return false
+          end
+
           def assign_test_status_full_screen(record, gene, genes, genotype, column)
             # interrogate variant dna column
             if record.raw_fields['variant dna']!=nil
@@ -149,74 +167,26 @@ module Import
               elsif record.raw_fields['variant dna']=='N'
                 genotype.add_status(1)
               elsif record.raw_fields['gene']!=nil && record.raw_fields['gene(other)'].nil?
-                if column=='gene'
-                  genotype.add_status(2)
-                else  
-                  genotype.add_status(1)
-                end
+                update_status(2, 1, column, 'gene', genotype)
               elsif record.raw_fields['gene']!=nil && record.raw_fields['gene(other)']!=nil
                 if column=='gene'
                   genotype.add_status(2)
                 elsif column =='gene(other)'
-                  gene_values= record.raw_fields['gene(other)'].scan(BRCA_GENE_REGEX)
-                  gene_values.each do |gene_value|
-                    mapped_gene_values=[]
-                    mapped_gene_values.append(BRCA_GENE_MAP[gene_value])
-                    mapped_gene_values[0]&.each do |value|
-                      if  (value==gene)
-                      #need to deal with BRCA1+2 => its not working at this part
-                        if /#{gene_value}\s?\(?fail\)?/i.match(record.raw_fields['gene(other)'])
-                          genotype.add_status(9)
-                        else
-                          genotype.add_status(1)
-                        end
-                      end
-                    end
-                  end
+                 match_fail(gene, record, genotype)
                 end
-              elsif record.raw_fields['gene']==nil && ((genes['gene(other)']).nil? ||(genes['gene(other)']).length > 1)
-                if column=='variant dna'
-                  genotype.add_status(2)
-                else 
-                  genotype.add_status(1)
-                end
-              elsif record.raw_fields['gene']==nil && (genes['gene(other)']).length == 1 
-                if column=='gene(other)'
-                  genotype.add_status(2)
-                else 
-                  genotype.add_status(1)
-                end
+              elsif record.raw_fields['gene']==nil && ((genes[:'gene(other)']).nil? ||genes[:'gene(other)'].length > 1 )
+                update_status(2, 1, column, 'variant dna', genotype)
+              elsif record.raw_fields['gene']==nil && (genes[:'gene(other)']).length == 1 
+                update_status(2, 1, column, 'gene(other)', genotype)
               end
             #interrogate raw gene(other)
             elsif (/fail/i.match(record.raw_fields['gene(other)']) ).present?
-              gene_list= record.raw_fields['gene(other)'].scan(BRCA_GENE_REGEX)
-              if gene_list.length>=1
-                gene_list.each do |gene_value|
-                  mapped_gene_values=[]
-                  mapped_gene_values.append(BRCA_GENE_MAP[gene_value])
-                  mapped_gene_values[0]&.each do |value|
-                    if  (value==gene)
-                      if /#{gene_value}\s?\(?fail\)?/i.match(record.raw_fields['gene(other)'])
-                        genotype.add_status(9)
-                      else
-                        genotype.add_status(1)
-                      end
-                    end
-                  end
-                end
+              if match_fail(gene, record, genotype)
               else
-                if column=='gene'
-                    genotype.add_status(10)
-                else 
-                    genotype.add_status(1)
-                end
+                update_status(10, 1, column, 'gene', genotype)
               end
             elsif record.raw_fields['gene(other)'].match(/c\.|Ex*Del|Ex*Dup|Het\sDel*|Het\sDup*/ix)
-              if column=='gene(other)'
-                genotype.add_status(2)
-              else
-                genotype.add_status(1)  
-              end
+              update_status(2, 1, column, 'gene(other)', genotype)
             #TODO could this include brca1/2
             else 
               genotype.add_status(4)
@@ -236,6 +206,14 @@ module Import
                   end
                 end
               end
+            end
+          end
+
+          def update_status(status1, status2, column, column_name, genotype)
+            if column==column_name
+              genotype.add_status(status1)
+            else 
+              genotype.add_status(status2)
             end
           end
 
