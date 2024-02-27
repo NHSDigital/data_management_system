@@ -102,7 +102,7 @@ gem 'nokogiri', '~> 1.11'
 gem 'regexp-examples'
 
 gem 'jquery-rails'
-gem 'jquery-ui-rails'
+gem 'jquery-ui-rails', github: 'jquery-ui-rails/jquery-ui-rails', tag: 'v7.0.0'
 
 group :test do
   gem 'simplecov'
