@@ -18,8 +18,8 @@ module Import
                                             PASS_THROUGH_FIELDS)
             assign_test_type(genotype, record)
             genotypes = assign_test_scope(genotype, record)
-            genotypes.each do |genotype|
-              @persister.integrate_and_store(genotype)
+            genotypes.each do |single_genotype|
+              @persister.integrate_and_store(single_genotype)
             end
           end
 
@@ -58,7 +58,7 @@ module Import
               next if gene.nil?
 
               gene.each do |gene_value|
-                genotype = genotype.dup if counter > 0
+                genotype = genotype.dup if counter.positive?
                 genotype.add_gene(gene_value)
                 genotypes.append(genotype)
                 counter += 1
@@ -78,7 +78,7 @@ module Import
               gene_list = record.raw_fields[column]&.scan(BRCA_GENE_REGEX)
               if column == 'test/panel'
                 r208 = record.raw_fields[column]&.scan('R208')
-                gene_list.append(process_R208(genotype, record, genes)) unless r208.nil?
+                gene_list.append(process_r208(genotype, record, genes)) unless r208.nil?
               end
               next if gene_list.nil?
 
@@ -115,8 +115,8 @@ module Import
               genotype.add_test_scope(:targeted_mutation)
               assign_test_status_targeted(genotype, record)
               genotypes = process_genes_targeted(genotype, record)
-              genotypes.each do |genotype|
-                assign_test_status_targeted(genotype, record)
+              genotypes.each do |single_genotype|
+                assign_test_status_targeted(single_genotype, record)
               end
             elsif testscope == 'fullscreen'
               genotype.add_test_scope(:full_screen)
@@ -148,26 +148,30 @@ module Import
             false
           end
 
+          def interrogate_variant_dna_column(record, genotype, genes, column, gene)
+            if record.raw_fields['variant dna'].match(/Fail/ix)
+              genotype.add_status(9)
+            elsif record.raw_fields['variant dna'] == 'N'
+              genotype.add_status(1)
+            elsif !record.raw_fields['gene'].nil? && record.raw_fields['gene(other)'].nil?
+              update_status(2, 1, column, 'gene', genotype)
+            elsif !record.raw_fields['gene'].nil? && !record.raw_fields['gene(other)'].nil?
+              if column == 'gene'
+                genotype.add_status(2)
+              elsif column == 'gene(other)'
+                match_fail(gene, record, genotype)
+              end
+            elsif record.raw_fields['gene'].nil? && ((genes[:'gene(other)']).nil? || genes[:'gene(other)'].length > 1)
+              update_status(2, 1, column, 'variant dna', genotype)
+            elsif record.raw_fields['gene'].nil? && (genes[:'gene(other)']).length == 1
+              update_status(2, 1, column, 'gene(other)', genotype)
+            end
+          end
+
           def assign_test_status_full_screen(record, gene, genes, genotype, column)
             # interrogate variant dna column
-            if record.raw_fields['variant dna'] != nil
-              if record.raw_fields['variant dna'].match(/Fail/ix)
-                genotype.add_status(9)
-              elsif record.raw_fields['variant dna'] == 'N'
-                genotype.add_status(1)
-              elsif !record.raw_fields['gene'].nil? && record.raw_fields['gene(other)'].nil?
-                update_status(2, 1, column, 'gene', genotype)
-              elsif !record.raw_fields['gene'].nil? && !record.raw_fields['gene(other)'].nil?
-                if column == 'gene'
-                  genotype.add_status(2)
-                elsif column == 'gene(other)'
-                  match_fail(gene, record, genotype)
-                end
-              elsif record.raw_fields['gene'].nil? && ((genes[:'gene(other)']).nil? || genes[:'gene(other)'].length > 1)
-                update_status(2, 1, column, 'variant dna', genotype)
-              elsif record.raw_fields['gene'].nil? && (genes[:'gene(other)']).length == 1
-                update_status(2, 1, column, 'gene(other)', genotype)
-              end
+            if !record.raw_fields['variant dna'].nil?
+              interrogate_variant_dna_column(record, genotype, genes, column, gene)
             # interrogate raw gene(other)
             elsif /fail/i.match(record.raw_fields['gene(other)']).present?
               if match_fail(gene, record, genotype)
@@ -179,20 +183,24 @@ module Import
             # TODO: could this include brca1/2
             else
               genotype.add_status(4)
-              gene_list = record.raw_fields['gene(other)'].scan(BRCA_GENE_REGEX)
-              if gene_list.length > 1
-                gene_list.each do |gene1|
-                  gene_list.each do |gene2|
-                    next unless /#{gene1}\sClass\sV,\s#{gene2}\sN/i.match(record.raw_fields['gene(other)'])
+              gene_classv_gene_n_format(record, genotype, gene)
+            end
+          end
 
-                    gene1 = BRCA_GENE_MAP[gene1]
-                    gene2 = BRCA_GENE_MAP[gene2]
-                    if gene == gene1[0]
-                      genotype.add_status(2)
-                    elsif gene == gene2[0]
-                      genotype.add_status(1)
-                    end
-                  end
+          def gene_classv_gene_n_format(record, genotype, gene)
+            gene_list = record.raw_fields['gene(other)'].scan(BRCA_GENE_REGEX)
+            return unless gene_list.length > 1
+
+            gene_list.each do |gene1|
+              gene_list.each do |gene2|
+                next unless /#{gene1}\sClass\sV,\s#{gene2}\sN/i.match(record.raw_fields['gene(other)'])
+
+                gene1 = BRCA_GENE_MAP[gene1]
+                gene2 = BRCA_GENE_MAP[gene2]
+                if gene == gene1[0]
+                  genotype.add_status(2)
+                elsif gene == gene2[0]
+                  genotype.add_status(1)
                 end
               end
             end
@@ -206,18 +214,15 @@ module Import
             end
           end
 
-          def process_R208(_genotype, record, _genes)
+          def process_r208(_genotype, record, _genes)
             return unless record.raw_fields['test/panel'] == 'R208'
 
             date = DateTime.parse(record.raw_fields['authoriseddate'])
             if date < DateTime.parse('01/08/2022')
-              print('first_panel')
               r208_panel_genes = %w[BRCA1 BRCA2]
             elsif DateTime.parse('31/07/2022') < date && date < DateTime.parse('16/11/2022')
-              print('second panel')
               r208_panel_genes = %w[BRCA1 BRCA2 CHEK2 PALB2 ATM]
             elsif date > DateTime.parse('15/07/2022')
-              print('third_panel')
               r208_panel_genes = %w[BRCA1 BRCA2 CHEK2 PALB2 ATM RAD51C RAD51D]
             end
             r208_panel_genes
@@ -228,13 +233,13 @@ module Import
               genotype.add_status(9)
             elsif !record.raw_fields['gene(other)'].nil? && record.raw_fields['gene(other)'].scan(/het|del|dup|c\./ix)
               genotype.add_status(2)
-            elsif record.raw_fields['variant dna'] != nil && record.raw_fields['variant dna'].match(/Fail|Wrong\samplicon\stested/ix)
+            elsif !record.raw_fields['variant dna'].nil? && record.raw_fields['variant dna'].match(/Fail|Wrong\samplicon\stested/ix)
               genotype.add_status(9)
-            elsif record.raw_fields['variant dna'] != nil && record.raw_fields['variant dna'] == 'N'
+            elsif !record.raw_fields['variant dna'].nil? && record.raw_fields['variant dna'] == 'N'
               genotype.add_status(1)
-            elsif record.raw_fields['variant dna'] != nil && record.raw_fields['variant dna'].match(/het|del|dup|c\./ix)
+            elsif !record.raw_fields['variant dna'].nil? && record.raw_fields['variant dna'].match(/het|del|dup|c\./ix)
               genotype.add_status(2)
-            elsif record.raw_fields['variant protein'] != nil && record.raw_fields['variant protein'] == 'N'
+            elsif !record.raw_fields['variant protein'].nil? && record.raw_fields['variant protein'] == 'N'
               genotype.add_status(1)
             elsif record.raw_fields['variant protein'].nil?
               genotype.add_status(4)
