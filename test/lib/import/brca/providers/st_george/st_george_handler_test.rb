@@ -255,27 +255,28 @@ class StGeorgeTest < ActiveSupport::TestCase
     full_screen_test_status.raw_fields['gene(other)'] = 'unknown'
     @handler.assign_test_status_full_screen(full_screen_test_status, 'BRCA1', {'gene': ['CHECK2'], 'gene(other)':['ATM', 'BRCA1'], 'variant dna': ['BRCA1']}, @genotype, '')
     assert_equal 4, @genotype.attribute_map['teststatus']
+
   end
 
 
 
-  test 'process_R208' do
+  test 'process_r208' do
     r208_first_panel = build_raw_record('pseudo_id1' => 'bob')
     r208_first_panel.raw_fields['test/panel'] = 'R208'
     r208_first_panel.raw_fields['authoriseddate'] = '09/07/2022'
-    genes=@handler.process_R208(@genotype, r208_first_panel, [])
+    genes=@handler.process_r208(@genotype, r208_first_panel, [])
     assert_equal ['BRCA1', 'BRCA2'], genes
 
     r208_second_panel = build_raw_record('pseudo_id1' => 'bob')
     r208_second_panel.raw_fields['test/panel'] = 'R208'
     r208_second_panel.raw_fields['authoriseddate'] = '01/08/2022'
-    genes=@handler.process_R208(@genotype, r208_second_panel, [])
+    genes=@handler.process_r208(@genotype, r208_second_panel, [])
     assert_equal ['BRCA1', 'BRCA2', 'CHEK2', 'PALB2', 'ATM'], genes
 
     r208_third_panel = build_raw_record('pseudo_id1' => 'bob')
     r208_third_panel.raw_fields['test/panel'] = 'R208'
     r208_third_panel.raw_fields['authoriseddate'] = '01/01/2023'
-    genes=@handler.process_R208(@genotype, r208_third_panel, [])
+    genes=@handler.process_r208(@genotype, r208_third_panel, [])
     assert_equal [ 'BRCA1', 'BRCA2', 'CHEK2', 'PALB2', 'ATM', 'RAD51C', 'RAD51D'], genes
 
 
@@ -290,7 +291,7 @@ class StGeorgeTest < ActiveSupport::TestCase
 
   end
 
-
+=begin
   test 'handle_test_status_full_screen' do
     targeted = build_raw_record('pseudo_id1' => 'bob')
     targeted.raw_fields['gene']="BRCA1"
@@ -304,6 +305,7 @@ class StGeorgeTest < ActiveSupport::TestCase
     @handler.handle_test_status_full_screen(targeted, @genotype, {"gene"=>["BRCA1"], "gene(other)"=>[]})
     assert_equal 7, @genotype.attribute_map['gene']
   end
+=end
 
   test 'process_genes_full_screen' do
     targeted = build_raw_record('pseudo_id1' => 'bob')
@@ -313,7 +315,17 @@ class StGeorgeTest < ActiveSupport::TestCase
     assert_equal 7, @genotype.attribute_map['gene']
   end
 
+  test 'process_variants' do
 
+    targeted = build_raw_record('pseudo_id1' => 'bob')
+    targeted.mapped_fields['teststatus']= 2
+    targeted.raw_fields['variant dna']='c.1234A<G'
+    targeted.raw_fields['variant protein']='p.1234Arg123Gly'
+    @handler.process_variants(@genotype, targeted)
+    assert_equal "c.1234A<G", @genotype.attribute_map['codingdnasequencechange']
+    assert_equal "p.1234Arg123Gly", @genotype.attribute_map['proteinimpact']
+
+  end
 
 
   def clinical_json

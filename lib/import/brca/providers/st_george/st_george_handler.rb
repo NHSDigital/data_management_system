@@ -6,6 +6,7 @@ module Import
   module Brca
     module Providers
       module StGeorge
+        # TODO: top level comment
         class StGeorgeHandler < Import::Germline::ProviderHandler
           include Import::Helpers::Brca::Providers::Rj7::Constants
 
@@ -40,7 +41,6 @@ module Import
           end
 
           def process_genes_targeted(genotype, record)
-            genotypes = []
             columns = ['gene', 'gene(other)']
             genes = []
             columns.each do |column|
@@ -52,7 +52,11 @@ module Import
                 genes.append(gene)
               end
             end
+            duplicate_genotype_targeted(genes, genotype)
+          end
 
+          def duplicate_genotype_targeted(genes, genotype)
+            genotypes = []
             counter = 0
             genes.each do |gene|
               next if gene.nil?
@@ -69,12 +73,10 @@ module Import
 
           def process_genes_full_screen(genotype, record)
             # TODO: handle BRCA1 so record isn't made twice
-            genotypes = []
             genes_dict = {}
             columns = ['gene', 'gene(other)', 'variant dna', 'test/panel']
             columns.each do |column|
               genes = []
-              gene_list = []
               gene_list = record.raw_fields[column]&.scan(BRCA_GENE_REGEX)
               if column == 'test/panel'
                 r208 = record.raw_fields[column]&.scan('R208')
@@ -83,8 +85,8 @@ module Import
               next if gene_list.nil?
 
               gene_list.each do |gene|
-                BRCA_GENE_MAP[gene].each do |gene|
-                  genes.append(gene)
+                BRCA_GENE_MAP[gene].each do |gene_value|
+                  genes.append(gene_value)
                 end
               end
               genes_dict[column] = genes
@@ -98,7 +100,7 @@ module Import
             counter = 0
             columns.each do |column|
               genes[column]&.each do |gene|
-                genotype = genotype.dup if counter > 0
+                genotype = genotype.dup if counter.positive?
 
                 genotype.add_gene(gene)
                 assign_test_status_full_screen(record, gene, genes, genotype, column)
@@ -229,24 +231,46 @@ module Import
           end
 
           def assign_test_status_targeted(genotype, record)
-            if !record.raw_fields['gene(other)'].nil? && record.raw_fields['gene(other)'].scan(/Fail/ix).size.positive?
-              genotype.add_status(9)
-            elsif !record.raw_fields['gene(other)'].nil? && record.raw_fields['gene(other)'].scan(/het|del|dup|c\./ix)
-              genotype.add_status(2)
-            elsif !record.raw_fields['variant dna'].nil? && record.raw_fields['variant dna'].match(/Fail|Wrong\samplicon\stested/ix)
-              genotype.add_status(9)
-            elsif !record.raw_fields['variant dna'].nil? && record.raw_fields['variant dna'] == 'N'
-              genotype.add_status(1)
-            elsif !record.raw_fields['variant dna'].nil? && record.raw_fields['variant dna'].match(/het|del|dup|c\./ix)
-              genotype.add_status(2)
-            elsif !record.raw_fields['variant protein'].nil? && record.raw_fields['variant protein'] == 'N'
-              genotype.add_status(1)
-            elsif record.raw_fields['variant protein'].nil?
-              genotype.add_status(4)
+            
+            TARGETED_TEST_STATUS.each do |test_values|
+              return if assign_test_status_targeted_support( record, test_values[:column], 
+                                                             test_values[:expression], 
+                                                             test_values[:status],
+                                                             test_values[:regex],
+                                                             genotype)
+            end
+
+          end
+
+          def assign_test_status_targeted_support(record, column, expression, status, match, genotype)
+            if match == 'regex'
+              if !record.raw_fields[column].nil? && record.raw_fields[column].scan(expression).size.positive?
+                genotype.add_status(status)
+                true
+              end
+            else
+              !record.raw_fields[column].nil? && record.raw_fields[column] == match
+              genotype.add_status(status)
+              true
             end
           end
 
-          def process_variants(genotype, record); end
+          def process_variants(genotype, record)
+            return unless record.mapped_fields['teststatus'] == 2
+            if !record.raw_fields['variant dna'].nil? && /c\.(?<cdna>.*)/i.match(record.raw_fields['variant dna'])
+               genotype.add_gene_location($LAST_MATCH_INFO[:cdna])
+            elsif
+            
+            c_value_string = record.raw_fields['variant dna'] + ' ' + record.raw_fields['gene(other)']
+            puts(c_value_string)
+            genotype.add_gene_location($LAST_MATCH_INFO[:cdna]) if /c\.(?<cdna>.*)/i.match(c_value_string)
+
+            protein_impact_string = record.raw_fields['variant protein'] + ' ' + record.raw_fields['variant dna'] + ' ' + record.raw_fields['gene(other)']
+            puts(protein_impact_string)
+            return unless /p.(?:\((?<impact>.*)\))/.match(protein_impact_string)
+
+            genotype.add_protein_impact($LAST_MATCH_INFO[:impact])
+          end
         end
       end
     end
