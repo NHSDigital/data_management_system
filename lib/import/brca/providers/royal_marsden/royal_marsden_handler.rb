@@ -29,7 +29,7 @@ module Import
           TEST_TYPE_MAP = { 'affected' => :diagnostic,
                             'unaffected' => :predictive }.freeze
           # rubocop:disable Lint/MixedRegexpCaptureTypes
-          CDNA_REGEX_PROT = /c\.(?<cdna>.+)(?=(?<separtors>_|;.)p\.(?<impact>.+))/i
+          CDNA_REGEX_PROT = /c\.(?<cdna>.+)(?=(?<separators>_|;.)p\.(?<impact>.+))/i
           CDNA_REGEX_NOPROT = /c\.(?<cdna>.+)/i
           DEL_DUP_REGEX = /(?<deldup>Deletion|Duplication)\s(ex|exon)s?\s?
                            (?<exon>\d+([a-z -]+\d+)?)|
