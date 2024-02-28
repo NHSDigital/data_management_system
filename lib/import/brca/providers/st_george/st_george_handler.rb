@@ -257,19 +257,16 @@ module Import
 
           def process_variants(genotype, record)
             return unless record.mapped_fields['teststatus'] == 2
-            if !record.raw_fields['variant dna'].nil? && /c\.(?<cdna>.*)/i.match(record.raw_fields['variant dna'])
-               genotype.add_gene_location($LAST_MATCH_INFO[:cdna])
-            elsif
-            
-            c_value_string = record.raw_fields['variant dna'] + ' ' + record.raw_fields['gene(other)']
-            puts(c_value_string)
-            genotype.add_gene_location($LAST_MATCH_INFO[:cdna]) if /c\.(?<cdna>.*)/i.match(c_value_string)
+   
+            ['variant dna', 'gene(other)'].each do |column|
+              genotype.add_gene_location($LAST_MATCH_INFO[:cdna]) if /c\.(?<cdna>.*)/i.match(record.raw_fields[column])
+            end  
+                
+            ['variant protein', 'variant dna', 'gene(other)'].each do |column|
+              puts 
+              genotype.add_protein_impact($LAST_MATCH_INFO[:impact]) if /p\.(?<impact>.*)/.match(record.raw_fields[column])
+            end 
 
-            protein_impact_string = record.raw_fields['variant protein'] + ' ' + record.raw_fields['variant dna'] + ' ' + record.raw_fields['gene(other)']
-            puts(protein_impact_string)
-            return unless /p.(?:\((?<impact>.*)\))/.match(protein_impact_string)
-
-            genotype.add_protein_impact($LAST_MATCH_INFO[:impact])
           end
         end
       end
