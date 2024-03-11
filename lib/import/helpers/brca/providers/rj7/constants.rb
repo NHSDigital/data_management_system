@@ -47,28 +47,28 @@ module Import
 
 
             BRCA_GENE_MAP={
-                        'ATM' => ['ATM'],
-                        'ATM-1' => ['ATM'],
-                        'BRCA1/2' => ['BRCA1', 'BRCA2'],
-                        'BRCA1+2' => ['BRCA1', 'BRCA2'],
-                        'BRCA1' => ['BRCA1'],
-                        'BR1' => ['BRCA1'],
-                        'BRCA2' => ['BRCA2'],
-                        'BR2' => ['BRCA2'],
-                        'BRIP1'=>['BRIP1'],
-                        'CHEK2'=>['CHEK2'],
-                        'CHECK2'=>['CHEK2'],
-                        'EPCAM'=>['EPCAM'],
-                        'MLH1'=>['MLH1'],
-                        'MSH2'=>['MSH2'],
-                        'MSH6'=>['MSH6'],
-                        'PALB2'=>['PALB2'],
-                        'PALB1'=>['PALB2'],
-                        'PLAB2'=>['PALB2'],
-                        'PMS2'=>['PMS2'],
-                        'RAD51C'=>['RAD51C'],
-                        'RAD51D'=>['RAD51D'],
-                        'TP53'=>['TP53'],
+                        "ATM" => ['ATM'],
+                        "ATM-1" => ['ATM'],
+                        "BRCA1/2" => ['BRCA1', 'BRCA2'],
+                        "BRCA1+2" => ['BRCA1', 'BRCA2'],
+                        "BRCA1" => ['BRCA1'],
+                        "BR1" => ['BRCA1'],
+                        "BRCA2" => ['BRCA2'],
+                        "BR2" => ['BRCA2'],
+                        "BRIP1"=>['BRIP1'],
+                        "CHEK2"=>['CHEK2'],
+                        "CHECK2"=>['CHEK2'],
+                        "EPCAM"=>['EPCAM'],
+                        "MLH1"=>['MLH1'],
+                        "MSH2"=>['MSH2'],
+                        "MSH6"=>['MSH6'],
+                        "PALB2"=>['PALB2'],
+                        "PALB1"=>['PALB2'],
+                        "PLAB2"=>['PALB2'],
+                        "PMS2"=>['PMS2'],
+                        "RAD51C"=>['RAD51C'],
+                        "RAD51D"=>['RAD51D'],
+                        "TP53"=>['TP53'],
                         }.freeze
 
 
@@ -82,6 +82,10 @@ module Import
                                    {column:'variant protein', expression:'nil', status:4, regex:'match'},
                                    ]
 
+
+            EXON_REGEX =/((?<zygosity>Het)\s?(?<mutationtype>dup|del)\s?(\.\s?)?ex\s?(?<exons>[0-9]+(\-(ex)?[0-9]+)?) |
+              (?<mutationtype>del)\s?ex\s?(?<exons>[0-9]+_[0-9]+) |
+              ex(on)?\s?(?<exons>[0-9]+(\-[0-9]+)?)\s?(?<zygosity>Het)?\s?(?<mutationtype>del(etion)?|dup))/ix
 
             # rubocop:enable Lint/MixedRegexpCaptureTypes
         end

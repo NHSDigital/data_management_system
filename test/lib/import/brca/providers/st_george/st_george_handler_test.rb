@@ -291,12 +291,13 @@ class StGeorgeTest < ActiveSupport::TestCase
 
   end
 
-=begin
+
   test 'handle_test_status_full_screen' do
+
     targeted = build_raw_record('pseudo_id1' => 'bob')
     targeted.raw_fields['gene']="BRCA1"
     targeted.raw_fields['gene(other)']="unknown"
-    @handler.handle_test_status_full_screen(targeted, @genotype, {'gene': ["BRCA1"], 'gene(other)': [], 'variant dna': [], 'test/panel':[] })
+    @handler.handle_test_status_full_screen(targeted, @genotype, {"gene"=> ["BRCA1"], "gene(other)"=> [], "variant dna"=> [], "test/panel"=>[] })
     assert_equal 7, @genotype.attribute_map['gene']
 
     targeted = build_raw_record('pseudo_id1' => 'bob')
@@ -304,8 +305,10 @@ class StGeorgeTest < ActiveSupport::TestCase
     targeted.raw_fields['gene(other)']="unknown"
     @handler.handle_test_status_full_screen(targeted, @genotype, {"gene"=>["BRCA1"], "gene(other)"=>[]})
     assert_equal 7, @genotype.attribute_map['gene']
+
+
   end
-=end
+
 
   test 'process_genes_full_screen' do
     targeted = build_raw_record('pseudo_id1' => 'bob')
@@ -317,13 +320,22 @@ class StGeorgeTest < ActiveSupport::TestCase
 
   test 'process_variants' do
 
-    targeted = build_raw_record('pseudo_id1' => 'bob')
-    targeted.mapped_fields['teststatus']= 2
-    targeted.raw_fields['variant dna']='c.1234A<G'
-    targeted.raw_fields['variant protein']='p.1234Arg123Gly'
-    @handler.process_variants(@genotype, targeted)
+    process_variants1 = build_raw_record('pseudo_id1' => 'bob')
+    @genotype.attribute_map['teststatus']= 2
+    process_variants1.raw_fields['variant dna']='c.1234A<G'
+    process_variants1.raw_fields['variant protein']='p.1234Arg123Gly'
+    @handler.process_variants(@genotype, process_variants1)
     assert_equal "c.1234A<G", @genotype.attribute_map['codingdnasequencechange']
     assert_equal "p.1234Arg123Gly", @genotype.attribute_map['proteinimpact']
+
+    process_variants2 = build_raw_record('pseudo_id1' => 'bob')
+    @genotype.attribute_map['teststatus']= 2
+    process_variants2.raw_fields['variant dna']='het del ex 12-34'
+    process_variants2.raw_fields['variant protein']=''
+    @handler.process_variants(@genotype, process_variants2)
+    assert_equal 3, @genotype.attribute_map['sequencevarianttype']
+    assert_equal "12-34", @genotype.attribute_map['exonintroncodonnumber']
+    assert_equal 1, @genotype.attribute_map['variantgenotype']
 
   end
 

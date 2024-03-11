@@ -20,8 +20,10 @@ module Import
             assign_test_type(genotype, record)
             genotypes = assign_test_scope(genotype, record)
             genotypes.each do |single_genotype|
+              process_variants(single_genotype, record)
               @persister.integrate_and_store(single_genotype)
             end
+
           end
 
           def new_format_file?
@@ -83,9 +85,11 @@ module Import
                 gene_list.append(process_r208(genotype, record, genes)) unless r208.nil?
               end
               next if gene_list.nil?
+              
 
               gene_list.each do |gene|
-                BRCA_GENE_MAP[gene].each do |gene_value|
+                next if gene.nil?
+                BRCA_GENE_MAP[gene]&.each do |gene_value|
                   genes.append(gene_value)
                 end
               end
@@ -180,7 +184,7 @@ module Import
               else
                 update_status(10, 1, column, 'gene', genotype)
               end
-            elsif record.raw_fields['gene(other)'].match(/c\.|Ex*Del|Ex*Dup|Het\sDel*|Het\sDup*/ix)
+            elsif record.raw_fields['gene(other)']&.match(/c\.|Ex*Del|Ex*Dup|Het\sDel*|Het\sDup*/ix)
               update_status(2, 1, column, 'gene(other)', genotype)
             # TODO: could this include brca1/2
             else
@@ -190,8 +194,8 @@ module Import
           end
 
           def gene_classv_gene_n_format(record, genotype, gene)
-            gene_list = record.raw_fields['gene(other)'].scan(BRCA_GENE_REGEX)
-            return unless gene_list.length > 1
+            gene_list = record.raw_fields['gene(other)']&.scan(BRCA_GENE_REGEX)
+            return if gene_list.nil? || gene_list.length <= 1
 
             gene_list.each do |gene1|
               gene_list.each do |gene2|
@@ -256,17 +260,23 @@ module Import
           end
 
           def process_variants(genotype, record)
-            return unless record.mapped_fields['teststatus'] == 2
-   
+            return unless genotype.attribute_map['teststatus'] == 2 
+
             ['variant dna', 'gene(other)'].each do |column|
               genotype.add_gene_location($LAST_MATCH_INFO[:cdna]) if /c\.(?<cdna>.*)/i.match(record.raw_fields[column])
             end  
-                
+
             ['variant protein', 'variant dna', 'gene(other)'].each do |column|
-              puts 
               genotype.add_protein_impact($LAST_MATCH_INFO[:impact]) if /p\.(?<impact>.*)/.match(record.raw_fields[column])
             end 
+            if record.mapped_fields['codingdnasequencechange'].nil? && record.mapped_fields['proteinimpact'].nil?
 
+              ['variant dna', 'gene(other)'].each do |column|
+                genotype.add_exon_location($LAST_MATCH_INFO[:exons]) if EXON_REGEX.match(record.raw_fields[column])
+                genotype.add_variant_type($LAST_MATCH_INFO[:mutationtype]) if EXON_REGEX.match(record.raw_fields[column])
+                genotype.add_zygosity($LAST_MATCH_INFO[:zygosity]) if EXON_REGEX.match(record.raw_fields[column])
+            end
+          end
           end
         end
       end
