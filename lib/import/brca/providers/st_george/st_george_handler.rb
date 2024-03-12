@@ -23,7 +23,6 @@ module Import
             end
           end
 
-
           def assign_test_type(genotype, record)
             return if record.raw_fields['moleculartestingtype'].nil?
 

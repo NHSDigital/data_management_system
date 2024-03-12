@@ -182,7 +182,7 @@ RJ7 () {
 MBIS=$1
 PROV='RJ7'
 IFS=$'\n'
-for x in $(find  $DIRPATH/$FILEPATH -type f -name "*.pseudo" -name "*HBOC*")
+for x in $(find $DIRPATH/$FILEPATH -type f -name "*.pseudo" -name "*HBOC*")
 do
 IFS="$OIFS"
 $BRAKE import:brca fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
