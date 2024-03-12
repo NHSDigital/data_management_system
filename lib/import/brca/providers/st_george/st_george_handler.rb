@@ -11,8 +11,6 @@ module Import
           include Import::Helpers::Brca::Providers::Rj7::Constants
 
           def process_fields(record)
-            return unless new_format_file?
-
             genotype = Import::Brca::Core::GenotypeBrca.new(record)
             genotype.add_passthrough_fields(record.mapped_fields,
                                             record.raw_fields,
@@ -23,13 +21,8 @@ module Import
               process_variants(single_genotype, record)
               @persister.integrate_and_store(single_genotype)
             end
-
           end
 
-          def new_format_file?
-            file_name = @batch.original_filename
-            file_name.scan(/HBOC/i).size.positive?
-          end
 
           def assign_test_type(genotype, record)
             return if record.raw_fields['moleculartestingtype'].nil?
