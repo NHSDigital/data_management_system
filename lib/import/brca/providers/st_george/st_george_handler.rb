@@ -73,30 +73,29 @@ module Import
               genes = []
               gene_list = record.raw_fields[column]&.scan(BRCA_GENE_REGEX)
               if column == 'test/panel'
-                panel_genes_list=process_test_panels(record)
+                panel_genes_list = process_test_panels(record)
                 gene_list.append(panel_genes_list) unless panel_genes_list.nil?
                 r208 = record.raw_fields[column]&.scan('R208')
                 gene_list.append(process_r208(genotype, record, genes)) unless r208.nil?
               end
               next if gene_list.nil?
-              
 
               gene_list.each do |gene|
                 next if gene.nil?
+
                 BRCA_GENE_MAP[gene]&.each do |gene_value|
                   genes.append(gene_value)
                 end
               end
+              # handles brca1 and brca2 being matched twice
+              genes = genes.uniq
               genes_dict[column] = genes
             end
             handle_test_status_full_screen(record, genotype, genes_dict)
           end
 
           def process_test_panels(record)
-            test_genes_list= FULL_SCREEN_TESTS_MAP[record.raw_fields['test/panel']]
-            puts test_genes_list
-            test_genes_list
-
+            FULL_SCREEN_TESTS_MAP[record.raw_fields['test/panel']]
           end
 
           def handle_test_status_full_screen(record, genotype, genes)
@@ -236,15 +235,13 @@ module Import
           end
 
           def assign_test_status_targeted(genotype, record)
-            
             TARGETED_TEST_STATUS.each do |test_values|
-              return if assign_test_status_targeted_support( record, test_values[:column], 
-                                                             test_values[:expression], 
-                                                             test_values[:status],
-                                                             test_values[:regex],
-                                                             genotype)
+              return if assign_test_status_targeted_support(record, test_values[:column],
+                                                            test_values[:expression],
+                                                            test_values[:status],
+                                                            test_values[:regex],
+                                                            genotype)
             end
-
           end
 
           def assign_test_status_targeted_support(record, column, expression, status, match, genotype)
@@ -261,23 +258,27 @@ module Import
           end
 
           def process_variants(genotype, record)
-            return unless genotype.attribute_map['teststatus'] == 2 
+            return unless genotype.attribute_map['teststatus'] == 2
 
             ['variant dna', 'gene(other)'].each do |column|
               genotype.add_gene_location($LAST_MATCH_INFO[:cdna]) if /c\.(?<cdna>.*)/i.match(record.raw_fields[column])
-            end  
+            end
 
             ['variant protein', 'variant dna', 'gene(other)'].each do |column|
-              genotype.add_protein_impact($LAST_MATCH_INFO[:impact]) if /p\.(?<impact>.*)/.match(record.raw_fields[column])
-            end 
+              if /p\.(?<impact>.*)/.match(record.raw_fields[column])
+                genotype.add_protein_impact($LAST_MATCH_INFO[:impact])
+              end
+            end
             if record.mapped_fields['codingdnasequencechange'].nil? && record.mapped_fields['proteinimpact'].nil?
 
               ['variant dna', 'gene(other)'].each do |column|
                 genotype.add_exon_location($LAST_MATCH_INFO[:exons]) if EXON_REGEX.match(record.raw_fields[column])
-                genotype.add_variant_type($LAST_MATCH_INFO[:mutationtype]) if EXON_REGEX.match(record.raw_fields[column])
+                if EXON_REGEX.match(record.raw_fields[column])
+                  genotype.add_variant_type($LAST_MATCH_INFO[:mutationtype])
+                end
                 genotype.add_zygosity($LAST_MATCH_INFO[:zygosity]) if EXON_REGEX.match(record.raw_fields[column])
+              end
             end
-          end
           end
         end
       end
