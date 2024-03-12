@@ -81,6 +81,8 @@ module Import
               genes = []
               gene_list = record.raw_fields[column]&.scan(BRCA_GENE_REGEX)
               if column == 'test/panel'
+                panel_genes_list=process_test_panels(record)
+                gene_list.append(panel_genes_list) unless panel_genes_list.nil?
                 r208 = record.raw_fields[column]&.scan('R208')
                 gene_list.append(process_r208(genotype, record, genes)) unless r208.nil?
               end
@@ -96,6 +98,13 @@ module Import
               genes_dict[column] = genes
             end
             handle_test_status_full_screen(record, genotype, genes_dict)
+          end
+
+          def process_test_panels(record)
+            test_genes_list= FULL_SCREEN_TESTS_MAP[record.raw_fields['test/panel']]
+            puts test_genes_list
+            test_genes_list
+
           end
 
           def handle_test_status_full_screen(record, genotype, genes)
