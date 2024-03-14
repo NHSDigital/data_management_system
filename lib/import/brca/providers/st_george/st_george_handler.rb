@@ -66,36 +66,31 @@ module Import
           end
 
           def process_genes_full_screen(genotype, record)
-            # TODO: handle BRCA1 so record isn't made twice
             genes_dict = {}
-            columns = ['gene', 'gene(other)', 'variant dna', 'test/panel']
-            columns.each do |column|
+
+            ['gene', 'gene(other)', 'variant dna', 'test/panel'].each do |column|
               genes = []
               gene_list = record.raw_fields[column]&.scan(BRCA_GENE_REGEX)
-              if column == 'test/panel'
-                panel_genes_list = process_test_panels(record)
-                gene_list.append(panel_genes_list) unless panel_genes_list.nil?
-                r208 = record.raw_fields[column]&.scan('R208')
-                gene_list.append(process_r208(genotype, record, genes)) unless r208.nil?
-              end
+              gene_list = process_test_panels(record, gene_list, column, genotype, genes) if column == 'test/panel'
               next if gene_list.nil?
 
               gene_list.each do |gene|
-                next if gene.nil?
-
                 BRCA_GENE_MAP[gene]&.each do |gene_value|
                   genes.append(gene_value)
                 end
               end
               # handles brca1 and brca2 being matched twice
-              genes = genes.uniq
-              genes_dict[column] = genes
+              genes_dict[column] = genes.uniq
             end
             handle_test_status_full_screen(record, genotype, genes_dict)
           end
 
-          def process_test_panels(record)
-            FULL_SCREEN_TESTS_MAP[record.raw_fields['test/panel']]
+          def process_test_panels(record, gene_list, column, genotype, genes)
+            panel_genes_list = FULL_SCREEN_TESTS_MAP[record.raw_fields['test/panel']]
+            gene_list.append(panel_genes_list) unless panel_genes_list.nil?
+            r208 = record.raw_fields[column]&.scan('R208')
+            gene_list.append(process_r208(genotype, record, genes)) unless r208.nil?
+            gene_list
           end
 
           def handle_test_status_full_screen(record, genotype, genes)
@@ -167,7 +162,7 @@ module Import
               elsif column == 'gene(other)'
                 match_fail(gene, record, genotype)
               end
-            elsif record.raw_fields['gene'].nil? && ((genes[:'gene(other)']).nil? || genes[:'gene(other)'].length > 1)
+            elsif record.raw_fields['gene'].nil? && ((genes[:'gene(other)']).nil? || genes[:'gene(other)'].length > 1) && genes[:'variant dna'].length>=1
               update_status(2, 1, column, 'variant dna', genotype)
             elsif record.raw_fields['gene'].nil? && (genes[:'gene(other)']).length == 1
               update_status(2, 1, column, 'gene(other)', genotype)
@@ -185,7 +180,7 @@ module Import
                 update_status(10, 1, column, 'gene', genotype)
               end
             elsif record.raw_fields['gene(other)']&.match(/c\.|Ex*Del|Ex*Dup|Het\sDel*|Het\sDup*/ix)
-              update_status(2, 1, column, 'gene(other)', genotype)
+              update_status(2, 1, column, 'gene', genotype)
             # TODO: could this include brca1/2
             else
               genotype.add_status(4)
@@ -270,14 +265,17 @@ module Import
               end
             end
             if record.mapped_fields['codingdnasequencechange'].nil? && record.mapped_fields['proteinimpact'].nil?
+              process_location_type_zygosity(genotype, record)
+            end
+          end
 
-              ['variant dna', 'gene(other)'].each do |column|
-                genotype.add_exon_location($LAST_MATCH_INFO[:exons]) if EXON_REGEX.match(record.raw_fields[column])
-                if EXON_REGEX.match(record.raw_fields[column])
-                  genotype.add_variant_type($LAST_MATCH_INFO[:mutationtype])
-                end
-                genotype.add_zygosity($LAST_MATCH_INFO[:zygosity]) if EXON_REGEX.match(record.raw_fields[column])
-              end
+          def process_location_type_zygosity(genotype, record)
+            ['variant dna', 'gene(other)'].each do |column|
+              next unless EXON_REGEX.match(record.raw_fields[column])
+
+              genotype.add_exon_location($LAST_MATCH_INFO[:exons])
+              genotype.add_variant_type($LAST_MATCH_INFO[:mutationtype])
+              genotype.add_zygosity($LAST_MATCH_INFO[:zygosity])
             end
           end
         end
