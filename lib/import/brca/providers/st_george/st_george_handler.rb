@@ -16,14 +16,33 @@ module Import
                                             record.raw_fields,
                                             PASS_THROUGH_FIELDS)
             assign_test_type(genotype, record)
-            genotypes = assign_test_scope(genotype, record)
+            genotype = assign_test_scope(genotype, record)
+            genotypes=[]
+            if genotype.attribute_map['genetictestscope']=='Targeted BRCA mutation test'
+              # determines the genes in the record and creates a genotype for each one
+              genes = process_genes_targeted(genotype, record)
+              #For each gene in the list of genes a new genotype will need to be created
+              genotypes=duplicate_genotype_targeted(genes, genotype)
+              genotypes.each do |single_genotype|
+                assign_test_status_targeted(single_genotype, record)
+              end
+            elsif genotype.attribute_map['genetictestscope'] == 'Full screen BRCA1 and BRCA2'
+              genotypes = process_genes_full_screen(genotype, record)
+            end
+
             genotypes.each do |single_genotype|
               process_variants(single_genotype, record)
               @persister.integrate_and_store(single_genotype)
+
             end
           end
 
           def assign_test_type(genotype, record)
+
+            # extract molecular testing type from the raw record
+            # map molecular testing type and assign to genotype using
+            # add_molecular_testing_type method from genotype.rb
+
             return if record.raw_fields['moleculartestingtype'].nil?
 
             testtype = TEST_TYPE_MAP[record.raw_fields['moleculartestingtype']]
@@ -35,6 +54,11 @@ module Import
           end
 
           def process_genes_targeted(genotype, record)
+            #For targeted tests only
+            #This method creates a list of genes included in the record that match BRCA_GENE_REGEX
+            #The genotype is duplicated for each gene in this list
+            # A list of genotypes (one for each gene) is returned
+
             columns = ['gene', 'gene(other)']
             genes = []
             columns.each do |column|
@@ -46,16 +70,22 @@ module Import
                 genes.append(gene)
               end
             end
-            duplicate_genotype_targeted(genes, genotype)
+            genes
           end
 
           def duplicate_genotype_targeted(genes, genotype)
+
+            # When there is more than one gene listed a separate genotype needs to be created for each one
+            # The genotype is duplicated and the new gene is added to the duplicated genotype
+            # Each genotype is then added to the genoytypes list which this method then returns
+
             genotypes = []
             counter = 0
             genes.each do |gene|
               next if gene.nil?
 
               gene.each do |gene_value|
+                #genotype only needs to be duplicated if there is more than one gene in the list
                 genotype = genotype.dup if counter.positive?
                 genotype.add_gene(gene_value)
                 genotypes.append(genotype)
@@ -114,18 +144,12 @@ module Import
             testscope = TEST_SCOPE_MAP[record.raw_fields['moleculartestingtype']]
             if testscope == 'targeted'
               genotype.add_test_scope(:targeted_mutation)
-              assign_test_status_targeted(genotype, record)
-              genotypes = process_genes_targeted(genotype, record)
-              genotypes.each do |single_genotype|
-                assign_test_status_targeted(single_genotype, record)
-              end
             elsif testscope == 'fullscreen'
               genotype.add_test_scope(:full_screen)
-              genotypes = process_genes_full_screen(genotype, record)
             else
               genotype.add_test_scope(:no_genetictestscope)
             end
-            genotypes
+            genotype
           end
 
           def match_fail(gene, record, genotype)
