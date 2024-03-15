@@ -53,6 +53,11 @@ module Import
           end
 
           def assign_test_scope(genotype, record)
+
+            # extract molecular testing type from the raw record
+            # map molecular testing type and assign to genotype using
+            # add_test_scope method from genotype_brca.rb
+
             testscope = TEST_SCOPE_MAP[record.raw_fields['moleculartestingtype']]
             if testscope == 'targeted'
               genotype.add_test_scope(:targeted_mutation)
@@ -106,6 +111,9 @@ module Import
           end
 
           def assign_test_status_targeted(genotype, record)
+            #loop through list of dictionaries in TARGETED_TEST_STATUS from constants.rb
+            #run assign_test_status_targeted_support for each dictionary with the values
+            # from the dictionary forming the parameters
             TARGETED_TEST_STATUS.each do |test_values|
               return if assign_test_status_targeted_support(record, test_values[:column],
                                                             test_values[:expression],
@@ -116,6 +124,9 @@ module Import
           end
 
           def assign_test_status_targeted_support(record, column, expression, status, match, genotype)
+            #if the match parameter is regex, try to match the regular expressions else determine if it matches exactly
+            # if the column value matches the expression, assign test status and return true
+
             if match == 'regex'
               if !record.raw_fields[column].nil? && record.raw_fields[column].scan(expression).size.positive?
                 genotype.add_status(status)
@@ -247,6 +258,8 @@ module Import
           end
 
           def match_fail(gene, record, genotype)
+            # Determines if a gene in the gene(other) column has failed 
+            # Assigns genes that have failed a test status of 9, otherwise teststatus is 1
             gene_list = record.raw_fields['gene(other)'].scan(BRCA_GENE_REGEX)
             if gene_list.length >= 1
               gene_list.each do |gene_value|
@@ -268,6 +281,7 @@ module Import
           end
 
           def update_status(status1, status2, column, column_name, genotype)
+            # update genotype status depending on if the gene is in the same column that the rule applies to
             if column == column_name
               genotype.add_status(status1)
             else
@@ -276,6 +290,8 @@ module Import
           end
 
           def gene_classv_gene_n_format(record, genotype, gene)
+            # update status of genes listed in format '[gene 1] Class V, [gene 2] N'
+            # 2 (abnormal) for [gene 1]. 1 (normal) for [gene 2]
             gene_list = record.raw_fields['gene(other)']&.scan(BRCA_GENE_REGEX)
             return if gene_list.nil? || gene_list.length <= 1
 
@@ -295,6 +311,7 @@ module Import
           end
 
           def process_variants(genotype, record)
+            #add hgvsc and hgvsp codes - if not present then run process_location_type_zygosity
             return unless genotype.attribute_map['teststatus'] == 2
 
             ['variant dna', 'gene(other)'].each do |column|
@@ -312,6 +329,7 @@ module Import
           end
 
           def process_location_type_zygosity(genotype, record)
+            # use methods in genotype.rb to add exon location, variant type and zygosity
             ['variant dna', 'gene(other)'].each do |column|
               next unless EXON_REGEX.match(record.raw_fields[column])
 
