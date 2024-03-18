@@ -351,16 +351,32 @@ class StGeorgeTest < ActiveSupport::TestCase
     process_variants2 = build_raw_record('pseudo_id1' => 'bob')
     @genotype.attribute_map['teststatus']= 2
     process_variants2.raw_fields['variant dna']='het del ex 12-34'
-    process_variants2.raw_fields['variant protein']=''
+    process_variants2.raw_fields['variant proteins']=''
     @handler.process_variants(@genotype, process_variants2)
     assert_equal 3, @genotype.attribute_map['sequencevarianttype']
     assert_equal "12-34", @genotype.attribute_map['exonintroncodonnumber']
     assert_equal 1, @genotype.attribute_map['variantgenotype']
 
   end
+  
+  test 'gene_classv_gene_n_format' do
+    #test, when 'gene(other)' column has following format 'GENE1 Class V, GENE2 N' that the second gene gets teststatus 2 assigned 
+    gene_classv_gene_n = build_raw_record('pseudo_id1' => 'bob')
+    gene_classv_gene_n.raw_fields['gene(other)'] = 'BRCA1 Class V, ATM N'
+    @handler.gene_classv_gene_n_format(gene_classv_gene_n, @genotype, 'ATM',)
+    assert_equal 1, @genotype.attribute_map['teststatus']
 
+   #test, when 'gene(other)' column has following format 'GENE1 Class V, GENE2 N' that the first gene gets teststatus 1 assigned
+    gene_classv_gene_n = build_raw_record('pseudo_id1' => 'bob')
+    gene_classv_gene_n.raw_fields['gene(other)'] = 'BRCA1 Class V, ATM N'
+    @handler.gene_classv_gene_n_format(gene_classv_gene_n, @genotype, 'BRCA1')
+    assert_equal 2, @genotype.attribute_map['teststatus']
+
+
+  end 
 
   def clinical_json
+    +
     {}.to_json
   end
 
