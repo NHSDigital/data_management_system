@@ -41,6 +41,7 @@ for x in $(find  $DIRPATH/$FILEPATH -type f -name "*.pseudo" -path "*/$PROV/*" \
 -not -path "*/2017/*" \
 ! -name "*Colorectal*" \
 ! -name "*Other*" \
+! -name "*other*" \
 ! -name "*CAPP2*")
 do
 IFS="$OIFS"
