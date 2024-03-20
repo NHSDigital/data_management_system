@@ -23,7 +23,7 @@ module Import
                             'Family follow-up testing to aid variant interpretation' => 'targeted',
                             'Inherited breast cancer and ovarian cancer' => 'fullscreen',
                             'Inherited ovarian cancer (without breast cancer)' => 'fullscreen',
-                            'Predictive testing for known familial mutation(s)' => 'fullscreen',
+                            'Predictive testing for known familial mutation(s)' => 'targeted',
                             }.freeze
 
             FULL_SCREEN_TESTS_MAP =

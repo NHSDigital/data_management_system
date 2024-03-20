@@ -308,14 +308,58 @@ class StGeorgeTest < ActiveSupport::TestCase
     genes= @handler.process_genes_targeted(targeted)
     assert_equal [['BRCA1']], genes
 
+
+    targeted = build_raw_record('pseudo_id1' => 'bob')
+    targeted.raw_fields['gene']="PLAB2"
+    targeted.raw_fields['gene(other)']="BRCA2"
+    genes= @handler.process_genes_targeted(targeted)
+    assert_equal [['PALB2'],['BRCA2']], genes
+
   end
 
   test 'assign_test_status_targeted' do
+
     targeted = build_raw_record('pseudo_id1' => 'bob')
     targeted.raw_fields['gene']=""
     targeted.raw_fields['gene(other)']="FAIL"
     @handler.assign_test_status_targeted(@genotype, targeted)
     assert_equal 9, @genotype.attribute_map['teststatus']
+
+    targeted = build_raw_record('pseudo_id1' => 'bob')
+    targeted.raw_fields['gene']=""
+    targeted.raw_fields['gene(other)']="het"
+    @handler.assign_test_status_targeted(@genotype, targeted)
+    assert_equal 2, @genotype.attribute_map['teststatus']
+
+
+    targeted = build_raw_record('pseudo_id1' => 'bob')
+    targeted.raw_fields['gene']=""
+    targeted.raw_fields['gene(other)']=""
+    targeted.raw_fields['variant dna']="FAIL"
+    @handler.assign_test_status_targeted(@genotype, targeted)
+    assert_equal 9, @genotype.attribute_map['teststatus']
+
+    targeted = build_raw_record('pseudo_id1' => 'bob')
+    targeted.raw_fields['gene']=""
+    targeted.raw_fields['gene(other)']=""
+    targeted.raw_fields['variant dna']="wrong amplicon tested"
+    @handler.assign_test_status_targeted(@genotype, targeted)
+    assert_equal 9, @genotype.attribute_map['teststatus']
+
+    targeted = build_raw_record('pseudo_id1' => 'bob')
+    targeted.raw_fields['gene']=""
+    targeted.raw_fields['gene(other)']=""
+    targeted.raw_fields['variant dna']="N"
+    @handler.assign_test_status_targeted(@genotype, targeted)
+    assert_equal 1, @genotype.attribute_map['teststatus']
+
+    targeted = build_raw_record('pseudo_id1' => 'bob')
+    targeted.raw_fields['gene']=""
+    targeted.raw_fields['gene(other)']=""
+    targeted.raw_fields['variant dna']="dup"
+    @handler.assign_test_status_targeted(@genotype, targeted)
+    assert_equal 2, @genotype.attribute_map['teststatus']
+
 
   end
 

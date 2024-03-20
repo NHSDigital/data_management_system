@@ -133,9 +133,10 @@ module Import
                 true
               end
             else
-              !record.raw_fields[column].nil? && record.raw_fields[column] == match
-              genotype.add_status(status)
-              true
+              if !record.raw_fields[column].nil? && record.raw_fields[column] == expression
+                genotype.add_status(status)
+                true
+              end
             end
           end
 
