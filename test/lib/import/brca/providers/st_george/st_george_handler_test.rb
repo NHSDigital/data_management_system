@@ -310,6 +310,15 @@ class StGeorgeTest < ActiveSupport::TestCase
 
   end
 
+  test 'assign_test_status_targeted' do
+    targeted = build_raw_record('pseudo_id1' => 'bob')
+    targeted.raw_fields['gene']=""
+    targeted.raw_fields['gene(other)']="FAIL"
+    @handler.assign_test_status_targeted(@genotype, targeted)
+    assert_equal 9, @genotype.attribute_map['teststatus']
+
+  end
+
 
   test 'handle_test_status_full_screen' do
 
@@ -334,8 +343,19 @@ class StGeorgeTest < ActiveSupport::TestCase
     targeted.raw_fields['gene']="BRCA1"
     targeted.raw_fields['gene(other)']="unknown"
     genes_dict=@handler.process_genes_full_screen(@genotype, targeted)
-    #TODO fix this test
-    assert_equal '{"gene"=>["BRCA1"], "gene(other)"=>[]}', genes_dict
+    assert_equal ({"gene"=>["BRCA1"], "gene(other)"=>[]}), genes_dict
+
+    targeted = build_raw_record('pseudo_id1' => 'bob')
+    targeted.raw_fields['gene']="BRCA1/2"
+    targeted.raw_fields['gene(other)']="unknown"
+    genes_dict=@handler.process_genes_full_screen(@genotype, targeted)
+    assert_equal  ({"gene"=>["BRCA1", "BRCA2"], "gene(other)"=>[]}) , genes_dict
+    
+    targeted = build_raw_record('pseudo_id1' => 'bob')
+    targeted.raw_fields['gene']="BRCA1+2"
+    targeted.raw_fields['gene(other)']="unknown"
+    genes_dict=@handler.process_genes_full_screen(@genotype, targeted)
+    assert_equal ({"gene"=>["BRCA1", "BRCA2"], "gene(other)"=>[]}), genes_dict
   end
 
   test 'process_variants' do
