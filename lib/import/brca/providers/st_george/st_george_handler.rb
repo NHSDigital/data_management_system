@@ -12,6 +12,10 @@ module Import
 
           def process_fields(record)
             genotype = Import::Brca::Core::GenotypeBrca.new(record)
+            
+            return unless record.raw_fields['servicereportidentifier'].start_with?("V")
+            
+           
             genotype.add_passthrough_fields(record.mapped_fields,
                                             record.raw_fields,
                                             PASS_THROUGH_FIELDS)
