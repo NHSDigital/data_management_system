@@ -5,7 +5,7 @@ class StGeorgeHandlerOldTest < ActiveSupport::TestCase
     @record   = build_raw_record('pseudo_id1' => 'bob')
     @genotype = Import::Brca::Core::GenotypeBrca.new(@record)
     @importer_stdout, @importer_stderr = capture_io do
-      @handler = Import::Brca::Providers::StGeorge::StGeorgeHandlerOld.new(EBatch.new)
+      @handler = Import::Brca::Providers::StGeorgeOld::StGeorgeHandlerOld.new(EBatch.new)
     end
     @logger = Import::Log.get_logger
   end
