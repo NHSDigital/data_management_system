@@ -13,6 +13,8 @@ module Import
           def process_fields(record)
             genotype = Import::Brca::Core::GenotypeBrca.new(record)
             
+
+            #records using new importer should only have SRIs starting with V
             return unless record.raw_fields['servicereportidentifier'].start_with?("V")
        
             genotype.add_passthrough_fields(record.mapped_fields,
