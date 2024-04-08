@@ -180,7 +180,11 @@ module Import
             # panels mapped to list of genes in FULL_SCREEN_TESTS_MAP
             # to output list of genes tested in panel
             panel_genes_list = FULL_SCREEN_TESTS_MAP[record.raw_fields['test/panel']]
-            gene_list.append(panel_genes_list) unless panel_genes_list.nil?
+            if panel_genes_list!=nil
+              panel_genes_list.each do |gene|
+                gene_list.append(gene)
+              end
+            end
             r208 = record.raw_fields[column]&.scan('R208')
             gene_list.append(process_r208(genotype, record, genes)) unless r208.nil?
             gene_list
