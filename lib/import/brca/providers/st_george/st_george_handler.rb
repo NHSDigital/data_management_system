@@ -35,7 +35,6 @@ module Import
 
               # For each gene in the list of genes a new genotype will need to be created
               genotypes = duplicate_genotype_targeted(genes, genotype)
-              #puts genotypes
               genotypes.each do |single_genotype|
                 assign_test_status_targeted(single_genotype, record)
               end
@@ -188,11 +187,11 @@ module Import
               end
             end
             r208 = record.raw_fields[column]&.scan('R208')
-            gene_list.append(process_r208(genotype, record, genes)) unless r208.nil?
+            gene_list.append(process_r208(record)) unless r208.nil?
             gene_list
           end
 
-          def process_r208(_genotype, record, _genes)
+          def process_r208(record)
             # Determine genes tested from r208 panel based on the authorised date
             # output list of genes in r208 panel
             return unless record.raw_fields['test/panel'] == 'R208'
@@ -213,14 +212,15 @@ module Import
             # Link to assign_test_status_full screen which assigns test status for each gene
             # Adds genotype to genotype list which is then outputted
             genotypes = []
-            columns = ['gene', 'gene (other)', 'variant dna', 'test/panel']  # when I correct typo here it loses records in the counts
+            columns = ['gene', 'gene (other)', 'variant dna', 'test/panel'] 
             counter = 0
             columns.each do |column|
               genes[column]&.each do |gene|
                 # don't need to duplicate genotype if only one gene
                 genotype = genotype.dup if counter.positive?
-
                 genotype.add_gene(gene)
+                #TODO CHECK THIS!
+                genotype.add_status(4)
                 assign_test_status_full_screen(record, gene, genes, genotype, column)
                 genotypes.append(genotype)
                 counter += 1
@@ -268,11 +268,11 @@ module Import
               end
             # variant dna [Is not '*Fail*', 'N' or null] AND [raw:gene is null] AND [raw:gene (other) does not specify a single gene]
             # If gene is specified in raw:variant dna, then assign 2 (abnormal) for the specified gene and 1 (normal) for all other genes. Else interrogate raw:gene (other).
-            elsif record.raw_fields['gene'].nil? && ((genes['gene (other)']).nil? || genes['gene (other)'].length > 1) && genes['variant dna'].length >= 1
+            elsif record.raw_fields['gene'].nil? && ((genes['gene (other)']).nil? || genes['gene (other)'].length > 1) && genes['variant dna']!=nil && genes['variant dna'].length >= 1
               update_status(2, 1, column, 'variant dna', genotype)
             # variant dna [Is not '*Fail*', 'N' or null] AND [raw:gene is null] AND [raw:gene (other) specifies a single gene]
             # 2 (abnormal) for gene in raw:gene (other). 1 (normal) for all other genes.
-            elsif record.raw_fields['gene'].nil? && (genes['gene (other)']).length == 1
+            elsif record.raw_fields['gene'].nil? && genes['gene (other)']!=nil && (genes['gene (other)']).length == 1
               update_status(2, 1, column, 'gene (other)', genotype)
             end
           end
