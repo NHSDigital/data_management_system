@@ -74,7 +74,7 @@ module Import
 
             # in order of priority
             TARGETED_TEST_STATUS = [{column:'gene (other)', expression:/Fail/ix, status: 9, regex:'regex'},
-                                   {column: 'gene (other)', expression: /het|del|dup|c\./ix, status:2, regex:'regex'},
+                                   {column: 'gene (other)', expression: /^het|del|dup|^c\./ix, status:2, regex:'regex'},
                                    {column:'variant dna', expression:/Fail|Wrong\samplicon\stested/ix, status: 9, regex:'regex'},
                                    {column:'variant dna', expression:'N', status: 1, regex: 'match'},
                                    {column:'variant dna', expression:/het|del|dup|c\./ix, status:2, regex:'regex'},

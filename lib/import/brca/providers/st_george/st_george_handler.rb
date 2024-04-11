@@ -55,7 +55,7 @@ module Import
             # map molecular testing type and assign to genotype using
             # add_molecular_testing_type method from genotype.rb
 
-            return if record.raw_fields['moleculartestingtype'].nil?
+            return if record.raw_fields['moleculartestingtype'].blank?
 
             testtype = TEST_TYPE_MAP[record.raw_fields['moleculartestingtype']]
             if testtype == 'predictive'
@@ -93,7 +93,7 @@ module Import
             genes = []
             columns.each do |column|
               gene_list = record.raw_fields[column]&.scan(BRCA_GENE_REGEX)
-              next if gene_list.nil?
+              next if gene_list.blank?
 
               gene_list.each do |gene|
                 gene = BRCA_GENE_MAP[gene]
@@ -111,7 +111,7 @@ module Import
             genotypes = []
             counter = 0
             genes.each do |gene|
-              next if gene.nil?
+              next if gene.blank?
 
               gene.each do |gene_value|
                 # genotype only needs to be duplicated if there is more than one gene in the list
@@ -142,12 +142,12 @@ module Import
             # if the column value matches the expression, assign test status and return true
 
             if match == 'regex'
-              if !record.raw_fields[column].nil? && record.raw_fields[column].scan(expression).size.positive?
+              if !record.raw_fields[column].blank? && record.raw_fields[column].scan(expression).size.positive?
                 genotype.add_status(status)
                 true
               end
             else
-              if !record.raw_fields[column].nil? && record.raw_fields[column] == expression
+              if !record.raw_fields[column].blank? && record.raw_fields[column] == expression
                 genotype.add_status(status)
                 true
               end
@@ -159,21 +159,28 @@ module Import
             # outputs a dictionary of genes assigned to each column name
             genes_dict = {}
 
+
             ['gene', 'gene (other)', 'variant dna', 'test/panel'].each do |column|
               genes = []
               gene_list = record.raw_fields[column]&.scan(BRCA_GENE_REGEX)
+              
+             
               gene_list = process_test_panels(record, gene_list, column, genotype, genes) if column == 'test/panel'
-              next if gene_list.nil?
 
-              gene_list.each do |gene|
-                BRCA_GENE_MAP[gene]&.each do |gene_value|
+              next if gene_list.blank?
+
+              gene_list.each do |gene|   
+                BRCA_GENE_MAP[gene]&.each do |gene_value|       
                   genes.append(gene_value)
                 end
               end
+              
               # handles brca1 and brca2 being matched twice
               genes_dict[column] = genes.uniq
             end
             genes_dict
+
+  
           end
 
           def process_test_panels(record, gene_list, column, genotype, genes)
@@ -181,21 +188,22 @@ module Import
             # panels mapped to list of genes in FULL_SCREEN_TESTS_MAP
             # to output list of genes tested in panel
             panel_genes_list = FULL_SCREEN_TESTS_MAP[record.raw_fields['test/panel']]
+  
             if panel_genes_list!=nil
               panel_genes_list.each do |gene|
                 gene_list.append(gene)
               end
             end
-            r208 = record.raw_fields[column]&.scan('R208')
-            gene_list.append(process_r208(record)) unless r208.nil?
+            r208 = record.raw_fields[column]&.eql?('R208') 
+            gene_list=process_r208(record) unless r208.blank?
             gene_list
           end
 
           def process_r208(record)
+          
             # Determine genes tested from r208 panel based on the authorised date
             # output list of genes in r208 panel
             return unless record.raw_fields['test/panel'] == 'R208'
-
             date = DateTime.parse(record.raw_fields['authoriseddate'])
             if date < DateTime.parse('01/08/2022')
               r208_panel_genes = %w[BRCA1 BRCA2]
@@ -205,6 +213,8 @@ module Import
               r208_panel_genes = %w[BRCA1 BRCA2 CHEK2 PALB2 ATM RAD51C RAD51D]
             end
             r208_panel_genes
+            
+            
           end
 
           def handle_test_status_full_screen(record, genotype, genes)
@@ -230,8 +240,10 @@ module Import
           end
 
           def assign_test_status_full_screen(record, gene, genes, genotype, column)
+     
             # interrogate variant dna column
-            if !record.raw_fields['variant dna'].nil?
+            if !record.raw_fields['variant dna'].blank?
+            
               interrogate_variant_dna_column(record, genotype, genes, column, gene)
             # interrogate raw gene (other)
             elsif /fail/i.match(record.raw_fields['gene (other)']).present?
@@ -239,7 +251,7 @@ module Import
               else
                 update_status(10, 1, column, 'gene', genotype)
               end
-            elsif record.raw_fields['gene (other)']&.match(/c\.|Ex*Del|Ex*Dup|Het\sDel*|Het\sDup*/ix)
+            elsif record.raw_fields['gene (other)']&.match(/^c\.|^Ex.*Del|^Ex.*Dup|^Het\sDel*|^Het\sDup*/ix)
               update_status(2, 1, column, 'gene', genotype)
             # TODO: could this include brca1/2
             else
@@ -256,11 +268,11 @@ module Import
               genotype.add_status(1)
             # variant dna [Is not '*Fail*', 'N' or null] AND [raw:gene is not null] AND [raw:gene (other) is null]
             # 2 (abnormal) for gene in raw:gene. 1 (normal) for all other genes.
-            elsif !record.raw_fields['gene'].nil? && record.raw_fields['gene (other)'].nil?
+            elsif !record.raw_fields['gene'].blank? && record.raw_fields['gene (other)'].blank?
               update_status(2, 1, column, 'gene', genotype)
             # variant dna [Is not '*Fail*', 'N' or null] AND [raw:gene is not null] AND [raw:gene (other) is not null]
             # 2 (abnormal) for gene in raw:gene. 9 (failed, genetic test) for any gene specified WITH 'Fail' in raw:gene (other). 1 (normal) for all other genes
-            elsif !record.raw_fields['gene'].nil? && !record.raw_fields['gene (other)'].nil?
+            elsif !record.raw_fields['gene'].blank? && !record.raw_fields['gene (other)'].blank?
               if column == 'gene'
                 genotype.add_status(2)
               elsif column == 'gene (other)'
@@ -268,11 +280,11 @@ module Import
               end
             # variant dna [Is not '*Fail*', 'N' or null] AND [raw:gene is null] AND [raw:gene (other) does not specify a single gene]
             # If gene is specified in raw:variant dna, then assign 2 (abnormal) for the specified gene and 1 (normal) for all other genes. Else interrogate raw:gene (other).
-            elsif record.raw_fields['gene'].nil? && ((genes['gene (other)']).nil? || genes['gene (other)'].length > 1) && genes['variant dna']!=nil && genes['variant dna'].length >= 1
+            elsif record.raw_fields['gene'].blank? && ((genes['gene (other)']).blank? || genes['gene (other)'].length > 1) && genes['variant dna']!=nil && genes['variant dna'].length >= 1
               update_status(2, 1, column, 'variant dna', genotype)
             # variant dna [Is not '*Fail*', 'N' or null] AND [raw:gene is null] AND [raw:gene (other) specifies a single gene]
             # 2 (abnormal) for gene in raw:gene (other). 1 (normal) for all other genes.
-            elsif record.raw_fields['gene'].nil? && genes['gene (other)']!=nil && (genes['gene (other)']).length == 1
+            elsif record.raw_fields['gene'].blank? && genes['gene (other)']!=nil && (genes['gene (other)']).length == 1
               update_status(2, 1, column, 'gene (other)', genotype)
             end
           end
@@ -302,6 +314,7 @@ module Import
 
           def update_status(status1, status2, column, column_name, genotype)
             # update genotype status depending on if the gene is in the same column that the rule applies to
+            
             if column == column_name
               genotype.add_status(status1)
             else
@@ -313,7 +326,7 @@ module Import
             # update status of genes listed in format '[gene 1] Class V, [gene 2] N'
             # 2 (abnormal) for [gene 1]. 1 (normal) for [gene 2]
             gene_list = record.raw_fields['gene (other)']&.scan(BRCA_GENE_REGEX)
-            return if gene_list.nil? || gene_list.length <= 1
+            return if gene_list.blank? || gene_list.length <= 1
 
             gene_list.each do |gene1|
               gene_list.each do |gene2|
@@ -343,7 +356,7 @@ module Import
                 genotype.add_protein_impact($LAST_MATCH_INFO[:impact])
               end
             end
-            if record.mapped_fields['codingdnasequencechange'].nil? && record.mapped_fields['proteinimpact'].nil?
+            if record.mapped_fields['codingdnasequencechange'].blank? && record.mapped_fields['proteinimpact'].blank?
               process_location_type_zygosity(genotype, record)
             end
           end
