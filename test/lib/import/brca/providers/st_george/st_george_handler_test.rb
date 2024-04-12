@@ -79,8 +79,7 @@ class StGeorgeTest < ActiveSupport::TestCase
     fullscreen_record2.raw_fields['variant dna'] = ''
     fullscreen_record2.raw_fields['variant protein'] = ''
     @handler.assign_test_scope(@genotype, fullscreen_record2)
-    assert_equal 'Full screen BRCA1 and BRCA2', @genotype.attribute_map['genetictestscope']
-
+    assert_equal 'Targeted BRCA mutation test', @genotype.attribute_map['genetictestscope']  
   end
 
 
@@ -160,10 +159,10 @@ class StGeorgeTest < ActiveSupport::TestCase
 
     #Test when raw:gene is null] AND raw:gene (other) specifies a single gene and the gene in question is in the gene(other column)
     full_screen_test_status = build_raw_record('pseudo_id1' => 'bob')
-    full_screen_test_status.raw_fields['variant dna'] = ''
+    full_screen_test_status.raw_fields['variant dna'] = 'variant'
     full_screen_test_status.raw_fields['gene'] = nil
     full_screen_test_status.raw_fields['gene (other)'] = 'BRCA1'
-    @handler.assign_test_status_full_screen(full_screen_test_status, 'BRCA1', {'gene': [], 'gene (other)':['BRCA1'], 'variant dna': ['BRCA2']}, @genotype, 'gene (other)')
+    @handler.assign_test_status_full_screen(full_screen_test_status, 'BRCA1', {'gene'=> [], 'gene (other)'=>['BRCA1'], 'variant dna'=> ['variant']}, @genotype, 'gene (other)')
     assert_equal 2, @genotype.attribute_map['teststatus']
 
     #Test when raw:gene is null] AND raw:gene (other) specifies a single gene and the gene in question is not in  the gene (other) column
@@ -171,7 +170,7 @@ class StGeorgeTest < ActiveSupport::TestCase
     full_screen_test_status.raw_fields['variant dna'] = 'ATM'
     full_screen_test_status.raw_fields['gene'] = nil
     full_screen_test_status.raw_fields['gene (other)'] = 'BRCA1'
-    @handler.assign_test_status_full_screen(full_screen_test_status, 'BRCA2', {'gene': [], 'gene (other)':['BRCA1'], 'variant dna': ['ATM'], 'test/panel': 'BRCA2'}, @genotype, 'variant dna')
+    @handler.assign_test_status_full_screen(full_screen_test_status, 'BRCA2', {'gene'=> [], 'gene (other)'=>['BRCA1'], 'variant dna'=> ['ATM'], 'test/panel'=> 'BRCA2'}, @genotype, 'variant dna')
     assert_equal 1, @genotype.attribute_map['teststatus']
 
 
@@ -181,16 +180,16 @@ class StGeorgeTest < ActiveSupport::TestCase
     full_screen_test_status.raw_fields['variant dna'] = 'BRCA1'
     full_screen_test_status.raw_fields['gene'] = nil
     full_screen_test_status.raw_fields['gene (other)'] = 'BRCA2'
-    @handler.assign_test_status_full_screen(full_screen_test_status, 'BRCA1', {'gene': ['CHEK2'], 'gene (other)':[ 'BRCA2'], 'variant dna': ['BRCA1']}, @genotype, 'variant dna')
+    @handler.assign_test_status_full_screen(full_screen_test_status, 'BRCA1', {'gene'=> ['CHEK2'], 'gene (other)'=>[ 'BRCA2'], 'variant dna'=> ['BRCA1']}, @genotype, 'variant dna')
     assert_equal 1, @genotype.attribute_map['teststatus']
 
     #Test when raw:gene is null] AND raw:gene (other) does not specify a single gene, and gene in question is not in variant dna column but there is a gene in variant dna column
 
     full_screen_test_status = build_raw_record('pseudo_id1' => 'bob')
-    full_screen_test_status.raw_fields['variant dna'] = ''
+    full_screen_test_status.raw_fields['variant dna'] = 'ATM'
     full_screen_test_status.raw_fields['gene'] = nil
     full_screen_test_status.raw_fields['gene (other)'] = 'BRCA1 BRCA2'
-    @handler.assign_test_status_full_screen(full_screen_test_status, 'BRCA1', {'gene': ['CHECK2'], 'gene (other)':['BRCA1', 'BRCA2'], 'variant dna': ['BRCA1']}, @genotype, 'gene (other)')
+    @handler.assign_test_status_full_screen(full_screen_test_status, 'BRCA1', {'gene'=> ['CHECK2'], 'gene (other)'=>['BRCA1', 'BRCA2'], 'variant dna'=> ['ATM']}, @genotype, 'gene (other)')
     assert_equal 1, @genotype.attribute_map['teststatus']
 
 
@@ -283,19 +282,19 @@ class StGeorgeTest < ActiveSupport::TestCase
     r208_first_panel = build_raw_record('pseudo_id1' => 'bob')
     r208_first_panel.raw_fields['test/panel'] = 'R208'
     r208_first_panel.raw_fields['authoriseddate'] = '09/07/2022'
-    genes=@handler.process_r208(@genotype, r208_first_panel, [])
+    genes=@handler.process_r208(r208_first_panel)
     assert_equal ['BRCA1', 'BRCA2'], genes
 
     r208_second_panel = build_raw_record('pseudo_id1' => 'bob')
     r208_second_panel.raw_fields['test/panel'] = 'R208'
     r208_second_panel.raw_fields['authoriseddate'] = '01/08/2022'
-    genes=@handler.process_r208(@genotype, r208_second_panel, [])
+    genes=@handler.process_r208(r208_second_panel)
     assert_equal ['BRCA1', 'BRCA2', 'CHEK2', 'PALB2', 'ATM'], genes
 
     r208_third_panel = build_raw_record('pseudo_id1' => 'bob')
     r208_third_panel.raw_fields['test/panel'] = 'R208'
     r208_third_panel.raw_fields['authoriseddate'] = '01/01/2023'
-    genes=@handler.process_r208(@genotype, r208_third_panel, [])
+    genes=@handler.process_r208(r208_third_panel)
     assert_equal [ 'BRCA1', 'BRCA2', 'CHEK2', 'PALB2', 'ATM', 'RAD51C', 'RAD51D'], genes
 
 

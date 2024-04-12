@@ -167,7 +167,7 @@ module Import
              
               gene_list = process_test_panels(record, gene_list, column, genotype, genes) if column == 'test/panel'
 
-              next if gene_list.blank?
+              next if gene_list.nil?
 
               gene_list.each do |gene|   
                 BRCA_GENE_MAP[gene]&.each do |gene_value|       
@@ -195,7 +195,13 @@ module Import
               end
             end
             r208 = record.raw_fields[column]&.eql?('R208') 
-            gene_list=process_r208(record) unless r208.blank?
+            if !r208.blank? 
+              r208_genes=process_r208(record)
+              r208_genes.each do |gene|
+                  gene_list.append(gene)
+              end
+            end 
+            #gene_list=process_r208(record) unless r208.blank?
             gene_list
           end
 
