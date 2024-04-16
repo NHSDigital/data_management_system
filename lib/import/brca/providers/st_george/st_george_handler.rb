@@ -96,18 +96,14 @@ module Import
             # When there is more than one gene listed a separate genotype needs to be created for each one
             # The genotype is duplicated and the new gene is added to the duplicated genotype
             # Each genotype is then added to the genoytypes list which this method then returns
-
             genotypes = []
-            counter = 0
             genes.each do |gene|
               next if gene.blank?
-
               gene.each do |gene_value|
-                # genotype only needs to be duplicated if there is more than one gene in the list
-                genotype = genotype.dup if counter.positive?
-                genotype.add_gene(gene_value)
-                genotypes.append(genotype)
-                counter += 1
+                # genotype only needs to be duplicated if there is more than one gene in the list               
+                  genotype = genotype.dup if genes.flatten.uniq.size > 1 
+                  genotype.add_gene(gene_value)
+                  genotypes.append(genotype)
               end
             end
             genotypes
