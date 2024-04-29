@@ -45,6 +45,54 @@ class RoyalMarsdenHandlerTest < ActiveSupport::TestCase
     normal_record.raw_fields['teststatus'] = 'NO PATHOGENIC VARIANT IDENTIFIED'
     @handler.process_teststatus(@genotype, normal_record)
     assert_equal 1, @genotype.attribute_map['teststatus']
+
+    non_path_record = build_raw_record('pseudo_id1' => 'bob')
+    non_path_record.raw_fields['teststatus'] = 'Ex del'
+    non_path_record.raw_fields['variantpathclass'] = '2a'
+    @handler.process_teststatus(@genotype, non_path_record)
+    assert_equal 10, @genotype.attribute_map['teststatus']
+
+    non_path_record = build_raw_record('pseudo_id1' => 'bob')
+    non_path_record.raw_fields['teststatus'] = 'Ex del'
+    non_path_record.raw_fields['variantpathclass'] = '2b'
+    @handler.process_teststatus(@genotype, non_path_record)
+    assert_equal 10, @genotype.attribute_map['teststatus']
+
+    non_path_record = build_raw_record('pseudo_id1' => 'bob')
+    non_path_record.raw_fields['teststatus'] = 'Ex del'
+    non_path_record.raw_fields['variantpathclass'] = 'variant'
+    @handler.process_teststatus(@genotype, non_path_record)
+    assert_equal 10, @genotype.attribute_map['teststatus']
+
+    path_record = build_raw_record('pseudo_id1' => 'bob')
+    path_record.raw_fields['teststatus'] = 'Ex Del'
+    path_record.raw_fields['variantpathclass'] = '1b'
+    @handler.process_teststatus(@genotype, path_record)
+    assert_equal 2, @genotype.attribute_map['teststatus']
+
+    path_record = build_raw_record('pseudo_id1' => 'bob')
+    path_record.raw_fields['teststatus'] = 'Del ex 1'
+    path_record.raw_fields['variantpathclass'] = '1b'
+    @handler.process_teststatus(@genotype, path_record)
+    assert_equal 2, @genotype.attribute_map['teststatus']
+
+    path_record = build_raw_record('pseudo_id1' => 'bob')
+    path_record.raw_fields['teststatus'] = 'BRCA exon Deletion'
+    path_record.raw_fields['variantpathclass'] = '1b'
+    @handler.process_teststatus(@genotype, path_record)
+    assert_equal 2, @genotype.attribute_map['teststatus']
+
+    path_record = build_raw_record('pseudo_id1' => 'bob')
+    path_record.raw_fields['teststatus'] = 'borderline'
+    path_record.raw_fields['variantpathclass'] = '1b'
+    @handler.process_teststatus(@genotype, path_record)
+    assert_equal 7, @genotype.attribute_map['teststatus']
+
+    path_record = build_raw_record('pseudo_id1' => 'bob')
+    path_record.raw_fields['teststatus'] = 'non-pathogenic variant detected'
+    path_record.raw_fields['variantpathclass'] = '1b'
+    @handler.process_teststatus(@genotype, path_record)
+    assert_equal 10, @genotype.attribute_map['teststatus']
   end
 
   test 'process_variant' do
