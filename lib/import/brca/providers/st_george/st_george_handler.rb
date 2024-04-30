@@ -99,11 +99,12 @@ module Import
             genotypes = []
             genes.each do |gene|
               next if gene.blank?
+
               gene.each do |gene_value|
-                # genotype only needs to be duplicated if there is more than one gene in the list               
-                  genotype = genotype.dup if genes.flatten.uniq.size > 1 
-                  genotype.add_gene(gene_value)
-                  genotypes.append(genotype)
+                # genotype only needs to be duplicated if there is more than one gene in the list
+                genotype = genotype.dup if genes.flatten.uniq.size > 1
+                genotype.add_gene(gene_value)
+                genotypes.append(genotype)
               end
             end
             genotypes
@@ -120,6 +121,9 @@ module Import
                                                             test_values[:regex],
                                                             genotype)
             end
+            return if record.raw_fields['variant protein'].present?
+
+            genotype.add_status(4)
           end
 
           def assign_test_status_targeted_support(record, column, expression, status, match, genotype)
