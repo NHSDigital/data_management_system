@@ -141,14 +141,14 @@ module Import
             end
           end
 
-          def process_genes_full_screen(genotype, record)
+          def process_genes_full_screen(_genotype, record)
             # extracts genes from colunns in record
             # outputs a dictionary of genes assigned to each column name
             genes_dict = {}
 
             ['gene', 'gene (other)', 'variant dna', 'test/panel'].each do |column|
               genes = []
-              #TODO check this method can get multiple genes in list
+              # TODO: check this method can get multiple genes in list
               gene_list = record.raw_fields[column]&.scan(BRCA_GENE_REGEX)
 
               gene_list = process_test_panels(record, gene_list, column) if column == 'test/panel'

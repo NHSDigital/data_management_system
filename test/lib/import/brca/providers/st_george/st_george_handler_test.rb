@@ -102,10 +102,10 @@ class StGeorgeTest < ActiveSupport::TestCase
 
   test 'duplicate_genotype_targeted' do
     genotypes = @handler.duplicate_genotype_targeted([['PALB2'], ['BRCA2']], @genotype)
-    assert_equal 2, genotypes.length()
+    assert_equal 2, genotypes.length
 
     genotypes = @handler.duplicate_genotype_targeted([['BRCA2']], @genotype)
-    assert_equal 1, genotypes.length()
+    assert_equal 1, genotypes.length
   end
 
   test 'assign_test_status_targeted' do
@@ -202,7 +202,7 @@ class StGeorgeTest < ActiveSupport::TestCase
     genes_dict = @handler.process_genes_full_screen(@genotype, fs_brca1_plus_brca2_record)
     assert_equal ({ 'gene' => %w[BRCA1 BRCA2], 'gene (other)' => [] }), genes_dict
 
-    #TODO- what would be the outcome if the same gene was in two different columns?
+    # TODO- what would be the outcome if the same gene was in two different columns?
     fs_brca1_plus_brca2_record = build_raw_record('pseudo_id1' => 'bob')
     fs_brca1_plus_brca2_record.raw_fields['gene'] = 'BRCA1+2, BRCA1'
     fs_brca1_plus_brca2_record.raw_fields['gene (other)'] = 'unknown'
@@ -218,14 +218,13 @@ class StGeorgeTest < ActiveSupport::TestCase
 
     r207_panel = build_raw_record('pseudo_id1' => 'bob')
     r207_panel.raw_fields['test/panel'] = 'R207'
-    genes = @handler.process_test_panels(r207_panel, ["CHEK2"], 'test/panel')
+    genes = @handler.process_test_panels(r207_panel, ['CHEK2'], 'test/panel')
     assert_equal %w[CHEK2 BRCA1 BRCA2 BRIP1 MLH1 MSH2 MSH6 PALB2 RAD51C RAD51D], genes
 
     blank_panel = build_raw_record('pseudo_id1' => 'bob')
     blank_panel.raw_fields['test/panel'] = ''
     genes = @handler.process_test_panels(blank_panel, [], 'test/panel')
     assert_equal %w[], genes
-
   end
 
   test 'process_r208' do
@@ -252,23 +251,23 @@ class StGeorgeTest < ActiveSupport::TestCase
     targeted = build_raw_record('pseudo_id1' => 'bob')
     targeted.raw_fields['gene'] = 'BRCA1'
     targeted.raw_fields['gene (other)'] = 'unknown'
-    genotypes=@handler.handle_test_status_full_screen(targeted, @genotype, { 'gene' => ['BRCA1'], 'gene (other)' => [], 'variant dna' => [], 'test/panel' => [] })
+    genotypes = @handler.handle_test_status_full_screen(targeted, @genotype, { 'gene' => ['BRCA1'], 'gene (other)' => [], 'variant dna' => [], 'test/panel' => [] })
     assert_equal 7, @genotype.attribute_map['gene']
-    assert_equal 1, genotypes.length()
+    assert_equal 1, genotypes.length
 
     targeted = build_raw_record('pseudo_id1' => 'bob')
     targeted.raw_fields['gene'] = 'BRCA1'
     targeted.raw_fields['gene (other)'] = 'unknown'
-    genotypes=@handler.handle_test_status_full_screen(targeted, @genotype, { 'gene' => ['BRCA1'], 'gene (other)' => [] })
+    genotypes = @handler.handle_test_status_full_screen(targeted, @genotype, { 'gene' => ['BRCA1'], 'gene (other)' => [] })
     assert_equal 7, @genotype.attribute_map['gene']
-    assert_equal 1, genotypes.length()
+    assert_equal 1, genotypes.length
 
     # check the duplication is working correctly
     targeted = build_raw_record('pseudo_id1' => 'bob')
     targeted.raw_fields['gene'] = 'BRCA1'
     targeted.raw_fields['gene (other)'] = 'BRCA2'
-    genotypes=@handler.handle_test_status_full_screen(targeted, @genotype, { 'gene' => ['BRCA1'], 'gene (other)' => ['BRCA2'] })
-    assert_equal 2, genotypes.length()
+    genotypes = @handler.handle_test_status_full_screen(targeted, @genotype, { 'gene' => ['BRCA1'], 'gene (other)' => ['BRCA2'] })
+    assert_equal 2, genotypes.length
   end
 
   test 'assign_test_status_full_screen' do
@@ -469,12 +468,11 @@ class StGeorgeTest < ActiveSupport::TestCase
   end
 
   test 'update_status' do
-    @handler.update_status( 2, 1, 'gene', 'gene', @genotype)
+    @handler.update_status(2, 1, 'gene', 'gene', @genotype)
     assert_equal 2, @genotype.attribute_map['teststatus']
 
-    @handler.update_status( 2, 1, 'gene', 'gene(other)', @genotype)
+    @handler.update_status(2, 1, 'gene', 'gene(other)', @genotype)
     assert_equal 1, @genotype.attribute_map['teststatus']
-
   end
 
   test 'gene_classv_gene_n_format' do
@@ -530,7 +528,6 @@ class StGeorgeTest < ActiveSupport::TestCase
   end
 
   test 'process_location_type_zygosity' do
-
     location_type_zygosity = build_raw_record('pseudo_id1' => 'bob')
     @genotype.attribute_map['teststatus'] = 2
     location_type_zygosity.raw_fields['gene'] = 'het del ex 12-34'
