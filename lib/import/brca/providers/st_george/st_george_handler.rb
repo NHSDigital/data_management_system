@@ -148,9 +148,10 @@ module Import
 
             ['gene', 'gene (other)', 'variant dna', 'test/panel'].each do |column|
               genes = []
+              #TODO check this method can get multiple genes in list
               gene_list = record.raw_fields[column]&.scan(BRCA_GENE_REGEX)
 
-              gene_list = process_test_panels(record, gene_list, column, genotype, genes) if column == 'test/panel'
+              gene_list = process_test_panels(record, gene_list, column) if column == 'test/panel'
 
               next if gene_list.nil?
 
@@ -160,13 +161,13 @@ module Import
                 end
               end
 
-              # handles brca1 and brca2 being matched twice
+              # handles brca1 and brca2 being matched twice in one column
               genes_dict[column] = genes.uniq
             end
             genes_dict
           end
 
-          def process_test_panels(record, gene_list, column, _genotype, _genes)
+          def process_test_panels(record, gene_list, column)
             # extracts panels tested from record
             # panels mapped to list of genes in FULL_SCREEN_TESTS_MAP
             # to output list of genes tested in panel
@@ -198,7 +199,7 @@ module Import
               r208_panel_genes = %w[BRCA1 BRCA2]
             elsif DateTime.parse('31/07/2022') < date && date < DateTime.parse('16/11/2022')
               r208_panel_genes = %w[BRCA1 BRCA2 CHEK2 PALB2 ATM]
-            elsif date > DateTime.parse('15/07/2022')
+            elsif date > DateTime.parse('16/11/2022')
               r208_panel_genes = %w[BRCA1 BRCA2 CHEK2 PALB2 ATM RAD51C RAD51D]
             end
             r208_panel_genes
