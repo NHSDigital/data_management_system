@@ -79,7 +79,7 @@ module Import
                                    {column:'variant dna', expression:'N', status: 1, regex: 'match'},
                                    {column:'variant dna', expression:/het|del|dup|c\./ix, status:2, regex:'regex'},
                                    {column:'variant protein', expression:'N', status:1, regex:'match'},
-                                   {column:'variant protein', expression:'nil', status:4, regex:'match'},
+                                   {column:'variant protein', expression:/p\./ix, status:2, regex:'regex'}
                                    ]
 
 

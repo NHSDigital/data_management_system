@@ -80,6 +80,196 @@ class StGeorgeTest < ActiveSupport::TestCase
     assert_equal 'Targeted BRCA mutation test', @genotype.attribute_map['genetictestscope']
   end
 
+  test 'process_genes_targeted' do
+    targeted_brca1_record_empty_gene_other = build_raw_record('pseudo_id1' => 'bob')
+    targeted_brca1_record_empty_gene_other.raw_fields['gene'] = 'BRCA1'
+    targeted_brca1_record_empty_gene_other.raw_fields['gene (other)'] = nil
+    genes = @handler.process_genes_targeted(targeted_brca1_record_empty_gene_other)
+    assert_equal [['BRCA1']], genes
+
+    targeted_brca1_record_empty_gene = build_raw_record('pseudo_id1' => 'bob')
+    targeted_brca1_record_empty_gene.raw_fields['gene'] = nil
+    targeted_brca1_record_empty_gene.raw_fields['gene (other)'] = 'BRCA1'
+    genes = @handler.process_genes_targeted(targeted_brca1_record_empty_gene)
+    assert_equal [['BRCA1']], genes
+
+    targeted_incorrect_gene_name = build_raw_record('pseudo_id1' => 'bob')
+    targeted_incorrect_gene_name.raw_fields['gene'] = 'PLAB2'
+    targeted_incorrect_gene_name.raw_fields['gene (other)'] = 'BRCA2'
+    genes = @handler.process_genes_targeted(targeted_incorrect_gene_name)
+    assert_equal [['PALB2'], ['BRCA2']], genes
+  end
+
+  test 'duplicate_genotype_targeted' do
+    genotypes = @handler.duplicate_genotype_targeted([['PALB2'], ['BRCA2']], @genotype)
+    assert_equal 2, genotypes.length
+
+    genotypes = @handler.duplicate_genotype_targeted([['BRCA2']], @genotype)
+    assert_equal 1, genotypes.length
+  end
+
+  test 'assign_test_status_targeted' do
+    # Priority 1: Fail in gene(other)
+    targeted = build_raw_record('pseudo_id1' => 'bob')
+    targeted.raw_fields['gene'] = ''
+    targeted.raw_fields['gene (other)'] = 'FAIL'
+    @handler.assign_test_status_targeted(@genotype, targeted)
+    assert_equal 9, @genotype.attribute_map['teststatus']
+
+    # Priority 1: het in gene(other)
+    targeted = build_raw_record('pseudo_id1' => 'bob')
+    targeted.raw_fields['gene'] = ''
+    targeted.raw_fields['gene (other)'] = 'het'
+    @handler.assign_test_status_targeted(@genotype, targeted)
+    assert_equal 2, @genotype.attribute_map['teststatus']
+
+    # Priority 2: Fail in variant dna
+    targeted = build_raw_record('pseudo_id1' => 'bob')
+    targeted.raw_fields['gene'] = ''
+    targeted.raw_fields['gene (other)'] = ''
+    targeted.raw_fields['variant dna'] = 'FAIL'
+    @handler.assign_test_status_targeted(@genotype, targeted)
+    assert_equal 9, @genotype.attribute_map['teststatus']
+
+    # Priority 2: wrong amplicon tested in variant dna
+    targeted = build_raw_record('pseudo_id1' => 'bob')
+    targeted.raw_fields['gene'] = ''
+    targeted.raw_fields['gene (other)'] = ''
+    targeted.raw_fields['variant dna'] = 'wrong amplicon tested'
+    @handler.assign_test_status_targeted(@genotype, targeted)
+    assert_equal 9, @genotype.attribute_map['teststatus']
+
+    # Priority 2: N in variant dna
+    targeted = build_raw_record('pseudo_id1' => 'bob')
+    targeted.raw_fields['gene'] = ''
+    targeted.raw_fields['gene (other)'] = ''
+    targeted.raw_fields['variant dna'] = 'N'
+    @handler.assign_test_status_targeted(@genotype, targeted)
+    assert_equal 1, @genotype.attribute_map['teststatus']
+
+    # Priority 2: dup in variant dna
+    targeted = build_raw_record('pseudo_id1' => 'bob')
+    targeted.raw_fields['gene'] = ''
+    targeted.raw_fields['gene (other)'] = ''
+    targeted.raw_fields['variant dna'] = 'dup'
+    @handler.assign_test_status_targeted(@genotype, targeted)
+    assert_equal 2, @genotype.attribute_map['teststatus']
+
+    # Priority 3: N in variant protein
+    targeted = build_raw_record('pseudo_id1' => 'bob')
+    targeted.raw_fields['gene'] = ''
+    targeted.raw_fields['gene (other)'] = ''
+    targeted.raw_fields['variant dna'] = ''
+    targeted.raw_fields['variant protein'] = 'N'
+    @handler.assign_test_status_targeted(@genotype, targeted)
+    assert_equal 1, @genotype.attribute_map['teststatus']
+
+    # Priority 3: p. in variant protein
+    targeted = build_raw_record('pseudo_id1' => 'bob')
+    targeted.raw_fields['gene'] = ''
+    targeted.raw_fields['gene (other)'] = ''
+    targeted.raw_fields['variant dna'] = ''
+    targeted.raw_fields['variant protein'] = 'p.1234'
+    @handler.assign_test_status_targeted(@genotype, targeted)
+    assert_equal 2, @genotype.attribute_map['teststatus']
+
+    # Priority 3: blank in variant protein
+    targeted = build_raw_record('pseudo_id1' => 'bob')
+    targeted.raw_fields['gene'] = ''
+    targeted.raw_fields['gene (other)'] = ''
+    targeted.raw_fields['variant dna'] = ''
+    targeted.raw_fields['variant protein'] = ''
+    @handler.assign_test_status_targeted(@genotype, targeted)
+    assert_equal 4, @genotype.attribute_map['teststatus']
+  end
+
+  test 'process_genes_full_screen' do
+    fs_brca1_record = build_raw_record('pseudo_id1' => 'bob')
+    fs_brca1_record.raw_fields['gene'] = 'BRCA1'
+    fs_brca1_record.raw_fields['gene (other)'] = 'unknown'
+    genes_dict = @handler.process_genes_full_screen(@genotype, fs_brca1_record)
+    assert_equal ({ 'gene' => ['BRCA1'], 'gene (other)' => [] }), genes_dict
+
+    fs_brca1_slash_brca2_record = build_raw_record('pseudo_id1' => 'bob')
+    fs_brca1_slash_brca2_record.raw_fields['gene'] = 'BRCA1/2'
+    fs_brca1_slash_brca2_record.raw_fields['gene (other)'] = 'unknown'
+    genes_dict = @handler.process_genes_full_screen(@genotype, fs_brca1_slash_brca2_record)
+    assert_equal ({ 'gene' => %w[BRCA1 BRCA2], 'gene (other)' => [] }), genes_dict
+
+    fs_brca1_plus_brca2_record = build_raw_record('pseudo_id1' => 'bob')
+    fs_brca1_plus_brca2_record.raw_fields['gene'] = 'BRCA1+2'
+    fs_brca1_plus_brca2_record.raw_fields['gene (other)'] = 'unknown'
+    genes_dict = @handler.process_genes_full_screen(@genotype, fs_brca1_plus_brca2_record)
+    assert_equal ({ 'gene' => %w[BRCA1 BRCA2], 'gene (other)' => [] }), genes_dict
+
+    # TODO- what would be the outcome if the same gene was in two different columns?
+    fs_brca1_plus_brca2_record = build_raw_record('pseudo_id1' => 'bob')
+    fs_brca1_plus_brca2_record.raw_fields['gene'] = 'BRCA1+2, BRCA1'
+    fs_brca1_plus_brca2_record.raw_fields['gene (other)'] = 'unknown'
+    genes_dict = @handler.process_genes_full_screen(@genotype, fs_brca1_plus_brca2_record)
+    assert_equal ({ 'gene' => %w[BRCA1 BRCA2], 'gene (other)' => [] }), genes_dict
+  end
+
+  test 'process_test_panels' do
+    hboc_v1_panel = build_raw_record('pseudo_id1' => 'bob')
+    hboc_v1_panel.raw_fields['test/panel'] = 'HBOC_V1'
+    genes = @handler.process_test_panels(hboc_v1_panel, [], 'test/panel')
+    assert_equal %w[BRCA1 BRCA2 CHEK2 PALB2], genes
+
+    r207_panel = build_raw_record('pseudo_id1' => 'bob')
+    r207_panel.raw_fields['test/panel'] = 'R207'
+    genes = @handler.process_test_panels(r207_panel, ['CHEK2'], 'test/panel')
+    assert_equal %w[CHEK2 BRCA1 BRCA2 BRIP1 MLH1 MSH2 MSH6 PALB2 RAD51C RAD51D], genes
+
+    blank_panel = build_raw_record('pseudo_id1' => 'bob')
+    blank_panel.raw_fields['test/panel'] = ''
+    genes = @handler.process_test_panels(blank_panel, [], 'test/panel')
+    assert_equal %w[], genes
+  end
+
+  test 'process_r208' do
+    r208_first_panel = build_raw_record('pseudo_id1' => 'bob')
+    r208_first_panel.raw_fields['test/panel'] = 'R208'
+    r208_first_panel.raw_fields['authoriseddate'] = '09/07/2022'
+    genes = @handler.process_r208(r208_first_panel)
+    assert_equal %w[BRCA1 BRCA2], genes
+
+    r208_second_panel = build_raw_record('pseudo_id1' => 'bob')
+    r208_second_panel.raw_fields['test/panel'] = 'R208'
+    r208_second_panel.raw_fields['authoriseddate'] = '01/08/2022'
+    genes = @handler.process_r208(r208_second_panel)
+    assert_equal %w[BRCA1 BRCA2 CHEK2 PALB2 ATM], genes
+
+    r208_third_panel = build_raw_record('pseudo_id1' => 'bob')
+    r208_third_panel.raw_fields['test/panel'] = 'R208'
+    r208_third_panel.raw_fields['authoriseddate'] = '01/01/2023'
+    genes = @handler.process_r208(r208_third_panel)
+    assert_equal %w[BRCA1 BRCA2 CHEK2 PALB2 ATM RAD51C RAD51D], genes
+  end
+
+  test 'handle_test_status_full_screen' do
+    targeted = build_raw_record('pseudo_id1' => 'bob')
+    targeted.raw_fields['gene'] = 'BRCA1'
+    targeted.raw_fields['gene (other)'] = 'unknown'
+    genotypes = @handler.handle_test_status_full_screen(targeted, @genotype, { 'gene' => ['BRCA1'], 'gene (other)' => [], 'variant dna' => [], 'test/panel' => [] })
+    assert_equal 7, @genotype.attribute_map['gene']
+    assert_equal 1, genotypes.length
+
+    targeted = build_raw_record('pseudo_id1' => 'bob')
+    targeted.raw_fields['gene'] = 'BRCA1'
+    targeted.raw_fields['gene (other)'] = 'unknown'
+    genotypes = @handler.handle_test_status_full_screen(targeted, @genotype, { 'gene' => ['BRCA1'], 'gene (other)' => [] })
+    assert_equal 7, @genotype.attribute_map['gene']
+    assert_equal 1, genotypes.length
+
+    # check the duplication is working correctly
+    targeted = build_raw_record('pseudo_id1' => 'bob')
+    targeted.raw_fields['gene'] = 'BRCA1'
+    targeted.raw_fields['gene (other)'] = 'BRCA2'
+    genotypes = @handler.handle_test_status_full_screen(targeted, @genotype, { 'gene' => ['BRCA1'], 'gene (other)' => ['BRCA2'] })
+    assert_equal 2, genotypes.length
+  end
+
   test 'assign_test_status_full_screen' do
     # Test when variant dna column contains fail
     full_screen_test_status = build_raw_record('pseudo_id1' => 'bob')
@@ -265,133 +455,24 @@ class StGeorgeTest < ActiveSupport::TestCase
     assert_equal 4, @genotype.attribute_map['teststatus']
   end
 
-  test 'process_r208' do
-    r208_first_panel = build_raw_record('pseudo_id1' => 'bob')
-    r208_first_panel.raw_fields['test/panel'] = 'R208'
-    r208_first_panel.raw_fields['authoriseddate'] = '09/07/2022'
-    genes = @handler.process_r208(r208_first_panel)
-    assert_equal %w[BRCA1 BRCA2], genes
-
-    r208_second_panel = build_raw_record('pseudo_id1' => 'bob')
-    r208_second_panel.raw_fields['test/panel'] = 'R208'
-    r208_second_panel.raw_fields['authoriseddate'] = '01/08/2022'
-    genes = @handler.process_r208(r208_second_panel)
-    assert_equal %w[BRCA1 BRCA2 CHEK2 PALB2 ATM], genes
-
-    r208_third_panel = build_raw_record('pseudo_id1' => 'bob')
-    r208_third_panel.raw_fields['test/panel'] = 'R208'
-    r208_third_panel.raw_fields['authoriseddate'] = '01/01/2023'
-    genes = @handler.process_r208(r208_third_panel)
-    assert_equal %w[BRCA1 BRCA2 CHEK2 PALB2 ATM RAD51C RAD51D], genes
-  end
-
-  test 'process_genes_targeted' do
-    targeted_brca1_record = build_raw_record('pseudo_id1' => 'bob')
-    targeted_brca1_record.raw_fields['gene'] = 'BRCA1'
-    targeted_brca1_record.raw_fields['gene (other)'] = 'unknown'
-    genes = @handler.process_genes_targeted(targeted_brca1_record)
-    assert_equal [['BRCA1']], genes
-
-    targeted_incorrect_gene_name = build_raw_record('pseudo_id1' => 'bob')
-    targeted_incorrect_gene_name.raw_fields['gene'] = 'PLAB2'
-    targeted_incorrect_gene_name.raw_fields['gene (other)'] = 'BRCA2'
-    genes = @handler.process_genes_targeted(targeted_incorrect_gene_name)
-    assert_equal [['PALB2'], ['BRCA2']], genes
-  end
-
-  test 'assign_test_status_targeted' do
-    targeted = build_raw_record('pseudo_id1' => 'bob')
-    targeted.raw_fields['gene'] = ''
-    targeted.raw_fields['gene (other)'] = 'FAIL'
-    @handler.assign_test_status_targeted(@genotype, targeted)
+  test 'match fail' do
+    failed_gene = build_raw_record('pseudo_id1' => 'bob')
+    failed_gene.raw_fields['gene (other)'] = 'PALB2 BRCA1 failed'
+    @handler.match_fail('BRCA1', failed_gene, @genotype)
     assert_equal 9, @genotype.attribute_map['teststatus']
 
-    targeted = build_raw_record('pseudo_id1' => 'bob')
-    targeted.raw_fields['gene'] = ''
-    targeted.raw_fields['gene (other)'] = 'het'
-    @handler.assign_test_status_targeted(@genotype, targeted)
-    assert_equal 2, @genotype.attribute_map['teststatus']
-
-    targeted = build_raw_record('pseudo_id1' => 'bob')
-    targeted.raw_fields['gene'] = ''
-    targeted.raw_fields['gene (other)'] = ''
-    targeted.raw_fields['variant dna'] = 'FAIL'
-    @handler.assign_test_status_targeted(@genotype, targeted)
-    assert_equal 9, @genotype.attribute_map['teststatus']
-
-    targeted = build_raw_record('pseudo_id1' => 'bob')
-    targeted.raw_fields['gene'] = ''
-    targeted.raw_fields['gene (other)'] = ''
-    targeted.raw_fields['variant dna'] = 'wrong amplicon tested'
-    @handler.assign_test_status_targeted(@genotype, targeted)
-    assert_equal 9, @genotype.attribute_map['teststatus']
-
-    targeted = build_raw_record('pseudo_id1' => 'bob')
-    targeted.raw_fields['gene'] = ''
-    targeted.raw_fields['gene (other)'] = ''
-    targeted.raw_fields['variant dna'] = 'N'
-    @handler.assign_test_status_targeted(@genotype, targeted)
+    not_failed_gene = build_raw_record('pseudo_id1' => 'bob')
+    not_failed_gene.raw_fields['gene (other)'] = 'PALB2 BRCA1 failed'
+    @handler.match_fail('PALB2', not_failed_gene, @genotype)
     assert_equal 1, @genotype.attribute_map['teststatus']
+  end
 
-    targeted = build_raw_record('pseudo_id1' => 'bob')
-    targeted.raw_fields['gene'] = ''
-    targeted.raw_fields['gene (other)'] = ''
-    targeted.raw_fields['variant dna'] = 'dup'
-    @handler.assign_test_status_targeted(@genotype, targeted)
+  test 'update_status' do
+    @handler.update_status(2, 1, 'gene', 'gene', @genotype)
     assert_equal 2, @genotype.attribute_map['teststatus']
-  end
 
-  test 'handle_test_status_full_screen' do
-    targeted = build_raw_record('pseudo_id1' => 'bob')
-    targeted.raw_fields['gene'] = 'BRCA1'
-    targeted.raw_fields['gene (other)'] = 'unknown'
-    @handler.handle_test_status_full_screen(targeted, @genotype, { 'gene' => ['BRCA1'], 'gene (other)' => [], 'variant dna' => [], 'test/panel' => [] })
-    assert_equal 7, @genotype.attribute_map['gene']
-
-    targeted = build_raw_record('pseudo_id1' => 'bob')
-    targeted.raw_fields['gene'] = 'BRCA1'
-    targeted.raw_fields['gene (other)'] = 'unknown'
-    @handler.handle_test_status_full_screen(targeted, @genotype, { 'gene' => ['BRCA1'], 'gene (other)' => [] })
-    assert_equal 7, @genotype.attribute_map['gene']
-  end
-
-  test 'process_genes_full_screen' do
-    fs_brca1_record = build_raw_record('pseudo_id1' => 'bob')
-    fs_brca1_record.raw_fields['gene'] = 'BRCA1'
-    fs_brca1_record.raw_fields['gene (other)'] = 'unknown'
-    genes_dict = @handler.process_genes_full_screen(@genotype, fs_brca1_record)
-    assert_equal ({ 'gene' => ['BRCA1'], 'gene (other)' => [] }), genes_dict
-
-    fs_brca1_slash_brca2_record = build_raw_record('pseudo_id1' => 'bob')
-    fs_brca1_slash_brca2_record.raw_fields['gene'] = 'BRCA1/2'
-    fs_brca1_slash_brca2_record.raw_fields['gene (other)'] = 'unknown'
-    genes_dict = @handler.process_genes_full_screen(@genotype, fs_brca1_slash_brca2_record)
-    assert_equal ({ 'gene' => %w[BRCA1 BRCA2], 'gene (other)' => [] }), genes_dict
-
-    fs_brca1_plus_brca2_record = build_raw_record('pseudo_id1' => 'bob')
-    fs_brca1_plus_brca2_record.raw_fields['gene'] = 'BRCA1+2'
-    fs_brca1_plus_brca2_record.raw_fields['gene (other)'] = 'unknown'
-    genes_dict = @handler.process_genes_full_screen(@genotype, fs_brca1_plus_brca2_record)
-    assert_equal ({ 'gene' => %w[BRCA1 BRCA2], 'gene (other)' => [] }), genes_dict
-  end
-
-  test 'process_variants' do
-    cvalue_pvalue_present = build_raw_record('pseudo_id1' => 'bob')
-    @genotype.attribute_map['teststatus'] = 2
-    cvalue_pvalue_present.raw_fields['variant dna'] = 'c.1234A<G'
-    cvalue_pvalue_present.raw_fields['variant protein'] = 'p.1234Arg123Gly'
-    @handler.process_variants(@genotype, cvalue_pvalue_present)
-    assert_equal 'c.1234A<G', @genotype.attribute_map['codingdnasequencechange']
-    assert_equal 'p.1234Arg123Gly', @genotype.attribute_map['proteinimpact']
-
-    cvalue_pvalue_absent = build_raw_record('pseudo_id1' => 'bob')
-    @genotype.attribute_map['teststatus'] = 2
-    cvalue_pvalue_absent.raw_fields['variant dna'] = 'het del ex 12-34'
-    cvalue_pvalue_absent.raw_fields['variant proteins'] = ''
-    @handler.process_variants(@genotype, cvalue_pvalue_absent)
-    assert_equal 3, @genotype.attribute_map['sequencevarianttype']
-    assert_equal '12-34', @genotype.attribute_map['exonintroncodonnumber']
-    assert_equal 1, @genotype.attribute_map['variantgenotype']
+    @handler.update_status(2, 1, 'gene', 'gene(other)', @genotype)
+    assert_equal 1, @genotype.attribute_map['teststatus']
   end
 
   test 'gene_classv_gene_n_format' do
@@ -406,6 +487,62 @@ class StGeorgeTest < ActiveSupport::TestCase
     gene_classv_gene_n.raw_fields['gene (other)'] = 'BRCA1 Class V, ATM N'
     @handler.gene_classv_gene_n_format(gene_classv_gene_n, @genotype, 'BRCA1')
     assert_equal 2, @genotype.attribute_map['teststatus']
+  end
+
+  test 'process_variants' do
+    # variant dna and variant protein columns
+    cvalue_pvalue_present1 = build_raw_record('pseudo_id1' => 'bob')
+    @genotype.attribute_map['teststatus'] = 2
+    cvalue_pvalue_present1.raw_fields['variant dna'] = 'c.1234A<G'
+    cvalue_pvalue_present1.raw_fields['variant protein'] = 'p.1234Arg123Gly'
+    @handler.process_variants(@genotype, cvalue_pvalue_present1)
+    assert_equal 'c.1234A<G', @genotype.attribute_map['codingdnasequencechange']
+    assert_equal 'p.1234Arg123Gly', @genotype.attribute_map['proteinimpact']
+
+    # gene and variant dna columns
+    cvalue_pvalue_present2 = build_raw_record('pseudo_id1' => 'bob')
+    @genotype.attribute_map['teststatus'] = 2
+    cvalue_pvalue_present2.raw_fields['gene'] = 'c.1234A<G'
+    cvalue_pvalue_present2.raw_fields['variant dna'] = 'p.1234Arg123Gly'
+    @handler.process_variants(@genotype, cvalue_pvalue_present2)
+    assert_equal 'c.1234A<G', @genotype.attribute_map['codingdnasequencechange']
+    assert_equal 'p.1234Arg123Gly', @genotype.attribute_map['proteinimpact']
+
+    # gene and gene(other) columns
+    cvalue_pvalue_present3 = build_raw_record('pseudo_id1' => 'bob')
+    @genotype.attribute_map['teststatus'] = 2
+    cvalue_pvalue_present3.raw_fields['gene'] = 'c.1234A<G'
+    cvalue_pvalue_present3.raw_fields['gene(other)'] = 'p.1234Arg123Gly'
+    @handler.process_variants(@genotype, cvalue_pvalue_present3)
+    assert_equal 'c.1234A<G', @genotype.attribute_map['codingdnasequencechange']
+    assert_equal 'p.1234Arg123Gly', @genotype.attribute_map['proteinimpact']
+
+    # check process_location_type_zygosity runs ok from this function
+    cvalue_pvalue_absent = build_raw_record('pseudo_id1' => 'bob')
+    @genotype.attribute_map['teststatus'] = 2
+    cvalue_pvalue_absent.raw_fields['variant dna'] = 'het del ex 12-34'
+    @handler.process_variants(@genotype, cvalue_pvalue_absent)
+    assert_equal 3, @genotype.attribute_map['sequencevarianttype']
+    assert_equal '12-34', @genotype.attribute_map['exonintroncodonnumber']
+    assert_equal 1, @genotype.attribute_map['variantgenotype']
+  end
+
+  test 'process_location_type_zygosity' do
+    location_type_zygosity = build_raw_record('pseudo_id1' => 'bob')
+    @genotype.attribute_map['teststatus'] = 2
+    location_type_zygosity.raw_fields['gene'] = 'het del ex 12-34'
+    @handler.process_variants(@genotype, location_type_zygosity)
+    assert_equal nil, @genotype.attribute_map['sequencevarianttype']
+    assert_equal nil, @genotype.attribute_map['exonintroncodonnumber']
+    assert_equal nil, @genotype.attribute_map['variantgenotype']
+
+    location_type_zygosity = build_raw_record('pseudo_id1' => 'bob')
+    @genotype.attribute_map['teststatus'] = 2
+    location_type_zygosity.raw_fields['variant dna'] = 'het del ex 12-34'
+    @handler.process_variants(@genotype, location_type_zygosity)
+    assert_equal 3, @genotype.attribute_map['sequencevarianttype']
+    assert_equal '12-34', @genotype.attribute_map['exonintroncodonnumber']
+    assert_equal 1, @genotype.attribute_map['variantgenotype']
   end
 
   test 'interrogate_variant_dna_column' do
