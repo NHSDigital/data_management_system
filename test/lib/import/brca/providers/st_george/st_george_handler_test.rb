@@ -183,6 +183,19 @@ class StGeorgeTest < ActiveSupport::TestCase
     assert_equal 4, @genotype.attribute_map['teststatus']
   end
 
+
+  test 'assign_test_status_targeted_support' do
+    check_regex = build_raw_record('pseudo_id1' => 'bob')
+    check_regex.raw_fields['variant dna'] = 'this contains an expression'
+    @handler.assign_test_status_targeted_support(check_regex, 'variant dna', 'expression', 2, 'regex', @genotype)
+    assert_equal 2, @genotype.attribute_map['teststatus']
+
+    check_match = build_raw_record('pseudo_id1' => 'bob')
+    check_match.raw_fields['variant dna'] = 'expression'
+    @handler.assign_test_status_targeted_support(check_match, 'variant dna', 'expression', 1, 'match', @genotype)
+    assert_equal 1, @genotype.attribute_map['teststatus']
+  end
+
   test 'process_genes_full_screen' do
     fs_brca1_record = build_raw_record('pseudo_id1' => 'bob')
     fs_brca1_record.raw_fields['gene'] = 'BRCA1 PALB2'
