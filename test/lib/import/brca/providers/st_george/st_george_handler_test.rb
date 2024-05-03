@@ -187,13 +187,13 @@ class StGeorgeTest < ActiveSupport::TestCase
   test 'assign_test_status_targeted_support' do
     check_regex = build_raw_record('pseudo_id1' => 'bob')
     check_regex.raw_fields['variant dna'] = 'this contains an expression'
-    @handler.assign_test_status_targeted_support(check_regex, 'variant dna', 'expression', 2, 'regex', @genotype)
-    assert_equal 2, @genotype.attribute_map['teststatus']
+    status= @handler.assign_test_status_targeted_support(check_regex, {column:'variant dna', expression:'expression', status:2,  regex: 'regex'}, @genotype)
+    assert_equal 2, status
 
     check_match = build_raw_record('pseudo_id1' => 'bob')
     check_match.raw_fields['variant dna'] = 'expression'
-    @handler.assign_test_status_targeted_support(check_match, 'variant dna', 'expression', 1, 'match', @genotype)
-    assert_equal 1, @genotype.attribute_map['teststatus']
+    status=@handler.assign_test_status_targeted_support(check_match, {column:'variant dna', expression:'expression', status: 1, regex: 'match'}, @genotype)
+    assert_equal 1, status
   end
 
   test 'process_genes_full_screen' do

@@ -6,28 +6,33 @@ module Import
   module Brca
     module Providers
       module StGeorge
-        # TODO: top level comment
+        # Process St George-specific record details into generalized internal genotype format
         class StGeorgeHandler < Import::Germline::ProviderHandler
           include Import::Helpers::Brca::Providers::Rj7::Constants
 
           def process_fields(record)
             genotype = Import::Brca::Core::GenotypeBrca.new(record)
-
             # records using new importer should only have SRIs starting with V
             return unless record.raw_fields['servicereportidentifier'].start_with?('V')
 
-            genotype.add_passthrough_fields(record.mapped_fields,
-                                            record.raw_fields,
-                                            PASS_THROUGH_FIELDS)
+            genotype.add_passthrough_fields(record.mapped_fields, record.raw_fields, PASS_THROUGH_FIELDS)
 
             assign_test_type(genotype, record)
             genotype = assign_test_scope(genotype, record)
 
+            genotypes = fill_genotype(genotype)
+
+            genotypes.each do |single_genotype|
+              process_variants(single_genotype, record)
+              @persister.integrate_and_store(single_genotype)
+            end
+          end
+
+          def fill_genotypes(genotype)
             genotypes = []
             if genotype.attribute_map['genetictestscope'] == 'Targeted BRCA mutation test'
               # determines the genes in the record and creates a genotype for each one
               genes = process_genes_targeted(record)
-
               # For each gene in the list of genes a new genotype will need to be created
               genotypes = duplicate_genotype_targeted(genes, genotype)
               genotypes.each do |single_genotype|
@@ -37,11 +42,7 @@ module Import
               genes_dict = process_genes_full_screen(genotype, record)
               genotypes = handle_test_status_full_screen(record, genotype, genes_dict)
             end
-
-            genotypes.each do |single_genotype|
-              process_variants(single_genotype, record)
-              @persister.integrate_and_store(single_genotype)
-            end
+            genotypes
           end
 
           def assign_test_type(genotype, record)
@@ -113,31 +114,32 @@ module Import
           def assign_test_status_targeted(genotype, record)
             # loop through list of dictionaries in TARGETED_TEST_STATUS from constants.rb
             # run assign_test_status_targeted_support for each dictionary with the values
-            # from the dictionary forming the parameters
-            TARGETED_TEST_STATUS.each do |test_values|
-              return if assign_test_status_targeted_support(record, test_values[:column],
-                                                            test_values[:expression],
-                                                            test_values[:status],
-                                                            test_values[:regex],
-                                                            genotype)
-            end
-            return if record.raw_fields['variant protein'].present?
 
-            genotype.add_status(4)
+            status = nil
+            # from the dictionary forming the parameters
+
+            TARGETED_TEST_STATUS.each do |test_values|
+              status = assign_test_status_targeted_support(record, test_values, genotype)
+              break unless status.nil?
+            end
+
+            status = 4 if status.nil? && record.raw_fields['variant protein'].blank?
+
+            genotype.add_status(status)
           end
 
-          def assign_test_status_targeted_support(record, column, expression, status, match, genotype)
+          def assign_test_status_targeted_support(record, test_values, _genotype)
             # if the match parameter is regex, try to match the regular expressions else determine if it matches exactly
             # if the column value matches the expression, assign test status and return true
+            column = test_values[:column]
+            status = test_values[:status]
+            expression = test_values[:expression]
+            match = test_values[:regex]
 
             if match == 'regex'
-              if record.raw_fields[column].present? && record.raw_fields[column].scan(expression).size.positive?
-                genotype.add_status(status)
-                true
-              end
+              status if record.raw_fields[column].present? && record.raw_fields[column].scan(expression).size.positive?
             elsif record.raw_fields[column].present? && record.raw_fields[column] == expression
-              genotype.add_status(status)
-              true
+              status
             end
           end
 
@@ -234,12 +236,13 @@ module Import
               interrogate_variant_dna_column(record, genotype, genes, column, gene)
             # interrogate raw gene (other)
             elsif /fail/i.match(record.raw_fields['gene (other)']).present?
-              if match_fail(gene, record, genotype)
-              else
-                update_status(10, 1, column, 'gene', genotype)
-              end
+              return if match_fail(gene, record, genotype)
+
+              update_status(10, 1, column, 'gene', genotype)
+
             elsif record.raw_fields['gene (other)']&.match(/^c\.|^Ex.*Del|^Ex.*Dup|^Het\sDel*|^Het\sDup*/ix)
               update_status(2, 1, column, 'gene', genotype)
+
             # TODO: could this include brca1/2
             else
               genotype.add_status(4)
@@ -253,25 +256,33 @@ module Import
               genotype.add_status(9)
             elsif record.raw_fields['variant dna'] == 'N'
               genotype.add_status(1)
-            # variant dna [Is not '*Fail*', 'N' or null] AND [raw:gene is not null] AND [raw:gene (other) is null]
+            # variant dna is not '*Fail*', 'N' or null AND raw:gene is not null AND raw:gene (other) is null
             # 2 (abnormal) for gene in raw:gene. 1 (normal) for all other genes.
-            elsif record.raw_fields['gene'].present? && record.raw_fields['gene (other)'].blank?
+            elsif record.raw_fields['gene'].present? \
+              && record.raw_fields['gene (other)'].blank?
               update_status(2, 1, column, 'gene', genotype)
-            # variant dna [Is not '*Fail*', 'N' or null] AND [raw:gene is not null] AND [raw:gene (other) is not null]
-            # 2 (abnormal) for gene in raw:gene. 9 (failed, genetic test) for any gene specified WITH 'Fail' in raw:gene (other). 1 (normal) for all other genes
-            elsif record.raw_fields['gene'].present? && record.raw_fields['gene (other)'].present?
+            # variant dna is not '*Fail*', 'N' or null AND raw:gene is not null AND raw:gene (other) is not null
+            # 2 (abnormal) for gene in raw:gene.
+            # 9 (failed, genetic test) for any gene specified WITH 'Fail' in raw:gene (other).
+            # 1 (normal) for all other genes
+            elsif record.raw_fields['gene'].present? \
+                        && record.raw_fields['gene (other)'].present?
               if column == 'gene'
                 genotype.add_status(2)
               elsif column == 'gene (other)'
                 match_fail(gene, record, genotype)
               end
-            # variant dna [Is not '*Fail*', 'N' or null] AND [raw:gene is null] AND [raw:gene (other) does not specify a single gene]
-            # If gene is specified in raw:variant dna, then assign 2 (abnormal) for the specified gene and 1 (normal) for all other genes. Else interrogate raw:gene (other).
-            elsif record.raw_fields['gene'].blank? && ((genes['gene (other)']).blank? || genes['gene (other)'].length > 1) && genes['variant dna'] != nil && genes['variant dna'].length >= 1
+            # variant dna not '*Fail*', 'N' or null AND raw:gene is null AND raw:gene(other) not a single gene
+            # If gene is specified in raw:variant dna, assign 2 (abnormal) for that gene and 1 (normal) for all other genes.
+            # Else interrogate raw:gene (other).
+            elsif record.raw_fields['gene'].blank? \
+              && (genes['gene (other)'].blank? || genes['gene (other)'].length > 1) \
+                  && !genes['variant dna'].nil? \
+                    && genes['variant dna'].length >= 1
               update_status(2, 1, column, 'variant dna', genotype)
-            # variant dna [Is not '*Fail*', 'N' or null] AND [raw:gene is null] AND [raw:gene (other) specifies a single gene]
+            # variant dna is not '*Fail*', 'N' or null AND raw:gene is null AND raw:gene (other) specifies a single gene
             # 2 (abnormal) for gene in raw:gene (other). 1 (normal) for all other genes.
-            elsif record.raw_fields['gene'].blank? && genes['gene (other)'] != nil && (genes['gene (other)']).length == 1
+            elsif record.raw_fields['gene'].blank? && !genes['gene (other)'].nil? && genes['gene (other)'].length == 1
               update_status(2, 1, column, 'gene (other)', genotype)
             end
           end
