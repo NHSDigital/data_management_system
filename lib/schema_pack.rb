@@ -11,7 +11,7 @@ class SchemaPack
   end
 
   def build
-    Zip::File.open(filename, Zip::File::CREATE) do |zipfile|
+    Zip::File.open(filename, create: true) do |zipfile|
       xsd = Xsd::SchemaFiles.new(dataset_version, zipfile)
       xsd.components.each(&:save_file)
       # TODO: previous dataset version front end selection
