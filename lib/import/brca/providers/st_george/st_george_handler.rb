@@ -20,7 +20,7 @@ module Import
             assign_test_type(genotype, record)
             genotype = assign_test_scope(genotype, record)
 
-            genotypes = fill_genotype(genotype)
+            genotypes = fill_genotypes(genotype, record)
 
             genotypes.each do |single_genotype|
               process_variants(single_genotype, record)
@@ -28,7 +28,7 @@ module Import
             end
           end
 
-          def fill_genotypes(genotype)
+          def fill_genotypes(genotype, record)
             genotypes = []
             if genotype.attribute_map['genetictestscope'] == 'Targeted BRCA mutation test'
               # determines the genes in the record and creates a genotype for each one
