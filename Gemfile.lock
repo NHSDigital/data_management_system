@@ -89,7 +89,7 @@ GEM
     bootstrap-sass (3.4.1)
       autoprefixer-rails (>= 5.2.1)
       sassc (>= 2.0.0)
-    bootstrap-table-rails (1.11.1.1)
+    bootstrap-table-rails (1.20.2)
     brakeman (5.0.4)
     builder (3.2.4)
     bundler-audit (0.9.1)
@@ -537,7 +537,7 @@ PLATFORMS
 
 DEPENDENCIES
   activemodel-caution (= 6.1.7.6)
-  bootstrap-table-rails (~> 1.11.1)
+  bootstrap-table-rails (~> 1.20.2)
   byebug
   cancancan (~> 3.0)
   capistrano (>= 2.5.0, < 3.0)

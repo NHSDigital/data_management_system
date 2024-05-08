@@ -96,8 +96,7 @@ gem 'ndr_ui'
 gem 'ndr_workflow', '~> 1.2', '>= 1.2.2'
 
 gem 'caxlsx', '~> 4'
-# TODO: 2023-09-03: bootstrap-table-rails fails `rake assets:precompile` if updated to 1.20.2
-gem 'bootstrap-table-rails', '~> 1.11.1'
+gem 'bootstrap-table-rails', '~> 1.20.2'
 
 gem 'loofah', '>= 2.3.1' # address CVE-2019-15587
 gem 'nokogiri', '~> 1.11'
