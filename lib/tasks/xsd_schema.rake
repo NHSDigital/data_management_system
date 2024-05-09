@@ -127,7 +127,7 @@ namespace :xsd do
     d_version_previous = dataset.dataset_versions.find_by(semver_version: version_previous)
     fname.concat "#{dataset.name}_v#{d_version.schema_version_format}.zip"
     filename = Rails.root.join('tmp', 'schema_packs').join(fname)
-    Zip::File.open(filename, Zip::File::CREATE) do |zipfile|
+    Zip::File.open(filename, create: true) do |zipfile|
       print "Generating Schema Files...\n"
       schema_files = Xsd::SchemaFiles.new(d_version, zipfile)
       schema_files.components.each(&:save_file)
