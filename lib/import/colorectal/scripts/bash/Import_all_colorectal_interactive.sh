@@ -173,4 +173,20 @@ $BRAKE import:colorectal fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.
 done
 }
 
-RR8; RR8_2; RNZ; RTD; RX1; RCU; RGT; R0A; R1K; RPY; RP4; RTH; RQ3; REP; R1H
+
+
+RJ7 () {
+PROV='RJ7'
+IFS=$'\n'
+for x in $(find  $DIRPATH/$FILEPATH  -type f -iname "*CRC*.pseudo" -path "*/$PROV/*" -o -type f -iname "*colorectal*.pseudo"  -path "*/$PROV/*")
+do
+IFS="$OIFS"
+$BRAKE import:colorectal fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
+done
+}
+
+#RR8; RR8_2; RNZ; RTD; RX1; RCU; RGT; R0A; R1K; RPY; RP4; RTH; RQ3; REP; R1H; RJ7
+
+RJ7
+
+#lib/import/colorectal/scripts/bash/Import_all_colorectal_interactive.sh ~/work/data_management_system private/pseudonymised_data/updated_files/
