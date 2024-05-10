@@ -1,3 +1,5 @@
+require 'rainbow'
+
 module Nodes
   # build a change log to txt file
   class ChangeLog

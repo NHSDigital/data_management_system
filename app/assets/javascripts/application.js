@@ -12,7 +12,7 @@
 //
 //= require jquery
 //= require jquery_ujs
-//= require bootstrap-table
+//= require bootstrap-table/bootstrap-table
 //= require cocoon
 // require bootstrapValidator.min
 //= require jQuery-File-Upload-9.22.0/vendor/jquery.ui.widget
