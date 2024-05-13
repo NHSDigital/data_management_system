@@ -9,9 +9,6 @@ module Import
                                        providercode receiveddate specimentype].freeze
 
 
-         
-
-
                                        TEST_TYPE_MAP =
                                        {
                                          'Carrier testing for known familial mutation(s)' => 'carrier',
@@ -53,6 +50,8 @@ module Import
                                         'VUS check' => []
                                     }.freeze
 
+                                    CRC_GENE_REGEX = %r{ATM|BMPR1A|EPCAM|GREM1|MLH1|MSH2|MHS2|MUTYH|NTHL1|PMS2|PMS|POLD1|POLE|PTEN|SMAD4|STK11|TP53}ix
+
                                     CRC_GENE_MAP =
                                     {
                                         'ATM' => ['ATM'],
@@ -60,11 +59,13 @@ module Import
                                         'EPCAM' => ['EPCAM'],
                                         'GREM1' => ['GREM1'],
                                         'MLH1' => ['MLH1'],
-                                        'MSH2' => %w[MSH2 MHS2],
+                                        'MSH2' => ['MSH2'],
+                                        'MHS2' => ['MSH2'],
                                         'MSH6' => ['MSH6'],
                                         'MUTYH' => ['MUTYH'],
                                         'NTHL1' => ['NTHL1'],
-                                        'PMS2' => %w[PMS2 PMS],
+                                        'PMS2' => ['PMS2'],
+                                        'PMS' => ['PMS2'],
                                         'POLD1' => ['POLD1'],
                                         'POLE' => ['POLE'],
                                         'PTEN' => ['PTEN'],
@@ -73,17 +74,23 @@ module Import
                                         'TP53' => ['TP53']
                                     }.freeze
 
+                                    
+
                     TARGETED_TEST_STATUS = [{ column: 'gene (other)', expression: /FAIL|^Blank\scontamination/ix, status: 9, regex: 'regex' },
                                     { column: 'gene (other)', expression: /^het|del|dup|^c\./ix, status: 2, regex: 'regex' },
                                     { column: 'variant dna', expression: /^fail|^Blank\scontamination/ix, status: 9,regex: 'regex' },
                                     { column: 'variant dna', expression: /^Normal|no\sdel\/dup/ix, status: 1,regex: 'regex' },
-                                    { column: 'variant dna', expression: /SNP\spresent|see\scomments/ix, status: 4,regex: 'regex' }, #Note this is in the context of 'c.1284T>C SNP present', where the designation of this benign variant as a SNP should override the regex 'c.*'
+                                    #{ column: 'variant dna', expression: /SNP\spresent|see\scomments/ix, status: 4,regex: 'regex' }, #Note this is in the context of 'c.1284T>C SNP present', where the designation of this benign variant as a SNP should override the regex 'c.*'
                                     { column: 'variant dna', expression: /het\sdel|het\sdup|het\sinv|^ex.*del|^ex.*dup|^ex.*inv|^del\sex|^dup\sex|^inv\sex|^c\./ix, status: 2, regex: 'regex' },
                                     { column: 'variant protein', expression: /p\./ix, status: 2, regex: 'regex' },
                                     { column: 'variant protein', expression: /fail/ix, status: 9, regex: 'regex' }].freeze
                     
                                     #FULL_SCREEN_TESTS_STATUS
-                
+
+                                    
+                                    EXON_REGEX = /((?<zygosity>Het)\s?(?<mutationtype>dup|del)\s?(\.\s?)?ex\s?(?<exons>[0-9]+(-(ex)?[0-9]+)?) |
+                                    (?<mutationtype>del)\s?ex\s?(?<exons>[0-9]+_[0-9]+) |
+                                    ex(on)?\s?(?<exons>[0-9]+(-[0-9]+)?)\s?(?<zygosity>Het)?\s?(?<mutationtype>del(etion)?|dup))/ix
               
           
             end
