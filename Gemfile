@@ -9,8 +9,11 @@ gem 'rails', '~> 6.1.0', '>= 6.1.7.5'
 gem 'psych', '3.3.2' # Exactly match the version on Ruby 3.0
 
 # Use postgresql as the database for Active Record
-# gem 'pg', '>= 0.18', '< 2.0'
-gem 'pg', '~> 1.2.3' # Support old CentOS 7 PostgreSQL client 9.2.24
+if /\A3[.][01][.]/.match?(RUBY_VERSION)
+  gem 'pg', '~> 1.2.3' # Support old CentOS 7 PostgreSQL client 9.2.24 for as long as possible
+else
+  gem 'pg' # Drop CentOS 7 support for ruby 3.2
+end
 
 # use Puma as the app server
 gem 'puma', '~> 6.0'
@@ -92,10 +95,8 @@ gem 'ndr_support', '~> 5.9'
 gem 'ndr_ui'
 gem 'ndr_workflow', '~> 1.2', '>= 1.2.2'
 
-gem 'axlsx'
-# TODO: 2023-09-03: bootstrap-table-rails fails `rake assets:precompile` if updated to 1.20.2
-gem 'bootstrap-table-rails', '~> 1.11.1'
-gem 'zip-zip' # annoying backwards compatibility for old axlsx version
+gem 'caxlsx', '~> 4'
+gem 'bootstrap-table-rails', '~> 1.20.2'
 
 gem 'loofah', '>= 2.3.1' # address CVE-2019-15587
 gem 'nokogiri', '~> 1.11'

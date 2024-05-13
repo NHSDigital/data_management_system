@@ -4,6 +4,7 @@ namespace :xsd do
     Axlsx::Package.new do |package|
       workbook = package.workbook
       workbook.use_shared_strings = true
+      workbook.escape_formulas = false
 
       columns = [
         'Data Item No.',
@@ -228,7 +229,7 @@ namespace :xsd do
                 cell.merge(row.cells.last)
               end
             end
-            sheet.rows.pop
+            sheet.rows.delete_at(sheet.rows.size - 1)
 
             sheet.add_row(Array.new(columns.count), style: style_choice) do |row|
               cell = row.cells.second
