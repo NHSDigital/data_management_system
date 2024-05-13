@@ -78,7 +78,7 @@ module Import
                 assign_test_status_targeted(single_genotype, record)
               end
             
-            # elsif genotype.attribute_map['genetictestscope'] == "Full screen Colorectal Lynch or MMR"
+            # elsif genotype.attribute_map['genetictestscope'] == "Full screen Colorectal Lynch or MMR"  #need to add in full screen methods here
             #   genes = process_genes_targeted(record)
 
             #   genotypes = duplicate_genotype_targeted(genes, genotype)
