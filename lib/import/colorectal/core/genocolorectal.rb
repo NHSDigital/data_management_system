@@ -31,7 +31,13 @@ module Import
                            'STK11' => 76,
                            'GREM1' => 1882,
                            'NTHL1' => 3108,
-                           'CDH1' => 794 }.freeze
+                           'CDH1' => 794,
+                           'BRCA1' => 7,
+                           'BRCA2' => 8,
+                           'TP53' => 79,
+                           'PALB2' => 3186,
+                           'RNF43' => 5019,
+                           'VHL' => 83 }.freeze
 
         COLORECTAL_REGEX = /(?<apc>APC)|
                             (?<bmpr>BMPR1A)|
@@ -49,15 +55,21 @@ module Import
                             (?<stk>STK11)|
                             (?<grem>GREM1)|
                             (?<nthl>NTHL1)|
-                            (?<cdh1>CDH1)/ix # Added by Francesco
+                            (?<cdh1>CDH1)|
+                            (?<brca1>BRCA1)|
+                            (?<brca2>BRCA2)|
+                            (?<tp53>TP53)|
+                            (?<palb2>PALB2)|
+                            (?<rnf43>RNF43)|
+                            (?<vhl>VHL)/ix # Added by Francesco
 
         # ------------------------ Interogators ------------------------------
 
         def add_gene_colorectal(colorectal_input)
           case colorectal_input
           when Integer
-            if [1432, 358, 577, 2744, 2804, 2808, 2850, 3394,
-                3408, 5000, 62, 72, 76, 1882, 3108, 794].include? colorectal_input
+            if [1432, 358, 577, 2744, 2804, 2808, 2850, 3394, 7, 8, 79, 3186, 5019,
+                3408, 5000, 62, 72, 76, 1882, 3108, 794, 83].include? colorectal_input
 
               @attribute_map['gene'] = colorectal_input
               @logger.debug "SUCCESSFUL gene parse for #{colorectal_input}"
@@ -77,7 +89,7 @@ module Import
                             "#{colorectal_input}"
             else
               if colorectal_input.include? '/'
-                @logger.debug 'WARNING: string provided for gene extraction contains a slash,'\
+                @logger.debug 'WARNING: string provided for gene extraction contains a slash,' \
                               "possible multi-gene error: #{colorectal_input}"
               end
               case variable = COLORECTAL_REGEX.match(colorectal_input.strip)

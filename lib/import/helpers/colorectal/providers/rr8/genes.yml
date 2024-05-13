@@ -1,5 +1,13 @@
 ---
 apc:
+- apc - conf mlpa +ve
+- apc - conf mlpa -ve
+- apc - conf seq +ve
+- apc - conf seq -ve
+- apc - pred mlpa +ve
+- apc - pred mlpa -ve
+- apc - pred seq +ve
+- apc - pred seq -ve
 - confirmation_seq_positive
 - diagnostic apc +ve
 - diagnostic apc -ve
@@ -71,6 +79,8 @@ mutyh:
 - mutyh pred carrier
 - pred seq +ve (mutyh)
 - pred seq -ve (mutyh)
+pms2_mutyh:
+- pms2 - mlpa pred positive c5
 pms2:
 - pms2 - biallelic (cmmrd) pred negative
 - pms2 - biallelic pred negative
@@ -80,7 +90,6 @@ pms2:
 - pms2 - mlpa pred negative c4
 - pms2 - mlpa pred negative c5
 - pms2 - mlpa pred positive c4
-- pms2 - mlpa pred positive c5
 - pms2 - mlpa pred -ve c4
 - pms2 - mlpa pred -ve c5
 - pms2 - pred complex mut +ve
