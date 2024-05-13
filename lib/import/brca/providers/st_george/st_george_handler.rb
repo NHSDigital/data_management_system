@@ -119,28 +119,16 @@ module Import
             # from the dictionary forming the parameters
 
             TARGETED_TEST_STATUS.each do |test_values|
-              status = assign_test_status_targeted_support(record, test_values, genotype)
+              if record.raw_fields[test_values[:column]].present? &&
+                 record.raw_fields[test_values[:column]].scan(test_values[:expression]).size.positive?
+                status = test_values[:status]
+              end
               break unless status.nil?
             end
 
             status = 4 if status.nil? && record.raw_fields['variant protein'].blank?
 
             genotype.add_status(status)
-          end
-
-          def assign_test_status_targeted_support(record, test_values, _genotype)
-            # if the match parameter is regex, try to match the regular expressions else determine if it matches exactly
-            # if the column value matches the expression, assign test status and return true
-            column = test_values[:column]
-            status = test_values[:status]
-            expression = test_values[:expression]
-            match = test_values[:regex]
-
-            if match == 'regex'
-              status if record.raw_fields[column].present? && record.raw_fields[column].scan(expression).size.positive?
-            elsif record.raw_fields[column].present? && record.raw_fields[column] == expression
-              status
-            end
           end
 
           def process_genes_full_screen(_genotype, record)
@@ -150,7 +138,6 @@ module Import
 
             ['gene', 'gene (other)', 'variant dna', 'test/panel'].each do |column|
               genes = []
-              # TODO: check this method can get multiple genes in list
               gene_list = record.raw_fields[column]&.scan(BRCA_GENE_REGEX)
 
               gene_list = process_test_panels(record, gene_list, column) if column == 'test/panel'
@@ -241,8 +228,6 @@ module Import
               genotype.add_status(4)
             elsif record.raw_fields['gene (other)']&.match(/^c\.|^Ex.*Del\z|^Ex.*Dup\z|^Het\sDel|^Het\sDup/ix)
               update_status(2, 1, column, 'gene', genotype)
-
-            # TODO: could this include brca1/2
             else
               genotype.add_status(4)
               gene_classv_gene_n_format(record, genotype, gene)
@@ -332,9 +317,9 @@ module Import
 
                 gene1 = BRCA_GENE_MAP[gene1]
                 gene2 = BRCA_GENE_MAP[gene2]
-                if gene == gene1[0]
+                if gene1.include?(gene)
                   genotype.add_status(2)
-                elsif gene == gene2[0]
+                elsif gene2.include?(gene)
                   genotype.add_status(1)
                 end
               end

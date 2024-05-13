@@ -79,18 +79,14 @@ module Import
             # in order of priority
             TARGETED_TEST_STATUS = [{ column: 'gene (other)', expression: /^Fail|^positive\scontrol\sfailed\z|
                                       ^wrong\sexon|^wronng\sexon\z/ix,
-                                      status: 9, regex: 'regex' },
-                                    { column: 'gene (other)', expression: /^het|del|dup|^c\./ix, status: 2,
-                                      regex: 'regex' },
+                                      status: 9},
+                                    { column: 'gene (other)', expression: /^het|del|dup|^c\./ix, status: 2},
                                     { column: 'variant dna', expression: /Fail|^Wrong\samplicon\stested\z|
-                                    ^wrong\sexon\z|^incorrect.*sequenced\z/ix, status: 9,
-                                      regex: 'regex' },
-                                    { column: 'variant dna', expression: 'N', status: 1, regex: 'match' },
-                                    { column: 'variant dna', expression: /^het|del|dup|^c\./ix, status: 2,
-                                      regex: 'regex' },
-                                    { column: 'variant protein', expression: 'N', status: 1, regex: 'match' },
-                                    { column: 'variant protein', expression: /^p\./ix, status: 2,
-                                      regex: 'regex' }].freeze
+                                    ^wrong\sexon\z|^incorrect.*sequenced\z/ix, status: 9},
+                                    { column: 'variant dna', expression: /^N\z/, status: 1 },
+                                    { column: 'variant dna', expression: /^het|del|dup|^c\./ix, status: 2 },
+                                    { column: 'variant protein', expression: /^N\z/, status: 1 },
+                                    { column: 'variant protein', expression: /^p\./ix, status: 2}].freeze
 
             EXON_REGEX = /((?<zygosity>Het)\s?(?<mutationtype>dup|del)\s?(\.\s?)?ex\s?(?<exons>[0-9]+(-(ex)?[0-9]+)?) |
               (?<mutationtype>del)\s?ex\s?(?<exons>[0-9]+_[0-9]+) |
