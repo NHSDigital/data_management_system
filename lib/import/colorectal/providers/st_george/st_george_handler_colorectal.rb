@@ -146,6 +146,7 @@ module Import
       end 
 
       def assign_test_status_targeted_support(record, test_values, _genotype)
+        #Loop through the dictionaries in regex and assing the correct associated statusß
         column = test_values[:column]
         status = test_values[:status]
         expression = test_values[:expression]
