@@ -237,8 +237,9 @@ module Import
               return if match_fail(gene, record, genotype)
 
               update_status(10, 1, column, 'gene', genotype)
-
-            elsif record.raw_fields['gene (other)']&.match(/^c\.|^Ex.*Del|^Ex.*Dup|^Het\sDel*|^Het\sDup*/ix)
+            elsif record.raw_fields['gene (other)']&.match(/\?\z/ix)
+              genotype.add_status(4)
+            elsif record.raw_fields['gene (other)']&.match(/^c\.|^Ex.*Del\z|^Ex.*Dup\z|^Het\sDel|^Het\sDup/ix)
               update_status(2, 1, column, 'gene', genotype)
 
             # TODO: could this include brca1/2
@@ -271,7 +272,8 @@ module Import
                 match_fail(gene, record, genotype)
               end
             # variant dna not '*Fail*', 'N' or null AND raw:gene is null AND raw:gene(other) not a single gene
-            # If gene is specified in raw:variant dna, assign 2 (abnormal) for that gene and 1 (normal) for all other genes.
+            # If gene is specified in raw:variant dna, assign 2 (abnormal) for that gene and 1 (normal) for
+            # all other genes.
             # Else interrogate raw:gene (other).
             elsif record.raw_fields['gene'].blank? \
               && (genes['gene (other)'].blank? || genes['gene (other)'].length > 1) \
@@ -326,7 +328,7 @@ module Import
 
             gene_list.each do |gene1|
               gene_list.each do |gene2|
-                next unless /#{gene1}\sClass\sV,\s#{gene2}\sN/i.match(record.raw_fields['gene (other)'])
+                next unless /^#{gene1}\sClass\sV,\s#{gene2}\sN\z/i.match(record.raw_fields['gene (other)'])
 
                 gene1 = BRCA_GENE_MAP[gene1]
                 gene2 = BRCA_GENE_MAP[gene2]
