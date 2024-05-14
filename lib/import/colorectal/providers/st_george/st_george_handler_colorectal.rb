@@ -42,7 +42,7 @@ module Import
 
             return unless TEST_TYPE_MAP[record.raw_fields['moleculartestingtype']]
 
-            genotype.add_molecular_testing_type_strict(TEST_TYPE_MAP[record.raw_fields['moleculartestingtype']])
+            genotype.add_molecular_testing_type_strict_strict(TEST_TYPE_MAP[record.raw_fields['moleculartestingtype']])
 
           end
 
@@ -158,14 +158,6 @@ module Import
           status if record.raw_fields[column].present? && record.raw_fields[column].scan(expression).size.positive?
         elsif record.raw_fields[column].present? && record.raw_fields[column] == expression
           status
-
-        elsif unknown_status_regex.match?(record.raw_fields['variant dna']) # replace status with 4 if states "SNP present" or "see comments"
-          puts "###############"
-          status = 4
-
-         
-          puts status
-          puts "###############"
         end 
 
       end 
