@@ -586,6 +586,7 @@ DEPENDENCIES
   rack-mini-profiler
   railroady
   rails (~> 6.1.0, >= 6.1.7.5)
+  rainbow
   regexp-examples
   sass-rails
   simplecov
