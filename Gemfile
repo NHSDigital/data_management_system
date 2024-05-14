@@ -104,6 +104,7 @@ gem 'regexp-examples'
 
 gem 'jquery-rails'
 gem 'jquery-ui-rails', github: 'jquery-ui-rails/jquery-ui-rails', tag: 'v7.0.0'
+gem 'rainbow'
 
 group :test do
   gem 'simplecov'
