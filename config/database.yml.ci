@@ -9,3 +9,8 @@ default: &default
 test:
   <<: *default
   database: data_management_system_test
+
+# For testing class loading in production environment
+production:
+  <<: *default
+  database: data_management_system_test

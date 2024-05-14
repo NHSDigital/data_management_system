@@ -34,4 +34,12 @@ class GemfileTest < ActiveSupport::TestCase
       MSG
     end
   end
+
+  test 'classes should load correctly in deployment environment' do
+    cmd = 'RAILS_ENV=production BUNDLE_WITHOUT=development:test bundle exec rake zeitwerk:check'
+    msg = Bundler.with_unbundled_env { `#{cmd} 2>&1` }
+    assert_equal(0, $CHILD_STATUS.exitstatus,
+                 'Expected all classes to load cleanly in deployment production environment, ' \
+                 "returning exit status 0.\n\nCommand run:\n$ #{cmd}\n#{msg}")
+  end
 end

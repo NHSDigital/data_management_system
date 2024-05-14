@@ -113,6 +113,7 @@ set :asset_script, <<~SHELL
     sed -i.bak -e '/mini_racer (0.6.2-x86_64-linux)/,+1d' Gemfile.lock
   fi
   printf 'disable-self-update-check true\\nyarn-offline-mirror "./vendor/npm-packages-offline-cache"\\nyarn-offline-mirror-pruning false\\n' > .yarnrc
+  RAILS_ENV=production BUNDLE_WITHOUT=development:test bundle exec rake zeitwerk:check
   RAILS_ENV=production bundle exec rake assets:clobber assets:precompile
   rm config/secrets.yml config/database.yml
 SHELL
