@@ -42,7 +42,7 @@ module Import
 
             return unless TEST_TYPE_MAP[record.raw_fields['moleculartestingtype']]
 
-            genotype.add_molecular_testing_type(TEST_TYPE_MAP[record.raw_fields['moleculartestingtype']])
+            genotype.add_molecular_testing_type_strict(TEST_TYPE_MAP[record.raw_fields['moleculartestingtype']])
 
           end
 
@@ -77,13 +77,11 @@ module Import
               genotypes.each do |single_genotype|
                 assign_test_status_targeted(single_genotype, record)
               end
-            
-            # elsif genotype.attribute_map['genetictestscope'] == "Full screen Colorectal Lynch or MMR"  #need to add in full screen methods here
-            #   genes = process_genes_targeted(record)
 
-            #   genotypes = duplicate_genotype_targeted(genes, genotype)
-            #   genotypes.each do |single_genotype|
-            #     assign_test_status_targeted(single_genotype, record)
+            elsif genotype.attribute_map['genetictestscope'] == 'Full screen Colorectal Lynch or MMR'
+              genes_dict = process_genes_fullscreen(genotype, record)
+              genotypes = handle_test_status_full_screen(record, genotype, genes_dict)
+
               end 
             genotypes
       
@@ -110,6 +108,8 @@ module Import
         genes
       end
 
+
+
       def duplicate_genotype_targeted(genes, genotype)
         #When there is more the one gene listed, a seperate genotype is created for each
         #each genotype is then adde to teh genotypes list which is then returned
@@ -120,7 +120,7 @@ module Import
 
           gene.each do |gene_value|
             #only duplicate if there is more than one gene in the list
-            genotype = genotype.dup if genes.flatten.uniq.size >1
+            genotype = genotype.dup_colo if genes.flatten.uniq.size >1
             genotype.add_gene_colorectal(gene_value)
             genotypes.append(genotype)
           end 
@@ -160,10 +160,77 @@ module Import
           status
 
         elsif unknown_status_regex.match?(record.raw_fields['variant dna']) # replace status with 4 if states "SNP present" or "see comments"
+          puts "###############"
           status = 4
+
+         
+          puts status
+          puts "###############"
         end 
 
       end 
+
+      def process_genes_fullscreen(genotype, record)
+        genes_dict={}
+
+        ['gene', 'gene (other)', 'variant dna', 'test/panel'].each do |column|
+          genes = []
+          gene_list = record.raw_fields[column]&.scan(CRC_GENE_REGEX)
+
+          gene_list = process_test_panels(record, gene_list, column) if column == 'test/panel'
+
+          next if gene_list.nil?
+
+          gene_list.each do |gene|
+            CRC_GENE_MAP[gene]&.each do |gene_value|
+              genes.append(gene_value)
+            end
+          end
+
+          genes_dict[column] = genes.uniq
+        end
+        genes_dict
+      end
+
+      def process_test_panels(record, gene_list, column)
+        # extracts panels tested from record
+        # panels mapped to list of genes in FULL_SCREEN_TESTS_MAP
+        # to output list of genes tested in panel
+        panel_genes_list = FULL_SCREEN_TESTS_MAP[record.raw_fields['test/panel']] 
+
+        panel_genes_list&.each do |gene|
+          gene_list.append(gene)
+        end
+        
+        gene_list
+      end
+
+      def handle_test_status_fullscreen(record, genotype, genes)
+        genotypes=[]
+        columns = ['gene', 'gene (other)', 'variant_dna', 'test/panel']
+        counter = 0
+        columns.each do |column|
+          genes[column]&.each do |gene|
+            #duplicate genotype only if there is more than one gene present
+            genotype=genotype.dup_colo if counter.positive?
+            genotype.add_gene_colorectal(gene)
+            genotype.add_status(4)
+            assign_test_status_fullscreen(record, gene, genes, genotype, column)
+            genotypes.append(genotype)
+            counter +=1
+          end
+        end
+        genotypes
+      end
+
+      def assign_test_status_fullscreen (record, genotype, genes, column, gene)
+
+      end 
+
+
+
+
+
 
 
       def process_variants(genotype, record)
