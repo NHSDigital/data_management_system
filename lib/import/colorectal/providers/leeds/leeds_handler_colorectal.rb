@@ -217,10 +217,10 @@ module Import
             genotypes
           end
 
-          def add_variant_genotype(genocolorectal, gene, cdna_mutation, protein, report_variants, genotypes)
+          def add_variant_genotype(genocolorectal, gene, cdna, protein, report_variants, genotypes)
             genocolorectal_dup = genocolorectal.dup_colo
             genocolorectal_dup.add_gene_colorectal(gene)
-            genocolorectal_dup.add_gene_location(cdna_mutation)
+            genocolorectal_dup.add_gene_location(cdna)
             genocolorectal_dup.add_protein_impact(protein)
             process_exonic_variant(genocolorectal_dup, report_variants)
             genocolorectal_dup.add_variant_class(@var_class)
