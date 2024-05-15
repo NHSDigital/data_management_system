@@ -213,14 +213,14 @@ class LeedsHandlerColorectalTest < ActiveSupport::TestCase
     assert_equal 'Full screen Colorectal Lynch or MMR', genotypes[12].attribute_map['genetictestscope']
     assert_equal 76, genotypes[12].attribute_map['gene']
 
-    assert_nil genotypes[13].attribute_map['variantpathclass']
+    assert_equal 4, genotypes[13].attribute_map['variantpathclass']
     assert_equal 2, genotypes[13].attribute_map['teststatus']
     assert_equal 'Full screen Colorectal Lynch or MMR', genotypes[13].attribute_map['genetictestscope']
     assert_equal 2804, genotypes[13].attribute_map['gene']
     assert_equal 'c.1571G>C', genotypes[13].attribute_map['codingdnasequencechange']
     assert_equal 'p.Arg524Pro', genotypes[13].attribute_map['proteinimpact']
 
-    assert_nil genotypes[14].attribute_map['variantpathclass']
+    assert_equal 4, genotypes[14].attribute_map['variantpathclass']
     assert_equal 2, genotypes[14].attribute_map['teststatus']
     assert_equal 'Full screen Colorectal Lynch or MMR', genotypes[14].attribute_map['genetictestscope']
     assert_equal 2808, genotypes[14].attribute_map['gene']

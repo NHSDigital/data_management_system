@@ -33,6 +33,7 @@ module Import
                             'pathogenic' => 5,
                             'likely deleterious' => 4,
                             'likely pathogenic' => 4,
+                            'likely to be pathogenic' => 4,
                             'unknown' => 3,
                             'unclassified variant' => 3,
                             'vus' => 3,

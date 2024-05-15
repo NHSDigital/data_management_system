@@ -12,7 +12,7 @@ module Import
 
           def process_fields(record)
             populate_variables(record)
-            return unless should_process(record)
+            return unless should_process
 
             populate_genotype(record)
           end
@@ -27,14 +27,14 @@ module Import
             @genes_panel = []
           end
 
-          def should_process(_record)
-            filename = @batch.original_filename.split('/').last
-            return true if filename.scan(/MMR/i).size.positive?
-            return true if filename.scan(/other|familial/i).size.positive? &&
+          def should_process
+            filename = File.basename(@batch.original_filename)
+            return true if filename.match?(/MMR/i)
+            return true if filename.match?(/other|familial/i) &&
                            @indicationcategory == 'cancer' &&
                            @moleculartestingtype == 'familial' &&
-                           (@geno&.scan(/APC|EPCAM|LYNCH|MUTYH|PMS2/i)&.size&.positive? ||
-                           @report&.scan(/APC|BMPR1A|EPCAM|GREM1|MLH1|MSH2|MSH6|MUTYH|NTHL1|PMS2|POLD1|POLE|PTEN|SMAD4|STK11/i)&.size&.positive?)
+                           (@geno&.match?(/APC|EPCAM|LYNCH|MUTYH|PMS2/i) ||
+                           @report&.match?(MMR_GENE_REGEX))
 
             false
           end
@@ -81,47 +81,62 @@ module Import
           end
 
           def process_abnormal_targ(genocolorectal, _record, genotypes)
-            if @genes_panel.size > 1
-              GENES_PANEL.each do |panel, genes|
-                @genes_panel = genes if @genes_hash[panel].include?(@geno)
-              end
-            end
+            # Extract targeted genes
+            @targ_genes = extract_targeted_genes
 
-            targ_genes = @genes_panel
+            # Extract sentences from report
             sentences_arr = @report&.split(/\.\s+/) || []
 
+            process_sentence_arr(sentences_arr, genocolorectal, genotypes)
+
+            # Process remaining genes in target genes
+            return if @targ_genes.blank?
+
+            genocolorectal_dup = prepare_genotype(genocolorectal, @targ_genes[0], @report)
+            process_cdna_variant(genocolorectal_dup, @report)
+            genotypes << genocolorectal_dup
+          end
+
+          def extract_targeted_genes
+            return @genes_panel unless @genes_panel.size > 1
+
+            GENES_PANEL.each do |panel, genes|
+              @genes_panel = genes if @genes_hash[panel].include?(@geno)
+            end
+            @genes_panel
+          end
+
+          def process_sentence_arr(sentences_arr, genocolorectal, genotypes)
+            # Process each sentence
             sentences_arr.each do |sentence|
               gene = sentence.scan(COLORECTAL_GENES_REGEX).flatten.uniq[0]
 
-              if sentence.match(ABSENT_REGEX)
-                targ_genes -= [gene]
+              next unless gene.present? && @targ_genes.include?(gene)
+
+              case sentence
+              when ABSENT_REGEX
+                @targ_genes -= [gene]
                 process_negative_genes([gene], genocolorectal, genotypes)
-              end
-
-              next unless gene.present? && targ_genes.include?(gene)
-              next unless sentence.scan(CDNA_REGEX).size.positive? ||
-                          sentence.scan(EXON_VARIANT_REGEX).size.positive?
-
-              targ_genes -= [gene]
-              cdna_vars = get_cdna_mutations(sentence)
-              if cdna_vars.size > 1
-                cdna_vars.each do |cdna_mutation|
-                  genocolorectal_dup = prepare_genotype(genocolorectal, gene, sentence)
-                  genocolorectal_dup.add_gene_location(cdna_mutation)
-                  genotypes << genocolorectal_dup
-                end
-              else
-                genocolorectal_dup = prepare_genotype(genocolorectal, gene, sentence)
-                process_cdna_variant(genocolorectal_dup, sentence)
-                genotypes << genocolorectal_dup
+              when CDNA_REGEX, EXON_VARIANT_REGEX
+                @targ_genes -= [gene]
+                process_mutated_genes(genocolorectal, gene, sentence, genotypes)
               end
             end
+          end
 
-            return if targ_genes.blank?
-
-            genocolorectal_dup = prepare_genotype(genocolorectal, targ_genes[0], @report)
-            process_cdna_variant(genocolorectal_dup, @report)
-            genotypes << genocolorectal_dup
+          def process_mutated_genes(genocolorectal, gene, sentence, genotypes)
+            cdna_vars = get_cdna_mutations(sentence)
+            if cdna_vars.size > 1
+              cdna_vars.each do |cdna_mutation|
+                genocolorectal_dup = prepare_genotype(genocolorectal, gene, sentence)
+                genocolorectal_dup.add_gene_location(cdna_mutation)
+                genotypes << genocolorectal_dup
+              end
+            else
+              genocolorectal_dup = prepare_genotype(genocolorectal, gene, sentence)
+              process_cdna_variant(genocolorectal_dup, sentence)
+              genotypes << genocolorectal_dup
+            end
           end
 
           def prepare_genotype(genocolorectal, gene, text)
@@ -192,26 +207,25 @@ module Import
             if cdna_vars.size > 1
               proteins = report_variants.scan(PROTEIN_REGEX).flatten.uniq
               cdna_vars.zip(proteins).each do |cdna_mutation, protein|
-                genocolorectal_dup = genocolorectal.dup_colo
-                genocolorectal_dup.add_gene_colorectal(pos_genes[0])
-                genocolorectal_dup.add_gene_location(cdna_mutation)
-                genocolorectal_dup.add_protein_impact(protein)
-                process_exonic_variant(genocolorectal_dup, report_variants)
-                genocolorectal_dup.add_variant_class(@var_class)
-                genocolorectal_dup.add_status(@teststatus)
-                genotypes << genocolorectal_dup
+                add_variant_genotype(genocolorectal, pos_genes[0],
+                                     cdna_mutation, protein, report_variants, genotypes)
               end
             else
-              genocolorectal_dup = genocolorectal.dup_colo
-              process_cdna_variant(genocolorectal_dup, report_variants)
-              process_exonic_variant(genocolorectal_dup, report_variants)
-              process_protein_impact(genocolorectal_dup, report_variants)
-              genocolorectal_dup.add_variant_class(@var_class)
-              genocolorectal_dup.add_gene_colorectal(pos_genes[0])
-              genocolorectal_dup.add_status(@teststatus)
-              genotypes << genocolorectal_dup
+              process_abnormal_gene(report_variants, genocolorectal, genotypes,
+                                    pos_genes[0], @var_class)
             end
             genotypes
+          end
+
+          def add_variant_genotype(genocolorectal, gene, cdna_mutation, protein, report_variants, genotypes)
+            genocolorectal_dup = genocolorectal.dup_colo
+            genocolorectal_dup.add_gene_colorectal(gene)
+            genocolorectal_dup.add_gene_location(cdna_mutation)
+            genocolorectal_dup.add_protein_impact(protein)
+            process_exonic_variant(genocolorectal_dup, report_variants)
+            genocolorectal_dup.add_variant_class(@var_class)
+            genocolorectal_dup.add_status(@teststatus)
+            genotypes << genocolorectal_dup
           end
 
           def sentences_array
@@ -228,7 +242,9 @@ module Import
             results.each do |res|
               gene_path_hash.merge!(res[:assocgene] => res[:pathogenic]&.strip) if res
             end
-            gene_path_hash.map { |_k, v| v.gsub!('uncertain clinical significance', 'uncertain significance') }
+            gene_path_hash.each_value do |v|
+              v.gsub!('uncertain clinical significance', 'uncertain significance')
+            end
             gene_path_hash
           end
 
@@ -237,24 +253,29 @@ module Import
               genes_found = rep.scan(COLORECTAL_GENES_REGEX).flatten.uniq
               gene = (genes_found & pos_genes)[0]
               next unless gene.present? && pos_genes.include?(gene)
-              next unless rep.scan(CDNA_REGEX).size.positive? || rep.scan(EXON_VARIANT_REGEX).size.positive?
+              next unless rep.scan(CDNA_REGEX).size.positive? ||
+                          rep.scan(EXON_VARIANT_REGEX).size.positive?
 
               pos_genes -= [gene]
-              genocolorectal_dup = genocolorectal.dup_colo
-              process_cdna_variant(genocolorectal_dup, rep)
-              process_exonic_variant(genocolorectal_dup, rep)
-              process_protein_impact(genocolorectal_dup, rep)
-              genocolorectal_dup.add_gene_colorectal(gene)
               varclass = gene_path_hash[gene] || @var_class
-              genocolorectal_dup.add_variant_class(varclass)
-              @teststatus = 10 if NON_PATH_VARCLASS.include? varclass
-              genocolorectal_dup.add_status(@teststatus)
-              genotypes.append(genocolorectal_dup)
+              process_abnormal_gene(rep, genocolorectal, genotypes, gene, varclass)
             end
 
             return if pos_genes.blank?
 
             process_negative_genes(pos_genes, genocolorectal, genotypes)
+          end
+
+          def process_abnormal_gene(rep, genocolorectal, genotypes, gene, varclass)
+            genocolorectal_dup = genocolorectal.dup_colo
+            process_cdna_variant(genocolorectal_dup, rep)
+            process_exonic_variant(genocolorectal_dup, rep)
+            process_protein_impact(genocolorectal_dup, rep)
+            genocolorectal_dup.add_gene_colorectal(gene)
+            genocolorectal_dup.add_variant_class(varclass)
+            @teststatus = 10 if NON_PATH_VARCLASS.include? varclass
+            genocolorectal_dup.add_status(@teststatus)
+            genotypes.append(genocolorectal_dup)
           end
 
           def process_negative_genes(negative_genes, genocolorectal, genotypes)
@@ -279,27 +300,25 @@ module Import
           def find_test_status(_record)
             @teststatus = nil
             if @geno == 'ngs msh2 seq variant'
-              @teststatus = if @report.include?('likely to be benign')
-                              10
-                            else
-                              2
-                            end
+              @teststatus = @report.include?('likely to be benign') ? 10 : 2
             else
               STATUS_PANEL.each do |category, status|
                 @teststatus = status if @status_hash[category].include?(@geno)
               end
             end
             # exceptional cases for 'mlh1 only -ve' genotype
-            if @geno == 'mlh1 only -ve'
-              if @report.include?('However, insufficient DNA has been provided')
-                @teststatus = 9
-              elsif @report.include?('The variant c.1409+47T>C was detected in intron 12')
-                @teststatus = 10
-              elsif @report.include?('sequence variant c.1595G>A')
-                @teststatus = 2
-              end
-            end
+            exceptinal_teststatus if @geno == 'mlh1 only -ve'
             @teststatus
+          end
+
+          def exceptinal_teststatus
+            if @report.match(/insufficient\sDNA|DNA\sprovided\sis\sof\sinsufficient/i)
+              @teststatus = 9
+            elsif @report.include?('The variant c.1409+47T>C was detected in intron 12')
+              @teststatus = 10
+            elsif @report.include?('sequence variant c.1595G>A')
+              @teststatus = 2
+            end
           end
 
           def cleanup_report(report)
@@ -321,8 +340,8 @@ module Import
           def get_genes_from_report(report)
             genes = report&.scan(COLORECTAL_GENES_REGEX)&.flatten&.uniq
             if genes.present?
-              genes -= ['Met'] if @report&.scan(/p\.\(?\w*Met/)&.size&.positive?
-              genes -= ['met'] if @report&.scan('endometrial')&.size&.positive?
+              genes -= ['Met'] if @report.scan(/p\.\(?\w*Met/).size.positive?
+              genes -= ['met'] if @report.scan('endometrial').size.positive?
             end
             genes || []
           end
@@ -333,24 +352,28 @@ module Import
 
           def add_varclass
             @var_class = nil
-            if %r{C4/5}i.match(@geno)
-              @var_class = if @report.exclude?('likely pathogenic to uncertain significance') && @report.match(PATHOGENIC_REGEX)
-                             $LAST_MATCH_INFO[:pathogenic]
-                           else
-                             7
-                           end
-            elsif /class\s?2/i.match(@geno) ||
-                  ['fap diagn poss benign', 'fap p.glu1317gln'].include?(@geno)
-              @var_class = 2
-            elsif /class\s?3|c\s?3/i.match(@geno) ||
-                  ['conf mlpa +ve (apc)', 'fap diagn unknown'].include?(@geno)
-              @var_class = 3
-            elsif /class\s?4|c\s?4/i.match(@geno) ||
-                  ['fap diagn poss path', 'two mutations'].include?(@geno)
-              @var_class = 4
-            elsif /class\s?5|c\s?5/i.match(@geno) ||
-                  VARIANT_CLASS_5.include?(@geno)
-              @var_class = 5
+            class5 = ->(id) { VARIANT_CLASS_5.include? id }
+            class7 = ->(id) { VARIANT_CLASS_7.include? id }
+            @var_class = case @geno
+                         when class7
+                           var_class_from_report
+                         when /class\s?2/i, 'fap diagn poss benign', 'fap p.glu1317gln'
+                           2
+                         when /class\s?3|c\s?3/i, 'conf mlpa +ve (apc)', 'fap diagn unknown'
+                           3
+                         when /class\s?4|c\s?4/i, 'fap diagn poss path', 'two mutations'
+                           4
+                         when /class\s?5|c\s?5/i, class5
+                           5
+                         end
+          end
+
+          def var_class_from_report
+            report_cleaned = @report.gsub('No further pathogenic changes were detected', '')
+            if report_cleaned.match(PATHOGENIC_REGEX)
+              $LAST_MATCH_INFO[:pathogenic].strip
+            else
+              7
             end
           end
 
@@ -368,10 +391,13 @@ module Import
           def add_molecular_testingtype(genocolorectal, record)
             genotype = record.raw_fields['genotype'].downcase.strip
             mtype = record.raw_fields['moleculartestingtype'].downcase.strip
-            genocolorectal.add_molecular_testing_type_strict(:diagnostic) if mtype.match(/r2(09|10|11)+/i)
-            genocolorectal.add_molecular_testing_type_strict(:diagnostic) if genotype.match(/conf/i)
-            genocolorectal.add_molecular_testing_type_strict(:predictive) if genotype.match(/(pred|unaff)/i)
-            genocolorectal.add_molecular_testing_type_strict(TEST_TYPE_MAP_COLO[mtype]) unless mtype.nil?
+            if genotype.match(/(pred|unaff)/i)
+              genocolorectal.add_molecular_testing_type_strict(:predictive)
+            elsif genotype.match(/conf/i) || mtype.match(/r2(09|10|11)+/i)
+              genocolorectal.add_molecular_testing_type_strict(:diagnostic)
+            else
+              genocolorectal.add_molecular_testing_type_strict(TEST_TYPE_MAP_COLO[mtype])
+            end
           end
 
           def process_scope(geno, genocolorectal, record)
@@ -383,20 +409,6 @@ module Import
             else
               stripped_scope = TEST_SCOPE_MAP_COLO[scope.downcase.strip]
               genocolorectal.add_test_scope(stripped_scope) if stripped_scope
-            end
-          end
-
-          def add_colorectal_from_raw_genotype(genocolorectal, record)
-            colo_string = record.raw_fields['genotype']
-            if colo_string.scan(COLORECTAL_GENES_REGEX).size > 1
-              @logger.error "Multiple genes detected in report: #{colo_string};"
-            elsif COLORECTAL_GENES_REGEX.match(colo_string) &&
-                  colo_string.scan(COLORECTAL_GENES_REGEX).size == 1
-              genocolorectal.add_gene_colorectal($LAST_MATCH_INFO[:colorectal])
-              # when COLORECTAL_GENES_REGEX and test_string.scan(GENE_REGEX).size > 1
-              @logger.debug "SUCCESSFUL gene parse from raw_record for: #{$LAST_MATCH_INFO[:colorectal]}"
-            else
-              @logger.debug 'No Gene detected'
             end
           end
 

@@ -46,6 +46,8 @@ module Import
                      RNF43|SDHB|SMAD4|STK11|TP53|VHL'.freeze
 
             # rubocop:disable Lint/MixedRegexpCaptureTypes
+            MMR_GENE_REGEX = /APC|BMPR1A|EPCAM|GREM1|MLH1|MSH2|MSH6|MUTYH|NTHL1|PMS2|POLD1|
+                              POLE|PTEN|SMAD4|STK11/ix
             CDNA_REGEX = /c\.(?<cdna>[\w+>*\-]+)?/ix
             PROTEIN_REGEX = /\(?p\.\(?(?<impact>\w+)\)?/ix
             EXON_REGEX = /(?<exon>exon(s)?[\s\-\d]+)/ix
@@ -77,7 +79,7 @@ module Import
             ABSENT_REGEX = /is absent in this patient/i
             NO_DEL_REGEX = /this patient does not have the deletion/i
             PATHOGENIC_REGEX = /(?<pathogenic>likely\snon-pathogenic|likely\spathogenic|
-            pathogenic[^ity]|benign|likely\s(to\sbe\s)?benign|
+            likely\s(to\sbe\s)?pathogenic|pathogenic[^ity]|benign|likely\s(to\sbe\s)?benign|
             uncertain\s(clinical\s)?significance)/ix
             PATHOGENIC_GENES_REGEX = /(?<pathogenic>likely\snon-pathogenic|likely\spathogenic|
             pathogenic[^ity]|benign|likely\s(to\sbe\s)?benign|
@@ -148,6 +150,26 @@ module Import
               'fap diagn mutyh het.',
               '(v2) mutyh het.',
               'apc - conf seq +ve'
+            ].freeze
+
+            VARIANT_CLASS_7 = [
+              'conf seq +ve',
+              'mlpa -ve + seq (splice site mutation)',
+              'mlpa -ve + seq +ve (nonsense/frameshift)',
+              'ngs mlh1 truncating/frameshift',
+              'ngs msh2 truncating/frameshift',
+              'ngs multiple exon mlpa del',
+              'pred mlpa +ve',
+              'mlpa positive',
+              'mlpa positive (diag)',
+              'pred (other) positive',
+              'generic c4/5',
+              'lynch diag; c4/5',
+              'generic c4/5',
+              'lynch diag; c4/5',
+              'r210_c4/5',
+              'lynch diag; c4/5',
+              'generic c4/5'
             ].freeze
 
             NON_PATH_VARCLASS = [
