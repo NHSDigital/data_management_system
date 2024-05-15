@@ -36,7 +36,7 @@ IFS=$'\n'
 for x in $(find  $DIRPATH/$FILEPATH  -not -path "*/API_BETA_RETRIEVED/*" -type f -name "*MMR*.pseudo" -o -type f -name "*other*.pseudo" -path "*/$PROV/*")
 do
 IFS="$OIFS"
-bundle exec rake import:colorectal fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
+$BRAKE import:colorectal fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
 done
 }
 
