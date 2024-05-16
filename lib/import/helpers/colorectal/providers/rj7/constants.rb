@@ -50,11 +50,11 @@ module Import
                                         'VUS check' => []
                                     }.freeze
 
-                                    CRC_GENE_REGEX = %r{ATM|BMPR1A|EPCAM|GREM1|MLH1|MSH2|MHS2|MUTYH|NTHL1|PMS2|PMS|POLD1|POLE|PTEN|SMAD4|STK11|TP53}ix
+                                    CRC_GENE_REGEX = %r{APC|BMPR1A|EPCAM|GREM1|MLH1|MSH2|MHS2|MUTYH|NTHL1|PMS2|PMS|POLD1|POLE|PTEN|SMAD4|STK11|TP53}ix
 
                                     CRC_GENE_MAP =
                                     {
-                                        'ATM' => ['ATM'],
+                                        'ATM' => ['APC'],
                                         'BMPR1A' => ['BMPR1A'],
                                         'EPCAM' => ['EPCAM'],
                                         'GREM1' => ['GREM1'],

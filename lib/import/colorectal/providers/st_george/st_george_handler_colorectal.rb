@@ -18,24 +18,11 @@ module Import
             return unless record.raw_fields['servicereportidentifier'].start_with?('V')
 
             genotype.add_passthrough_fields(record.mapped_fields, record.raw_fields, PASS_THROUGH_FIELDS)
-            puts "### SRI ###### "
-            puts record.raw_fields['servicereportidentifier']
-            
-      
 
             assign_test_type(genotype, record)
             genotype = assign_test_scope(genotype, record)
 
-            puts "### GENOTYPE GENETIC TEST SCOPE ###"
-            puts genotype.attribute_map['genetictestscope']
-
-            puts "### GENOTYPE GENETIC TEST TYPE ###"
-            puts genotype.attribute_map['moleculartestingtype']
-
             genotypes = fill_genotypes(genotype, record)
-
-            puts "### GENOTYPES ###"
-            puts genotypes
 
             genotypes.each do |single_genotype|
               process_variants(single_genotype, record)
@@ -90,9 +77,10 @@ module Import
                 assign_test_status_targeted(single_genotype, record)
               end
             
-
+            #else check if it is full screen 
             elsif genotype.attribute_map['genetictestscope'] == 'Full screen Colorectal Lynch or MMR'
               genes_dict = process_genes_fullscreen(genotype, record)
+             
               genotypes = handle_test_status_fullscreen(record, genotype, genes_dict)
 
             end 
@@ -154,7 +142,7 @@ module Import
 
           status = 4 if status.nil? && record.raw_fields['variant protein'].blank?
 
-          update_status(2, 1, column, 'gene', genotype) if status.nil? && record.raw_fields['variant protein'].match(/p\./ix)
+          update_status(2, 1, column, 'gene', genotype) if status.nil? && record.raw_fields['variant protein'].match(/p\./ix) #THIS WON"T WORK, need to refactor this whole method to get the columns
 
           genotype.add_status(status)
 
@@ -167,7 +155,7 @@ module Import
           expression = test_values[:expression]
           match = test_values[:regex]
 
-          #unknown_status_regex= '/SNP\spresent|see\scomments/ix'
+          #unknown_status_regex= '/SNP\spresent|see\scomments/ix' #STILL NEED TO HANDLE THE 'SNP PRESENT' overiding the c. rule
 
           if match == 'regex'
             status if record.raw_fields[column].present? && record.raw_fields[column].scan(expression).size.positive?
@@ -183,13 +171,10 @@ module Import
           ['gene', 'gene (other)', 'variant dna', 'test/panel'].each do |column|
     
             genes = []
-            gene_list = record.raw_fields[column]&.scan(CRC_GENE_REGEX)
-
-            
-          
+            gene_list = record.raw_fields[column]&.scan(CRC_GENE_REGEX)       
 
             gene_list = process_test_panels(record, gene_list, column) if column == 'test/panel'
-
+           
 
             next if gene_list.nil?
 
@@ -200,16 +185,15 @@ module Import
               end
               
             end
-            puts "### Gene List ###"
-            puts gene_list
 
             genes_dict[column] = genes.uniq
-
+          
             
           end
 
           
           genes_dict
+    
 
           
         end
@@ -235,7 +219,9 @@ module Import
 
           end       
           gene_list
-          binding.pry
+                  
+          
+          #binding.pry
         end
 
         def handle_test_status_fullscreen(record, genotype, genes)
@@ -245,9 +231,11 @@ module Import
           columns.each do |column|
             genes[column]&.each do |gene|
               #duplicate genotype only if there is more than one gene present
+              
               genotype=genotype.dup_colo if counter.positive?
               genotype.add_gene_colorectal(gene)
               genotype.add_status(4)
+              
               assign_test_status_fullscreen(record, gene, genes, genotype, column)
               genotypes.append(genotype)
               counter +=1
@@ -259,6 +247,7 @@ module Import
         def assign_test_status_fullscreen (record, genotype, genes, column, gene)
           #interrogate the variant dna column and raw gene (other) column
           if record.raw_fields['variant dna'].present?
+            
             interrogate_variant_dna_column(record, genotype, genes, column, gene)
           elsif record.raw_fields['variant protein'].present?
             interrogate_variant_protein_column(record, genotype, genes, column, gene)
@@ -272,24 +261,29 @@ module Import
 
           variant_regex=/het\sdel|het\sdup|het\sinv|^ex.*del|^ex.*dup|^ex.*inv|^del\sex|^dup\sex|^inv\sex|^c\.|inversion/ix
         
+          puts record.raw_fields['variant dna']
+          puts record.raw_fields['gene']
+          puts record.raw_fields['gene (other)']
 
           if record.raw_fields['variant dna'].match(/Fail/ix)         
             genotype.add_status(9)
           elsif record.raw_fields['variant dna'] == 'N'
-            puts record.raw_fields['variant dna']
             genotype.add_status(1)
           elsif record.raw_fields['variant dna'].match(variant_regex) && !record.raw_fields['gene'].blank?
+            
             update_status(2, 1, column, 'gene', genotype)
-          elsif record.raw_fields['variant dna'].match(variant_regex) && record.raw_fields['gene'].blank? && record.raw_fields['gene (other)'].length == 1
+          elsif record.raw_fields['variant dna'].match(variant_regex) && record.raw_fields['gene'].blank? && record.raw_fields['gene (other)'].length == 3
+            puts "I'M HERE AS EXPECTED"
             update_status(2, 1, column, 'gene', genotype)
           elsif record.raw_fields['variant dna'].match(variant_regex) && record.raw_fields['gene'].blank? && record.raw_fields['gene (other)'].length > 1 && !genes['variant dna'].nil? #can gene (other) be null in this scenario as wel?????
             #Gene should be specified in raw:variant dna; assign 2 (abnormal) for the specified gene and 1 (normal) for all other genes.
+            
             update_status(2, 1, column, 'variant dna', genotype)
           else
+            
             interrogate_variant_protein_column(record, genotype, genes, column, gene)
           end
 
-          puts genotype.attribute_map['teststatus']
         end 
 
         def interrogate_variant_protein_column(record, genotype, genes, column, gene)
@@ -355,35 +349,9 @@ module Import
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         end
       end
     end
   end
 end
-
+end 
