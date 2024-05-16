@@ -25,8 +25,6 @@ module Import
             genotypes = fill_genotypes(genotype, record)
 
             genotypes.each do |single_genotype|
-              single_genotype.attribute_map['gene']
-              single_genotype.attribute_map['teststatus']
 
               process_variants(single_genotype, record)
               @persister.integrate_and_store(single_genotype)
@@ -102,12 +100,13 @@ module Import
           columns.each do |column|
             gene_list = record.raw_fields[column]&.scan(CRC_GENE_REGEX)
             next if gene_list.blank?
-          end 
+           
 
-          gene_list.each do |gene|
-            gene = CRC_GENE_MAP[gene]
-            genes.append(gene)
+            gene_list.each do |gene|
+              gene = CRC_GENE_MAP[gene]
+              genes.append(gene)
           end
+        end 
         
          genes
         end
@@ -223,8 +222,7 @@ module Import
           end       
           gene_list
                   
-          
-          #binding.pry
+
         end
 
         def handle_test_status_fullscreen(record, genotype, genes) #genes param is actually 'genes_dict
@@ -270,7 +268,7 @@ module Import
       
           if record.raw_fields['variant dna'].match(/Fail/ix)         
             genotype.add_status(9)
-          elsif record.raw_fields['variant dna'] == 'N'
+          elsif record.raw_fields['variant dna'] == 'N' || record.raw_fields['variant dna'].blank?
             genotype.add_status(1)
           elsif record.raw_fields['variant dna'].match(variant_regex) && !record.raw_fields['gene'].blank?           
             update_status(2, 1, column, 'gene', genotype)
@@ -290,11 +288,12 @@ module Import
 
         def interrogate_variant_protein_column(record, genotype, genes, column, gene)
 
-          
-          if record.raw_fields['variant protein'].match(/fail/ix)
+          if record.raw_fields['variant protein'].blank?
+            genotype.add_status(1)
+          elsif record.raw_fields['variant protein'].match(/fail/ix) 
             genotype.add_status(9)
           elsif record.raw_fields['variant protein'].match(/p.*/ix)
-            update_status(2, 1, column, 'gene', genotype)
+            update_status(2, 1, column, 'gene', genotype)   
           else
             genotype.add_status(1)
           end 
@@ -309,7 +308,6 @@ module Import
             genotype.add_status(status1)
           else
             genotype.add_status(status2)
-            puts "YOU'VE GOT A STATUS 2"
           end
         end
 
