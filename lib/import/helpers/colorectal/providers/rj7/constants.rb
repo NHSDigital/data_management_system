@@ -54,7 +54,7 @@ module Import
 
                                     CRC_GENE_MAP =
                                     {
-                                        'ATM' => ['APC'],
+                                        'APC' => ['APC'],
                                         'BMPR1A' => ['BMPR1A'],
                                         'EPCAM' => ['EPCAM'],
                                         'GREM1' => ['GREM1'],

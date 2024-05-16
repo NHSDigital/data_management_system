@@ -25,6 +25,9 @@ module Import
             genotypes = fill_genotypes(genotype, record)
 
             genotypes.each do |single_genotype|
+              single_genotype.attribute_map['gene']
+              single_genotype.attribute_map['teststatus']
+
               process_variants(single_genotype, record)
               @persister.integrate_and_store(single_genotype)
             end
@@ -224,21 +227,23 @@ module Import
           #binding.pry
         end
 
-        def handle_test_status_fullscreen(record, genotype, genes)
+        def handle_test_status_fullscreen(record, genotype, genes) #genes param is actually 'genes_dict
           genotypes=[]
           columns = ['gene', 'gene (other)', 'variant_dna', 'test/panel']
           counter = 0
           columns.each do |column|
             genes[column]&.each do |gene|
               #duplicate genotype only if there is more than one gene present
-              
+       
               genotype=genotype.dup_colo if counter.positive?
               genotype.add_gene_colorectal(gene)
               genotype.add_status(4)
               
-              assign_test_status_fullscreen(record, gene, genes, genotype, column)
+              assign_test_status_fullscreen(record, genotype, genes, column, gene)
               genotypes.append(genotype)
               counter +=1
+
+
             end
           end
           genotypes
@@ -246,6 +251,7 @@ module Import
 
         def assign_test_status_fullscreen (record, genotype, genes, column, gene)
           #interrogate the variant dna column and raw gene (other) column
+
           if record.raw_fields['variant dna'].present?
             
             interrogate_variant_dna_column(record, genotype, genes, column, gene)
@@ -253,6 +259,7 @@ module Import
             interrogate_variant_protein_column(record, genotype, genes, column, gene)
           end
 
+        
         end 
 
 
@@ -260,24 +267,19 @@ module Import
         def interrogate_variant_dna_column(record, genotype, genes, column, gene)
 
           variant_regex=/het\sdel|het\sdup|het\sinv|^ex.*del|^ex.*dup|^ex.*inv|^del\sex|^dup\sex|^inv\sex|^c\.|inversion/ix
-        
-          puts record.raw_fields['variant dna']
-          puts record.raw_fields['gene']
-          puts record.raw_fields['gene (other)']
-
+      
           if record.raw_fields['variant dna'].match(/Fail/ix)         
             genotype.add_status(9)
           elsif record.raw_fields['variant dna'] == 'N'
             genotype.add_status(1)
-          elsif record.raw_fields['variant dna'].match(variant_regex) && !record.raw_fields['gene'].blank?
+          elsif record.raw_fields['variant dna'].match(variant_regex) && !record.raw_fields['gene'].blank?           
+            update_status(2, 1, column, 'gene', genotype)
+          elsif record.raw_fields['variant dna'].match(variant_regex) && record.raw_fields['gene'].blank? && genes['gene (other)'].length == 1
             
             update_status(2, 1, column, 'gene', genotype)
-          elsif record.raw_fields['variant dna'].match(variant_regex) && record.raw_fields['gene'].blank? && record.raw_fields['gene (other)'].length == 3
-            puts "I'M HERE AS EXPECTED"
-            update_status(2, 1, column, 'gene', genotype)
-          elsif record.raw_fields['variant dna'].match(variant_regex) && record.raw_fields['gene'].blank? && record.raw_fields['gene (other)'].length > 1 && !genes['variant dna'].nil? #can gene (other) be null in this scenario as wel?????
+          elsif record.raw_fields['variant dna'].match(variant_regex) && record.raw_fields['gene'].blank? && genes['gene (other)'].length > 1 && !genes['variant dna'].nil? #can gene (other) be null in this scenario as wel?????
             #Gene should be specified in raw:variant dna; assign 2 (abnormal) for the specified gene and 1 (normal) for all other genes.
-            
+
             update_status(2, 1, column, 'variant dna', genotype)
           else
             
@@ -287,6 +289,8 @@ module Import
         end 
 
         def interrogate_variant_protein_column(record, genotype, genes, column, gene)
+
+          
           if record.raw_fields['variant protein'].match(/fail/ix)
             genotype.add_status(9)
           elsif record.raw_fields['variant protein'].match(/p.*/ix)
@@ -295,11 +299,7 @@ module Import
             genotype.add_status(1)
           end 
 
-
         end 
-
-
-
 
 
         def update_status(status1, status2, column, column_name, genotype)
@@ -309,13 +309,9 @@ module Import
             genotype.add_status(status1)
           else
             genotype.add_status(status2)
+            puts "YOU'VE GOT A STATUS 2"
           end
         end
-
-
-
-
-
 
 
         def process_variants(genotype, record)
