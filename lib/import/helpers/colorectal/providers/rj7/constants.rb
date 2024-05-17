@@ -50,7 +50,7 @@ module Import
                                         'VUS check' => []
                                     }.freeze
 
-                                    CRC_GENE_REGEX = %r{APC|BMPR1A|EPCAM|GREM1|MLH1|MSH2|MHS2|MUTYH|NTHL1|PMS2|PMS|POLD1|POLE|PTEN|SMAD4|STK11|TP53}ix
+                                    CRC_GENE_REGEX = %r{APC|BMPR1A|EPCAM|GREM1|MLH1|MSH2|MHS2|MSH6|MUTYH|NTHL1|PMS2|PMS|POLD1|POLE|PTEN|SMAD4|STK11|TP53}ix
 
                                     CRC_GENE_MAP =
                                     {
@@ -80,7 +80,7 @@ module Import
                                     { column: 'gene (other)', expression: /^het|del|dup|^c\./ix, status: 2, regex: 'regex' },
                                     { column: 'variant dna', expression: /^fail|^Blank\scontamination/ix, status: 9,regex: 'regex' },
                                     { column: 'variant dna', expression: /^Normal|no\sdel\/dup/ix, status: 1,regex: 'regex' },
-                                    { column: 'variant dna', expression: /SNP\spresent|see\scomments/ix, status: 4,regex: 'regex' }, #Note this is in the context of 'c.1284T>C SNP present', where the designation of this benign variant as a SNP should override the regex 'c.*'
+                                    { column: 'variant dna', expression: /SNP\spresent|see\scomments/ix, status: 4,regex: 'regex' }, 
                                     { column: 'variant dna', expression: /het\sdel|het\sdup|het\sinv|^ex.*del|^ex.*dup|^ex.*inv|^del\sex|^dup\sex|^inv\sex|^c\./ix, status: 2, regex: 'regex' },
                                    # { column: 'variant protein', expression: /p\./ix, status: 2, regex: 'regex' },
                                     { column: 'variant protein', expression: /fail/ix, status: 9, regex: 'regex' }].freeze

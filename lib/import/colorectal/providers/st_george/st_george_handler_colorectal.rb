@@ -69,105 +69,15 @@ module Import
 
             genotypes =[]
 
-            #check if it is targeted 
-            if genotype.attribute_map['genetictestscope'] == "Targeted Colorectal Lynch or MMR"
-              genes = process_genes_targeted(record)
+            genes_dict = process_genes(genotype, record)
+            genotypes = handle_test_status(record, genotype, genes_dict)
 
-              genotypes = duplicate_genotype_targeted(genes, genotype)
-              genotypes.each do |single_genotype|
-                assign_test_status_targeted(single_genotype, record)
-              end
-            
-            #else check if it is full screen 
-            elsif genotype.attribute_map['genetictestscope'] == 'Full screen Colorectal Lynch or MMR'
-              genes_dict = process_genes_fullscreen(genotype, record)
-             
-              genotypes = handle_test_status_fullscreen(record, genotype, genes_dict)
-
-            end 
             genotypes
           end 
 
 
-         def process_genes_targeted(record)
-          #Targeted tests only
-          #Creates a list of genes included in the record that match the BRCA gene regez
-          #Genotype is suplicated fro every gene in the list 
-          #list of genotypes is returned
 
-          columns = ['gene', 'gene (other)']
-          genes =[]
-          columns.each do |column|
-            gene_list = record.raw_fields[column]&.scan(CRC_GENE_REGEX)
-            next if gene_list.blank?
-           
-
-            gene_list.each do |gene|
-              gene = CRC_GENE_MAP[gene]
-              genes.append(gene)
-          end
-        end 
-        
-         genes
-        end
-
-
-
-        def duplicate_genotype_targeted(genes, genotype)
-          #When there is more the one gene listed, a seperate genotype is created for each
-          #each genotype is then adde to teh genotypes list which is then returned
-          genotypes = []
-
-          genes.each do |gene|
-            next if gene.blank?
-
-            gene.each do |gene_value|
-              #only duplicate if there is more than one gene in the list
-              genotype = genotype.dup_colo if genes.flatten.uniq.size >1
-              genotype.add_gene_colorectal(gene_value)
-              genotypes.append(genotype)
-            end 
-          end 
-          genotypes
-        end
-
-        def assign_test_status_targeted(genotype, record)
-          #Loop through the list of dictionarys in TARGTEED_TEST_STATUS within constants.rb
-          #run support method for each dictionary item with the values
-
-          status = nil
-          TARGETED_TEST_STATUS.each do |test_values|
-            status = assign_test_status_targeted_support(record, test_values, genotype)
-
-            break unless status.nil?
-          end 
-
-          status = 4 if status.nil? && record.raw_fields['variant protein'].blank?
-
-          update_status(2, 1, column, 'gene', genotype) if status.nil? && record.raw_fields['variant protein'].match(/p\./ix) #THIS WON"T WORK, need to refactor this whole method to get the columns
-
-          genotype.add_status(status)
-
-        end 
-
-        def assign_test_status_targeted_support(record, test_values, _genotype)
-          #Loop through the dictionaries in regex and assing the correct associated statusß
-          column = test_values[:column]
-          status = test_values[:status]
-          expression = test_values[:expression]
-          match = test_values[:regex]
-
-          #unknown_status_regex= '/SNP\spresent|see\scomments/ix' #STILL NEED TO HANDLE THE 'SNP PRESENT' overiding the c. rule
-
-          if match == 'regex'
-            status if record.raw_fields[column].present? && record.raw_fields[column].scan(expression).size.positive?
-          elsif record.raw_fields[column].present? && record.raw_fields[column] == expression
-            status
-          end 
-
-        end 
-
-        def process_genes_fullscreen(_genotype, record)
+        def process_genes(_genotype, record)
           genes_dict={}
 
           ['gene', 'gene (other)', 'variant dna', 'test/panel'].each do |column|
@@ -216,7 +126,7 @@ module Import
           if r211.present? && date < DateTime.parse('18/07/2022')
             panel_genes_list=FULL_SCREEN_TESTS_MAP['R211']
 
-          elsif r211.present? && date > DateTime.parse('18/07/2022')
+          elsif r211.present? && date >= DateTime.parse('18/07/2022')
             panel_genes_list=FULL_SCREEN_TESTS_MAP['R211_']
 
           end       
@@ -225,7 +135,7 @@ module Import
 
         end
 
-        def handle_test_status_fullscreen(record, genotype, genes) #genes param is actually 'genes_dict
+        def handle_test_status(record, genotype, genes) #genes param is actually 'genes_dict
           genotypes=[]
           columns = ['gene', 'gene (other)', 'variant_dna', 'test/panel']
           counter = 0
@@ -236,33 +146,96 @@ module Import
               genotype=genotype.dup_colo if counter.positive?
               genotype.add_gene_colorectal(gene)
               genotype.add_status(4)
-              
-              assign_test_status_fullscreen(record, genotype, genes, column, gene)
-              genotypes.append(genotype)
-              counter +=1
 
+              if genotype.attribute_map['genetictestscope'] == "Targeted Colorectal Lynch or MMR"
+              
+                assign_test_status_targeted(record, genotype, genes, column, gene)
+                genotypes.append(genotype)
+                counter +=1
+
+              elsif genotype.attribute_map['genetictestscope'] == 'Full screen Colorectal Lynch or MMR'
+                assign_test_status_fullscreen(record, genotype, genes, column, gene)
+                genotypes.append(genotype)
+                counter +=1
+              end 
 
             end
           end
           genotypes
         end
 
+
+        def assign_test_status_targeted (record, genotype, genes, column, gene)
+          #interrogate the variant dna column and raw gene (other) column
+
+          if record.raw_fields['gene (other )'].present?
+            
+            interrogate_gene_other_targeted(record, genotype, genes, column, gene)
+
+          elsif record.raw_fields['variant dna'].present?
+            interrogate_variant_dna_targeted(record, genotype, genes, column, gene)
+
+          elsif record.raw_fields['variant protein'].present?
+            interrogate_variant_protein_targeted(record, genotype, genes, column, gene)
+
+
+          end       
+        end 
+
+
+        def interrogate_gene_other_targeted(record, genotype, genes, column, gene)
+          if record.raw_fields['gene (other)'].match(/^Fail|^Blank contamination$/ix)         
+            genotype.add_status(9)
+
+          elsif record.raw_fields['gene (other)'].match(/^het|del|dup|^c./ix)         
+            genotype.add_status(2)
+          end   
+        end
+
+
+        def interrogate_variant_dna_targeted(record, genotype, genes, column, gene)
+          if record.raw_fields['variant dna'].match(/Fail|^Blank contamination$/ix)         
+            genotype.add_status(9)
+
+          elsif record.raw_fields['variant dna'].match(/^Normal|^no del\/dup$/ix)         
+            genotype.add_status(1)
+          
+          elsif record.raw_fields['variant dna'].match(/SNP present$|^no del\/dup$/ix)         
+            genotype.add_status(4)
+
+          elsif record.raw_fields['variant dna'].match( /het\sdel|het\sdup|het\sinv|^ex.*del|^ex.*dup|^ex.*inv|^del\sex|^dup\sex|^inv\sex|^c\./ix)         
+            genotype.add_status(2)
+          end 
+        end 
+
+
+        def interrogate_variant_protein_targeted(record, genotype, genes, column, gene)
+          if record.raw_fields['variant protein'].match(/^p./ix) 
+            update_status(2, 1, column, 'variant protein', genotype)
+
+          elsif record.raw_fields['variant protein'].match(/fail/ix)         
+            genotype.add_status(9)
+
+          else
+            genotype.add_status(1)
+          end 
+        end
+
+
+
+
         def assign_test_status_fullscreen (record, genotype, genes, column, gene)
           #interrogate the variant dna column and raw gene (other) column
 
           if record.raw_fields['variant dna'].present?
             
-            interrogate_variant_dna_column(record, genotype, genes, column, gene)
+            interrogate_variant_dna_fullscreen(record, genotype, genes, column, gene)
           elsif record.raw_fields['variant protein'].present?
-            interrogate_variant_protein_column(record, genotype, genes, column, gene)
-          end
-
-        
+            interrogate_variant_protein_fullscreen(record, genotype, genes, column, gene)
+          end       
         end 
 
-
-
-        def interrogate_variant_dna_column(record, genotype, genes, column, gene)
+        def interrogate_variant_dna_fullscreen(record, genotype, genes, column, gene)
 
           variant_regex=/het\sdel|het\sdup|het\sinv|^ex.*del|^ex.*dup|^ex.*inv|^del\sex|^dup\sex|^inv\sex|^c\.|inversion/ix
       
@@ -276,17 +249,14 @@ module Import
             
             update_status(2, 1, column, 'gene', genotype)
           elsif record.raw_fields['variant dna'].match(variant_regex) && record.raw_fields['gene'].blank? && genes['gene (other)'].length > 1 && !genes['variant dna'].nil? #can gene (other) be null in this scenario as wel?????
-            #Gene should be specified in raw:variant dna; assign 2 (abnormal) for the specified gene and 1 (normal) for all other genes.
-
+            #Gene should be specified in raw:variant dna; assign 2 (abnormal) for the specified gene and 1 (normal) for all other genes.     
             update_status(2, 1, column, 'variant dna', genotype)
-          else
-            
-            interrogate_variant_protein_column(record, genotype, genes, column, gene)
+          
           end
 
         end 
 
-        def interrogate_variant_protein_column(record, genotype, genes, column, gene)
+        def interrogate_variant_protein_fullscreen(record, genotype, genes, column, gene)
 
           if record.raw_fields['variant protein'].blank?
             genotype.add_status(1)
