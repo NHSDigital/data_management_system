@@ -87,7 +87,6 @@ module Import
 
             gene_list = process_test_panels(record, gene_list, column) if column == 'test/panel'
            
-
             next if gene_list.nil?
 
             gene_list.each do |gene|
@@ -95,19 +94,12 @@ module Import
                 genes.append(gene_value)
                 
               end
-              
             end
 
             genes_dict[column] = genes.uniq
-          
-            
-          end
-
-          
-          genes_dict
-    
-
-          
+                 
+          end         
+          genes_dict            
         end
 
         def process_test_panels(record, gene_list, column)
@@ -122,18 +114,32 @@ module Import
           
           r211 = record.raw_fields[column]&.eql?('R211')
 
-          date = DateTime.parse(record.raw_fields['authoriseddate'])
-          if r211.present? && date < DateTime.parse('18/07/2022')
-            panel_genes_list=FULL_SCREEN_TESTS_MAP['R211']
+          if r211.present?
+            r211_genes = process_r211(record)
+            r211_genes.each do |gene|
+              gene_list.append(gene)
+            end
+          end
 
-          elsif r211.present? && date >= DateTime.parse('18/07/2022')
-            panel_genes_list=FULL_SCREEN_TESTS_MAP['R211_']
-
-          end       
+            
           gene_list
                   
 
         end
+
+
+        def process_r211(record)
+          return unless record.raw_fields['test/panel'] == 'R211'
+
+          date = DateTime.parse(record.raw_fields['authoriseddate'])
+
+          if date < DateTime.parse('18/07/2022')
+            r211_panel_genes=%w[APC BMPR1A EPCAM MLH1 MSH2 MSH6 MUTYH NTHL1 PMS2 POLD1 POLE PTEN SMAD4 STK11]
+          elsif date >= DateTime.parse('18/07/2022')
+            r211_panel_genes=%w[APC BMPR1A EPCAM MLH1 MSH2 MSH6 MUTYH NTHL1 PMS2 POLD1 POLE PTEN SMAD4 STK11 GREM1 RNF43]
+          end
+          r211_panel_genes
+        end 
 
         def handle_test_status(record, genotype, genes) #genes param is actually 'genes_dict
           genotypes=[]
@@ -181,6 +187,8 @@ module Import
 
           end       
         end 
+
+     
 
 
         def interrogate_gene_other_targeted(record, genotype, genes, column, gene)
@@ -286,15 +294,11 @@ module Import
           # add hgvsc and hgvsp codes - if not present then run process_location_type_zygosity
           return unless genotype.attribute_map['teststatus'] == 2
 
-          ['variant dna', 'gene (other)'].each do |column|
-            genotype.add_gene_location($LAST_MATCH_INFO[:cdna]) if /c\.(?<cdna>.*)/i.match(record.raw_fields[column])
-          end
-
-          ['variant protein', 'variant dna', 'gene (other)'].each do |column|
-            if /p\.(?<impact>.*)/.match(record.raw_fields[column])
-              genotype.add_protein_impact($LAST_MATCH_INFO[:impact])
-            end
-          end
+      
+          genotype.add_gene_location($LAST_MATCH_INFO[:cdna]) if /c\.(?<cdna>.*)/i.match(record.raw_fields['variant dna'])
+    
+          genotype.add_protein_impact($LAST_MATCH_INFO[:impact]) if /p\.(?<impact>.*)/i.match(record.raw_fields['variant protein'])
+   
           if record.mapped_fields['codingdnasequencechange'].blank? && record.mapped_fields['proteinimpact'].blank?
             process_location_type_zygosity(genotype, record)
           end
