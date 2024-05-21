@@ -48,7 +48,7 @@ module Import
                                         'VUS check' => []
                                     }.freeze
 
-                                    CRC_GENE_REGEX = %r{APC|BMPR1A|EPCAM|GREM1|MLH1|MSH2|MHS2|MSH6|MUTYH|NTHL1|PMS2|PMS|POLD1|POLE|PTEN|SMAD4|STK11|TP53|RNF43}ix
+                                    CRC_GENE_REGEX = %r{APC|BMPR1A|EPCAM|GREM1|MLH1|MSH2|MHS2|MSH6|MUTYH|NTHL1|PMS2|PMS|POLD1|POLE|PTEN|SMAD4|STK11|TP53|RNF43|ATM}ix
 
                                     CRC_GENE_MAP =
                                     {
@@ -70,21 +70,11 @@ module Import
                                         'SMAD4' => ['SMAD4'],
                                         'STK11' => ['STK11'],
                                         'TP53' => ['TP53'],
-                                        'RNF43' => ['RNF43']
+                                        'RNF43' => ['RNF43'],
+                                        'ATM' => ['ATM']
                                     }.freeze
 
                                     
-
-                    # TARGETED_TEST_STATUS = [{ column: 'gene (other)', expression: /FAIL|^Blank\scontamination/ix, status: 9, regex: 'regex' },
-                    #                 { column: 'gene (other)', expression: /^het|del|dup|^c\./ix, status: 2, regex: 'regex' },
-                    #                 { column: 'variant dna', expression: /^fail|^Blank\scontamination/ix, status: 9,regex: 'regex' },
-                    #                 { column: 'variant dna', expression: /^Normal|no\sdel\/dup/ix, status: 1,regex: 'regex' },
-                    #                 { column: 'variant dna', expression: /SNP\spresent|see\scomments/ix, status: 4,regex: 'regex' }, 
-                    #                 { column: 'variant dna', expression: /het\sdel|het\sdup|het\sinv|^ex.*del|^ex.*dup|^ex.*inv|^del\sex|^dup\sex|^inv\sex|^c\./ix, status: 2, regex: 'regex' },
-                    #                # { column: 'variant protein', expression: /p\./ix, status: 2, regex: 'regex' },
-                    #                 { column: 'variant protein', expression: /fail/ix, status: 9, regex: 'regex' }].freeze
-                    
-                                    #FULL_SCREEN_TESTS_STATUS
 
                                     
                                     EXON_REGEX = /((?<zygosity>Het)\s?(?<mutationtype>dup|del)\s?(\.\s?)?ex\s?(?<exons>[0-9]+(-(ex)?[0-9]+)?) |

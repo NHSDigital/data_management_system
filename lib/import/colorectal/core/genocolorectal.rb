@@ -32,7 +32,9 @@ module Import
                            'GREM1' => 1882,
                            'NTHL1' => 3108,
                            'CDH1' => 794, 
-                          'RNF43' => 5019 }.freeze
+                          'RNF43' => 5019,
+                          'TP53' => 79,
+                          'ATM' => 451 }.freeze
 
         COLORECTAL_REGEX = /(?<apc>APC)|
                             (?<bmpr>BMPR1A)|
@@ -51,7 +53,9 @@ module Import
                             (?<grem>GREM1)|
                             (?<nthl>NTHL1)|
                             (?<cdh1>CDH1)|
-                            (?<rnf43>RNF43)/ix # Added by Francesco
+                            (?<rnf43>RNF43)|
+                            (?<tp53>TP53)|
+                            (?<atm>ATM)/ix # Added by Francesco
 
         # ------------------------ Interogators ------------------------------
 
@@ -74,7 +78,7 @@ module Import
           case colorectal_input
           when Integer
             if [1432, 358, 577, 2744, 2804, 2808, 2850, 3394,
-                3408, 5000, 62, 72, 76, 1882, 3108, 794, 5019].include? colorectal_input
+                3408, 5000, 62, 72, 76, 1882, 3108, 794, 5019, 79, 451].include? colorectal_input
 
               @attribute_map['gene'] = colorectal_input
               @logger.debug "SUCCESSFUL gene parse for #{colorectal_input}"
