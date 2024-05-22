@@ -21,14 +21,11 @@ module Import
 
             assign_test_type(genotype, record)
             genotype = assign_test_scope(genotype, record)
-
             genotypes = fill_genotypes(genotype, record)
-
-          
-
             genotypes.each do |single_genotype|
 
               process_variants(single_genotype, record)
+
               @persister.integrate_and_store(single_genotype)
             end
 
@@ -176,11 +173,16 @@ module Import
         def assign_test_status_targeted (record, genotype, genes, column, gene)
           #interrogate the variant dna column and raw gene (other) column
 
-          if record.raw_fields['gene (other )'].present?
-            
-            interrogate_gene_other_targeted(record, genotype, genes, column, gene)
+          puts "#############"
+          puts record.raw_fields['variant dna']
+          puts "#############"
+          
 
+          if record.raw_fields['gene (other)'].present?
+            interrogate_gene_other_targeted(record, genotype, genes, column, gene)
+  
           elsif record.raw_fields['variant dna'].present?
+            puts "I'M HITTING THIS AS EXPECTED"
             interrogate_variant_dna_targeted(record, genotype, genes, column, gene)
 
           elsif record.raw_fields['variant protein'].present?
@@ -195,11 +197,12 @@ module Import
 
         def interrogate_gene_other_targeted(record, genotype, genes, column, gene)
 
-          if record.raw_fields['gene (other)'].match(/^Fail|^Blank contamination$/ix)         
+          if record.raw_fields['gene (other)'].match(/^Fail|^Blank contamination$/ix)  
+            puts "I SHOULDN't BE HERE"       
             genotype.add_status(9)
-
-          elsif record.raw_fields['gene (other)'].match(/^het|del|dup|^c./ix)         
+          elsif record.raw_fields['gene (other)'].match(/^het|del|dup|^c./ix)                    
             genotype.add_status(2)
+          else interrogate_variant_dna_targeted(record, genotype, genes, column, gene)
           end   
         end
 
@@ -214,14 +217,17 @@ module Import
           elsif record.raw_fields['variant dna'].match(/SNP present$|^no del\/dup$/ix)         
             genotype.add_status(4)
 
-          elsif record.raw_fields['variant dna'].match( /het\sdel|het\sdup|het\sinv|^ex.*del|^ex.*dup|^ex.*inv|^del\sex|^dup\sex|^inv\sex|^c\./ix)         
+          elsif record.raw_fields['variant dna'].match(/het\sdel|het\sdup|het\sinv|^ex.*del|^ex.*dup|^ex.*inv|^del\sex|^dup\sex|^inv\sex|^c\./ix)    
+            puts "######## I should be here ########"      
             genotype.add_status(2)
+          else interrogate_variant_protein_targeted(record, genotype, genes, column, gene)
+
           end 
         end 
 
 
         def interrogate_variant_protein_targeted(record, genotype, genes, column, gene)
-          if record.raw_fields['variant protein'].match(/^p./ix) 
+          if record.raw_fields['variant protein'].match(/^p./ix)             
             update_status(2, 1, column, 'variant protein', genotype)
 
           elsif record.raw_fields['variant protein'].match(/fail/ix)         
@@ -262,7 +268,8 @@ module Import
           elsif record.raw_fields['variant dna'].match(variant_regex) && record.raw_fields['gene'].blank? && genes['gene (other)'].length > 1  #can gene (other) be null in this scenario as wel?????
             #Gene should be specified in raw:variant dna; assign 2 (abnormal) for the specified gene and 1 (normal) for all other genes.     
             update_status(2, 1, column, 'variant dna', genotype)
-
+          else 
+            interrogate_variant_protein_fullscreen(record, genotype, genes, column, gene)
 
           end
         end 
@@ -299,10 +306,8 @@ module Import
         def process_variants(genotype, record)
           # add hgvsc and hgvsp codes - if not present then run process_location_type_zygosity
           return unless genotype.attribute_map['teststatus'] == 2
-
-      
-          genotype.add_gene_location($LAST_MATCH_INFO[:cdna]) if /c\.(?<cdna>.*)/i.match(record.raw_fields['variant dna'])
     
+          genotype.add_gene_location($LAST_MATCH_INFO[:cdna]) if /c\.(?<cdna>.*)/i.match(record.raw_fields['variant dna']) 
           genotype.add_protein_impact($LAST_MATCH_INFO[:impact]) if /p\.(?<impact>.*)/i.match(record.raw_fields['variant protein'])
    
           if record.mapped_fields['codingdnasequencechange'].blank? && record.mapped_fields['proteinimpact'].blank?
@@ -319,10 +324,6 @@ module Import
             genotype.add_variant_type($LAST_MATCH_INFO[:mutationtype])
             genotype.add_zygosity($LAST_MATCH_INFO[:zygosity])
           end
-            
-
-
-
         end
       end
     end
