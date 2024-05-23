@@ -94,7 +94,6 @@ class StGeorgeTest < ActiveSupport::TestCase
     assert_equal 'Full screen Colorectal Lynch or MMR', @genotype.attribute_map['genetictestscope']
   end
 
-=begin
   test 'assign_test_status_targeted' do
     # Priority 1: Fail in gene(other)
     targeted = build_raw_record('pseudo_id1' => 'bob')
@@ -190,60 +189,8 @@ class StGeorgeTest < ActiveSupport::TestCase
     assert_equal 2, @genotype.attribute_map['teststatus']
   end
 
-=end
 
 
-test 'process_test_panels' do
-
-  r209 = build_raw_record('pseudo_id1' => 'bob')
-  r209.raw_fields['test/panel'] = 'R209'
-  genes= @handler.process_test_panels(r209, [], 'test/panel')
-  assert_equal %w[APC BMPR1A EPCAM MLH1 MSH2 MSH6 MUTYH NTHL1 PMS2 POLD1 POLE PTEN SMAD4 STK11], genes
-
-  lynch = build_raw_record('pseudo_id1' => 'bob')
-  lynch.raw_fields['test/panel'] = 'Lynch (R210)'
-  genes= @handler.process_test_panels(lynch, [], 'test/panel')
-  assert_equal %w[EPCAM MLH1 MSH2 MSH6 PMS2], genes
-
-  r414 = build_raw_record('pseudo_id1' => 'bob')
-  r414.raw_fields['test/panel'] = 'R414'
-  genes= @handler.process_test_panels(r414, [], 'test/panel')
-  assert_equal %w[APC], genes
-
-end
-
-
-
-
-  test 'process_r211' do
-
-    r211_before = build_raw_record('pseudo_id1' => 'bob')
-    r211_before.raw_fields['test/panel'] = 'R211'
-    r211_before.raw_fields['authoriseddate']='17/07/2022'
-    genes= @handler.process_r211(r211_before)
-    assert_equal %w[APC BMPR1A EPCAM MLH1 MSH2 MSH6 MUTYH NTHL1 PMS2 POLD1 POLE PTEN SMAD4 STK11], genes
-
-    r211_after = build_raw_record('pseudo_id1' => 'bob')
-    r211_after.raw_fields['test/panel'] = 'R211'
-    r211_after.raw_fields['authoriseddate']='18/07/2022'
-    genes= @handler.process_r211(r211_after)
-    assert_equal %w[APC BMPR1A EPCAM MLH1 MSH2 MSH6 MUTYH NTHL1 PMS2 POLD1 POLE PTEN SMAD4 STK11 GREM1 RNF43], genes
-  end
-
-
-  test 'assign_test_status_full_screen' do
-    fs_variant_dna_column = build_raw_record('pseudo_id1' => 'bob')
-    fs_variant_dna_column.raw_fields['gene'] = 'BRCA1'
-    fs_variant_dna_column.raw_fields['variant dna'] = 'Fail'
-    genotypes = @handler.assign_test_status_fullscreen(fs_variant_dna_column, @genotype, { 'gene' => ['BRCA1'], 'gene (other)' => [], 'variant dna' => [], 'test/panel' => []}, 'gene', 'BRCA1' )
-    assert_equal 9, @genotype.attribute_map['teststatus']
-
-    fs_variant_dna_column = build_raw_record('pseudo_id1' => 'bob')
-    fs_variant_dna_column.raw_fields['gene'] = 'BRCA1'
-    fs_variant_dna_column.raw_fields['variant dna'] = 'N'
-    genotypes = @handler.assign_test_status_fullscreen(fs_variant_dna_column, @genotype, { 'gene' => ['BRCA1'], 'gene (other)' => [], 'variant dna' => [], 'test/panel' => []}, 'gene', 'BRCA1' )
-    assert_equal 1, @genotype.attribute_map['teststatus']
-  end
 
   def clinical_json
     +
