@@ -1,6 +1,3 @@
-# require_relative 'report_extractor'
-require 'pry'
-
 module Import
   module Colorectal
     module Providers
@@ -9,6 +6,12 @@ module Import
         # Leeds importer for colorectal
         class LeedsHandlerColorectal < Import::Germline::ProviderHandler
           include Import::Helpers::Colorectal::Providers::Rr8::Constants
+
+          def initialize(batch)
+            @genes_hash = YAML.safe_load(File.open(Rails.root.join(GENES_FILEPATH)))
+            @status_hash = YAML.safe_load(File.open(Rails.root.join(STATUS_FILEPATH)))
+            super
+          end
 
           def process_fields(record)
             populate_variables(record)
@@ -22,8 +25,6 @@ module Import
             @report = cleanup_report(record.raw_fields['report'])
             @moleculartestingtype = record.raw_fields['moleculartestingtype']&.downcase
             @indicationcategory = record.raw_fields['indicationcategory']&.downcase
-            @genes_hash = YAML.safe_load(File.open(Rails.root.join(GENES_FILEPATH)))
-            @status_hash = YAML.safe_load(File.open(Rails.root.join(STATUS_FILEPATH)))
             @genes_panel = []
           end
 
