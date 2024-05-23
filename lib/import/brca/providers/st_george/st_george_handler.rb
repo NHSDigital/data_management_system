@@ -11,11 +11,11 @@ module Import
           PASS_THROUGH_FIELDS = %w[age sex consultantcode collecteddate
                                    receiveddate authoriseddate servicereportidentifier
                                    providercode receiveddate sampletype].freeze
-          CDNA_REGEX = /c\.(?<cdna>[0-9]+[^\s)]+)|c\.\[(?<cdna>.*?)\]/i.freeze
+          CDNA_REGEX = /c\.(?<cdna>[0-9]+[^\s)]+)|c\.\[(?<cdna>.*?)\]/i
 
           PROTEIN_REGEX = /p\.(?<impact>[a-z]+[0-9]+[a-z]+)|
                            p\.(?<sqrbo>\[)?(?<rndbo>\()?(?<impact>[a-z]+[0-9]+[a-z]+)
-                           (?<rndbrc>\))?(?<sqrbc>\])?/ix.freeze
+                           (?<rndbrc>\))?(?<sqrbc>\])?/ix
 
           DEPRECATED_BRCA_NAMES_MAP = { 'BR1'    => 'BRCA1',
                                         'B1'     => 'BRCA1',
@@ -37,7 +37,7 @@ module Import
                                      NF1|
                                      NF2|
                                      SMARCB1|
-                                     LZTR1)/xi.freeze
+                                     LZTR1)/xi
 
           EXON_VARIANT_REGEX = /(?<variant>del|dup|ins).+ex(?<on>on)?(?<s>s)?\s
                                 (?<exons>[0-9]+(?<dgs>-[0-9]+)?)|
@@ -47,11 +47,11 @@ module Import
                               (?<exons>[0-9]+(?<dgs>\sto\s[0-9]+))|
                               (?<variant>del|dup|ins)(?<s>\s)?(?<exons>[0-9]+(?<dgs>-[0-9]+)?)|
                               ex(?<on>on)?(?<s>s)?\s(?<exons>[0-9]+(?<dgs>\sto\s[0-9]+)?)\s
-                              (?<variant>del|dup|ins)/ix.freeze
+                              (?<variant>del|dup|ins)/ix
 
-          DEPRECATED_BRCA_NAMES_REGEX = /B1|BR1|BRCA\s1|B2|BR2|BRCA\s2/i.freeze
+          DEPRECATED_BRCA_NAMES_REGEX = /B1|BR1|BRCA\s1|B2|BR2|BRCA\s2/i
 
-          DELIMETER_REGEX = /[&\n+,;]|and|IFD/i.freeze
+          DELIMETER_REGEX = /[&\n+,;]|and|IFD/i
 
           def process_fields(record)
             genotype = Import::Brca::Core::GenotypeBrca.new(record)

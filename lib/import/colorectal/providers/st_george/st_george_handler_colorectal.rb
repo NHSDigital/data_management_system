@@ -61,11 +61,11 @@ module Import
             # Check if record is full screen or targeted and handle accordingly
             # process the genes, genotypes and test status for each gene listed in the genotype
 
-            genes_dict = process_genes(genotype, record)
+            genes_dict = process_genes(record)
             handle_test_status(record, genotype, genes_dict)
           end
 
-          def process_genes(_genotype, record)
+          def process_genes( record)
             genes_dict = {}
 
             ['gene', 'gene (other)', 'variant dna', 'test/panel'].each do |column|
@@ -132,6 +132,8 @@ module Import
               genes[column]&.each do |gene|
                 # duplicate genotype only if there is more than one gene present
 
+
+
                 genotype = genotype.dup_colo if counter.positive?
                 genotype.add_gene_colorectal(gene)
                 genotype.add_status(4)
@@ -151,15 +153,16 @@ module Import
             end
             genotypes
           end
+          
 
           def assign_test_status_targeted(record, genotype, genes, column, gene)
             # interrogate the variant dna column and raw gene (other) column
 
             if record.raw_fields['gene (other)'].present?
-              interrogate_gene_other_targeted(record, genotype, genes, column, gene)
+              int_gene_other=interrogate_gene_other_targeted(record, genotype, genes, column, gene)
 
             elsif record.raw_fields['variant dna'].present?
-              interrogate_variant_dna_targeted(record, genotype, genes, column, gene)
+             int_variant_dna=interrogate_variant_dna_targeted(record, genotype, genes, column, gene)
 
             elsif record.raw_fields['variant protein'].present?
               interrogate_variant_protein_targeted(record, genotype, genes, column, gene)
@@ -191,7 +194,7 @@ module Import
               (/het\sdel|het\sdup|het\sinv|^ex.*del|^ex.*dup|^ex.*inv|^del\sex|^dup\sex|^inv\sex|^c\./ix)
               genotype.add_status(2)
             else
-              interrogate_variant_protein_targeted(record, genotype, genes, column, gene)
+             interrogate_variant_protein_targeted(record, genotype, genes, column, gene)
 
             end
           end
@@ -245,9 +248,9 @@ module Import
           end
 
           def interrogate_variant_protein_fullscreen(record, genotype, _genes, column, _gene)
-            if record.raw_fields['variant protein'].blank?
-              genotype.add_status(1)
-            elsif record.raw_fields['variant protein'].match(/fail/ix)
+            # if record.raw_fields['variant protein'].blank?
+            #   genotype.add_status(1)
+            if record.raw_fields['variant protein'].match(/fail/ix)
               genotype.add_status(9)
             elsif record.raw_fields['variant protein'].match(/p.*/ix)
               update_status(2, 1, column, 'gene', genotype)
