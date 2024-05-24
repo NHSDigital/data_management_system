@@ -1,6 +1,6 @@
 require 'possibly'
 require 'pry'
-require 'Date'
+require 'date'
 
 module Import
   module Brca

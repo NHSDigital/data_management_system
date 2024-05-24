@@ -596,9 +596,9 @@ class StGeorgeTest < ActiveSupport::TestCase
     @genotype.attribute_map['teststatus'] = 2
     location_type_zygosity.raw_fields['gene'] = 'het del ex 12-34'
     @handler.process_variants(@genotype, location_type_zygosity)
-    assert_equal nil, @genotype.attribute_map['sequencevarianttype']
-    assert_equal nil, @genotype.attribute_map['exonintroncodonnumber']
-    assert_equal nil, @genotype.attribute_map['variantgenotype']
+    assert_nil @genotype.attribute_map['sequencevarianttype']
+    assert_nil @genotype.attribute_map['exonintroncodonnumber']
+    assert_nil @genotype.attribute_map['variantgenotype']
 
     location_type_zygosity = build_raw_record('pseudo_id1' => 'bob')
     @genotype.attribute_map['teststatus'] = 2
