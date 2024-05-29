@@ -10,24 +10,24 @@ module Import
 
             TEST_TYPE_MAP =
               {
-                'Diagnostic testing for known mutation(s)' => 'diagnostic',
-                'Family follow-up testing to aid variant interpretation' => 'diagnostic',
-                'Inherited breast cancer and ovarian cancer' => 'diagnostic',
-                'Inherited ovarian cancer (without breast cancer)' => 'diagnostic',
-                'Predictive testing for known familial mutation(s)' => 'predictive',
-                'NICE approved PARP inhibitor treatment' => 'diagnostic',
-                'Inherited prostate cancer' => 'diagnostic'
+                'diagnostic testing for known mutation(s)' => 'diagnostic',
+                'family follow-up testing to aid variant interpretation' => 'diagnostic',
+                'inherited breast cancer and ovarian cancer' => 'diagnostic',
+                'inherited ovarian cancer (without breast cancer)' => 'diagnostic',
+                'predictive testing for known familial mutation(s)' => 'predictive',
+                'nice approved parp inhibitor treatment' => 'diagnostic',
+                'inherited prostate cancer' => 'diagnostic'
               }.freeze
 
             TEST_SCOPE_MAP =
               {
-                'Diagnostic testing for known mutation(s)' => 'targeted',
-                'Family follow-up testing to aid variant interpretation' => 'targeted',
-                'Inherited breast cancer and ovarian cancer' => 'fullscreen',
-                'Inherited ovarian cancer (without breast cancer)' => 'fullscreen',
-                'Predictive testing for known familial mutation(s)' => 'targeted',
-                'NICE approved PARP inhibitor treatment' => 'fullscreen',
-                'Inherited prostate cancer' => 'fullscreen'
+                'diagnostic testing for known mutation(s)' => :targeted_mutation,
+                'family follow-up testing to aid variant interpretation' => :targeted_mutation,
+                'inherited breast cancer and ovarian cancer' => :full_screen,
+                'inherited ovarian cancer (without breast cancer)' => :full_screen,
+                'predictive testing for known familial mutation(s)' => :targeted_mutation,
+                'nice approved parp inhibitor treatment' => :full_screen,
+                'inherited prostate cancer' => :full_screen
               }.freeze
 
             FULL_SCREEN_TESTS_MAP =

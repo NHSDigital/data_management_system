@@ -30,7 +30,7 @@ module Import
 
           def fill_genotypes(genotype, record)
             genotypes = []
-            if genotype.attribute_map['genetictestscope'] == 'Targeted BRCA mutation test'
+            if genotype.targeted?
               # determines the genes in the record and creates a genotype for each one
               genes = process_genes_targeted(record)
               # For each gene in the list of genes a new genotype will need to be created
@@ -38,7 +38,7 @@ module Import
               genotypes.each do |single_genotype|
                 assign_test_status_targeted(single_genotype, record)
               end
-            elsif genotype.attribute_map['genetictestscope'] == 'Full screen BRCA1 and BRCA2'
+            elsif genotype.full_screen?
               genes_dict = process_genes_full_screen(genotype, record)
               genotypes = handle_test_status_full_screen(record, genotype, genes_dict)
             end
@@ -52,9 +52,9 @@ module Import
 
             return if record.raw_fields['moleculartestingtype'].blank?
 
-            return unless TEST_TYPE_MAP[record.raw_fields['moleculartestingtype']]
+            return unless TEST_TYPE_MAP[record.raw_fields['moleculartestingtype']&.downcase&.strip]
 
-            genotype.add_molecular_testing_type(TEST_TYPE_MAP[record.raw_fields['moleculartestingtype']])
+            genotype.add_molecular_testing_type(TEST_TYPE_MAP[record.raw_fields['moleculartestingtype']&.downcase&.strip])
           end
 
           def assign_test_scope(genotype, record)
@@ -62,14 +62,12 @@ module Import
             # map molecular testing type and assign to genotype using
             # add_test_scope method from genotype_brca.rb
 
-            testscope = TEST_SCOPE_MAP[record.raw_fields['moleculartestingtype']]
-            if testscope == 'targeted'
-              genotype.add_test_scope(:targeted_mutation)
-            elsif testscope == 'fullscreen'
-              genotype.add_test_scope(:full_screen)
-            else
-              genotype.add_test_scope(:no_genetictestscope)
-            end
+            testscope = record.raw_fields['moleculartestingtype']&.downcase&.strip
+            genotype.add_test_scope(TEST_SCOPE_MAP[testscope])
+            return genotype if genotype.attribute_map['genetictestscope'].present?
+
+            genotype.add_test_scope(:no_genetictestscope)
+
             genotype
           end
 
@@ -98,16 +96,12 @@ module Import
             # The genotype is duplicated and the new gene is added to the duplicated genotype
             # Each genotype is then added to the genoytypes list which this method then returns
             genotypes = []
-            genes.each do |gene|
-              next if gene.blank?
-
-              gene.each do |gene_value|
+            genes.flatten.compact_blank.uniq.each do |gene_value|
                 # genotype only needs to be duplicated if there is more than one gene in the list
                 genotype = genotype.dup if genes.flatten.uniq.size > 1
                 genotype.add_gene(gene_value)
                 genotypes.append(genotype)
               end
-            end
             genotypes
           end
 
