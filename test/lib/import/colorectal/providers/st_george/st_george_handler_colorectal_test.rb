@@ -95,8 +95,6 @@ class StGeorgeTest < ActiveSupport::TestCase
   end
 
 
-test 'fill_genotypes' do
-end 
 
 test 'process_genes' do 
 #test where it is not a panel
