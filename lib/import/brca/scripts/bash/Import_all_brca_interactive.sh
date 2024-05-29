@@ -194,6 +194,7 @@ done
 RJ7_2 () {
 MBIS=$1
 PROV='RJ7'
+PROV_OLD_FILE='RJ7_2'
 IFS=$'\n'
 for x in $(find  $DIRPATH/$FILEPATH -type f -name "*.pseudo" -path "*/$PROV/*" \
 -not -path "*/2021/*" \
@@ -203,7 +204,7 @@ for x in $(find  $DIRPATH/$FILEPATH -type f -name "*.pseudo" -path "*/$PROV/*" \
 ! -name "*HBOC*")
 do
 IFS="$OIFS"
-$BRAKE import:brca fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code='RJ7_2'
+$BRAKE import:brca fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV_OLD_FILE
 done
 }
 
