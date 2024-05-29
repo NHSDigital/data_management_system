@@ -93,7 +93,7 @@ module Import
                 'ATM' => ['ATM']
               }.freeze
 
-            EXON_REGEX = /((?<zygosity>Het)\s?(?<mutationtype>dup|del)\s?(\.\s?)?ex\s?(?<exons>[0-9]+(-(ex)?[0-9]+)?) |
+            EXON_REGEX = /((?<zygosity>Het)\s?(?<mutationtype>dup|del)\s?.+(\.\s?)?ex\s?(?<exons>[0-9]+(-(ex)?[0-9]+)?) |
               (?<mutationtype>del)\s?ex\s?(?<exons>[0-9]+_[0-9]+) |
               ex(on)?\s?(?<exons>[0-9]+(-[0-9]+)?)\s?(?<zygosity>Het)?\s?(?<mutationtype>del(etion)?|dup))/ix
           end

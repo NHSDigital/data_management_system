@@ -101,23 +101,23 @@ end
 test 'process_genes' do 
 #test where it is not a panel
 
-mhs6_typo=build_raw_record('pseudo_id1' => 'bob')
-mhs6_typo.raw_fields['gene'] = 'MHS2'
-mhs6_typo.raw_fields['gene (other)'] = 'unknown'
-genes_dict= @handler.process_genes(mhs6_typo)
-assert_equal ({ 'gene' => %w[MSH2], 'gene (other)' => [] }), genes_dict
+  mhs6_typo=build_raw_record('pseudo_id1' => 'bob')
+  mhs6_typo.raw_fields['gene'] = 'MHS2'
+  mhs6_typo.raw_fields['gene (other)'] = 'unknown'
+  genes_dict= @handler.process_genes(@genotype, mhs6_typo)
+  assert_equal ({ 'gene' => %w[MSH2], 'gene (other)' => [] }), genes_dict
 
-targeted_crc=build_raw_record('pseudo_id1' => 'bob')
-targeted_crc.raw_fields['gene'] = 'MLH1'
-targeted_crc.raw_fields['gene (other)'] = 'MSH6'
-genes_dict= @handler.process_genes(targeted_crc)
-assert_equal ({ 'gene' => %w[MLH1], 'gene (other)' => ['MSH6'] }), genes_dict
+  targeted_crc=build_raw_record('pseudo_id1' => 'bob')
+  targeted_crc.raw_fields['gene'] = 'MLH1'
+  targeted_crc.raw_fields['gene (other)'] = 'MSH6'
+  genes_dict= @handler.process_genes(@genotype,targeted_crc)
+  assert_equal ({ 'gene' => %w[MLH1], 'gene (other)' => ['MSH6'] }), genes_dict
 
-fs_crc=build_raw_record('pseudo_id1' => 'bob')
-fs_crc.raw_fields['gene'] = ''
-fs_crc.raw_fields['gene (other)'] = 'MLH1, MSH2, MSH6, EPCAM'
-genes_dict= @handler.process_genes(fs_crc)
-assert_equal ({ 'gene' => %w[], 'gene (other)' => ['MLH1', 'MSH2', 'MSH6', 'EPCAM'] }), genes_dict
+  fs_crc=build_raw_record('pseudo_id1' => 'bob')
+  fs_crc.raw_fields['gene'] = ''
+  fs_crc.raw_fields['gene (other)'] = 'MLH1, MSH2, MSH6, EPCAM'
+  genes_dict= @handler.process_genes(@genotype,fs_crc)
+  assert_equal ({ 'gene' => %w[], 'gene (other)' => ['MLH1', 'MSH2', 'MSH6', 'EPCAM'] }), genes_dict
 
 
 
@@ -162,23 +162,24 @@ end
 
   test 'handle_test_status' do 
 
-    #how to give it the genetictestscope variable so it knows which to follow in the if/else loop 
-    #- not sure how to test this method, ideally need to test the duplication part.
+    fs_gene_column = build_raw_record('pseudo_id1' => 'bob')
+    fs_gene_column.raw_fields['gene'] = 'MSH2'
+    fs_gene_column.raw_fields['gene (other)'] = 'unknown'
+    fs_gene_column.raw_fields['variant dna'] = 'unknown'
+    fs_gene_column.raw_fields['variant protein'] = 'unknown'
+    @genotype.attribute_map['genetictestscope'] = 'Targeted Colorectal Lynch or MMR'
+    genotypes = @handler.handle_test_status(fs_gene_column, @genotype, { 'gene' => ['MSH2'], 'gene (other)' => [], 'variant dna' => [], 'variant protein' => [], 'test/panel' => [] })
+    assert_equal 2804, @genotype.attribute_map['gene']
+    assert_equal 1, genotypes.length
 
-    # fs_gene_column = build_raw_record('pseudo_id1' => 'bob')
-    # fs_gene_column.raw_fields['gene'] = 'MSH2'
-    # fs_gene_column.raw_fields['gene (other)'] = 'unknown'
-
-    # genotypes = @handler.handle_test_status(fs_gene_column, @genotype, { 'gene' => ['MSH2'], 'gene (other)' => [], 'variant dna' => [], 'test/panel' => [] })
-    # assert_equal 2804, @genotype.attribute_map['gene']
-    # assert_equal 1, genotypes.length
-
-    # fs_geneother_column = build_raw_record('pseudo_id1' => 'bob')
-    # fs_geneother_column.raw_fields['gene'] = 'unknown'
-    # fs_geneother_column.raw_fields['gene (other)'] = 'MSH2'
-    # genotypes = @handler.handle_test_status(fs_geneother_column, @genotype, { 'gene' => [], 'gene (other)' => ['MSH2'], 'variant dna' => [], 'test/panel' => [] })
-    # assert_equal 2804, @genotype.attribute_map['gene ']
-    # assert_equal 1, genotypes.length
+    fs_geneother_column = build_raw_record('pseudo_id1' => 'bob')
+    fs_geneother_column.raw_fields['gene'] = 'MSH2'
+    fs_geneother_column.raw_fields['gene (other)'] = 'APC'
+    fs_gene_column.raw_fields['variant dna'] = 'unknown'
+    @genotype.attribute_map['genetictestscope'] = 'Full screen Colorectal Lynch or MMR'
+    genotypes = @handler.handle_test_status(fs_geneother_column, @genotype, { 'gene' => ['R211'], 'gene (other)' => ['APC'], 'variant dna' => [], 'test/panel' => [] })
+    assert_equal 2804, @genotype.attribute_map['gene']
+    assert_equal 2, genotypes.length
 
 
   end
@@ -207,7 +208,7 @@ end
     fs_variant_dna_gene_null.raw_fields['gene'] = nil
     fs_variant_dna_gene_null.raw_fields['gene (other)'] = 'APC'
     fs_variant_dna_gene_null.raw_fields['variant dna'] = 'c.3920T>A'
-    genotypes = @handler.assign_test_status_fullscreen(fs_variant_dna_gene_null,  @genotype, { 'gene' => [], 'gene (other)' => ['APC'], 'variant dna' => [], 'test/panel' => []}, 'gene (other)','APC' )
+    genotypes = @handler.assign_test_status_fullscreen(fs_variant_dna_gene_null,  @genotype, { 'gene' => [], 'gene (other)' => ['APC'], 'variant dna' => ['c.3920T>A'], 'test/panel' => []}, 'gene (other)','APC' )
     assert_equal 2, @genotype.attribute_map['teststatus']
 
     fs_variant_dna_gene_null = build_raw_record('pseudo_id1' => 'bob')
@@ -228,16 +229,144 @@ end
     fs_variant_protein_p.raw_fields['gene'] = 'APC'
     genotypes = @handler.assign_test_status_fullscreen(fs_variant_protein_p,  @genotype, { 'gene' => [], 'gene (other)' => [], 'variant dna' => [], 'test/panel' => []}, 'gene','APC' )
     assert_equal 2, @genotype.attribute_map['teststatus']
+
+    fs_variant_protein_else = build_raw_record('pseudo_id1' => 'bob')
+    fs_variant_protein_else.raw_fields['variant protein'] = 'no result'
+    fs_variant_protein_else.raw_fields['gene'] = 'APC'
+    genotypes = @handler.assign_test_status_fullscreen(fs_variant_protein_else,  @genotype, { 'gene' => [], 'gene (other)' => [], 'variant dna' => [], 'test/panel' => []}, 'gene','APC' )
+    assert_equal 1, @genotype.attribute_map['teststatus']
   end
 
 
   test 'assign_test_status_targeted' do
-    fs_variant_dna_fail = build_raw_record('pseudo_id1' => 'bob')
-    fs_variant_dna_fail.raw_fields['gene'] = 'APC'
-    fs_variant_dna_fail.raw_fields['gene (other)'] = 'Fail'
-    genotypes = @handler.assign_test_status_fullscreen(fs_variant_dna_fail, @genotype, { 'gene' => ['APC'], 'gene (other)' => [], 'variant dna' => [], 'test/panel' => []},  'gene' , 'APC' )
-    assert_equal 9, @genotype.attribute_map['teststatus']  
+
+    targ_gene_other_fail = build_raw_record('pseudo_id1' => 'bob')
+    targ_gene_other_fail.raw_fields['variant dna'] = nil
+    targ_gene_other_fail.raw_fields['gene'] = nil
+    targ_gene_other_fail.raw_fields['gene (other)'] = 'Failed sample'
+    @handler.assign_test_status_targeted(targ_gene_other_fail, @genotype, { 'gene': [], 'gene (other)': ['FAIL'], 'variant dna': [] ,'variant protein': [], 'test/panel' => []},  'gene (other)', 'APC')
+    assert_equal 9, @genotype.attribute_map['teststatus']
+
+    targ_gene_other_het= build_raw_record('pseudo_id1' => 'bob')
+    targ_gene_other_het.raw_fields['variant dna'] = nil
+    targ_gene_other_het.raw_fields['gene'] = nil
+    targ_gene_other_het.raw_fields['gene (other)'] = 'het duplication'
+    @handler.assign_test_status_targeted(targ_gene_other_het, @genotype, { 'gene': [], 'gene (other)': ['het duplication'], 'variant dna': [] ,'variant protein': [], 'test/panel' => []},  'gene (other)', 'APC')
+    assert_equal 2, @genotype.attribute_map['teststatus']
+
+    #variant dna is fail, gene is APC and gene(other) is nil
+    targ_variant_dna_fail = build_raw_record('pseudo_id1' => 'bob')
+    targ_variant_dna_fail.raw_fields['variant dna'] = 'samples failed'
+    targ_variant_dna_fail.raw_fields['gene'] = 'APC'
+    targ_variant_dna_fail.raw_fields['gene (other)'] = nil
+    @handler.assign_test_status_targeted(targ_variant_dna_fail, @genotype, { 'gene': [], 'gene (other)': [], 'variant dna': ['samples failed'] , 'variant protein': [], 'test/panel' => []},  'variant dna', 'APC')
+    assert_equal 9, @genotype.attribute_map['teststatus']
+
+    #benign SNP noted in data, must be given unknown (4) instead of matcing the c. 
+    targ_variant_dna_snp_present = build_raw_record('pseudo_id1' => 'bob')
+    targ_variant_dna_snp_present.raw_fields['variant dna'] = 'c.1284T>C SNP present'
+    targ_variant_dna_snp_present.raw_fields['gene'] = 'APC'
+    targ_variant_dna_snp_present.raw_fields['gene (other)'] = 'EPCAM'
+    @handler.assign_test_status_targeted(targ_variant_dna_snp_present, @genotype, { 'gene': [], 'gene (other)': [], 'variant dna': [''] , 'variant protein': [], 'test/panel' => []},  'variant dna', 'APC')
+    assert_equal 4, @genotype.attribute_map['teststatus']
+
+    #real c. in variant dna, test for assigning 2  
+    targ_variant_dna_c = build_raw_record('pseudo_id1' => 'bob')
+    targ_variant_dna_c.raw_fields['variant dna'] = 'c.1256A>G'
+    targ_variant_dna_c.raw_fields['gene'] = 'APC'
+    targ_variant_dna_c.raw_fields['gene (other)'] = 'EPCAM'
+    @handler.assign_test_status_targeted(targ_variant_dna_c, @genotype, { 'gene': [], 'gene (other)': [], 'variant dna': [''] , 'variant protein': [], 'test/panel' => []},  'variant dna', 'APC')
+    assert_equal 2, @genotype.attribute_map['teststatus']
+
+    #real variant in variant dna, test for assigning 2  
+    targ_variant_dna_ex_inv = build_raw_record('pseudo_id1' => 'bob')
+    targ_variant_dna_ex_inv.raw_fields['variant dna'] = 'Exon 12 inversion'
+    targ_variant_dna_ex_inv.raw_fields['gene'] = 'APC'
+    targ_variant_dna_ex_inv.raw_fields['gene (other)'] = 'EPCAM'
+    targ_variant_dna_ex_inv.raw_fields['gene (other)'] = 'EPCAM'
+    @handler.assign_test_status_targeted(targ_variant_dna_ex_inv, @genotype, { 'gene': [], 'gene (other)': [], 'variant dna': [''] , 'variant protein': [], 'test/panel' => []},  'variant dna', 'APC')
+    assert_equal 2, @genotype.attribute_map['teststatus']
+
+    #variant (p.) is in protein dna column   
+    targ_variant_protein_p = build_raw_record('pseudo_id1' => 'bob')
+    targ_variant_protein_p.raw_fields['variant dna'] = ''
+    targ_variant_protein_p.raw_fields['gene'] = 'APC'
+    targ_variant_protein_p.raw_fields['gene (other)'] = 'EPCAM'
+    targ_variant_protein_p.raw_fields['variant protein'] = 'p.256Arg>Thr'
+    @handler.assign_test_status_targeted(targ_variant_protein_p, @genotype, { 'gene': [], 'gene (other)': [], 'variant dna': [''] , 'variant protein': ['p.256Arg>Thr'], 'test/panel' => []},  'variant protein', 'APC')
+    assert_equal 2, @genotype.attribute_map['teststatus']
+
+    #variant (p.) is in protein dna column   
+    targ_variant_protein_fail = build_raw_record('pseudo_id1' => 'bob')
+    targ_variant_protein_fail.raw_fields['variant dna'] = ''
+    targ_variant_protein_fail.raw_fields['gene'] = 'APC'
+    targ_variant_protein_fail.raw_fields['gene (other)'] = 'EPCAM'
+    targ_variant_protein_fail.raw_fields['variant protein'] = 'failed test'
+    @handler.assign_test_status_targeted(targ_variant_protein_fail, @genotype, { 'gene': [], 'gene (other)': [], 'variant dna': [''] , 'variant protein': ['failed test'], 'test/panel' => []},  'variant protein', 'APC')
+    assert_equal 9, @genotype.attribute_map['teststatus']
+
+    #no variant noted in any column    
+    targ_no_variant = build_raw_record('pseudo_id1' => 'bob')
+    targ_no_variant.raw_fields['variant dna'] = ''
+    targ_no_variant.raw_fields['gene'] = 'APC'
+    targ_no_variant.raw_fields['gene (other)'] = 'EPCAM'
+    targ_no_variant.raw_fields['variant protein'] = ''
+    @handler.assign_test_status_targeted(targ_no_variant, @genotype, { 'gene': ['APC'], 'gene (other)': ['EPCAM'], 'variant dna': [''] , 'variant protein': [''], 'test/panel' => []},  'variant protein', 'APC')
+    assert_equal 1, @genotype.attribute_map['teststatus']
+
   end 
+
+  test 'process_variants' do 
+
+    # variant dna and variant protein columns
+    cvalue_pvalue_present = build_raw_record('pseudo_id1' => 'bob')
+    @genotype.attribute_map['teststatus'] = 2
+    cvalue_pvalue_present.raw_fields['variant dna'] = 'c.3477C>G'
+    cvalue_pvalue_present.raw_fields['variant protein'] = 'p.(Tyr1159Ter)'
+    @handler.process_variants(@genotype, cvalue_pvalue_present)
+    assert_equal 'c.3477C>G', @genotype.attribute_map['codingdnasequencechange']
+    assert_equal 'p.Tyr1159Ter', @genotype.attribute_map['proteinimpact']
+
+
+    # no c or p value, check process_zygosity runs correctly
+    no_c_or_p_value = build_raw_record('pseudo_id1' => 'bob')
+    @genotype.attribute_map['teststatus'] = 2
+    no_c_or_p_value.raw_fields['variant dna'] = 'Ex 09-10 het del, confirm by MLPA'
+    @handler.process_variants(@genotype, no_c_or_p_value)
+    assert_equal 3, @genotype.attribute_map['sequencevarianttype']
+    assert_equal '09-10', @genotype.attribute_map['exonintroncodonnumber']
+    assert_equal 1, @genotype.attribute_map['variantgenotype']
+
+  end 
+
+
+
+
+    test 'process_location_type_zygosity' do 
+
+    # when variant is in variant dna column
+    location_variant_dna_column = build_raw_record('pseudo_id1' => 'bob')
+    @genotype.attribute_map['teststatus'] = 2
+    location_variant_dna_column.raw_fields['variant dna'] = 'Het Dup Ex1-6'
+    @handler.process_variants(@genotype, location_variant_dna_column)
+    assert_equal 4, @genotype.attribute_map['sequencevarianttype']
+    assert_equal '1-6', @genotype.attribute_map['exonintroncodonnumber']
+    assert_equal 1, @genotype.attribute_map['variantgenotype']
+
+    # when variant is in gene (other) column
+    location_variant_dna_column = build_raw_record('pseudo_id1' => 'bob')
+    @genotype.attribute_map['teststatus'] = 2
+    location_variant_dna_column.raw_fields['gene (other)'] = 'HET DEL EX7'
+    @handler.process_variants(@genotype, location_variant_dna_column)
+    assert_equal 3, @genotype.attribute_map['sequencevarianttype']
+    assert_equal '7', @genotype.attribute_map['exonintroncodonnumber']
+    assert_equal 1, @genotype.attribute_map['variantgenotype']
+
+    end 
+
+   
+
+
 
   def clinical_json
     +
