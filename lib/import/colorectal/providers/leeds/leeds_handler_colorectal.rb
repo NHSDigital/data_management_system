@@ -56,7 +56,7 @@ module Import
 
           def process_variants_from_record(genocolorectal, record)
             genotypes = []
-            allocate_genes(record)
+            allocate_genes
             find_test_status(record)
             if genocolorectal.full_screen?
               process_fullscreen_records(genocolorectal, record, genotypes)
@@ -288,7 +288,7 @@ module Import
             end
           end
 
-          def allocate_genes(_record)
+          def allocate_genes
             @genes_panel = get_genes_from_report(@report)
 
             return if @genes_panel.present?
@@ -324,17 +324,7 @@ module Import
 
           def cleanup_report(report)
             raw_report = report
-            exclude_statements = [
-              'Screening for mutations in MLH1, MSH2 and MSH6 is now in progress as requested.',
-              'MLPA and MSH2 analysis was not requested.',
-              'MLPA and MSH2 analysis were not requested.',
-              'if MSH2 and MSH6 data analysis is required.',
-              'No further screening for mutations in MLH1, MSH2 or MSH6 has been performed.',
-              'developing further MSH2-related cancers',
-              'developing MSH2-associated cancer'
-            ]
-
-            exclude_statements.each { |st| raw_report&.sub!(st, '') }
+            EXCLUDE_STATEMENTS.each { |st| raw_report&.sub!(st, '') }
             raw_report
           end
 

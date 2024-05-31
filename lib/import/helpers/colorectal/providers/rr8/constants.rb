@@ -179,6 +179,16 @@ module Import
               'likely non-pathogenic',
               'benign'
             ].freeze
+
+            EXCLUDE_STATEMENTS = [
+              'Screening for mutations in MLH1, MSH2 and MSH6 is now in progress as requested.',
+              'MLPA and MSH2 analysis was not requested.',
+              'MLPA and MSH2 analysis were not requested.',
+              'if MSH2 and MSH6 data analysis is required.',
+              'No further screening for mutations in MLH1, MSH2 or MSH6 has been performed.',
+              'developing further MSH2-related cancers',
+              'developing MSH2-associated cancer'
+            ].freeze
           end
         end
       end
