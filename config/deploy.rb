@@ -42,6 +42,7 @@ set :copy_exclude, %w[
   doc
   private
   test
+  vendor/cache/*-arm64-darwin.gem
   vendor/cache/*-darwin-1?.gem
   vendor/cache/*-darwin1?.gem
   vendor/cache/*-darwin-2?.gem
