@@ -10,26 +10,26 @@ module Import
 
             TEST_TYPE_MAP =
               {
-                'Carrier testing for known familial mutation(s)' => :carrier,
-                'Diagnostic testing for known mutation(s)' => :diagnostic,
-                'Family follow-up testing to aid variant interpretation' => :diagnostic,
-                'Predictive testing for known familial mutation(s)' => :predictive,
-                'Inherited MMR deficiency (Lynch syndrome)' => :diagnostic,
-                'Inherited colorectal cancer (with or without polyposis)' => :diagnostic,
-                'Inherited polyposis - germline test' => :diagnostic,
-                'APC associated Polyposis' => :diagnostic
+                'carrier testing for known familial mutation(s)' => :carrier,
+                'diagnostic testing for known mutation(s)' => :diagnostic,
+                'family follow-up testing to aid variant interpretation' => :diagnostic,
+                'predictive testing for known familial mutation(s)' => :predictive,
+                'inherited MMR deficiency (lynch syndrome)' => :diagnostic,
+                'inherited colorectal cancer (with or without polyposis)' => :diagnostic,
+                'inherited polyposis - germline test' => :diagnostic,
+                'apc associated polyposis' => :diagnostic
               }.freeze
 
             TEST_SCOPE_MAP =
               {
-                'Carrier testing for known familial mutation(s)' => 'targeted',
-                'Diagnostic testing for known mutation(s)' => 'targeted',
-                'Family follow-up testing to aid variant interpretation' => 'targeted',
-                'Predictive testing for known familial mutation(s)' => 'targeted',
-                'Inherited MMR deficiency (Lynch syndrome)' => 'fullscreen',
-                'Inherited colorectal cancer (with or without polyposis)' => 'fullscreen',
-                'Inherited polyposis - germline test' => 'fullscreen',
-                'APC associated Polyposis' => 'fullscreen'
+                'carrier testing for known familial mutation(s)' => :targeted_mutation,
+                'diagnostic testing for known mutation(s)' => :targeted_mutation,
+                'family follow-up testing to aid variant interpretation' => :targeted_mutation,
+                'predictive testing for known familial mutation(s)' => :targeted_mutation,
+                'inherited mmr deficiency (lynch syndrome)' => :full_screen,
+                'inherited colorectal cancer (with or without polyposis)' => :full_screen,
+                'inherited polyposis - germline test' => :full_screen,
+                'apc associated polyposis' => :full_screen
               }.freeze
 
             FULL_SCREEN_TESTS_MAP =

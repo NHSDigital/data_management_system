@@ -1,6 +1,6 @@
 require 'possibly'
 require 'pry'
-require 'Date'
+require 'date'
 
 module Import
   module Colorectal
@@ -24,8 +24,6 @@ module Import
             genotype = assign_test_scope(genotype, record)
             genotypes = fill_genotypes(genotype, record)
 
-            # genotypes=process_genes(genotype, record)
-            # handle_test_status(record, genotype, genotypes)
             genotypes.each do |single_genotype|
               process_variants(single_genotype, record)
 
@@ -40,9 +38,9 @@ module Import
 
             return if record.raw_fields['moleculartestingtype'].blank?
 
-            return unless TEST_TYPE_MAP[record.raw_fields['moleculartestingtype']]
+            return unless TEST_TYPE_MAP[record.raw_fields['moleculartestingtype']&.downcase&.strip]
 
-            genotype.add_molecular_testing_type_strict(TEST_TYPE_MAP[record.raw_fields['moleculartestingtype']])
+            genotype.add_molecular_testing_type_strict(TEST_TYPE_MAP[record.raw_fields['moleculartestingtype']&.downcase&.strip])
           end
 
           def assign_test_scope(genotype, record)
@@ -51,14 +49,12 @@ module Import
             # add_test_scope method from genocolorectal.rb
             # return (filled) genotype
 
-            testscope = TEST_SCOPE_MAP[record.raw_fields['moleculartestingtype']]
-            if testscope == 'targeted'
-              genotype.add_test_scope(:targeted_mutation)
-            elsif testscope == 'fullscreen'
-              genotype.add_test_scope(:full_screen)
-            else
-              genotype.add_test_scope(:no_genetictestscope)
-            end
+            testscope = record.raw_fields['moleculartestingtype']&.downcase&.strip
+            genotype.add_test_scope(TEST_SCOPE_MAP[testscope])
+            return genotype if genotype.attribute_map['genetictestscope'].present?
+
+            genotype.add_test_scope(:no_genetictestscope)
+
             genotype
           end
 
@@ -139,40 +135,36 @@ module Import
             # Determines whether test is targeted or full screen and runs duplicate_genotype method.
             # Return genotypes list
 
-            if genotype.attribute_map['genetictestscope'] == 'Targeted Colorectal Lynch or MMR'
+            if genotype.targeted?
 
               columns = ['gene', 'gene (other)', 'variant_dna', 'variant protein', 'test/panel']
-              test = 'targeted'
-              genotypes = duplicate_genotype(columns, test, genotype, genes, record)
+              genotypes = duplicate_genotype(columns,genotype, genes, record)
 
-            elsif genotype.attribute_map['genetictestscope'] == 'Full screen Colorectal Lynch or MMR'
+            elsif genotype.full_screen?
 
               columns = ['gene', 'gene (other)', 'variant_dna', 'test/panel']
-              test = 'full_screen'
-              genotypes = duplicate_genotype(columns, test, genotype, genes, record)
+              genotypes = duplicate_genotype(columns, genotype, genes, record)
 
             end
             genotypes
           end
 
-          def duplicate_genotype(columns, test, genotype, genes, record)
+          def duplicate_genotype(columns, genotype, genes, record)
             # Iterates through relevant columns and runs assign_test_status method - assigns test status for each gene
             # Adds genotype to genotypes list and returns list
-            counter = 0
             genotypes = []
 
             columns.each do |column|
               genes[column]&.each do |gene|
-                genotype = genotype.dup_colo if counter.positive?
-                genotype.add_gene_colorectal(gene)
-                genotype.add_status(4)
-                if test == 'full_screen'
-                  assign_test_status_fullscreen(record, genotype, genes, column, gene)
-                elsif test == 'targeted'
-                  assign_test_status_targeted(record, genotype, genes, column, gene)
+                genotype_new = genotype.dup_colo
+                genotype_new.add_gene_colorectal(gene)
+                genotype_new.add_status(4)
+                if genotype.full_screen?
+                  assign_test_status_fullscreen(record, genotype_new, genes, column, gene)
+                elsif genotype.targeted?
+                  assign_test_status_targeted(record, genotype_new, genes, column, gene)
                 end
-                genotypes.append(genotype)
-                counter += 1
+                genotypes.append(genotype_new)
               end
             end
             genotypes
@@ -188,7 +180,7 @@ module Import
               interrogate_variant_dna_targeted(record, genotype, genes, column, gene)
 
             elsif record.raw_fields['variant protein'].present?
-              interrogate_variant_protein_targeted(record, genotype, genes, column, gene)
+              interrogate_variant_protein_targeted(record, genotype, column)
 
             end
           end
@@ -212,32 +204,27 @@ module Import
             # Else, interogate the variant protein column
             if record.raw_fields['variant dna'].match(/Fail|^Blank\scontamination$/ix)
               genotype.add_status(9)
-
             elsif record.raw_fields['variant dna'].match(%r{^Normal|^no\sdel/dup$}ix)
               genotype.add_status(1)
-
             elsif record.raw_fields['variant dna'].match(/SNP\spresent$|see\scomments/ix)
               genotype.add_status(4)
-
             elsif record.raw_fields['variant dna'].match \
               (/het\sdel|het\sdup|het\sinv|^ex.*del|^ex.*dup|^ex.*inv|^del\sex|^dup\sex|^inv\sex|^c\./ix)
               genotype.add_status(2)
             else
-              interrogate_variant_protein_targeted(record, genotype, genes, column, gene)
+              interrogate_variant_protein_targeted(record, genotype, column)
 
             end
           end
 
-          def interrogate_variant_protein_targeted(record, genotype, _genes, column, _gene)
+          def interrogate_variant_protein_targeted(record, genotype, column)
             # Match the data in the raw 'variant protein' field to the relevant regular expression
             # Assign the appropriate test status
             # Else, add test status of 1
             if record.raw_fields['variant protein'].match(/^p./ix)
               update_status(2, 1, column, 'variant protein', genotype)
-
             elsif record.raw_fields['variant protein'].match(/fail/ix)
               genotype.add_status(9)
-
             else
               genotype.add_status(1)
             end
@@ -249,7 +236,7 @@ module Import
             if record.raw_fields['variant dna'].present?
               interrogate_variant_dna_fullscreen(record, genotype, genes, column, gene)
             elsif record.raw_fields['variant protein'].present?
-              interrogate_variant_protein_fullscreen(record, genotype, genes, column, gene)
+              interrogate_variant_protein_fullscreen(record, genotype, column)
             end
           end
 
@@ -274,12 +261,12 @@ module Import
               # 1 (normal) for all other genes.
               update_status(2, 1, column, 'variant dna', genotype)
             else
-              interrogate_variant_protein_fullscreen(record, genotype, genes, column, gene)
+              interrogate_variant_protein_fullscreen(record, genotype, column)
 
             end
           end
 
-          def interrogate_variant_protein_fullscreen(record, genotype, _genes, column, _gene)
+          def interrogate_variant_protein_fullscreen(record, genotype, column)
             if record.raw_fields['variant protein'].blank?
               genotype.add_status(1)
             elsif record.raw_fields['variant protein'].match(/fail/ix)
