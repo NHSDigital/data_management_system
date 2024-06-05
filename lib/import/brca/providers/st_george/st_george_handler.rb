@@ -97,11 +97,10 @@ module Import
             # Each genotype is then added to the genoytypes list which this method then returns
             genotypes = []
             genes.flatten.compact_blank.uniq.each do |gene_value|
-                # genotype only needs to be duplicated if there is more than one gene in the list
-                genotype = genotype.dup if genes.flatten.uniq.size > 1
-                genotype.add_gene(gene_value)
-                genotypes.append(genotype)
-              end
+              genotype_new = genotype.dup
+              genotype_new.add_gene(gene_value)
+              genotypes.append(genotype_new)
+            end
             genotypes
           end
 
@@ -192,17 +191,12 @@ module Import
             # Adds genotype to genotype list which is then outputted
             genotypes = []
             columns = ['gene', 'gene (other)', 'variant dna', 'test/panel']
-            counter = 0
             columns.each do |column|
               genes[column]&.each do |gene|
-                # don't need to duplicate genotype if only one gene
-                genotype = genotype.dup if counter.positive?
-                genotype.add_gene(gene)
-                # TODO: CHECK THIS!
-                genotype.add_status(4)
-                assign_test_status_full_screen(record, gene, genes, genotype, column)
-                genotypes.append(genotype)
-                counter += 1
+                genotype_new = genotype.dup
+                genotype_new.add_gene(gene)
+                assign_test_status_full_screen(record, gene, genes, genotype_new, column)
+                genotypes.append(genotype_new)
               end
             end
             genotypes
@@ -211,7 +205,6 @@ module Import
           def assign_test_status_full_screen(record, gene, genes, genotype, column)
             # interrogate variant dna column
             if record.raw_fields['variant dna'].present?
-
               interrogate_variant_dna_column(record, genotype, genes, column, gene)
             # interrogate raw gene (other)
             elsif /fail/i.match(record.raw_fields['gene (other)']).present?
@@ -224,6 +217,7 @@ module Import
               update_status(2, 1, column, 'gene', genotype)
             else
               genotype.add_status(4)
+
               gene_classv_gene_n_format(record, genotype, gene)
             end
           end
@@ -249,6 +243,8 @@ module Import
                 genotype.add_status(2)
               elsif column == 'gene (other)'
                 match_fail(gene, record, genotype)
+              else
+                genotype.add_status(1)
               end
             # variant dna not '*Fail*', 'N' or null AND raw:gene is null AND raw:gene(other) not a single gene
             # If gene is specified in raw:variant dna, assign 2 (abnormal) for that gene and 1 (normal) for
