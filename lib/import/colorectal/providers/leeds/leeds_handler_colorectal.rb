@@ -17,9 +17,10 @@ module Import
             populate_variables(record)
             return unless should_process
 
-            populate_genotype(record)
+            populate_and_persist_genotype(record)
           end
 
+          # populate class variables that can be used over different methods
           def populate_variables(record)
             @geno = record.raw_fields['genotype']&.downcase
             @report = cleanup_report(record.raw_fields['report'])
@@ -28,6 +29,7 @@ module Import
             @genes_panel = []
           end
 
+          # checks if file has colorectal tests and should be processed under this importer
           def should_process
             filename = File.basename(@batch.original_filename)
             return true if filename.match?(/MMR/i)
@@ -40,7 +42,7 @@ module Import
             false
           end
 
-          def populate_genotype(record)
+          def populate_and_persist_genotype(record)
             genocolorectal = Import::Colorectal::Core::Genocolorectal.new(record)
             genocolorectal.add_passthrough_fields(record.mapped_fields,
                                                   record.raw_fields,
@@ -98,6 +100,7 @@ module Import
             genotypes << genocolorectal_dup
           end
 
+          # If genes_panel has one gene then use it else use genotype to find targeted gene
           def extract_targeted_genes
             return @genes_panel unless @genes_panel.size > 1
 
@@ -125,6 +128,8 @@ module Import
             end
           end
 
+          # Prepare genotypes for positive targeted genes
+          # Few genes report more than one mutation so need to create as many genetic test results
           def process_mutated_genes(genocolorectal, gene, sentence, genotypes)
             cdna_vars = get_cdna_mutations(sentence)
             if cdna_vars.size > 1
@@ -188,6 +193,8 @@ module Import
           end
 
           def find_report_variant
+            # Remove statements at the end of report mentioning about all the genes
+            # to filter out information about variants and genes found
             report = @report&.split(/Scanning|Screening/i)&.first
             @report_variant = case report
                               when VARIANT_REPORT_REGEX
@@ -233,6 +240,7 @@ module Import
             @report_variant.split(/\.\s+|and/)
           end
 
+          # Returns a hash of gene and its pathogenicity
           def gene_path_hash
             results = [PATHOGENIC_GENES_REGEX, GENE_PATH_REGEX].flat_map do |regexp|
               sentences_array.map do |sentence|
@@ -279,6 +287,7 @@ module Import
             genotypes.append(genocolorectal_dup)
           end
 
+          # For all negative genes add a genotype with status 1
           def process_negative_genes(negative_genes, genocolorectal, genotypes)
             negative_genes&.each do |gene|
               genocolorectal_dup = genocolorectal.dup_colo
@@ -288,6 +297,7 @@ module Import
             end
           end
 
+          # Prepare genes panel with priority of report over genotype
           def allocate_genes
             @genes_panel = get_genes_from_report(@report)
 
@@ -298,6 +308,7 @@ module Import
             end
           end
 
+          # Get test status for record
           def find_test_status(_record)
             @teststatus = nil
             if @geno == 'ngs msh2 seq variant'
@@ -322,6 +333,7 @@ module Import
             end
           end
 
+          # Remove statements from report that mentions genes but have no significance in test
           def cleanup_report(report)
             raw_report = report
             EXCLUDE_STATEMENTS.each { |st| raw_report&.sub!(st, '') }
@@ -359,6 +371,7 @@ module Import
                          end
           end
 
+          # Class 7 records
           def var_class_from_report
             report_cleaned = @report.gsub('No further pathogenic changes were detected', '')
             if report_cleaned.match(PATHOGENIC_REGEX)
@@ -391,18 +404,6 @@ module Import
             end
           end
 
-          def process_scope(geno, genocolorectal, record)
-            scope = Maybe(record.raw_fields['reason']).
-                    or_else(Maybe(record.mapped_fields['genetictestscope']).or_else(''))
-            # ------------ Set the test scope ---------------------
-            if (geno.downcase.include? 'ashkenazi') || (geno.include? 'AJ')
-              genocolorectal.add_test_scope(:aj_screen)
-            else
-              stripped_scope = TEST_SCOPE_MAP_COLO[scope.downcase.strip]
-              genocolorectal.add_test_scope(stripped_scope) if stripped_scope
-            end
-          end
-
           def process_exonic_variant(genotype, variant)
             return unless variant&.scan(EXON_VARIANT_REGEX)&.size&.positive?
 
@@ -432,10 +433,6 @@ module Import
               @logger.debug "FAILED protein parse for: #{variant}"
             end
           end
-          # def finalize
-          #             @extractor.summary
-          #             super
-          #           end
         end
         # rubocop:enable Metrics/ClassLength
       end
