@@ -15,12 +15,12 @@ module Import
 
           def process_fields(record)
             populate_variables(record)
-            return unless should_process
+            return unless should_process?
 
             populate_and_persist_genotype(record)
           end
 
-          # populate class variables that can be used over different methods
+          # populate class instance variables that can be used over different methods
           def populate_variables(record)
             @geno = record.raw_fields['genotype']&.downcase
             @report = cleanup_report(record.raw_fields['report'])
@@ -30,7 +30,7 @@ module Import
           end
 
           # checks if file has colorectal tests and should be processed under this importer
-          def should_process
+          def should_process?
             filename = File.basename(@batch.original_filename)
             return true if filename.match?(/MMR/i)
             return true if filename.match?(/other|familial/i) &&
@@ -59,7 +59,7 @@ module Import
           def process_variants_from_record(genocolorectal, record)
             genotypes = []
             allocate_genes
-            find_test_status(record)
+            allocate_test_status
             if genocolorectal.full_screen?
               process_fullscreen_records(genocolorectal, record, genotypes)
             elsif genocolorectal.targeted? || genocolorectal.no_scope?
@@ -308,8 +308,8 @@ module Import
             end
           end
 
-          # Get test status for record
-          def find_test_status(_record)
+          # Get test status for record based on genotype
+          def allocate_test_status
             @teststatus = nil
             if @geno == 'ngs msh2 seq variant'
               @teststatus = @report.include?('likely to be benign') ? 10 : 2
@@ -319,11 +319,11 @@ module Import
               end
             end
             # exceptional cases for 'mlh1 only -ve' genotype
-            exceptinal_teststatus if @geno == 'mlh1 only -ve'
+            exceptional_teststatus if @geno == 'mlh1 only -ve'
             @teststatus
           end
 
-          def exceptinal_teststatus
+          def exceptional_teststatus
             if @report.match(/insufficient\sDNA|DNA\sprovided\sis\sof\sinsufficient/i)
               @teststatus = 9
             elsif @report.include?('The variant c.1409+47T>C was detected in intron 12')

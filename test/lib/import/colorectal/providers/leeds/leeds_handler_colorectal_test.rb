@@ -12,7 +12,7 @@ class LeedsHandlerColorectalTest < ActiveSupport::TestCase
 
   test 'add_positive_teststatus' do
     @handler.populate_variables(@record)
-    assert_equal 2, @handler.find_test_status(@record)
+    assert_equal 2, @handler.allocate_test_status
   end
 
   test 'add_gene_from_report' do
