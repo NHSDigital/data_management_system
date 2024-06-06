@@ -96,7 +96,6 @@ module Import
             # map panels to list of genes in FULL_SCREEN_TESTS_MAP
             # return list of genes tested in panel
             panel_genes_list = FULL_SCREEN_TESTS_MAP[record.raw_fields['test/panel']]
-
             panel_genes_list&.each do |gene|
               gene_list.append(gene)
             end
@@ -131,17 +130,14 @@ module Import
           end
 
           def handle_test_status(record, genotype, genes)
-            # Creates a duplicate genotype for each gene (if necessary)
+            # Creates a duplicate genotype for each gene
             # Determines whether test is targeted or full screen and runs duplicate_genotype method.
             # Return genotypes list
-
             if genotype.targeted?
-
               columns = ['gene', 'gene (other)', 'variant_dna', 'variant protein', 'test/panel']
-              genotypes = duplicate_genotype(columns,genotype, genes, record)
+              genotypes = duplicate_genotype(columns, genotype, genes, record)
 
             elsif genotype.full_screen?
-
               columns = ['gene', 'gene (other)', 'variant_dna', 'test/panel']
               genotypes = duplicate_genotype(columns, genotype, genes, record)
 
@@ -160,7 +156,7 @@ module Import
                 genotype_new.add_gene_colorectal(gene)
                 genotype_new.add_status(4)
                 if genotype.full_screen?
-                  assign_test_status_fullscreen(record, genotype_new, genes, column, gene)
+                  assign_test_status_fullscreen(record, genotype_new, genes, column)
                 elsif genotype.targeted?
                   assign_test_status_targeted(record, genotype_new, genes, column, gene)
                 end
@@ -177,7 +173,7 @@ module Import
               interrogate_gene_other_targeted(record, genotype, genes, column, gene)
 
             elsif record.raw_fields['variant dna'].present?
-              interrogate_variant_dna_targeted(record, genotype, genes, column, gene)
+              interrogate_variant_dna_targeted(record, genotype, column)
 
             elsif record.raw_fields['variant protein'].present?
               interrogate_variant_protein_targeted(record, genotype, column)
@@ -194,11 +190,11 @@ module Import
             elsif record.raw_fields['gene (other)'].match(/^het|del|dup|^c./ix)
               genotype.add_status(2)
             else
-              interrogate_variant_dna_targeted(record, genotype, genes, column, gene)
+              interrogate_variant_dna_targeted(record, genotype, column)
             end
           end
 
-          def interrogate_variant_dna_targeted(record, genotype, genes, column, gene)
+          def interrogate_variant_dna_targeted(record, genotype, column)
             # Match the data in the raw 'variant dna' field to the relevant regular expression
             # Assign the appropriate test status
             # Else, interogate the variant protein column
@@ -221,7 +217,7 @@ module Import
             # Match the data in the raw 'variant protein' field to the relevant regular expression
             # Assign the appropriate test status
             # Else, add test status of 1
-            if record.raw_fields['variant protein'].match(/^p./ix)
+            if record.raw_fields['variant protein'].match(/^p\./ix)
               update_status(2, 1, column, 'variant protein', genotype)
             elsif record.raw_fields['variant protein'].match(/fail/ix)
               genotype.add_status(9)
@@ -230,17 +226,17 @@ module Import
             end
           end
 
-          def assign_test_status_fullscreen(record, genotype, genes, column, gene)
+          def assign_test_status_fullscreen(record, genotype, genes, column)
             # interrogate the variant dna column and raw gene (other) column
 
             if record.raw_fields['variant dna'].present?
-              interrogate_variant_dna_fullscreen(record, genotype, genes, column, gene)
+              interrogate_variant_dna_fullscreen(record, genotype, genes, column)
             elsif record.raw_fields['variant protein'].present?
               interrogate_variant_protein_fullscreen(record, genotype, column)
             end
           end
 
-          def interrogate_variant_dna_fullscreen(record, genotype, genes, column, gene)
+          def interrogate_variant_dna_fullscreen(record, genotype, genes, column)
             variant_regex = \
               /het\sdel|het\sdup|het\sinv|^ex.*del|^ex.*dup|^ex.*inv|^del\sex|^dup\sex|^inv\sex|^c\.|^inversion$/ix
 
