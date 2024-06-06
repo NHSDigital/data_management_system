@@ -33,18 +33,7 @@ done
 RR8 () {
 PROV='RR8'
 IFS=$'\n'
-for x in $(find  $DIRPATH/$FILEPATH  -not -path "*/API_BETA_RETRIEVED/*" -type f -name "*MMR*.pseudo" -path "*/$PROV/*")
-do
-IFS="$OIFS"
-$BRAKE import:colorectal fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
-done
-}
-
-
-RR8_2 () {
-PROV='RR8'
-IFS=$'\n'
-for x in $(find  $DIRPATH/$FILEPATH -not -path "*/API_BETA_RETRIEVED/*"  -type f  -name "*other*pseudo" -path "*/$PROV/*" )
+for x in $(find  $DIRPATH/$FILEPATH  -not -path "*/API_BETA_RETRIEVED/*" -type f -name "*MMR*.pseudo" -o -type f -name "*other*.pseudo" -path "*/$PROV/*")
 do
 IFS="$OIFS"
 $BRAKE import:colorectal fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
@@ -173,4 +162,4 @@ $BRAKE import:colorectal fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.
 done
 }
 
-RR8; RR8_2; RNZ; RTD; RX1; RCU; RGT; R0A; R1K; RPY; RP4; RTH; RQ3; REP; R1H
+RR8; RNZ; RTD; RX1; RCU; RGT; R0A; R1K; RPY; RP4; RTH; RQ3; REP; R1H
