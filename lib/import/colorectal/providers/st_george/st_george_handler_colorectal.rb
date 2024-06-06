@@ -61,11 +61,11 @@ module Import
           def fill_genotypes(genotype, record)
             # process the genes, genotypes and test status for each gene listed in the genotype
 
-            genes_dict = process_genes(genotype, record)
+            genes_dict = process_genes(record)
             handle_test_status(record, genotype, genes_dict)
           end
 
-          def process_genes(_genotype, record)
+          def process_genes(record)
             # process the gene names in columns listed and check for matches with the CRC gene regex list
             # add matched tgenes to the genes_dict
             # if no matched to crc gene regex list then check for matches in CRC gene map to add to the genes_dict
@@ -181,7 +181,7 @@ module Import
             end
           end
 
-          def interrogate_gene_other_targeted(record, genotype, genes, column, gene)
+          def interrogate_gene_other_targeted(record, genotype, _genes, column, _gene)
             # Match the data in the raw 'gene (other)' field to the relevant regular expression
             # Assign the appropriate test status
             # Else, interogate the variant dna column
@@ -252,7 +252,7 @@ module Import
               update_status(2, 1, column, 'gene (other)', genotype)
             elsif record.raw_fields['variant dna'].match(variant_regex) \
                 && record.raw_fields['gene'].blank? \
-                  && genes['gene (other)'].length > 1 # can gene (other) be null in this scenario as wel?????
+                  && (genes['gene (other)'].blank? || genes['gene (other)'].length > 1)
               # Gene should be specified in raw:variant dna; assign 2 (abnormal) for the specified gene and
               # 1 (normal) for all other genes.
               update_status(2, 1, column, 'variant dna', genotype)
