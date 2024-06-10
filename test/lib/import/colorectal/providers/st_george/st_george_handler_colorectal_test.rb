@@ -266,7 +266,7 @@ class StGeorgeTest < ActiveSupport::TestCase
     targ_variant_dna_snp_present.raw_fields['variant dna'] = 'c.1284T>C SNP present'
     targ_variant_dna_snp_present.raw_fields['gene'] = 'APC'
     targ_variant_dna_snp_present.raw_fields['gene (other)'] = 'EPCAM'
-    @handler.assign_test_status_targeted(targ_variant_dna_snp_present, @genotype, { gene: [], 'gene (other)': [], 'variant dna': [''], 'variant protein': [], 'test/panel' => [] }, 'variant dna', 'APC')
+    @handler.assign_test_status_targeted(targ_variant_dna_snp_present, @genotype, { gene: [], 'gene (other)': [], 'variant dna': [], 'variant protein': [], 'test/panel' => [] }, 'variant dna', 'APC')
     assert_equal 4, @genotype.attribute_map['teststatus']
 
     # real c. in variant dna, test for assigning 2
@@ -274,7 +274,7 @@ class StGeorgeTest < ActiveSupport::TestCase
     targ_variant_dna_c.raw_fields['variant dna'] = 'c.1256A>G'
     targ_variant_dna_c.raw_fields['gene'] = 'APC'
     targ_variant_dna_c.raw_fields['gene (other)'] = 'EPCAM'
-    @handler.assign_test_status_targeted(targ_variant_dna_c, @genotype, { gene: [], 'gene (other)': [], 'variant dna': [''], 'variant protein': [], 'test/panel' => [] }, 'variant dna', 'APC')
+    @handler.assign_test_status_targeted(targ_variant_dna_c, @genotype, { gene: [], 'gene (other)': [], 'variant dna': [], 'variant protein': [], 'test/panel' => [] }, 'variant dna', 'APC')
     assert_equal 2, @genotype.attribute_map['teststatus']
 
     # real variant in variant dna, test for assigning 2
@@ -283,25 +283,34 @@ class StGeorgeTest < ActiveSupport::TestCase
     targ_variant_dna_ex_inv.raw_fields['gene'] = 'APC'
     targ_variant_dna_ex_inv.raw_fields['gene (other)'] = 'EPCAM'
     targ_variant_dna_ex_inv.raw_fields['gene (other)'] = 'EPCAM'
-    @handler.assign_test_status_targeted(targ_variant_dna_ex_inv, @genotype, { gene: [], 'gene (other)': [], 'variant dna': [''], 'variant protein': [], 'test/panel' => [] }, 'variant dna', 'APC')
+    @handler.assign_test_status_targeted(targ_variant_dna_ex_inv, @genotype, { gene: [], 'gene (other)': [], 'variant dna': [], 'variant protein': [], 'test/panel' => [] }, 'variant dna', 'APC')
     assert_equal 2, @genotype.attribute_map['teststatus']
 
-    # variant (p.) is in protein dna column
+    # variant (p.) is in protein dna column and gene is in variant dna column
+    targ_variant_protein_p = build_raw_record('pseudo_id1' => 'bob')
+    targ_variant_protein_p.raw_fields['variant dna'] = 'APC'
+    targ_variant_protein_p.raw_fields['gene'] = ''
+    targ_variant_protein_p.raw_fields['gene (other)'] = 'EPCAM'
+    targ_variant_protein_p.raw_fields['variant protein'] = 'p.256Arg>Thr'
+    @handler.assign_test_status_targeted(targ_variant_protein_p, @genotype, { gene: [], 'gene (other)': [], 'variant dna': [], 'variant protein': [], 'test/panel' => [] }, 'variant dna', 'APC')
+    assert_equal 1, @genotype.attribute_map['teststatus']
+
+    # variant (p.) is in protein dna column and gene is in gene column
     targ_variant_protein_p = build_raw_record('pseudo_id1' => 'bob')
     targ_variant_protein_p.raw_fields['variant dna'] = ''
     targ_variant_protein_p.raw_fields['gene'] = 'APC'
     targ_variant_protein_p.raw_fields['gene (other)'] = 'EPCAM'
     targ_variant_protein_p.raw_fields['variant protein'] = 'p.256Arg>Thr'
-    @handler.assign_test_status_targeted(targ_variant_protein_p, @genotype, { gene: [], 'gene (other)': [], 'variant dna': [''], 'variant protein': ['p.256Arg>Thr'], 'test/panel' => [] }, 'variant protein', 'APC')
+    @handler.assign_test_status_targeted(targ_variant_protein_p, @genotype, { gene: [], 'gene (other)': ['EPCAM'], 'variant dna': [], 'variant protein': [], 'test/panel' => [] }, 'gene', 'APC')
     assert_equal 2, @genotype.attribute_map['teststatus']
 
-    # variant (p.) is in protein dna column
+    # fail in variant protein column
     targ_variant_protein_fail = build_raw_record('pseudo_id1' => 'bob')
     targ_variant_protein_fail.raw_fields['variant dna'] = ''
     targ_variant_protein_fail.raw_fields['gene'] = 'APC'
     targ_variant_protein_fail.raw_fields['gene (other)'] = 'EPCAM'
     targ_variant_protein_fail.raw_fields['variant protein'] = 'failed test'
-    @handler.assign_test_status_targeted(targ_variant_protein_fail, @genotype, { gene: [], 'gene (other)': [], 'variant dna': [''], 'variant protein': ['failed test'], 'test/panel' => [] }, 'variant protein', 'APC')
+    @handler.assign_test_status_targeted(targ_variant_protein_fail, @genotype, { gene: ['APC'], 'gene (other)': ['EPCAM'], 'variant dna': [], 'variant protein': [], 'test/panel' => [] }, 'gene', 'APC')
     assert_equal 9, @genotype.attribute_map['teststatus']
 
     # no variant noted in any column
@@ -310,7 +319,7 @@ class StGeorgeTest < ActiveSupport::TestCase
     targ_no_variant.raw_fields['gene'] = 'APC'
     targ_no_variant.raw_fields['gene (other)'] = 'EPCAM'
     targ_no_variant.raw_fields['variant protein'] = ''
-    @handler.assign_test_status_targeted(targ_no_variant, @genotype, { gene: ['APC'], 'gene (other)': ['EPCAM'], 'variant dna': [''], 'variant protein': [''], 'test/panel' => [] }, 'variant protein', 'APC')
+    @handler.assign_test_status_targeted(targ_no_variant, @genotype, { gene: ['APC'], 'gene (other)': ['EPCAM'], 'variant dna': [], 'variant protein': [], 'test/panel' => [] }, 'variant protein', 'APC')
     assert_equal 1, @genotype.attribute_map['teststatus']
   end
 
@@ -343,6 +352,7 @@ class StGeorgeTest < ActiveSupport::TestCase
     assert_equal 4, @genotype.attribute_map['sequencevarianttype']
     assert_equal '1-6', @genotype.attribute_map['exonintroncodonnumber']
     assert_equal 1, @genotype.attribute_map['variantgenotype']
+    assert_equal 1, @genotype.attribute_map['variantlocation']
 
     # when variant is in gene (other) column
     location_variant_dna_column = build_raw_record('pseudo_id1' => 'bob')
@@ -352,6 +362,7 @@ class StGeorgeTest < ActiveSupport::TestCase
     assert_equal 3, @genotype.attribute_map['sequencevarianttype']
     assert_equal '7', @genotype.attribute_map['exonintroncodonnumber']
     assert_equal 1, @genotype.attribute_map['variantgenotype']
+    assert_equal 1, @genotype.attribute_map['variantlocation']
   end
 
   def clinical_json

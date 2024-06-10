@@ -154,7 +154,6 @@ module Import
               genes[column]&.each do |gene|
                 genotype_new = genotype.dup_colo
                 genotype_new.add_gene_colorectal(gene)
-                genotype_new.add_status(4)
                 if genotype.full_screen?
                   assign_test_status_fullscreen(record, genotype_new, genes, column)
                 elsif genotype.targeted?
@@ -218,7 +217,7 @@ module Import
             # Assign the appropriate test status
             # Else, add test status of 1
             if record.raw_fields['variant protein'].match(/^p\./ix)
-              update_status(2, 1, column, 'variant protein', genotype)
+              update_status(2, 1, column, ['gene', 'gene (other)'], genotype)
             elsif record.raw_fields['variant protein'].match(/fail/ix)
               genotype.add_status(9)
             else
@@ -245,17 +244,17 @@ module Import
             elsif record.raw_fields['variant dna'] == 'N' || record.raw_fields['variant dna'].blank?
               genotype.add_status(1)
             elsif record.raw_fields['variant dna'].match(variant_regex) && record.raw_fields['gene'].present?
-              update_status(2, 1, column, 'gene', genotype)
+              update_status(2, 1, column, ['gene'], genotype)
             elsif record.raw_fields['variant dna'].match(variant_regex) \
               && record.raw_fields['gene'].blank? \
                 && genes['gene (other)'].length == 1
-              update_status(2, 1, column, 'gene (other)', genotype)
+              update_status(2, 1, column, ['gene (other)'], genotype)
             elsif record.raw_fields['variant dna'].match(variant_regex) \
                 && record.raw_fields['gene'].blank? \
                   && (genes['gene (other)'].blank? || genes['gene (other)'].length > 1)
               # Gene should be specified in raw:variant dna; assign 2 (abnormal) for the specified gene and
               # 1 (normal) for all other genes.
-              update_status(2, 1, column, 'variant dna', genotype)
+              update_status(2, 1, column, ['variant dna'], genotype)
             else
               interrogate_variant_protein_fullscreen(record, genotype, column)
 
@@ -268,7 +267,7 @@ module Import
             elsif record.raw_fields['variant protein'].match(/fail/ix)
               genotype.add_status(9)
             elsif record.raw_fields['variant protein'].match(/p.*/ix)
-              update_status(2, 1, column, 'gene', genotype)
+              update_status(2, 1, column, ['gene', 'gene (other)'], genotype)
             else
               genotype.add_status(1)
             end
@@ -277,7 +276,7 @@ module Import
           def update_status(status1, status2, column, column_name, genotype)
             # update genotype status depending on if the gene is in the same column that the rule applies to
 
-            if column == column_name
+            if column_name.include? column
               genotype.add_status(status1)
             else
               genotype.add_status(status2)
