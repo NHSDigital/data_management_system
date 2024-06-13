@@ -122,13 +122,13 @@ class StGeorgeHandlerColorectalTest < ActiveSupport::TestCase
     targeted_crc.raw_fields['gene'] = 'MLH1'
     targeted_crc.raw_fields['gene (other)'] = 'MSH6'
     genes_dict = @handler.process_genes(targeted_crc)
-    assert_equal ({ 'gene' => %w[MLH1], 'gene (other)' => ['MSH6'] , "variant dna"=>[], "test/panel"=>[]}), genes_dict
+    assert_equal ({ 'gene' => %w[MLH1], 'gene (other)' => ['MSH6'] }), genes_dict
 
     fs_crc = build_raw_record('pseudo_id1' => 'bob')
     fs_crc.raw_fields['gene'] = ''
     fs_crc.raw_fields['gene (other)'] = 'MLH1, MSH2, MSH6, EPCAM'
     genes_dict = @handler.process_genes(fs_crc)
-    assert_equal ({ 'gene' => %w[], 'gene (other)' => %w[MLH1 MSH2 MSH6 EPCAM], "variant dna"=>[], "test/panel"=>[] }), genes_dict
+    assert_equal ({ 'gene' => %w[], 'gene (other)' => %w[MLH1 MSH2 MSH6 EPCAM]}), genes_dict
   end
 
   test 'process_test_panels' do
