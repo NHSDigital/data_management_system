@@ -19,8 +19,6 @@ class StGeorgeHandlerColorectalTest < ActiveSupport::TestCase
     @handler.process_fields(process_fields_wrecord)
     assert_not_equal 'W1234567', @genotype.attribute_map['servicereportidentifier']
 
-
-
   end
 
   test 'assign_test_type' do
