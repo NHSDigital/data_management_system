@@ -1,5 +1,4 @@
 require 'possibly'
-require 'pry'
 require 'date'
 
 module Import
@@ -16,7 +15,6 @@ module Import
             return unless record.raw_fields['servicereportidentifier'].start_with?('V')
 
             genotype.add_passthrough_fields(record.mapped_fields, record.raw_fields, PASS_THROUGH_FIELDS)
-
             assign_test_type(genotype, record)
             genotype = assign_test_scope(genotype, record)
 
@@ -26,6 +24,7 @@ module Import
               process_variants(single_genotype, record)
               @persister.integrate_and_store(single_genotype)
             end
+            genotypes
           end
 
           def fill_genotypes(genotype, record)
@@ -61,13 +60,12 @@ module Import
             # extract molecular testing type from the raw record
             # map molecular testing type and assign to genotype using
             # add_test_scope method from genotype_brca.rb
-
             testscope = record.raw_fields['moleculartestingtype']&.downcase&.strip
             genotype.add_test_scope(TEST_SCOPE_MAP[testscope])
             return genotype if genotype.attribute_map['genetictestscope'].present?
 
             genotype.add_test_scope(:no_genetictestscope)
-
+            @logger.error 'ERROR - record with no genetic test scope, ask Fiona for new rules'
             genotype
           end
 

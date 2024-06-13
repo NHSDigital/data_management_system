@@ -11,6 +11,19 @@ class StGeorgeTest < ActiveSupport::TestCase
     @logger = Import::Log.get_logger
   end
 
+  test 'failed_variant_record' do
+    failed_test_record = build_raw_record('pseudo_id1' => 'bob')
+    failed_test_record.raw_fields['moleculartestingtype'] = 'Diagnostic testing for known mutation(s)'
+    failed_test_record.raw_fields['servicereportidentifier'] = 'V'
+    failed_test_record.raw_fields['gene'] = 'BRCA1'
+    failed_test_record.raw_fields['gene (other)'] = 'FAIL'
+    failed_test_record.raw_fields['variant dna'] = 'N'
+    genotypes = @handler.process_fields(failed_test_record)
+    assert_equal 1, genotypes[0].attribute_map['moleculartestingtype']
+    assert_equal 'Targeted BRCA mutation test', genotypes[0].attribute_map['genetictestscope']
+    assert_equal 7, genotypes[0].attribute_map['gene']
+    assert_equal 9, genotypes[0].attribute_map['teststatus']
+  end
   test 'assign_test_type' do
     diagnostic_record1 = build_raw_record('pseudo_id1' => 'bob')
     diagnostic_record1.raw_fields['moleculartestingtype'] = 'Diagnostic testing for known mutation(s)'
@@ -44,59 +57,43 @@ class StGeorgeTest < ActiveSupport::TestCase
   end
 
   test 'assign_test_scope' do
+    testscope_no_scope_record = build_raw_record('pseudo_id1' => 'bob')
+    testscope_no_scope_record.raw_fields['moleculartestingtype'] = 'no genetic test scope'
+    @logger.expects(:error).with('ERROR - record with no genetic test scope, ask Fiona for new rules')
+    @handler.assign_test_scope(@genotype, testscope_no_scope_record)
+
     testscope_targeted_record1 = build_raw_record('pseudo_id1' => 'bob')
     testscope_targeted_record1.raw_fields['moleculartestingtype'] = 'Diagnostic testing for known mutation(s)'
-    testscope_targeted_record1.raw_fields['gene (other)'] = 'N'
-    testscope_targeted_record1.raw_fields['variant dna'] = ''
-    testscope_targeted_record1.raw_fields['variant protein'] = ''
     @handler.assign_test_scope(@genotype, testscope_targeted_record1)
     assert_equal 'Targeted BRCA mutation test', @genotype.attribute_map['genetictestscope']
 
     testscope_targeted_record2 = build_raw_record('pseudo_id1' => 'bob')
     testscope_targeted_record2.raw_fields['moleculartestingtype'] = 'Family follow-up testing to aid variant interpretation'
-    testscope_targeted_record2.raw_fields['gene (other)'] = 'N'
-    testscope_targeted_record2.raw_fields['variant dna'] = ''
-    testscope_targeted_record2.raw_fields['variant protein'] = ''
     @handler.assign_test_scope(@genotype, testscope_targeted_record2)
     assert_equal 'Targeted BRCA mutation test', @genotype.attribute_map['genetictestscope']
 
     testscope_targeted_record3 = build_raw_record('pseudo_id1' => 'bob')
     testscope_targeted_record3.raw_fields['moleculartestingtype'] = 'Predictive testing for known familial mutation(s)'
-    testscope_targeted_record3.raw_fields['gene (other)'] = 'N'
-    testscope_targeted_record3.raw_fields['variant dna'] = ''
-    testscope_targeted_record3.raw_fields['variant protein'] = ''
     @handler.assign_test_scope(@genotype, testscope_targeted_record3)
     assert_equal 'Targeted BRCA mutation test', @genotype.attribute_map['genetictestscope']
 
     testscope_fs_record1 = build_raw_record('pseudo_id1' => 'bob')
     testscope_fs_record1.raw_fields['moleculartestingtype'] = 'Inherited breast cancer and ovarian cancer'
-    testscope_fs_record1.raw_fields['gene (other)'] = 'N'
-    testscope_fs_record1.raw_fields['variant dna'] = ''
-    testscope_fs_record1.raw_fields['variant protein'] = ''
     @handler.assign_test_scope(@genotype, testscope_fs_record1)
     assert_equal 'Full screen BRCA1 and BRCA2', @genotype.attribute_map['genetictestscope']
 
     testscope_fs_record2 = build_raw_record('pseudo_id1' => 'bob')
     testscope_fs_record2.raw_fields['moleculartestingtype'] = 'Inherited ovarian cancer (without breast cancer)'
-    testscope_fs_record2.raw_fields['gene (other)'] = 'N'
-    testscope_fs_record2.raw_fields['variant dna'] = ''
-    testscope_fs_record2.raw_fields['variant protein'] = ''
     @handler.assign_test_scope(@genotype, testscope_fs_record2)
     assert_equal 'Full screen BRCA1 and BRCA2', @genotype.attribute_map['genetictestscope']
 
     testscope_fs_record3 = build_raw_record('pseudo_id1' => 'bob')
     testscope_fs_record3.raw_fields['moleculartestingtype'] = 'NICE approved PARP inhibitor treatment'
-    testscope_fs_record3.raw_fields['gene (other)'] = 'N'
-    testscope_fs_record3.raw_fields['variant dna'] = ''
-    testscope_fs_record3.raw_fields['variant protein'] = ''
     @handler.assign_test_scope(@genotype, testscope_fs_record3)
     assert_equal 'Full screen BRCA1 and BRCA2', @genotype.attribute_map['genetictestscope']
 
     testscope_fs_record4 = build_raw_record('pseudo_id1' => 'bob')
     testscope_fs_record4.raw_fields['moleculartestingtype'] = 'Inherited prostate cancer'
-    testscope_fs_record4.raw_fields['gene (other)'] = 'N'
-    testscope_fs_record4.raw_fields['variant dna'] = ''
-    testscope_fs_record4.raw_fields['variant protein'] = ''
     @handler.assign_test_scope(@genotype, testscope_fs_record4)
     assert_equal 'Full screen BRCA1 and BRCA2', @genotype.attribute_map['genetictestscope']
   end
@@ -315,14 +312,14 @@ class StGeorgeTest < ActiveSupport::TestCase
     fs_gene_column.raw_fields['gene'] = 'BRCA1'
     fs_gene_column.raw_fields['gene (other)'] = 'unknown'
     genotypes = @handler.handle_test_status_full_screen(fs_gene_column, @genotype, { 'gene' => ['BRCA1'], 'gene (other)' => [], 'variant dna' => [], 'test/panel' => [] })
-    assert_equal 7, @genotype.attribute_map['gene']
+    assert_equal 7, genotypes[0].attribute_map['gene']
     assert_equal 1, genotypes.length
 
     fs_gene_other_column = build_raw_record('pseudo_id1' => 'bob')
     fs_gene_other_column.raw_fields['gene'] = 'unknown'
     fs_gene_other_column.raw_fields['gene (other)'] = 'BRCA1'
     genotypes = @handler.handle_test_status_full_screen(fs_gene_other_column, @genotype, { 'gene' => [], 'gene (other)' => ['BRCA1'] })
-    assert_equal 7, @genotype.attribute_map['gene']
+    assert_equal 7, genotypes[0].attribute_map['gene']
     assert_equal 1, genotypes.length
 
     # check the duplication is working correctly
