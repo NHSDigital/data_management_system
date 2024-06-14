@@ -96,17 +96,19 @@ done
 RCU () {
 PROV='RCU'
 IFS=$'\n'
-for x in $(find $DIRPATH/$FILEPATH -type f \
-\( -name "*BRCA*.pseudo*" -o \
--name "143e91983941d5040b176a997b80509b43bc686d_01.12.2019*pseudo" \
--o -name "*1dbb*pseudo" \
--o -name "0341fb*pseudo" \) -path "*/$PROV/*" \
-! -name "*Colorectal*" \
-! -name "*NonBRCA*" \
-! -name "*nonBRCA*")
+for x in $(find $DIRPATH/$FILEPATH -type f -path "*/$PROV/*" \
+\( -iname "*BRCA*.pseudo" -o -iname "*HBOC*.pseudo" -o \
+	-name "*1dbb561a296d1efcf685bd67a3b*pseudo" \)  \
+! -iname "*NON_CRC_HBOC_*" \
+! -iname "*lynch*" \
+! -iname "*nonBRCA*" \
+! -iname "*Colorectal*" \
+! -iname "*Hereditary Cancer_Other*" )
 do
-IFS="$OIFS"
-$BRAKE import:brca fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
+  if echo "$x" | grep -q "576f0670b0490bc788f673a5653c28cc1f7e7f7" || ! echo "$x" | grep -q "CRC"; then
+	IFS="$OIFS"
+    $BRAKE import:brca fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
+  fi
 done
 }
 

@@ -1,0 +1,258 @@
+---
+abnormal:
+- apc - conf mlpa +ve
+- apc - conf seq +ve
+- apc - pred mlpa +ve
+- apc - pred seq +ve
+- confirmation class 5 +ve
+- familial class 3 pos
+- lynch conf mlpa +ve
+- lynch conf seq +ve
+- lynch familial - class 3 +ve
+- lynch mlpa del confirmation +ve
+- lynch pred mlpa +ve
+- lynch pred seq class 4 +ve
+- lynch pred seq class 5 +ve
+- mutyh - conf seq +ve
+- mutyh - pred seq +ve
+- mutyh pred carrier
+- pms2 - conf mlpa positive c5
+- pms2 - conf seq positive c5
+- pms2 - mlpa pred positive c4
+- pms2 - mlpa pred positive c5
+- pms2 - pred complex mut +ve
+- pms2 - seq pred positive c4
+- pms2 - seq pred positive c5
+- predictive class 4 +ve
+- predictive class 5 +ve
+- conf mlpa +ve
+- conf seq +ve
+- mlh1 confirmation +ve
+- mlpa del confirmation +ve
+- msh2 confirmation +ve
+- mlpa +ve(large exon deletion) + seq -ve
+- mlpa multi-exon deletion (with seq)
+- mlpa -ve + intronic uv
+- mlpa -ve + seq (splice site mutation)
+- mlpa -ve + seq (unknown variant)
+- mlpa -ve + seq +ve (nonsense/frameshift)
+- ngs class 5/m
+- ngs class m
+- ngs mlh1 truncating/frameshift
+- ngs msh2 truncating/frameshift
+- ngs msh6 seq variant
+- ngs msh6 truncating/frameshift
+- ngs multiple exon mlpa del
+- ngs multiple exon mlpa dup
+- ngs single exon mlpa del
+- ngs uv class 3
+- ngs uv class 4
+- ngs uv class 5
+- sequencing positive
+- uv class 3
+- uv/mut class 5
+- familial - class 3 +ve
+- pred mlpa +ve
+- pred mlpa epcam del +ve
+- pred mlpa msh2 del +ve
+- pred mlpa msh2 dup +ve
+- pred mlpa msh6 del +ve
+- pred seq class 4 +ve
+- pred seq class 5 +ve
+- pred seq mlh1 +ve
+- pred seq mlh1 class 4 +ve
+- pred seq msh2 +ve
+- pred seq msh2 class 4 +ve
+- pred seq msh6 +ve
+- confirmation_seq_positive
+- diagnostic apc +ve
+- fap uv class3
+- predictive_seq_positive
+- class 4
+- conf class 4 seq positive
+- conf class 5 mlpa positive
+- conf class 5 seq positive
+- pms2 class 3 hom
+- pred (other) positive
+- class 3
+- class 4
+- class 5 (mlpa)
+- class 5 (seq)
+- mlpa positive
+- mlpa positive (diag)
+- seq mutation +ve
+- two mutations
+- uv class 3
+- uv class 5
+- biallelic pred positive
+- mlpa pred positive
+- mlpa pred positive c4
+- mlpa pred positive c5
+- pred (other) positive
+- pred complex mut +ve
+- r802x homozygote (diag)
+- seq class 4 pred positive
+- seq pred positive
+- "(v2) any gene c5 - unaffected patient"
+- apc - conf mlpa +ve
+- apc class 3
+- fap (apc) class 5
+- fap (mutyh) class 5
+- fap class 3
+- fap diagn mutyh het.
+- "(v2) any gene c5 - unaffected patient"
+- "(v2) class 3"
+- "(v2) class 5"
+- class 4
+- lynch (incl pms2) class 3
+- lynch (incl. pms2) class 4
+- lynch (incl. pms2) class 5
+- lynch class 5
+- lynch diag; c4/5
+- class 3 pms2 cancer panel
+- class 5 pms2 cancer panel
+- pms2 class 5 cancer panel
+- conf mlpa +ve (apc)
+- conf seq +ve (apc)
+- conf seq +ve (mutyh)
+- fap conf-pred +ve (apc)
+- fap diagn +ve (apc)
+- fap diagn +ve (mutyh c.het)
+- fap diagn +ve (mutyh homoz)
+- fap diagn class 3
+- fap diagn class 4
+- fap diagn mutyh het.
+- fap diagn poss path
+- fap diagn unknown
+- mutyh pred carrier
+- pred seq +ve (apc)
+- pred seq +ve (mutyh)
+- "(v2) class 3"
+- "(v2) class 4"
+- "(v2) class 5"
+- "(v2) mutyh c5 hom/c.het"
+- "(v2) mutyh het."
+- lynch diag; c4/5
+- generic c4/5
+- lynch (incl pms2) class 3
+- lynch (incl. pms2) class 4
+- lynch (incl. pms2) class 5
+- lynch diag; c3
+- lynch diag; c4/5
+- r210_c4/5
+- lynch diag; c4/5
+- pms2 - conf mlpa positive c5
+- "(v2) mutyh c5 hom/c.het"
+- "(v2) mutyh het."
+- apc - conf seq +ve
+- generic c3
+- generic c4/5
+normal:
+- apc - conf mlpa -ve
+- apc - conf seq -ve
+- apc - pred mlpa -ve
+- apc - pred seq -ve
+- conf c4/c5 mlpa -ve
+- confirmation class 5 -ve
+- epcam pred mlpa del -ve
+- familial class 3 neg
+- lynch conf mlpa -ve
+- lynch familial - class 3 -ve
+- lynch pred mlpa -ve
+- lynch pred seq class 4 -ve
+- lynch pred seq class 5 -ve
+- mutyh - pred seq -ve
+- pms2 - biallelic (cmmrd) pred negative
+- pms2 - biallelic pred negative
+- pms2 - mlpa conf negative
+- pms2 - mlpa pred negative c4
+- pms2 - mlpa pred negative c5
+- pms2 - mlpa pred -ve c4
+- pms2 - mlpa pred -ve c5
+- pms2 - pred complex mut -ve
+- pms2 - seq pred negative c4
+- pms2 - seq pred negative c5
+- predictive class 4-ve
+- predictive class 5 -ve
+- conf seq -ve
+- mlh1 only -ve
+- mlpa and seq normal
+- mlpa and seq normal (excl. msh6 ex8)
+- mlpa only -ve
+- mlpa -ve + seq -ve
+- msh2 only -ve
+- ngs msh2,mlh1,msh6 normal
+- familial - class 3 -ve
+- pred mlpa epcam del -ve
+- pred mlpa msh2 del -ve
+- pred mlpa msh2 dup -ve
+- pred mlpa msh6 del -ve
+- pred mlpa -ve
+- pred seq class 4 -ve
+- pred seq class 5 -ve
+- pred seq mlh1 -ve
+- pred seq msh2 class 4 -ve
+- pred seq msh2 -ve
+- pred seq msh6 -ve
+- diagnostic apc -ve
+- seq&mlpa_diagnostic_negative
+- seq/mlpa_diagnostic_negative
+- word report - normal
+- predictive_seq_negative
+- pred (other) negative
+- confirmation neg
+- mlpa conf -ve
+- no mutation identified
+- seq 1-12, mlpa normal
+- seq 2,6-12, mlpa normal
+- biallelic pred negative
+- mlpa pred negative
+- mlpa pred negative c4
+- mlpa pred negative c5
+- pred complex mut -ve
+- seq class 4 pred negative
+- seq pred negative
+- (v2) normal
+- (v2) normal - single gene
+- fap normal
+- mutyh carrier norm; partner aff
+- normal
+- normal - single gene
+- (v2) normal - unaffected
+- lynch (4) normal - unaffected
+- lynch (incl pms2) normal
+- lynch normal
+- normal pms2 cancer panel
+- conf seq -ve (apc)
+- fap diagn -ve
+- mutyh only normal
+- fap pred -ve (apc)
+- pred mlpa -ve (apc)
+- pred seq -ve (apc)
+- pred seq -ve (mutyh)
+- generic normal
+- generic normal - unaffected
+- generic normal (mlpa dosage)
+- lynch diag; normal
+- lynch diag; normal - unaffected
+- r210_normal
+- generic normal, ngs dosage fail
+- r211_normal
+normal_var:
+- ngs uv class 2
+- uv class 2
+- fap uv class2
+- class 2
+- uv class 2
+- fap diagn class 2
+- fap diagn poss benign
+- fap p.glu1317gln
+unknown:
+- no report required
+fail:
+- ngs fail
+- ngs screening failed
+- analysis failed
+- fail/results not required
+- failed
+- analysis failure

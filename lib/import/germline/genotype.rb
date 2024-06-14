@@ -33,11 +33,15 @@ module Import
                             'pathogenic' => 5,
                             'likely deleterious' => 4,
                             'likely pathogenic' => 4,
+                            'likely to be pathogenic' => 4,
                             'unknown' => 3,
                             'unclassified variant' => 3,
                             'vus' => 3,
                             'likely benign' => 2,
+                            'likely to be benign' => 2,
                             'non-pathological variant' => 1,
+                            'likely non-pathogenic' => 2,
+                            'uncertain significance' => 3,
                             'benign' => 1 }.freeze
 
       VARIANT_IMPACT_MAP = { 'missense' => 1,
@@ -336,7 +340,7 @@ module Import
       end
 
       def add_variant_class(variant)
-        if variant.is_a?(Integer) && variant >= 1 && variant <= 5
+        if variant.is_a?(Integer) && variant >= 1 && variant <= 7
           @attribute_map['variantpathclass'] = variant
         elsif variant.is_a?(String)
           if VARIANT_CLASS_MAP[variant.downcase.strip]
