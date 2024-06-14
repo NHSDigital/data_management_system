@@ -229,15 +229,15 @@ module Import
               genotype.add_status(1)
             # variant dna is not '*Fail*', 'N' or null AND raw:gene is not null AND raw:gene (other) is null
             # 2 (abnormal) for gene in raw:gene. 1 (normal) for all other genes.
-            elsif record.raw_fields['gene'].present? \
-              && record.raw_fields['gene (other)'].blank?
+            elsif record.raw_fields['gene'].present? &&
+                  record.raw_fields['gene (other)'].blank?
               update_status(2, 1, column, 'gene', genotype)
             # variant dna is not '*Fail*', 'N' or null AND raw:gene is not null AND raw:gene (other) is not null
             # 2 (abnormal) for gene in raw:gene.
             # 9 (failed, genetic test) for any gene specified WITH 'Fail' in raw:gene (other).
             # 1 (normal) for all other genes
-            elsif record.raw_fields['gene'].present? \
-                        && record.raw_fields['gene (other)'].present?
+            elsif record.raw_fields['gene'].present? &&
+                  record.raw_fields['gene (other)'].present?
               if column == 'gene'
                 genotype.add_status(2)
               elsif column == 'gene (other)'
@@ -249,10 +249,10 @@ module Import
             # If gene is specified in raw:variant dna, assign 2 (abnormal) for that gene and 1 (normal) for
             # all other genes.
             # Else interrogate raw:gene (other).
-            elsif record.raw_fields['gene'].blank? \
-              && (genes['gene (other)'].blank? || genes['gene (other)'].length > 1) \
-                  && !genes['variant dna'].nil? \
-                    && genes['variant dna'].length >= 1
+            elsif record.raw_fields['gene'].blank? &&
+                  (genes['gene (other)'].blank? || genes['gene (other)'].length > 1) &&
+                  !genes['variant dna'].nil? &&
+                  genes['variant dna'].length >= 1
               update_status(2, 1, column, 'variant dna', genotype)
             # variant dna is not '*Fail*', 'N' or null AND raw:gene is null AND raw:gene (other) specifies a single gene
             # 2 (abnormal) for gene in raw:gene (other). 1 (normal) for all other genes.
