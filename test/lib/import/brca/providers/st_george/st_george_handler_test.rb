@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class StGeorgeTest < ActiveSupport::TestCase
+class StGeorgeHandlerTest < ActiveSupport::TestCase
   def setup
     @record   = build_raw_record('pseudo_id1' => 'bob')
     @genotype = Import::Brca::Core::GenotypeBrca.new(@record)
