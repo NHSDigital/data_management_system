@@ -63,10 +63,18 @@ done
 RCU () {
 PROV='RCU'
 IFS=$'\n'
-for x in $(find  $DIRPATH/$FILEPATH -not -path "*/API_BETA_RETRIEVED/*" -type f -name "*.pseudo" -path "*/$PROV/*")
+for x in $(find $DIRPATH/$FILEPATH -type f -path "*/$PROV/*" \
+\( -iname "*lynch*.pseudo" -o -iname "*colorectal*.pseudo" -o -iname "*crc*.pseudo" -o \
+	-name "*1dbb561a296d1efcf685bd67a3b*pseudo" \) \
+! -iname "*NON_BRCA_CRC*" \
+! -iname "*NonBRCA_CRC*" \
+! -iname "*Non_CRC*" \
+! -iname "*nonBRCA_nonCRC*" \
+! -iname "*NonBRCA_NonColorectal*" \
+)
 do
 IFS="$OIFS"
-bundle exec rake import:colorectal fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
+$BRAKE import:colorectal fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
 done
 }
 
@@ -83,7 +91,9 @@ done
 R0A () {
 PROV='R0A'
 IFS=$'\n'
-for x in $(find  $DIRPATH/$FILEPATH -type f -iname "*HNPCC*.pseudo" -path "*/$PROV/*" -o -type f -iname "*FAP*.pseudo" -path "*/$PROV/*")
+for x in $(find  $DIRPATH/$FILEPATH -type f -path "*/$PROV/*" \
+\( -iname "*HNPCC*.pseudo" -o -type f -iname "*FAP*.pseudo" \) \
+-not -path "*/2021-12-03/*" )
 do
 IFS="$OIFS"
 $BRAKE import:colorectal fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
