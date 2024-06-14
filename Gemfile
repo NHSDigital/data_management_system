@@ -9,11 +9,7 @@ gem 'rails', '~> 6.1.0', '>= 6.1.7.5'
 gem 'psych', '3.3.2' # Exactly match the version on Ruby 3.0
 
 # Use postgresql as the database for Active Record
-if /\A3[.][01][.]/.match?(RUBY_VERSION)
-  gem 'pg', '~> 1.2.3' # Support old CentOS 7 PostgreSQL client 9.2.24 for as long as possible
-else
-  gem 'pg' # Drop CentOS 7 support for ruby 3.2
-end
+gem 'pg', '~> 1.4.6' # All client instance have postgres version >= 9.3
 
 # use Puma as the app server
 gem 'puma', '~> 6.0'
@@ -95,8 +91,8 @@ gem 'ndr_support', '~> 5.9'
 gem 'ndr_ui'
 gem 'ndr_workflow', '~> 1.2', '>= 1.2.2'
 
-gem 'caxlsx', '~> 4'
 gem 'bootstrap-table-rails', '~> 1.20.2'
+gem 'caxlsx', '~> 4'
 
 gem 'loofah', '>= 2.3.1' # address CVE-2019-15587
 gem 'nokogiri', '~> 1.11'
