@@ -175,6 +175,7 @@ class StGeorgeHandlerColorectalTest < ActiveSupport::TestCase
   end
 
   test 'handle_test_status' do
+ 
     fs_gene_column = build_raw_record('pseudo_id1' => 'bob')
     fs_gene_column.raw_fields['gene'] = 'MSH2'
     fs_gene_column.raw_fields['gene (other)'] = 'unknown'
