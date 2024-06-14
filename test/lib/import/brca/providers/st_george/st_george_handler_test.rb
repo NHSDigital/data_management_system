@@ -251,26 +251,26 @@ class StGeorgeTest < ActiveSupport::TestCase
     fs_brca1_record = build_raw_record('pseudo_id1' => 'bob')
     fs_brca1_record.raw_fields['gene'] = 'BRCA1 PALB2'
     fs_brca1_record.raw_fields['gene (other)'] = 'unknown'
-    genes_dict = @handler.process_genes_full_screen(@genotype, fs_brca1_record)
+    genes_dict = @handler.process_genes_full_screen(fs_brca1_record)
     assert_equal ({ 'gene' => %w[BRCA1 PALB2], 'gene (other)' => [] }), genes_dict
 
     fs_brca1_slash_brca2_record = build_raw_record('pseudo_id1' => 'bob')
     fs_brca1_slash_brca2_record.raw_fields['gene'] = 'BRCA1/2'
     fs_brca1_slash_brca2_record.raw_fields['gene (other)'] = 'unknown'
-    genes_dict = @handler.process_genes_full_screen(@genotype, fs_brca1_slash_brca2_record)
+    genes_dict = @handler.process_genes_full_screen(fs_brca1_slash_brca2_record)
     assert_equal ({ 'gene' => %w[BRCA1 BRCA2], 'gene (other)' => [] }), genes_dict
 
     fs_brca1_plus_brca2_record = build_raw_record('pseudo_id1' => 'bob')
     fs_brca1_plus_brca2_record.raw_fields['gene'] = 'BRCA1+2'
     fs_brca1_plus_brca2_record.raw_fields['gene (other)'] = 'unknown'
-    genes_dict = @handler.process_genes_full_screen(@genotype, fs_brca1_plus_brca2_record)
+    genes_dict = @handler.process_genes_full_screen(fs_brca1_plus_brca2_record)
     assert_equal ({ 'gene' => %w[BRCA1 BRCA2], 'gene (other)' => [] }), genes_dict
 
     # TODO- what would be the outcome if the same gene was in two different columns?
     fs_brca1_plus_brca2_record = build_raw_record('pseudo_id1' => 'bob')
     fs_brca1_plus_brca2_record.raw_fields['gene'] = 'BRCA1+2, BRCA1'
     fs_brca1_plus_brca2_record.raw_fields['gene (other)'] = 'unknown'
-    genes_dict = @handler.process_genes_full_screen(@genotype, fs_brca1_plus_brca2_record)
+    genes_dict = @handler.process_genes_full_screen(fs_brca1_plus_brca2_record)
     assert_equal ({ 'gene' => %w[BRCA1 BRCA2], 'gene (other)' => [] }), genes_dict
   end
 

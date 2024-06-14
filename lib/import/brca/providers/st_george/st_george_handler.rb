@@ -39,7 +39,7 @@ module Import
                 assign_test_status_targeted(single_genotype, record)
               end
             elsif genotype.full_screen?
-              genes_dict = process_genes_full_screen(genotype, record)
+              genes_dict = process_genes_full_screen(record)
               genotypes = handle_test_status_full_screen(record, genotype, genes_dict)
             end
             genotypes
@@ -123,7 +123,7 @@ module Import
             genotype.add_status(status)
           end
 
-          def process_genes_full_screen(_genotype, record)
+          def process_genes_full_screen(record)
             # extracts genes from colunns in record
             # outputs a dictionary of genes assigned to each column name
             genes_dict = {}
