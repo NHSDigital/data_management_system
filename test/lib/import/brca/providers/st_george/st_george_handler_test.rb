@@ -11,19 +11,43 @@ class StGeorgeTest < ActiveSupport::TestCase
     @logger = Import::Log.get_logger
   end
 
-  test 'failed_variant_record' do
-    failed_test_record = build_raw_record('pseudo_id1' => 'bob')
-    failed_test_record.raw_fields['moleculartestingtype'] = 'Diagnostic testing for known mutation(s)'
-    failed_test_record.raw_fields['servicereportidentifier'] = 'V'
-    failed_test_record.raw_fields['gene'] = 'BRCA1'
-    failed_test_record.raw_fields['gene (other)'] = 'FAIL'
-    failed_test_record.raw_fields['variant dna'] = 'N'
-    genotypes = @handler.process_fields(failed_test_record)
-    assert_equal 1, genotypes[0].attribute_map['moleculartestingtype']
-    assert_equal 'Targeted BRCA mutation test', genotypes[0].attribute_map['genetictestscope']
-    assert_equal 7, genotypes[0].attribute_map['gene']
-    assert_equal 9, genotypes[0].attribute_map['teststatus']
+  test 'process_fields' do
+    valid_sri_record = build_raw_record('pseudo_id1' => 'bob')
+    valid_sri_record.raw_fields['moleculartestingtype'] = 'Diagnostic testing for known mutation(s)'
+    valid_sri_record.raw_fields['servicereportidentifier'] = 'V1234'
+    valid_sri_record.raw_fields['gene'] = 'BRCA1'
+    genotypes = @handler.process_fields(valid_sri_record)
+    assert_equal 'V1234', genotypes[0].attribute_map['servicereportidentifier']
+
+    invalid_sri_record = build_raw_record('pseudo_id1' => 'bob')
+    invalid_sri_record.raw_fields['moleculartestingtype'] = 'Diagnostic testing for known mutation(s)'
+    invalid_sri_record.raw_fields['servicereportidentifier'] = 'W1234'
+    valid_sri_record.raw_fields['gene'] = 'BRCA1'
+    genotypes = @handler.process_fields(invalid_sri_record)
+    assert_nil genotypes
   end
+
+  test 'fill_genotypes' do
+    targeted = build_raw_record('pseudo_id1' => 'bob')
+    @genotype.attribute_map['genetictestscope'] = 'Targeted BRCA mutation test'
+    targeted.raw_fields['gene'] = 'BRCA2 PALB2'
+    targeted.raw_fields['gene (other)'] = 'positive control failed'
+    genotypes = @handler.fill_genotypes(@genotype, targeted)
+    assert_equal 8, genotypes[0].attribute_map['gene']
+    assert_equal 9, genotypes[0].attribute_map['teststatus']
+    assert_equal 3186, genotypes[1].attribute_map['gene']
+    assert_equal 9, genotypes[1].attribute_map['teststatus']
+
+    fullscreen = build_raw_record('pseudo_id1' => 'bob')
+    @genotype.attribute_map['genetictestscope'] = 'Full screen BRCA1 and BRCA2'
+    fullscreen.raw_fields['variant dna'] = 'value'
+    fullscreen.raw_fields['gene'] = 'BRCA1'
+    fullscreen.raw_fields['gene (other)'] = nil
+    genotypes = @handler.fill_genotypes(@genotype, fullscreen)
+    assert_equal 7, genotypes[0].attribute_map['gene']
+    assert_equal 2, genotypes[0].attribute_map['teststatus']
+  end
+
   test 'assign_test_type' do
     diagnostic_record1 = build_raw_record('pseudo_id1' => 'bob')
     diagnostic_record1.raw_fields['moleculartestingtype'] = 'Diagnostic testing for known mutation(s)'
@@ -578,32 +602,30 @@ class StGeorgeTest < ActiveSupport::TestCase
     assert_equal 'c.1234A<G', @genotype.attribute_map['codingdnasequencechange']
     assert_equal 'p.1234Arg123Gly', @genotype.attribute_map['proteinimpact']
 
-    # check process_location_type_zygosity runs ok from this function
+    # check process_location_type runs ok from this function
     cvalue_pvalue_absent = build_raw_record('pseudo_id1' => 'bob')
     @genotype.attribute_map['teststatus'] = 2
     cvalue_pvalue_absent.raw_fields['variant dna'] = 'het del ex 12-34'
     @handler.process_variants(@genotype, cvalue_pvalue_absent)
     assert_equal 3, @genotype.attribute_map['sequencevarianttype']
     assert_equal '12-34', @genotype.attribute_map['exonintroncodonnumber']
-    assert_equal 1, @genotype.attribute_map['variantgenotype']
   end
 
-  test 'process_location_type_zygosity' do
-    location_type_zygosity = build_raw_record('pseudo_id1' => 'bob')
+  test 'process_location_type' do
+    location_type = build_raw_record('pseudo_id1' => 'bob')
     @genotype.attribute_map['teststatus'] = 2
-    location_type_zygosity.raw_fields['gene'] = 'het del ex 12-34'
-    @handler.process_variants(@genotype, location_type_zygosity)
+    location_type.raw_fields['gene'] = 'het del ex 12-34'
+    @handler.process_variants(@genotype, location_type)
     assert_nil @genotype.attribute_map['sequencevarianttype']
     assert_nil @genotype.attribute_map['exonintroncodonnumber']
     assert_nil @genotype.attribute_map['variantgenotype']
 
-    location_type_zygosity = build_raw_record('pseudo_id1' => 'bob')
+    location_type = build_raw_record('pseudo_id1' => 'bob')
     @genotype.attribute_map['teststatus'] = 2
-    location_type_zygosity.raw_fields['variant dna'] = 'het del ex 12-34'
-    @handler.process_variants(@genotype, location_type_zygosity)
+    location_type.raw_fields['variant dna'] = 'het del ex 12-34'
+    @handler.process_variants(@genotype, location_type)
     assert_equal 3, @genotype.attribute_map['sequencevarianttype']
     assert_equal '12-34', @genotype.attribute_map['exonintroncodonnumber']
-    assert_equal 1, @genotype.attribute_map['variantgenotype']
   end
 
   test 'interrogate_variant_dna_column' do

@@ -10,9 +10,10 @@ module Import
           include Import::Helpers::Brca::Providers::Rj7::Constants
 
           def process_fields(record)
+            return unless record.raw_fields['servicereportidentifier'].start_with?('V')
+
             genotype = Import::Brca::Core::GenotypeBrca.new(record)
             # records using new importer should only have SRIs starting with V
-            return unless record.raw_fields['servicereportidentifier'].start_with?('V')
 
             genotype.add_passthrough_fields(record.mapped_fields, record.raw_fields, PASS_THROUGH_FIELDS)
             assign_test_type(genotype, record)
@@ -263,24 +264,22 @@ module Import
           def match_fail(gene, record, genotype)
             # Determines if a gene in the gene (other) column has failed
             # Assigns genes that have failed a test status of 9, otherwise teststatus is 1
+
             gene_list = record.raw_fields['gene (other)'].scan(BRCA_GENE_REGEX)
-            if gene_list.length >= 1
-              gene_list.each do |gene_value|
-                mapped_gene_values = []
-                mapped_gene_values.append(BRCA_GENE_MAP[gene_value])
-                mapped_gene_values[0]&.each do |value|
-                  if value == gene
-                    if /#{gene_value}\s?\(?fail\)?/i.match(record.raw_fields['gene (other)'])
-                      genotype.add_status(9)
-                    else
-                      genotype.add_status(1)
-                    end
-                  end
+            return false if gene_list.empty?
+
+            gene_list.each do |gene_value|
+              mapped_gene_values = BRCA_GENE_MAP[gene_value] || []
+
+              mapped_gene_values.each do |value|
+                if value == gene
+                  status = /#{gene_value}\s?\(?fail\)?/i.match?(record.raw_fields['gene (other)']) ? 9 : 1
+                  genotype.add_status(status)
                 end
               end
-              return true
             end
-            false
+
+            true
           end
 
           def update_status(status1, status2, column, column_name, genotype)
@@ -315,7 +314,7 @@ module Import
           end
 
           def process_variants(genotype, record)
-            # add hgvsc and hgvsp codes - if not present then run process_location_type_zygosity
+            # add hgvsc and hgvsp codes - if not present then run process_location_type
             return unless genotype.attribute_map['teststatus'] == 2
 
             ['variant dna', 'gene (other)'].each do |column|
@@ -328,18 +327,17 @@ module Import
               end
             end
             if record.mapped_fields['codingdnasequencechange'].blank? && record.mapped_fields['proteinimpact'].blank?
-              process_location_type_zygosity(genotype, record)
+              process_location_type(genotype, record)
             end
           end
 
-          def process_location_type_zygosity(genotype, record)
-            # use methods in genotype.rb to add exon location, variant type and zygosity
+          def process_location_type(genotype, record)
+            # use methods in genotype.rb to add exon location, variant type
             ['variant dna', 'gene (other)'].each do |column|
               next unless EXON_REGEX.match(record.raw_fields[column])
 
               genotype.add_exon_location($LAST_MATCH_INFO[:exons])
               genotype.add_variant_type($LAST_MATCH_INFO[:mutationtype])
-              genotype.add_zygosity($LAST_MATCH_INFO[:zygosity])
             end
           end
         end
