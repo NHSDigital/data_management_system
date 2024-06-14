@@ -10,37 +10,24 @@ class BartsHandlerColorectalTest < ActiveSupport::TestCase
     @logger = Import::Log.get_logger
   end
 
-  test 'process_genetictestcope' do
-    targ_record = build_raw_record('pseudo_id1' => 'bob')
-    @handler.add_genetictestscope(@genocolorectal, targ_record)
-    assert_equal 'Targeted Colorectal Lynch or MMR', @genocolorectal.attribute_map['genetictestscope']
-
-    fs_record = build_raw_record('pseudo_id1' => 'bob')
-    fs_record.raw_fields['testscope'] = 'Diagnostic'
-    @handler.add_genetictestscope(@genocolorectal, fs_record)
-    assert_equal 'Full screen Colorectal Lynch or MMR', @genocolorectal.attribute_map['genetictestscope']
+  test 'assign_variant_details' do
+    fake_record = build_raw_record('pseudo_id1' => 'bob')
+    @handler.assign_variant_details(@genocolorectal, fake_record)
+    assert_equal 'c.1009C>T', @genocolorectal.attribute_map['codingdnasequencechange']
+    assert_equal 'p.Gln337x', @genocolorectal.attribute_map['proteinimpact']
   end
 
   private
 
   def clinical_json
-    { sex: '2',
-      codingdnasequencechange: 'c.123A>T',
-      proteinimpact: 'p.126MT',
-      variantpathclass: 1,
-      gene: 2808,
-      age: 999 }.to_json
+    {}.to_json
   end
 
   def rawtext_clinical_json
-    { 'lab' => 'Brimingham',
-      'sex' => 2,
-      'testscope' => 'Predictive',
+    { 'diagnostic lab' => 'RWEAA',
       'authoriseddate' => '12/04/2018 00:00',
       'gene' => 'MLH1',
-      'variantpathclass' => 'Class 1',
-      'consultantname' => 'Dr. Smith',
-      'codingdnasequencechange' => 'c.123A>T',
-      'proteinimpact' => 'p.126MT' }.to_json
+      'variant' => 'c.1009C>T p.Gln337X',
+      'variantpathclass' => '5' }.to_json
   end
 end
