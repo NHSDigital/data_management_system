@@ -9,10 +9,10 @@ module Import
           include Import::Helpers::Colorectal::Providers::Rj7::Constants
 
           def process_fields(record)
-            genotype = Import::Colorectal::Core::Genocolorectal.new(record)
-
             # records using new importer should only have SRIs starting with V
             return unless record.raw_fields['servicereportidentifier'].start_with?('V')
+
+            genotype = Import::Colorectal::Core::Genocolorectal.new(record)
 
             # add standard passthrough fields to genotype object
             genotype.add_passthrough_fields(record.mapped_fields, record.raw_fields,
@@ -56,23 +56,32 @@ module Import
           def fill_genotypes(genotype, record)
             # process the genes, genotypes and test status for each gene listed in the genotype
 
-            genes_dict = process_genes(record)
+            genes_dict = process_genes(genotype, record)
             handle_test_status(record, genotype, genes_dict)
           end
 
-          def process_genes(record)
+          def process_genes(genotype, record)
             # process the gene names in columns listed and check for matches with the CRC gene regex list
             # add matched tgenes to the genes_dict
             # if no matched to crc gene regex list then check for matches in CRC gene map to add to the genes_dict
             # return genes_dict
             genes_dict = {}
+        
+            columns = if genotype.targeted?
+              ['gene', 'gene (other)']
+            elsif genotype.full_screen?
+              ['gene', 'gene (other)', 'variant_dna', 'test/panel']
+         
+            end 
 
-            ['gene', 'gene (other)', 'variant dna', 'test/panel'].each do |column|
+
+            columns.each do |column|
+
               genes = []
               gene_list = record.raw_fields[column]&.scan(CRC_GENE_REGEX)
 
               gene_list = process_test_panels(record, gene_list, column) if column == 'test/panel'
-
+              
               next if gene_list.nil?
 
               gene_list.each do |gene|
@@ -80,11 +89,15 @@ module Import
                   genes.append(gene_value)
                 end
               end
+          
 
               genes_dict[column] = genes.uniq
             end
+    
             genes_dict
+       
           end
+
 
           def process_test_panels(record, gene_list, column)
             # extracts panels tested from record
@@ -126,6 +139,7 @@ module Import
                         ['gene', 'gene (other)', 'variant_dna', 'test/panel']
                       end
 
+ 
             genotypes = duplicate_genotype(columns, genotype, genes, record) if columns.present?
 
             genotypes
@@ -249,11 +263,11 @@ module Import
 
           def interrogate_variant_protein_fullscreen(record, genotype, column)
             if record.raw_fields['variant protein'].blank?
-              genotype.add_status(1)
-            elsif record.raw_fields['variant protein'].match(/fail/ix)
-              genotype.add_status(9)
+              genotype.add_status(1)            
             elsif record.raw_fields['variant protein'].match(/p.*/ix)
               update_status(2, 1, column, ['gene', 'gene (other)'], genotype)
+            elsif record.raw_fields['variant protein'].match(/fail/ix)
+              genotype.add_status(9)
             else
               genotype.add_status(1)
             end
@@ -281,11 +295,11 @@ module Import
             end
 
             if record.mapped_fields['codingdnasequencechange'].blank? && record.mapped_fields['proteinimpact'].blank?
-              process_location_type_zygosity(genotype, record)
+              process_location_type(genotype, record)
             end
           end
 
-          def process_location_type_zygosity(genotype, record)
+          def process_location_type(genotype, record)
             # use methods in genotype.rb to add exon location, variant type and zygosity
             # all current evidence is in variant dna column - future proofing with gene (other) column as well
             ['variant dna', 'gene (other)'].each do |column|
@@ -293,7 +307,6 @@ module Import
 
               genotype.add_exon_location($LAST_MATCH_INFO[:exons])
               genotype.add_variant_type($LAST_MATCH_INFO[:mutationtype])
-              genotype.add_zygosity($LAST_MATCH_INFO[:zygosity])
             end
           end
         end

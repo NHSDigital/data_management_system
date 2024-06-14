@@ -14,10 +14,19 @@ class StGeorgeHandlerColorectalTest < ActiveSupport::TestCase
   test 'process_fields' do
 
     #test that nothing is added to record if SRI doesn't start with 'V'
-    process_fields_wrecord = build_raw_record('pseudo_id1' => 'bob')
-    process_fields_wrecord.raw_fields['servicereportidentifier'] = 'W1234567'
-    @handler.process_fields(process_fields_wrecord)
-    assert_not_equal 'W1234567', @genotype.attribute_map['servicereportidentifier']
+    valid_sri_record = build_raw_record('pseudo_id1' => 'bob')
+    valid_sri_record.raw_fields['moleculartestingtype'] = 'Diagnostic testing for known mutation(s)'
+    valid_sri_record.raw_fields['servicereportidentifier'] = 'V123456'
+    valid_sri_record.raw_fields['gene'] = 'ATM'
+    genotypes = @handler.process_fields(valid_sri_record)
+    assert_equal 'V123456', genotypes[0].attribute_map['servicereportidentifier']
+
+    invalid_sri_record = build_raw_record('pseudo_id1' => 'bob')
+    invalid_sri_record.raw_fields['moleculartestingtype'] = 'Diagnostic testing for known mutation(s)'
+    invalid_sri_record.raw_fields['servicereportidentifier'] = 'W123456'
+    valid_sri_record.raw_fields['gene'] = 'ATM'
+    genotypes = @handler.process_fields(invalid_sri_record)
+    assert_nil genotypes
 
   end
 
@@ -115,19 +124,22 @@ class StGeorgeHandlerColorectalTest < ActiveSupport::TestCase
     mhs6_typo = build_raw_record('pseudo_id1' => 'bob')
     mhs6_typo.raw_fields['gene'] = 'MHS2'
     mhs6_typo.raw_fields['gene (other)'] = 'unknown'
-    genes_dict = @handler.process_genes(mhs6_typo)
+    @genotype.attribute_map['genetictestscope'] = 'Targeted Colorectal Lynch or MMR'
+    genes_dict = @handler.process_genes(@genotype, mhs6_typo)
     assert_equal ({ 'gene' => %w[MSH2], "gene (other)"=>[]}), genes_dict
 
     targeted_crc = build_raw_record('pseudo_id1' => 'bob')
     targeted_crc.raw_fields['gene'] = 'MLH1'
     targeted_crc.raw_fields['gene (other)'] = 'MSH6'
-    genes_dict = @handler.process_genes(targeted_crc)
+    @genotype.attribute_map['genetictestscope'] = 'Targeted Colorectal Lynch or MMR'
+    genes_dict = @handler.process_genes(@genotype, targeted_crc)
     assert_equal ({ 'gene' => %w[MLH1], 'gene (other)' => ['MSH6'] }), genes_dict
 
     fs_crc = build_raw_record('pseudo_id1' => 'bob')
     fs_crc.raw_fields['gene'] = ''
     fs_crc.raw_fields['gene (other)'] = 'MLH1, MSH2, MSH6, EPCAM'
-    genes_dict = @handler.process_genes(fs_crc)
+    @genotype.attribute_map['genetictestscope'] = 'Full screen Colorectal Lynch or MMR'
+    genes_dict = @handler.process_genes(@genotype, fs_crc)
     assert_equal ({ 'gene' => %w[], 'gene (other)' => %w[MLH1 MSH2 MSH6 EPCAM]}), genes_dict
   end
 
@@ -360,10 +372,9 @@ class StGeorgeHandlerColorectalTest < ActiveSupport::TestCase
     @handler.process_variants(@genotype, no_c_or_p_value)
     assert_equal 3, @genotype.attribute_map['sequencevarianttype']
     assert_equal '09-10', @genotype.attribute_map['exonintroncodonnumber']
-    assert_equal 1, @genotype.attribute_map['variantgenotype']
   end
 
-  test 'process_location_type_zygosity' do
+  test 'process_location_type' do
     # when variant is in variant dna column
     location_variant_dna_column = build_raw_record('pseudo_id1' => 'bob')
     @genotype.attribute_map['teststatus'] = 2
@@ -371,7 +382,6 @@ class StGeorgeHandlerColorectalTest < ActiveSupport::TestCase
     @handler.process_variants(@genotype, location_variant_dna_column)
     assert_equal 4, @genotype.attribute_map['sequencevarianttype']
     assert_equal '1-6', @genotype.attribute_map['exonintroncodonnumber']
-    assert_equal 1, @genotype.attribute_map['variantgenotype']
     assert_equal 1, @genotype.attribute_map['variantlocation']
 
     # when variant is in gene (other) column
@@ -381,7 +391,6 @@ class StGeorgeHandlerColorectalTest < ActiveSupport::TestCase
     @handler.process_variants(@genotype, location_variant_dna_column)
     assert_equal 3, @genotype.attribute_map['sequencevarianttype']
     assert_equal '7', @genotype.attribute_map['exonintroncodonnumber']
-    assert_equal 1, @genotype.attribute_map['variantgenotype']
     assert_equal 1, @genotype.attribute_map['variantlocation']
   end
 
