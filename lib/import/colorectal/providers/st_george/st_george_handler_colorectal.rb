@@ -48,6 +48,7 @@ module Import
 
             testscope = record.raw_fields['moleculartestingtype']&.downcase&.strip
             genotype.add_test_scope(TEST_SCOPE_MAP[testscope])
+
             return genotype if genotype.attribute_map['genetictestscope'].present?
 
             @logger.error 'ERROR - record with no genetic test scope, ask Fiona for new rules'
@@ -66,22 +67,20 @@ module Import
             # if no matched to crc gene regex list then check for matches in CRC gene map to add to the genes_dict
             # return genes_dict
             genes_dict = {}
-        
-            columns = if genotype.targeted?
-              ['gene', 'gene (other)']
-            elsif genotype.full_screen?
-              ['gene', 'gene (other)', 'variant_dna', 'test/panel']
-         
-            end 
 
+            columns = if genotype.targeted?
+                        ['gene', 'gene (other)']
+                      elsif genotype.full_screen?
+                        ['gene', 'gene (other)', 'variant_dna', 'test/panel']
+
+                      end
 
             columns.each do |column|
-
               genes = []
               gene_list = record.raw_fields[column]&.scan(CRC_GENE_REGEX)
 
               gene_list = process_test_panels(record, gene_list, column) if column == 'test/panel'
-              
+
               next if gene_list.nil?
 
               gene_list.each do |gene|
@@ -89,15 +88,12 @@ module Import
                   genes.append(gene_value)
                 end
               end
-          
 
               genes_dict[column] = genes.uniq
             end
-    
-            genes_dict
-       
-          end
 
+            genes_dict
+          end
 
           def process_test_panels(record, gene_list, column)
             # extracts panels tested from record
@@ -134,12 +130,12 @@ module Import
 
           def handle_test_status(record, genotype, genes)
             columns = if genotype.targeted?
-                        ['gene', 'gene (other)', 'variant_dna', 'variant protein', 'test/panel']
+                        ['gene', 'gene (other)']
                       elsif genotype.full_screen?
-                        ['gene', 'gene (other)', 'variant_dna', 'test/panel']
+
+                        ['test/panel', 'gene', 'gene (other)', 'variant_dna']
                       end
 
- 
             genotypes = duplicate_genotype(columns, genotype, genes, record) if columns.present?
 
             genotypes
@@ -149,7 +145,6 @@ module Import
             # Iterates through relevant columns and runs assign_test_status method - assigns test status for each gene
             # Adds genotype to genotypes list and returns list
             genotypes = []
-
             columns.each do |column|
               genes[column]&.each do |gene|
                 genotype_new = genotype.dup_colo
@@ -176,6 +171,9 @@ module Import
 
             elsif record.raw_fields['variant protein'].present?
               interrogate_variant_protein_targeted(record, genotype, column)
+
+            else
+              genotype.add_status(1)
 
             end
           end
@@ -232,6 +230,8 @@ module Import
               interrogate_variant_dna_fullscreen(record, genotype, genes, column)
             elsif record.raw_fields['variant protein'].present?
               interrogate_variant_protein_fullscreen(record, genotype, column)
+            else
+              genotype.add_status(1)
             end
           end
 
@@ -263,7 +263,7 @@ module Import
 
           def interrogate_variant_protein_fullscreen(record, genotype, column)
             if record.raw_fields['variant protein'].blank?
-              genotype.add_status(1)            
+              genotype.add_status(1)
             elsif record.raw_fields['variant protein'].match(/p.*/ix)
               update_status(2, 1, column, ['gene', 'gene (other)'], genotype)
             elsif record.raw_fields['variant protein'].match(/fail/ix)
