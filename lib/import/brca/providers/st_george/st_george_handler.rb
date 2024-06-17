@@ -195,6 +195,7 @@ module Import
                 genotype_new = genotype.dup
                 genotype_new.add_gene(gene)
                 assign_test_status_full_screen(record, gene, genes, genotype_new, column)
+                
                 genotypes.append(genotype_new)
               end
             end
@@ -264,15 +265,20 @@ module Import
             # Assigns genes that have failed a test status of 9, otherwise teststatus is 1
           
             gene_list = record.raw_fields['gene (other)'].scan(BRCA_GENE_REGEX)
+            
             return false if gene_list.empty?
           
             gene_list.each do |gene_value|
               mapped_gene_values = BRCA_GENE_MAP[gene_value] || []
           
               mapped_gene_values.each do |value|
+             
                 if value == gene
                   status = /#{gene_value}\s?\(?fail\)?/i.match?(record.raw_fields['gene (other)']) ? 9 : 1
                   genotype.add_status(status)
+                else
+                  genotype.add_status(1)
+            
                 end
               end
             end
