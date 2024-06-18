@@ -195,7 +195,7 @@ module Import
                 genotype_new = genotype.dup
                 genotype_new.add_gene(gene)
                 assign_test_status_full_screen(record, gene, genes, genotype_new, column)
-                
+
                 genotypes.append(genotype_new)
               end
             end
@@ -204,6 +204,7 @@ module Import
 
           def assign_test_status_full_screen(record, gene, genes, genotype, column)
             # interrogate variant dna column
+
             if record.raw_fields['variant dna'].present?
               interrogate_variant_dna_column(record, genotype, genes, column, gene)
             # interrogate raw gene (other)
@@ -252,7 +253,7 @@ module Import
             # Else interrogate raw:gene (other).
             elsif record.raw_fields['gene'].blank? &&
                   (genes['gene (other)'].blank? || genes['gene (other)'].length > 1) &&
-              update_status(2, 1, column, 'variant dna', genotype)
+                  update_status(2, 1, column, 'variant dna', genotype)
             # variant dna is not '*Fail*', 'N' or null AND raw:gene is null AND raw:gene (other) specifies a single gene
             # 2 (abnormal) for gene in raw:gene (other). 1 (normal) for all other genes.
             elsif record.raw_fields['gene'].blank? && !genes['gene (other)'].nil? && genes['gene (other)'].length == 1
@@ -263,26 +264,25 @@ module Import
           def match_fail(gene, record, genotype)
             # Determines if a gene in the gene (other) column has failed
             # Assigns genes that have failed a test status of 9, otherwise teststatus is 1
-          
+
             gene_list = record.raw_fields['gene (other)'].scan(BRCA_GENE_REGEX)
-            
+
             return false if gene_list.empty?
-          
+
             gene_list.each do |gene_value|
               mapped_gene_values = BRCA_GENE_MAP[gene_value] || []
-          
+
               mapped_gene_values.each do |value|
-             
                 if value == gene
                   status = /#{gene_value}\s?\(?fail\)?/i.match?(record.raw_fields['gene (other)']) ? 9 : 1
                   genotype.add_status(status)
                 else
                   genotype.add_status(1)
-            
+
                 end
               end
             end
-          
+
             true
           end
 
@@ -338,24 +338,24 @@ module Import
           def process_location_type(genotype, record)
             # use methods in genotype.rb to add exon location, variant type
 
-            record_gene= genotype.attribute_map['gene']
+            record_gene = genotype.attribute_map['gene']
 
             ['variant dna', 'gene (other)'].each do |column|
               next unless EXON_REGEX.match(record.raw_fields[column])
+
               gene_list = record.raw_fields[column]&.scan(BRCA_GENE_REGEX)
               gene_list.each do |gene|
                 next if gene_list.blank?
+
                 gene = BRCA_GENE_MAP[gene][0]
-                gene_integer= BRCA_INTEGER_MAP[gene]
-                if gene_integer!=record_gene
-                  genotype.add_status(1)
-                end
+                gene_integer = BRCA_INTEGER_MAP[gene]
+                genotype.add_status(1) if gene_integer != record_gene
               end
-              if genotype.attribute_map['teststatus'] == 2
-                EXON_REGEX.match(record.raw_fields[column])
-                genotype.add_exon_location($LAST_MATCH_INFO[:exons])
-                genotype.add_variant_type($LAST_MATCH_INFO[:mutationtype])
-              end
+              next unless genotype.attribute_map['teststatus'] == 2
+
+              EXON_REGEX.match(record.raw_fields[column])
+              genotype.add_exon_location($LAST_MATCH_INFO[:exons])
+              genotype.add_variant_type($LAST_MATCH_INFO[:mutationtype])
             end
           end
         end
