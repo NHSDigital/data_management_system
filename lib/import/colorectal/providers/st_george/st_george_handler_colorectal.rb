@@ -18,6 +18,8 @@ module Import
             genotype.add_passthrough_fields(record.mapped_fields, record.raw_fields,
                                             PASS_THROUGH_FIELDS)
 
+            assign_test_type(genotype, record)
+
             assign_test_scope(genotype, record)
             genotypes = fill_genotypes(genotype, record)
 
