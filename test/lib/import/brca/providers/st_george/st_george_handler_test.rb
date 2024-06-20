@@ -515,6 +515,17 @@ class StGeorgeHandlerTest < ActiveSupport::TestCase
     assert_equal 1, genotypes[1].attribute_map['teststatus']
     assert_equal 451, genotypes[1].attribute_map['gene']
 
+    # test when exonic variant is reported in gene_other
+    full_screen_test_status = build_raw_record('pseudo_id1' => 'bob')
+    full_screen_test_status.raw_fields['variant dna'] = nil
+    full_screen_test_status.raw_fields['gene'] = 'BRCA2'
+    full_screen_test_status.raw_fields['gene (other)'] = 'Hetdel ex 25'
+    full_screen_test_status.raw_fields['test/panel'] = 'RPKM_0723'
+    @handler.assign_test_scope(@genotype, full_screen_test_status)
+    genotypes = @handler.fill_genotypes(@genotype, full_screen_test_status)
+    assert_equal 2, genotypes[0].attribute_map['teststatus']
+    assert_equal 8, genotypes[0].attribute_map['gene']
+
     # test assigning test status of 4 when none of the scenarios above fit
     full_screen_test_status = build_raw_record('pseudo_id1' => 'bob')
     full_screen_test_status.raw_fields['variant dna'] = nil

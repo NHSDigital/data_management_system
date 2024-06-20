@@ -268,7 +268,6 @@ module Import
           end
 
           def assign_status_on_gene_other(record, genes, genotype, genotypes)
-            binding.pry if record.raw_fields['servicereportidentifier'] == 'V001777'
             gene_other = record.raw_fields['gene (other)']
             remaining_genes = @all_genes
             case gene_other
@@ -276,7 +275,7 @@ module Import
               process_failed_gene_other(genes, genotype, genotypes, remaining_genes)
             when /\?\z/i
               process_status_genes(genotype, 4, genes['gene'], genotypes)
-            when /^c\.|^Ex.*Del\z|^Ex.*Dup\z|^Het\sDel|^Het\sDup/ix
+            when /^c\.|^Ex.*Del\z|^Ex.*Dup\z|^Het\s?Del|^Het\s?Dup/ix
               process_pathogenic_gene_other(genotype, genes, remaining_genes, genotypes)
             when /^#{BRCA_GENE_REGEX}\sClass\sV,\s#{BRCA_GENE_REGEX}\sN\z/i
               process_class_v_gene_other(gene_other, genotype, genotypes)
