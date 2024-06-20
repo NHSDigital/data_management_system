@@ -13,9 +13,6 @@ class StGeorgeHandlerTest < ActiveSupport::TestCase
 
   test 'process_fields' do
     valid_sri_record = build_raw_record('pseudo_id1' => 'bob')
-    valid_sri_record.raw_fields['moleculartestingtype'] = 'Diagnostic testing for known mutation(s)'
-    valid_sri_record.raw_fields['servicereportidentifier'] = 'V1234'
-    valid_sri_record.raw_fields['gene'] = 'BRCA1'
     genotypes = @handler.process_fields(valid_sri_record)
     assert_equal 'V1234', genotypes[0].attribute_map['servicereportidentifier']
 
@@ -143,10 +140,11 @@ class StGeorgeHandlerTest < ActiveSupport::TestCase
   end
 
   test 'duplicate_genotype_targeted' do
-    genotypes = @handler.duplicate_genotype_targeted([['PALB2'], ['BRCA2']], @genotype)
+    genotypes = []
+    genotypes = @handler.duplicate_genotype_targeted([['PALB2'], ['BRCA2']], @genotype, genotypes)
     assert_equal 2, genotypes.length
 
-    genotypes = @handler.duplicate_genotype_targeted([['BRCA2']], @genotype)
+    genotypes = @handler.duplicate_genotype_targeted([['BRCA2']], @genotype, genotypes)
     assert_equal 1, genotypes.length
   end
 
@@ -252,26 +250,26 @@ class StGeorgeHandlerTest < ActiveSupport::TestCase
     fs_brca1_record.raw_fields['gene'] = 'BRCA1 PALB2'
     fs_brca1_record.raw_fields['gene (other)'] = 'unknown'
     genes_dict = @handler.process_genes_full_screen(fs_brca1_record)
-    assert_equal ({ 'gene' => %w[BRCA1 PALB2], 'gene (other)' => [] }), genes_dict
+    assert_equal ({ 'gene' => %w[BRCA1 PALB2], 'gene (other)' => [], 'variant dna' => [], 'test/panel' => [] }), genes_dict
 
     fs_brca1_slash_brca2_record = build_raw_record('pseudo_id1' => 'bob')
     fs_brca1_slash_brca2_record.raw_fields['gene'] = 'BRCA1/2'
     fs_brca1_slash_brca2_record.raw_fields['gene (other)'] = 'unknown'
     genes_dict = @handler.process_genes_full_screen(fs_brca1_slash_brca2_record)
-    assert_equal ({ 'gene' => %w[BRCA1 BRCA2], 'gene (other)' => [] }), genes_dict
+    assert_equal ({ 'gene' => %w[BRCA1 BRCA2], 'gene (other)' => [], 'variant dna' => [], 'test/panel' => [] }), genes_dict
 
     fs_brca1_plus_brca2_record = build_raw_record('pseudo_id1' => 'bob')
     fs_brca1_plus_brca2_record.raw_fields['gene'] = 'BRCA1+2'
     fs_brca1_plus_brca2_record.raw_fields['gene (other)'] = 'unknown'
     genes_dict = @handler.process_genes_full_screen(fs_brca1_plus_brca2_record)
-    assert_equal ({ 'gene' => %w[BRCA1 BRCA2], 'gene (other)' => [] }), genes_dict
+    assert_equal ({ 'gene' => %w[BRCA1 BRCA2], 'gene (other)' => [], 'variant dna' => [], 'test/panel' => [] }), genes_dict
 
     # TODO- what would be the outcome if the same gene was in two different columns?
     fs_brca1_plus_brca2_record = build_raw_record('pseudo_id1' => 'bob')
     fs_brca1_plus_brca2_record.raw_fields['gene'] = 'BRCA1+2, BRCA1'
     fs_brca1_plus_brca2_record.raw_fields['gene (other)'] = 'unknown'
     genes_dict = @handler.process_genes_full_screen(fs_brca1_plus_brca2_record)
-    assert_equal ({ 'gene' => %w[BRCA1 BRCA2], 'gene (other)' => [] }), genes_dict
+    assert_equal ({ 'gene' => %w[BRCA1 BRCA2], 'gene (other)' => [], 'variant dna' => [], 'test/panel' => [] }), genes_dict
   end
 
   test 'process_test_panels' do
@@ -331,18 +329,20 @@ class StGeorgeHandlerTest < ActiveSupport::TestCase
     assert_equal %w[BRCA1 BRCA2 CHEK2 PALB2 ATM RAD51C RAD51D], genes
   end
 
-  test 'handle_test_status_full_screen' do
+  test 'assign_test_status_full_screen' do
     fs_gene_column = build_raw_record('pseudo_id1' => 'bob')
     fs_gene_column.raw_fields['gene'] = 'BRCA1'
     fs_gene_column.raw_fields['gene (other)'] = 'unknown'
-    genotypes = @handler.handle_test_status_full_screen(fs_gene_column, @genotype, { 'gene' => ['BRCA1'], 'gene (other)' => [], 'variant dna' => [], 'test/panel' => [] })
+    @handler.assign_test_scope(@genotype, fs_gene_column)
+    genotypes = @handler.fill_genotypes(@genotype, fs_gene_column)
     assert_equal 7, genotypes[0].attribute_map['gene']
     assert_equal 1, genotypes.length
 
     fs_gene_other_column = build_raw_record('pseudo_id1' => 'bob')
     fs_gene_other_column.raw_fields['gene'] = 'unknown'
     fs_gene_other_column.raw_fields['gene (other)'] = 'BRCA1'
-    genotypes = @handler.handle_test_status_full_screen(fs_gene_other_column, @genotype, { 'gene' => [], 'gene (other)' => ['BRCA1'] })
+    @handler.assign_test_scope(@genotype, fs_gene_other_column)
+    genotypes = @handler.fill_genotypes(@genotype, fs_gene_other_column)
     assert_equal 7, genotypes[0].attribute_map['gene']
     assert_equal 1, genotypes.length
 
@@ -350,185 +350,170 @@ class StGeorgeHandlerTest < ActiveSupport::TestCase
     multiple_genes = build_raw_record('pseudo_id1' => 'bob')
     multiple_genes.raw_fields['gene'] = 'BRCA1'
     multiple_genes.raw_fields['gene (other)'] = 'BRCA2'
-    genotypes = @handler.handle_test_status_full_screen(multiple_genes, @genotype, { 'gene' => ['BRCA1'], 'gene (other)' => ['BRCA2'] })
+    @handler.assign_test_scope(@genotype, multiple_genes)
+    genotypes = @handler.fill_genotypes(@genotype, multiple_genes)
     assert_equal 2, genotypes.length
   end
 
-  test 'assign_test_status_full_screen' do
+  test 'assign test status based on variant dna' do
     # Test when variant dna column contains fail
     full_screen_test_status = build_raw_record('pseudo_id1' => 'bob')
     full_screen_test_status.raw_fields['variant dna'] = 'BRCA1 tested. All genes have Failed'
-    @handler.assign_test_status_full_screen(full_screen_test_status, 'BRCA1', { 'variant dna': ['BRCA1'] }, @genotype, 'variant dna')
-    assert_equal 9, @genotype.attribute_map['teststatus']
+    @handler.assign_test_scope(@genotype, full_screen_test_status)
+    genotypes = @handler.fill_genotypes(@genotype, full_screen_test_status)
+    assert_equal 9, genotypes[0].attribute_map['teststatus']
 
     # Test when variant dna column contains N
     full_screen_test_status = build_raw_record('pseudo_id1' => 'bob')
     full_screen_test_status.raw_fields['variant dna'] = 'N'
-    @handler.assign_test_status_full_screen(full_screen_test_status, 'BRCA1', { gene: ['BRCA1'] }, @genotype, 'gene')
-    assert_equal 1, @genotype.attribute_map['teststatus']
+    @handler.assign_test_scope(@genotype, full_screen_test_status)
+    genotypes = @handler.fill_genotypes(@genotype, full_screen_test_status)
+    assert_equal 1, genotypes[0].attribute_map['teststatus']
 
-    # Test when [raw:gene is not null] AND [raw:gene (other) is null] and gene in question is in gene column
+    # Test when [raw:gene is not null] AND [raw:gene (other) is null]
     full_screen_test_status = build_raw_record('pseudo_id1' => 'bob')
-    full_screen_test_status.raw_fields['variant dna'] = 'value'
+    full_screen_test_status.raw_fields['variant dna'] = 'BR1 Ex1-2 del'
     full_screen_test_status.raw_fields['gene'] = 'BRCA1'
     full_screen_test_status.raw_fields['gene (other)'] = nil
-    @handler.assign_test_status_full_screen(full_screen_test_status, 'BRCA1', { gene: ['BRCA1'], 'gene (other)': [], 'variant dna': [] }, @genotype, 'gene')
-    assert_equal 2, @genotype.attribute_map['teststatus']
+    @handler.assign_test_scope(@genotype, full_screen_test_status)
+    genotypes = @handler.fill_genotypes(@genotype, full_screen_test_status)
+    assert_equal 2, genotypes[0].attribute_map['teststatus']
+    assert_equal 7, genotypes[0].attribute_map['gene']
 
-    # Test when [raw:gene is not null] AND [raw:gene (other) is null] and gene in question is not in gene column
-    full_screen_test_status = build_raw_record('pseudo_id1' => 'bob')
-    full_screen_test_status.raw_fields['variant dna'] = 'BRCA1'
-    full_screen_test_status.raw_fields['gene'] = 'BRCA2'
-    full_screen_test_status.raw_fields['gene (other)'] = nil
-    @handler.assign_test_status_full_screen(full_screen_test_status, 'BRCA1', { gene: ['BRCA2'], 'gene (other)': [], 'variant dna': ['BRCA1'] }, @genotype, 'variant dna')
-    assert_equal 1, @genotype.attribute_map['teststatus']
+    # [Is not '*Fail*', 'N' or null] AND [raw:gene is not null] AND [raw:gene (other) is not null]
 
-    # [Is not '*Fail*', 'N' or null] AND [raw:gene is not null] AND [raw:gene (other) is not null] and gene in question is in gene column
     full_screen_test_status = build_raw_record('pseudo_id1' => 'bob')
-    full_screen_test_status.raw_fields['variant dna'] = 'BRCA1'
-    full_screen_test_status.raw_fields['gene'] = 'CHECK2'
-    full_screen_test_status.raw_fields['gene (other)'] = 'BRCA2'
-    @handler.assign_test_status_full_screen(full_screen_test_status, 'CHEK2', { gene: ['CHEK2'], 'gene (other)': ['BRCA2'], 'variant dna': ['BRCA1'] }, @genotype, 'gene')
-    assert_equal 2, @genotype.attribute_map['teststatus']
+    full_screen_test_status.raw_fields['variant dna'] = 'PALB2: c.1675C>T'
+    full_screen_test_status.raw_fields['gene'] = 'PALB2'
+    full_screen_test_status.raw_fields['gene (other)'] = '(TP53 at GOSH)'
+    @handler.assign_test_scope(@genotype, full_screen_test_status)
+    genotypes = @handler.fill_genotypes(@genotype, full_screen_test_status)
+    assert_equal 2, genotypes[0].attribute_map['teststatus']
+    assert_equal 3186, genotypes[0].attribute_map['gene']
+    assert_equal 1, genotypes[1].attribute_map['teststatus']
+    assert_equal 79, genotypes[1].attribute_map['gene']
 
     # [raw:gene is not null] AND [raw:gene (other) is not null] and gene in question is in gene (other) column but not failed
     full_screen_test_status = build_raw_record('pseudo_id1' => 'bob')
-    full_screen_test_status.raw_fields['variant dna'] = 'BRCA1'
-    full_screen_test_status.raw_fields['gene'] = 'CHECK2'
-    full_screen_test_status.raw_fields['gene (other)'] = 'BRCA1 BRCA2 FAIL'
-    @handler.assign_test_status_full_screen(full_screen_test_status, 'BRCA1', { gene: ['CHEK2'], 'gene (other)': %w[BRCA1 BRCA2], 'variant dna': ['BRCA1'] }, @genotype, 'gene (other)')
-    assert_equal 1, @genotype.attribute_map['teststatus']
-
-    # [raw:gene is not null] AND [raw:gene (other) is not null] and gene in question is in gene (other) column and has failed
-    full_screen_test_status = build_raw_record('pseudo_id1' => 'bob')
-    full_screen_test_status.raw_fields['variant dna'] = 'BRCA1'
-    full_screen_test_status.raw_fields['gene'] = 'CHECK2'
-    full_screen_test_status.raw_fields['gene (other)'] = 'BRCA1 BRCA2 FAIL'
-    @handler.assign_test_status_full_screen(full_screen_test_status, 'BRCA2', { gene: ['CHECK2'], 'gene (other)': ['BRCA1'], 'variant dna': ['BRCA1'] }, @genotype, 'gene (other)')
-    assert_equal 9, @genotype.attribute_map['teststatus']
-
-    # [raw:gene is not null] AND [raw:gene (other) is not null] and gene in question is in gene (other) column and has failed (BRCA1/2)
-    full_screen_test_status = build_raw_record('pseudo_id1' => 'bob')
-    full_screen_test_status.raw_fields['variant dna'] = 'BRCA1'
-    full_screen_test_status.raw_fields['gene'] = 'CHECK2'
-    full_screen_test_status.raw_fields['gene (other)'] = 'BRCA1/2 FAIL'
-    @handler.assign_test_status_full_screen(full_screen_test_status, 'BRCA1', { gene: ['CHEK2'], 'gene (other)': %w[BRCA1 BRCA2], 'variant dna': ['BRCA1'] }, @genotype, 'gene (other)')
-    assert_equal 9, @genotype.attribute_map['teststatus']
-
-    # [raw:gene is not null] AND [raw:gene (other) is not null] and gene in question is in gene (other) column and has failed(BRCA1/2)
-    full_screen_test_status = build_raw_record('pseudo_id1' => 'bob')
-    full_screen_test_status.raw_fields['variant dna'] = 'BRCA1'
-    full_screen_test_status.raw_fields['gene'] = 'CHECK2'
-    full_screen_test_status.raw_fields['gene (other)'] = 'BRCA1/2 FAIL'
-    @handler.assign_test_status_full_screen(full_screen_test_status, 'BRCA2', { gene: ['CHEK2'], 'gene (other)': %w[BRCA1 BRCA2], 'variant dna': ['BRCA1'] }, @genotype, 'gene (other)')
-    assert_equal 9, @genotype.attribute_map['teststatus']
+    full_screen_test_status.raw_fields['variant dna'] = 'BR1? Ex7-12 del'
+    full_screen_test_status.raw_fields['gene'] = 'BRCA1'
+    full_screen_test_status.raw_fields['gene (other)'] = 'BRCA2 FAIL'
+    @handler.assign_test_scope(@genotype, full_screen_test_status)
+    genotypes = @handler.fill_genotypes(@genotype, full_screen_test_status)
+    assert_equal 2, genotypes[0].attribute_map['teststatus']
+    assert_equal 7, genotypes[0].attribute_map['gene']
+    assert_equal 9, genotypes[1].attribute_map['teststatus']
+    assert_equal 8, genotypes[1].attribute_map['gene']
 
     # Test when raw:gene is null] AND raw:gene (other) specifies a single gene and the gene in question is in the gene(other column)
     full_screen_test_status = build_raw_record('pseudo_id1' => 'bob')
     full_screen_test_status.raw_fields['variant dna'] = 'variant'
     full_screen_test_status.raw_fields['gene'] = nil
-    full_screen_test_status.raw_fields['gene (other)'] = 'BRCA1'
-    @handler.assign_test_status_full_screen(full_screen_test_status, 'BRCA1', { 'gene' => [], 'gene (other)' => ['BRCA1'], 'variant dna' => ['variant'] }, @genotype, 'gene (other)')
-    assert_equal 2, @genotype.attribute_map['teststatus']
+    full_screen_test_status.raw_fields['gene (other)'] = 'ATM'
+    full_screen_test_status.raw_fields['test/panel'] = 'R208'
 
-    # Test when raw:gene is null] AND raw:gene (other) specifies a single gene and the gene in question is not in  the gene (other) column
-    full_screen_test_status = build_raw_record('pseudo_id1' => 'bob')
-    full_screen_test_status.raw_fields['variant dna'] = 'ATM'
-    full_screen_test_status.raw_fields['gene'] = nil
-    full_screen_test_status.raw_fields['gene (other)'] = 'BRCA1'
-    @handler.assign_test_status_full_screen(full_screen_test_status, 'ATM', { 'gene' => [], 'gene (other)' => ['BRCA1'], 'variant dna' => ['ATM'], 'test/panel' => 'BRCA2' }, @genotype, 'variant dna')
-    assert_equal 1, @genotype.attribute_map['teststatus']
+    @handler.assign_test_scope(@genotype, full_screen_test_status)
+    genotypes = @handler.fill_genotypes(@genotype, full_screen_test_status)
+    assert_equal 7, genotypes.size
+    assert_equal 2, genotypes[0].attribute_map['teststatus']
+    assert_equal 451, genotypes[0].attribute_map['gene']
 
-    # Test when raw:gene is null] AND raw:gene (other) does not specify a single gene, and gene in question is in the variant dna column
+    assert_equal 1, genotypes[1].attribute_map['teststatus']
+    assert_equal 7, genotypes[1].attribute_map['gene']
 
-    full_screen_test_status = build_raw_record('pseudo_id1' => 'bob')
-    full_screen_test_status.raw_fields['variant dna'] = 'BRCA1'
-    full_screen_test_status.raw_fields['gene'] = nil
-    full_screen_test_status.raw_fields['gene (other)'] = 'BRCA1/2'
-    @handler.assign_test_status_full_screen(full_screen_test_status, 'BRCA1', { 'gene' => ['CHEK2'], 'gene (other)' => %w[BRCA1 BRCA2], 'variant dna' => ['BRCA1'] }, @genotype, 'variant dna')
-    assert_equal 2, @genotype.attribute_map['teststatus']
+    assert_equal 1, genotypes[2].attribute_map['teststatus']
+    assert_equal 8, genotypes[2].attribute_map['gene']
 
-    # Test when raw:gene is null] AND raw:gene (other) does not specify a single gene, and gene in question is not in variant dna column but there is a gene in variant dna column
+    # Test when raw:gene is null] AND raw:gene (other) does not specify a single gene
 
     full_screen_test_status = build_raw_record('pseudo_id1' => 'bob')
-    full_screen_test_status.raw_fields['variant dna'] = 'ATM'
+    full_screen_test_status.raw_fields['variant dna'] = 'c.2269del'
     full_screen_test_status.raw_fields['gene'] = nil
-    full_screen_test_status.raw_fields['gene (other)'] = 'BRCA1 BRCA2'
-    @handler.assign_test_status_full_screen(full_screen_test_status, 'BRCA1', { 'gene' => ['CHECK2'], 'gene (other)' => %w[BRCA1 BRCA2], 'variant dna' => ['ATM'] }, @genotype, 'gene (other)')
-    assert_equal 1, @genotype.attribute_map['teststatus']
+    full_screen_test_status.raw_fields['gene (other)'] = 'BRCA1 Class V, BRCA2 N'
+    full_screen_test_status.raw_fields['test/panel'] = 'BRCA1/2_V1'
+    @handler.assign_test_scope(@genotype, full_screen_test_status)
+    genotypes = @handler.fill_genotypes(@genotype, full_screen_test_status)
+    assert_equal 2, genotypes[0].attribute_map['teststatus']
+    assert_equal 7, genotypes[0].attribute_map['gene']
 
+    assert_equal 1, genotypes[1].attribute_map['teststatus']
+    assert_equal 8, genotypes[1].attribute_map['gene']
+
+    # Test when raw:gene is null] AND raw:gene (other) does not specify a single gene but varaint dna has gene
+
+    full_screen_test_status = build_raw_record('pseudo_id1' => 'bob')
+    full_screen_test_status.raw_fields['variant dna'] = 'BRCA1 EX3 Del'
+    full_screen_test_status.raw_fields['gene'] = nil
+    full_screen_test_status.raw_fields['gene (other)'] = 'PALB2/BRCA2 normal'
+    full_screen_test_status.raw_fields['test/panel'] = 'RPKM'
+    @handler.assign_test_scope(@genotype, full_screen_test_status)
+    genotypes = @handler.fill_genotypes(@genotype, full_screen_test_status)
+    assert_equal 2, genotypes[0].attribute_map['teststatus']
+    assert_equal 7, genotypes[0].attribute_map['gene']
+
+    assert_equal 1, genotypes[1].attribute_map['teststatus']
+    assert_equal 3186, genotypes[1].attribute_map['gene']
+
+    assert_equal 1, genotypes[2].attribute_map['teststatus']
+    assert_equal 8, genotypes[2].attribute_map['gene']
+  end
+
+  test 'assign test status based on gene (other)' do
     # tests when there is a fail in gene (other) column, and the gene in question has failed
     full_screen_test_status = build_raw_record('pseudo_id1' => 'bob')
     full_screen_test_status.raw_fields['variant dna'] = nil
-    full_screen_test_status.raw_fields['gene'] = nil
-    full_screen_test_status.raw_fields['gene (other)'] = 'BRCA1/2 FAIL'
-    @handler.assign_test_status_full_screen(full_screen_test_status, 'BRCA2', { gene: [], 'gene (other)': %w[BRCA1 BRCA2], 'variant dna': [] }, @genotype, 'gene (other)')
-    assert_equal 9, @genotype.attribute_map['teststatus']
+    full_screen_test_status.raw_fields['gene'] = 'BRCA1'
+    full_screen_test_status.raw_fields['gene (other)'] = 'PALB2 FAIL'
+    @handler.assign_test_scope(@genotype, full_screen_test_status)
+    genotypes = @handler.fill_genotypes(@genotype, full_screen_test_status)
+    assert_equal 9, genotypes[0].attribute_map['teststatus']
+    assert_equal 3186, genotypes[0].attribute_map['gene']
 
-    # tests when there is a fail and more than one gene in gene (other) column, and the gene in question has not failed
+    assert_equal 1, genotypes[1].attribute_map['teststatus']
+    assert_equal 7, genotypes[1].attribute_map['gene']
+
+    # tests when there is a fail and more than one gene in gene (other) column
     full_screen_test_status = build_raw_record('pseudo_id1' => 'bob')
     full_screen_test_status.raw_fields['variant dna'] = nil
     full_screen_test_status.raw_fields['gene'] = nil
     full_screen_test_status.raw_fields['gene (other)'] = 'ATM BRCA1/2 FAIL'
-    @handler.assign_test_status_full_screen(full_screen_test_status, 'ATM', { gene: [], 'gene (other)': %w[ATM BRCA2 BRCA1], 'variant dna': [] }, @genotype, 'gene (other)')
-    assert_equal 1, @genotype.attribute_map['teststatus']
-
-    # tests when there is a fail in gene (other) column and there is more than one gene ,and the gene in question has failed
-    full_screen_test_status = build_raw_record('pseudo_id1' => 'bob')
-    full_screen_test_status.raw_fields['variant dna'] = nil
-    full_screen_test_status.raw_fields['gene'] = nil
-    full_screen_test_status.raw_fields['gene (other)'] = 'ATM BRCA1/2 FAIL'
-    @handler.assign_test_status_full_screen(full_screen_test_status, 'BRCA1', { gene: ['CHECK2'], 'gene (other)': %w[ATM BRCA2 BRCA1], 'variant dna': ['BRCA1'] }, @genotype, 'gene (other)')
-    assert_equal 9, @genotype.attribute_map['teststatus']
+    @handler.assign_test_scope(@genotype, full_screen_test_status)
+    genotypes = @handler.fill_genotypes(@genotype, full_screen_test_status)
+    assert_equal 9, genotypes[0].attribute_map['teststatus']
+    assert_equal 9, genotypes[1].attribute_map['teststatus']
+    assert_equal 9, genotypes[2].attribute_map['teststatus']
 
     # test when there is fail in gene (other) column with no gene specified and there is gene listed in the gene column
     full_screen_test_status = build_raw_record('pseudo_id1' => 'bob')
     full_screen_test_status.raw_fields['variant dna'] = nil
     full_screen_test_status.raw_fields['gene'] = 'BRCA2'
     full_screen_test_status.raw_fields['gene (other)'] = 'FAIL'
-    @handler.assign_test_status_full_screen(full_screen_test_status, 'BRCA2', { gene: ['BRCA2'], 'gene (other)': ['FAIL'], 'variant dna': [] }, @genotype, 'gene')
-    assert_equal 10, @genotype.attribute_map['teststatus']
-
-    # test when there is fail in gene (other) column with no gene specified and the gene is not listed in the gene column
-    full_screen_test_status = build_raw_record('pseudo_id1' => 'bob')
-    full_screen_test_status.raw_fields['variant dna'] = nil
-    full_screen_test_status.raw_fields['gene'] = nil
-    full_screen_test_status.raw_fields['gene (other)'] = 'FAIL'
-    full_screen_test_status.raw_fields['test/panel'] = 'BRCA2'
-    @handler.assign_test_status_full_screen(full_screen_test_status, 'BRCA2', { gene: [], 'gene (other)': ['FAIL'], 'variant dna': [], 'test/panel': ['BRCA2'] }, @genotype, 'test/panel')
-    assert_equal 1, @genotype.attribute_map['teststatus']
+    @handler.assign_test_scope(@genotype, full_screen_test_status)
+    genotypes = @handler.fill_genotypes(@genotype, full_screen_test_status)
+    assert_equal 10, genotypes[0].attribute_map['teststatus']
 
     # test when the regex matches the gene (other) column and the gene is in the gene column
     full_screen_test_status = build_raw_record('pseudo_id1' => 'bob')
     full_screen_test_status.raw_fields['variant dna'] = nil
     full_screen_test_status.raw_fields['gene'] = 'BRCA1'
     full_screen_test_status.raw_fields['gene (other)'] = 'c.1234'
-    @handler.assign_test_status_full_screen(full_screen_test_status, 'BRCA1', { gene: ['CHECK2'], 'gene (other)': %w[ATM BRCA2], 'variant dna': [] }, @genotype, 'gene')
-    assert_equal 2, @genotype.attribute_map['teststatus']
+    @handler.assign_test_scope(@genotype, full_screen_test_status)
+    genotypes = @handler.fill_genotypes(@genotype, full_screen_test_status)
+    assert_equal 2, genotypes[0].attribute_map['teststatus']
+    assert_equal 7, genotypes[0].attribute_map['gene']
 
-    # test when the regex matches the gene (other) column and the gene is not in the gene column
-    full_screen_test_status = build_raw_record('pseudo_id1' => 'bob')
-    full_screen_test_status.raw_fields['variant dna'] = nil
-    full_screen_test_status.raw_fields['gene'] = 'CHEK2'
-    full_screen_test_status.raw_fields['gene (other)'] = 'c.1234 ATM BRCA1/2'
-    @handler.assign_test_status_full_screen(full_screen_test_status, 'ATM', { gene: ['CHEK2'], 'gene (other)': %w[ATM BRCA2 BRCA1], 'variant dna': [] }, @genotype, 'gene (other)')
-    assert_equal 1, @genotype.attribute_map['teststatus']
-
-    # test when the value in gene (other) is in the format 'gene Class V, gene N' - first gene
+    # test when the value in gene (other) is in the format 'gene Class V, gene N'
     full_screen_test_status = build_raw_record('pseudo_id1' => 'bob')
     full_screen_test_status.raw_fields['variant dna'] = nil
     full_screen_test_status.raw_fields['gene'] = nil
     full_screen_test_status.raw_fields['gene (other)'] = 'BRCA1 Class V, ATM N'
-    @handler.assign_test_status_full_screen(full_screen_test_status, 'ATM', { gene: [], 'gene (other)': %w[ATM BRCA1], 'variant dna': [] }, @genotype, 'gene (other)')
-    assert_equal 1, @genotype.attribute_map['teststatus']
+    @handler.assign_test_scope(@genotype, full_screen_test_status)
+    genotypes = @handler.fill_genotypes(@genotype, full_screen_test_status)
+    assert_equal 2, genotypes[0].attribute_map['teststatus']
+    assert_equal 7, genotypes[0].attribute_map['gene']
 
-    # test when the value in gene (other) is in the format 'gene Class V, gene N' - second gene
-    full_screen_test_status = build_raw_record('pseudo_id1' => 'bob')
-    full_screen_test_status.raw_fields['variant dna'] = nil
-    full_screen_test_status.raw_fields['gene'] = nil
-    full_screen_test_status.raw_fields['gene (other)'] = 'BRCA1 Class V, ATM N'
-    @handler.assign_test_status_full_screen(full_screen_test_status, 'BRCA1', { gene: [nil], 'gene (other)': %w[ATM BRCA1], 'variant dna': [] }, @genotype, 'gene (other)')
-    assert_equal 2, @genotype.attribute_map['teststatus']
+    assert_equal 1, genotypes[1].attribute_map['teststatus']
+    assert_equal 451, genotypes[1].attribute_map['gene']
 
     # test assigning test status of 4 when none of the scenarios above fit
     full_screen_test_status = build_raw_record('pseudo_id1' => 'bob')
@@ -536,42 +521,10 @@ class StGeorgeHandlerTest < ActiveSupport::TestCase
     full_screen_test_status.raw_fields['gene'] = nil
     full_screen_test_status.raw_fields['gene (other)'] = 'unknown'
     full_screen_test_status.raw_fields['test/panel'] = 'BRCA1/2_V1'
-    @handler.assign_test_status_full_screen(full_screen_test_status, 'BRCA1', { gene: [], 'gene (other)': [], 'variant dna': [], 'test/panel': %w[BRCA1 BRCA2] }, @genotype, 'test/panel')
-    assert_equal 4, @genotype.attribute_map['teststatus']
-  end
-
-  test 'match fail' do
-    failed_gene = build_raw_record('pseudo_id1' => 'bob')
-    failed_gene.raw_fields['gene (other)'] = 'PALB2 BRCA1 failed'
-    @handler.match_fail('BRCA1', failed_gene, @genotype)
-    assert_equal 9, @genotype.attribute_map['teststatus']
-
-    not_failed_gene = build_raw_record('pseudo_id1' => 'bob')
-    not_failed_gene.raw_fields['gene (other)'] = 'PALB2 BRCA1 failed'
-    @handler.match_fail('PALB2', not_failed_gene, @genotype)
-    assert_equal 1, @genotype.attribute_map['teststatus']
-  end
-
-  test 'update_status' do
-    @handler.update_status(2, 1, 'gene', 'gene', @genotype)
-    assert_equal 2, @genotype.attribute_map['teststatus']
-
-    @handler.update_status(2, 1, 'gene', 'gene(other)', @genotype)
-    assert_equal 1, @genotype.attribute_map['teststatus']
-  end
-
-  test 'gene_classv_gene_n_format' do
-    # test, when 'gene (other)' column has following format 'GENE1 Class V, GENE2 N' that the second gene gets teststatus 2 assigned
-    gene_classv_gene_n = build_raw_record('pseudo_id1' => 'bob')
-    gene_classv_gene_n.raw_fields['gene (other)'] = 'BRCA1 Class V, ATM N'
-    @handler.gene_classv_gene_n_format(gene_classv_gene_n, @genotype, 'ATM')
-    assert_equal 1, @genotype.attribute_map['teststatus']
-
-    # test, when 'gene (other)' column has following format 'GENE1 Class V, GENE2 N' that the first gene gets teststatus 1 assigned
-    gene_classv_gene_n = build_raw_record('pseudo_id1' => 'bob')
-    gene_classv_gene_n.raw_fields['gene (other)'] = 'BRCA1 Class V, ATM N'
-    @handler.gene_classv_gene_n_format(gene_classv_gene_n, @genotype, 'BRCA1')
-    assert_equal 2, @genotype.attribute_map['teststatus']
+    @handler.assign_test_scope(@genotype, full_screen_test_status)
+    genotypes = @handler.fill_genotypes(@genotype, full_screen_test_status)
+    assert_equal 4, genotypes[0].attribute_map['teststatus']
+    assert_equal 4, genotypes[1].attribute_map['teststatus']
   end
 
   test 'process_variants' do
@@ -628,116 +581,35 @@ class StGeorgeHandlerTest < ActiveSupport::TestCase
     assert_equal '12-34', @genotype.attribute_map['exonintroncodonnumber']
   end
 
-  test 'interrogate_variant_dna_column' do
-    # Test when variant dna column contains fail
-    full_screen_test_status = build_raw_record('pseudo_id1' => 'bob')
-    full_screen_test_status.raw_fields['variant dna'] = 'BRCA1 tested. All genes have Failed'
-    @handler.interrogate_variant_dna_column(full_screen_test_status, @genotype, { 'variant dna': ['BRCA1'] }, 'variant dna', 'BRCA1')
-    assert_equal 9, @genotype.attribute_map['teststatus']
-
-    # Test when variant dna column contains N
-    full_screen_test_status = build_raw_record('pseudo_id1' => 'bob')
-    full_screen_test_status.raw_fields['variant dna'] = 'N'
-    @handler.interrogate_variant_dna_column(full_screen_test_status, @genotype, { gene: ['BRCA1'] }, 'gene', 'BRCA1')
-    assert_equal 1, @genotype.attribute_map['teststatus']
-
-    # Test when [raw:gene is not null] AND [raw:gene (other) is null] and gene in question is in gene column
-    full_screen_test_status = build_raw_record('pseudo_id1' => 'bob')
-    full_screen_test_status.raw_fields['variant dna'] = 'value'
-    full_screen_test_status.raw_fields['gene'] = 'BRCA1'
-    full_screen_test_status.raw_fields['gene (other)'] = nil
-    @handler.interrogate_variant_dna_column(full_screen_test_status, @genotype, { gene: ['BRCA1'], 'gene (other)': [], 'variant dna': [] }, 'gene', 'BRCA1')
-    assert_equal 2, @genotype.attribute_map['teststatus']
-
-    # Test when [raw:gene is not null] AND [raw:gene (other) is null] and gene in question is not in gene column
-    full_screen_test_status = build_raw_record('pseudo_id1' => 'bob')
-    full_screen_test_status.raw_fields['variant dna'] = 'BRCA1'
-    full_screen_test_status.raw_fields['gene'] = 'BRCA2'
-    full_screen_test_status.raw_fields['gene (other)'] = nil
-    @handler.interrogate_variant_dna_column(full_screen_test_status, @genotype, { gene: ['BRCA2'], 'gene (other)': [], 'variant dna': ['BRCA1'] }, 'variant dna', 'BRCA1')
-    assert_equal 1, @genotype.attribute_map['teststatus']
-
-    # [Is not '*Fail*', 'N' or null] AND [raw:gene is not null] AND [raw:gene (other) is not null] and gene in question is in gene column
-    full_screen_test_status = build_raw_record('pseudo_id1' => 'bob')
-    full_screen_test_status.raw_fields['variant dna'] = 'BRCA1'
-    full_screen_test_status.raw_fields['gene'] = 'CHECK2'
-    full_screen_test_status.raw_fields['gene (other)'] = 'BRCA2'
-    @handler.interrogate_variant_dna_column(full_screen_test_status, @genotype, { gene: ['CHEK2'], 'gene (other)': ['BRCA2'], 'variant dna': ['BRCA1'] }, 'gene', 'CHEK2')
-    assert_equal 2, @genotype.attribute_map['teststatus']
-
-    # [raw:gene is not null] AND [raw:gene (other) is not null] and gene in question is in gene (other) column but not failed
-    full_screen_test_status = build_raw_record('pseudo_id1' => 'bob')
-    full_screen_test_status.raw_fields['variant dna'] = 'BRCA1'
-    full_screen_test_status.raw_fields['gene'] = 'CHECK2'
-    full_screen_test_status.raw_fields['gene (other)'] = 'BRCA1 BRCA2 FAIL'
-    @handler.interrogate_variant_dna_column(full_screen_test_status, @genotype, { gene: ['CHEK2'], 'gene (other)': %w[BRCA1 BRCA2], 'variant dna': ['BRCA1'] }, 'gene (other)', 'BRCA1')
-    assert_equal 1, @genotype.attribute_map['teststatus']
-
-    # [raw:gene is not null] AND [raw:gene (other) is not null] and gene in question is in gene (other) column and has failed
-    full_screen_test_status = build_raw_record('pseudo_id1' => 'bob')
-    full_screen_test_status.raw_fields['variant dna'] = 'BRCA1'
-    full_screen_test_status.raw_fields['gene'] = 'CHECK2'
-    full_screen_test_status.raw_fields['gene (other)'] = 'BRCA1 BRCA2 FAIL'
-    @handler.interrogate_variant_dna_column(full_screen_test_status, @genotype, { gene: ['CHECK2'], 'gene (other)': ['BRCA1'], 'variant dna': ['BRCA1'] }, 'gene (other)', 'BRCA2')
-    assert_equal 9, @genotype.attribute_map['teststatus']
-
-    # [raw:gene is not null] AND [raw:gene (other) is not null] and gene in question is in gene (other) column and has failed (BRCA1/2)
-    full_screen_test_status = build_raw_record('pseudo_id1' => 'bob')
-    full_screen_test_status.raw_fields['variant dna'] = 'BRCA1'
-    full_screen_test_status.raw_fields['gene'] = 'CHECK2'
-    full_screen_test_status.raw_fields['gene (other)'] = 'BRCA1/2 FAIL'
-    @handler.interrogate_variant_dna_column(full_screen_test_status, @genotype, { gene: ['CHEK2'], 'gene (other)': %w[BRCA1 BRCA2], 'variant dna': ['BRCA1'] }, 'gene (other)', 'BRCA1')
-    assert_equal 9, @genotype.attribute_map['teststatus']
-
-    # [raw:gene is not null] AND [raw:gene (other) is not null] and gene in question is in gene (other) column and has failed(BRCA1/2)
-    full_screen_test_status = build_raw_record('pseudo_id1' => 'bob')
-    full_screen_test_status.raw_fields['variant dna'] = 'BRCA1'
-    full_screen_test_status.raw_fields['gene'] = 'CHECK2'
-    full_screen_test_status.raw_fields['gene (other)'] = 'BRCA1/2 FAIL'
-    @handler.interrogate_variant_dna_column(full_screen_test_status, @genotype, { gene: ['CHEK2'], 'gene (other)': %w[BRCA1 BRCA2], 'variant dna': ['BRCA1'] }, 'gene (other)', 'BRCA2')
-    assert_equal 9, @genotype.attribute_map['teststatus']
-
-    # Test when raw:gene is null] AND raw:gene (other) specifies a single gene and the gene in question is in the gene(other column)
-    full_screen_test_status = build_raw_record('pseudo_id1' => 'bob')
-    full_screen_test_status.raw_fields['variant dna'] = 'variant'
-    full_screen_test_status.raw_fields['gene'] = nil
-    full_screen_test_status.raw_fields['gene (other)'] = 'BRCA1'
-    @handler.interrogate_variant_dna_column(full_screen_test_status, @genotype, { 'gene' => [], 'gene (other)' => ['BRCA1'], 'variant dna' => ['variant'] }, 'gene (other)', 'BRCA1')
-    assert_equal 2, @genotype.attribute_map['teststatus']
-
-    # Test when raw:gene is null] AND raw:gene (other) specifies a single gene and the gene in question is not in  the gene (other) column
-    full_screen_test_status = build_raw_record('pseudo_id1' => 'bob')
-    full_screen_test_status.raw_fields['variant dna'] = 'ATM'
-    full_screen_test_status.raw_fields['gene'] = nil
-    full_screen_test_status.raw_fields['gene (other)'] = 'BRCA1'
-    @handler.interrogate_variant_dna_column(full_screen_test_status, @genotype, { 'gene' => [], 'gene (other)' => ['BRCA1'], 'variant dna' => ['ATM'], 'test/panel' => 'BRCA2' }, 'variant dna', 'ATM')
-    assert_equal 1, @genotype.attribute_map['teststatus']
-
-    # Test when raw:gene is null] AND raw:gene (other) does not specify a single gene, and gene in question is in the variant dna column
-
-    full_screen_test_status = build_raw_record('pseudo_id1' => 'bob')
-    full_screen_test_status.raw_fields['variant dna'] = 'BRCA1'
-    full_screen_test_status.raw_fields['gene'] = nil
-    full_screen_test_status.raw_fields['gene (other)'] = 'BRCA1/2'
-    @handler.interrogate_variant_dna_column(full_screen_test_status, @genotype, { 'gene' => ['CHEK2'], 'gene (other)' => %w[BRCA1 BRCA2], 'variant dna' => ['BRCA1'] }, 'variant dna', 'BRCA1')
-    assert_equal 2, @genotype.attribute_map['teststatus']
-
-    # Test when raw:gene is null] AND raw:gene (other) does not specify a single gene, and gene in question is not in variant dna column but there is a gene in variant dna column
-
-    full_screen_test_status = build_raw_record('pseudo_id1' => 'bob')
-    full_screen_test_status.raw_fields['variant dna'] = 'ATM'
-    full_screen_test_status.raw_fields['gene'] = nil
-    full_screen_test_status.raw_fields['gene (other)'] = 'BRCA1 BRCA2'
-    @handler.interrogate_variant_dna_column(full_screen_test_status, @genotype, { 'gene' => ['CHECK2'], 'gene (other)' => %w[BRCA1 BRCA2], 'variant dna' => ['ATM'] }, 'gene (other)', 'BRCA1')
-    assert_equal 1, @genotype.attribute_map['teststatus']
-  end
-
   def clinical_json
-    +
-    {}.to_json
+    { 'sex' => '2',
+      'consultantcode' => 'C9999998',
+      'providercode' => 'providercode',
+      'collecteddate' => '2023-07-04T00:00:00.000+01:00',
+      'receiveddate' => '2023-07-05T00:00:00.000+01:00',
+      'authoriseddate' => '2023-08-22T00:00:00.000+01:00',
+      'servicereportidentifier' => 'V1234',
+      'sortdate' => '2023-07-05T00:00:00.000+01:00',
+      'specimentype' => '5',
+      'age' => 41 }.to_json
   end
 
   def rawtext_clinical_json
-    {}.to_json
+    { 'sex' => 'Female',
+      'g number' => 'g numbe',
+      'providercode' => 'providercode',
+      'referral organisation' => "St George's Hospital",
+      'consultantname' => 'XYZ',
+      'servicereportidentifier' => 'V1234',
+      'receiveddate' => '2023-07-05 16:38:55',
+      'collecteddate' => '2023-07-04 09:43:00',
+      'authoriseddate' => '2023-08-22 14:31:20',
+      'specimentype' => 'Blood',
+      'test/panel' => 'MLPA',
+      'gene' => 'ATM',
+      'gene (other)' => 'kit 2',
+      'variant dna' => 'N',
+      'variant protein' => 'N',
+      'moleculartestingtype' => 'Inherited breast cancer and ovarian cancer' }.to_json
   end
 end

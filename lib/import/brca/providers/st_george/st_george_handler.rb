@@ -34,13 +34,13 @@ module Import
               # determines the genes in the record and creates a genotype for each one
               genes = process_genes_targeted(record)
               # For each gene in the list of genes a new genotype will need to be created
-              genotypes = duplicate_genotype_targeted(genes, genotype)
+              duplicate_genotype_targeted(genes, genotype, genotypes)
               genotypes.each do |single_genotype|
                 assign_test_status_targeted(single_genotype, record)
               end
             elsif genotype.full_screen?
-              genes_dict = process_genes_full_screen(record)
-              genotypes = handle_test_status_full_screen(record, genotype, genes_dict)
+              genes = process_genes_full_screen(record)
+              assign_test_status_full_screen(record, genes, genotype, genotypes)
             end
             genotypes
           end
@@ -52,9 +52,11 @@ module Import
 
             return if record.raw_fields['moleculartestingtype'].blank?
 
-            return unless TEST_TYPE_MAP[record.raw_fields['moleculartestingtype']&.downcase&.strip]
+            raw_moleculartestingtype = record.raw_fields['moleculartestingtype'].downcase.strip
 
-            genotype.add_molecular_testing_type(TEST_TYPE_MAP[record.raw_fields['moleculartestingtype']&.downcase&.strip])
+            return unless TEST_TYPE_MAP[raw_moleculartestingtype]
+
+            genotype.add_molecular_testing_type(TEST_TYPE_MAP[raw_moleculartestingtype])
           end
 
           def assign_test_scope(genotype, record)
@@ -90,17 +92,15 @@ module Import
             genes
           end
 
-          def duplicate_genotype_targeted(genes, genotype)
+          def duplicate_genotype_targeted(genes, genotype, genotypes)
             # When there is more than one gene listed a separate genotype needs to be created for each one
             # The genotype is duplicated and the new gene is added to the duplicated genotype
             # Each genotype is then added to the genoytypes list which this method then returns
-            genotypes = []
             genes.flatten.compact_blank.uniq.each do |gene_value|
               genotype_new = genotype.dup
               genotype_new.add_gene(gene_value)
               genotypes.append(genotype_new)
             end
-            genotypes
           end
 
           def assign_test_status_targeted(genotype, record)
@@ -184,137 +184,131 @@ module Import
             r208_panel_genes
           end
 
-          def handle_test_status_full_screen(record, genotype, genes)
-            # Creates a duplicate genotype for each gene
-            # Link to assign_test_status_full screen which assigns test status for each gene
-            # Adds genotype to genotype list which is then outputted
-            genotypes = []
-            columns = ['gene', 'gene (other)', 'variant dna', 'test/panel']
-            columns.each do |column|
-              genes[column]&.each do |gene|
-                genotype_new = genotype.dup
-                genotype_new.add_gene(gene)
-                assign_test_status_full_screen(record, gene, genes, genotype_new, column)
+          def assign_test_status_full_screen(record, genes, genotype, genotypes)
+            @all_genes = genes.values.compact_blank.flatten.uniq
 
-                genotypes.append(genotype_new)
-              end
-            end
-            genotypes
-          end
-
-          def assign_test_status_full_screen(record, gene, genes, genotype, column)
-            # interrogate variant dna column
+            return if @all_genes.empty?
 
             if record.raw_fields['variant dna'].present?
-              interrogate_variant_dna_column(record, genotype, genes, column, gene)
-            # interrogate raw gene (other)
-            elsif /fail/i.match(record.raw_fields['gene (other)']).present?
-              return if match_fail(gene, record, genotype)
-
-              update_status(10, 1, column, 'gene', genotype)
-            elsif record.raw_fields['gene (other)']&.match(/\?\z/ix)
-              genotype.add_status(4)
-            elsif record.raw_fields['gene (other)']&.match(/^c\.|^Ex.*Del\z|^Ex.*Dup\z|^Het\sDel|^Het\sDup/ix)
-              update_status(2, 1, column, 'gene', genotype)
+              assign_status_on_variant_dna(record, genes, genotype, genotypes)
+            elsif record.raw_fields['gene (other)'].present?
+              assign_status_on_gene_other(record, genes, genotype, genotypes)
             else
-              genotype.add_status(4)
-
-              gene_classv_gene_n_format(record, genotype, gene)
+              process_status_genes(genotype, 4, @all_genes, genotypes)
             end
           end
 
-          def interrogate_variant_dna_column(record, genotype, genes, column, gene)
-            # For full screen tests only- add test status when variant dna column is not empty
-            if record.raw_fields['variant dna'].match(/Fail/ix)
-              genotype.add_status(9)
-            elsif record.raw_fields['variant dna'] == 'N'
-              genotype.add_status(1)
-            # variant dna is not '*Fail*', 'N' or null AND raw:gene is not null AND raw:gene (other) is null
-            # 2 (abnormal) for gene in raw:gene. 1 (normal) for all other genes.
-            elsif record.raw_fields['gene'].present? &&
-                  record.raw_fields['gene (other)'].blank?
-              update_status(2, 1, column, 'gene', genotype)
-            # variant dna is not '*Fail*', 'N' or null AND raw:gene is not null AND raw:gene (other) is not null
-            # 2 (abnormal) for gene in raw:gene.
-            # 9 (failed, genetic test) for any gene specified WITH 'Fail' in raw:gene (other).
-            # 1 (normal) for all other genes
-            elsif record.raw_fields['gene'].present? &&
-                  record.raw_fields['gene (other)'].present?
-              if column == 'gene'
-                genotype.add_status(2)
-              elsif column == 'gene (other)'
-                match_fail(gene, record, genotype)
-              else
-                genotype.add_status(1)
-              end
-            # variant dna not '*Fail*', 'N' or null AND raw:gene is null AND raw:gene(other) not a single gene
-            # If gene is specified in raw:variant dna, assign 2 (abnormal) for that gene and 1 (normal) for
-            # all other genes.
-            # Else interrogate raw:gene (other).
-            elsif record.raw_fields['gene'].blank? &&
-                  (genes['gene (other)'].blank? || genes['gene (other)'].length > 1) &&
-                  update_status(2, 1, column, 'variant dna', genotype)
-            # variant dna is not '*Fail*', 'N' or null AND raw:gene is null AND raw:gene (other) specifies a single gene
-            # 2 (abnormal) for gene in raw:gene (other). 1 (normal) for all other genes.
-            elsif record.raw_fields['gene'].blank? && !genes['gene (other)'].nil? && genes['gene (other)'].length == 1
-              update_status(2, 1, column, 'gene (other)', genotype)
+          def process_status_genes(genotype, status, genes, genotypes)
+            genes.each do |gene|
+              genotype_new = genotype.dup
+              genotype_new.add_gene(gene)
+              genotype_new.add_status(status)
+              genotypes << genotype_new
             end
           end
 
-          def match_fail(gene, record, genotype)
-            # Determines if a gene in the gene (other) column has failed
-            # Assigns genes that have failed a test status of 9, otherwise teststatus is 1
-
-            gene_list = record.raw_fields['gene (other)'].scan(BRCA_GENE_REGEX)
-
-            return false if gene_list.empty?
-
-            gene_list.each do |gene_value|
-              mapped_gene_values = BRCA_GENE_MAP[gene_value] || []
-
-              mapped_gene_values.each do |value|
-                if value == gene
-                  status = /#{gene_value}\s?\(?fail\)?/i.match?(record.raw_fields['gene (other)']) ? 9 : 1
-                  genotype.add_status(status)
-                else
-                  genotype.add_status(1)
-
-                end
-              end
-            end
-
-            true
-          end
-
-          def update_status(status1, status2, column, column_name, genotype)
-            # update genotype status depending on if the gene is in the same column that the rule applies to
-
-            if column == column_name
-              genotype.add_status(status1)
+          def assign_status_on_variant_dna(record, genes, genotype, genotypes)
+            variant_dna = record.raw_fields['variant dna']
+            gene_other = record.raw_fields['gene (other)']
+            @gene_other_brca_size = gene_other&.scan(BRCA_GENE_REGEX)&.size || 0
+            case variant_dna
+            when /Fail/i
+              process_status_genes(genotype, 9, @all_genes, genotypes)
+            when 'N'
+              process_status_genes(genotype, 1, @all_genes, genotypes)
             else
-              genotype.add_status(status2)
+              handle_gene_conditions(genes, genotype, genotypes, record)
             end
           end
 
-          def gene_classv_gene_n_format(record, genotype, gene)
-            # update status of genes listed in format '[gene 1] Class V, [gene 2] N'
-            # 2 (abnormal) for [gene 1]. 1 (normal) for [gene 2]
-            gene_list = record.raw_fields['gene (other)']&.scan(BRCA_GENE_REGEX)
-            return if gene_list.blank? || gene_list.length <= 1
-
-            gene_list.each do |gene1|
-              gene_list.each do |gene2|
-                next unless /^#{gene1}\sClass\sV,\s#{gene2}\sN\z/i.match(record.raw_fields['gene (other)'])
-
-                gene1 = BRCA_GENE_MAP[gene1]
-                gene2 = BRCA_GENE_MAP[gene2]
-                if gene1.include?(gene)
-                  genotype.add_status(2)
-                elsif gene2.include?(gene)
-                  genotype.add_status(1)
-                end
-              end
+          def handle_gene_conditions(genes, genotype, genotypes, record)
+            gene = record.raw_fields['gene']
+            gene_other = record.raw_fields['gene (other)']
+            if gene.present? && gene_other.blank?
+              process_genes(genes, genotype, genotypes)
+            elsif gene.present? && gene_other.present?
+              process_genes_with_other(gene_other, genes, genotype, genotypes)
+            elsif gene.blank? && gene_other.present?
+              process_other_gene(genes, genotype, genotypes, record)
+            else
+              process_status_genes(genotype, 4, @all_genes, genotypes)
             end
+          end
+
+          def process_genes(genes, genotype, genotypes)
+            pos_gene = genes['gene']
+            process_status_genes(genotype, 2, pos_gene, genotypes)
+            remaining_genes = @all_genes - pos_gene
+            process_status_genes(genotype, 1, remaining_genes, genotypes)
+          end
+
+          def process_genes_with_other(gene_other, genes, genotype, genotypes)
+            pos_gene = genes['gene']
+            process_status_genes(genotype, 2, pos_gene, genotypes)
+            remaining_genes = @all_genes - pos_gene
+
+            if gene_other.match(/Fail/i)
+              failed_gene = genes['gene (other)']
+              process_status_genes(genotype, 9, failed_gene, genotypes)
+              remaining_genes -= failed_gene
+            end
+
+            process_status_genes(genotype, 1, remaining_genes, genotypes)
+          end
+
+          def process_other_gene(genes, genotype, genotypes, record)
+            pos_gene = @gene_other_brca_size == 1 ? genes['gene (other)'] : genes['variant dna']
+            if pos_gene.present?
+              process_status_genes(genotype, 2, pos_gene, genotypes)
+              remaining_genes = @all_genes - pos_gene
+              process_status_genes(genotype, 1, remaining_genes, genotypes)
+            else
+              assign_status_on_gene_other(record, genes, genotype, genotypes)
+            end
+          end
+
+          def assign_status_on_gene_other(record, genes, genotype, genotypes)
+            binding.pry if record.raw_fields['servicereportidentifier'] == 'V001777'
+            gene_other = record.raw_fields['gene (other)']
+            remaining_genes = @all_genes
+            case gene_other
+            when /Fail/i
+              process_failed_gene_other(genes, genotype, genotypes, remaining_genes)
+            when /\?\z/i
+              process_status_genes(genotype, 4, genes['gene'], genotypes)
+            when /^c\.|^Ex.*Del\z|^Ex.*Dup\z|^Het\sDel|^Het\sDup/ix
+              process_pathogenic_gene_other(genotype, genes, remaining_genes, genotypes)
+            when /^#{BRCA_GENE_REGEX}\sClass\sV,\s#{BRCA_GENE_REGEX}\sN\z/i
+              process_class_v_gene_other(gene_other, genotype, genotypes)
+            else
+              process_status_genes(genotype, 4, @all_genes, genotypes)
+            end
+          end
+
+          def process_failed_gene_other(genes, genotype, genotypes, remaining_genes)
+            if genes['gene (other)'].present?
+              process_status_genes(genotype, 9, genes['gene (other)'], genotypes)
+              remaining_genes -= genes['gene (other)']
+            elsif genes['gene']
+              process_status_genes(genotype, 10, genes['gene'], genotypes)
+              remaining_genes -= genes['gene']
+            end
+            process_status_genes(genotype, 1, remaining_genes, genotypes)
+          end
+
+          def process_pathogenic_gene_other(genotype, genes, remaining_genes, genotypes)
+            process_status_genes(genotype, 2, genes['gene'], genotypes)
+
+            remaining_genes -= genes['gene']
+            process_status_genes(genotype, 1, remaining_genes, genotypes)
+          end
+
+          # "gene1 Class V, gene2 N"
+          def process_class_v_gene_other(gene_other, genotype, genotypes)
+            class_5_gene = gene_other.split(',').first.scan(BRCA_GENE_REGEX)
+            process_status_genes(genotype, 2, class_5_gene, genotypes)
+            normal_gene = gene_other.split(',').last.scan(BRCA_GENE_REGEX)
+            process_status_genes(genotype, 1, normal_gene, genotypes)
           end
 
           def process_variants(genotype, record)
