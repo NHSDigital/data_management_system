@@ -11,8 +11,8 @@ class AdhocHandlerColorectalTest < ActiveSupport::TestCase
   end
 
   test 'assign_variant_details' do
-    fake_record = build_raw_record('pseudo_id1' => 'bob')
-    @handler.assign_variant_details(@genocolorectal, fake_record)
+    lynch_record = build_raw_record('pseudo_id1' => 'bob')
+    @handler.assign_variant_details(@genocolorectal, lynch_record)
     assert_equal 'c.1009C>T', @genocolorectal.attribute_map['codingdnasequencechange']
     assert_equal 'p.Gln337x', @genocolorectal.attribute_map['proteinimpact']
   end
