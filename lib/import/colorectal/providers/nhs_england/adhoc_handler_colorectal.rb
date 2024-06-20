@@ -1,8 +1,8 @@
 module Import
   module Colorectal
     module Providers
-      module Adhoc
-        # Fake Handler to import Lynch data for Cassie
+      module NhsEngland
+        # Ad hoc Lynch patient data from registries (e.g. St. Mark's Bowel registry, CAPP2 cohort, National Lynch registry), uploaded using API pseudonymisation services to obtain identifiers for CAS linkage to lab germline data and NCRAS records.
         class AdhocHandlerColorectal < Import::Germline::ProviderHandler
           PASS_THROUGH_FIELDS = ['diagnostic lab', 'authoriseddate', 'gene', 'variantpathclass'].freeze
           CDNA_REGEX = /c\.(?<cdna>[\w+>*\-]+)?/ix

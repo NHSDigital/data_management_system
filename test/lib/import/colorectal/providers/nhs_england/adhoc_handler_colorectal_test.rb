@@ -5,7 +5,7 @@ class AdhocHandlerColorectalTest < ActiveSupport::TestCase
     @record = build_raw_record('pseudo_id1' => 'bob')
     @genocolorectal = Import::Colorectal::Core::Genocolorectal.new(@record)
     @importer_stdout, @importer_stderr = capture_io do
-      @handler = Import::Colorectal::Providers::Adhoc::AdhocHandlerColorectal.new(EBatch.new)
+      @handler = Import::Colorectal::Providers::NhsEngland::AdhocHandlerColorectal.new(EBatch.new)
     end
     @logger = Import::Log.get_logger
   end
