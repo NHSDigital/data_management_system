@@ -17,7 +17,7 @@ module Import
           'RQ3' => Import::Colorectal::Providers::Birmingham::BirminghamHandlerColorectal,
           'RTH' => Import::Colorectal::Providers::Oxford::OxfordHandlerColorectal,
           'REP' => Import::Colorectal::Providers::Liverpool::LiverpoolHandlerColorectal,
-          'R1H' => Import::Colorectal::Providers::Barts::BartsHandlerColorectal
+          'X26' => Import::Colorectal::Providers::NhsEngland::AdhocHandlerColorectal
         }.freeze
 
         def self.get_handler(provider_code)
