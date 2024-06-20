@@ -1,9 +1,9 @@
 module Import
   module Colorectal
     module Providers
-      module Barts
+      module Adhoc
         # Fake Handler to import Lynch data for Cassie
-        class BartsHandlerColorectal < Import::Germline::ProviderHandler
+        class AdhocHandlerColorectal < Import::Germline::ProviderHandler
           PASS_THROUGH_FIELDS = ['diagnostic lab', 'authoriseddate', 'gene', 'variantpathclass'].freeze
           CDNA_REGEX = /c\.(?<cdna>[\w+>*\-]+)?/ix
           PROTEIN_REGEX = /\(?p\.\(?(?<impact>\w+)\)?/ix

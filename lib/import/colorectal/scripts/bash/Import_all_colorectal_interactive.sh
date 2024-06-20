@@ -150,16 +150,18 @@ $BRAKE import:colorectal fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.
 done
 }
 
-R1H () {
-PROV='R1H'	
+ADHOC () {
+PROV='R1H'
+PROV_ADH='ADHOC'	
 IFS=$'\n'
 for x in $(find  $DIRPATH/$FILEPATH -not -path "*/API_BETA_RETRIEVED/*" -type f -name "*.pseudo" -path "*/$PROV/*" \
 -not -path "*/2021/*" \
 )
 do
 IFS="$OIFS"
-$BRAKE import:colorectal fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
+$BRAKE import:colorectal fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV_ADH
 done
 }
 
-RR8; RNZ; RTD; RX1; RCU; RGT; R0A; R1K; RPY; RP4; RTH; RQ3; REP; R1H
+RR8; RNZ; RTD; RX1; RCU; RGT; R0A; R1K; RPY; RP4; RTH; RQ3; REP; ADHOC
+
