@@ -173,5 +173,15 @@ $BRAKE import:colorectal fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.
 done
 }
 
-RR8; RNZ; RTD; RX1; RCU; RGT; R0A; R1K; RPY; RP4; RTH; RQ3; REP; X26_AD_HOC
+RJ7 () {
+PROV='RJ7'
+IFS=$'\n'
+for x in $(find  $DIRPATH/$FILEPATH  -type f -iname "*CRC*.pseudo" -path "*/$PROV/*" -o -type f -iname "*colorectal*.pseudo"  -path "*/$PROV/*")
+do
+IFS="$OIFS"
+$BRAKE import:colorectal fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
+done
+}
+
+RR8; RNZ; RTD; RX1; RCU; RGT; R0A; R1K; RPY; RP4; RTH; RQ3; REP; RJ7; X26_AD_HOC
 
