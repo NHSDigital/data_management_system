@@ -30,18 +30,18 @@ module Import
   
               FULL_SCREEN_TESTS_MAP =
                 {
-                  'R209' => %w[APC BMPR1A EPCAM MLH1 MSH2 MSH6 MUTYH NTHL1
+                  'r209' => %w[APC BMPR1A EPCAM MLH1 MSH2 MSH6 MUTYH NTHL1
                                PMS2 POLD1 POLE PTEN SMAD4 STK11],
-                  'Lynch (R210)' => %w[EPCAM MLH1 MSH2 MSH6 PMS2],
-                  'R414' => ['APC'],
-                  'Polyedge' => [],
-                  'ExomeDepth' => [],
-                  'RPKM_0723' => [],
-                  'LR-PCR' => [],
-                  'MLPA' => [],
-                  'RPKM' => [],
-                  'SANGER' => [],
-                  'VUS check' => []
+                  'lynch (r210)' => %w[EPCAM MLH1 MSH2 MSH6 PMS2],
+                  'r414' => ['APC'],
+                  'polyedge' => [],
+                  'exomedepth' => [],
+                  'rpkm_0723' => [],
+                  'lr-pcr' => [],
+                  'mlpa' => [],
+                  'rpkm' => [],
+                  'sanger' => [],
+                  'vus check' => []
                 }.freeze
   
               CRC_GENE_REGEX = /APC|

@@ -95,7 +95,9 @@ module Import
             # map panels to list of genes in FULL_SCREEN_TESTS_MAP
             # return list of genes tested in panel
 
-            panel_genes_list = FULL_SCREEN_TESTS_MAP[record.raw_fields['test/panel']]
+            test_panel = record.raw_fields['test/panel']&.downcase&.strip
+
+            panel_genes_list = FULL_SCREEN_TESTS_MAP[test_panel]
             panel_genes_list&.each do |gene|
               gene_list.append(gene)
             end
@@ -105,9 +107,7 @@ module Import
             if r211.present?
               r211_genes = process_r211(record)
               gene_list += r211_genes
-              # r211_genes.each do |gene|
-              # gene_list.append(gene)
-              # end
+
             end
 
             gene_list
