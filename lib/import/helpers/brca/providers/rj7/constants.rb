@@ -32,20 +32,20 @@ module Import
 
             FULL_SCREEN_TESTS_MAP =
               {
-                'BRCA1/2_V1' => %w[BRCA1 BRCA2],
-                'CHEK2_v1' => ['CHEK2'],
-                'HBOC_V1' => %w[BRCA1 BRCA2 CHEK2 PALB2],
-                'HBOC_v2' => %w[BRCA1 BRCA2 PALB2],
-                'TP53_V1' => ['TP53'],
-                'MLPA' => [],
-                'SANGER' => [],
-                'VUS check' => [],
-                'RPKM' => [],
-                'R207' => %w[BRCA1 BRCA2 BRIP1 MLH1 MSH2 MSH6 PALB2 RAD51C RAD51D],
-                'R208+C' => %w[BRCA1 BRCA2 CHEK2 PALB2],
-                'R430' => %w[BRCA1 BRCA2 MLH1 MSH2 MSH6 ATM PALB2 CHEK2],
-                'R444.1' => %w[BRCA1 BRCA2 PALB2 RAD51C RAD51D ATM CHEK2],
-                'R444.2' => %w[BRCA1 BRCA2]
+                'brca1/2_V1' => %w[BRCA1 BRCA2],
+                'chek2_v1' => ['CHEK2'],
+                'hboc_v1' => %w[BRCA1 BRCA2 CHEK2 PALB2],
+                'hboc_v2' => %w[BRCA1 BRCA2 PALB2],
+                'tp53_v1' => ['TP53'],
+                'mlpa' => [],
+                'sanger' => [],
+                'vus check' => [],
+                'rpkm' => [],
+                'r207' => %w[BRCA1 BRCA2 BRIP1 MLH1 MSH2 MSH6 PALB2 RAD51C RAD51D],
+                'r208+c' => %w[BRCA1 BRCA2 CHEK2 PALB2],
+                'r430' => %w[BRCA1 BRCA2 MLH1 MSH2 MSH6 ATM PALB2 CHEK2],
+                'r444.1' => %w[BRCA1 BRCA2 PALB2 RAD51C RAD51D ATM CHEK2],
+                'r444.2' => %w[BRCA1 BRCA2]
               }.freeze
 
             BRCA_GENE_REGEX = %r{ATM|ATM-1|BRCA1/2|BRCA1\+2|BRCA1|BR1|BRCA1/2|BRCA2|BR2|BRIP1|CHEK2
