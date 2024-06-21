@@ -12,8 +12,7 @@ class StGeorgeHandlerColorectalTest < ActiveSupport::TestCase
   end
 
   test 'process_fields' do
-
-    #test that nothing is added to record if SRI doesn't start with 'V'
+    # test that nothing is added to record if SRI doesn't start with 'V'
     valid_sri_record = build_raw_record('pseudo_id1' => 'bob')
     valid_sri_record.raw_fields['moleculartestingtype'] = 'Diagnostic testing for known mutation(s)'
     valid_sri_record.raw_fields['servicereportidentifier'] = 'V123456'
@@ -27,7 +26,6 @@ class StGeorgeHandlerColorectalTest < ActiveSupport::TestCase
     valid_sri_record.raw_fields['gene'] = 'ATM'
     genotypes = @handler.process_fields(invalid_sri_record)
     assert_nil genotypes
-
   end
 
   test 'assign_test_type' do
@@ -35,22 +33,6 @@ class StGeorgeHandlerColorectalTest < ActiveSupport::TestCase
     carrier_record1.raw_fields['moleculartestingtype'] = 'Carrier testing for known familial mutation(s)'
     @handler.assign_test_type(@genotype, carrier_record1)
     assert_equal 3, @genotype.attribute_map['moleculartestingtype']
-
-
-    diagnostic_record1 = build_raw_record('pseudo_id1' => 'bob')
-    diagnostic_record1.raw_fields['moleculartestingtype'] = 'Inherited colorectal cancer (with or without polyposis)'
-    @handler.assign_test_type(@genotype, diagnostic_record1)
-    assert_equal 1, @genotype.attribute_map['moleculartestingtype']
-
-    diagnostic_record2 = build_raw_record('pseudo_id1' => 'bob')
-    diagnostic_record2.raw_fields['moleculartestingtype'] = 'Inherited MMR deficiency (Lynch syndrome)'
-    @handler.assign_test_type(@genotype, diagnostic_record2)
-    assert_equal 1, @genotype.attribute_map['moleculartestingtype']
-
-    diagnostic_record3 = build_raw_record('pseudo_id1' => 'bob')
-    diagnostic_record3.raw_fields['moleculartestingtype'] = 'Inherited polyposis - germline test'
-    @handler.assign_test_type(@genotype, diagnostic_record3)
-    assert_equal 1, @genotype.attribute_map['moleculartestingtype']
 
     diagnostic_record4 = build_raw_record('pseudo_id1' => 'bob')
     diagnostic_record4.raw_fields['moleculartestingtype'] = 'APC associated Polyposis'
@@ -62,11 +44,6 @@ class StGeorgeHandlerColorectalTest < ActiveSupport::TestCase
     @handler.assign_test_type(@genotype, diagnostic_record5)
     assert_equal 1, @genotype.attribute_map['moleculartestingtype']
 
-    diagnostic_record6 = build_raw_record('pseudo_id1' => 'bob')
-    diagnostic_record6.raw_fields['moleculartestingtype'] = 'Family follow-up testing to aid variant interpretation'
-    @handler.assign_test_type(@genotype, diagnostic_record6)
-    assert_equal 1, @genotype.attribute_map['moleculartestingtype']
-
     predictive_record1 = build_raw_record('pseudo_id1' => 'bob')
     predictive_record1.raw_fields['moleculartestingtype'] = 'Predictive testing for known familial mutation(s)'
     @handler.assign_test_type(@genotype, predictive_record1)
@@ -74,7 +51,6 @@ class StGeorgeHandlerColorectalTest < ActiveSupport::TestCase
   end
 
   test 'assign_test_scope' do
-
     testscope_no_testscope = build_raw_record('pseudo_id1' => 'bob')
     testscope_no_testscope.raw_fields['moleculartestingtype'] = 'no molecular testing type'
     @logger.expects(:error).with('ERROR - record with no genetic test scope, ask Fiona for new rules')
@@ -114,8 +90,6 @@ class StGeorgeHandlerColorectalTest < ActiveSupport::TestCase
     testscope_fs_record3.raw_fields['moleculartestingtype'] = 'Inherited polyposis - germline test'
     @handler.assign_test_scope(@genotype, testscope_fs_record3)
     assert_equal 'Full screen Colorectal Lynch or MMR', @genotype.attribute_map['genetictestscope']
-
-   
   end
 
   test 'process_genes' do
@@ -126,7 +100,7 @@ class StGeorgeHandlerColorectalTest < ActiveSupport::TestCase
     mhs6_typo.raw_fields['gene (other)'] = 'unknown'
     @genotype.attribute_map['genetictestscope'] = 'Targeted Colorectal Lynch or MMR'
     genes_dict = @handler.process_genes(@genotype, mhs6_typo)
-    assert_equal ({ 'gene' => %w[MSH2], "gene (other)"=>[]}), genes_dict
+    assert_equal ({ 'gene' => %w[MSH2], 'gene (other)' => [] }), genes_dict
 
     targeted_crc = build_raw_record('pseudo_id1' => 'bob')
     targeted_crc.raw_fields['gene'] = 'MLH1'
@@ -140,7 +114,7 @@ class StGeorgeHandlerColorectalTest < ActiveSupport::TestCase
     fs_crc.raw_fields['gene (other)'] = 'MLH1, MSH2, MSH6, EPCAM'
     @genotype.attribute_map['genetictestscope'] = 'Full screen Colorectal Lynch or MMR'
     genes_dict = @handler.process_genes(@genotype, fs_crc)
-    assert_equal ({ 'gene' => %w[], 'gene (other)' => %w[MLH1 MSH2 MSH6 EPCAM]}), genes_dict
+    assert_equal ({ 'gene' => %w[], 'gene (other)' => %w[MLH1 MSH2 MSH6 EPCAM] }), genes_dict
   end
 
   test 'process_test_panels' do
@@ -175,7 +149,6 @@ class StGeorgeHandlerColorectalTest < ActiveSupport::TestCase
   end
 
   test 'handle_test_status' do
- 
     fs_gene_column = build_raw_record('pseudo_id1' => 'bob')
     fs_gene_column.raw_fields['gene'] = 'MSH2'
     fs_gene_column.raw_fields['gene (other)'] = 'unknown'
@@ -356,6 +329,133 @@ class StGeorgeHandlerColorectalTest < ActiveSupport::TestCase
     assert_equal 1, @genotype.attribute_map['teststatus']
   end
 
+  test 'interrogate_gene_other_targeted' do
+    int_gene_other_fail = build_raw_record('pseudo_id1' => 'bob')
+    int_gene_other_fail.raw_fields['variant dna'] = ''
+    int_gene_other_fail.raw_fields['gene'] = 'APC'
+    int_gene_other_fail.raw_fields['gene (other)'] = 'Fail'
+    @handler.interrogate_gene_other_targeted(int_gene_other_fail, @genotype, { gene: ['APC'], 'gene (other)': ['Fail'], 'variant dna': [], 'variant protein': [], 'test/panel' => [] }, 'gene (other)', 'APC')
+    assert_equal 9, @genotype.attribute_map['teststatus']
+
+    int_gene_other_match = build_raw_record('pseudo_id1' => 'bob')
+    int_gene_other_match.raw_fields['variant dna'] = ''
+    int_gene_other_match.raw_fields['gene'] = 'APC'
+    int_gene_other_match.raw_fields['gene (other)'] = 'c.123A>C'
+    @handler.interrogate_gene_other_targeted(int_gene_other_match, @genotype, { gene: ['APC'], 'gene (other)': ['c.123A>C'], 'variant dna': [], 'variant protein': [], 'test/panel' => [] }, 'gene (other)', 'APC')
+    assert_equal 2, @genotype.attribute_map['teststatus']
+  end
+
+  test 'interrogate_variant_dna_targeted' do
+    int_variant_dna_fail = build_raw_record('pseudo_id1' => 'bob')
+    int_variant_dna_fail.raw_fields['variant dna'] = 'Blank contamination'
+    int_variant_dna_fail.raw_fields['gene'] = 'APC'
+    @handler.interrogate_variant_dna_targeted(int_variant_dna_fail, @genotype, 'variant dna')
+    assert_equal 9, @genotype.attribute_map['teststatus']
+
+    int_variant_dna_normal = build_raw_record('pseudo_id1' => 'bob')
+    int_variant_dna_normal.raw_fields['variant dna'] = 'no del/dup'
+    int_variant_dna_normal.raw_fields['gene'] = 'APC'
+    @handler.interrogate_variant_dna_targeted(int_variant_dna_normal, @genotype, 'variant dna')
+    assert_equal 1, @genotype.attribute_map['teststatus']
+
+    int_variant_dna_see_comments = build_raw_record('pseudo_id1' => 'bob')
+    int_variant_dna_see_comments.raw_fields['variant dna'] = 'see comments'
+    int_variant_dna_see_comments.raw_fields['gene'] = 'APC'
+    @handler.interrogate_variant_dna_targeted(int_variant_dna_see_comments, @genotype, 'variant dna')
+    assert_equal 4, @genotype.attribute_map['teststatus']
+
+    int_variant_dna_dup = build_raw_record('pseudo_id1' => 'bob')
+    int_variant_dna_dup.raw_fields['variant dna'] = 'Exon 4 duplication'
+    int_variant_dna_dup.raw_fields['gene'] = 'APC'
+    @handler.interrogate_variant_dna_targeted(int_variant_dna_dup, @genotype, 'variant dna')
+    assert_equal 2, @genotype.attribute_map['teststatus']
+  end
+
+  test 'interrogate_variant_protein_targeted' do
+    int_variant_protein_p = build_raw_record('pseudo_id1' => 'bob')
+    int_variant_protein_p.raw_fields['variant protein'] = 'p.(Thr328Ter)'
+    int_variant_protein_p.raw_fields['gene'] = 'APC'
+    int_variant_protein_p.raw_fields['gene (other)'] = 'EPCAM'
+    @handler.interrogate_variant_protein_targeted(int_variant_protein_p, @genotype, 'gene')
+    assert_equal 2, @genotype.attribute_map['teststatus']
+
+    int_variant_protein_fail = build_raw_record('pseudo_id1' => 'bob')
+    int_variant_protein_fail.raw_fields['variant protein'] = 'FAIL'
+    int_variant_protein_fail.raw_fields['gene'] = 'APC'
+    @handler.interrogate_variant_protein_targeted(int_variant_protein_fail, @genotype, 'gene')
+    assert_equal 9, @genotype.attribute_map['teststatus']
+
+    int_variant_protein_fail = build_raw_record('pseudo_id1' => 'bob')
+    int_variant_protein_fail.raw_fields['variant protein'] = ''
+    int_variant_protein_fail.raw_fields['gene'] = 'APC'
+    @handler.interrogate_variant_protein_targeted(int_variant_protein_fail, @genotype, 'gene')
+    assert_equal 1, @genotype.attribute_map['teststatus']
+  end
+
+  test 'interrogate_variant_dna_fullscreen' do
+    int_variant_dna_fs_fail = build_raw_record('pseudo_id1' => 'bob')
+    int_variant_dna_fs_fail.raw_fields['variant dna'] = 'Fail'
+    int_variant_dna_fs_fail.raw_fields['gene'] = 'APC'
+    @handler.interrogate_variant_dna_fullscreen(int_variant_dna_fs_fail, @genotype, { gene: ['APC'], 'gene (other)': ['EPCAM'], 'variant dna': [], 'variant protein': ['Fail'], 'test/panel' => [] }, 'variant dna')
+    assert_equal 9, @genotype.attribute_map['teststatus']
+
+    int_variant_dna_fs_n = build_raw_record('pseudo_id1' => 'bob')
+    int_variant_dna_fs_n.raw_fields['variant dna'] = 'N'
+    int_variant_dna_fs_n.raw_fields['gene'] = 'APC'
+    @handler.interrogate_variant_dna_fullscreen(int_variant_dna_fs_n, @genotype, { gene: ['APC'], 'gene (other)': ['EPCAM'], 'variant dna': [], 'variant protein': ['Fail'], 'test/panel' => [] }, 'variant dna')
+    assert_equal 1, @genotype.attribute_map['teststatus']
+  end
+
+  test 'handle_gene_status_full_screen' do
+    handle_gene_fs_present = build_raw_record('pseudo_id1' => 'bob')
+    handle_gene_fs_present.raw_fields['variant dna'] = 'c.123A>C'
+    handle_gene_fs_present.raw_fields['gene'] = 'APC'
+    @handler.handle_gene_status_full_screen(handle_gene_fs_present, @genotype, { gene: ['APC'], 'gene (other)': ['EPCAM'], 'variant dna': [], 'variant protein': ['Fail'], 'test/panel' => [] }, 'gene')
+    assert_equal 2, @genotype.attribute_map['teststatus']
+  end
+
+  test 'handle_gene_other_status_full_screen' do
+    handle_geneother_fs_lenght1 = build_raw_record('pseudo_id1' => 'bob')
+    handle_geneother_fs_lenght1.raw_fields['gene'] = nil
+    handle_geneother_fs_lenght1.raw_fields['gene (other)'] = 'EPCAM'
+    handle_geneother_fs_lenght1.raw_fields['variant dna'] = 'c.123A>C'
+    @handler.handle_gene_other_status_full_screen(handle_geneother_fs_lenght1, @genotype, { 'gene' => [], 'gene (other)' => ['EPCAM'], 'variant dna' => [], 'test/panel' => [] }, 'gene (other)')
+    assert_equal 2, @genotype.attribute_map['teststatus']
+
+    handle_geneother_fs_grt_one = build_raw_record('pseudo_id1' => 'bob')
+    handle_geneother_fs_grt_one.raw_fields['gene'] = nil
+    handle_geneother_fs_grt_one.raw_fields['gene (other)'] = 'EPCAM, MLH1'
+    handle_geneother_fs_grt_one.raw_fields['variant dna'] = 'c.123A>C'
+    @handler.handle_gene_other_status_full_screen(handle_geneother_fs_grt_one, @genotype, { 'gene' => [], 'gene (other)' => ['EPCAM, MLH1'], 'variant dna' => [], 'test/panel' => [] }, 'gene (other)')
+    assert_equal 2, @genotype.attribute_map['teststatus']
+  end
+
+  test 'interrogate_variant_protein_fullscreen' do
+    int_variant_protein_fs_blank = build_raw_record('pseudo_id1' => 'bob')
+    int_variant_protein_fs_blank.raw_fields['variant protein'] = ''
+    int_variant_protein_fs_blank.raw_fields['gene'] = 'APC'
+    @handler.interrogate_variant_protein_fullscreen(int_variant_protein_fs_blank, @genotype, 'gene')
+    assert_equal 1, @genotype.attribute_map['teststatus']
+
+    int_variant_protein_fs_p = build_raw_record('pseudo_id1' => 'bob')
+    int_variant_protein_fs_p.raw_fields['variant protein'] = 'p.(Thr328Ter)'
+    int_variant_protein_fs_p.raw_fields['gene'] = 'APC'
+    @handler.interrogate_variant_protein_fullscreen(int_variant_protein_fs_p, @genotype, 'gene')
+    assert_equal 2, @genotype.attribute_map['teststatus']
+
+    int_variant_protein_fs_fail = build_raw_record('pseudo_id1' => 'bob')
+    int_variant_protein_fs_fail.raw_fields['variant protein'] = 'Fail'
+    int_variant_protein_fs_fail.raw_fields['gene'] = 'APC'
+    @handler.interrogate_variant_protein_fullscreen(int_variant_protein_fs_fail, @genotype, 'gene')
+    assert_equal 9, @genotype.attribute_map['teststatus']
+
+    int_variant_protein_fs_fail = build_raw_record('pseudo_id1' => 'bob')
+    int_variant_protein_fs_fail.raw_fields['variant protein'] = 'hello'
+    int_variant_protein_fs_fail.raw_fields['gene'] = 'APC'
+    @handler.interrogate_variant_protein_fullscreen(int_variant_protein_fs_fail, @genotype, 'gene')
+    assert_equal 1, @genotype.attribute_map['teststatus']
+  end
+
   test 'process_variants' do
     # variant dna and variant protein columns
     cvalue_pvalue_present = build_raw_record('pseudo_id1' => 'bob')
@@ -404,4 +504,3 @@ class StGeorgeHandlerColorectalTest < ActiveSupport::TestCase
     {}.to_json
   end
 end
-

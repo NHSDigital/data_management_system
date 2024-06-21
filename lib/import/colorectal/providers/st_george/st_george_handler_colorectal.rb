@@ -13,19 +13,14 @@ module Import
             return unless record.raw_fields['servicereportidentifier'].start_with?('V')
 
             genotype = Import::Colorectal::Core::Genocolorectal.new(record)
-
             # add standard passthrough fields to genotype object
             genotype.add_passthrough_fields(record.mapped_fields, record.raw_fields,
                                             PASS_THROUGH_FIELDS)
-
             assign_test_type(genotype, record)
-
             assign_test_scope(genotype, record)
             genotypes = fill_genotypes(genotype, record)
-
             genotypes.each do |single_genotype|
               process_variants(single_genotype, record)
-
               @persister.integrate_and_store(single_genotype)
             end
           end
@@ -35,11 +30,13 @@ module Import
             # map molecular testing type and assign to genotype using
             # add_molecular_testing_type_strict method from genocolorectal.rb
 
-            return if record.raw_fields['moleculartestingtype'].blank?
+            molecular_test_type = record.raw_fields['moleculartestingtype']&.downcase&.strip
 
-            return unless TEST_TYPE_MAP[record.raw_fields['moleculartestingtype']&.downcase&.strip]
+            return if molecular_test_type.blank?
 
-            genotype.add_molecular_testing_type_strict(TEST_TYPE_MAP[record.raw_fields['moleculartestingtype']&.downcase&.strip])
+            return unless TEST_TYPE_MAP[molecular_test_type]
+
+            genotype.add_molecular_testing_type_strict(TEST_TYPE_MAP[molecular_test_type])
           end
 
           def assign_test_scope(genotype, record)
@@ -63,26 +60,24 @@ module Import
             handle_test_status(record, genotype, genes_dict)
           end
 
+          def get_columns_process_genes(genotype)
+            if genotype.targeted?
+              ['gene', 'gene (other)']
+            elsif genotype.full_screen?
+              ['gene', 'gene (other)', 'variant_dna', 'test/panel']
+            end
+          end
+
           def process_genes(genotype, record)
-            # process the gene names in columns listed and check for matches with the CRC gene regex list
-            # add matched tgenes to the genes_dict
-            # if no matched to crc gene regex list then check for matches in CRC gene map to add to the genes_dict
-            # return genes_dict
+            # check if gene names match with the CRC gene regex list, else check CRC gene map, then add to genes_dict
             genes_dict = {}
 
-            columns = if genotype.targeted?
-                        ['gene', 'gene (other)']
-                      elsif genotype.full_screen?
-                        ['gene', 'gene (other)', 'variant_dna', 'test/panel']
-
-                      end
+            columns = get_columns_process_genes(genotype)
 
             columns.each do |column|
               genes = []
               gene_list = record.raw_fields[column]&.scan(CRC_GENE_REGEX)
-
               gene_list = process_test_panels(record, gene_list, column) if column == 'test/panel'
-
               next if gene_list.nil?
 
               gene_list.each do |gene|
@@ -90,10 +85,8 @@ module Import
                   genes.append(gene_value)
                 end
               end
-
               genes_dict[column] = genes.uniq
             end
-
             genes_dict
           end
 
@@ -101,6 +94,7 @@ module Import
             # extracts panels tested from record
             # map panels to list of genes in FULL_SCREEN_TESTS_MAP
             # return list of genes tested in panel
+
             panel_genes_list = FULL_SCREEN_TESTS_MAP[record.raw_fields['test/panel']]
             panel_genes_list&.each do |gene|
               gene_list.append(gene)
@@ -110,9 +104,10 @@ module Import
 
             if r211.present?
               r211_genes = process_r211(record)
-              r211_genes.each do |gene|
-                gene_list.append(gene)
-              end
+              gene_list += r211_genes
+              # r211_genes.each do |gene|
+              # gene_list.append(gene)
+              # end
             end
 
             gene_list
@@ -197,14 +192,17 @@ module Import
             # Match the data in the raw 'variant dna' field to the relevant regular expression
             # Assign the appropriate test status
             # Else, interogate the variant protein column
-            if record.raw_fields['variant dna'].match(/Fail|^Blank\scontamination$/ix)
+
+            variant_dna = record.raw_fields['variant dna']
+
+            case variant_dna
+            when /Fail|^Blank\scontamination$/ix
               genotype.add_status(9)
-            elsif record.raw_fields['variant dna'].match(%r{^Normal|^no\sdel/dup$}ix)
+            when %r{^Normal|^no\sdel/dup$}ix
               genotype.add_status(1)
-            elsif record.raw_fields['variant dna'].match(/SNP\spresent$|see\scomments/ix)
+            when /SNP\spresent$|see\scomments/ix
               genotype.add_status(4)
-            elsif record.raw_fields['variant dna'].match \
-              (/het\sdel|het\sdup|het\sinv|^ex.*del|^ex.*dup|^ex.*inv|^del\sex|^dup\sex|^inv\sex|^c\./ix)
+            when /het\sdel|het\sdup|het\sinv|^ex.*del|^ex.*dup|^ex.*inv|^del\sex|^dup\sex|^inv\sex|^c\./ix
               genotype.add_status(2)
             else
               interrogate_variant_protein_targeted(record, genotype, column)
@@ -238,35 +236,50 @@ module Import
           end
 
           def interrogate_variant_dna_fullscreen(record, genotype, genes, column)
+            variant_dna = record.raw_fields['variant dna']
+
             variant_regex = \
               /het\sdel|het\sdup|het\sinv|^ex.*del|^ex.*dup|^ex.*inv|^del\sex|^dup\sex|^inv\sex|^c\.|^inversion$/ix
 
-            if record.raw_fields['variant dna'].match(/Fail/ix)
+            if variant_dna.match(/Fail/ix)
               genotype.add_status(9)
-            elsif record.raw_fields['variant dna'] == 'N' || record.raw_fields['variant dna'].blank?
+            elsif variant_dna == 'N' || variant_dna.blank?
               genotype.add_status(1)
-            elsif record.raw_fields['variant dna'].match(variant_regex) && record.raw_fields['gene'].present?
+            elsif variant_dna.match(variant_regex)
+              handle_gene_status_full_screen(record, genotype, genes, column)
+            else
+              interrogate_variant_protein_fullscreen(record, genotype, column)
+            end
+          end
+
+          def handle_gene_status_full_screen(record, genotype, genes, column)
+            raw_gene = record.raw_fields['gene']
+
+            if raw_gene.present?
               update_status(2, 1, column, ['gene'], genotype)
-            elsif record.raw_fields['variant dna'].match(variant_regex) \
-              && record.raw_fields['gene'].blank? \
-                && genes['gene (other)'].length == 1
+            elsif raw_gene.blank?
+              handle_gene_other_status_full_screen(record, genotype, genes, column)
+            end
+          end
+
+          def handle_gene_other_status_full_screen(record, genotype, genes, column)
+            raw_genes = genes['gene (other)']
+            if raw_genes.length == 1
               update_status(2, 1, column, ['gene (other)'], genotype)
-            elsif record.raw_fields['variant dna'].match(variant_regex) \
-                && record.raw_fields['gene'].blank? \
-                  && (genes['gene (other)'].blank? || genes['gene (other)'].length > 1)
-              # Gene should be specified in raw:variant dna; assign 2 (abnormal) for the specified gene and
-              # 1 (normal) for all other genes.
+            elsif raw_genes.blank? || raw_genes.length > 1
               update_status(2, 1, column, ['variant dna'], genotype)
             else
               interrogate_variant_protein_fullscreen(record, genotype, column)
-
             end
           end
 
           def interrogate_variant_protein_fullscreen(record, genotype, column)
             if record.raw_fields['variant protein'].blank?
               genotype.add_status(1)
-            elsif record.raw_fields['variant protein'].match(/p.*/ix)
+              return
+            end
+
+            if record.raw_fields['variant protein'].match(/p.*/ix)
               update_status(2, 1, column, ['gene', 'gene (other)'], genotype)
             elsif record.raw_fields['variant protein'].match(/fail/ix)
               genotype.add_status(9)

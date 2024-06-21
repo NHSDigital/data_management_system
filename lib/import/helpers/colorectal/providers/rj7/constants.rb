@@ -12,11 +12,7 @@ module Import
                 {
                   'carrier testing for known familial mutation(s)' => :carrier,
                   'diagnostic testing for known mutation(s)' => :diagnostic,
-                  'family follow-up testing to aid variant interpretation' => :diagnostic,
                   'predictive testing for known familial mutation(s)' => :predictive,
-                  'inherited MMR deficiency (lynch syndrome)' => :diagnostic,
-                  'inherited colorectal cancer (with or without polyposis)' => :diagnostic,
-                  'inherited polyposis - germline test' => :diagnostic,
                   'apc associated polyposis' => :diagnostic
                 }.freeze
   
