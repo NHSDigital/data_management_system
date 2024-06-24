@@ -20,6 +20,10 @@ class StGeorgeHandlerOldTest < ActiveSupport::TestCase
     assert_difference('EBatch.count', 1) do
       handler.finalize
     end
+    # confirm batch created now has 'RJ7' as provider
+    e_batch.reload
+    assert_equal 'RJ7', e_batch.provider
+    assert_equal 'RJ7', e_batch.registryid
   end
 
   test 'process_moltesttype' do
