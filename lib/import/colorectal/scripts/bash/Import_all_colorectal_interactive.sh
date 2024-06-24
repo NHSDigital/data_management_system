@@ -33,18 +33,7 @@ done
 RR8 () {
 PROV='RR8'
 IFS=$'\n'
-for x in $(find  $DIRPATH/$FILEPATH  -not -path "*/API_BETA_RETRIEVED/*" -type f -name "*MMR*.pseudo" -path "*/$PROV/*")
-do
-IFS="$OIFS"
-$BRAKE import:colorectal fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
-done
-}
-
-
-RR8_2 () {
-PROV='RR8'
-IFS=$'\n'
-for x in $(find  $DIRPATH/$FILEPATH -not -path "*/API_BETA_RETRIEVED/*"  -type f  -name "*other*pseudo" -path "*/$PROV/*" )
+for x in $(find  $DIRPATH/$FILEPATH  -not -path "*/API_BETA_RETRIEVED/*" -type f -name "*MMR*.pseudo" -o -type f -name "*other*.pseudo" -path "*/$PROV/*")
 do
 IFS="$OIFS"
 $BRAKE import:colorectal fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
@@ -74,10 +63,18 @@ done
 RCU () {
 PROV='RCU'
 IFS=$'\n'
-for x in $(find  $DIRPATH/$FILEPATH -not -path "*/API_BETA_RETRIEVED/*" -type f -name "*.pseudo" -path "*/$PROV/*")
+for x in $(find $DIRPATH/$FILEPATH -type f -path "*/$PROV/*" \
+\( -iname "*lynch*.pseudo" -o -iname "*colorectal*.pseudo" -o -iname "*crc*.pseudo" -o \
+	-name "*1dbb561a296d1efcf685bd67a3b*pseudo" \) \
+! -iname "*NON_BRCA_CRC*" \
+! -iname "*NonBRCA_CRC*" \
+! -iname "*Non_CRC*" \
+! -iname "*nonBRCA_nonCRC*" \
+! -iname "*NonBRCA_NonColorectal*" \
+)
 do
 IFS="$OIFS"
-bundle exec rake import:colorectal fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
+$BRAKE import:colorectal fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
 done
 }
 
@@ -94,7 +91,9 @@ done
 R0A () {
 PROV='R0A'
 IFS=$'\n'
-for x in $(find  $DIRPATH/$FILEPATH -type f -iname "*HNPCC*.pseudo" -path "*/$PROV/*" -o -type f -iname "*FAP*.pseudo" -path "*/$PROV/*")
+for x in $(find  $DIRPATH/$FILEPATH -type f -path "*/$PROV/*" \
+\( -iname "*HNPCC*.pseudo" -o -type f -iname "*FAP*.pseudo" \) \
+-not -path "*/2021-12-03/*" )
 do
 IFS="$OIFS"
 $BRAKE import:colorectal fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
@@ -161,16 +160,28 @@ $BRAKE import:colorectal fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.
 done
 }
 
-R1H () {
-PROV='R1H'	
+X26_AD_HOC () {
+# These files of NHS England data for this run have been imported as Barts file in svn repository
+PROV='R1H'
 IFS=$'\n'
 for x in $(find  $DIRPATH/$FILEPATH -not -path "*/API_BETA_RETRIEVED/*" -type f -name "*.pseudo" -path "*/$PROV/*" \
 -not -path "*/2021/*" \
 )
 do
 IFS="$OIFS"
+$BRAKE import:colorectal fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code='X26'
+done
+}
+
+RJ7 () {
+PROV='RJ7'
+IFS=$'\n'
+for x in $(find  $DIRPATH/$FILEPATH  -type f -iname "*CRC*.pseudo" -path "*/$PROV/*" -o -type f -iname "*colorectal*.pseudo"  -path "*/$PROV/*")
+do
+IFS="$OIFS"
 $BRAKE import:colorectal fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
 done
 }
 
-RR8; RR8_2; RNZ; RTD; RX1; RCU; RGT; R0A; R1K; RPY; RP4; RTH; RQ3; REP; R1H
+RR8; RNZ; RTD; RX1; RCU; RGT; R0A; R1K; RPY; RP4; RTH; RQ3; REP; RJ7; X26_AD_HOC
+

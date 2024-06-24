@@ -17,6 +17,7 @@ class BrcaHandlerMappingTest < ActiveSupport::TestCase
     'RQ3' => 'Birmingham',
     'RGT' => 'Cambridge',
     'RTH' => 'Oxford',
+    'RJ7_2' => 'StGeorgeOld',
     'RJ7' => 'StGeorge',
     'RPY' => 'RoyalMarsden'
   }.freeze

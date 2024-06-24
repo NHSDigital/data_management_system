@@ -1,436 +1,358 @@
 require 'possibly'
-require 'pry'
+require 'date'
 
 module Import
   module Brca
     module Providers
       module StGeorge
-        # rubocop:disable Metrics/ClassLength
         # Process St George-specific record details into generalized internal genotype format
         class StGeorgeHandler < Import::Germline::ProviderHandler
-          PASS_THROUGH_FIELDS = %w[age sex consultantcode collecteddate
-                                   receiveddate authoriseddate servicereportidentifier
-                                   providercode receiveddate sampletype].freeze
-          CDNA_REGEX = /c\.(?<cdna>[0-9]+[^\s)]+)|c\.\[(?<cdna>.*?)\]/i.freeze
-
-          PROTEIN_REGEX = /p\.(?<impact>[a-z]+[0-9]+[a-z]+)|
-                           p\.(?<sqrbo>\[)?(?<rndbo>\()?(?<impact>[a-z]+[0-9]+[a-z]+)
-                           (?<rndbrc>\))?(?<sqrbc>\])?/ix.freeze
-
-          DEPRECATED_BRCA_NAMES_MAP = { 'BR1'    => 'BRCA1',
-                                        'B1'     => 'BRCA1',
-                                        'BRCA 1' => 'BRCA1',
-                                        'BR2'    => 'BRCA2',
-                                        'B2'     => 'BRCA2',
-                                        'BRCA 2' => 'BRCA2' }.freeze
-
-          BRCA_GENES_REGEX = /(?<brca>BRCA1|
-                                     BRCA2|
-                                     ATM|
-                                     CHEK2|
-                                     PALB2|
-                                     MLH1|
-                                     MSH2|
-                                     MSH6|
-                                     MUTYH|
-                                     SMAD4|
-                                     NF1|
-                                     NF2|
-                                     SMARCB1|
-                                     LZTR1)/xi.freeze
-
-          EXON_VARIANT_REGEX = /(?<variant>del|dup|ins).+ex(?<on>on)?(?<s>s)?\s
-                                (?<exons>[0-9]+(?<dgs>-[0-9]+)?)|
-                              ex(?<on>on)?(?<s>s)?\s(?<exons>[0-9]+(?<dgs>-[0-9]+)?)\s
-                              (?<variant>del|dup|ins)|
-                              (?<variant>del|dup|ins)\sexon(?<s>s)?\s
-                              (?<exons>[0-9]+(?<dgs>\sto\s[0-9]+))|
-                              (?<variant>del|dup|ins)(?<s>\s)?(?<exons>[0-9]+(?<dgs>-[0-9]+)?)|
-                              ex(?<on>on)?(?<s>s)?\s(?<exons>[0-9]+(?<dgs>\sto\s[0-9]+)?)\s
-                              (?<variant>del|dup|ins)/ix.freeze
-
-          DEPRECATED_BRCA_NAMES_REGEX = /B1|BR1|BRCA\s1|B2|BR2|BRCA\s2/i.freeze
-
-          DELIMETER_REGEX = /[&\n+,;]|and|IFD/i.freeze
+          include Import::Helpers::Brca::Providers::Rj7::Constants
 
           def process_fields(record)
+            return unless record.raw_fields['servicereportidentifier'].start_with?('V')
+
             genotype = Import::Brca::Core::GenotypeBrca.new(record)
-            genotype.add_passthrough_fields(record.mapped_fields,
-                                            record.raw_fields,
-                                            PASS_THROUGH_FIELDS)
-            add_organisationcode_testresult(genotype)
-            add_moleculartestingtype(genotype, record)
-            process_genetictestcope(genotype, record)
-            res = process_variants_from_record(genotype, record)
-            res.each { |cur_genotype| @persister.integrate_and_store(cur_genotype) }
-          end
+            # records using new importer should only have SRIs starting with V
 
-          def add_organisationcode_testresult(genotype)
-            genotype.attribute_map['organisationcode_testresult'] = '697N0'
-          end
+            genotype.add_passthrough_fields(record.mapped_fields, record.raw_fields, PASS_THROUGH_FIELDS)
+            assign_test_type(genotype, record)
+            genotype = assign_test_scope(genotype, record)
 
-          def add_moleculartestingtype(genotype, record)
-            return if record.raw_fields['moleculartestingtype'].nil?
+            genotypes = fill_genotypes(genotype, record)
 
-            moltesttype = record.raw_fields['moleculartestingtype']
-            if moltesttype.scan(/unaf|pred/i).size.positive?
-              genotype.add_molecular_testing_type_strict(:predictive)
-            elsif moltesttype.scan(/affected|conf/i).size.positive?
-              genotype.add_molecular_testing_type_strict(:diagnostic)
+            genotypes.each do |single_genotype|
+              process_variants(single_genotype, record)
+              @persister.integrate_and_store(single_genotype)
             end
+            genotypes
           end
 
-          def process_genetictestcope(genotype, record)
-            if ashkenazi?(record)
-              genotype.add_test_scope(:aj_screen)
-            elsif polish?(record)
-              genotype.add_test_scope(:polish_screen)
-            elsif targeted_test?(record)
-              genotype.add_test_scope(:targeted_mutation)
-            elsif full_screen?(record)
-              genotype.add_test_scope(:full_screen)
-            elsif void_genetictestscope?(record)
-              @logger.debug 'Unknown moleculartestingtype'
-              genotype.add_test_scope(:no_genetictestscope)
-            end
-          end
-
-          def process_variants_from_record(genotype, record)
+          def fill_genotypes(genotype, record)
             genotypes = []
-            positive_gene = get_positive_genes(record)
-            if ashkenazi?(record) || polish?(record) || full_screen?(record)
-              process_fullscreen_records(genotype, record, positive_gene, genotypes)
-            elsif targeted_test?(record) || void_genetictestscope?(record)
-              process_targeted_records(positive_gene, genotype, record, genotypes)
+            if genotype.targeted?
+              # determines the genes in the record and creates a genotype for each one
+              genes = process_genes_targeted(record)
+              # For each gene in the list of genes a new genotype will need to be created
+              duplicate_genotype_targeted(genes, genotype, genotypes)
+              genotypes.each do |single_genotype|
+                assign_test_status_targeted(single_genotype, record)
+              end
+            elsif genotype.full_screen?
+              genes = process_genes_full_screen(record)
+              assign_test_status_full_screen(record, genes, genotype, genotypes)
             end
             genotypes
           end
 
-          def get_positive_genes(record)
-            positive_gene = []
-            gene = record.raw_fields['genotype'].scan(BRCA_GENES_REGEX)
-            deprecated_gene = record.raw_fields['genotype'].scan(DEPRECATED_BRCA_NAMES_REGEX)
-            process_rightname_gene(gene, positive_gene) if gene.present?
-            process_deprecated_gene(deprecated_gene, positive_gene) if deprecated_gene.present?
-            @logger.debug 'Unable to extract gene' if gene.empty? && deprecated_gene.empty?
-            positive_gene
+          def assign_test_type(genotype, record)
+            # extract molecular testing type from the raw record
+            # map molecular testing type and assign to genotype using
+            # add_molecular_testing_type method from genotype.rb
+
+            return if record.raw_fields['moleculartestingtype'].blank?
+
+            raw_moleculartestingtype = record.raw_fields['moleculartestingtype'].downcase.strip
+
+            return unless TEST_TYPE_MAP[raw_moleculartestingtype]
+
+            genotype.add_molecular_testing_type(TEST_TYPE_MAP[raw_moleculartestingtype])
           end
 
-          def process_rightname_gene(gene, positive_genes)
-            gene.size == 1 ? positive_genes.append(gene.join) : positive_genes.append(gene)
+          def assign_test_scope(genotype, record)
+            # extract molecular testing type from the raw record
+            # map molecular testing type and assign to genotype using
+            # add_test_scope method from genotype_brca.rb
+            testscope = record.raw_fields['moleculartestingtype']&.downcase&.strip
+            genotype.add_test_scope(TEST_SCOPE_MAP[testscope])
+            return genotype if genotype.attribute_map['genetictestscope'].present?
+
+            genotype.add_test_scope(:no_genetictestscope)
+            @logger.error 'ERROR - record with no genetic test scope, ask Fiona for new rules'
+            genotype
           end
 
-          def process_deprecated_gene(deprecated_gene, positive_genes)
-            if deprecated_gene.size == 1
-              positive_genes.append(DEPRECATED_BRCA_NAMES_MAP[deprecated_gene.join])
-            else
-              deprecated_gene.each do |dg|
-                positive_genes.append(DEPRECATED_BRCA_NAMES_MAP[dg])
+          def process_genes_targeted(record)
+            # For targeted tests only
+            # This method creates a list of genes included in the record that match BRCA_GENE_REGEX
+            # The genotype is duplicated for each gene in this list
+            # A list of genotypes (one for each gene) is returned
+
+            columns = ['gene', 'gene (other)']
+            genes = []
+            columns.each do |column|
+              gene_list = record.raw_fields[column]&.scan(BRCA_GENE_REGEX)
+              next if gene_list.blank?
+
+              gene_list.each do |gene|
+                gene = BRCA_GENE_MAP[gene]
+                genes.append(gene)
               end
             end
+            genes
           end
 
-          def process_fullscreen_records(genotype, record, positive_genes, genotypes)
-            if normal?(record)
-              normal_full_screen(genotype, genotypes)
-            elsif failed_test?(record)
-              failed_full_screen(genotype, genotypes)
-            elsif positive_cdna?(record) || positive_exonvariant?(record)
-              if record.raw_fields['genotype'].scan(CDNA_REGEX).size > 1
-                process_multiple_positive_variants(positive_genes, genotype, record, genotypes)
-              else
-                single_variant_full_screen(genotype, genotypes, positive_genes, record)
+          def duplicate_genotype_targeted(genes, genotype, genotypes)
+            # When there is more than one gene listed a separate genotype needs to be created for each one
+            # The genotype is duplicated and the new gene is added to the duplicated genotype
+            # Each genotype is then added to the genoytypes list which this method then returns
+            genes.flatten.compact_blank.uniq.each do |gene_value|
+              genotype_new = genotype.dup
+              genotype_new.add_gene(gene_value)
+              genotypes.append(genotype_new)
+            end
+          end
+
+          def assign_test_status_targeted(genotype, record)
+            # loop through list of dictionaries in TARGETED_TEST_STATUS from constants.rb
+            # run assign_test_status_targeted_support for each dictionary with the values
+
+            status = nil
+            # from the dictionary forming the parameters
+
+            TARGETED_TEST_STATUS.each do |test_values|
+              if record.raw_fields[test_values[:column]].present? &&
+                 record.raw_fields[test_values[:column]].scan(test_values[:expression]).size.positive?
+                status = test_values[:status]
+              end
+              break unless status.nil?
+            end
+
+            status = 4 if status.nil? && record.raw_fields['variant protein'].blank?
+
+            genotype.add_status(status)
+          end
+
+          def process_genes_full_screen(record)
+            # extracts genes from colunns in record
+            # outputs a dictionary of genes assigned to each column name
+            genes_dict = {}
+
+            ['gene', 'gene (other)', 'variant dna', 'test/panel'].each do |column|
+              genes = []
+              gene_list = record.raw_fields[column]&.scan(BRCA_GENE_REGEX)
+
+              gene_list = process_test_panels(record, gene_list, column) if column == 'test/panel'
+
+              next if gene_list.nil?
+
+              gene_list.each do |gene|
+                BRCA_GENE_MAP[gene]&.each do |gene_value|
+                  genes.append(gene_value)
+                end
+              end
+
+              # handles brca1 and brca2 being matched twice in one column
+              genes_dict[column] = genes.uniq
+            end
+            genes_dict
+          end
+
+          def process_test_panels(record, gene_list, column)
+            # extracts panels tested from record
+            # panels mapped to list of genes in FULL_SCREEN_TESTS_MAP
+            # to output list of genes tested in panel
+            test_panel=record.raw_fields['test/panel']&.downcase&.strip
+            panel_genes_list = FULL_SCREEN_TESTS_MAP[test_panel]
+
+            panel_genes_list&.each do |gene|
+              gene_list.append(gene)
+            end
+            r208 = record.raw_fields[column]&.eql?('R208')
+            if r208.present?
+              r208_genes = process_r208(record)
+              r208_genes.each do |gene|
+                gene_list.append(gene)
               end
             end
-            genotypes
+            # gene_list=process_r208(record) unless r208.blank?
+            gene_list
           end
 
-          def normal_full_screen(genotype, genotypes)
-            %w[BRCA1 BRCA2].each do |negative_gene|
-              genotype_dup = genotype.dup
-              genotype_dup.add_gene(negative_gene)
-              genotype_dup.add_status(1)
-              genotypes.append(genotype_dup)
+          def process_r208(record)
+            # Determine genes tested from r208 panel based on the authorised date
+            # output list of genes in r208 panel
+            return unless record.raw_fields['test/panel'] == 'R208'
+
+            date = DateTime.parse(record.raw_fields['authoriseddate'])
+            if date < DateTime.parse('01/08/2022')
+              r208_panel_genes = %w[BRCA1 BRCA2]
+            elsif DateTime.parse('31/07/2022') < date && date < DateTime.parse('16/11/2022')
+              r208_panel_genes = %w[BRCA1 BRCA2 CHEK2 PALB2 ATM]
+            elsif date > DateTime.parse('16/11/2022')
+              r208_panel_genes = %w[BRCA1 BRCA2 CHEK2 PALB2 ATM RAD51C RAD51D]
             end
+            r208_panel_genes
           end
 
-          def failed_full_screen(genotype, genotypes)
-            %w[BRCA1 BRCA2].each do |negative_gene|
-              genotype_dup = genotype.dup
-              genotype_dup.add_gene(negative_gene)
-              genotype_dup.add_status(9)
-              genotypes.append(genotype_dup)
-            end
-          end
+          def assign_test_status_full_screen(record, genes, genotype, genotypes)
+            @all_genes = genes.values.compact_blank.flatten.uniq
 
-          def single_variant_full_screen(genotype, genotypes, positive_genes, record)
-            negative_gene = %w[BRCA1 BRCA2] - positive_genes
-            genotype_dup = genotype.dup
-            genotype_dup.add_gene(negative_gene.join)
-            genotype_dup.add_status(1)
-            genotypes.append(genotype_dup)
-            genotype.add_gene(positive_genes.join)
-            process_single_positive_variants(genotype, record)
-            process_single_protein(genotype, record)
-            genotypes.append(genotype)
-          end
+            return if @all_genes.empty?
 
-          def process_targeted_records(positive_genes, genotype, record, genotypes)
-            if normal?(record)
-              process_normal_targeted(genotype, record, genotypes)
-            elsif failed_test?(record)
-              process_failed_targeted(genotype, record, genotypes)
-            elsif positive_cdna?(record) || positive_exonvariant?(record)
-              process_positive_targeted(record, positive_genes, genotype, genotypes)
-            end
-            genotypes
-          end
-
-          def process_normal_targeted(genotype, record, genotypes)
-            process_single_gene(genotype, record)
-            genotype.add_status(1)
-            genotypes.append(genotype)
-          end
-
-          def process_failed_targeted(genotype, record, genotypes)
-            process_single_gene(genotype, record)
-            genotype.add_status(9)
-            genotypes.append(genotype)
-          end
-
-          def process_positive_targeted(record, positive_genes, genotype, genotypes)
-            if record.raw_fields['genotype'].scan(CDNA_REGEX).size > 1
-              process_multiple_positive_variants(positive_genes, genotype, record, genotypes)
+            if record.raw_fields['variant dna'].present?
+              assign_status_on_variant_dna(record, genes, genotype, genotypes)
+            elsif record.raw_fields['gene (other)'].present?
+              assign_status_on_gene_other(record, genes, genotype, genotypes)
             else
-              process_single_gene(genotype, record)
-              process_single_positive_variants(genotype, record)
-              process_single_protein(genotype, record)
-              genotypes.append(genotype)
+              process_status_genes(genotype, 4, @all_genes, genotypes)
             end
           end
 
-          # Ordering here is important so duplicate branches are required
-          # rubocop:disable  Lint/DuplicateBranch
-          def process_single_gene(genotype, record)
-            if record.raw_fields['genotype'].scan(BRCA_GENES_REGEX).size.positive?
-              genotype.add_gene($LAST_MATCH_INFO[:brca])
-              @logger.debug "SUCCESSFUL gene parse for: #{$LAST_MATCH_INFO[:brca]}"
-            elsif deprecated_brca_genenames?(record)
-              add_gene_from_deprecated_nomenclature(genotype, record)
-            elsif record.raw_fields['moleculartestingtype'].scan(BRCA_GENES_REGEX).size.positive?
-              genotype.add_gene($LAST_MATCH_INFO[:brca])
-              @logger.debug "SUCCESSFUL gene parse for: #{$LAST_MATCH_INFO[:brca]}"
-            elsif deprecated_brca_genenames_moleculartestingtype?(record)
-              add_gene_from_deprecated_nomenclature_moleculartestingtype(genotype, record)
+          def process_status_genes(genotype, status, genes, genotypes)
+            genes.each do |gene|
+              genotype_new = genotype.dup
+              genotype_new.add_gene(gene)
+              genotype_new.add_status(status)
+              genotypes << genotype_new
+            end
+          end
+
+          def assign_status_on_variant_dna(record, genes, genotype, genotypes)
+            variant_dna = record.raw_fields['variant dna']
+            gene_other = record.raw_fields['gene (other)']
+            @gene_other_brca_size = gene_other&.scan(BRCA_GENE_REGEX)&.size || 0
+            case variant_dna
+            when /Fail/i
+              process_status_genes(genotype, 9, @all_genes, genotypes)
+            when 'N'
+              process_status_genes(genotype, 1, @all_genes, genotypes)
             else
-              @logger.debug "FAILED gene parse for: #{record.raw_fields['genotype']}"
+              handle_gene_conditions(genes, genotype, genotypes, record)
             end
           end
-          # rubocop:enable  Lint/DuplicateBranch
 
-          def process_single_protein(genotype, record)
-            if record.raw_fields['genotype'].scan(PROTEIN_REGEX).size.positive?
-              genotype.add_protein_impact($LAST_MATCH_INFO[:impact])
-              @logger.debug "SUCCESSFUL gene parse for: #{$LAST_MATCH_INFO[:impact]}"
+          def handle_gene_conditions(genes, genotype, genotypes, record)
+            gene = record.raw_fields['gene']
+            gene_other = record.raw_fields['gene (other)']
+            if gene.present? && gene_other.blank?
+              process_genes(genes, genotype, genotypes)
+            elsif gene.present? && gene_other.present?
+              process_genes_with_other(gene_other, genes, genotype, genotypes)
+            elsif gene.blank? && gene_other.present?
+              process_other_gene(genes, genotype, genotypes, record)
             else
-              @logger.debug "FAILED protein parse for: #{record.raw_fields['genotype']}"
+              process_status_genes(genotype, 4, @all_genes, genotypes)
             end
           end
 
-          def process_single_positive_variants(genotype, record)
-            if positive_cdna?(record)
-              process_cdna_variant(genotype, record)
-            elsif positive_exonvariant?(record)
-              process_exonic_variant(genotype, record)
+          def process_genes(genes, genotype, genotypes)
+            pos_gene = genes['gene']
+            process_status_genes(genotype, 2, pos_gene, genotypes)
+            remaining_genes = @all_genes - pos_gene
+            process_status_genes(genotype, 1, remaining_genes, genotypes)
+          end
+
+          def process_genes_with_other(gene_other, genes, genotype, genotypes)
+            pos_gene = genes['gene']
+            process_status_genes(genotype, 2, pos_gene, genotypes)
+            remaining_genes = @all_genes - pos_gene
+
+            if gene_other.match(/Fail/i)
+              failed_gene = genes['gene (other)']
+              process_status_genes(genotype, 9, failed_gene, genotypes)
+              remaining_genes -= failed_gene
+            end
+
+            process_status_genes(genotype, 1, remaining_genes, genotypes)
+          end
+
+          def process_other_gene(genes, genotype, genotypes, record)
+            pos_gene = @gene_other_brca_size == 1 ? genes['gene (other)'] : genes['variant dna']
+            if pos_gene.present?
+              process_status_genes(genotype, 2, pos_gene, genotypes)
+              remaining_genes = @all_genes - pos_gene
+              process_status_genes(genotype, 1, remaining_genes, genotypes)
             else
-              @logger.debug "FAILED variant parse for: #{record.raw_fields['genotype']}"
+              assign_status_on_gene_other(record, genes, genotype, genotypes)
             end
           end
 
-          def add_variants_multiple_results(variants, genotype, genotypes)
-            variants.each do |gene, mutation, protein|
-              genotype_dup = genotype.dup
-              genotype_dup.add_gene(gene)
-              genotype_dup.add_gene_location(mutation)
-              genotype_dup.add_protein_impact(protein)
-              genotype_dup.add_status(2)
-              genotypes.append(genotype_dup)
-            end
-          end
-
-          def process_multiple_positive_variants(positive_genes, genotype, record, genotypes)
-            if positive_genes.flatten.uniq.size > 1
-              variants = process_multi_genes_rec(record, positive_genes)
-            elsif positive_genes.flatten.uniq.size == 1
-              variants = process_uniq_gene_rec(record, positive_genes)
-            end
-
-            add_variants_multiple_results(variants, genotype, genotypes) unless variants.nil?
-
-            genotypes
-          end
-
-          def process_multi_genes_rec(record, positive_genes)
-            if record.raw_fields['genotype'].scan(DELIMETER_REGEX).size > 1
-              variants = process_single_variant(record, positive_genes)
-            elsif record.raw_fields['genotype'].scan(DELIMETER_REGEX).size.positive?
-              variants = process_split_variants(record, [])
-            end
-            variants
-          end
-
-          def process_uniq_gene_rec(record, positive_genes)
-            if record.raw_fields['genotype'].scan(DELIMETER_REGEX).size.positive?
-              variants = process_split_variants(record, positive_genes)
+          def assign_status_on_gene_other(record, genes, genotype, genotypes)
+            gene_other = record.raw_fields['gene (other)']
+            remaining_genes = @all_genes
+            case gene_other
+            when /Fail/i
+              process_failed_gene_other(genes, genotype, genotypes, remaining_genes)
+            when /\?\z/i
+              process_status_genes(genotype, 4, genes['gene'], genotypes)
+            when /^c\.|^Ex.*Del\z|^Ex.*Dup\z|^Het\s?Del|^Het\s?Dup/ix
+              process_pathogenic_gene_other(genotype, genes, remaining_genes, genotypes)
+            when /^#{BRCA_GENE_REGEX}\sClass\sV,\s#{BRCA_GENE_REGEX}\sN\z/i
+              process_class_v_gene_other(gene_other, genotype, genotypes)
             else
-              positive_genes *= record.raw_fields['genotype'].scan(CDNA_REGEX).
-                                flatten.compact.size
-              variants = process_single_variant(record, positive_genes)
+              process_status_genes(genotype, 4, @all_genes, genotypes)
             end
-            variants
           end
 
-          def process_single_variant(record, positive_genes)
-            mutation = get_cdna_mutation(record.raw_fields['genotype'])
-            protein = get_protein_impact(record.raw_fields['genotype'])
-            positive_genes.zip(mutation, protein.flatten.compact)
+          def process_failed_gene_other(genes, genotype, genotypes, remaining_genes)
+            if genes['gene (other)'].present?
+              process_status_genes(genotype, 9, genes['gene (other)'], genotypes)
+              remaining_genes -= genes['gene (other)']
+            elsif genes['gene']
+              process_status_genes(genotype, 10, genes['gene'], genotypes)
+              remaining_genes -= genes['gene']
+            end
+            process_status_genes(genotype, 1, remaining_genes, genotypes)
           end
 
-          def process_split_variants(record, positive_genes)
-            record.raw_fields['genotype'].scan(DELIMETER_REGEX)
-            raw_genotypes = record.raw_fields['genotype'].split($LAST_MATCH_INFO[0])
-            variants = []
-            raw_genotypes.each do |raw_genotype|
-              if positive_genes == []
-                positive_gene_rec = []
-                gene = raw_genotype.scan(BRCA_GENES_REGEX)
-                deprec_gene = raw_genotype.scan(DEPRECATED_BRCA_NAMES_REGEX)
-                process_rightname_gene(gene, positive_gene_rec) if gene.present?
-                process_deprecated_gene(deprec_gene, positive_gene_rec) if deprec_gene.present?
-              else
-                positive_gene_rec = positive_genes
+          def process_pathogenic_gene_other(genotype, genes, remaining_genes, genotypes)
+            process_status_genes(genotype, 2, genes['gene'], genotypes)
+
+            remaining_genes -= genes['gene']
+            process_status_genes(genotype, 1, remaining_genes, genotypes)
+          end
+
+          # "gene1 Class V, gene2 N"
+          def process_class_v_gene_other(gene_other, genotype, genotypes)
+            class_5_gene = gene_other.split(',').first.scan(BRCA_GENE_REGEX)
+            process_status_genes(genotype, 2, class_5_gene, genotypes)
+            normal_gene = gene_other.split(',').last.scan(BRCA_GENE_REGEX)
+            process_status_genes(genotype, 1, normal_gene, genotypes)
+          end
+
+          def process_variants(genotype, record)
+            # add hgvsc and hgvsp codes - if not present then run process_location_type
+            return unless genotype.attribute_map['teststatus'] == 2
+
+            ['variant dna', 'gene (other)'].each do |column|
+              genotype.add_gene_location($LAST_MATCH_INFO[:cdna]) if /c\.(?<cdna>.*)/i.match(record.raw_fields[column])
+            end
+
+            ['variant protein', 'variant dna', 'gene (other)'].each do |column|
+              if /p\.(?<impact>.*)/.match(record.raw_fields[column])
+                genotype.add_protein_impact($LAST_MATCH_INFO[:impact])
               end
-              mutation = get_cdna_mutation(raw_genotype)
-              protein = get_protein_impact(raw_genotype)
-              variants << positive_gene_rec.zip(mutation, protein.flatten.compact).flatten
             end
-            variants
+            if record.mapped_fields['codingdnasequencechange'].blank? && record.mapped_fields['proteinimpact'].blank?
+              process_location_type(genotype, record)
+            end
           end
 
-          def get_protein_impact(raw_genotype)
-            raw_genotype.scan(PROTEIN_REGEX)
-            $LAST_MATCH_INFO.nil? ? [] : [$LAST_MATCH_INFO[:impact]]
-          end
+          def process_location_type(genotype, record)
+            # use methods in genotype.rb to add exon location, variant type
 
-          def get_cdna_mutation(raw_genotype)
-            raw_genotype.scan(CDNA_REGEX).flatten.compact
-          end
+            record_gene = genotype.attribute_map['gene']
 
-          def add_gene_from_deprecated_nomenclature(genotype, record)
-            genename = record.raw_fields['genotype'].scan(DEPRECATED_BRCA_NAMES_REGEX).flatten.uniq
-            genotype.add_gene(DEPRECATED_BRCA_NAMES_MAP[genename.join])
-          end
+            ['variant dna', 'gene (other)'].each do |column|
+              next unless EXON_REGEX.match(record.raw_fields[column])
 
-          def deprecated_brca_genenames?(record)
-            genename = record.raw_fields['genotype'].scan(DEPRECATED_BRCA_NAMES_REGEX).flatten.join
-            DEPRECATED_BRCA_NAMES_MAP[genename].present?
-          end
+              gene_list = record.raw_fields[column]&.scan(BRCA_GENE_REGEX)
+              gene_list.each do |gene|
+                next if gene_list.blank?
 
-          def deprecated_brca_genenames_moleculartestingtype?(record)
-            genename = record.raw_fields['moleculartestingtype'].
-                       scan(DEPRECATED_BRCA_NAMES_REGEX).flatten.join
-            DEPRECATED_BRCA_NAMES_MAP[genename].present?
-          end
+                gene = BRCA_GENE_MAP[gene][0]
+                gene_integer = BRCA_INTEGER_MAP[gene]
+                genotype.add_status(1) if gene_integer != record_gene
+              end
+              next unless genotype.attribute_map['teststatus'] == 2
 
-          def add_gene_from_deprecated_nomenclature_moleculartestingtype(genotype, record)
-            genename = record.raw_fields['moleculartestingtype'].
-                       scan(DEPRECATED_BRCA_NAMES_REGEX).flatten.join
-            genotype.add_gene(DEPRECATED_BRCA_NAMES_MAP[genename])
-          end
-
-          def process_exonic_variant(genotype, record)
-            return unless record.raw_fields['genotype'].scan(EXON_VARIANT_REGEX).size.positive?
-
-            genotype.add_exon_location($LAST_MATCH_INFO[:exons])
-            genotype.add_variant_type($LAST_MATCH_INFO[:variant])
-            genotype.add_status(2)
-            @logger.debug "SUCCESSFUL exon variant parse for: #{record.raw_fields['genotype']}"
-            # end
-          end
-
-          def process_cdna_variant(genotype, record)
-            return unless record.raw_fields['genotype'].scan(CDNA_REGEX).size.positive?
-
-            genotype.add_gene_location($LAST_MATCH_INFO[:cdna])
-            genotype.add_status(2)
-            @logger.debug "SUCCESSFUL cdna change parse for: #{$LAST_MATCH_INFO[:cdna]}"
-            # end
-          end
-
-          def process_normal_record(genotype, record)
-            genotype.add_status(1)
-            @logger.debug "SUCCESSFUL cdna change parse for: #{record.raw_fields['genotype']}"
-          end
-
-          def normal?(record)
-            variant = record.raw_fields['genotype']
-            moltesttype = record.raw_fields['moleculartestingtype']
-            variant.scan(%r{NO PATHOGENIC|Normal|N/N|NOT DETECTED}i).size.positive? ||
-              variant == 'N' || moltesttype.scan(/unaffected/i).size.positive?
-          end
-
-          def positive_cdna?(record)
-            variant = record.raw_fields['genotype']
-            variant.scan(CDNA_REGEX).size.positive?
-          end
-
-          def positive_exonvariant?(record)
-            variant = record.raw_fields['genotype']
-            variant.scan(EXON_VARIANT_REGEX).size.positive?
-          end
-
-          def targeted_test?(record)
-            return if record.raw_fields['moleculartestingtype'].nil?
-
-            moltesttype = record.raw_fields['moleculartestingtype']
-            moltesttype.scan(/pred|conf|targeted|c\.|6174delT/i).size.positive? ||
-              moltesttype.scan(%r{BRCA(1|2) exon deletion/duplication}i).size.positive?
-          end
-
-          def full_screen?(record)
-            return if record.raw_fields['moleculartestingtype'].nil?
-
-            moltesttype = record.raw_fields['moleculartestingtype']
-            moltesttype.scan(/screen/i).size.positive? ||
-              moltesttype == 'BRCA1 & 2 exon deletion & duplication analysis'
-          end
-
-          def ashkenazi?(record)
-            return if record.raw_fields['moleculartestingtype'].nil?
-
-            moltesttype = record.raw_fields['moleculartestingtype']
-            moltesttype.scan(/ash/i).size.positive?
-          end
-
-          def polish?(record)
-            return if record.raw_fields['moleculartestingtype'].nil?
-
-            moltesttype = record.raw_fields['moleculartestingtype']
-            moltesttype.scan(/polish/i).size.positive?
-          end
-
-          def failed_test?(record)
-            record.raw_fields['genotype'].scan(/Fail/i).size.positive?
-          end
-
-          def void_genetictestscope?(record)
-            return if record.raw_fields['moleculartestingtype'].nil?
-
-            record.raw_fields['moleculartestingtype'].empty? ||
-              record.raw_fields['moleculartestingtype'] == 'Store'
+              EXON_REGEX.match(record.raw_fields[column])
+              genotype.add_exon_location($LAST_MATCH_INFO[:exons])
+              genotype.add_variant_type($LAST_MATCH_INFO[:mutationtype])
+            end
           end
         end
-        # rubocop:enable Metrics/ClassLength
       end
     end
   end

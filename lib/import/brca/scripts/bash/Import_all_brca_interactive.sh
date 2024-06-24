@@ -96,17 +96,19 @@ done
 RCU () {
 PROV='RCU'
 IFS=$'\n'
-for x in $(find $DIRPATH/$FILEPATH -type f \
-\( -name "*BRCA*.pseudo*" -o \
--name "143e91983941d5040b176a997b80509b43bc686d_01.12.2019*pseudo" \
--o -name "*1dbb*pseudo" \
--o -name "0341fb*pseudo" \) -path "*/$PROV/*" \
-! -name "*Colorectal*" \
-! -name "*NonBRCA*" \
-! -name "*nonBRCA*")
+for x in $(find $DIRPATH/$FILEPATH -type f -path "*/$PROV/*" \
+\( -iname "*BRCA*.pseudo" -o -iname "*HBOC*.pseudo" -o \
+	-name "*1dbb561a296d1efcf685bd67a3b*pseudo" \)  \
+! -iname "*NON_CRC_HBOC_*" \
+! -iname "*lynch*" \
+! -iname "*nonBRCA*" \
+! -iname "*Colorectal*" \
+! -iname "*Hereditary Cancer_Other*" )
 do
-IFS="$OIFS"
-$BRAKE import:brca fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
+  if echo "$x" | grep -q "576f0670b0490bc788f673a5653c28cc1f7e7f7" || ! echo "$x" | grep -q "CRC"; then
+	IFS="$OIFS"
+    $BRAKE import:brca fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
+  fi
 done
 }
 
@@ -178,19 +180,34 @@ $BRAKE import:brca fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1
 done
 }
 
-
+#to handle the new file format
 RJ7 () {
 MBIS=$1
 PROV='RJ7'
+IFS=$'\n'
+for x in $(find $DIRPATH/$FILEPATH -type f -name "*.pseudo" -path "*/$PROV/*" -name "*HBOC*")
+do
+IFS="$OIFS"
+$BRAKE import:brca fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
+done
+}
+
+#to handle the old file format
+RJ7_2 () {
+MBIS=$1
+PROV='RJ7'
+PROV_OLD_FILE='RJ7_2'
 IFS=$'\n'
 for x in $(find  $DIRPATH/$FILEPATH -type f -name "*.pseudo" -path "*/$PROV/*" \
 -not -path "*/2021/*" \
 -not -path "*/2022/*" \
 -not -path "*/2023/*" \
-! -name "c466c80823235315f4df98bb4a14c4937ee5cbc4_08.2020_STG HBOC PHE reported till 28082020.xlsx.pseudo")
+! -iname "*CRC*.pseudo" \
+! -iname "*colorectal*.pseudo" \
+! -name "*HBOC*")
 do
 IFS="$OIFS"
-$BRAKE import:brca fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
+$BRAKE import:brca fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV_OLD_FILE
 done
 }
 
@@ -239,6 +256,6 @@ done
 }
 
 
-RTD; RQ3; RR8; RNZ; RVJ; RX1; RCU; RJ1; RGT; RPY; R0A; RJ7; RTH; R1K; RP4; REP
+RTD; RQ3; RR8; RNZ; RVJ; RX1; RCU; RJ1; RGT; RPY; R0A; RJ7; RJ7_2 ; RTH; R1K; RP4; REP
 
 
