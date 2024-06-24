@@ -55,8 +55,6 @@ module Import
 
           def process_fields(record)
 
-            #binding.pry
-
             #records using new importer should only have SRIs starting with D
             return unless record.raw_fields['servicereportidentifier'].start_with?("D")
             genotype = Import::Brca::Core::GenotypeBrca.new(record)
@@ -72,8 +70,6 @@ module Import
             #correcting ebatch provider and registry to RJ7 (from RJ7_2) to allow data to persist in the database
             @batch.provider ='RJ7'
             @batch.registryid = 'RJ7'
-
-            binding.pry
 
             res.each { |cur_genotype| @persister.integrate_and_store(cur_genotype) }
           end
