@@ -202,7 +202,8 @@ for x in $(find  $DIRPATH/$FILEPATH -type f -name "*.pseudo" -path "*/$PROV/*" \
 -not -path "*/2021/*" \
 -not -path "*/2022/*" \
 -not -path "*/2023/*" \
-! -name "c466c80823235315f4df98bb4a14c4937ee5cbc4_08.2020_STG HBOC PHE reported till 28082020.xlsx.pseudo" \
+! -iname "*CRC*.pseudo" \
+! -iname "*colorectal*.pseudo" \
 ! -name "*HBOC*")
 do
 IFS="$OIFS"

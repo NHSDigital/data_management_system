@@ -10,6 +10,22 @@ class StGeorgeHandlerOldTest < ActiveSupport::TestCase
     @logger = Import::Log.get_logger
   end
 
+  test 'process_fields' do
+    e_batch = EBatch.create(original_filename: 'test_file',
+                            e_type:            'PSMOLE',
+                            provider:          'RJ7_2',
+                            registryid:        'RJ7_2')
+    handler = Import::Brca::Providers::StGeorgeOld::StGeorgeHandlerOld.new(e_batch)
+    handler.process_fields(@record)
+    assert_difference('EBatch.count', 1) do
+      handler.finalize
+    end
+    # confirm batch created now has 'RJ7' as provider
+    e_batch.reload
+    assert_equal 'RJ7', e_batch.provider
+    assert_equal 'RJ7', e_batch.registryid
+  end
+
   test 'process_moltesttype' do
     predictive_record = build_raw_record('pseudo_id1' => 'bob')
     predictive_record.raw_fields['moleculartestingtype'] = 'unaffected'

@@ -54,12 +54,10 @@ module Import
           DELIMETER_REGEX = /[&\n+,;]|and|IFD/i.freeze
 
           def process_fields(record)
+            # records using new importer should only have SRIs starting with D
+            return unless record.raw_fields['servicereportidentifier'].start_with?('D')
+
             genotype = Import::Brca::Core::GenotypeBrca.new(record)
-
-            #records using new importer should only have SRIs starting with D
-            return unless record.raw_fields['servicereportidentifier'].start_with?("D")
-
-            
             genotype.add_passthrough_fields(record.mapped_fields,
                                             record.raw_fields,
                                             PASS_THROUGH_FIELDS)
@@ -67,11 +65,15 @@ module Import
             add_moleculartestingtype(genotype, record)
             process_genetictestcope(genotype, record)
             res = process_variants_from_record(genotype, record)
+            # correcting ebatch provider and registry to RJ7 (from RJ7_2) to allow data to persist in the database
+            @batch.provider = 'RJ7'
+            @batch.registryid = 'RJ7'
             res.each { |cur_genotype| @persister.integrate_and_store(cur_genotype) }
           end
 
           def add_organisationcode_testresult(genotype)
             genotype.attribute_map['organisationcode_testresult'] = '697N0'
+          
           end
 
           def add_moleculartestingtype(genotype, record)
