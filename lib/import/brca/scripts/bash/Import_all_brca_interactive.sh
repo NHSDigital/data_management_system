@@ -117,11 +117,10 @@ PROV='RQ3'
 IFS=$'\n'
 for x in $(find  $DIRPATH/$FILEPATH -type f -name "*.pseudo" -path "*/$PROV/*" \
 -not -path "*/2018-02-06/*" \
-! -name "*Rare*" \
-! -name "*Colon*" \
-! -name "*COLON*" \
-! -name "*non BRCA*" \
-! -name "*bwnft*"  )
+! -iname "*Rare*" \
+! -iname "*Colon*" \
+! -iname "*non BRCA*" \
+! -iname "*bwnft*"  )
   do
   IFS="$OIFS"
   $BRAKE import:brca fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV
