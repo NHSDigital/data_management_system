@@ -160,18 +160,18 @@ $BRAKE import:colorectal fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.
 done
 }
 
-X26_AD_HOC () {
-# These files of NHS England data for this run have been imported as Barts file in svn repository
-PROV='R1H'
-IFS=$'\n'
-for x in $(find  $DIRPATH/$FILEPATH -not -path "*/API_BETA_RETRIEVED/*" -type f -name "*.pseudo" -path "*/$PROV/*" \
--not -path "*/2021/*" \
-)
-do
-IFS="$OIFS"
-$BRAKE import:colorectal fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code='X26'
-done
-}
+# X26_AD_HOC () {
+# # These files of NHS England data for this run have been imported as Barts file in svn repository
+# PROV='R1H'
+# IFS=$'\n'
+# for x in $(find  $DIRPATH/$FILEPATH -not -path "*/API_BETA_RETRIEVED/*" -type f -name "*.pseudo" -path "*/$PROV/*" \
+# -not -path "*/2021/*" \
+# )
+# do
+# IFS="$OIFS"
+# $BRAKE import:colorectal fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code='X26'
+# done
+# }
 
 RJ7 () {
 PROV='RJ7'
@@ -183,5 +183,5 @@ $BRAKE import:colorectal fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.
 done
 }
 
-RR8; RNZ; RTD; RX1; RCU; RGT; R0A; R1K; RPY; RP4; RTH; RQ3; REP; RJ7; X26_AD_HOC
+RR8; RNZ; RTD; RX1; RCU; RGT; R0A; R1K; RPY; RP4; RTH; RQ3; REP; RJ7
 
