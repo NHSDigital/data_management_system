@@ -65,7 +65,8 @@ PROV='RCU'
 IFS=$'\n'
 for x in $(find $DIRPATH/$FILEPATH -type f -path "*/$PROV/*" \
 \( -iname "*lynch*.pseudo" -o -iname "*colorectal*.pseudo" -o -iname "*crc*.pseudo" -o \
-	-name "*1dbb561a296d1efcf685bd67a3b*pseudo" \) \
+	-name "*1dbb561a296d1efcf685bd67a3b*pseudo" -o \
+	-name "*b20327dfab493e86e7f65e89663fb551*pseudo" \) \
 ! -iname "*NON_BRCA_CRC*" \
 ! -iname "*NonBRCA_CRC*" \
 ! -iname "*Non_CRC*" \
