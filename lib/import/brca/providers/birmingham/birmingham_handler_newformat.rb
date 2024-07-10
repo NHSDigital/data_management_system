@@ -19,7 +19,11 @@ module Import
             add_organisationcode_testresult(genotype)
             variant_processor = VariantProcessor.new(genotype, record, @logger)
             res = variant_processor.process_variants_from_report
-            res.each { |cur_genotype| @persister.integrate_and_store(cur_genotype) }
+            if res.present?
+              res.each { |cur_genotype| @persister.integrate_and_store(cur_genotype) }
+            else
+              @persister.integrate_and_store(genotype)
+            end 
           end
 
           def summarize
