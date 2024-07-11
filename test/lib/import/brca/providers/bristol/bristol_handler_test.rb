@@ -39,6 +39,18 @@ class BristolHandlerTest < ActiveSupport::TestCase
     assert_equal 8, res[1].attribute_map['gene']
   end
 
+  test 'process_unknown_record' do
+    normal_record = build_raw_record('pseudo_id1' => 'bob')
+    normal_record.raw_fields['variantpathclass'] = 'Unknown'
+    @handler.process_test_status(@genotype, normal_record)
+    res = @handler.process_gene(@genotype, normal_record)
+    assert_equal 2, res.size
+    assert_equal 1, res[0].attribute_map['teststatus']
+    assert_equal 7, res[0].attribute_map['gene']
+    assert_equal 3, res[1].attribute_map['teststatus']
+    assert_equal 8, res[1].attribute_map['gene']
+  end
+
   test 'process_protein_impact' do
     @handler.add_protein_impact(@genotype, @record)
     assert_equal 'p.Asp2723His', @genotype.attribute_map['proteinimpact']

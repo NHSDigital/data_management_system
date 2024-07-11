@@ -21,7 +21,7 @@ module Import
                                'Likely Deleterious' => :positive,
                                'Likely Pathogenic' => :positive,
                                'Pathogenic' => :positive,
-                               'Unknown' => :positive }.freeze
+                               'Unknown' => 3 }.freeze
           end
         end
       end
