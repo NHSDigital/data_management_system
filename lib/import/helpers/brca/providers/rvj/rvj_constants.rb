@@ -22,6 +22,14 @@ module Import
                                'Likely Pathogenic' => :positive,
                                'Pathogenic' => :positive,
                                'Unknown' => :positive }.freeze
+
+            VARPATH_MAP = { 'Benign' => 1,
+                            'Likely Benign' => 2,
+                            'Deleterious' => 5,
+                            'Likely Deleterious' => 4,
+                            'Likely Pathogenic' => 4,
+                            'Pathogenic' => 5,
+                            'Unknown' => 3 }.freeze
           end
         end
       end

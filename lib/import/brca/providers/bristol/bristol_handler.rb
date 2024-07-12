@@ -26,6 +26,7 @@ module Import
             genotype.add_test_scope(:full_screen)
             process_test_status(genotype, record)
             genotype.add_method('ngs')
+            process_var_path_class(genotype, record)
             res = process_gene(genotype, record)
             res&.each { |cur_genotype| @persister.integrate_and_store(cur_genotype) }
           end
@@ -63,11 +64,16 @@ module Import
             return if record.raw_fields['variantpathclass'].nil?
 
             varpathclass_field = record.raw_fields['variantpathclass']
-            if TESTSTATUS_MAP[varpathclass_field].present?
-              genotype.add_status(TESTSTATUS_MAP[varpathclass_field])
-            end
+            genotype.add_status(TESTSTATUS_MAP[varpathclass_field]) if TESTSTATUS_MAP[varpathclass_field].present?
           end
           # rubocop:enable Style/GuardClause
+
+          def process_var_path_class(genotype, record)
+            return if record.raw_fields['variantpathclass'].nil?
+
+            varpathclass_field = record.raw_fields['variantpathclass']
+            genotype.add_variant_class(VARPATH_MAP[varpathclass_field]) if VARPATH_MAP[varpathclass_field].present?
+          end
 
           def process_cdna_change(genotype, record)
             case record.mapped_fields['codingdnasequencechange']

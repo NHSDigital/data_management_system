@@ -39,6 +39,11 @@ class BristolHandlerTest < ActiveSupport::TestCase
     assert_equal 8, res[1].attribute_map['gene']
   end
 
+  test 'process_var_path_class' do
+    @handler.process_var_path_class(@genotype, @record)
+    assert_equal 5, @genotype.attribute_map['variantpathclass']
+  end
+
   test 'process_protein_impact' do
     @handler.add_protein_impact(@genotype, @record)
     assert_equal 'p.Asp2723His', @genotype.attribute_map['proteinimpact']
