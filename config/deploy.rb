@@ -111,7 +111,7 @@ set :asset_script, <<~SHELL
   # Remove mini_racer CentOS 7 shim from Gemfile.lock unless needed
   if [ -e /etc/os-release ] && \
      [ 2 -ne $(grep -Ec '^(ID="centos"|VERSION_ID="7")$' /etc/os-release) ]; then
-    sed -i.bak -e '/mini_racer (0.6.2-x86_64-linux)/,+1d' Gemfile.lock
+    sed -i.bak -e '/mini_racer ([0-9.]*-x86_64-linux)/,+1d' Gemfile.lock
   fi
   printf 'disable-self-update-check true\\nyarn-offline-mirror "./vendor/npm-packages-offline-cache"\\nyarn-offline-mirror-pruning false\\n' > .yarnrc
   RAILS_ENV=production bundle exec rake assets:clobber assets:precompile
