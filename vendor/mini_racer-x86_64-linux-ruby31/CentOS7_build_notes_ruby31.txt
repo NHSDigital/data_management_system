@@ -1,0 +1,103 @@
+This directory contains a compiled gemfile mini_racer-0.12.0-x86_64-linux.gem
+compiled with Ruby 3.1 on CentOS 7.
+
+We need this, because the default development toolchain on CentOS 7 is too
+old to compile the latest binaries.
+
+Instead, we add the extra tools on a single build box, and use this to
+compile the gem.
+
+Please note, we currently compile separate binaries for Ruby 3.0.x and Ruby 3.1.x
+and have a special stanza in Gemfile to copy the right binary into vendor/cache
+
+Instructions tested 2024-05-08 on ncr-encore-app1.
+
+To set up the toolchain and install mini_racer 0.12.0
+(cf. https://github.com/rubyjs/mini_racer/issues/169):
+
+  sudo yum group install "Development Tools"
+  sudo yum install centos-release-scl # handles multiple versions of scl
+  sudo yum install scl-utils
+  sudo yum install scl-utils-build
+  sudo yum install devtoolset-9
+  scl enable devtoolset-9 bash # set everything up for version 9
+  gcc --version # this should be 9 now
+
+  # If necessary, set proxy servers, e.g.
+  export http_proxy=https://hostname:8080/
+  export https_proxy="$http_proxy"
+  export HTTP_PROXY="$http_proxy"
+
+  (cd .rbenv/plugins/ruby-build/; git pull)
+  rbenv install 3.1.4 --skip-existing
+  gem fetch mini_racer --version 0.12.0
+  gem install -N mini_racer-0.12.0.gem
+
+To compile the gem manually (after following the steps above):
+  git clone https://github.com/rubyjs/mini_racer.git
+  cd mini_racer
+  git checkout v0.12.0
+  rbenv shell 3.1.4
+  bundle install
+  rake clobber
+  scl enable devtoolset-9 bash # set everything up for version 9
+  rake compile
+  rake test # fails with error: undefined method `require_paths'
+  rake native gem
+  ls -oh pkg/*.gem # expect to see mini_racer-0.12.0-x86_64-linux.gem
+
+
+To update a repository with the Ruby 3.1 mini_racer binaries:
+
+  mkdir -p vendor/mini_racer-x86_64-linux-ruby31
+  mv ~/mini_racer/pkg/mini_racer-0.12.0-x86_64-linux.gem vendor/mini_racer-x86_64-linux-ruby31/
+
+Add the following to the Gemfile instead of the existing mini_racer / libv8 entries:
+
+  # We have built our own CentOS 7 binaries for various gems
+  # (with separate gem files for different ruby versions)
+  # Copy these into place if needed
+  def add_custom_centos_7_binaries(gem_dir_basename, gem_fnames)
+    gem_dir = if RUBY_PLATFORM == 'x86_64-linux' && File.exist?('/etc/os-release') &&
+                 File.readlines('/etc/os-release').grep(/^(ID="centos"|VERSION_ID="7")$/).count == 2
+                "vendor/#{gem_dir_basename}-x86_64-linux-ruby#{RUBY_VERSION.split('.')[0..1].join}"
+              end
+    require 'fileutils'
+    gem_fnames.each do |gem_fname|
+      if gem_dir && Dir.exist?(gem_dir)
+        begin
+          FileUtils.cp "#{gem_dir}/#{gem_fname}", 'vendor/cache/'
+        rescue Errno::EACCES
+          # Deployer account may not have write access to vendor/cache/
+          # (in which case the file in vendor/cache/ is probably already correct)
+        end
+      else
+        FileUtils.rm_f "vendor/cache/#{gem_fname}"
+      end
+    end
+  end
+  # We have built our own CentOS 7 binaries for mini_racer
+  # Copy these into place if needed
+  mini_racer_version = '0.12.0'
+  add_custom_centos_7_binaries('mini_racer',
+                               ["mini_racer-#{mini_racer_version}-x86_64-linux.gem"])
+  # Lock the gem version: if this changes, we need to rebuild our binaries
+  gem 'mini_racer', mini_racer_version
+
+Check that mini_racer is working:
+  ruby -r bundler/setup -r mini_racer -e 'puts MiniRacer::Context.new.eval("\"OK\"")'
+  # Expect a single line back containing only: OK
+
+Add the following to .gitignore
+
+  # Ignored to allow multiple different versions to be copied in by Gemfile
+  /vendor/cache/mini_racer-0.12.0-x86_64-linux.gem
+
+Run the following command:
+  bundle lock --add-platform x86_64-linux
+
+The following command needs to be run on all CentOS 7 deployments / working copies:
+  # This is run automatically on deployments in config/deploy.rb
+  script/fixup_centos7_gemfile.sh Gemfile.lock mini_racer red-arrow red-parquet
+
+Run tests / commit the changes.

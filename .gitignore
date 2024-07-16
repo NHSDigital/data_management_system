@@ -42,7 +42,7 @@ yarn-debug.log*
 
 build/dms-app/ansible/collections
 
-vendor/cache/mini_racer-0.6.2-x86_64-linux.gem
+/vendor/cache/mini_racer-0.12.0-x86_64-linux.gem
 
 # Ignore master key for decrypting credentials and more.
 /config/master.key

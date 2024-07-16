@@ -2,10 +2,10 @@ require 'test_helper'
 
 class GemfileTest < ActiveSupport::TestCase
   EXPECTED_MINI_RACER_ROWS = <<-TXT.freeze
-    mini_racer (0.6.2)
-      libv8-node (~> 16.10.0.0)
-    mini_racer (0.6.2-x86_64-linux)
-      libv8-node (~> 16.10.0.0)
+    mini_racer (0.12.0)
+      libv8-node (~> 21.7.2.0)
+    mini_racer (0.12.0-x86_64-linux)
+      libv8-node (~> 21.7.2.0)
   TXT
   test 'Gemfile.lock should reference mini_racer x86_64-linux binaries' do
     unless File.read('Gemfile.lock').include?(EXPECTED_MINI_RACER_ROWS)
@@ -23,11 +23,11 @@ class GemfileTest < ActiveSupport::TestCase
           grep -A1 '^    mini_racer' Gemfile.lock
 
         Expect to see the following output from grep:
-              mini_racer (0.6.2)
-                libv8-node (~> 16.10.0.0)
+              mini_racer (0.12.0)
+                libv8-node (~> 21.7.2.0)
           --
-              mini_racer (0.6.2-x86_64-linux)
-                libv8-node (~> 16.10.0.0)
+              mini_racer (0.12.0-x86_64-linux)
+                libv8-node (~> 21.7.2.0)
 
         If they're not there already, add the last 2 lines above, immediately after the first 2.
         (See also vendor/mini_racer-x86_64-linux-ruby30/CentOS7_build_notes_ruby30.txt)
