@@ -203,7 +203,8 @@ for x in $(find  $DIRPATH/$FILEPATH -type f -name "*.pseudo" -path "*/$PROV/*" \
 -not -path "*/2023/*" \
 ! -iname "*CRC*.pseudo" \
 ! -iname "*colorectal*.pseudo" \
-! -name "*HBOC*")
+! -name "*HBOC*" \
+! -name "*TP53*")
 do
 IFS="$OIFS"
 $BRAKE import:brca fname="$(echo "$x" | sed -e 's:.*pseudonymised_data/\(.*\):\1:')" prov_code=$PROV_OLD_FILE
