@@ -17,6 +17,7 @@ module Import
             process_molecular_testing(genotype, record)
             add_organisationcode_testresult(genotype)
             extract_teststatus(genotype, record)
+            add_provider_code(genotype, record)
             results = process_variant_record(genotype, record)
             results.each { |cur_genotype| @persister.integrate_and_store(cur_genotype) }
           end
@@ -30,6 +31,14 @@ module Import
 
           def add_organisationcode_testresult(genotype)
             genotype.attribute_map['organisationcode_testresult'] = '699H0'
+          end
+
+          def add_provider_code(genotype, record)
+            raw_org = record.raw_fields['providercode']&.downcase&.strip
+            org_code = ORG_CODE_MAP[raw_org]
+            return if org_code.blank?
+
+            genotype.attribute_map['providercode'] = org_code
           end
 
           def extract_teststatus(genotype, record)
@@ -56,14 +65,10 @@ module Import
             test_string = record.raw_fields['test']
             gene = extract_gene(test_string, variant, record)
             genotype.add_gene(gene[0])
-            if test_string.scan(CONFIRM_SEQ_NGS).size.positive?
-              add_fs_negative_gene(gene, genotype, genotypes)
-            end
+            add_fs_negative_gene(gene, genotype, genotypes) if test_string.scan(CONFIRM_SEQ_NGS).size.positive?
 
             process_variants(genotype, variant) if positive_record?(genotype) && variant.present?
-            unless test_string.scan(CONFIRM_SEQ_NGS).size.positive? && gene.blank?
-              genotypes.append(genotype)
-            end
+            genotypes.append(genotype) unless test_string.scan(CONFIRM_SEQ_NGS).size.positive? && gene.blank?
 
             genotypes
           end
@@ -110,7 +115,7 @@ module Import
             genotype.attribute_map['teststatus'] == 2
           end
 
-          # rubocop:disable Metrics/MethodLength, Metrics/CyclomaticComplexity, Layout/LineLength
+          # rubocop:disable Metrics/MethodLength, Metrics/CyclomaticComplexity
           def extract_gene(test_string, geno_string, record)
             positive_gene = []
             positive_gene << 'BRCA1' if record.raw_fields['servicereportidentifier'] == 'W1715894'
@@ -135,7 +140,7 @@ module Import
             end
             positive_gene
           end
-          # rubocop:enable Metrics/MethodLength, Metrics/CyclomaticComplexity, Layout/LineLength
+          # rubocop:enable Metrics/MethodLength, Metrics/CyclomaticComplexity
         end
       end
     end
