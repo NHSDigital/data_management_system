@@ -12,9 +12,6 @@
         name: "@Development tools"
         state: present
 
-    - name: Enable amazon-linux-extras packages
-      shell: amazon-linux-extras install postgresql14 vim epel -y
-
     - name: Remove Libuv Package from Amazon Linux2
       yum:
         name: libuv
@@ -23,6 +20,7 @@
     - name: Install Packages
       yum:
         name:
+          - postgresql15
           - httpd
           - mod_ssl
           - gcc
@@ -73,7 +71,7 @@
           # - postgresql
           # - nodejs
           - npm
-          - java-1.8.0-openjdk-headless
+          - java-1.8.0-amazon-corretto-devel
           - python-cryptography
           - python-boto3
           - wget
@@ -317,6 +315,9 @@
             source /home/mbis_app/.bash_profile && CAP_DEPLOY_REPOSITORY='file:///home/mbis_app/data_management_system/.git' /home/mbis_app/.rbenv/shims/bundle exec cap localhost_live deploy:cold
           register: deploy_cold
           ignore_errors: true
+          # TODO: capistrano routinely writes to stderr. Find a better way to identify errors
+          #       e.g. something like:
+          # failed_when: "'rolling back' in deploy_cold.stdout"
 
     - name: Delete content & directory
       become_user: mbis_app

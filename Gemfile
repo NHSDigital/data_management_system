@@ -121,6 +121,11 @@ group :test do
   # Capistrano 3.0 has some potentially incompatible changes.
   # Leave version unchanged workarounds can be found
   gem 'capistrano', '>= 2.5.0', '< 3.0', require: false
+
+  # Support passwordless deployment via SSH keys
+  gem 'bcrypt_pbkdf', '~> 1.0'
+  gem 'ed25519', '~> 1.2'
+
   gem 'capybara-email'
   gem 'mocha'
 end

@@ -88,11 +88,13 @@ if secondary_repo && credentials_repo
     set -e
     for fname in #{secondary_repo_paths.collect { |fname| Shellwords.escape(fname) }.join(' ')}; do
       rm -f "$fname"
-      svn export --force "#{secondary_repo}/$fname" "$fname"
+      svn export --force "#{secondary_repo}/$fname" "$fname" || \
+        echo "Warning: secondary repository inaccessible. Not updating \\"$fname\\""
     done
     for fname in #{credentials_repo_paths.collect { |fname| Shellwords.escape(fname) }.join(' ')}; do
       rm -f "$fname"
-      svn export --force "#{credentials_repo}/$fname" "$fname"
+      svn export --force "#{credentials_repo}/$fname" "$fname" || \
+        echo "Warning: credentials repository inaccessible. Not updating \\"$fname\\""
     done
   SHELL
 else
@@ -114,6 +116,9 @@ set :asset_script, <<~SHELL
     sed -i.bak -e '/mini_racer ([0-9.]*-x86_64-linux)/,+1d' Gemfile.lock
   fi
   printf 'disable-self-update-check true\\nyarn-offline-mirror "./vendor/npm-packages-offline-cache"\\nyarn-offline-mirror-pruning false\\n' > .yarnrc
+  if NODE_OPTIONS=--openssl-legacy-provider node --version > /dev/null 2>&1; then
+    export NODE_OPTIONS=--openssl-legacy-provider
+  fi
   RAILS_ENV=production bundle exec rake assets:clobber assets:precompile
   rm config/secrets.yml config/database.yml
 SHELL

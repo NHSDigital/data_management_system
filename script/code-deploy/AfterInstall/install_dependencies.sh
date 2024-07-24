@@ -1,6 +1,7 @@
 #!/bin/bash
-sudo amazon-linux-extras install ansible2 -y
-sudo pip2 install botocore boto3 python-ldap
+sudo yum install ansible python3-pip -y
+sudo yum install curl --allowerasing -y
+sudo pip install botocore boto3 --no-input
 ansible-galaxy collection install amazon.aws community.aws community.general
 
 
