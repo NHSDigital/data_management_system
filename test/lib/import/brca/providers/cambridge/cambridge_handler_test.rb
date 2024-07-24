@@ -102,7 +102,25 @@ class CambridgeHandlerTest < ActiveSupport::TestCase
     assert_equal 3, @genotype.attribute_map['sequencevarianttype']
   end
 
-  # TODO: write test coverage for function 'summarize'
+  test 'add_provider_code' do
+    prov_record = build_raw_record('pseudo_id1' => 'bob')
+
+    # For which codes are there
+    prov_record.raw_fields['providercode'] = 'Clinical Genetics'
+    prov_record.mapped_fields['providercode'] = 'Clinical Genetics'
+    @genotype.add_passthrough_fields(prov_record.mapped_fields, prov_record.raw_fields,
+                                     Import::Brca::Providers::Cambridge::CambridgeHandler::PASS_THROUGH_FIELDS)
+    @handler.add_provider_code(@genotype, prov_record, Import::Brca::Providers::Cambridge::CambridgeHandler::ORG_CODE_MAP)
+    assert_equal 'RGT01', @genotype.attribute_map['providercode']
+
+    # For which codes are not there
+    prov_record.raw_fields['providercode'] = 'Velindre Cancer Centre'
+    prov_record.mapped_fields['providercode'] = 'Velindre Cancer Centre'
+    @genotype.add_passthrough_fields(prov_record.mapped_fields, prov_record.raw_fields,
+                                     Import::Brca::Providers::Cambridge::CambridgeHandler::PASS_THROUGH_FIELDS)
+    @handler.add_provider_code(@genotype, prov_record, Import::Brca::Providers::Cambridge::CambridgeHandler::ORG_CODE_MAP)
+    assert_equal 'Velindre Cancer Centre', @genotype.attribute_map['providercode']
+  end
 
   private
 

@@ -229,7 +229,7 @@
       become: true
       args:
         chdir: /home/mbis_app/data_management_system
-      shell: sed -i.bak '/mini_racer (0.6.2-x86_64-linux/,+1d' Gemfile.lock
+      shell: sed -i.bak '/mini_racer ([0-9.]*-x86_64-linux/,+1d' Gemfile.lock
 
     - name: symlink cmake3 to cmake
       become: true
