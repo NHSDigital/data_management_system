@@ -86,6 +86,17 @@ module Import
                                   (?<ex>(?<nm>exon|exons)\s(?<exons>[0-9]+([a-z -]+[0-9]+)?))
                                   ([a-z ]+
                                   (?<mutationtype>del|dup))?/ix
+            ORG_CODE_MAP = {
+              'royal cornwall hospital trust' => 'REF12',
+              'exeter clinical genetics centre' => 'RH802',
+              'peninsula clinical genetics service' => 'RH802',
+              'royal devon & exeter hospital nhs trust' => 'RH802',
+              'peninsula clinical genetics service (truro)' => 'RH855',
+              'royal devon & exeter hospital (oncology)' => 'RH8AA',
+              'peninsula clinical genetics service (plymouth)' => 'RH8D2',
+              'molecular genetics department' => 'RNZ02',
+              'wessex clinical genetics service' => 'RNZ02'
+            }.freeze
             # rubocop:enable Lint/MixedRegexpCaptureTypes
           end
         end

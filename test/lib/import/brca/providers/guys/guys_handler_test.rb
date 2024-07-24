@@ -1014,6 +1014,26 @@ class GuysHandlerTest < ActiveSupport::TestCase
     assert_equal 'Full screen BRCA1 and BRCA2', res[1].attribute_map['genetictestscope']
   end
 
+  test 'add_provider_code' do
+    prov_record = build_raw_record('pseudo_id1' => 'bob')
+
+    # For which codes are there
+    prov_record.raw_fields['providercode'] = "Guy's Hospital"
+    prov_record.mapped_fields['providercode'] = "Guy's Hospital"
+    @genotype.add_passthrough_fields(prov_record.mapped_fields, prov_record.raw_fields,
+                                     Import::Brca::Providers::Guys::GuysHandler::PASS_THROUGH_FIELDS)
+    @handler.add_provider_code(@genotype, prov_record, Import::Brca::Providers::Guys::GuysHandler::ORG_CODE_MAP)
+    assert_equal 'RJ121', @genotype.attribute_map['providercode']
+
+    # For which codes are not there
+    prov_record.raw_fields['providercode'] = 'ASHFORD, KENT'
+    prov_record.mapped_fields['providercode'] = 'ASHFORD, KENT'
+    @genotype.add_passthrough_fields(prov_record.mapped_fields, prov_record.raw_fields,
+                                     Import::Brca::Providers::Guys::GuysHandler::PASS_THROUGH_FIELDS)
+    @handler.add_provider_code(@genotype, prov_record, Import::Brca::Providers::Guys::GuysHandler::ORG_CODE_MAP)
+    assert_equal 'ASHFORD, KENT', @genotype.attribute_map['providercode']
+  end
+
   private
 
   def clinical_json

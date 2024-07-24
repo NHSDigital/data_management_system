@@ -1,5 +1,4 @@
 require 'possibly'
-require 'pry'
 
 module Import
   module Brca
@@ -23,6 +22,25 @@ module Import
           CDNA_REGEX = /c\.(?<cdna>.*)/i
           PROTEIN_REGEX = /p.(?:\((?<impact>.*)\))/
           EXON_LOCATION_REGEX = /exons? (\d+[a-z]*(?: ?- ?\d+[a-z]*)?)/i
+          ORG_CODE_MAP = {
+            'north west thames genetics service' => 'R1K01',
+            'royal free hampstead nhs trust' => 'RAL01',
+            'royal free hospital' => 'RAL01',
+            'royal united hospital' => 'RD130',
+            "addenbrooke's hospital" => 'RGT01',
+            'centre for medical genetics' => 'RGT01',
+            'clinical genetics' => 'RGT01',
+            'clinical genetics, box 134' => 'RGT01',
+            'department of paediatrics' => 'RGT01',
+            'genetics laboratories' => 'RGT01',
+            'oncology' => 'RGT01',
+            'royal devon & exeter hospital' => 'RH802',
+            'portsmouth hospital' => 'RHU03',
+            'st georges' => 'RJ701',
+            'norfolk and norwich university hospital' => 'RM102',
+            'norfolk & norwich hospital' => 'RM102',
+            'james cook university hospital' => 'RTDCR'
+          }.freeze
 
           def process_fields(record)
             genotype = Import::Brca::Core::GenotypeBrca.new(record)
@@ -41,6 +59,7 @@ module Import
             add_zygosity(genotype, record)
             process_exons(record.raw_fields['proteinimpact'], genotype)
             add_organisationcode_testresult(genotype)
+            add_provider_code(genotype, record, ORG_CODE_MAP)
             @persister.integrate_and_store(genotype)
           end
 
