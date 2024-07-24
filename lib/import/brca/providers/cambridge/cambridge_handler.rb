@@ -59,20 +59,12 @@ module Import
             add_zygosity(genotype, record)
             process_exons(record.raw_fields['proteinimpact'], genotype)
             add_organisationcode_testresult(genotype)
-            add_provider_code(genotype, record)
+            add_provider_code(genotype, record, ORG_CODE_MAP)
             @persister.integrate_and_store(genotype)
           end
 
           def add_organisationcode_testresult(genotype)
             genotype.attribute_map['organisationcode_testresult'] = '69860'
-          end
-
-          def add_provider_code(genotype, record)
-            raw_org = record.raw_fields['providercode']&.downcase&.strip
-            org_code = ORG_CODE_MAP[raw_org]
-            return if org_code.blank?
-
-            genotype.attribute_map['providercode'] = org_code
           end
 
           def process_cdna_change(genotype, record, variantpathclass)

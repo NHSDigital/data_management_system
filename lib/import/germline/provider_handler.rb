@@ -27,6 +27,14 @@ module Import
       end
 
       def process_fields(_raw_record); end
+
+      def add_provider_code(genotype, record, org_code_map)
+        raw_org = record.raw_fields['providercode']&.downcase&.strip
+        org_code = org_code_map[raw_org]
+        return if org_code.blank?
+
+        genotype.attribute_map['providercode'] = org_code
+      end
     end
   end
 end

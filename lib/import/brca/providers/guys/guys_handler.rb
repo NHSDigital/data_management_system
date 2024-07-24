@@ -56,7 +56,7 @@ module Import
             mtype = record.raw_fields['moleculartestingtype']
             genotype.add_molecular_testing_type_strict(mtype) if mtype
             add_organisationcode_testresult(genotype)
-            add_provider_code(genotype, record)
+            add_provider_code(genotype, record, ORG_CODE_MAP)
             # Below method appends extracted items to @genotypes list
             process_tests
             @genotypes.flatten.each do |cur_genotype|
@@ -68,14 +68,6 @@ module Import
 
           def add_organisationcode_testresult(genotype)
             genotype.attribute_map['organisationcode_testresult'] = '699L0'
-          end
-
-          def add_provider_code(genotype, record)
-            raw_org = record.raw_fields['providercode']&.downcase&.strip
-            org_code = ORG_CODE_MAP[raw_org]
-            return if org_code.blank?
-
-            genotype.attribute_map['providercode'] = org_code
           end
 
           def process_tests

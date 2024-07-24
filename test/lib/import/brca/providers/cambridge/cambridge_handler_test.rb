@@ -110,7 +110,7 @@ class CambridgeHandlerTest < ActiveSupport::TestCase
     prov_record.mapped_fields['providercode'] = 'Clinical Genetics'
     @genotype.add_passthrough_fields(prov_record.mapped_fields, prov_record.raw_fields,
                                      Import::Brca::Providers::Cambridge::CambridgeHandler::PASS_THROUGH_FIELDS)
-    @handler.add_provider_code(@genotype, prov_record)
+    @handler.add_provider_code(@genotype, prov_record, Import::Brca::Providers::Cambridge::CambridgeHandler::ORG_CODE_MAP)
     assert_equal 'RGT01', @genotype.attribute_map['providercode']
 
     # For which codes are not there
@@ -118,7 +118,7 @@ class CambridgeHandlerTest < ActiveSupport::TestCase
     prov_record.mapped_fields['providercode'] = 'Velindre Cancer Centre'
     @genotype.add_passthrough_fields(prov_record.mapped_fields, prov_record.raw_fields,
                                      Import::Brca::Providers::Cambridge::CambridgeHandler::PASS_THROUGH_FIELDS)
-    @handler.add_provider_code(@genotype, prov_record)
+    @handler.add_provider_code(@genotype, prov_record, Import::Brca::Providers::Cambridge::CambridgeHandler::ORG_CODE_MAP)
     assert_equal 'Velindre Cancer Centre', @genotype.attribute_map['providercode']
   end
 

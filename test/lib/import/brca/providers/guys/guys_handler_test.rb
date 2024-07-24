@@ -1022,7 +1022,7 @@ class GuysHandlerTest < ActiveSupport::TestCase
     prov_record.mapped_fields['providercode'] = "Guy's Hospital"
     @genotype.add_passthrough_fields(prov_record.mapped_fields, prov_record.raw_fields,
                                      Import::Brca::Providers::Guys::GuysHandler::PASS_THROUGH_FIELDS)
-    @handler.add_provider_code(@genotype, prov_record)
+    @handler.add_provider_code(@genotype, prov_record, Import::Brca::Providers::Guys::GuysHandler::ORG_CODE_MAP)
     assert_equal 'RJ121', @genotype.attribute_map['providercode']
 
     # For which codes are not there
@@ -1030,7 +1030,7 @@ class GuysHandlerTest < ActiveSupport::TestCase
     prov_record.mapped_fields['providercode'] = 'ASHFORD, KENT'
     @genotype.add_passthrough_fields(prov_record.mapped_fields, prov_record.raw_fields,
                                      Import::Brca::Providers::Guys::GuysHandler::PASS_THROUGH_FIELDS)
-    @handler.add_provider_code(@genotype, prov_record)
+    @handler.add_provider_code(@genotype, prov_record, Import::Brca::Providers::Guys::GuysHandler::ORG_CODE_MAP)
     assert_equal 'ASHFORD, KENT', @genotype.attribute_map['providercode']
   end
 

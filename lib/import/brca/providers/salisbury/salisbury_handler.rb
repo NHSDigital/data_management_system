@@ -17,7 +17,7 @@ module Import
             process_molecular_testing(genotype, record)
             add_organisationcode_testresult(genotype)
             extract_teststatus(genotype, record)
-            add_provider_code(genotype, record)
+            add_provider_code(genotype, record, ORG_CODE_MAP)
             results = process_variant_record(genotype, record)
             results.each { |cur_genotype| @persister.integrate_and_store(cur_genotype) }
           end
@@ -31,14 +31,6 @@ module Import
 
           def add_organisationcode_testresult(genotype)
             genotype.attribute_map['organisationcode_testresult'] = '699H0'
-          end
-
-          def add_provider_code(genotype, record)
-            raw_org = record.raw_fields['providercode']&.downcase&.strip
-            org_code = ORG_CODE_MAP[raw_org]
-            return if org_code.blank?
-
-            genotype.attribute_map['providercode'] = org_code
           end
 
           def extract_teststatus(genotype, record)

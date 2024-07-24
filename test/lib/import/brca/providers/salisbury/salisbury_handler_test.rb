@@ -131,7 +131,7 @@ class SalisburyHandlerTest < ActiveSupport::TestCase
     prov_record.mapped_fields['providercode'] = 'Royal Cornwall Hospital Trust'
     @genotype.add_passthrough_fields(prov_record.mapped_fields, prov_record.raw_fields,
                                      Import::Helpers::Brca::Providers::Rnz::RnzConstants::PASS_THROUGH_FIELDS)
-    @handler.add_provider_code(@genotype, prov_record)
+    @handler.add_provider_code(@genotype, prov_record, Import::Helpers::Brca::Providers::Rnz::RnzConstants::ORG_CODE_MAP)
     assert_equal 'REF12', @genotype.attribute_map['providercode']
 
     # For which codes are not there
@@ -139,7 +139,7 @@ class SalisburyHandlerTest < ActiveSupport::TestCase
     prov_record.mapped_fields['providercode'] = 'North Devon District Hospital'
     @genotype.add_passthrough_fields(prov_record.mapped_fields, prov_record.raw_fields,
                                      Import::Helpers::Brca::Providers::Rnz::RnzConstants::PASS_THROUGH_FIELDS)
-    @handler.add_provider_code(@genotype, prov_record)
+    @handler.add_provider_code(@genotype, prov_record, Import::Helpers::Brca::Providers::Rnz::RnzConstants::ORG_CODE_MAP)
     assert_equal 'North Devon District Hospital', @genotype.attribute_map['providercode']
   end
 
