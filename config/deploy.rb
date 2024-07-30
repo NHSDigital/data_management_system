@@ -253,4 +253,6 @@ TARGETS.each do |env, name, app, port, app_user, include_assets|
 end
 
 # For AWS CodeDeploy deployments, using a local working copy checkout
-add_target(:current, :localhost_live, 'localhost', 22, 'mbis_app', true)
+if ENV.key?('CAP_DEPLOY_APP_USER')
+  add_target(:current, :localhost_live, 'localhost', 22, ENV.fetch('CAP_DEPLOY_APP_USER'), true)
+end

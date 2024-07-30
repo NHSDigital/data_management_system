@@ -10,20 +10,20 @@
 
     - name: Make Directory
       file:
-        path: /home/mbis_app/mbis_front
+        path: "/home/{{ app_user }}/mbis_front"
         state: directory
-        owner: mbis_app
-        group: mbis_app
+        owner: "{{ app_user }}"
+        group: "{{ app_user }}"
         mode: 0750
 
     # # Current folder not being written
     # - name: Copy Folder
     #   become: true
-    #   become_user: mbis_app
+    #   become_user: "{{ app_user }}"
     #   synchronize:
     #     # example of location /opt/codedeploy-agent/deployment-root/1837119a-3753-4fe5-bcf8-0a2c553c4628/d-0ZIYEP67O/deployment-archive/
     #     src: "../../../../{{ item }}/"
-    #     dest: "/home/mbis_app/mbis_front/{{ item }}/"
+    #     dest: "/home/{{ app_user }}/mbis_front/{{ item }}/"
     #     recursive: true
     #     links: true
     #     delete: true
@@ -33,17 +33,17 @@
     #     - shared
 
     # - name: Copy Folder
-    #   command: rsync -azPv --delete-excluded ../../../../{{ item }}/ /home/mbis_app/mbis_front/{{ item }}
+    #   command: "rsync -azPv --delete-excluded ../../../../{{ item }}/ /home/{{ app_user }}/mbis_front/{{ item }}"
     #   with_items:
     #     - current
     #     - releases
     #     - shared
 
-    - name: Fix user 'mbis_app' permissions
+    - name: "Fix user '{{ app_user }}' permissions"
       become: true
       file:
-        path: /home/mbis_app/mbis_front
-        owner: mbis_app
+        path: "/home/{{ app_user }}/mbis_front"
+        owner: "{{ app_user }}"
         group: deployer
         mode: 0770
         state: directory
@@ -53,9 +53,9 @@
       become: true
       copy:
         remote_src: true
-        src: /home/mbis_app/mbis_front/current/script/start_server.sh.sample
-        dest: /home/mbis_app/start_server.sh
-        owner: mbis_app
+        src: "/home/{{ app_user }}/mbis_front/current/script/start_server.sh.sample"
+        dest: "/home/{{ app_user }}/start_server.sh"
+        owner: "{{ app_user }}"
         group: deployer
         mode: 0764
 
@@ -63,19 +63,19 @@
       become: true
       copy:
         remote_src: true
-        src: /home/mbis_app/mbis_front/current/script/stop_server_gracefully.sh.sample
-        dest: /home/mbis_app/stop_server_gracefully.sh
-        owner: mbis_app
+        src: "/home/{{ app_user }}/mbis_front/current/script/stop_server_gracefully.sh.sample"
+        dest: "/home/{{ app_user }}/stop_server_gracefully.sh"
+        owner: "{{ app_user }}"
         group: deployer
         mode: 0764
 
-    # - name: Copy files for mbis_app
-    #   become_user: mbis_app
+    # - name: "Copy files for {{ app_user }}"
+    #   become_user: "{{ app_user }}"
     #   copy:
     #     remote_src: true
-    #     src: "/home/mbis_app/mbis_front/current/config/{{ item }}.sample"
-    #     dest: "/home/mbis_app/mbis_front/shared/config/{{ item }}.yml"
-    #     owner: mbis_app
+    #     src: "/home/{{ app_user }}/mbis_front/current/config/{{ item }}.sample"
+    #     dest: "/home/{{ app_user }}/mbis_front/shared/config/{{ item }}.yml"
+    #     owner: "{{ app_user }}"
     #     group: deployer
     #     mode: 0740
     #   with_items:

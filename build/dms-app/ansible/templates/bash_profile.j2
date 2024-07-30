@@ -5,6 +5,8 @@ if [ -f ~/.bashrc ]; then
 	. ~/.bashrc
 fi
 
+unset GEM_HOME
+
 # User specific environment and startup programs
 
 PATH=$PATH:$HOME/.local/bin:$HOME/bin:$HOME/.rbenv/bin:/usr/local/bin
@@ -16,5 +18,3 @@ eval "$(rbenv init -)"
 
 #export NDR_AUTH=true
 
-APP_USER="mbis_app"
-export DEPLOYER="$APP_USER"

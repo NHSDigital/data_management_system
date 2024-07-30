@@ -142,25 +142,36 @@
       with_items:
         "{{ application_users }}"
 
+    - name: "Set up TMPDIR and GEM_HOME for rbenv installation"
+      become_user: "{{ item }}"
+      become: true
+      shell: |
+        if ! grep -q "unset GEM_HOME" ~/.bash_profile; then
+          echo "unset GEM_HOME" >> ~/.bash_profile
+        fi
+      with_items:
+        "{{ ruby_env_users }}"
+
     - name: Create Ruby Application
-      import_role:
+      include_role:
         name: zzet.rbenv
       vars:
+        rbenv_tmpdir: "/home/{{ item[0] }}/rbenv_tmp"
         rbenv_users:
           "{{ ruby_env_users }}"
 
     - name: Make .ssh folder
-      become_user: mbis_app
+      become_user: "{{ app_user }}"
       become: true
       file:
         path: ~/tmp/.ssh
         state: directory
         mode: 0700
-        owner: mbis_app
-        group: mbis_app
+        owner: "{{ app_user }}"
+        group: "{{ app_user }}"
 
-    - name: generate SSH key for mbis_app directory
-      become_user: mbis_app
+    - name: "generate SSH key for {{ app_user }} directory"
+      become_user: "{{ app_user }}"
       become: true
       openssh_keypair:
         path: ~/tmp/.ssh/id_rsa
@@ -170,99 +181,99 @@
         force: no
 
     - name: create .ssh directory
-      become_user: mbis_app
+      become_user: "{{ app_user }}"
       become: true
       file:
         path: ~/.ssh
         state: directory
         mode: 0700
-        owner: mbis_app
-        group: mbis_app
+        owner: "{{ app_user }}"
+        group: "{{ app_user }}"
 
-    - name: create authorized_keys file to mbis_app directory
-      become_user: mbis_app
+    - name: "create authorized_keys file to {{ app_user }} directory"
+      become_user: "{{ app_user }}"
       become: true
       file:
         path: ~/.ssh/authorized_keys
         state: touch
         mode: 0600
-        owner: mbis_app
-        group: mbis_app
+        owner: "{{ app_user }}"
+        group: "{{ app_user }}"
 
-    - name:  add mbis_app to authorized_key
-      become_user: mbis_app
+    - name: "add {{ app_user }} to authorized_key"
+      become_user: "{{ app_user }}"
       become: true
       shell: cat ~/tmp/.ssh/id_rsa.pub > ~/.ssh/authorized_keys
 
     - name: copy .id_rsa keys to .ssh directory
-      become_user: mbis_app
+      become_user: "{{ app_user }}"
       become: true
       copy:
         src:  ~/tmp/.ssh/id_rsa
         dest:  ~/.ssh/id_rsa
-        owner: mbis_app
-        group: mbis_app
+        owner: "{{ app_user }}"
+        group: "{{ app_user }}"
         mode: 0400
         remote_src: true
 
     - name: Delete content & directory
-      become_user: mbis_app
+      become_user: "{{ app_user }}"
       become: true
       file:
         state: absent
-        path: /home/mbis_app/data_management_system
+        path: "/home/{{ app_user }}/data_management_system"
 
-    - name: Copy Code to mbis_app directory
-      become_user: mbis_app
+    - name: "Copy Code to {{ app_user }} directory"
+      become_user: "{{ app_user }}"
       copy:
         src:  /tmp/mbis_front/
-        dest: /home/mbis_app/data_management_system/
-        owner: mbis_app
-        group: mbis_app
+        dest: "/home/{{ app_user }}/data_management_system/"
+        owner: "{{ app_user }}"
+        group: "{{ app_user }}"
         mode: 0770
         remote_src: true
 
     - name: Remove Mini Racer from Gemfile.lock
-      become_user: mbis_app
+      become_user: "{{ app_user }}"
       become: true
       args:
-        chdir: /home/mbis_app/data_management_system
+        chdir: "/home/{{ app_user }}/data_management_system"
       shell: sed -i.bak '/mini_racer ([0-9.]*-x86_64-linux/,+1d' Gemfile.lock
 
     - name: symlink cmake3 to cmake
       become: true
       file:
         src: /usr/bin/cmake3
-        dest: /home/mbis_app/.rbenv/bin/cmake
-        owner: mbis_app
-        group: mbis_app
+        dest: "/home/{{ app_user }}/.rbenv/bin/cmake"
+        owner: "{{ app_user }}"
+        group: "{{ app_user }}"
         state: link
 
     - name: Make mbis_front
       become: true
-      become_user: mbis_app
+      become_user: "{{ app_user }}"
       block:
-        - name: Create .bash_profile on mbis_app home
-          become_user: mbis_app
+        - name: "Create .bash_profile on {{ app_user }} home"
+          become_user: "{{ app_user }}"
           template:
             src: bash_profile.j2
-            dest: /home/mbis_app/.bash_profile
-            owner: mbis_app
-            group: mbis_app
+            dest: "/home/{{ app_user }}/.bash_profile"
+            owner: "{{ app_user }}"
+            group: "{{ app_user }}"
 
         - name: Source Bash profile
-          shell: source /home/mbis_app/.bash_profile
+          shell: "source /home/{{ app_user }}/.bash_profile"
 
         - name: bundle install
-          become_user: mbis_app
-          shell: source /home/mbis_app/.bash_profile && /home/mbis_app/.rbenv/shims/bundle install --local
+          become_user: "{{ app_user }}"
+          shell: "source /home/{{ app_user }}/.bash_profile && /home/{{ app_user }}/.rbenv/shims/bundle install --local"
           args:
-            chdir: /home/mbis_app/data_management_system/
+            chdir: "/home/{{ app_user }}/data_management_system/"
 
         - name: bundle check
           args:
-            chdir: /home/mbis_app/data_management_system/
-          shell: source /home/mbis_app/.bash_profile && /home/mbis_app/.rbenv/shims/bundle check
+            chdir: "/home/{{ app_user }}/data_management_system/"
+          shell: "source /home/{{ app_user }}/.bash_profile && /home/{{ app_user }}/.rbenv/shims/bundle check"
 
         - name: Get Current branch
           shell: |
@@ -277,7 +288,7 @@
 
             # TODO: if config/.git exists, need to find the way to delete 
           args:
-            chdir: /home/mbis_app/data_management_system
+            chdir: "/home/{{ app_user }}/data_management_system"
           register: current_branch
 
         - name: Get facts
@@ -288,7 +299,7 @@
             (head -1 config/deployments.yml; printf "current:\n  branch: `git rev-parse HEAD`\n  ruby: `cat .ruby-version`\n"; tail -n+5 config/deployments.yml) > config/deployments.yml2
             mv config/deployments.yml2 config/deployments.yml
           args:
-            chdir: /home/mbis_app/data_management_system
+            chdir: "/home/{{ app_user }}/data_management_system"
 
         - name: Move all config file
           shell: |
@@ -296,23 +307,23 @@
             cp config/smtp_settings.yml.sample config/smtp_settings.yml
             cp config/database.yml.sample config/database.yml
           args:
-            chdir: /home/mbis_app/data_management_system
+            chdir: "/home/{{ app_user }}/data_management_system"
 
         - name: Clear Known hosts
           shell: |
-            echo "" > /home/mbis_app/.ssh/known_hosts
+            echo "" > /home/{{ app_user }}/.ssh/known_hosts
 
         - name: Bundle exec cap deploy:setup
           args:
-            chdir: /home/mbis_app/data_management_system
+            chdir: "/home/{{ app_user }}/data_management_system"
           shell: |
-            source /home/mbis_app/.bash_profile && CAP_DEPLOY_REPOSITORY='file:///home/mbis_app/data_management_system/.git' /home/mbis_app/.rbenv/shims/bundle exec cap localhost_live deploy:setup
+            source /home/{{ app_user }}/.bash_profile && CAP_DEPLOY_REPOSITORY='file:///home/{{ app_user }}/data_management_system/.git' DEPLOYER='{{ app_user }}' CAP_DEPLOY_APP_USER='{{ app_user }}' /home/{{ app_user }}/.rbenv/shims/bundle exec cap localhost_live deploy:setup
 
         - name: Bundle exec cap deploy:cold
           args:
-            chdir: /home/mbis_app/data_management_system
+            chdir: "/home/{{ app_user }}/data_management_system"
           shell: |
-            source /home/mbis_app/.bash_profile && CAP_DEPLOY_REPOSITORY='file:///home/mbis_app/data_management_system/.git' /home/mbis_app/.rbenv/shims/bundle exec cap localhost_live deploy:cold
+            source /home/{{ app_user }}/.bash_profile && CAP_DEPLOY_REPOSITORY='file:///home/{{ app_user }}/data_management_system/.git' DEPLOYER='{{ app_user }}' CAP_DEPLOY_APP_USER='{{ app_user }}' /home/{{ app_user }}/.rbenv/shims/bundle exec cap localhost_live deploy:cold
           register: deploy_cold
           ignore_errors: true
           # TODO: capistrano routinely writes to stderr. Find a better way to identify errors
@@ -320,7 +331,7 @@
           # failed_when: "'rolling back' in deploy_cold.stdout"
 
     - name: Delete content & directory
-      become_user: mbis_app
+      become_user: "{{ app_user }}"
       file:
         state: absent
-        path: /home/mbis_app/data_management_system
+        path: "/home/{{ app_user }}/data_management_system"
