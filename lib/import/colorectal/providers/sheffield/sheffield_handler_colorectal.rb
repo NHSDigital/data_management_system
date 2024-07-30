@@ -32,6 +32,9 @@ module Import
             genotype_str = record.raw_fields['genetictestscope'].strip
             karyo = record.raw_fields['karyotypingmethod'].strip
             moleculartestingtype = record.raw_fields['moleculartestingtype'].strip
+            if genotype_str.downcase.match(/r211\s::\sinherited\spolyposis\sand\searly\sonset\scolorectal\scancer/)
+              genotype_str="r211 :: inherited polyposis and early onset colorectal cancer, germline testing"
+            end
             process_method = GENETICTESTSCOPE_METHOD_MAPPING[genotype_str.downcase]
             if process_method
               public_send(process_method, karyo, genocolorectal, moleculartestingtype)
@@ -72,6 +75,17 @@ module Import
             end
           end
 
+
+          def process_scope_r414(karyo, genocolorectal, moleculartestingtype)
+            if R414_PANEL_GENE_MAPPING_FS.keys.include? karyo
+              @logger.debug "ADDED FULL_SCREEN TEST for: #{karyo}"
+              genocolorectal.add_test_scope(:full_screen)
+              @genes_set = R414_PANEL_GENE_MAPPING_FS[karyo]
+            else
+              genocolorectal.add_test_scope(:no_genetictestscope)
+            end
+          end
+
           def process_scope_r210(karyo, genocolorectal, moleculartestingtype)
             if R210_PANEL_GENE_MAPPING_FS.keys.include? karyo
               @logger.debug "ADDED FULL_SCREEN TEST for: #{karyo}"
@@ -90,6 +104,9 @@ module Import
           end
 
           def process_scope_r211(karyo, genocolorectal, moleculartestingtype)
+            if karyo.match(/R211.1\s::\sSmall\spanel\sin\sLeeds.*send\sDNA\ssample/)
+              karyo='R211.1 :: Small panel in Leeds - send DNA sample'
+            end
             if R211_PANEL_GENE_MAPPING_FS.keys.include? karyo
               @logger.debug "ADDED FULL_SCREEN TEST for: #{karyo}"
               genocolorectal.add_test_scope(:full_screen)
@@ -218,12 +235,26 @@ module Import
 
           def process_targeted_no_scope_records(genocolorectal, record, genocolorectals)
             genotype_str = record.raw_fields['genotype']
-            if normal?(genotype_str)
+          if genotype_str.scan(/fail/).size.positive?
+              gene=get_gene(record)
+              genocolorectal.add_status(9)
+              genocolorectals.append(genocolorectal)
+          elsif normal?(genotype_str)
               process_normal_targeted(genocolorectal, record, genocolorectals)
             elsif positive_cdna?(genotype_str) || positive_exonvariant?(genotype_str)
               process_variant_targeted(genocolorectal, record, genocolorectals)
             elsif only_protein_impact?(genotype_str)
               process_only_protein_rec(genocolorectal, record, genocolorectals)
+              #TODO this will give it a test status of 2 even if it says "No pathogenic mutation detected!!"
+            elsif genotype_str.scan(/^pathogenic\smutation\sdetected/).size.positive?
+              gene = get_gene(record)
+              genocolorectal.add_status(2)
+              genocolorectals.append(genocolorectal)
+            else
+              gene=get_gene(record)
+              genocolorectal.add_status(4)
+              genocolorectals.append(genocolorectal)
+
             end
           end
 
@@ -247,6 +278,7 @@ module Import
           end
 
           def add_other_genes_with_status(other_genes, genocolorectal, genocolorectals, status)
+            #TODO what if there are no gene names???
             other_genes.each do |gene|
               genotype_othr = genocolorectal.dup_colo
               @logger.debug "SUCCESSFUL gene parse for #{status} status for: #{gene}"
@@ -255,6 +287,10 @@ module Import
               genotype_othr.add_protein_impact(nil)
               genotype_othr.add_gene_location(nil)
               genocolorectals.append(genotype_othr)
+            end
+
+            if other_genes.empty?
+              genocolorectals.append(genocolorectal)
             end
             genocolorectals
           end

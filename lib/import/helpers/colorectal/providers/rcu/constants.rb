@@ -62,7 +62,9 @@ module Import
               'fap familial mutation' => :process_scope_fap_familial,
               'hnpcc' => :process_scope_hnpcc,
               'myh' => :process_scope_myh,
-              'breast ovarian & colorectal cancer panel' => :process_scope_colo_ovarian_panel
+              'breast ovarian & colorectal cancer panel' => :process_scope_colo_ovarian_panel,
+              'r211 :: inherited polyposis and early onset colorectal cancer, germline testing'=> :process_scope_r211,
+              'r414 :: apc associated polyposis'=> :process_scope_r414
             }.freeze
 
             COLO_PANEL_GENE_MAPPING_FS = {
@@ -74,8 +76,7 @@ module Import
               'Extended CRC panel - analysis only' => %w[MLH1 MSH2 MSH6 PMS2 EPCAM
                                                          APC MUTYH BMPR1A PTEN POLD1
                                                          POLE SMAD4 STK11],
-              'Full panel' => %w[MLH1 MSH2 MSH6 PMS2 EPCAM APC MUTYH BMPR1A PTEN POLD1 POLE SMAD4
-                                 STK11],
+              'Full panel' => %w[ATM BRCA1 BRCA2 BRIP1 CDH1 CHEK2 EPCAM MLH1 MSH2 MSH6 PALB2 PTEN RAD51C RAD51D STK11 TP53 PMS2],
               'MLH1  MSH2  MSH6  PMS1 & PMS2' => %w[MLH1 MSH2 MSH6 PMS1 PMS2],
               'MLH1  MSH2  MSH6 and PMS2' => %w[MLH1 MSH2 MSH6 PMS2],
               'MLH1  MSH2 and MSH6' => %w[MLH1 MSH2 MSH6],
@@ -88,6 +89,11 @@ module Import
             COLO_PANEL_GENE_MAPPING_TAR = {
               'PTEN familial mutation' => %w[PTEN],
               'STK11 familial mutation' => %w[STK11]
+            }.freeze
+
+
+            R414_PANEL_GENE_MAPPING_FS = {
+              'R414.1 :: APC sequencing in Leeds' => %w[APC]
             }.freeze
 
             R209_PANEL_GENE_MAPPING_FS = {
@@ -110,13 +116,19 @@ module Import
             R210_PANEL_GENE_MAPPING_FS = {
               'R210.2 :: Small panel in Leeds' => %w[MLH1 MSH2 MSH6 PMS2 EPCAM],
               'R210.2 :: Unknown mutation(s) by Small panel' => %w[MLH1 MSH2 MSH6 PMS2 EPCAM],
-              'R210.5 :: Unknown mutation(s) by MLPA or equivalent' => %w[MLH1 MSH2 EPCAM]
+              'R210.5 :: Unknown mutation(s) by MLPA or equivalent' => %w[MLH1 MSH2 EPCAM],
+              'R210.1 :: Unknown mutation(s) by Microsatellite instability'=> %w[MLH1 MSH2 MSH6 PMS2 EPCAM],
+              'R210.2 :: Small panel in Leeds - Send DNA'=> %w[MLH1 MSH2 MSH6 PMS2 EPCAM]
             }.freeze
 
             R210_PANEL_GENE_MAPPING_TAR = {
               'R240.1 :: Diagnostic familial' => %w[MLH1 MSH2 MSH6 PMS2 EPCAM],
               'R242.1 :: Predictive MLPA' => %w[MLH1 MSH2 EPCAM],
-              'R242.1 :: Predictive testing' => %w[MLH1 MSH2 MSH6 PMS2 EPCAM]
+              'R242.1 :: Predictive testing' => %w[MLH1 MSH2 MSH6 PMS2 EPCAM],
+              'R242.1 :: Predictive testing - MLPA in Leeds - Send Blood'=> %w[MLH1 MSH2 MSH6 PMS2 EPCAM],
+              'R242.1 :: Predictive testing - MLPA in Leeds - Send DNA'=> %w[MLH1 MSH2 MSH6 PMS2 EPCAM],
+              'R242.1 :: Predictive testing - Seq in Leeds - Send Blood'=> %w[MLH1 MSH2 MSH6 PMS2 EPCAM],
+              'R242.1 :: Predictive testing - Seq in Leeds - Send DNA'=> %w[MLH1 MSH2 MSH6 PMS2 EPCAM]
             }.freeze
 
             R210_PANEL_GENE_MAPPING_MOL = {
@@ -125,13 +137,19 @@ module Import
             }.freeze
 
             R211_PANEL_GENE_MAPPING_FS = {
+              'R211.1 :: Small Panel in Leeds' => %w[APC BMPR1A EPCAM MLH1 MSH2 MSH6 MUTYH NTHL1 PMS2 POLD1 POLE PTEN RNF43 SMAD4 STK11],
+              'R211.1 :: Small panel in Leeds - send DNA sample'=> %w[APC BMPR1A EPCAM MLH1 MSH2 MSH6 MUTYH NTHL1 PMS2 POLD1 POLE PTEN RNF43 SMAD4 STK11],
               'R211.1 :: APC and MUTYH genes in Leeds' => %w[APC MUTYH],
               'R211.2 :: Unknown mutation(s) by MLPA or equivalent' => %w[APC MUTYH]
             }.freeze
 
             R211_PANEL_GENE_MAPPING_TAR = {
               'R240.1 :: Diagnostic familial' => %w[APC MUTYH],
-              'R242.1 :: Predictive testing' => %w[APC MUTYH]
+              'R240.1 :: Diagnostic familial - Seq in Leeds - Send Blood'=> %w[APC BMPR1A EPCAM MLH1 MSH2 MSH6 MUTYH NTHL1 PMS2 POLD1 POLE PTEN RNF43 SMAD4 STK11],
+              'R242.1 :: Predictive testing' => %w[APC BMPR1A EPCAM MLH1 MSH2 MSH6 MUTYH NTHL1 PMS2 POLD1 POLE PTEN RNF43 SMAD4 STK11],
+              'R242.1 :: Predictive testing - Seq in Leeds - Send Blood' => %w[APC BMPR1A EPCAM MLH1 MSH2 MSH6 MUTYH NTHL1 PMS2 POLD1 POLE PTEN RNF43 SMAD4 STK11],
+              'R242.1 :: Predictive testing - Seq in Leeds - Analysis only'=> %w[APC BMPR1A EPCAM MLH1 MSH2 MSH6 MUTYH NTHL1 PMS2 POLD1 POLE PTEN RNF43 SMAD4 STK11],
+              'R242.1 :: Predictive testing - Seq in Leeds - Send DNA'=> %w[APC BMPR1A EPCAM MLH1 MSH2 MSH6 MUTYH NTHL1 PMS2 POLD1 POLE PTEN RNF43 SMAD4 STK11]
             }.freeze
 
             R211_PANEL_GENE_MAPPING_MOL = {
@@ -185,7 +203,7 @@ module Import
 
             # rubocop:disable Lint/MixedRegexpCaptureTypes
             NORMAL_VAR_REGEX = %r{(?<not>no|not)[a-z /]+
-                                  (?<det>detected|reported|deteected|deteceted)+}ix.freeze
+                                  (?<det>detected|reported|deteected|deteceted|present)+}ix.freeze
 
             CDNA_REGEX = /c\.\[?(?<cdna>
                                 ([0-9]+[+>_-][0-9][+>_-][0-9]+[+>_-][0-9][ACGTdelinsup]+)|
