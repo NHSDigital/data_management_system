@@ -288,21 +288,21 @@ class StGeorgeHandlerOldTest < ActiveSupport::TestCase
 
   def clinical_json
     { sex: '2',
-      hospitalnumber: '332061',
+      hospitalnumber: '123456',
       receiveddate: '1998-08-13T00:00:00.000+01:00',
-      servicereportidentifier: 'D11585',
+      servicereportidentifier: 'D12345',
       specimentype: '5',
-      age: 42 }.to_json
+      age: 32 }.to_json
   end
 
   def rawtext_clinical_json
     { sex: 'Female',
-      'g number' => '4241',
-      genotype: 'BR2 c.6275_6276delTT',
+      'g number' => '1234',
+      genotype: 'BR2 c.6165_6166delAA',
       providercode: 'RMHS',
-      referralorganisation: 'Royal Marsden Hospital',
-      consultantname: 'Eeles',
-      servicereportidentifier: 'D11585',
+      referralorganisation: 'Hospital',
+      consultantname: 'Consultant',
+      servicereportidentifier: 'D12345',
       servicelevel: 'NHS',
       collecteddate: '',
       receiveddate: '1998-08-13 00:00:00',
