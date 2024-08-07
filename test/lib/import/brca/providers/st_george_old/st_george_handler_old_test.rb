@@ -134,6 +134,33 @@ class StGeorgeHandlerOldTest < ActiveSupport::TestCase
     assert_equal 'c.6275_6276del', variants[1].attribute_map['codingdnasequencechange']
   end
 
+  # test 'process_multi_variants_no_gene' do
+  #   multiple_variants_no_gene_record = build_raw_record('pseudo_id1' => 'bob')
+  #   multiple_variants_no_gene_record.raw_fields['genotype'] = 'c.666A>G + c.6275_6276del'
+  #   genotypes = []
+  #   variants = @handler.process_multi_variants_no_gene(multiple_variants_no_gene_record, @genotype, genotypes)
+  #   assert_equal 2, variants[0].attribute_map['teststatus']
+  #   assert_equal 2, variants[1].attribute_map['teststatus']
+  #   assert_equal nil, variants[0].attribute_map['gene']
+  #   assert_equal nil, variants[1].attribute_map['gene']
+  #   assert_equal 'c.666A>G', variants[0].attribute_map['codingdnasequencechange']
+  #   assert_equal 'c.6275_6276del', variants[1].attribute_map['codingdnasequencechange']  
+  # end     
+  
+  test 'process_ucs_variants' do
+    ucs_variant_record = build_raw_record('pseudo_id1' => 'bob')
+    ucs_variant_record.raw_fields['genotype'] = 'N + BR1 UCS'
+    positive_genes=['BRCA1', 'BRCA2']
+    genotypes = []
+    variants = @handler.process_ucs_variants(@genotype, genotypes, positive_genes, ucs_variant_record)
+    assert_equal 10, variants[0].attribute_map['teststatus']
+    assert_equal 7, variants[0].attribute_map['gene']
+  end  
+
+  test 'unknown_status' do
+  end
+
+
   test 'process_multiple_cdnavariants_protein_for_same_gene' do
     multiple_cdnavariants_record = build_raw_record('pseudo_id1' => 'bob')
     multiple_cdnavariants_record.raw_fields['genotype'] = 'BR1 c.3005delA, c.3119G>A (p.Ser1040Asn)'
@@ -287,22 +314,22 @@ class StGeorgeHandlerOldTest < ActiveSupport::TestCase
   private
 
   def clinical_json
-    { sex: '2',
+    { sex: '1',
       hospitalnumber: '332061',
       receiveddate: '1998-08-13T00:00:00.000+01:00',
-      servicereportidentifier: 'D11585',
+      servicereportidentifier: 'D12345',
       specimentype: '5',
       age: 42 }.to_json
   end
 
   def rawtext_clinical_json
     { sex: 'Female',
-      'g number' => '4241',
-      genotype: 'BR2 c.6275_6276delTT',
-      providercode: 'RMHS',
-      referralorganisation: 'Royal Marsden Hospital',
-      consultantname: 'Eeles',
-      servicereportidentifier: 'D11585',
+      'g number' => '1234',
+      genotype: 'BR2 c.6135_6136delAA',
+      providercode: 'PROV',
+      referralorganisation: 'Hospital',
+      consultantname: 'Consultant',
+      servicereportidentifier: 'D12345',
       servicelevel: 'NHS',
       collecteddate: '',
       receiveddate: '1998-08-13 00:00:00',

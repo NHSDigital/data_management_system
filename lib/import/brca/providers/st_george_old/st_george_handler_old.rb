@@ -191,11 +191,11 @@ module Import
               genotype.add_status(4)
             else
               process_single_gene(genotype, record)
+              genotype.add_gene(positive_genes.join) if !positive_genes.nil?
               genotype.add_status(4)  
             end    
             genotypes.append(genotype)
           end 
-
 
 
           def normal_full_screen(genotype, genotypes)
@@ -331,20 +331,23 @@ module Import
           end
 
           def process_multi_variants_no_gene(record, genotype, genotypes)          
+            return if record.raw_fields['genotype'].nil?
             record.raw_fields['genotype'].scan(DELIMETER_REGEX)
-            raw_genotypes = record.raw_fields['genotype'].split($LAST_MATCH_INFO[0])
-            variants =[]
-            raw_genotypes.each do |raw_genotype|
-              genotype_dup = genotype.dup
-              mutation = get_cdna_mutation(raw_genotype)
-              protein = get_protein_impact(raw_genotype)
-              genotype_dup.add_gene_location(mutation[0]) unless mutation.nil?
-              genotype_dup.add_protein_impact(protein[0]) unless protein.nil?
-              genotype_dup.add_status(2)
-              genotypes.append(genotype_dup)
-            end
-              create_empty_brca_tests(record, genotype, genotypes) if full_screen?(record)          
+            unless $LAST_MATCH_INFO.nil?
+              raw_genotypes = record.raw_fields['genotype'].split($LAST_MATCH_INFO[0])
+              variants =[]
+              raw_genotypes.each do |raw_genotype|
+                genotype_dup = genotype.dup
+                mutation = get_cdna_mutation(raw_genotype)
+                protein = get_protein_impact(raw_genotype)
+                genotype_dup.add_gene_location(mutation[0]) unless mutation.nil?
+                genotype_dup.add_protein_impact(protein[0]) unless protein.nil?
+                genotype_dup.add_status(2)
+                genotypes.append(genotype_dup)
+              end
           end 
+          create_empty_brca_tests(record, genotype, genotypes) if full_screen?(record)          
+        end 
 
           def create_empty_brca_tests(record, genotype, genotypes)
             fs_genes = ['BRCA1', 'BRCA2']
