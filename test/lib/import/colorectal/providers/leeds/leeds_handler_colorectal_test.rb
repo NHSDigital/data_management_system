@@ -228,6 +228,25 @@ class LeedsHandlerColorectalTest < ActiveSupport::TestCase
     assert_equal 'p.Arg300Gln', genotypes[14].attribute_map['proteinimpact']
   end
 
+  test 'fs record with no gene info in genotype or report, so genes extracted from mtype' do
+    fail_fs_no_gene_rec = build_raw_record('pseudo_id1' => 'bob')
+    fail_fs_no_gene_rec.raw_fields['moleculartestingtype'] = 'Diagnostic; Lynch'
+    fail_fs_no_gene_rec.raw_fields['genotype'] = 'Fail/Results not required'
+    fail_fs_no_gene_rec.raw_fields['report'] = nil
+
+    @handler.populate_variables(fail_fs_no_gene_rec)
+    @handler.add_varclass
+    @handler.add_scope(@genotype, fail_fs_no_gene_rec)
+    genotypes = @handler.process_variants_from_record(@genotype, fail_fs_no_gene_rec)
+
+    assert_equal 4, genotypes.size
+    assert_equal [9], genotypes.collect { |g| g.attribute_map['teststatus'] }.uniq
+    assert_equal 2744, genotypes[0].attribute_map['gene']
+    assert_equal 2804, genotypes[1].attribute_map['gene']
+    assert_equal 2808, genotypes[2].attribute_map['gene']
+    assert_equal 3394, genotypes[3].attribute_map['gene']
+  end
+
   private
 
   def clinical_json

@@ -165,11 +165,17 @@ module Import
           end
 
           def process_normal_fs(genocolorectal, _record, genotypes)
-            @genes_panel&.each do |gene|
+            if @genes_panel.blank?
               genocolorectal_new = genocolorectal.dup_colo
-              genocolorectal_new.add_gene_colorectal(gene)
               genocolorectal_new.add_status(@teststatus)
               genotypes << genocolorectal_new
+            else
+              @genes_panel&.each do |gene|
+                genocolorectal_new = genocolorectal.dup_colo
+                genocolorectal_new.add_gene_colorectal(gene)
+                genocolorectal_new.add_status(@teststatus)
+                genotypes << genocolorectal_new
+              end
             end
             genotypes
           end
@@ -306,6 +312,10 @@ module Import
             GENES_PANEL.each do |panel, genes|
               @genes_panel = genes if @genes_hash[panel].include?(@geno)
             end
+
+            return if @genes_panel.present?
+
+            @genes_panel = genes_from_mtype
           end
 
           # Get test status for record based on genotype
@@ -347,6 +357,21 @@ module Import
               genes -= ['met'] if @report.scan('endometrial').size.positive?
             end
             genes || []
+          end
+
+          def genes_from_mtype
+            case @moleculartestingtype
+            when /r209|diagnostic; lynch/
+              %w[MLH1 MSH2 MSH6 PMS2]
+            when /diagnostic/
+              @indicationcategory == 'fap1&2' ? %w[APC MUTYH] : []
+            when /r210/
+              %w[MLH1 MSH2 MSH6 PMS2 EPCAM]
+            when /r211/
+              %w[APC BMPR1A EPCAM GREM1 MLH1 MSH2 MSH6 MUTYH NTHL1 PMS2 POLD1 POLE PTEN SMAD4 STK11]
+            else
+              []
+            end
           end
 
           def add_organisationcode_testresult(genocolorectal)

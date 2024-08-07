@@ -37,6 +37,9 @@ module Import
                            'TP53' => 79,
                            'PALB2' => 3186,
                            'RNF43' => 5019,
+                           'CHEK2' => 865,
+                           'RAD51C' => 3615,
+                           'RAD51D' => 3616,
                            'VHL' => 83,
                            'ATM' => 451 }.freeze
 
@@ -62,6 +65,9 @@ module Import
                             (?<tp53>TP53)|
                             (?<palb2>PALB2)|
                             (?<rnf43>RNF43)|
+                            (?<chek2>CHEK2)|
+                            (?<rad51c>RAD51C)|
+                            (?<rad51d>RAD51D)|
                             (?<vhl>VHL) |
                             (?<atm>ATM)/ix # Added by Francesco
 

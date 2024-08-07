@@ -16,6 +16,7 @@ module Import
                                     'r209.1' => :full_screen,
                                     'r209.2' => :full_screen,
                                     'r210.5' => :full_screen,
+                                    'r210.1' => :full_screen,
                                     'r210.2' => :full_screen,
                                     'r211.1' => :full_screen,
                                     'r211.2' => :full_screen,
