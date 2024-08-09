@@ -64,6 +64,7 @@ module Import
             genotype.add_passthrough_fields(record.mapped_fields,
                                             record.raw_fields,
                                             PASS_THROUGH_FIELDS)
+            
             add_organisationcode_testresult(genotype)
             add_moleculartestingtype(genotype, record)
             process_genetictestcope(genotype, record)
@@ -72,6 +73,7 @@ module Import
             @batch.provider = 'RJ7'
             @batch.registryid = 'RJ7'
             res.each { |cur_genotype| @persister.integrate_and_store(cur_genotype) }
+            
           end
 
           def add_organisationcode_testresult(genotype)
@@ -283,6 +285,7 @@ module Import
             else
               @logger.debug "FAILED gene parse for: #{record.raw_fields['genotype']}"
             end
+        
           end
           # rubocop:enable  Lint/DuplicateBranch
 
@@ -513,8 +516,8 @@ module Import
           end
 
           def void_genetictestscope?(record)
-            return if record.raw_fields['moleculartestingtype'].nil?
-
+            return if record.raw_fields['moleculartestingtype'].nil? 
+            
             record.raw_fields['moleculartestingtype'].empty? ||
             record.raw_fields['moleculartestingtype'] == 'Store' ||
             record.raw_fields['moleculartestingtype'] == 'Reclassification of previous result'
