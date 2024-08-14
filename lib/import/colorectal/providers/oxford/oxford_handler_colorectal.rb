@@ -7,8 +7,19 @@ module Import
           include Import::Helpers::Colorectal::Providers::Rth::Constants
 
           def process_fields(record)
-            return unless colorectal_file?
+            @file_name = @batch.original_filename
 
+            return if @files_not_to_process.include? @file_name
+
+            if @files_to_process.include?(@file_name) || colorectal_file?
+              @files_to_process << @file_name unless @files_to_process.include?(@file_name)
+              prepare_genotypes(record)
+            else
+              @files_not_to_process << @file_name
+            end
+          end
+
+          def prepare_genotypes(record)
             genocolorectal = Import::Colorectal::Core::Genocolorectal.new(record)
             genocolorectal.add_passthrough_fields(record.mapped_fields,
                                                   record.raw_fields,
@@ -84,7 +95,7 @@ module Import
             else
               varpath = VAR_PATH_CLASS_MAP[varpathclass]
             end
-            genocolorectal.add_variant_class(varpath)
+            genocolorectal.add_variant_class(varpath) if varpath.present?
           end
 
           def assign_servicereportidentifier(genocolorectal, record)
