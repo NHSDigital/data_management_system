@@ -43,10 +43,8 @@ module Import
               positive_results.each do |gene, chromosomalvariant|
                 abnormal_genocolorectal = @genocolorectal.dup_colo
                 abnormal_genocolorectal.add_gene_colorectal(gene)
-                @abnormal_genocolorectal.add_status(2)
-                if @posnegtest == 'UV' 
-                  @abnormal_genocolorectal.add_variant_class(3)   
-                end 
+                abnormal_genocolorectal.add_status(2)
+                abnormal_genocolorectal.add_variant_class(3) if @posnegtest == 'UV' 
                 abnormal_genocolorectal.add_variant_type(chromosomalvariant)
                 @genotypes.append(abnormal_genocolorectal)
               end
@@ -58,8 +56,8 @@ module Import
                 abnormal_genocolorectal.add_gene_colorectal(gene)
                 abnormal_genocolorectal.add_gene_location(cdna)
                 abnormal_genocolorectal.add_protein_impact(protein)
-                @abnormal_genocolorectal.add_status(2)
-                @abnormal_genocolorectal.add_variant_class(3) if @posnegtest == 'UV'     
+                abnormal_genocolorectal.add_status(2)
+                abnormal_genocolorectal.add_variant_class(3) if @posnegtest == 'UV'     
                 @genotypes.append(abnormal_genocolorectal)
               end
             end
