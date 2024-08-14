@@ -8,6 +8,7 @@ module Import
         @lines_processed = 0
         @batch = batch
         attach_persister(batch)
+        @files_not_to_process = []
       end
 
       def attach_persister(batch)
