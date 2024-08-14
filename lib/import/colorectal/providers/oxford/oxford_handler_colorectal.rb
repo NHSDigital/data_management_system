@@ -11,7 +11,8 @@ module Import
 
             return if @files_not_to_process.include? @file_name
 
-            if colorectal_file?
+            if @files_to_process.include?(@file_name) || colorectal_file?
+              @files_to_process << @file_name unless @files_to_process.include?(@file_name)
               prepare_genotypes(record)
             else
               @files_not_to_process << @file_name

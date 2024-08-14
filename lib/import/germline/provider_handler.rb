@@ -9,6 +9,7 @@ module Import
         @batch = batch
         attach_persister(batch)
         @files_not_to_process = []
+        @files_to_process = []
       end
 
       def attach_persister(batch)
