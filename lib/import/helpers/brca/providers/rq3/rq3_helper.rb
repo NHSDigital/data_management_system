@@ -103,7 +103,7 @@ module Import
               true_variant = @testresult.gsub(NO_EVIDENCE_REGEX, '')
               negativegenes = no_evidence.scan(BRCA_REGEX).flatten - true_variant.
                               scan(BRCA_REGEX).flatten
-              no_evidence_exception= @testresult.scan(NO_EVIDENCE_REGEX).join
+              no_evidence_exception= @testresult.scan(NO_EVIDENCE_EXCEPTION_REGEX).join
               if no_evidence_exception.size.positive?
                 process_no_evidence_exception(no_evidence_exception)
               else

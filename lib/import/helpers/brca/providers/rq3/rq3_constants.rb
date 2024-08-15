@@ -50,8 +50,8 @@ module Import
                          [0-9]+[ACGTdelinsup]+)/x
 
             NO_EVIDENCE_REGEX = /no evidence.*?[^cp]\.|no further.*?[^cp]\./i
-            NO_EVIDENCE_EXCEPTION_REGEX = /however the previously reported heterozygous variant c.* in the \S+ gene is
-                                           now considered a variant of unknown significance. /i
+            NO_EVIDENCE_EXCEPTION_REGEX = /however\sthe\spreviously\sreported\sheterozygous\svariant\sc.*\sin\sthe\s\S+
+            \sgene\sis\snow\sconsidered\sa\svariant\sof\sunknown\ssignificance/ix
             PROTEIN_REGEX = /p\.\(?(?<impact>.[a-z]+[0-9]+[a-z]+([^[:alnum:]][0-9]+)?|
             [a-z]+[0-9]+[^[:alnum:]])/ix
 
