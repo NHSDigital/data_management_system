@@ -233,7 +233,7 @@ module Import
 
             exemptions = record.mapped_fields['codingdnasequencechange']
             if exemptions.scan('c.').size.positive?
-              genotype.add_gene_location(exemptions.gsub(/[\[\]+=]+/, ''))
+              genotype.add_gene_location(exemptions.gsub(/[() ]+/, ''))
             elsif exemptions.scan(/(?<delinsdup>del|ins|dup)/i).size.positive?
               genotype.add_variant_type($LAST_MATCH_INFO[:delinsdup])
               if exemptions.scan(/(?<exon>[0-9]+-[0-9]+)/i).size.positive?
