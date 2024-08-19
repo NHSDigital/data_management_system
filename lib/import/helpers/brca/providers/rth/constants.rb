@@ -54,19 +54,19 @@ module Import
             GENE_VALUES = [7, 8, 590, 18, 20, 865, 2744, 2804, 2808, 3186, 3394, 62, 3615, 3616, 76, 79, 358,
                            451, 577, 794, 1432, 1590, 1882, 2850, 3108, 3408, 5000, 5019, 72].freeze
 
-            RECORD_EXEMPTIONS = ['c.[-835C>T]+[=]', 'Deletion of whole PTEN gene',
-                                 'c.[-904_-883dup ]+[=]', 'whole gene deletion',
+            RECORD_EXEMPTIONS = ['c.( 442-127_ 593+118)', 'Deletion of whole PTEN gene', 'whole gene deletion',
                                  'Deletion partial exon 11 and exons 12-15', 'whole gene duplication'].freeze
 
             PROTEIN_REGEX = /p\.\[?\(?(?<impact>.+)(?:\))|
                              p\.\[(?<impact>[a-z0-9*]+)\]|
                              p\.(?<impact>[a-z]+[0-9]+[a-z]+)/ix
 
-            CDNA_REGEX = /c\.\[?(?<cdna>[0-9]+.+[a-z]+)\]?/i
+            CDNA_REGEX = /c\.\[?(?<cdna>[0-9-]+.+[a-z]+)\]?/i
 
             EXON_REGEX = /(?<mutationtype>del|inv|dup).+ion\s[a-z0-9]*\s?exons?\s?(?<exons>[0-9]+(?:-[0-9]+)?)|
                           ex(?:on|ons)?\s?(?<exons>[0-9]+(?:(?:-|\+)[0-9]+)?)\s?(?<mutationtype>del|inv|dup)|
-                          exon\s?(?<exons>[0-9]+)\s?-exon\s?(?<otherexon>[0-9]+)\s?(?<mutationtype>del|inv|dup)/ix
+                          exon\s?(?<exons>[0-9]+)\s?-exon\s?(?<otherexon>[0-9]+)\s?(?<mutationtype>del|inv|dup)|
+                          (?<mutationtype>del|inv|dup)(.+ion)?\s?ex(on)?\s?(?<exons>[0-9]+(-[0-9]+)?)/ix
 
             GENOMICCHANGE_REGEX = /Chr(?<chromosome>\d+)\.hg
                                    (?<genome_build>\d+):g\.(?<effect>.+)/ix

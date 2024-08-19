@@ -7,8 +7,19 @@ module Import
           include Import::Helpers::Brca::Providers::Rth::Constants
 
           def process_fields(record)
-            return unless brca_file?
+            @file_name = @batch.original_filename
 
+            return if @files_not_to_process.include? @file_name
+
+            if @files_to_process.include?(@file_name) || brca_file?
+              @files_to_process << @file_name unless @files_to_process.include?(@file_name)
+              prepare_genotypes(record)
+            else
+              @files_not_to_process << @file_name
+            end
+          end
+
+          def prepare_genotypes(record)
             genotype = Import::Brca::Core::GenotypeBrca.new(record)
             genotype.add_passthrough_fields(record.mapped_fields,
                                             record.raw_fields,
@@ -26,9 +37,8 @@ module Import
           end
 
           def brca_file?
-            file_name = @batch.original_filename
-            file_path = File.dirname(file_name)
-            file_path_array = file_name.split('/')
+            file_path = File.dirname(@file_name)
+            file_path_array = @file_name.split('/')
             pseudo_file = file_path_array[file_path_array.length - 1]
             pseudo_filename = pseudo_file.sub(/.xls[x]?.pseudo/, '')
             directory = Rails.root.join("private/pseudonymised_data/#{file_path}").to_s
@@ -223,7 +233,7 @@ module Import
 
             exemptions = record.mapped_fields['codingdnasequencechange']
             if exemptions.scan('c.').size.positive?
-              genotype.add_gene_location(exemptions.gsub(/[\[\]+=]+/, ''))
+              genotype.add_gene_location(exemptions.gsub(/[() ]+/, ''))
             elsif exemptions.scan(/(?<delinsdup>del|ins|dup)/i).size.positive?
               genotype.add_variant_type($LAST_MATCH_INFO[:delinsdup])
               if exemptions.scan(/(?<exon>[0-9]+-[0-9]+)/i).size.positive?
