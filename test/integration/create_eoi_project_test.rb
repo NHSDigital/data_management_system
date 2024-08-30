@@ -17,7 +17,7 @@ class CreateEoiProjectTest < ActionDispatch::IntegrationTest
     fill_in 'project_first_contact_date', with: '01/01/2021'
 
     select 'Another User', from: 'project_owner_grant_attributes_user_id'
-    assert page.has_text? 'Project Title'
+    assert_text 'Project Title'
     fill_in 'project_name', with: 'Test EOI'
     fill_in 'project_project_purpose', with: 'Testing EOI'
 
@@ -30,10 +30,10 @@ class CreateEoiProjectTest < ActionDispatch::IntegrationTest
     end
 
     # classifications
-    assert page.has_text? 'Classification of data requested'
+    assert_text 'Classification of data requested'
     select 'Anonymous', from: 'project_level_of_identifiability'
     # end uses
-    assert page.has_text? 'Summary of project type'
+    assert_text 'Summary of project type'
     check 'Research'
     check 'Service Evaluation'
 
@@ -42,7 +42,7 @@ class CreateEoiProjectTest < ActionDispatch::IntegrationTest
         assert_difference('ProjectDataset.count', 1) do
           assert_difference('ProjectEndUse.count', 2) do
             click_button 'Create EOI'
-            assert has_content?('EOI was successfully created')
+            assert_text('EOI was successfully created')
           end
         end
       end
@@ -53,15 +53,15 @@ class CreateEoiProjectTest < ActionDispatch::IntegrationTest
     end
     click_on('another@phe.gov.uk')
     click_on('Logout')
-    assert page.has_content? 'Signed out successfully.'
+    assert_text 'Signed out successfully.'
     login_and_accept_terms(@apman)
     click_on 'Projects'
-    assert has_content? 'Assigned Projects'
+    assert_text 'Assigned Projects'
     click_link 'Details', match: :first
 
     accept_prompt do
       click_button 'Approve'
     end
-    assert has_content?('APPROVED')
+    assert_text('APPROVED')
   end
 end
