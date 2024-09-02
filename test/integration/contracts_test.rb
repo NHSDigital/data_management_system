@@ -46,7 +46,7 @@ class ContractsTest < ActionDispatch::IntegrationTest
         click_button('Create Contract')
 
         assert_current_path project_path(project)
-        assert has_text?('Contract created successfully')
+        assert_text('Contract created successfully')
         assert has_selector?('#contractsTable', visible: true)
       end
     end
@@ -67,7 +67,7 @@ class ContractsTest < ActionDispatch::IntegrationTest
       click_button('Update Contract')
 
       assert_current_path project_path(project)
-      assert has_text?('Contract updated successfully')
+      assert_text('Contract updated successfully')
       assert has_selector?('#contractsTable', visible: true)
     end
   end
@@ -92,7 +92,7 @@ class ContractsTest < ActionDispatch::IntegrationTest
       end
     end
 
-    assert has_text?('Contract destroyed successfully')
+    assert_text('Contract destroyed successfully')
   end
 
   test 'should be able to view a contract' do
@@ -134,7 +134,7 @@ class ContractsTest < ActionDispatch::IntegrationTest
     visit edit_contract_path(contract)
 
     assert_no_current_path edit_contract_path(contract)
-    assert has_text?('You are not authorized to access this page.')
+    assert_text('You are not authorized to access this page.')
   end
 
   private
