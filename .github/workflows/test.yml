@@ -7,8 +7,8 @@ jobs:
     strategy:
       matrix:
         ruby-version:
-          - '3.0.4'
-          # - '3.1' # Not yet supported. Ideally move to rails 7.0 first
+          - '3.1.6'
+          # - '3.2' # Not yet tested on CentOS 7. Ideally move to rails 7.0 first
 
     name: Ruby ${{ matrix.ruby-version }}
 
