@@ -108,11 +108,6 @@ set :asset_script, <<~SHELL
   ruby -e "require 'yaml'; puts YAML.dump('production' => { 'secret_key_base' => 'compile_me' })" > config/secrets.yml
   touch config/special_users.production.yml config/admin_users.yml config/odr_users.yml \
         config/user_yubikeys.yml
-  # Remove mini_racer CentOS 7 shim from Gemfile.lock unless needed
-  if [ -e /etc/os-release ] && \
-     [ 2 -ne $(grep -Ec '^(ID="centos"|VERSION_ID="7")$' /etc/os-release) ]; then
-    sed -i.bak -e '/mini_racer ([0-9.]*-x86_64-linux)/,+1d' Gemfile.lock
-  fi
   printf 'disable-self-update-check true\\nyarn-offline-mirror "./vendor/npm-packages-offline-cache"\\nyarn-offline-mirror-pruning false\\n' > .yarnrc
   RAILS_ENV=production bundle exec rake assets:clobber assets:precompile
   rm config/secrets.yml config/database.yml
@@ -179,14 +174,12 @@ before 'ndr_dev_support:filesystem_tweaks', 'app:move_shared'
 
 desc 'ensure additional configuration for CentOS deployments'
 task :centos_deployment_specifics do
-  if /\A(3[.]0[.][567]|3[.][123][.])/.match?(fetch(:ruby))
-    # On CentOS 7, we need a newer GCC installation to build gems for new ruby versions
-    # We'd like to do the following, but scl incorrectly handles double quotes in passed commands:
-    # set :default_shell, 'scl enable devtoolset-9 -- sh'
-    set :default_shell, <<~CMD.chomp
-      sh -c 'scl_run() { echo "$@" | scl enable devtoolset-9 -; }; scl_run "$@"'
-    CMD
-  end
+  # On CentOS 7, we need a newer GCC installation to build gems for new ruby versions
+  # We'd like to do the following, but scl incorrectly handles double quotes in passed commands:
+  # set :default_shell, 'scl enable devtoolset-9 -- sh'
+  set :default_shell, <<~CMD.chomp
+    sh -c 'scl_run() { echo "$@" | scl enable devtoolset-9 -; }; scl_run "$@"'
+  CMD
 end
 
 # ==========================================[ DEPLOY ]==========================================
