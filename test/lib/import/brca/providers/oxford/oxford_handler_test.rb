@@ -156,7 +156,6 @@ class OxfordHandlerTest < ActiveSupport::TestCase
   end
 
   test 'process_variants' do
-    @logger.expects(:debug).with('SUCCESSFUL cdna change parse for: 7928C>T')
     @handler.process_variants(@genotype, @record, 5)
     assert_equal 'c.7928C>T', @genotype.attribute_map['codingdnasequencechange']
     assert_equal 2, @genotype.attribute_map['teststatus']
@@ -177,7 +176,6 @@ class OxfordHandlerTest < ActiveSupport::TestCase
     assert_equal 'c.-835C>T', @genotype.attribute_map['codingdnasequencechange']
     assert_equal 2, @genotype.attribute_map['teststatus']
 
-    @logger.expects(:debug).with('SUCCESSFUL cdna change parse for: 7928C>T')
     @handler.process_variants(@genotype, @record, 2)
     assert_equal 'c.7928C>T', @genotype.attribute_map['codingdnasequencechange']
     assert_equal 10, @genotype.attribute_map['teststatus']
@@ -297,11 +295,23 @@ class OxfordHandlerTest < ActiveSupport::TestCase
     @handler.process_variants(@genotype, exemptions_del_record2, 5)
     assert_equal 2, @genotype.attribute_map['teststatus']
 
-    nonpath_exemptions_record = build_raw_record('pseudo_id1' => 'bob')
-    nonpath_exemptions_record.mapped_fields['codingdnasequencechange'] = 'c.[-835C>T]+[=]'
-    @handler.process_variants(@genotype, nonpath_exemptions_record, 1)
-    assert_equal 'c.-835C>T', @genotype.attribute_map['codingdnasequencechange']
-    assert_equal 10, @genotype.attribute_map['teststatus']
+    path_exemptions_record = build_raw_record('pseudo_id1' => 'bob')
+    path_exemptions_record.mapped_fields['codingdnasequencechange'] = 'c.( 442-127_ 593+118)'
+    path_exemptions_record.mapped_fields['variantpathclass'] = 'C4'
+    variantpathclass = @handler.extract_variantpathclass(@genotype, path_exemptions_record)
+    @handler.process_variants(@genotype, path_exemptions_record, variantpathclass)
+    assert_equal 'c.442-127_593+118', @genotype.attribute_map['codingdnasequencechange']
+    assert_equal 4, @genotype.attribute_map['variantpathclass']
+    assert_equal 2, @genotype.attribute_map['teststatus']
+
+    path_rec = build_raw_record('pseudo_id1' => 'bob')
+    path_rec.mapped_fields['codingdnasequencechange'] = 'c.[-169C>T]+[=]'
+    path_rec.mapped_fields['variantpathclass'] = 'C3'
+    variantpathclass = @handler.extract_variantpathclass(@genotype, path_rec)
+    @handler.process_variants(@genotype, path_rec, variantpathclass)
+    assert_equal 'c.-169C>T', @genotype.attribute_map['codingdnasequencechange']
+    assert_equal 3, @genotype.attribute_map['variantpathclass']
+    assert_equal 2, @genotype.attribute_map['teststatus']
   end
 
   test 'process_protein_impact' do

@@ -105,7 +105,7 @@ end
 set :asset_script, <<~SHELL
   set -e
   cp config/database.yml.sample config/database.yml
-  ruby -ryaml -e "puts YAML.dump('production' => { 'secret_key_base' => 'compile_me' })" > config/secrets.yml
+  ruby -e "require 'yaml'; puts YAML.dump('production' => { 'secret_key_base' => 'compile_me' })" > config/secrets.yml
   touch config/special_users.production.yml config/admin_users.yml config/odr_users.yml \
         config/user_yubikeys.yml
   # Remove mini_racer CentOS 7 shim from Gemfile.lock unless needed
@@ -176,6 +176,18 @@ end
 
 after 'deploy:setup',                       'app:create_sysadmin_scripts'
 before 'ndr_dev_support:filesystem_tweaks', 'app:move_shared'
+
+desc 'ensure additional configuration for CentOS deployments'
+task :centos_deployment_specifics do
+  if /\A(3[.]0[.][567]|3[.][123][.])/.match?(fetch(:ruby))
+    # On CentOS 7, we need a newer GCC installation to build gems for new ruby versions
+    # We'd like to do the following, but scl incorrectly handles double quotes in passed commands:
+    # set :default_shell, 'scl enable devtoolset-9 -- sh'
+    set :default_shell, <<~CMD.chomp
+      sh -c 'scl_run() { echo "$@" | scl enable devtoolset-9 -; }; scl_run "$@"'
+    CMD
+  end
+end
 
 # ==========================================[ DEPLOY ]==========================================
 
@@ -249,3 +261,7 @@ end
 
 # For AWS CodeDeploy deployments, using a local working copy checkout
 add_target(:current, :localhost_live, 'localhost', 22, 'mbis_app', true)
+
+%i[mbis_live mbis_beta mbis_god_live mbis_brca_beta].each do |name|
+  after name, 'centos_deployment_specifics'
+end

@@ -421,7 +421,7 @@ GEM
     responders (3.1.0)
       actionpack (>= 5.2)
       railties (>= 5.2)
-    rexml (3.3.2)
+    rexml (3.3.6)
       strscan
     roo (2.10.0)
       nokogiri (~> 1)
@@ -600,4 +600,4 @@ DEPENDENCIES
   will_paginate
 
 BUNDLED WITH
-   2.2.33
+   2.3.27

@@ -25,6 +25,7 @@ module Import
             add_organisationcode_testresult(genotype)
             process_test_scope(genotype, record)
             process_test_status(genotype, record)
+            process_test_type(genotype, record)
             final_results = process_variant_records(genotype, record)
             final_results.each { |cur_genotype| @persister.integrate_and_store(cur_genotype) }
           end
