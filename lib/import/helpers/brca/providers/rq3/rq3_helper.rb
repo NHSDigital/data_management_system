@@ -103,14 +103,28 @@ module Import
               true_variant = @testresult.gsub(NO_EVIDENCE_REGEX, '')
               negativegenes = no_evidence.scan(BRCA_REGEX).flatten - true_variant.
                               scan(BRCA_REGEX).flatten
-              process_negative_genes(negativegenes)
-              @genotype.add_gene(unique_brca_genes_from(true_variant).join)
-              process_cdna(true_variant, @genotype)
-              process_protein_impact(true_variant, @genotype)
-              process_exon(true_variant, @genotype)
+              no_evidence_exception= @testresult.scan(NO_EVIDENCE_EXCEPTION_REGEX).join
+              if no_evidence_exception.size.positive?
+                process_no_evidence_exception(no_evidence_exception)
+              else
+                process_negative_genes(negativegenes)
+                @genotype.add_gene(unique_brca_genes_from(true_variant).join)
+                process_cdna(true_variant, @genotype)
+                process_protein_impact(true_variant, @genotype)
+                process_exon(true_variant, @genotype)
+                add_variantpathclass_uv_records(@genotype)
+                @genotypes.append(@genotype)
+              end 
+            end
+
+            def process_no_evidence_exception(testcolumn)
+              @genotype.add_gene(unique_brca_genes_from(testcolumn).join)
+              process_cdna(testcolumn, @genotype)
+              process_protein_impact(testcolumn, @genotype)
+              process_exon(testcolumn, @genotype)
               add_variantpathclass_uv_records(@genotype)
               @genotypes.append(@genotype)
-            end
+            end 
 
             def process_testresult_cdna_variants
               if (@testresult.scan(CDNA_REGEX).size > 1) ||
