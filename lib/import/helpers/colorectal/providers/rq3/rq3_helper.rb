@@ -44,7 +44,7 @@ module Import
                 abnormal_genocolorectal = @genocolorectal.dup_colo
                 abnormal_genocolorectal.add_gene_colorectal(gene)
                 abnormal_genocolorectal.add_status(2)
-                abnormal_genocolorectal.add_variant_class(3) if @posnegtest == 'UV' 
+                add_variantpathclass_uv_records(abnormal_genocolorectal)       
                 abnormal_genocolorectal.add_variant_type(chromosomalvariant)
                 @genotypes.append(abnormal_genocolorectal)
               end
@@ -57,7 +57,7 @@ module Import
                 abnormal_genocolorectal.add_gene_location(cdna)
                 abnormal_genocolorectal.add_protein_impact(protein)
                 abnormal_genocolorectal.add_status(2)
-                abnormal_genocolorectal.add_variant_class(3) if @posnegtest == 'UV'     
+                add_variantpathclass_uv_records(abnormal_genocolorectal)    
                 @genotypes.append(abnormal_genocolorectal)
               end
             end
@@ -65,8 +65,8 @@ module Import
             def process_mutyh_single_cdna_variants
               @genocolorectal.add_gene_colorectal('MUTYH')
               @genocolorectal.add_gene_location(@testresult.scan(CDNA_REGEX).join)
-              @genocolorectal.add_status(2)           
-              @genocolorectal.add_variant_class(3) if @posnegtest == 'UV'               
+              @genocolorectal.add_status(2)       
+              add_variantpathclass_uv_records(@genocolorectal)                  
               if @testresult.scan(PROTEIN_REGEX).size.positive?
                 @genocolorectal.add_protein_impact(@testresult.scan(PROTEIN_REGEX).join)
               end
@@ -80,7 +80,7 @@ module Import
                 @genocolorectal.add_gene_colorectal('MUTYH')
                 @genocolorectal.add_gene_location('')
                 @genocolorectal.add_status(2)
-                @genocolorectal.add_variant_class(3) if @posnegtest == 'UV' 
+                add_variantpathclass_uv_records(@genocolorectal) 
                 @genotypes.append(@genocolorectal)
                 if full_screen?(@record)
                   negativegenes = @genelist - ['MUTYH']
@@ -112,7 +112,7 @@ module Import
                 @genocolorectal.add_gene_colorectal(unique_colorectal_genes_from(@testreport).join)
                 @genocolorectal.add_gene_location(@testreport.scan(CDNA_REGEX).join)
                 @genocolorectal.add_status(2)
-                @genocolorectal.add_variant_class(3) if @posnegtest == 'UV'
+                add_variantpathclass_uv_records(@genocolorectal) 
                 if @testreport.scan(PROTEIN_REGEX).size.positive?
                   @genocolorectal.add_protein_impact(@testreport.scan(PROTEIN_REGEX).join)
                 end
@@ -145,7 +145,7 @@ module Import
               end
               @genocolorectal.add_gene_location('')
               @genocolorectal.add_status(2)
-              @genocolorectal.add_variant_class(3) if @posnegtest == 'UV' 
+              add_variantpathclass_uv_records(@genocolorectal) 
               @genotypes.append(@genocolorectal)
             end
 
@@ -180,7 +180,7 @@ module Import
                 @genocolorectal.add_variant_type(varianttype)
                 @genocolorectal.add_gene_colorectal(colorectal_genes.join)
                 @genocolorectal.add_status(2)
-                @genocolorectal.add_variant_class(3) if @posnegtest == 'UV' 
+                add_variantpathclass_uv_records(@genocolorectal) 
                 @genotypes.append(@genocolorectal)
               elsif colorectal_genes.size > 1
                 genes = colorectal_genes_from(testcolumn)
@@ -205,6 +205,7 @@ module Import
                 testcolumn.scan(CHR_VARIANTS_REGEX)[1]
               end
             end
+
 
             def process_positive_records
               @logger.debug 'ABNORMAL TEST'
@@ -247,7 +248,7 @@ module Import
               end
               @genocolorectal.add_gene_location(@testresult.scan(CDNA_REGEX).join)
               @genocolorectal.add_status(2)
-              @genocolorectal.add_variant_class(3) if @posnegtest == 'UV'
+              add_variantpathclass_uv_records(@genocolorectal) 
               if @testresult.scan(PROTEIN_REGEX).size.positive?
                 @genocolorectal.add_protein_impact(@testresult.scan(PROTEIN_REGEX).join)
               end
@@ -262,6 +263,12 @@ module Import
                 negativegenes = @genelist - [unique_colorectal_genes_from(@testresult)[0]]
               end
               process_negative_genes(negativegenes)
+            end
+
+
+            def add_variantpathclass_uv_records(genotype_object)
+              return if @posnegtest.nil?
+              genotype_object.attribute_map['variantpathclass'] = 3 if @posnegtest == 'UV'
             end
 
             def sometimes_tested?(record)
