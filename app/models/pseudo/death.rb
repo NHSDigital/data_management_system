@@ -64,7 +64,7 @@ module Pseudo
       codfft = death_data.codfft_1
       return codfft[(i - 1) * chunk_size..(i * chunk_size) - 1] if codfft && codfft.size > 75
 
-      result = death_data["codfft_#{i}"] || (death_data["codt_#{i}"] if i <= 5)
+      result = death_data["codfft_#{i}"] || (death_data["codt_#{i}"] if i <= 6)
       return result unless merge_extra
 
       ([result] + (i + 1..65).collect { |j| death_data["codfft_#{j}"] }).
