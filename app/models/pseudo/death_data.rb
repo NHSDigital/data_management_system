@@ -9,7 +9,7 @@ module Pseudo
     # Numerics from M204
     # lower case letters from LEDR
     #  (-- 0 01 02 03 1` Y 5 6 7 9 41 92 are very rare, and only in older M204 data),
-    COD10R_VALUES = %w[-- 0 01 02 03 1` Y 1 2 3 4 5 6 7 9 10 11 12 41 92 a b c d e].freeze
+    COD10R_VALUES = %w[-- 0 01 02 03 1` Y 1 2 3 4 5 6 7 9 10 11 12 41 92 a b c d e f].freeze
     RETIND_VALUES = %w[1 Y N].freeze # Numeric values from M204, strings from LEDR
 
     # PLOACC10 is supposed to be 1 numerical character (or blank)
@@ -32,7 +32,11 @@ module Pseudo
     # cod10r c = c = line 10
     # cod10r d = d = line 11
     # cod10r e = e = line 12
-    COD10R_TO_LINENO9 = { 'a' => 1, 'b' => 2, 'c' => 3, 'd' => 4, 'e' => 4,
+    #
+    # From 2024-09-09, an extra cause of death 1d field has been added.
+    # For now, we're mapping this back to cause 1c in LINENO9 terms, to ensure it does not
+    # get lost, but COD10R_TO_LINENO9 should be deprecated, or used the other way around.
+    COD10R_TO_LINENO9 = { 'a' => 1, 'b' => 2, 'c' => 3, 'd' => 4, 'e' => 4, 'f' => 3,
                           '1' => 1, '2' => 2, '3' => 3, '4' => 4, '10' => 4,
                           '11' => 6, '12' => 6 }.freeze
 

@@ -191,6 +191,22 @@ class BirminghamHandlerNewformatTest < ActiveSupport::TestCase
     assert_nil genotypes[1].attribute_map['proteinimpact']
   end
 
+  test 'process_testresult_no_evidence_exception' do
+    cdna_noevidence_exception_record = build_raw_record('pseudo_id1' => 'bob')
+    cdna_noevidence_exception_record.raw_fields['teststatus'] = 'Previous molecular analysis has shown no evidence of the familial variant, however the previously reported heterozygous variant c.206-1G>T in the BRIP1 gene is now considered a variant of unknown significance'
+    cdna_noevidence_exception_record.raw_fields['report'] = "Variants classified according to ACGS Best Practice Guidelines for Variant Classification in Rare Disease 2020."
+    cdna_noevidence_exception_record.raw_fields['overall2'] = 'UV'
+    processor = variant_processor_for(cdna_noevidence_exception_record)
+    @handler.process_genetictestscope(@genotype, cdna_noevidence_exception_record)
+    genotypes = processor.process_variants_from_report
+    assert_equal 1, genotypes.size
+    assert_equal 590, genotypes[0].attribute_map['gene']
+    assert_equal 2, genotypes[0].attribute_map['teststatus']
+    assert_equal 3, genotypes[0].attribute_map['variantpathclass']
+    assert_equal 'c.206-1G>T', genotypes[0].attribute_map['codingdnasequencechange']
+    assert_nil genotypes[0].attribute_map['proteinimpact']
+  end
+
   test 'process_testresult_multiple_cdna_variant' do
     multi_cdna_variants_record = build_raw_record('pseudo_id1' => 'bob')
     multi_cdna_variants_record.raw_fields['teststatus'] = 'Molecular analysis shows 5075G>A (M1652I) sequence variant in BRCA1 and 8410G>A (V2728I) sequence variant in BRCA2'

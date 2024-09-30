@@ -35,6 +35,7 @@ module Pseudo
     # and cod10rf_... / cod10r_... fields, to exclusively cod10rf_... / cod10r_... fields.
     def matched_cause_codes(i)
       raise 'Invalid index' unless (1..6).include?(i)
+
       # lineno values are always 1-6
       causes = (1..20).collect do |j|
         cod10r = death_data.send("cod10rf_#{j}") || death_data.send("cod10r_#{j}")
@@ -42,7 +43,10 @@ module Pseudo
         # More recent deaths have inconsistently back-ported lineno values from cod10r values
         line = nil if cod10r && line && death_data.dor.to_i >= 20180206 #  diffs
         # Prefer old lineno9 value, for continuity, and because it's more finegrained
+        raise 'New death cause 1d not yet supported' if cod10r == 'f'
+
         next unless (line || DeathData::COD10R_TO_LINENO9[cod10r]) == i
+
         multiple_cause_code(j)
       end
       causes.compact
@@ -60,7 +64,7 @@ module Pseudo
       codfft = death_data.codfft_1
       return codfft[(i - 1) * chunk_size..(i * chunk_size) - 1] if codfft && codfft.size > 75
 
-      result = death_data["codfft_#{i}"] || (death_data["codt_#{i}"] if i <= 5)
+      result = death_data["codfft_#{i}"] || (death_data["codt_#{i}"] if i <= 6)
       return result unless merge_extra
 
       ([result] + (i + 1..65).collect { |j| death_data["codfft_#{j}"] }).

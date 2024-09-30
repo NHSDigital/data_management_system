@@ -1222,3 +1222,7 @@ columns:
 - column: ward9r
   mappings:
   - field: ward9r
+- column: codt_6
+  mappings:
+  - field: codt_6
+    clean: :itself

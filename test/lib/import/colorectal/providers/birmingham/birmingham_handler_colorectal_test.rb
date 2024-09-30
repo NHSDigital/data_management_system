@@ -85,6 +85,27 @@ class BirminghamHandlerColorectalTest < ActiveSupport::TestCase
     assert_equal 2850, genocolorectals[0].attribute_map['gene']
   end
 
+  test 'process_testresult_single_VUS_variant' do
+    cdna_vus_record = build_raw_record('pseudo_id1' => 'bob')
+    cdna_vus_record.raw_fields['teststatus'] = 'Heterozygous missense variant of uncertain significance c.1309_1311del p.(His437del) identified in the MSH6 gene.'
+    cdna_vus_record.raw_fields['report'] = 'MLPA analysis of all MSH6, MLH1 and PMS2 exons to detect whole exon deletions/duplications.'
+    cdna_vus_record.raw_fields['overall2'] = 'UV'
+    processor = variant_processor_for(cdna_vus_record)
+    genocolorectals = processor.process_variants_from_report
+    assert_equal 3, genocolorectals.size
+    assert_equal 2744, genocolorectals[0].attribute_map['gene']
+    assert_equal 1, genocolorectals[0].attribute_map['teststatus']
+    assert_nil genocolorectals[0].attribute_map['variantpathclass']
+    assert_equal 3394, genocolorectals[1].attribute_map['gene']
+    assert_equal 1, genocolorectals[1].attribute_map['teststatus']
+    assert_nil genocolorectals[1].attribute_map['variantpathclass']
+    assert_equal 2808, genocolorectals[2].attribute_map['gene']
+    assert_equal 2, genocolorectals[2].attribute_map['teststatus']
+    assert_equal 3, genocolorectals[2].attribute_map['variantpathclass']
+    assert_equal 'c.1309_1311delp', genocolorectals[2].attribute_map['codingdnasequencechange']
+    assert_equal 'p.His437del', genocolorectals[2].attribute_map['proteinimpact']
+  end
+
   test 'process_multiple_variants_single_gene' do
     multiple_cdna_record = build_raw_record('pseudo_id1' => 'bob')
     multiple_cdna_record.raw_fields['teststatus'] = 'Heterozygous missense variant (c.1688G>T; p.Arg563Leu) identified in exon 11 of the PMS2 gene and a heterozygous intronic variant (c.251-20T>G) in intron 4 of the PMS2 gene.'

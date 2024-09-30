@@ -15,29 +15,6 @@ gem 'pg', '~> 1.4.6' # All client instance have postgres version >= 9.3
 gem 'puma', '~> 6.0'
 gem 'puma-daemon', require: false
 
-# We have built our own CentOS 7 binaries for various gems
-# (with separate gem files for different ruby versions)
-# Copy these into place if needed
-def add_custom_centos_7_binaries(gem_dir_basename, gem_fnames)
-  gem_dir = if RUBY_PLATFORM == 'x86_64-linux' && File.exist?('/etc/os-release') &&
-               File.readlines('/etc/os-release').grep(/^(ID="centos"|VERSION_ID="7")$/).count == 2
-              "vendor/#{gem_dir_basename}-x86_64-linux-ruby#{RUBY_VERSION.split('.')[0..1].join}"
-            end
-  require 'fileutils'
-  gem_fnames.each do |gem_fname|
-    if gem_dir && Dir.exist?(gem_dir)
-      begin
-        FileUtils.cp "#{gem_dir}/#{gem_fname}", 'vendor/cache/'
-      rescue Errno::EACCES
-        # Deployer account may not have write access to vendor/cache/
-        # (in which case the file in vendor/cache/ is probably already correct)
-      end
-    else
-      FileUtils.rm_f "vendor/cache/#{gem_fname}"
-    end
-  end
-end
-
 # Use SCSS for stylesheets
 gem 'sass-rails'
 # Use CoffeeScript for .coffee assets and views
@@ -45,20 +22,7 @@ gem 'coffee-rails'
 # See https://github.com/rails/execjs#readme for more supported runtimes
 # gem 'therubyracer', platforms: :ruby
 # gem 'mini_racer'
-# Allow mini_racer version to be overridden in a custom Gemfile
-# We need this for mini_racer on Mac OS Monterey, where the old libv8 no longer compiles
-unless defined?(BUNDLER_OVERRIDE_MINI_RACER) && BUNDLER_OVERRIDE_MINI_RACER
-  # We have built our own CentOS 7 binaries for mini_racer
-  # (with separate gem files for Ruby 3.0 and Ruby 3.1)
-  # Copy these into place if needed
-  mini_racer_version = '0.12.0'
-  add_custom_centos_7_binaries('mini_racer',
-                               ["mini_racer-#{mini_racer_version}-x86_64-linux.gem"])
-  gem 'libv8-node', '~> 21.7.2.0'
-  # gem 'mini_racer', '~> 0.12.0'
-  # Lock the gem version: if this changes, we need to rebuild our binaries
-  gem 'mini_racer', mini_racer_version
-end
+gem 'mini_racer', '~> 0.14'
 
 gem 'parser'
 # Turbolinks makes following links in your web application faster. Read more: https://github.com/rails/turbolinks
