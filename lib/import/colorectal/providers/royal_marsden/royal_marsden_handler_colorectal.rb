@@ -100,26 +100,6 @@ module Import
             end
           end
 
-          # def process_teststatus(genocolorectal, record)
-          #   teststatus = record.raw_fields['teststatus'] unless record.raw_fields['teststatus'].nil?
-          #   if /NO PATHOGENIC (VARIANT|DEL\/DUP) IDENTIFIED/.match(teststatus) ||
-          #      /No mutation detected/.match(teststatus)
-          #     genocolorectal.add_status(1)
-          #   elsif /non-pathogenic variant detected/.match(teststatus)
-          #     genocolorectal.add_status(10)
-          #     genocolorectal.add_variant_class(6) #Ad-hoc variant path class for when we know it is class1/2 but can't distinguish.
-          #   elsif /Fail/i.match(teststatus)
-          #     genocolorectal.add_status(9)
-          #   elsif /c\..+/.match(teststatus) ||
-          #         /Deletion*/.match(teststatus) ||
-          #         /Duplication*/.match(teststatus) ||
-          #         /Exon*/i.match(teststatus)
-          #         genocolorectal.add_status(2)
-          #   else
-          #     @logger.debug 'UNABLE TO DETERMINE TESTSTATUS'
-          #   end
-          # end
-
           def process_teststatus(genocolorectal, record)
             teststatus = record.raw_fields['teststatus'] unless record.raw_fields['teststatus'].nil?
             case teststatus
