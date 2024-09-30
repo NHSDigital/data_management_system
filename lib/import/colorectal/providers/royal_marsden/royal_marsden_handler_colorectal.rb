@@ -103,9 +103,10 @@ module Import
           def process_teststatus(genocolorectal, record)
             teststatus = record.raw_fields['teststatus'] unless record.raw_fields['teststatus'].nil?
             if /NO PATHOGENIC (VARIANT|DEL\/DUP) IDENTIFIED/.match(teststatus) ||
-               /non-pathogenic variant detected/.match(teststatus) ||
                /No mutation detected/.match(teststatus)
               genocolorectal.add_status(1)
+            elsif /non-pathogenic variant detected/.match(teststatus)
+              genocolorectal.add_status(10)
             elsif /Fail/i.match(teststatus)
               genocolorectal.add_status(9)
             elsif /c\..+/.match(teststatus) ||
