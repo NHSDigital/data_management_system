@@ -132,6 +132,64 @@ module Pseudo
       end
     end
 
+    test 'matched_cause_codes for Model 204' do
+      death = Death.new
+      # rubocop:disable Naming/VariableNumber
+      fields = { icd_1: 'A01', lineno9_1: '1',
+                 icd_2: 'B01', lineno9_2: '2',
+                 icd_3: 'C01', lineno9_3: '3',
+                 icd_4: 'D01', lineno9_4: '4',
+                 icd_5: 'E01', lineno9_5: '5',
+                 icd_6: 'F01', lineno9_6: '6',
+                 icd_7: 'A02', lineno9_7: '1',
+                 icd_8: 'B02', lineno9_8: '2',
+                 icd_9: 'C02', lineno9_9: '3',
+                 icd_10: 'D02', lineno9_10: '4',
+                 icd_11: 'E02', lineno9_11: '5',
+                 icd_12: 'F02', lineno9_12: '6' }
+      # rubocop:enable Naming/VariableNumber
+      death.build_death_data(fields)
+      assert_equal(%w[A01 A02], death.matched_cause_codes(1), 'matched_cause_codes(1) = cause 1a')
+      assert_equal(%w[B01 B02], death.matched_cause_codes(2), 'matched_cause_codes(2) = cause 1b')
+      assert_equal(%w[C01 C02], death.matched_cause_codes(3),
+                   'matched_cause_codes(3) = cause 1c')
+      assert_equal(%w[D01 D02], death.matched_cause_codes(4),
+                   'matched_cause_codes(4) = cause 2')
+      assert_equal(%w[E01 E02], death.matched_cause_codes(5),
+                   'matched_cause_codes(5) [used only internally, only applies to M204 data]')
+      assert_equal(%w[F01 F02], death.matched_cause_codes(6),
+                   'matched_cause_codes(6) = additional causes')
+    end
+
+    test 'matched_cause_codes for LEDR' do
+      death = Death.new
+      # rubocop:disable Naming/VariableNumber
+      fields = { icd_1: 'A01', cod10r_1: 'a',
+                 icd_2: 'B01', cod10r_2: 'b',
+                 icd_3: 'C01', cod10r_3: 'c',
+                 icd_4: 'D01', cod10r_4: 'd',
+                 icd_5: 'E01', cod10r_5: 'e',
+                 icd_6: 'F01', cod10r_6: 'f',
+                 icd_7: 'A02', cod10r_7: 'a',
+                 icd_8: 'B02', cod10r_8: 'b',
+                 icd_9: 'C02', cod10r_9: 'c',
+                 icd_10: 'D02', cod10r_10: 'd',
+                 icd_11: 'E02', cod10r_11: 'e',
+                 icd_12: 'F02', cod10r_12: 'f' }
+      # rubocop:enable Naming/VariableNumber
+      death.build_death_data(fields)
+      assert_equal(%w[A01 A02], death.matched_cause_codes(1), 'matched_cause_codes(1) = cause 1a')
+      assert_equal(%w[B01 B02], death.matched_cause_codes(2), 'matched_cause_codes(2) = cause 1b')
+      assert_equal(%w[C01 F01 C02 F02], death.matched_cause_codes(3),
+                   'matched_cause_codes(3) = cause 1c, with cause 1d bundled in')
+      assert_equal(%w[D01 E01 D02 E02], death.matched_cause_codes(4),
+                   'matched_cause_codes(4) = cause 2')
+      assert_equal(%w[], death.matched_cause_codes(5),
+                   'matched_cause_codes(5) [used only internally, only applies to M204 data]')
+      assert_equal(%w[], death.matched_cause_codes(6),
+                   'matched_cause_codes(6) = additional causes')
+    end
+
     test 'codt_codfft_extra for Model 204 / LEDR codt' do
       death = Death.new
       fields = (1..5).collect { |i| ["codt_#{i}".to_sym, "codt_#{i}"] }.to_h
@@ -141,6 +199,20 @@ module Pseudo
       (1..4).each { |i| assert_equal("codt_#{i}", death.codt_codfft_extra(i, 255)) }
       # No need to append extra codfft text onto the last record
       assert_equal('codt_5', death.codt_codfft_extra(5, 255, true))
+    end
+
+    # Test new codt_6 field for 2024-09-09 death certificate reforms
+    test 'codt_codfft_extra for Model 204 / LEDR codt_6' do
+      death = Death.new
+      fields = (1..6).to_h { |i| ["codt_#{i}".to_sym, "codt_#{i}"] }
+      death.build_death_data(fields)
+      (1..6).each do |i|
+        assert_equal("codt_#{i}", death.codt_codfft_extra(i))
+        assert_equal("codt_#{i}", death.codt_codfft_extra(i, 255))
+      end
+      # No need to append extra codfft text onto the last record
+      assert_equal('codt_5', death.codt_codfft_extra(5, 255, true))
+      assert_equal('codt_6', death.codt_codfft_extra(6, 255, true))
     end
 
     test 'codt_codfft_extra for LEDR codftt_1' do

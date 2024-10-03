@@ -17,12 +17,12 @@ class ProjectAmendmentsTest < ActionDispatch::IntegrationTest
 
       assert has_no_link?(href: new_project_project_amendment_path(project))
       assert has_selector?(dom_id)
-      assert has_text?('Requested at')
-      assert has_text?('Amendment approved date')
+      assert_text('Requested at')
+      assert_text('Amendment approved date')
 
       within(dom_id) do
-        assert has_text?(amendment.requested_at.to_s(:ui))
-        assert has_text?(amendment.amendment_approved_date.to_s(:ui))
+        assert_text(amendment.requested_at.to_s(:ui))
+        assert_text(amendment.amendment_approved_date.to_s(:ui))
         assert has_link?(href: project_amendment_path(amendment),         title: 'Details')
         assert has_no_link?(href: edit_project_amendment_path(amendment), title: 'Edit')
         assert has_no_link?(href: project_amendment_path(amendment),      title: 'Delete')
@@ -52,7 +52,7 @@ class ProjectAmendmentsTest < ActionDispatch::IntegrationTest
       click_button('Create Amendment')
 
       assert_current_path project_path(project)
-      assert has_text?('Amendment created successfully')
+      assert_text('Amendment created successfully')
       assert has_selector?('#projectAmendments', visible: true)
     end
     assert_equal 1, project.reload.amendment_number
@@ -85,7 +85,7 @@ class ProjectAmendmentsTest < ActionDispatch::IntegrationTest
         click_button('Update Amendment')
 
         assert_current_path project_path(project)
-        assert has_text?('Amendment updated successfully')
+        assert_text('Amendment updated successfully')
         assert has_selector?('#projectAmendments', visible: true)
       end
     end
@@ -113,7 +113,7 @@ class ProjectAmendmentsTest < ActionDispatch::IntegrationTest
       assert_current_path project_path(project)
     end
 
-    assert has_text?('Amendment destroyed successfully')
+    assert_text('Amendment destroyed successfully')
     assert has_selector?('#projectAmendments', visible: true)
   end
 
@@ -138,7 +138,7 @@ class ProjectAmendmentsTest < ActionDispatch::IntegrationTest
     visit edit_project_amendment_path(amendment)
 
     assert_no_current_path project_amendment_path(amendment)
-    assert has_text?('You are not authorized to access this page.')
+    assert_text('You are not authorized to access this page.')
   end
 
   test 'amendments without attachments should block transition to DPIA_START' do
@@ -156,8 +156,8 @@ class ProjectAmendmentsTest < ActionDispatch::IntegrationTest
       end
     end
 
-    assert has_text?('This project cannot move to "DPIA" for 1 reason')
-    assert has_text?('no amendment document attached')
+    assert_text('This project cannot move to "DPIA" for 1 reason')
+    assert_text('no amendment document attached')
     assert has_button?('Begin DPIA', disabled: true)
 
     click_link 'Amendments'

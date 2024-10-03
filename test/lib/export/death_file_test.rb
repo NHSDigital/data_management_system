@@ -1,5 +1,6 @@
 require 'test_helper'
 
+# rubocop:disable Naming/VariableNumber
 module Export
   class DeathFileTest < ActiveSupport::TestCase
     def setup
@@ -33,8 +34,8 @@ module Export
 
     # Helper constructor for a patient with a single long codfft_1 (LEDR-style)
     def long_codfft_ppat_and_fields
-      # codfft_1 is 378 characters = (75 * 5) + 3
-      fields_no_demog = { codfft_1: '123456' * 63, codt_1: 'Will be ignored' }
+      # codfft_1 is 456 characters = (75 * 6) + 6 = 6 * 76
+      fields_no_demog = { codfft_1: '123456' * 76, codt_1: 'Will be ignored' }
       ppat = build_death_record(fields_no_demog)
       [ppat, fields_no_demog]
     end
@@ -42,7 +43,7 @@ module Export
     # Helper constructor for a patient with codt fields but no codfft (Model 204 or LEDR style)
     def codt_ppat_and_fields
       fields_no_demog = { codt_1: 'Cause 1' * 86, codt_2: '222', codt_3: '333',
-                          codt_4: '4' * 75, codt_5: 'cause 5' }
+                          codt_4: '4' * 75, codt_5: 'cause 5', codt_6: 'cause 1d' }
       ppat = build_death_record(fields_no_demog)
       [ppat, fields_no_demog]
     end
@@ -64,9 +65,10 @@ module Export
       assert_equal(fields[:codfft_1][150..224], extract_field(ppat, 'codt_codfft_3'))
       assert_equal(fields[:codfft_1][225..299], extract_field(ppat, 'codt_codfft_4'))
       assert_equal(fields[:codfft_1][300..374], extract_field(ppat, 'codt_codfft_5'))
-      # There is no codt_6, but codt_codfft_6 can be used to get codfft_6 (from Model 204 data),
+      assert_equal(fields[:codfft_1][375..449], extract_field(ppat, 'codt_codfft_6'))
+      # There is no codt_7, but codt_codfft_7 can be used to get codfft_6 (from Model 204 data),
       # or to get more of CODFFT in 75-character instalments (from LEDR data)
-      assert_equal(fields[:codfft_1][375..-1], extract_field(ppat, 'codt_codfft_6'))
+      assert_equal(fields[:codfft_1][450..], extract_field(ppat, 'codt_codfft_7'))
     end
 
     test 'extract long CODFFT over CODT and split into 255 character sections' do
@@ -111,10 +113,11 @@ module Export
       assert_equal(fields[:codt_3], extract_field(ppat, 'codt_codfft_3'))
       assert_equal(fields[:codt_4], extract_field(ppat, 'codt_codfft_4'))
       assert_equal(fields[:codt_5], extract_field(ppat, 'codt_codfft_5'))
-      assert_nil(extract_field(ppat, 'codt_codfft_6'))
+      assert_equal(fields[:codt_6], extract_field(ppat, 'codt_codfft_6'))
+      assert_nil(extract_field(ppat, 'codt_codfft_7'))
     end
 
-    test 'extract CODT if no CODFFT split into 255 chartacter sections' do
+    test 'extract CODT if no CODFFT split into 255 character sections' do
       ppat, fields = codt_ppat_and_fields
 
       assert_equal(fields[:codt_1], extract_field(ppat, 'codt_codfft_1_255'))
@@ -122,7 +125,16 @@ module Export
       assert_equal(fields[:codt_3], extract_field(ppat, 'codt_codfft_3_255'))
       assert_equal(fields[:codt_4], extract_field(ppat, 'codt_codfft_4_255'))
       assert_equal(fields[:codt_5], extract_field(ppat, 'codt_codfft_5_255extra'))
-      assert_nil(extract_field(ppat, 'codt_codfft_6'))
+      assert_equal(fields[:codt_6], extract_field(ppat, 'codt_codfft_6_255'))
+      assert_nil(extract_field(ppat, 'codt_codfft_7'))
+    end
+
+    test 'extract CODT_3 and CODT_6 combined in old-style cancer extracts' do
+      ppat, fields = codt_ppat_and_fields
+
+      assert_equal("#{fields[:codt_3]}, #{fields[:codt_6]}",
+                   extract_field(ppat, 'codt_codfft_3_codt_6_255'))
     end
   end
 end
+# rubocop:enable Naming/VariableNumber

@@ -1384,7 +1384,8 @@ CREATE TABLE public.death_data (
     ccg9pod character varying,
     ccg9r character varying,
     gor9r character varying,
-    ward9r character varying
+    ward9r character varying,
+    codt_6 character varying
 );
 
 

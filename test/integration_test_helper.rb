@@ -4,6 +4,15 @@ require 'test_helper'
 module IntegrationTestHelper
   extend ActiveSupport::Concern
 
+  included do
+    # Ensure that tests do not leave extra windows open, polluting other tests.
+    teardown do
+      next if windows.count <= 1
+
+      raise "Error: test left extra windows open: windows.count = #{windows.count}"
+    end
+  end
+
   # Manually wait for AJAX requests in integration tests, for clarity.
   def wait_for_ajax
     started_waiting_at = Time.current
