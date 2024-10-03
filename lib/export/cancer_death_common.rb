@@ -10,7 +10,7 @@ module Export
   # all: Everything, including repeats of the same patient, and patients with no causes of death
   # cara: New congenital anomaly deaths, cf. https://ncr.plan.io/issues/15123
   # cara_all: All congenital anomaly deaths
-  class CancerDeathCommon < DeathFile
+  class CancerDeathCommon < DeathFile # rubocop:disable Metrics/ClassLength
     CARA_PATTERN = /\A(D215\z|D821|D1810|E7030|P350|P351|P371|P358|P832|K070|
           Q(?!038\z|039\z|0461\z|0780\z|0782\z|101\z|102\z|103\z|105\z|135\z|170\z|171\z|172\z|
               173\z|174\z|
@@ -78,7 +78,8 @@ module Export
       'occupation_mother' => 'occmt', 'dateofdeath' => 'dod', 'dateofdeath_text' => nil,
       'placeofdeath' => 'podt', 'ons_text1a' => 'codt_codfft_1_255',
       'ons_text1b' => 'codt_codfft_2_255',
-      'ons_text1c' => 'codt_codfft_3_255', 'ons_text2' => 'codt_codfft_4_255',
+      'ons_text1c' => 'codt_codfft_3_codt_6_255', # Combine CODT_3 and CODT_6 (cause 1c + 1d)
+      'ons_text2' => 'codt_codfft_4_255',
       'ons_text' => 'codt_codfft_5_255extra',
       'ons_code1a' => 'matched_cause_code_1', 'ons_code1b' => 'matched_cause_code_2',
       'ons_code1c' => 'matched_cause_code_3', 'ons_code2' => 'matched_cause_code_4',
