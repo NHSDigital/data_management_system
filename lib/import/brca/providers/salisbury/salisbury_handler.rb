@@ -13,24 +13,184 @@ module Import
             genotype.add_passthrough_fields(record.mapped_fields,
                                             record.raw_fields,
                                             PASS_THROUGH_FIELDS)
-
-            process_molecular_testing(genotype, record)
             add_organisationcode_testresult(genotype)
-            extract_teststatus(genotype, record)
             add_provider_code(genotype, record, ORG_CODE_MAP)
-            results = process_variant_record(genotype, record)
-            results.each { |cur_genotype| @persister.integrate_and_store(cur_genotype) }
+            # binding.pry if record.mapped_fields['servicereportidentifier'] == 'W1800757'
+
+            # For clarity, `raw_fields` contains multiple raw records for same SRI
+            # record.raw_fields.each { |raw_record| process_raw_record(genotype, raw_record) }
+            mol_testing_types = record.raw_fields.pluck('moleculartestingtype')&.uniq
+            @mol_testing_type = mol_testing_types&.first&.downcase
+            process_record(genotype, record)
           end
 
-          def process_molecular_testing(genotype, record)
-            mol_testing_type = record.raw_fields['moleculartestingtype']&.downcase
-            genotype.add_molecular_testing_type_strict(TEST_TYPE_MAPPING[mol_testing_type])
-            scope = TEST_SCOPE_MAPPING[mol_testing_type].presence || :no_genetictestscope
+          def add_provider_code(genotype, record, org_code_map)
+            raw_org = record.raw_fields.pluck('providercode')&.uniq&.first&.downcase
+            org_code = org_code_map[raw_org]
+            return if org_code.blank?
+
+            genotype.attribute_map['providercode'] = org_code
+          end
+
+          def process_record(genotype, record)
+            process_molecular_testing(genotype)
+            genotypes = []
+            if ROW_LEVEL.include?(@mol_testing_type)
+              record.raw_fields.each { |raw_record| process_row_case(genotypes, genotype, raw_record) }
+            elsif PANEL_LEVEL.keys.include?(@mol_testing_type)
+              process_panel_case(genotypes, genotype, record)
+            elsif HYBRID_LEVEL.include?(@mol_testing_type)
+              process_hybrid_case(genotypes, genotype, record)
+            end
+
+            genotypes.each { |cur_genotype| @persister.integrate_and_store(cur_genotype) }
+          end
+
+          def process_row_case(genotypes, genotype, record)
+            genotype_new = genotype.dup
+            @status = record['status']&.downcase
+            status = extract_teststatus_row_level
+            genotype_new.add_status(status)
+            extract_gene_row(genotype_new, record)
+            if [2, 10].include? status
+              assign_variantpathclass_row_level(genotype_new)
+              variant = record['genotype']
+              process_variants(genotype_new, variant) if positive_record?(genotype_new) && variant.present?
+            end
+            genotypes << genotype_new
+          end
+
+          def process_panel_case(genotypes, genotype, record)
+            @all_genes = PANEL_LEVEL[@mol_testing_type]
+
+            record.raw_fields.each do |raw_record|
+              process_panel_record(genotypes, genotype, raw_record) unless @all_genes.empty?
+            end
+
+            # Mark rest of genes in panel as 1
+            return if @all_genes.blank?
+
+            process_status_genes(@all_genes, 1, genotype, genotypes, record)
+          end
+
+          def process_hybrid_case(genotypes, genotype, record)
+            record.raw_fields.each do |raw_record|
+              process_row_case(genotypes, genotype, raw_record)
+            end
+
+            # check if all genes covered
+            genes_to_be_checked = HYBRID_LEVEL[@mol_testing_type]
+            genes_processed = genotypes.each.collect { |a| a.attribute_map['gene'] }.uniq
+
+            genes_to_be_added = genes_to_be_checked - genes_processed
+
+            return if genes_to_be_added.blank?
+
+            genes_to_be_added.each do |gene|
+              genotype_new = genotype.dup
+              genotype_new.add_gene(gene)
+              genotype_new.add_status(1)
+              genotypes << genotype_new
+            end
+          end
+
+          def process_panel_record(genotypes, genotype, raw_record)
+            @status = raw_record['status']&.downcase
+            status_genes = []
+            %w[test genotype].each do |field|
+              result = raw_record[field]&.scan(BRCA_REGEX)&.flatten&.uniq
+              if result.present?
+                status_genes = result 
+                break
+              end
+            end
+
+            if UNKNOWN_STATUS.include? @status
+              process_status_genes(@all_genes, 4, genotype, genotypes, raw_record)
+            elsif FAILED_TEST.match(@status)
+              process_status_genes(@all_genes, 9, genotype, genotypes, raw_record)
+            elsif ABNORMAL_STATUS.include? @status
+              process_status_genes(status_genes, 10, genotype, genotypes, raw_record)
+            elsif NEGATIVE_STATUS.include? @status
+              process_status_genes(@all_genes, 1, genotype, genotypes, raw_record)
+            elsif POSITIVE_STATUS.include?(@status) || @status.match(/variant*/ix)
+              process_status_genes(status_genes, 2, genotype, genotypes, raw_record)
+            end
+          end
+
+          def process_status_genes(genes, status, genotype, genotypes, record)
+            return unless genes&.all? { |gene| @all_genes.include?(gene) }
+
+            genes.each do |gene|
+              @all_genes -= [gene]
+              genotype_new = genotype.dup
+              genotype_new.add_gene(gene)
+              genotype_new.add_status(status)
+              if [2, 10].include? status
+                assign_variantpathclass_row_level(genotype_new)
+                variant = record['genotype']
+                process_variants(genotype, variant) if positive_record?(genotype) && variant.present?
+              end
+              genotypes << genotype_new
+            end
+          end
+
+          def process_molecular_testing(genotype)
+            genotype.add_molecular_testing_type_strict(TEST_TYPE_MAPPING[@mol_testing_type])
+            scope = TEST_SCOPE_MAPPING[@mol_testing_type].presence || :no_genetictestscope
             genotype.add_test_scope(scope)
           end
 
           def add_organisationcode_testresult(genotype)
             genotype.attribute_map['organisationcode_testresult'] = '699H0'
+          end
+
+          def extract_teststatus_row_level
+            if POSITIVE_STATUS.include?(@status) || @status.match(/variant*/ix)
+              2
+            elsif NEGATIVE_STATUS.include?(@status)
+              1
+            elsif FAILED_TEST.match(@status)
+              9
+            elsif UNKNOWN_STATUS.include?(@status)
+              4
+            elsif ABNORMAL_STATUS.include? @status
+              10
+            end
+          end
+
+          def assign_variantpathclass_row_level(genotype)
+            case @status
+            when /like(ly)?\spathogenic/ix
+              genotype.add_variant_class(4)
+            when /pathogenic/ix
+              genotype.add_variant_class(5)
+            when /likely\sbenign/ix
+              genotype.add_variant_class(2)
+            when /benign/ix
+              genotype.add_variant_class(1)
+            when /variant/ix
+              genotype.add_variant_class(3)
+            end
+          end
+
+          def extract_gene_row(genotype, record)
+            gene = []
+            
+            %w[test genotype moleculartestingtype].each do |field|
+              result = record[field]&.scan(BRCA_REGEX)&.flatten&.uniq
+              if result.present?
+                gene = result
+                break
+              end
+            end 
+
+            binding.pry if gene.size > 1
+            return if gene.blank?
+
+            replacements = { 'BC1' => 'BRCA1', 'BC2' => 'BRCA2' }
+            gene.map! { |g| replacements[g] || g }
+            genotype.add_gene(gene.first)
           end
 
           def extract_teststatus(genotype, record)
@@ -40,7 +200,7 @@ module Import
               genotype.add_status(:positive)
             elsif NEGATIVE_STATUS.include?(status)
               genotype.add_status(:negative)
-            elsif FAILED_TEST.match(record.raw_fields['status'])
+            elsif FAILED_TEST.match(@status)
               genotype.add_status(:failed)
             elsif UNKNOWN_STATUS.include?(status)
               genotype.add_status(:unknown)
@@ -49,20 +209,6 @@ module Import
               genotype.add_status(teststatus)
             end
             @logger.debug "#{genotype.attribute_map['teststatus']} status for : #{status}"
-          end
-
-          def process_variant_record(genotype, record)
-            genotypes = []
-            variant = record.raw_fields['genotype']
-            test_string = record.raw_fields['test']
-            gene = extract_gene(test_string, variant, record)
-            genotype.add_gene(gene[0])
-            add_fs_negative_gene(gene, genotype, genotypes) if test_string.scan(CONFIRM_SEQ_NGS).size.positive?
-
-            process_variants(genotype, variant) if positive_record?(genotype) && variant.present?
-            genotypes.append(genotype) unless test_string.scan(CONFIRM_SEQ_NGS).size.positive? && gene.blank?
-
-            genotypes
           end
 
           def process_variants(genotype, variant)
@@ -93,46 +239,9 @@ module Import
             @logger.debug "SUCCESSFUL protein parse for: #{$LAST_MATCH_INFO[:impact]}"
           end
 
-          def add_fs_negative_gene(positive_gene, genotype, genotypes)
-            negative_genes = %w[BRCA1 BRCA2] - positive_gene
-            negative_genes&.each do |brca_gene|
-              genotype_dup = genotype.dup
-              genotype_dup.add_gene(brca_gene)
-              genotype_dup.add_status(:negative)
-              genotypes.append(genotype_dup)
-            end
-          end
-
           def positive_record?(genotype)
             genotype.attribute_map['teststatus'] == 2
           end
-
-          # rubocop:disable Metrics/MethodLength, Metrics/CyclomaticComplexity
-          def extract_gene(test_string, geno_string, record)
-            positive_gene = []
-            positive_gene << 'BRCA1' if record.raw_fields['servicereportidentifier'] == 'W1715894'
-
-            gene_string = test_string.scan(CONFIRM_SEQ_NGS).size.positive? ? geno_string : test_string
-
-            case gene_string
-            when /BRCA1|BC1/i
-              positive_gene << 'BRCA1'
-            when /BRCA2|BC2/i
-              positive_gene << 'BRCA2'
-            when /PALB2|Variant\s+1/i
-              positive_gene << 'PALB2'
-            when /BRIP1/i
-              positive_gene << 'BRIP1'
-            when /MLH1/i
-              positive_gene << 'MLH1'
-            when /MSH6/i
-              positive_gene << 'MSH6'
-            when /MSH2/i
-              positive_gene << 'MSH2'
-            end
-            positive_gene
-          end
-          # rubocop:enable Metrics/MethodLength, Metrics/CyclomaticComplexity
         end
       end
     end
