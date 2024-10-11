@@ -12,13 +12,13 @@ class SalisburyHandlerTest < ActiveSupport::TestCase
     @logger = Import::Log.get_logger
   end
 
-  test 'extract_teststatus_row_level' do
+  test 'extract_teststatus_record' do
     @handler.assign_status_var(@record.raw_fields.first)
-    assert_equal 2, @handler.extract_teststatus_row_level
+    assert_equal 2, @handler.extract_teststatus_record
     broken_record = build_raw_record(options: { 'pseudo_id1' => 'bob' })
     broken_record.raw_fields.first['status'] = 'Failed'
     @handler.assign_status_var(broken_record.raw_fields.first)
-    assert_equal 9, @handler.extract_teststatus_row_level
+    assert_equal 9, @handler.extract_teststatus_record
   end
 
   test 'process_variants' do
@@ -51,7 +51,7 @@ class SalisburyHandlerTest < ActiveSupport::TestCase
     @handler.assign_molecular_testing_var(targ_rec)
     @handler.process_molecular_testing(@genotype)
     @handler.assign_status_var(targ_rec.raw_fields.first)
-    @handler.extract_teststatus_row_level
+    @handler.extract_teststatus_record
     genotypes = @handler.process_record(@genotype, targ_rec)
     assert_equal 1, genotypes.size
     assert_equal 'Targeted BRCA mutation test', genotypes[0].attribute_map['genetictestscope']
@@ -68,7 +68,7 @@ class SalisburyHandlerTest < ActiveSupport::TestCase
     @handler.assign_molecular_testing_var(targ_rec_path)
     @handler.process_molecular_testing(@genotype)
     @handler.assign_status_var(targ_rec_path.raw_fields.first)
-    @handler.extract_teststatus_row_level
+    @handler.extract_teststatus_record
     genotypes = @handler.process_record(@genotype, targ_rec_path)
     assert_equal 1, genotypes.size
     assert_equal 'Targeted BRCA mutation test', genotypes[0].attribute_map['genetictestscope']
@@ -87,7 +87,7 @@ class SalisburyHandlerTest < ActiveSupport::TestCase
     @handler.assign_molecular_testing_var(fs_rec_path)
     @handler.process_molecular_testing(@genotype)
     @handler.assign_status_var(fs_rec_path.raw_fields.first)
-    @handler.extract_teststatus_row_level
+    @handler.extract_teststatus_record
     genotypes = @handler.process_record(@genotype, fs_rec_path)
     assert_equal 1, genotypes.size
     assert_equal 'Full screen BRCA1 and BRCA2', genotypes[0].attribute_map['genetictestscope']
@@ -136,7 +136,7 @@ class SalisburyHandlerTest < ActiveSupport::TestCase
     @handler.assign_molecular_testing_var(ngs_fs_record)
     @handler.process_molecular_testing(@genotype)
     @handler.assign_status_var(ngs_fs_record.raw_fields.first)
-    @handler.extract_teststatus_row_level
+    @handler.extract_teststatus_record
     genotypes = @handler.process_record(@genotype, ngs_fs_record)
     assert_equal 3, genotypes.size
     assert_equal 'Full screen BRCA1 and BRCA2', genotypes[0].attribute_map['genetictestscope']
@@ -160,7 +160,7 @@ class SalisburyHandlerTest < ActiveSupport::TestCase
     @handler.assign_molecular_testing_var(row_level_record)
     @handler.process_molecular_testing(@genotype)
     @handler.assign_status_var(row_level_record.raw_fields.first)
-    @handler.extract_teststatus_row_level
+    @handler.extract_teststatus_record
     genotypes = @handler.process_record(@genotype, row_level_record)
     assert_equal 1, genotypes.size
     assert_equal 'Targeted BRCA mutation test', genotypes[0].attribute_map['genetictestscope']

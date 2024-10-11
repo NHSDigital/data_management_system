@@ -51,11 +51,11 @@ module Import
           def process_row_case(genotypes, genotype, record)
             genotype_new = genotype.dup
             assign_status_var(record)
-            status = extract_teststatus_row_level
+            status = extract_teststatus_record
             genotype_new.add_status(status)
             extract_gene_row(genotype_new, record)
             if [2, 10].include? status
-              assign_variantpathclass_row_level(genotype_new)
+              assign_variantpathclass_record(genotype_new)
               variant = record['genotype']
               process_variants(genotype_new, variant) if positive_record?(genotype_new) && variant.present?
             end
@@ -80,10 +80,10 @@ module Import
             end
 
             # check if all genes covered
-            genes_to_be_checked = HYBRID_LEVEL[@mol_testing_type]
+            genes_to_be_present = HYBRID_LEVEL[@mol_testing_type]
             genes_processed = genotypes.each.collect { |a| a.attribute_map['gene'] }.uniq
 
-            genes_to_be_added = genes_to_be_checked - genes_processed
+            genes_to_be_added = genes_to_be_present - genes_processed
 
             return if genes_to_be_added.blank?
 
@@ -97,15 +97,8 @@ module Import
 
           def process_panel_record(genotypes, genotype, raw_record)
             assign_status_var(raw_record)
-            status_genes = []
-            %w[test genotype].each do |field|
-              result = raw_record[field]&.scan(BRCA_REGEX)&.flatten&.uniq
-              if result.present?
-                status_genes = result
-                break
-              end
-            end
 
+            status_genes = extract_genes(%w[test genotype], raw_record)
             if UNKNOWN_STATUS.include? @status
               process_status_genes(@all_genes, 4, genotype, genotypes, raw_record)
             elsif FAILED_TEST.match(@status)
@@ -117,6 +110,18 @@ module Import
             elsif POSITIVE_STATUS.include?(@status) || @status.match(/variant*/ix)
               process_status_genes(status_genes, 2, genotype, genotypes, raw_record)
             end
+          end
+
+          def extract_genes(fields, raw_record)
+            status_genes = []
+            fields.each do |field|
+              result = raw_record[field]&.scan(BRCA_REGEX)&.flatten&.uniq
+              if result.present?
+                status_genes = result
+                break
+              end
+            end
+            status_genes
           end
 
           def assign_status_var(raw_record)
@@ -132,7 +137,7 @@ module Import
               genotype_new.add_gene(gene)
               genotype_new.add_status(status)
               if [2, 10].include? status
-                assign_variantpathclass_row_level(genotype_new)
+                assign_variantpathclass_record(genotype_new)
                 variant = record['genotype']
                 process_variants(genotype, variant) if positive_record?(genotype) && variant.present?
               end
@@ -150,7 +155,7 @@ module Import
             genotype.attribute_map['organisationcode_testresult'] = '699H0'
           end
 
-          def extract_teststatus_row_level
+          def extract_teststatus_record
             if POSITIVE_STATUS.include?(@status) || @status.match(/variant*/ix)
               2
             elsif NEGATIVE_STATUS.include?(@status)
@@ -164,7 +169,7 @@ module Import
             end
           end
 
-          def assign_variantpathclass_row_level(genotype)
+          def assign_variantpathclass_record(genotype)
             case @status
             when /like(ly)?\spathogenic/ix
               genotype.add_variant_class(4)
@@ -180,39 +185,12 @@ module Import
           end
 
           def extract_gene_row(genotype, record)
-            gene = []
-
-            %w[test genotype moleculartestingtype].each do |field|
-              result = record[field]&.scan(BRCA_REGEX)&.flatten&.uniq
-              if result.present?
-                gene = result
-                break
-              end
-            end
-
+            gene = extract_genes(%w[test genotype moleculartestingtype], record)
             return if gene.blank?
 
             replacements = { 'BC1' => 'BRCA1', 'BC2' => 'BRCA2' }
             gene.map! { |g| replacements[g] || g }
             genotype.add_gene(gene.first)
-          end
-
-          def extract_teststatus(genotype, record)
-            status = record.raw_fields['status']&.downcase
-            geno_string = record.raw_fields['genotype']
-            if POSITIVE_STATUS.include?(status)
-              genotype.add_status(:positive)
-            elsif NEGATIVE_STATUS.include?(status)
-              genotype.add_status(:negative)
-            elsif FAILED_TEST.match(@status)
-              genotype.add_status(:failed)
-            elsif UNKNOWN_STATUS.include?(status)
-              genotype.add_status(:unknown)
-            elsif GENO_DEPEND_STATUS.include?(status)
-              teststatus = geno_string.blank? ? :negative : :positive
-              genotype.add_status(teststatus)
-            end
-            @logger.debug "#{genotype.attribute_map['teststatus']} status for : #{status}"
           end
 
           def process_variants(genotype, variant)
