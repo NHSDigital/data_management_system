@@ -15,13 +15,15 @@ module Import
                                             PASS_THROUGH_FIELDS)
             add_organisationcode_testresult(genotype)
             add_provider_code(genotype, record, ORG_CODE_MAP)
-            # binding.pry if record.mapped_fields['servicereportidentifier'] == 'W1800757'
 
             # For clarity, `raw_fields` contains multiple raw records for same SRI
-            # record.raw_fields.each { |raw_record| process_raw_record(genotype, raw_record) }
-            mol_testing_types = record.raw_fields.pluck('moleculartestingtype')&.uniq
-            @mol_testing_type = mol_testing_types&.first&.downcase
-            process_record(genotype, record)
+            assign_molecular_testing_var(record)
+            res = process_record(genotype, record)
+            res.each { |cur_genotype| @persister.integrate_and_store(cur_genotype) }
+          end
+
+          def assign_molecular_testing_var(record)
+            @mol_testing_type = record.raw_fields.pluck('moleculartestingtype')&.uniq&.first&.downcase
           end
 
           def add_provider_code(genotype, record, org_code_map)
@@ -43,12 +45,12 @@ module Import
               process_hybrid_case(genotypes, genotype, record)
             end
 
-            genotypes.each { |cur_genotype| @persister.integrate_and_store(cur_genotype) }
+            genotypes
           end
 
           def process_row_case(genotypes, genotype, record)
             genotype_new = genotype.dup
-            @status = record['status']&.downcase
+            assign_status_var(record)
             status = extract_teststatus_row_level
             genotype_new.add_status(status)
             extract_gene_row(genotype_new, record)
@@ -62,7 +64,6 @@ module Import
 
           def process_panel_case(genotypes, genotype, record)
             @all_genes = PANEL_LEVEL[@mol_testing_type]
-
             record.raw_fields.each do |raw_record|
               process_panel_record(genotypes, genotype, raw_record) unless @all_genes.empty?
             end
@@ -95,12 +96,12 @@ module Import
           end
 
           def process_panel_record(genotypes, genotype, raw_record)
-            @status = raw_record['status']&.downcase
+            assign_status_var(raw_record)
             status_genes = []
             %w[test genotype].each do |field|
               result = raw_record[field]&.scan(BRCA_REGEX)&.flatten&.uniq
               if result.present?
-                status_genes = result 
+                status_genes = result
                 break
               end
             end
@@ -116,6 +117,10 @@ module Import
             elsif POSITIVE_STATUS.include?(@status) || @status.match(/variant*/ix)
               process_status_genes(status_genes, 2, genotype, genotypes, raw_record)
             end
+          end
+
+          def assign_status_var(raw_record)
+            @status = raw_record['status']&.downcase
           end
 
           def process_status_genes(genes, status, genotype, genotypes, record)
@@ -176,16 +181,15 @@ module Import
 
           def extract_gene_row(genotype, record)
             gene = []
-            
+
             %w[test genotype moleculartestingtype].each do |field|
               result = record[field]&.scan(BRCA_REGEX)&.flatten&.uniq
               if result.present?
                 gene = result
                 break
               end
-            end 
+            end
 
-            binding.pry if gene.size > 1
             return if gene.blank?
 
             replacements = { 'BC1' => 'BRCA1', 'BC2' => 'BRCA2' }
