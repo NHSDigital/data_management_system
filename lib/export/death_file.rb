@@ -1,6 +1,6 @@
 module Export
   # Base class for exporting mapped MBIS death data files
-  class DeathFile < BaseFile
+  class DeathFile < BaseFile # rubocop:disable Metrics/ClassLength
     # Special, repeated fields, e.g. there are 20 icd fields: icd_1 .. icd_20 fields
     SPECIAL = {
       # Auto-generated using:
@@ -198,7 +198,7 @@ module Export
 
     # Emit the value for a particular field, including common field mappings
     # (May be extended by subclasses for extract-specific tweaks)
-    def extract_field(ppat, field)
+    def extract_field(ppat, field) # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
       # Special fields not in the original spec
       case field
       when 'cod10r', 'cod10rf', 'codt', 'icd', 'icdf', 'icdpv', 'icdpvf', # non-identifying
@@ -228,6 +228,7 @@ module Export
         return if [1, 2, 3, 4].include?(i) &&
                   death_field(ppat, 'codfft_1').blank? &&
                   extract_field(ppat, "codt_codfft_#{i}").blank?
+
         return ppat.matched_cause_codes(i).join(',')
       when 'ons_code1a' # Comma separated ICD codes for death cause 1a
         return extract_field(ppat, 'matched_cause_code_1')
@@ -240,7 +241,8 @@ module Export
       when 'ons_code'
         # Concatenate additional cause codes, if present
         # ONS quirks mode: cause 5 is only extracted if 6 is also present
-        return '' unless extract_field(ppat, 'matched_cause_code_6').present?
+        return '' if extract_field(ppat, 'matched_cause_code_6').blank?
+
         val = [5, 6].collect { |j| extract_field(ppat, "matched_cause_code_#{j}") }.
               select(&:present?).compact.join(',')
         return val.split(',')[0..7].join(',') # Only 8 ICD codes fit into 40 character field
@@ -252,6 +254,9 @@ module Export
       when /^codt_codfft_([0-9]+)_255$/ # Prefer CODFFT to CODT, up to 255 characters per entry
         i = Regexp.last_match(1).to_i
         return ppat.codt_codfft_extra(i, 255)
+      when /^codt_codfft_3_codt_6_255$/ # Prefer CODFFT to CODT, up to 255 characters per entry
+        # Combine CODT_3 and CODT_6 transitionally for cancer extracts
+        return [ppat.codt_codfft_extra(3, 255), death_field(ppat, 'codt_6')].compact.join(', ')
       when /^codt_codfft_5_255extra$/ # Prefer CODFFT to CODT, up to 255 characters, append extras
         return ppat.codt_codfft_extra(5, 255, true)
       when /^icd_icdf_([0-9]+)$/ # Prefer ICDF to ICD, if present
@@ -299,8 +304,7 @@ module Export
       when 'patientid' # Linkage identifier for extracting matched patient records
         return @ppatid_rowids[ppat.id]
       end
-      val = death_field(ppat, field)
-      val
+      death_field(ppat, field)
     end
   end
 end
