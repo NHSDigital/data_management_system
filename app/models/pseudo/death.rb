@@ -33,16 +33,26 @@ module Pseudo
     #
     # In LEDR, cause codes have moved from being in a mixture of lineno9f_... / lineno9_... fields,
     # and cod10rf_... / cod10r_... fields, to exclusively cod10rf_... / cod10r_... fields.
-    def matched_cause_codes(i)
+    # TODO: Change parameter (i) to allow letters, to support cause 1d extracts
+    def matched_cause_codes(i) # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity, Naming/MethodParameterName
       raise 'Invalid index' unless (1..6).include?(i)
+
       # lineno values are always 1-6
       causes = (1..20).collect do |j|
         cod10r = death_data.send("cod10rf_#{j}") || death_data.send("cod10r_#{j}")
         line = death_data.send("lineno9f_#{j}") || death_data.send("lineno9_#{j}")
         # More recent deaths have inconsistently back-ported lineno values from cod10r values
-        line = nil if cod10r && line && death_data.dor.to_i >= 20180206 #  diffs
+        line = nil if cod10r && line && death_data.dor.to_i >= 20180206 #  diffs # rubocop:disable Style/NumericLiterals
+        # Temporarily treat cause 1d as cause 1c for cancer deaths extracts, and warn in the logs,
+        # until a new field is added to the extract.
+        if i == 3 && cod10r == 'f' && DeathData::COD10R_TO_LINENO9['f'] == 3
+          logger.warn("#{self.class.name} export warning: treating cause of death 1d as cause " \
+                      "1c in e_batchid #{e_batch_id} for matched_cause_codes(#{i}) with " \
+                      "cod10rf_#{j}/cod10r_#{j} = #{cod10r.inspect}")
+        end
         # Prefer old lineno9 value, for continuity, and because it's more finegrained
         next unless (line || DeathData::COD10R_TO_LINENO9[cod10r]) == i
+
         multiple_cause_code(j)
       end
       causes.compact
@@ -60,7 +70,7 @@ module Pseudo
       codfft = death_data.codfft_1
       return codfft[(i - 1) * chunk_size..(i * chunk_size) - 1] if codfft && codfft.size > 75
 
-      result = death_data["codfft_#{i}"] || (death_data["codt_#{i}"] if i <= 5)
+      result = death_data["codfft_#{i}"] || (death_data["codt_#{i}"] if i <= 6)
       return result unless merge_extra
 
       ([result] + (i + 1..65).collect { |j| death_data["codfft_#{j}"] }).

@@ -97,19 +97,19 @@ class StGeorgeHandlerOldTest < ActiveSupport::TestCase
 
   test 'process_single_record' do
     @logger.expects(:debug).with('SUCCESSFUL gene parse for BRCA2')
-    @logger.expects(:debug).with('SUCCESSFUL cdna change parse for: 6275_6276delTT')
-    @logger.expects(:debug).with('FAILED protein parse for: BR2 c.6275_6276delTT')
+    @logger.expects(:debug).with('SUCCESSFUL cdna change parse for: 6165_6166delAA')
+    @logger.expects(:debug).with('FAILED protein parse for: BR2 c.6165_6166delAA')
     @handler.process_variants_from_record(@genotype, @record)
     assert_equal 2, @genotype.attribute_map['teststatus']
-    assert_equal 'c.6275_6276del', @genotype.attribute_map['codingdnasequencechange']
+    assert_equal 'c.6165_6166del', @genotype.attribute_map['codingdnasequencechange']
     fullscreen_record = build_raw_record('pseudo_id1' => 'bob')
     fullscreen_record.raw_fields['moleculartestingtype'] = 'Full Screen'
     assert_equal true, @handler.full_screen?(fullscreen_record)
     # Test for full screen record
     @logger.expects(:debug).with('SUCCESSFUL gene parse for BRCA1')
     @logger.expects(:debug).with('SUCCESSFUL gene parse for BRCA2')
-    @logger.expects(:debug).with('SUCCESSFUL cdna change parse for: 6275_6276delTT')
-    @logger.expects(:debug).with('FAILED protein parse for: BR2 c.6275_6276delTT')
+    @logger.expects(:debug).with('SUCCESSFUL cdna change parse for: 6165_6166delAA')
+    @logger.expects(:debug).with('FAILED protein parse for: BR2 c.6165_6166delAA')
     variants = @handler.process_variants_from_record(@genotype, fullscreen_record)
     assert_equal 2, variants.size
     assert_equal 1, variants[0].attribute_map['teststatus']
@@ -314,19 +314,19 @@ class StGeorgeHandlerOldTest < ActiveSupport::TestCase
   private
 
   def clinical_json
-    { sex: '1',
-      hospitalnumber: '332061',
+    { sex: '2',
+      hospitalnumber: '123456',
       receiveddate: '1998-08-13T00:00:00.000+01:00',
       servicereportidentifier: 'D12345',
       specimentype: '5',
-      age: 42 }.to_json
+      age: 32 }.to_json
   end
 
   def rawtext_clinical_json
     { sex: 'Female',
       'g number' => '1234',
-      genotype: 'BR2 c.6135_6136delAA',
-      providercode: 'PROV',
+      genotype: 'BR2 c.6165_6166delAA',
+      providercode: 'RMHS',
       referralorganisation: 'Hospital',
       consultantname: 'Consultant',
       servicereportidentifier: 'D12345',

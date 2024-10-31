@@ -1384,7 +1384,8 @@ CREATE TABLE public.death_data (
     ccg9pod character varying,
     ccg9r character varying,
     gor9r character varying,
-    ward9r character varying
+    ward9r character varying,
+    codt_6 character varying
 );
 
 
@@ -8332,6 +8333,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20220428152502'),
 ('20220816095442'),
 ('20230525133522'),
-('20240620121939');
+('20240620121939'),
+('20240923153521');
 
 

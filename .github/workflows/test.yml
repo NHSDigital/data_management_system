@@ -7,8 +7,8 @@ jobs:
     strategy:
       matrix:
         ruby-version:
-          - '3.0.4'
-          # - '3.1' # Not yet supported. Ideally move to rails 7.0 first
+          - '3.1.6'
+          # - '3.2' # Not yet tested on CentOS 7. Ideally move to rails 7.0 first
 
     name: Ruby ${{ matrix.ruby-version }}
 
@@ -89,7 +89,9 @@ jobs:
       with:
         bundler-cache: true
     - name: Audit the bundle
-      run: bundle exec bundle-audit check --update
+      # Ignore bootstrap version 3 warning: https://nhsd-jira.digital.nhs.uk/browse/NDRS2-1676
+      run: bundle exec bundle-audit check --update --ignore CVE-2024-6484
+      # run: bundle exec bundle-audit check --update
 
   # A utility job upon which Branch Protection can depend,
   # thus remaining agnostic of the matrix.

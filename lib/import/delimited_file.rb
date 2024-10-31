@@ -20,7 +20,7 @@ module Import
       (1..20).collect { |i| "cod10r_#{i}" } +
       (1..20).collect { |i| "cod10rf_#{i}" } +
       (1..65).collect { |i| "codfft_#{i}" } +
-      (1..5).collect { |i| "codt_#{i}" } +
+      (1..6).collect { |i| "codt_#{i}" } +
       %w[corareat corcertt ctrypob ctryr ctydpod ctydr ctypod ctyr dester doddy dodmt dodyr doinqt
          dor emprssdm emprsshf empsecdm empsechf empstdm empsthf esttyped gor9r gorr hautpod hautr
          hropod hror] +

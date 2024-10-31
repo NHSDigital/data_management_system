@@ -154,6 +154,8 @@ module ActiveSupport
     def login_and_accept_terms(user)
       sign_in user
       visit terms_and_conditions_path
+      return if page.has_text?('Terms and Conditions have been accepted')
+
       click_on 'Accept'
     end
 
