@@ -1,7 +1,13 @@
 source 'https://rubygems.org'
 
-gem 'activemodel-caution', '6.1.7.6' # Supports rails ~> 6.1.7.0
-gem 'rails', '~> 6.1.0', '>= 6.1.7.5'
+# The activemodel-cautions gem is ours, so not available rubygems.org.
+# The .gem file is in vendor/cache - if this is lost, or the gem needs
+# updating, the source (along with development instructions in the
+# README) is available at:
+#  https://github.com/NHSDigital/activemodel-caution.git
+
+gem 'activemodel-caution', '7.0.8' # Supports rails ~> 7.0.8.0
+gem 'rails', '~> 7.0.4', '>= 7.0.8.1'
 
 # Use old psych for YAML on Ruby 3.1 until we move to Rails 7.0.4
 # so that we can continue to use aliases in config/locales/en.yml
