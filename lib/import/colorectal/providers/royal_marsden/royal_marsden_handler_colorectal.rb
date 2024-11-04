@@ -95,6 +95,9 @@ module Import
 
             if !varpathclass.nil? && !varpathclass.empty? && VARIANT_PATH_CLASS_COLO[varpathclass]
               genocolorectal.add_variant_class(VARIANT_PATH_CLASS_COLO[varpathclass.downcase])
+            elsif varpathclass.nil? && varpathclass.empty? 
+              && record.raw_fields['teststatus'].match(/non-pathogenic variant detected/)
+              genocolorectal.add_variant_class(6) #Ad-hoc variant path class for when we know it is class1/2 but can't distinguish.
             else
               @logger.debug 'NO VARIANTPATHCLASS DETECTED'
             end
@@ -107,7 +110,6 @@ module Import
               genocolorectal.add_status(1)
             when /non-pathogenic variant detected/
               genocolorectal.add_status(10)
-              genocolorectal.add_variant_class(6) #Ad-hoc variant path class for when we know it is class1/2 but can't distinguish.
             when /Fail/i
               genocolorectal.add_status(9)
             when /c\..+/ || /Deletion*/ || /Duplication*/ || /Exon*/i
