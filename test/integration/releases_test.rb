@@ -69,7 +69,7 @@ class ReleasesTest < ActionDispatch::IntegrationTest
 
     select  'Yes',                            from: 'release[income_received]'
     fill_in 'release[individual_to_release]', with: 'Yogi Bear'
-    fill_in 'release[release_date]',          with: Time.zone.today.to_s(:ui)
+    fill_in 'release[release_date]',          with: Time.zone.today.to_fs(:ui)
 
     assert_changes -> { release.reload.release_date } do
       click_button('Update Release')

@@ -22,20 +22,20 @@
       <dt><%= Delayed::Job.human_attribute_name(:status) %></dt>
       <dd><%= job_status(@job) %></dd>
       <dt><%= Delayed::Job.human_attribute_name(:created_at) %></dt>
-      <dd><%= @job.created_at.to_s(:db) %></dd>
+      <dd><%= @job.created_at.to_fs(:db) %></dd>
       <dt><%= Delayed::Job.human_attribute_name(:updated_at) %></dt>
-      <dd><%= @job.updated_at.to_s(:db) %></dd>
+      <dd><%= @job.updated_at.to_fs(:db) %></dd>
     </dl>
   </div>
   <div class="col-md-6">
     <dl class="dl-horizontal">
 
       <dt><%= Delayed::Job.human_attribute_name(:run_at) %></dt>
-      <dd><%= @job.run_at.to_s(:db) %></dd>
+      <dd><%= @job.run_at.to_fs(:db) %></dd>
       <dt><%= Delayed::Job.human_attribute_name(:failed_at) %></dt>
-      <dd><%= @job.failed_at&.to_s(:db) %></dd>
+      <dd><%= @job.failed_at&.to_fs(:db) %></dd>
       <dt><%= Delayed::Job.human_attribute_name(:locked_at) %></dt>
-      <dd><%= @job.locked_at&.to_s(:db) %></dd>
+      <dd><%= @job.locked_at&.to_fs(:db) %></dd>
       <dt><%= Delayed::Job.human_attribute_name(:locked_by) %></dt>
       <dd><%= @job.locked_by %></dd>
     </dl>
