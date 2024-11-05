@@ -15,6 +15,8 @@ module SensitiveRecoverableData
     cipher.decrypt
     if temporary_password.nil? || temporary_password.eql?('ADMIN')
       private_key = OpenSSL::PKey::RSA.new(private_key_data, password)
+      # TODO: we should ideally re-encrypt all our data, and switch to OAEP padding instead
+      # Brakeman warning: "Use of padding mode PKCS1 (default if not specified), which is known to be insecure. Use OAEP instead"
       # cipher.key = private_key.private_decrypt(rawdata[0..255])
       cipher.key = private_key.private_decrypt(rawdata[0..511])
     else
@@ -42,6 +44,8 @@ module SensitiveRecoverableData
     rawdata = cipher.update(secret_data)
     rawdata << cipher.final
     public_key = OpenSSL::PKey::RSA.new(public_key_data)
+    # TODO: we should ideally re-encrypt all our data, and switch to OAEP padding instead
+    # Brakeman warning: "Use of padding mode PKCS1 (default if not specified), which is known to be insecure. Use OAEP instead"
     public_key.public_encrypt(random_key) + random_iv + rawdata
   end
 end
