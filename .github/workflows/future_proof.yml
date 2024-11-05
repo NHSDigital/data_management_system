@@ -71,7 +71,7 @@ jobs:
         # by adding the following line, but this didn't help with github actions
         # # environment.config.set('output.hashFunction', 'sha256')
         # https://stackoverflow.com/questions/69692842/error-message-error0308010cdigital-envelope-routinesunsupported/73465262#73465262
-        run: NODE_OPTIONS=--openssl-legacy-provider RAILS_GROUPS=assets RAILS_ENV=test bin/rails assets:clobber assets:precompile
+        run: NODE_OPTIONS=--openssl-legacy-provider RAILS_GROUPS=assets RAILS_ENV=test bin/rails yarn:install assets:clobber assets:precompile
       - name: Run smoke tests with latest gems and ruby
         run: bin/rake smoke_test
 
