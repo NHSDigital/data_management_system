@@ -76,6 +76,7 @@ class SalisburyHandlerTest < ActiveSupport::TestCase
     assert_equal 8, genotypes[0].attribute_map['gene']
     assert_equal 'c.51_52del', genotypes[0].attribute_map['codingdnasequencechange']
     assert_equal 'p.Arg18LeufsTer12', genotypes[0].attribute_map['proteinimpact']
+    assert_equal 5, genotypes[0].attribute_map['variantpathclass']
   end
 
   test 'fs_rec_path' do
@@ -181,16 +182,17 @@ class SalisburyHandlerTest < ActiveSupport::TestCase
     assert_equal 7, genotypes.size
     assert_equal 'Full screen BRCA1 and BRCA2', genotypes[0].attribute_map['genetictestscope']
     assert_equal 1, genotypes[0].attribute_map['teststatus']
-    assert_equal 451, genotypes[0].attribute_map['gene']
+    assert_equal 8, genotypes[0].attribute_map['gene']
     assert_equal 'Full screen BRCA1 and BRCA2', genotypes[1].attribute_map['genetictestscope']
     assert_equal 1, genotypes[1].attribute_map['teststatus']
     assert_equal 7, genotypes[1].attribute_map['gene']
     assert_equal 'Full screen BRCA1 and BRCA2', genotypes[2].attribute_map['genetictestscope']
     assert_equal 1, genotypes[2].attribute_map['teststatus']
-    assert_equal 8, genotypes[2].attribute_map['gene']
+    assert_equal 451, genotypes[2].attribute_map['gene']
     assert_equal 'Full screen BRCA1 and BRCA2', genotypes[3].attribute_map['genetictestscope']
     assert_equal 1, genotypes[3].attribute_map['teststatus']
     assert_equal 865, genotypes[3].attribute_map['gene']
+    assert_equal 3186, genotypes[4].attribute_map['gene']
     assert_equal 'Full screen BRCA1 and BRCA2', genotypes[5].attribute_map['genetictestscope']
     assert_equal 1, genotypes[5].attribute_map['teststatus']
     assert_equal 3615, genotypes[5].attribute_map['gene']

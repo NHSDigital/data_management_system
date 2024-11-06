@@ -15,6 +15,9 @@ module Import
                                             PASS_THROUGH_FIELDS)
             add_organisationcode_testresult(genotype)
             add_provider_code(genotype, record, ORG_CODE_MAP)
+            record.raw_fields.reject! do |raw_record|
+              raw_record['status'].match(/Variant\sfor\sAlissa\sreview/ix)
+            end
 
             # For clarity, `raw_fields` contains multiple raw records for same SRI
             assign_molecular_testing_var(record)
@@ -64,7 +67,12 @@ module Import
 
           def process_panel_case(genotypes, genotype, record)
             @all_genes = PANEL_LEVEL[@mol_testing_type]
+            @status_genes_hash = {}
+
+            prepare_gene_status_hash(record)
+
             record.raw_fields.each do |raw_record|
+              assign_status_var(raw_record)
               process_panel_record(genotypes, genotype, raw_record) unless @all_genes.empty?
             end
 
@@ -96,19 +104,35 @@ module Import
           end
 
           def process_panel_record(genotypes, genotype, raw_record)
-            assign_status_var(raw_record)
-
             status_genes = extract_genes(%w[test genotype], raw_record)
-            if UNKNOWN_STATUS.include? @status
-              process_status_genes(@all_genes, 4, genotype, genotypes, raw_record)
+
+            status_found = @status_genes_hash[status_genes]&.uniq
+            if status_found.size > 1
+              process_multi_status_genes(status_genes, status_found, genotype, genotypes, raw_record)
+            elsif UNKNOWN_STATUS.include? @status
+              process_status_genes(status_genes, 4, genotype, genotypes, raw_record)
             elsif FAILED_TEST.match(@status)
               process_status_genes(@all_genes, 9, genotype, genotypes, raw_record)
             elsif ABNORMAL_STATUS.include? @status
               process_status_genes(status_genes, 10, genotype, genotypes, raw_record)
             elsif NEGATIVE_STATUS.include? @status
-              process_status_genes(@all_genes, 1, genotype, genotypes, raw_record)
-            elsif POSITIVE_STATUS.include?(@status) || @status.match(/variant*/ix)
+              process_status_genes(status_genes, 1, genotype, genotypes, raw_record)
+            elsif POSITIVE_STATUS.include?(@status) || @status.match(/^variant*/ix)
               process_status_genes(status_genes, 2, genotype, genotypes, raw_record)
+            end
+          end
+
+          def prepare_gene_status_hash(record)
+            record.raw_fields.each do |raw_record|
+              assign_status_var(raw_record)
+
+              status_genes = extract_genes(%w[test genotype], raw_record)
+
+              if @status_genes_hash[status_genes]
+                @status_genes_hash[status_genes] << @status
+              else
+                @status_genes_hash[status_genes] = [@status]
+              end
             end
           end
 
@@ -128,6 +152,21 @@ module Import
             @status = raw_record['status']&.downcase
           end
 
+          # Use priority if more than one status is present for same gene for a given record
+          def process_multi_status_genes(status_genes, status_found, genotype, genotypes, raw_record)
+            if (status_found & POSITIVE_STATUS) || status_found.map { |e| e.match(/^variant/) }
+              process_status_genes(status_genes, 2, genotype, genotypes, raw_record)
+            elsif status_found & ABNORMAL_STATUS
+              process_status_genes(status_genes, 10, genotype, genotypes, raw_record)
+            elsif status_found & NEGATIVE_STATUS
+              process_status_genes(status_genes, 1, genotype, genotypes, raw_record)
+            elsif status_found & FAILED_TEST
+              process_status_genes(@all_genes, 9, genotype, genotypes, raw_record)
+            elsif status_found & UNKNOWN_STATUS
+              process_status_genes(status_genes, 4, genotype, genotypes, raw_record)
+            end
+          end
+
           def process_status_genes(genes, status, genotype, genotypes, record)
             return unless genes&.all? { |gene| @all_genes.include?(gene) }
 
@@ -139,7 +178,7 @@ module Import
               if [2, 10].include? status
                 assign_variantpathclass_record(genotype_new)
                 variant = record['genotype']
-                process_variants(genotype, variant) if positive_record?(genotype) && variant.present?
+                process_variants(genotype_new, variant) if positive_record?(genotype_new) && variant.present?
               end
               genotypes << genotype_new
             end
@@ -156,7 +195,7 @@ module Import
           end
 
           def extract_teststatus_record
-            if POSITIVE_STATUS.include?(@status) || @status.match(/variant*/ix)
+            if POSITIVE_STATUS.include?(@status) || @status.match(/^variant*/ix)
               2
             elsif NEGATIVE_STATUS.include?(@status)
               1
@@ -222,7 +261,7 @@ module Import
           end
 
           def positive_record?(genotype)
-            genotype.attribute_map['teststatus'] == 2
+            [2, 10].include? genotype.attribute_map['teststatus']
           end
         end
       end
