@@ -239,6 +239,7 @@ ActiveRecord::Schema.define(version: 2018_12_21_110625) do
     t.string "codt_3"
     t.string "codt_4"
     t.string "codt_5"
+    t.string "codt_6"
     t.string "ctydpod"
     t.string "ctypod"
     t.string "dester"

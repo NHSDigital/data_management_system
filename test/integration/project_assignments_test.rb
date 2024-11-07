@@ -23,7 +23,7 @@ class ProjectAssignmentsTest < ActionDispatch::IntegrationTest
     end
 
     assert_current_path project_path(@project)
-    assert has_text?('Project assigned successfully')
+    assert_text('Project assigned successfully')
     assert has_select?('Assigned User')
     assert has_no_selector?('dt', text: 'Assigned User')
   end
