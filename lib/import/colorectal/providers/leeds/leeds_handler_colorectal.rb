@@ -369,6 +369,8 @@ module Import
               %w[MLH1 MSH2 MSH6 PMS2 EPCAM]
             when /r211/
               %w[APC BMPR1A EPCAM GREM1 MLH1 MSH2 MSH6 MUTYH NTHL1 PMS2 POLD1 POLE PTEN SMAD4 STK11]
+            when /confirmation/
+              @indicationcategory == '11450' ? %w[MLH1] : []
             else
               []
             end
