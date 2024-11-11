@@ -18,9 +18,58 @@
       },
       "user_input": "value_column",
       "confidence": "Medium",
+      "cwe_id": [
+        89
+      ],
       "note": ""
+    },
+    {
+      "warning_type": "Weak Cryptography",
+      "warning_code": 126,
+      "fingerprint": "824aa359c33e8b9c417a2e439e75839c4ef84ca2b5aa759d2c1f4f20175266f5",
+      "check_name": "WeakRSAKey",
+      "message": "Use of padding mode PKCS1 (default if not specified), which is known to be insecure. Use OAEP instead",
+      "file": "lib/sensitive_recoverable_data.rb",
+      "line": 49,
+      "link": "https://brakemanscanner.org/docs/warning_types/weak_cryptography/",
+      "code": "OpenSSL::PKey::RSA.new(public_key_data).public_encrypt((OpenSSL::Cipher.new(\"aes-256-cbc\").random_key or Digest::SHA1.hexdigest(temporary_password)[0, OpenSSL::Cipher.new(\"aes-256-cbc\").key_len]))",
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "SensitiveRecoverableData",
+        "method": "s(:self).encrypt_sensitive_data"
+      },
+      "user_input": null,
+      "confidence": "High",
+      "cwe_id": [
+        780
+      ],
+      "note": "Timing attacks in our scenario are impossible. We would ideally move to OAEP instead, but accept the risk in this limited context."
+    },
+    {
+      "warning_type": "Weak Cryptography",
+      "warning_code": 126,
+      "fingerprint": "c7d0e19b03e814ca34b7b53fe5b33b89351a087a3104fed643424337bfbd382b",
+      "check_name": "WeakRSAKey",
+      "message": "Use of padding mode PKCS1 (default if not specified), which is known to be insecure. Use OAEP instead",
+      "file": "lib/sensitive_recoverable_data.rb",
+      "line": 21,
+      "link": "https://brakemanscanner.org/docs/warning_types/weak_cryptography/",
+      "code": "OpenSSL::PKey::RSA.new(private_key_data, password).private_decrypt(rawdata[(0..511)])",
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "SensitiveRecoverableData",
+        "method": "s(:self).decrypt_sensitive_data"
+      },
+      "user_input": null,
+      "confidence": "High",
+      "cwe_id": [
+        780
+      ],
+      "note": "Timing attacks in our scenario are impossible. We would ideally move to OAEP instead, but accept the risk in this limited context."
     }
   ],
-  "updated": "2020-04-15 15:09:55 +0100",
-  "brakeman_version": "4.8.1"
+  "updated": "2024-11-05 15:15:35 +0000",
+  "brakeman_version": "6.2.2"
 }

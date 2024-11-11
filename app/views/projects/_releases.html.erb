@@ -31,7 +31,7 @@
           <td><%= release.phe_invoice_number %></td>
           <td><%= release.po_number %></td>
           <td><%= release.individual_to_release %></td>
-          <td><%= release.release_date&.to_s(:ui) %></td>
+          <td><%= release.release_date&.to_fs(:ui) %></td>
           <td>
             <div class="pull-right">
               <%= inline_controls_for(release) %>

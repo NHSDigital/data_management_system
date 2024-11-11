@@ -2,6 +2,11 @@ require 'test_helper'
 
 class PDFApplicationFacadeTest < ActiveSupport::TestCase
   def setup
+    # In Rails 7.0, classes are loaded before fixtures are populated.
+    # We need to rerun the metaprogramming after populating the fixtures,
+    # so that all the appropriate methods are defined, based on the lookup tables.
+    PdfApplicationFacade.perform_metaprogamming
+
     @team      = teams(:team_one)
     @applicant = users(:standard_user2)
     @project   = @team.projects.build(project_type: project_types(:application))

@@ -6,7 +6,7 @@
   <td><%= communication.id %></td>
   <td><%= communication.sender_full_name %></td>
   <td><%= communication.recipient_full_name %></td>
-  <td><%= communication.contacted_at.to_s(:ui) %></td>
+  <td><%= communication.contacted_at.to_fs(:ui) %></td>
   <td><%= communication.medium.titleize %></td>
   <td><%= "re: #{communication.parent_id}" if communication.parent_id %></td>
   <td class="text-right">

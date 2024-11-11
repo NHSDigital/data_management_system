@@ -109,7 +109,7 @@ set :asset_script, <<~SHELL
   touch config/special_users.production.yml config/admin_users.yml config/odr_users.yml \
         config/user_yubikeys.yml
   printf 'disable-self-update-check true\\nyarn-offline-mirror "./vendor/npm-packages-offline-cache"\\nyarn-offline-mirror-pruning false\\n' > .yarnrc
-  RAILS_ENV=production bundle exec rake assets:clobber assets:precompile
+  RAILS_ENV=production bundle exec rake yarn:install assets:clobber assets:precompile
   rm config/secrets.yml config/database.yml
 SHELL
 

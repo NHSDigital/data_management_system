@@ -21,8 +21,8 @@ class ProjectAmendmentsTest < ActionDispatch::IntegrationTest
       assert_text('Amendment approved date')
 
       within(dom_id) do
-        assert_text(amendment.requested_at.to_s(:ui))
-        assert_text(amendment.amendment_approved_date.to_s(:ui))
+        assert_text(amendment.requested_at.to_fs(:ui))
+        assert_text(amendment.amendment_approved_date.to_fs(:ui))
         assert has_link?(href: project_amendment_path(amendment),         title: 'Details')
         assert has_no_link?(href: edit_project_amendment_path(amendment), title: 'Edit')
         assert has_no_link?(href: project_amendment_path(amendment),      title: 'Delete')
