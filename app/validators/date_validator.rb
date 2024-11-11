@@ -64,7 +64,7 @@ class DateValidator < ActiveModel::EachValidator
   def comparative_name(comparative_option, record)
     case comparative_option
     when Date, Proc
-      comparative_value(comparative_option, record).try(:to_s, :ui)
+      comparative_value(comparative_option, record).try(:to_fs, :ui)
     when Symbol
       record.class.human_attribute_name(comparative_option)
     else

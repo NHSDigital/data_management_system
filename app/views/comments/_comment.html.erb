@@ -7,7 +7,7 @@
   <div class="media-body comment--body">
     <div class="media-heading comment--heading">
       <strong><%= comment.user_full_name %></strong><br />
-      <small><em><%= comment.created_at.to_s(:ui_with_time) %></em></small><br />
+      <small><em><%= comment.created_at.to_fs(:ui_with_time) %></em></small><br />
 
       <% comment.tags.each do |tag| %>
         <span class="label label-info"><%= tag %></span>

@@ -71,7 +71,7 @@ module Report
     end
 
     def to_csv
-      to_csv_enum.sum
+      to_csv_enum.sum('')
     end
 
     # Allow downloads to be streamed back as they're generated:

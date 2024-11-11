@@ -28,8 +28,8 @@
           <td><%= contract.referent_reference %></td>
           <td><%= contract.reference %></td>
           <td><%= contract.contract_version %></td>
-          <td><%= contract.contract_start_date&.to_s(:ui) %></td>
-          <td><%= contract.contract_end_date&.to_s(:ui) %></td>
+          <td><%= contract.contract_start_date&.to_fs(:ui) %></td>
+          <td><%= contract.contract_end_date&.to_fs(:ui) %></td>
           <td>
             <div class="pull-right">
               <%= inline_controls_for(contract) %>

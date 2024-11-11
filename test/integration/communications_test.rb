@@ -53,7 +53,7 @@ class CommunicationsTest < ActionDispatch::IntegrationTest
         select  'Standard User',               from: 'communication[sender_id]'
         select  'Application Manager One',     from: 'communication[recipient_id]'
         select  'Email',                       from: 'communication[medium]'
-        fill_in 'communication[contacted_at]', with: Time.zone.today.to_s(:ui)
+        fill_in 'communication[contacted_at]', with: Time.zone.today.to_fs(:ui)
 
         click_button 'Save'
       end
@@ -89,7 +89,7 @@ class CommunicationsTest < ActionDispatch::IntegrationTest
         assert has_select?('communication[recipient_id]', selected: 'Standard User')
 
         select  'Email', from: 'communication[medium]'
-        fill_in 'communication[contacted_at]', with: Time.zone.today.to_s(:ui)
+        fill_in 'communication[contacted_at]', with: Time.zone.today.to_fs(:ui)
 
         click_button 'Save'
       end
