@@ -369,6 +369,17 @@ module Import
               %w[MLH1 MSH2 MSH6 PMS2 EPCAM]
             when /r211/
               %w[APC BMPR1A EPCAM GREM1 MLH1 MSH2 MSH6 MUTYH NTHL1 PMS2 POLD1 POLE PTEN SMAD4 STK11]
+            when /confirmation/
+              genes_for_confirmation_mtype
+            else
+              []
+            end
+          end
+
+          def genes_for_confirmation_mtype
+            if @indicationcategory == '11450' && @geno == 'mlpa del confirmation +ve' &&
+               @report.match(/familial\spathogenic\sdeletion\sof\sexons\s16-19/ix)
+              %w[MLH1]
             else
               []
             end
