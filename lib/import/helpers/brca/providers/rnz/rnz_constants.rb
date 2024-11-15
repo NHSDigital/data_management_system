@@ -77,16 +77,7 @@ module Import
             CONFIRM_SEQ_NGS = /Confirmation\sSequencing|NGS\sResults/ix
 
             # rubocop:disable Lint/MixedRegexpCaptureTypes
-            CDNA_REGEX = /c\.\[?(?<cdna>
-                                ([0-9]+[+>_-][0-9][+>_-][0-9]+[+>_-][0-9][ACGTdelinsup]+)|
-                                ([0-9]+[+>_-][0-9][+>_-][0-9]+[+>_-][0-9]+[ACGTdelinsup]+)|
-                                ([0-9]+[+>_-][0-9]+[ACGTdelinsup][+>_-][ACGTdelinsup])|
-                                ([0-9]+[ACGTdelinsup]+[+>_-][ACGTdelinsup])|
-                                ([0-9]+[+>_-][0-9]+[ACGTdelinsup]+)|
-                                ([0-9]+[+>_-][0-9]+[+>_-][0-9]+[0-9]+[ACGTdelinsup]+)|
-                                ([0-9]+[?+>_-]+[0-9]+[?+>_-]+[ACGTdelinsup]+)|
-                                ([0-9]+[ACGTdelinsup]+)
-                                )\]?/ix
+            CDNA_REGEX = /c\.(?<cdna>[\w+>*\-]+)?[\w\s.]?/ix
 
             PROTEIN_REGEX = /p\.\((?<impact>.+)\)|
                             \(p\.(?<impact>[A-Za-z]+.+)\)|

@@ -1,5 +1,3 @@
-require 'possibly'
-
 module Import
   module Brca
     module Providers
@@ -58,11 +56,11 @@ module Import
             genotype_new.add_status(status)
             extract_gene_row(genotype_new, record)
             if [2, 10].include? status
-              assign_variantpathclass_record(genotype_new)
-              variant = record['genotype']
-              process_variants(genotype_new, variant) if positive_record?(genotype_new) && variant.present?
+              handle_variant_record(genotype_new, record, genotypes)
+            else
+              genotypes << genotype_new
             end
-            genotypes << genotype_new
+            genotypes
           end
 
           def process_panel_case(genotypes, genotype, record)
@@ -105,20 +103,21 @@ module Import
 
           def process_panel_record(genotypes, genotype, raw_record)
             status_genes = extract_genes(%w[test genotype], raw_record)
-
-            status_found = @status_genes_hash[status_genes]&.uniq
-            if status_found.size > 1
-              process_multi_status_genes(status_genes, status_found, genotype, genotypes, raw_record)
-            elsif UNKNOWN_STATUS.include? @status
-              process_status_genes(status_genes, 4, genotype, genotypes, raw_record)
-            elsif FAILED_TEST.match(@status)
-              process_status_genes(@all_genes, 9, genotype, genotypes, raw_record)
-            elsif ABNORMAL_STATUS.include? @status
-              process_status_genes(status_genes, 10, genotype, genotypes, raw_record)
-            elsif NEGATIVE_STATUS.include? @status
-              process_status_genes(status_genes, 1, genotype, genotypes, raw_record)
-            elsif POSITIVE_STATUS.include?(@status) || @status.match(/^variant*/ix)
-              process_status_genes(status_genes, 2, genotype, genotypes, raw_record)
+            status_genes.each do |status_gene|
+              status_found = @status_genes_hash[status_gene]&.uniq
+              if status_found.size > 1
+                process_multi_status_genes([status_gene], status_found, genotype, genotypes, raw_record)
+              elsif UNKNOWN_STATUS.include? @status
+                process_status_genes([status_gene], 4, genotype, genotypes, raw_record)
+              elsif FAILED_TEST.match(@status)
+                process_status_genes(@all_genes, 9, genotype, genotypes, raw_record)
+              elsif ABNORMAL_STATUS.include? @status
+                process_status_genes([status_gene], 10, genotype, genotypes, raw_record)
+              elsif NEGATIVE_STATUS.include? @status
+                process_status_genes([status_gene], 1, genotype, genotypes, raw_record)
+              elsif POSITIVE_STATUS.include?(@status) || @status.match(/^variant*/ix)
+                process_status_genes([status_gene], 2, genotype, genotypes, raw_record)
+              end
             end
           end
 
@@ -127,11 +126,12 @@ module Import
               assign_status_var(raw_record)
 
               status_genes = extract_genes(%w[test genotype], raw_record)
-
-              if @status_genes_hash[status_genes]
-                @status_genes_hash[status_genes] << @status
-              else
-                @status_genes_hash[status_genes] = [@status]
+              status_genes.each do |status_gene|
+                if @status_genes_hash[status_gene]
+                  @status_genes_hash[status_gene] << @status
+                else
+                  @status_genes_hash[status_gene] = [@status]
+                end
               end
             end
           end
@@ -153,19 +153,21 @@ module Import
           end
 
           # Use priority if more than one status is present for same gene for a given record
+          # rubocop:disable Metrics/CyclomaticComplexity, Metrics/AbcSize, Metrics/PerceivedComplexity
           def process_multi_status_genes(status_genes, status_found, genotype, genotypes, raw_record)
-            if (status_found & POSITIVE_STATUS) || status_found.map { |e| e.match(/^variant/) }
-              process_status_genes(status_genes, 2, genotype, genotypes, raw_record)
-            elsif status_found & ABNORMAL_STATUS
-              process_status_genes(status_genes, 10, genotype, genotypes, raw_record)
-            elsif status_found & NEGATIVE_STATUS
-              process_status_genes(status_genes, 1, genotype, genotypes, raw_record)
-            elsif status_found & FAILED_TEST
-              process_status_genes(@all_genes, 9, genotype, genotypes, raw_record)
-            elsif status_found & UNKNOWN_STATUS
-              process_status_genes(status_genes, 4, genotype, genotypes, raw_record)
+            if status_found.intersect?(POSITIVE_STATUS) || status_found.any? { |e| e.match(/^variant/) }
+              process_status_genes(status_genes, 2, genotype, genotypes, raw_record) if extract_teststatus_record == 2
+            elsif status_found.intersect?(ABNORMAL_STATUS)
+              process_status_genes(status_genes, 10, genotype, genotypes, raw_record) if extract_teststatus_record == 10
+            elsif status_found.intersect?(NEGATIVE_STATUS)
+              process_status_genes(status_genes, 1, genotype, genotypes, raw_record) if extract_teststatus_record == 1
+            elsif status_found.match(FAILED_TEST)
+              process_status_genes(@all_genes, 9, genotype, genotypes, raw_record) if extract_teststatus_record == 9
+            elsif status_found.intersect?(UNKNOWN_STATUS)
+              process_status_genes(status_genes, 4, genotype, genotypes, raw_record) if extract_teststatus_record == 4
             end
           end
+          # rubocop:enable Metrics/CyclomaticComplexity, Metrics/AbcSize, Metrics/PerceivedComplexity
 
           def process_status_genes(genes, status, genotype, genotypes, record)
             return unless genes&.all? { |gene| @all_genes.include?(gene) }
@@ -176,10 +178,25 @@ module Import
               genotype_new.add_gene(gene)
               genotype_new.add_status(status)
               if [2, 10].include? status
-                assign_variantpathclass_record(genotype_new)
-                variant = record['genotype']
-                process_variants(genotype_new, variant) if positive_record?(genotype_new) && variant.present?
+                handle_variant_record(genotype_new, record, genotypes)
+              else
+                genotypes << genotype_new
               end
+            end
+            genotypes
+          end
+
+          def handle_variant_record(genotype_new, record, genotypes)
+            assign_variantpathclass_record(genotype_new)
+            variant = record['genotype']
+            if variant.present?
+              if variant.scan(CDNA_REGEX).size > 1 ||
+                 variant.scan(EXON_VARIANT_REGEX).size > 1
+                process_multi_vars(genotype_new, variant, genotypes)
+              else
+                process_variants(genotype_new, variant, genotypes)
+              end
+            else
               genotypes << genotype_new
             end
           end
@@ -232,10 +249,24 @@ module Import
             genotype.add_gene(gene.first)
           end
 
-          def process_variants(genotype, variant)
-            process_cdna_variant(genotype, variant)
-            process_exonic_variant(genotype, variant)
-            process_protein_impact(genotype, variant)
+          def process_multi_vars(genotype_new, variant, genotypes)
+            variants = variant.split(/;|,/)
+            variants.each do |var|
+              genotype_dup = genotype_new.dup
+              gene = var&.scan(BRCA_REGEX)&.flatten&.uniq
+              if gene.present?
+                genotype_dup.add_gene(gene[0])
+                @all_genes -= gene if @all_genes.present?
+              end
+              process_variants(genotype_dup, var, genotypes)
+            end
+          end
+
+          def process_variants(genotype_new, variant, genotypes)
+            process_cdna_variant(genotype_new, variant)
+            process_exonic_variant(genotype_new, variant)
+            process_protein_impact(genotype_new, variant)
+            genotypes << genotype_new
           end
 
           def process_exonic_variant(genotype, variant)
@@ -258,10 +289,6 @@ module Import
 
             genotype.add_protein_impact($LAST_MATCH_INFO[:impact])
             @logger.debug "SUCCESSFUL protein parse for: #{$LAST_MATCH_INFO[:impact]}"
-          end
-
-          def positive_record?(genotype)
-            [2, 10].include? genotype.attribute_map['teststatus']
           end
         end
       end

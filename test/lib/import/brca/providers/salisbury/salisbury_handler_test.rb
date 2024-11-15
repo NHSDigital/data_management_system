@@ -22,7 +22,7 @@ class SalisburyHandlerTest < ActiveSupport::TestCase
   end
 
   test 'process_variants' do
-    @handler.process_variants(@genotype, @record.raw_fields.first['genotype'])
+    @handler.process_variants(@genotype, @record.raw_fields.first['genotype'], [])
     assert_equal 'c.9382C>T', @genotype.attribute_map['codingdnasequencechange']
     assert_equal 'p.Arg3128Ter', @genotype.attribute_map['proteinimpact']
     assert_equal 1, @genotype.attribute_map['sequencevarianttype']
@@ -31,7 +31,7 @@ class SalisburyHandlerTest < ActiveSupport::TestCase
   test 'process_exonic_variants' do
     exonic_record = build_raw_record(options: { 'pseudo_id1' => 'bob' })
     exonic_record.raw_fields.first['genotype'] = 'exons 21-24'
-    @handler.process_variants(@genotype, exonic_record.raw_fields.first['genotype'])
+    @handler.process_variants(@genotype, exonic_record.raw_fields.first['genotype'], [])
     assert_equal '21-24', @genotype.attribute_map['exonintroncodonnumber']
     assert_equal 10, @genotype.attribute_map['sequencevarianttype']
     assert_equal 1, @genotype.attribute_map['variantlocation']
@@ -175,7 +175,6 @@ class SalisburyHandlerTest < ActiveSupport::TestCase
     panel_rec.raw_fields.first['status'] = 'Normal'
     panel_rec.raw_fields.first['test'] = 'BRCA2 dosage analysis'
     panel_rec.raw_fields.first['genotype'] = nil
-    panel_rec.raw_fields[1]['moleculartestingtype'] = 'Breast and ovarian cancer 7-gene panel (R208)'
     @handler.assign_molecular_testing_var(panel_rec)
     @handler.process_molecular_testing(@genotype)
     genotypes = @handler.process_record(@genotype, panel_rec)
@@ -199,6 +198,32 @@ class SalisburyHandlerTest < ActiveSupport::TestCase
     assert_equal 'Full screen BRCA1 and BRCA2', genotypes[6].attribute_map['genetictestscope']
     assert_equal 1, genotypes[6].attribute_map['teststatus']
     assert_equal 3616, genotypes[6].attribute_map['gene']
+  end
+
+  test 'process multivariant cases' do
+    panel_rec = build_raw_record(options: { 'pseudo_id1' => 'bob' })
+    panel_rec.raw_fields.first['moleculartestingtype'] = 'Breast and ovarian cancer 7-gene panel (R208)'
+    panel_rec.raw_fields.first['genotype'] = 'BRCA2 c.5dupC p.(Gln74); CHEK2 c.4G>A'
+    panel_rec.raw_fields.first['test'] = 'Cartagenia/Congenica analysis'
+    @handler.assign_molecular_testing_var(panel_rec)
+    @handler.process_molecular_testing(@genotype)
+    genotypes = @handler.process_record(@genotype, panel_rec)
+    assert_equal 7, genotypes.size
+    assert_equal 'Full screen BRCA1 and BRCA2', genotypes[0].attribute_map['genetictestscope']
+    assert_equal 2, genotypes[0].attribute_map['teststatus']
+    assert_equal 8, genotypes[0].attribute_map['gene']
+    assert_equal 'c.5dupC', genotypes[0].attribute_map['codingdnasequencechange']
+    assert_equal 'p.Gln74', genotypes[0].attribute_map['proteinimpact']
+    assert_equal 2, genotypes[1].attribute_map['teststatus']
+    assert_equal 865, genotypes[1].attribute_map['gene']
+    assert_equal 'c.4G>A', genotypes[1].attribute_map['codingdnasequencechange']
+    assert_nil genotypes[1].attribute_map['proteinimpact']
+    assert_equal 1, genotypes[2].attribute_map['teststatus']
+    assert_equal 451, genotypes[2].attribute_map['gene']
+    assert_equal 1, genotypes[3].attribute_map['teststatus']
+    assert_equal 7, genotypes[3].attribute_map['gene']
+    assert_equal 1, genotypes[4].attribute_map['teststatus']
+    assert_equal 3186, genotypes[4].attribute_map['gene']
   end
 
   private
