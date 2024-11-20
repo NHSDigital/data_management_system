@@ -75,7 +75,7 @@ jobs:
         # https://stackoverflow.com/questions/69692842/error-message-error0308010cdigital-envelope-routinesunsupported/73465262#73465262
         run: NODE_OPTIONS=--openssl-legacy-provider bin/rails yarn:install assets:clobber assets:precompile
       - name: Run tests
-        run: bin/rails test 'test/**/${{ matrix.test-group }}*_test.rb'
+        run: PARALLEL_WORKERS=1 bin/rails test 'test/**/${{ matrix.test-group }}*_test.rb'
 
   # A utility job upon which Branch Protection can depend,
   # thus remaining agnostic of the matrix.
