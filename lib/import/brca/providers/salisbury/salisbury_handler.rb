@@ -190,8 +190,8 @@ module Import
             assign_variantpathclass_record(genotype_new)
             variant = record['genotype']
             if variant.present?
-              if variant.scan(CDNA_REGEX).size > 1 ||
-                 variant.scan(EXON_VARIANT_REGEX).size > 1
+              if (variant.scan(CDNA_REGEX).size +
+                 variant.scan(EXON_VARIANT_REGEX).size) > 1
                 process_multi_vars(genotype_new, variant, genotypes)
               else
                 process_variants(genotype_new, variant, genotypes)
