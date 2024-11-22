@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class CanManageDataItemsTest < ActionDispatch::IntegrationTest
+class ManageDataItemsTest < ActionDispatch::IntegrationTest
   def setup
     @admin = users(:admin_user)
     login_and_accept_terms(@admin)

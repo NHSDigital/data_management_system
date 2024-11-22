@@ -1,7 +1,7 @@
 require 'test_helper'
 require 'project_helper'
 
-class CanManageDatasetTest < ActionDispatch::IntegrationTest
+class ManageDatasetTest < ActionDispatch::IntegrationTest
   def setup
     @admin = users(:admin_user)
     login_and_accept_terms(@admin)

@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class CanManageDatasetVersionsTest < ActionDispatch::IntegrationTest
+class ManageDatasetVersionsTest < ActionDispatch::IntegrationTest
   def setup
     @admin = users(:admin_user)
     @dataset_manager = users(:team_dataset_manager)
