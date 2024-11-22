@@ -6,7 +6,8 @@ prescription1:
   bnf_code: XYZ45
   pat_age: 44
 # created in ppatients.yml
-  ppatient: patient1
+#  ppatient: patient1
+  ppatient_id: 1
 
 prescription2:
   prescription_dataid: 2
@@ -15,4 +16,5 @@ prescription2:
   drug_paid: £99.98
   bnf_code: FML02
   pat_age: 28
-  ppatient: patient1
+#  ppatient: patient1
+  ppatient_id: 1
