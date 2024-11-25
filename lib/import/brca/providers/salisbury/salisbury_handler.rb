@@ -187,13 +187,14 @@ module Import
           end
 
           def handle_variant_record(genotype_new, record, genotypes)
-            assign_variantpathclass_record(genotype_new)
             variant = record['genotype']
             if variant.present?
               if (variant.scan(CDNA_REGEX).size +
                  variant.scan(EXON_VARIANT_REGEX).size) > 1
                 process_multi_vars(genotype_new, variant, genotypes)
               else
+                # Assign varpath class only to single variant records
+                assign_variantpathclass_record(genotype_new)
                 process_variants(genotype_new, variant, genotypes)
               end
             else

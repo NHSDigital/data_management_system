@@ -73,6 +73,7 @@ class SalisburyHandlerTest < ActiveSupport::TestCase
     assert_equal 1, genotypes.size
     assert_equal 'Targeted BRCA mutation test', genotypes[0].attribute_map['genetictestscope']
     assert_equal 2, genotypes[0].attribute_map['teststatus']
+    assert_equal 5, genotypes[0].attribute_map['variantpathclass']
     assert_equal 8, genotypes[0].attribute_map['gene']
     assert_equal 'c.51_52del', genotypes[0].attribute_map['codingdnasequencechange']
     assert_equal 'p.Arg18LeufsTer12', genotypes[0].attribute_map['proteinimpact']
@@ -93,6 +94,7 @@ class SalisburyHandlerTest < ActiveSupport::TestCase
     assert_equal 1, genotypes.size
     assert_equal 'Full screen BRCA1 and BRCA2', genotypes[0].attribute_map['genetictestscope']
     assert_equal 2, genotypes[0].attribute_map['teststatus']
+    assert_equal 4, genotypes[0].attribute_map['variantpathclass']
     assert_equal 8, genotypes[0].attribute_map['gene']
     assert_equal 'c.68-7T>A', genotypes[0].attribute_map['codingdnasequencechange']
     assert_nil genotypes[0].attribute_map['proteinimpact']
@@ -214,9 +216,11 @@ class SalisburyHandlerTest < ActiveSupport::TestCase
     assert_equal 8, genotypes[0].attribute_map['gene']
     assert_equal 'c.5dupC', genotypes[0].attribute_map['codingdnasequencechange']
     assert_equal 'p.Gln74', genotypes[0].attribute_map['proteinimpact']
+    assert_nil genotypes[0].attribute_map['variantpathclass']
     assert_equal 2, genotypes[1].attribute_map['teststatus']
     assert_equal 865, genotypes[1].attribute_map['gene']
     assert_equal 'c.4G>A', genotypes[1].attribute_map['codingdnasequencechange']
+    assert_nil genotypes[1].attribute_map['variantpathclass']
     assert_nil genotypes[1].attribute_map['proteinimpact']
     assert_equal 1, genotypes[2].attribute_map['teststatus']
     assert_equal 451, genotypes[2].attribute_map['gene']
