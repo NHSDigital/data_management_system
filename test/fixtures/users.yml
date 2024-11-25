@@ -298,6 +298,12 @@ delegate_user3:
   division_id: 1
   delegate_user: true
 
+mbis_delegate:
+  email: mbis.delegate@phe.gov.uk
+  first_name: mbis
+  last_name: delegate
+  delegate_user: true
+
 approved_project_user:
   email: approved_project_user@phe.gov.uk
   first_name: Approved

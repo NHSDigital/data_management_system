@@ -13,7 +13,7 @@ require 'ndr_error/middleware/public_exceptions'
 module Mbis
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 6.1
+    config.load_defaults 7.0
 
     # Configuration for the application, engines, and railties goes here.
     #
@@ -70,5 +70,18 @@ module Mbis
 
     # TODO: Old Rails 6.0 default; disable this
     ActiveSupport.utc_to_local_returns_utc_offset_times = false
+
+    # TODO: Old Rails 6.1 default; disable this
+    # Fails rails test test/models/concerns/workflow/model_test.rb:180
+    config.active_support.executor_around_test_case = false
+
+    # TODO: Old Rails 6.1 default; disable this
+    # Fixtures are incomplete, e.g. test/fixtures/memberships.yml needs to be defined
+    config.active_record.verify_foreign_keys_for_fixtures = false
+
+    # Old Rails 6.1 default, required by devise_saml_authenticatable version 1.9.1
+    # cf. https://github.com/apokalipto/devise_saml_authenticatable/issues/237
+    # If we don't have this, the redirect when logging out from ADFS throws an application error.
+    Rails.application.config.action_controller.raise_on_open_redirects = false
   end
 end

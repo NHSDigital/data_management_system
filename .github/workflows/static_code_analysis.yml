@@ -1,0 +1,69 @@
+---
+name: Static Code Analysis
+
+on: [pull_request]
+
+jobs:
+  brakeman:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Ruby + Bundle
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+      - name: Run Brakeman analysis
+        run: bundle exec brakeman --parser-timeout 60
+
+  bundle-audit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Ruby + Bundle
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+      - name: Audit the bundle
+        # Ignore bootstrap version 3 warning: https://nhsd-jira.digital.nhs.uk/browse/NDRS2-1676
+        run: bundle exec bundle-audit check --update --ignore CVE-2024-6484
+        # run: bundle exec bundle-audit check --update
+
+  notify:
+    # Run only on main, but regardless of whether tests past:
+    if: ${{ always() }}
+    # if: ${{ always() && github.ref == 'refs/heads/main' }}
+
+    needs:
+      - brakeman
+      - bundle-audit
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: 8398a7/action-slack@v3
+        with:
+          status: custom
+          fields: workflow,commit,author
+          custom_payload: |
+            {
+              channel: '${{ secrets.SLACK_CHANNEL }}',
+              username: 'GitHub CI',
+              icon_emoji: ':robot_face:',
+              attachments: [{
+                text: '${{ github.event.commits[0].message }}',
+                fields: [
+                  { title: 'Author', value: '${{ github.actor }}', short: true },
+                  { title: 'Revision', value: '${{ github.sha }}', short: true }
+                ]
+              },{
+                color: '${{ needs.brakeman.result }}' === 'success' ? 'good' : '${{ needs.brakeman.result }}' === 'failure' ? 'danger' : 'warning',
+                text: `Brakeman checks returned *${{ needs.brakeman.result }}*.`
+              },{
+                color: '${{ needs.bundle-audit.result }}' === 'success' ? 'good' : '${{ needs.bundle-audit.result }}' === 'failure' ? 'danger' : 'warning',
+                text: `Bundle Audit checks returned *${{ needs.bundle-audit.result }}*.`
+              }]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
