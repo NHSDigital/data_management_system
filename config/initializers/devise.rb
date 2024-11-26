@@ -273,7 +273,12 @@ Devise.setup do |config|
   config.saml_create_user = true
 
   # Update the attributes of the user after a successful login. (Default is false)
-  config.saml_update_user = true
+  # config.saml_update_user = true
+  # The PHE ADFS server now includes blank email addresses for (some?) ex @phe staff.
+  # As an alternative to the below, we could write a saml_update_resource_hook that
+  # ignored blank email values, cf.
+  # https://github.com/apokalipto/devise_saml_authenticatable/tree/refs/heads/1.x-maintenance
+  config.saml_update_user = false
 
   # Set the default user key. The user will be looked up by this key. Make
   # sure that the Authentication Response includes the attribute.
