@@ -11,6 +11,10 @@ test:
 production:
   objectGuid: object_guid
   "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/upn": upn
-  "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress": email
+  # The PHE ADFS server now includes blank email addresses for (some?) ex @phe staff.
+  # As an alternative to the below, we could write a saml_update_resource_hook that
+  # ignored blank email values, cf.
+  # https://github.com/apokalipto/devise_saml_authenticatable/tree/refs/heads/1.x-maintenance
+  # "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress": email
   "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname": first_name
   "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname": last_name
