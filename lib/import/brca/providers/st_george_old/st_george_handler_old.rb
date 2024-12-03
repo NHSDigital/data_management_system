@@ -83,7 +83,7 @@ module Import
             # correcting ebatch provider and registry to RJ7 (from RJ7_2) to allow data to persist in the database
             @batch.provider = 'RJ7'
             @batch.registryid = 'RJ7'
-            
+
             res.each { |cur_genotype| @persister.integrate_and_store(cur_genotype) }
           end
 
@@ -416,7 +416,6 @@ module Import
           def process_split_variants(record, positive_genes)
             record.raw_fields['genotype'].scan(DELIMETER_REGEX)
             raw_genotypes = record.raw_fields['genotype'].split($LAST_MATCH_INFO[0])
-            puts raw_genotypes
             variants = []
             raw_genotypes.each do |raw_genotype|
               if positive_genes == []
