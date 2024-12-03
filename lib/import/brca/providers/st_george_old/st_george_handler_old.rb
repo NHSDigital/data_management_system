@@ -40,21 +40,32 @@ module Import
                                      SMARCB1|
                                      LZTR1)/xi.freeze
 
-          EXON_VARIANT_REGEX = /(?<variant>del|dup|ins).+ex(?<on>on)?(?<s>s)?\s
-                                (?<exons>[0-9]+(?<dgs>-[0-9]+)?)|
-                              ex(?<on>on)?(?<s>s)?\s(?<exons>[0-9]+(?<dgs>-[0-9]+)?)\s
-                              (?<variant>del|dup|ins)|
-                              (?<variant>del|dup|ins)\sexon(?<s>s)?\s
-                              (?<exons>[0-9]+(?<dgs>\sto\s[0-9]+))|
-                              (?<variant>del|dup|ins)(?<s>\s)?(?<exons>[0-9]+(?<dgs>-[0-9]+)?)|
-                              ex(?<on>on)?(?<s>s)?\s(?<exons>[0-9]+(?<dgs>\sto\s[0-9]+)?)\s
-                                                            (?<variant>del|dup|ins)|(?<variant>dup|del|ins)\s?ex\s?(?<exons>\d+)|
-                              (?<variant>dup|del|ins)\s?x\s?(?<exons>\d+(-|_)\d+)/ix.freeze
+          EXON_VARIANT_REGEX = /(?<variant>del|dup|ins).+ex(?<on>on)?(?<s>s)?\s(?<exons>[0-9]+(?<dgs>-[0-9]+)?)|
+                                ex(?<on>on)?(?<s>s)?\s(?<exons>[0-9]+(?<dgs>-[0-9]+)?)\s(?<variant>del|dup|ins)|
+                                (?<variant>del|dup|ins)\sexon(?<s>s)?\s(?<exons>[0-9]+(?<dgs>\sto\s[0-9]+))|
+                                (?<variant>del|dup|ins)(?<s>\s)?(?<exons>[0-9]+(?<dgs>-[0-9]+)?)|
+                                ex(?<on>on)?(?<s>s)?\s?(?<exons>[0-9]+(?<dgs>\sto\s[0-9]+)?)\s(?<variant>del|dup|ins)|
+                                (?<variant>dup|del|ins)\s?(x|ex)\s?(?<exons>[0-9]+(-|_)[0-9]+)|
+                                (?<variant>ivs.*-ivs.*del|dup|ins)(?<exon>~?[0-9]+)|
+                                (?<variant>dup|del|ins)\s?(ex|x)\s?(?<exons>[0-9]+)/ix.freeze
 
 
           DEPRECATED_BRCA_NAMES_REGEX = /B1|BR1|BRCA\s1|B2|BR2|BRCA\s2/i.freeze
 
           DELIMETER_REGEX = /[&\n+,;]|and|IFD/i.freeze
+
+          MALFORMED_MULTI_VARIANTS = {'N  c.231T>G p.(Thr77Thr)  c.6220C>A p.(His2074Asn)' => 
+                                              'N c.231T>G p.(Thr77Thr) & c.6220C>A p.(His2074Asn)',
+                                'N c.1011C>T p.(Asn337Asn)  c.6513G>T p.(Val2171Val)' => 
+                                              'N c.1011C>T p.(Asn337Asn) & c.6513G>T p.(Val2171Val)',
+                                'N c.2606C>T p.(Ser869Leu)  c.3497T>A p.(Val1166Asp)' => 
+                                              'N c.2606C>T p.(Ser869Leu) & c.3497T>A p.(Val1166Asp)',
+                                'N c.3310A>C p.(Thr1104Pro)  c.3503T>A  p.(Met1168Lys)' => 
+                                              'N c.3310A>C p.(Thr1104Pro) & c.3503T>A p.(Met1168Lys)',
+                                'N c.3119G>A p.(Ser1040Asn)  c.8593T>G p.(Leu2865Val)' => 
+                                              'N c.3119G>A p.(Ser1040Asn) & c.8593T>G p.(Leu2865Val)',
+                                'N c.5252G>A p.(Arg1751Gln)  c.3445A>G p.(Met1149Val)' => 
+                                              'N c.5252G>A p.(Arg1751Gln) & c.3445A>G p.(Met1149Val)'}.freeze
 
           def process_fields(record)
             # records using new importer should only have SRIs starting with D
@@ -72,8 +83,8 @@ module Import
             # correcting ebatch provider and registry to RJ7 (from RJ7_2) to allow data to persist in the database
             @batch.provider = 'RJ7'
             @batch.registryid = 'RJ7'
-            res.each { |cur_genotype| @persister.integrate_and_store(cur_genotype) }
             
+            res.each { |cur_genotype| @persister.integrate_and_store(cur_genotype) }
           end
 
           def add_organisationcode_testresult(genotype)
@@ -82,7 +93,7 @@ module Import
           end
 
           def add_moleculartestingtype(genotype, record)
-            return if record.raw_fields['moleculartestingtype'].nil?
+            return if record.raw_fields['moleculartestingtype'].nil? 
 
             moltesttype = record.raw_fields['moleculartestingtype']
             if moltesttype.scan(/unaf|pred/i).size.positive?
@@ -174,6 +185,10 @@ module Import
               genotypes.append(genotype_dup)
               genotype.add_gene(positive_genes.join)
               genotype.add_status(10)
+              #if no genes associated w/ variant, create empty records with status 4 as well
+              if positive_genes.empty?
+                create_empty_brca_tests(record, genotype, genotypes) 
+              end 
             else
               process_single_gene(genotype, record)
               genotype.add_status(10)  
@@ -272,6 +287,8 @@ module Import
           # Ordering here is important so duplicate branches are required
           # rubocop:disable  Lint/DuplicateBranch
           def process_single_gene(genotype, record)
+            return if record.raw_fields['moleculartestingtype'].nil?
+
             if record.raw_fields['genotype'].scan(BRCA_GENES_REGEX).size.positive?
               genotype.add_gene($LAST_MATCH_INFO[:brca])
               @logger.debug "SUCCESSFUL gene parse for: #{$LAST_MATCH_INFO[:brca]}"
@@ -320,7 +337,6 @@ module Import
           end
 
           def process_multiple_positive_variants(positive_genes, genotype, record, genotypes)
-            
             if positive_genes.flatten.uniq.size > 1
               variants = process_multi_genes_rec(record, positive_genes)
             elsif positive_genes.flatten.uniq.size == 1
@@ -335,9 +351,15 @@ module Import
 
           def process_multi_variants_no_gene(record, genotype, genotypes)          
             return if record.raw_fields['genotype'].nil?
-            record.raw_fields['genotype'].scan(DELIMETER_REGEX)
+
+            if MALFORMED_MULTI_VARIANTS.key?(record.raw_fields['genotype'])
+              genotype_field=MALFORMED_MULTI_VARIANTS[record.raw_fields['genotype']]
+            else
+              genotype_field=record.raw_fields['genotype']
+            end 
+            genotype_field.scan(DELIMETER_REGEX)
             unless $LAST_MATCH_INFO.nil?
-              raw_genotypes = record.raw_fields['genotype'].split($LAST_MATCH_INFO[0])
+              raw_genotypes = genotype_field.split($LAST_MATCH_INFO[0])
               variants =[]
               raw_genotypes.each do |raw_genotype|
                 genotype_dup = genotype.dup
@@ -363,8 +385,10 @@ module Import
           end 
 
           def process_multi_genes_rec(record, positive_genes)
+            
             if record.raw_fields['genotype'].scan(DELIMETER_REGEX).size > 1
               variants = process_single_variant(record, positive_genes)
+
             elsif record.raw_fields['genotype'].scan(DELIMETER_REGEX).size.positive?
               variants = process_split_variants(record, [])
             end
@@ -372,6 +396,7 @@ module Import
           end
 
           def process_uniq_gene_rec(record, positive_genes)
+
             if record.raw_fields['genotype'].scan(DELIMETER_REGEX).size.positive?
               variants = process_split_variants(record, positive_genes)
             else
@@ -391,6 +416,7 @@ module Import
           def process_split_variants(record, positive_genes)
             record.raw_fields['genotype'].scan(DELIMETER_REGEX)
             raw_genotypes = record.raw_fields['genotype'].split($LAST_MATCH_INFO[0])
+            puts raw_genotypes
             variants = []
             raw_genotypes.each do |raw_genotype|
               if positive_genes == []
@@ -467,7 +493,7 @@ module Import
           def normal?(record)
             variant = record.raw_fields['genotype']
             moltesttype = record.raw_fields['moleculartestingtype']
-            variant.scan(%r{NO PATHOGENIC|Normal|N/N|NOT DETECTED}i).size.positive? ||
+            variant.scan(%r{NO PATHOGENIC|Normal|N/N|N|NOT DETECTED}i).size.positive? ||
               variant == 'N' || moltesttype.scan(/unaffected/i).size.positive?
           end
 
@@ -516,8 +542,9 @@ module Import
           end
 
           def void_genetictestscope?(record)
-            return if record.raw_fields['moleculartestingtype'].nil? 
+            #return if record.raw_fields['moleculartestingtype'].nil? 
             
+            record.raw_fields['moleculartestingtype'].nil? ||
             record.raw_fields['moleculartestingtype'].empty? ||
             record.raw_fields['moleculartestingtype'] == 'Store' ||
             record.raw_fields['moleculartestingtype'] == 'Reclassification of previous result'
