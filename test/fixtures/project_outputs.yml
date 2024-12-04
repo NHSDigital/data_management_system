@@ -2,8 +2,8 @@
 
 one:
   project: one
-  output: MyString
+  output: one
 
 two:
   project: two
-  output: MyString
+  output: one

@@ -25,8 +25,8 @@
       <% project.project_amendments.accessible_by(current_ability).find_each do |amendment| %>
         <%= content_tag(:tr, id: dom_id(amendment)) do %>
           <td><%= amendment.reference %></td>
-          <td><%= amendment.requested_at.to_s(:ui) %></td>
-          <td><%= amendment.amendment_approved_date&.to_s(:ui) %></td>
+          <td><%= amendment.requested_at.to_fs(:ui) %></td>
+          <td><%= amendment.amendment_approved_date&.to_fs(:ui) %></td>
           <td>
             <% amendment.labels.each do |label| %>
               <%= bootstrap_label_tag(:default, label) %>

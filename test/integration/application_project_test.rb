@@ -21,7 +21,7 @@ class ApplicationProjectTest < ActionDispatch::IntegrationTest
     click_button 'New'
     click_link 'Application'
 
-    assert has_field?('project_application_date', with: Time.zone.today.to_s(:ui))
+    assert has_field?('project_application_date', with: Time.zone.today.to_fs(:ui))
   end
 
   test 'the DPIA process' do

@@ -31,9 +31,9 @@
           <td><%= dpia.reference %></td>
           <td><%= dpia.ig_toolkit_version %></td>
           <td><%= dpia.ig_assessment_status_value %></td>
-          <td><%= dpia.review_meeting_date&.to_s(:ui) %></td>
-          <td><%= dpia.dpia_decision_date&.to_s(:ui) %></td>
-          <td id='dpia_attached_date'><%= dpia&.attachment&.created_at&.to_s(:ui) %></td>
+          <td><%= dpia.review_meeting_date&.to_fs(:ui) %></td>
+          <td><%= dpia.dpia_decision_date&.to_fs(:ui) %></td>
+          <td id='dpia_attached_date'><%= dpia&.attachment&.created_at&.to_fs(:ui) %></td>
           <td>
             <div class="pull-right">
               <%= inline_controls_for(dpia) %>

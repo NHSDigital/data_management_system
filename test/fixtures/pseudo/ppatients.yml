@@ -8,20 +8,20 @@ patient1:
 patient2:
   id: 2
   e_batch_id: 1
-  type: Pseudo::Pbirth
+  type: Pseudo::Birth
   pseudo_id1: some_long_id_2_1
   pseudo_id2: ""
 
 patient3:
   id: 3
   e_batch_id: 1
-  type: Pseudo::Pdeath
+  type: Pseudo::Death
   pseudo_id1: some_long_id_3_1
   pseudo_id2: ""
 
 patient4:
   id: 4
   e_batch_id: 1
-  type: Pseudo::Pmolecular
+  type: Pseudo::Molecular
   pseudo_id1: some_long_id_4_1
   pseudo_id2: ""

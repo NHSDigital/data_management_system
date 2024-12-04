@@ -1,7 +1,13 @@
 source 'https://rubygems.org'
 
-gem 'activemodel-caution', '6.1.7.6' # Supports rails ~> 6.1.7.0
-gem 'rails', '~> 6.1.0', '>= 6.1.7.5'
+# The activemodel-cautions gem is ours, so not available rubygems.org.
+# The .gem file is in vendor/cache - if this is lost, or the gem needs
+# updating, the source (along with development instructions in the
+# README) is available at:
+#  https://github.com/NHSDigital/activemodel-caution.git
+
+gem 'activemodel-caution', '7.0.8' # Supports rails ~> 7.0.8.0
+gem 'rails', '~> 7.0.4', '>= 7.0.8.1'
 
 # Use old psych for YAML on Ruby 3.1 until we move to Rails 7.0.4
 # so that we can continue to use aliases in config/locales/en.yml
@@ -63,7 +69,7 @@ gem 'ndr_error', '~> 2.0'
 gem 'ndr_import'
 gem 'ndr_pseudonymise', '~> 0.4.1'
 gem 'ndr_support', '~> 5.9'
-gem 'ndr_ui'
+gem 'ndr_ui', '~> 3.3'
 gem 'ndr_workflow', '~> 1.2', '>= 1.2.2'
 
 gem 'bootstrap-table-rails', '~> 1.20.2'
@@ -74,7 +80,7 @@ gem 'nokogiri', '~> 1.11'
 gem 'regexp-examples'
 
 gem 'jquery-rails'
-gem 'jquery-ui-rails', github: 'jquery-ui-rails/jquery-ui-rails', tag: 'v7.0.0'
+gem 'jquery-ui-rails', '>= 7.0.0'
 gem 'rainbow'
 
 group :test do

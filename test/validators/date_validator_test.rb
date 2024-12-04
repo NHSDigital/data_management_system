@@ -51,7 +51,7 @@ class DateValidatorTest < ActiveSupport::TestCase
     timeline.birth_date = 130.years.ago
     refute timeline.valid?
     error_message = I18n.t('errors.messages.not_before',
-                           comparison: Timeline::EARLIEST_BIRTH_DATE.to_s(:ui))
+                           comparison: Timeline::EARLIEST_BIRTH_DATE.to_fs(:ui))
     assert_includes timeline.errors[:birth_date], error_message
 
     timeline.birth_date = 70.years.ago
@@ -75,7 +75,7 @@ class DateValidatorTest < ActiveSupport::TestCase
     timeline.treatment_date = timeline.birth_date + 12.years
     refute timeline.valid?
     error_message = I18n.t('errors.messages.not_before',
-                           comparison: 13.years.since(timeline.birth_date).to_s(:ui))
+                           comparison: 13.years.since(timeline.birth_date).to_fs(:ui))
     assert_includes timeline.errors[:treatment_date], error_message
 
     timeline.treatment_date = timeline.birth_date + 14.years

@@ -19,7 +19,7 @@ queued:
       exception_executions:
       locale: en
       timezone: UTC
-      enqueued_at: <%= Time.zone.now.to_s(:iso8601) %>
+      enqueued_at: <%= Time.zone.now.to_fs(:iso8601) %>
 
 running:
   queue: default
@@ -44,7 +44,7 @@ running:
       exception_executions:
       locale: en
       timezone: UTC
-      enqueued_at: <%= 2.minutes.ago.to_s(:iso8601) %>
+      enqueued_at: <%= 2.minutes.ago.to_fs(:iso8601) %>
 
 failed:
   queue: default
@@ -71,4 +71,4 @@ failed:
       exception_executions:
       locale: en
       timezone: UTC
-      enqueued_at: <%= 61.minutes.ago.to_s(:iso8601) %>
+      enqueued_at: <%= 61.minutes.ago.to_fs(:iso8601) %>
