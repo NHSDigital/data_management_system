@@ -376,7 +376,8 @@ GEM
       method_source (~> 1.0)
     pry-rails (0.3.11)
       pry (>= 0.13.0)
-    psych (3.3.2)
+    psych (4.0.4)
+      stringio
     public_suffix (6.0.1)
     puma (6.4.3)
       nio4r (~> 2.0)
@@ -509,6 +510,7 @@ GEM
       actionpack (>= 6.1)
       activesupport (>= 6.1)
       sprockets (>= 3.0.0)
+    stringio (3.0.1.2)
     terminal-notifier-guard (1.7.0)
     test-unit (3.6.2)
       power_assert
@@ -598,7 +600,7 @@ DEPENDENCIES
   possibly
   pry
   pry-rails
-  psych (= 3.3.2)
+  psych (= 4.0.4)
   puma (~> 6.0)
   puma-daemon
   rack-mini-profiler
@@ -609,6 +611,7 @@ DEPENDENCIES
   sass-rails
   simplecov
   spring
+  stringio (= 3.0.1.2)
   terminal-notifier-guard
   turbolinks (~> 5.x)
   web-console

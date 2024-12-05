@@ -12,7 +12,8 @@ gem 'rails', '~> 7.0.4', '>= 7.0.8.1'
 # Use old psych for YAML on Ruby 3.1 until we move to Rails 7.0.4
 # so that we can continue to use aliases in config/locales/en.yml
 # cf. https://stackoverflow.com/questions/71191685/visit-psych-nodes-alias-unknown-alias-default-psychbadalias
-gem 'psych', '3.3.2' # Exactly match the version on Ruby 3.0
+gem 'psych', '4.0.4' # Exactly match the version on Ruby 3.1
+gem 'stringio', '3.0.1.2' # psych dependency: exactly match the version on Ruby 3.1
 
 # Use postgresql as the database for Active Record
 gem 'pg', '~> 1.4.6' # All client instance have postgres version >= 9.3
