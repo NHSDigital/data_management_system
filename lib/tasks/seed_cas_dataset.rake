@@ -21,7 +21,7 @@ namespace :cas do
     fname = Rails.root.join('lib', 'tasks', 'xsd', 'nodes_cas.yml')
 
     Node.transaction do
-      YAML.safe_load(File.open(fname), [Symbol]).each do |row|
+      YAML.safe_load(File.open(fname), permitted_classes: [Symbol]).each do |row|
         version = row['dataset_version']
         dataset = row['name']
         print "Building nodes for #{version}\n"
