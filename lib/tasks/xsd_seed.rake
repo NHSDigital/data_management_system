@@ -44,7 +44,7 @@ namespace :xsd do
     fname = Rails.root.join('lib', 'tasks', 'xsd', 'nodes.yml')
 
     Node.transaction do
-      YAML.safe_load(File.open(fname), [Symbol]).each do |row|
+      YAML.safe_load(File.open(fname), permitted_classes: [Symbol]).each do |row|
         version = row['dataset_version']
         dataset = row['name']
         print "Building nodes for #{version}\n"
@@ -103,7 +103,7 @@ namespace :xsd do
     fname = Rails.root.join('lib', 'tasks', 'xsd', 'xml_types.yml')
     before = XmlType.count
     XmlType.transaction do
-      YAML.safe_load(File.open(fname), [Symbol]).each do |row|
+      YAML.safe_load(File.open(fname), permitted_classes: [Symbol]).each do |row|
         row.delete(:pattern) if row[:pattern].blank?
         row.delete(:decimal_places) if row[:decimal_places].blank?
         ignore = %w[xml_attribute_for_value enumeration_values attribute_names]
@@ -142,7 +142,7 @@ namespace :xsd do
     fname = Rails.root.join('lib', 'tasks', 'xsd', 'datasets.yml')
     before = Dataset.count
     Dataset.transaction do
-      YAML.safe_load(File.open(fname), [Symbol]).each_value do |row|
+      YAML.safe_load(File.open(fname), permitted_classes: [Symbol]).each_value do |row|
         d = Dataset.new(row)
         d.dataset_type = DatasetType.find_by(name: 'XML Schema')
         d.save!(validate: false)
@@ -157,7 +157,7 @@ namespace :xsd do
     fname = Rails.root.join('lib', 'tasks', 'xsd', 'dataset_versions.yml')
     before = DatasetVersion.count
     DatasetVersion.transaction do
-      YAML.safe_load(File.open(fname), [Symbol]).each_value do |row|
+      YAML.safe_load(File.open(fname), permitted_classes: [Symbol]).each_value do |row|
         d = DatasetVersion.new(row.except('dataset'))
         d.dataset = Dataset.find_by(name: row['dataset'])
         d.save!
@@ -172,7 +172,7 @@ namespace :xsd do
     attrs = Rails.root.join('lib', 'tasks', 'xsd', 'xml_attributes.yml')
     counter = 0
     Nodes::DataItem.transaction do
-      YAML.safe_load(File.open(attrs), [Symbol]).each_value do |row|
+      YAML.safe_load(File.open(attrs), permitted_classes: [Symbol]).each_value do |row|
         x = XmlAttribute.new(row)
         x.save!
         counter += 1
@@ -187,7 +187,7 @@ namespace :xsd do
     fname = Rails.root.join('lib', 'tasks', 'xsd', 'categories.yml')
     before = Category.count
     Category.transaction do
-      YAML.safe_load(File.open(fname), [Symbol]).each_value do |row|
+      YAML.safe_load(File.open(fname), permitted_classes: [Symbol]).each_value do |row|
         ignored_fields = %w[dataset_name dataset_version]
         e = Category.new(row.except(*ignored_fields))
         e.dataset_version = version_for_dataset(row['dataset_name'], row['dataset_version'])
@@ -203,7 +203,7 @@ namespace :xsd do
     fname = Rails.root.join('lib', 'tasks', 'xsd', 'data_dictionary_element.yml')
     before = DataDictionaryElement.count
     DataDictionaryElement.transaction do
-      YAML.safe_load(File.open(fname), [Symbol]).each do |row|
+      YAML.safe_load(File.open(fname), permitted_classes: [Symbol]).each do |row|
         dde = DataDictionaryElement.new(row.except('xml_type'))
         dde.xml_type = XmlType.find_by(name: row['xml_type']) unless row['xml_type'].nil?
         dde.save!
@@ -238,7 +238,7 @@ namespace :xsd do
   # Task for updating fixtures
   task upp: :environment do
     fname = Rails.root.join('lib', 'tasks', 'xsd', 'nodes.yml')
-    x = YAML.safe_load(File.open(fname), [Symbol]).each do |row|
+    x = YAML.safe_load(File.open(fname), permitted_classes: [Symbol]).each do |row|
       child_up(row)
     end
     puts x.to_yaml
@@ -373,7 +373,7 @@ namespace :xsd do
     fname = Rails.root.join('lib', 'tasks', 'xsd', 'categories.yml')
     before = Category.count
     Category.transaction do
-      YAML.safe_load(File.open(fname), [Symbol]).each_value do |row|
+      YAML.safe_load(File.open(fname), permitted_classes: [Symbol]).each_value do |row|
         next unless row['dataset_version'] == '4-1-1'
 
         ignored_fields = %w[dataset_name dataset_version]
@@ -392,7 +392,7 @@ namespace :xsd do
     fname = Rails.root.join('lib', 'tasks', 'xsd', 'nodes.yml')
 
     Node.transaction do
-      YAML.safe_load(File.open(fname), [Symbol]).each do |row|
+      YAML.safe_load(File.open(fname), permitted_classes: [Symbol]).each do |row|
         version = row['dataset_version']
         next unless version == '4-1-1'
 
@@ -457,7 +457,7 @@ namespace :xsd do
 
       fname = Rails.root.join('lib', 'tasks', 'xsd', 'COSDv9.0.1.yml')
 
-      YAML.safe_load(File.open(fname), [Symbol]).each do |row|
+      YAML.safe_load(File.open(fname), permitted_classes: [Symbol]).each do |row|
         print "Building nodes for #{v9_0_1.semver_version}\n"
         node = build_node(row, v9_0_1)
         if row['children'].present?
