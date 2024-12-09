@@ -38,6 +38,8 @@ module Export
     # Updated criteria implemented 2021-11, cf. plan.io #14947#note-21
     # RD_PATTERN = /\A(D761|D762|D763|U10.*|M303|E752)\z
     # /x
+    # Custom criteria used 2024-10, cf. JIRA NDRS3-337
+    # RD_PATTERN = /\A(Q81.*)\z/
     # Updated criteria implemented 2022-09, cf. plan.io #30091 and #14947
     RD_PATTERN = /\A(E009|E030|E031|G724|I776|I778|J991|M080|M082|M083|M084|M089|M300|M301|M303|
       M308|M313|M314|M315|M316|M317|M321|M328|M329|M330|M331|M332|M339|M340|M341|M348|M349|M352|
@@ -47,6 +49,8 @@ module Export
     # RD_PATTERN_POST_2015 = /\A(Q.*)\z/
     # Updated criteria implemented 2021-11, cf. plan.io #14947#note-21
     # RD_PATTERN_POST_2015 = /\AZZZZZZ\z/ # match no ICD codes
+    # Custom criteria used 2024-10, cf. JIRA NDRS3-337
+    # RD_PATTERN_POST_2015 = /\A(Q81.*)\z/
     # Updated criteria implemented 2022-09, cf. plan.io #30091 and #14947
     RD_PATTERN_POST_2015 = /\A(Q.*)\z/
     # Extract used until 2020-10
@@ -55,6 +59,9 @@ module Export
     #                       [/WOLFRAM/],
     #                       [/DIDMOAD/],
     #                       [/MULTI/, /ATROPHY/]].freeze
+    # Custom criteria used 2024-10, cf. JIRA NDRS3-337
+    # RD_STRING_PATTERNS = [[/EPIDERMOLYSIS BULLOSA/],
+    #                       [/EPIDERMOLYSIS/]].freeze
     # Updated criteria implemented 202x1-10, cf. plan.io #14947#note-18
     RD_STRING_PATTERNS = [].freeze
     # C / D00-D48, confirmed as sufficient against early 2017 cancer death files
