@@ -7,7 +7,6 @@ require 'csv'
 # folder = File.expand_path('../', __dir__)
 # $LOAD_PATH.unshift(folder) unless $LOAD_PATH.include?(folder)
 
-
 module Import
   module Brca
     module Core
@@ -34,6 +33,8 @@ module Import
 
           return load_manchester(tables) if 'R0A' == @batch.provider
 
+          return load_salisbury(tables) if 'RNZ' == @batch.provider
+
           # Enumerate over the tables
           # Under normal circustances, there will only be one table
           tables.each do |_tablename, table_content|
@@ -54,6 +55,27 @@ module Import
               grouping << rawtext['authoriseddate']
               grouping
             end
+            cleaned_records = []
+            # From each set of grouped records, build a normalised record
+            grouped_records_by_linkage.each do |_linkage, records|
+              cleaned_records << [records.first.first, grouped_rawtext_record_from(records)]
+            end
+            cleaned_records.each { |klass, fields| build_and_process_records(klass, fields) }
+          end
+        end
+
+        def load_salisbury(tables)
+          tables.each do |_tablename, table_content|
+            mapped_table = table_mapping.transform(table_content)
+            grouped_records_by_linkage = mapped_table.to_a[1..-1].group_by do |_klass, fields, _i|
+              grouping = fields.values_at('pseudo_id1', 'pseudo_id2')
+              rawtext = JSON.parse(fields['rawtext_clinical.to_json'])
+              grouping << rawtext['servicereportidentifier']
+              grouping << rawtext['moleculartestingtype']
+              grouping << rawtext['authoriseddate']
+              grouping
+            end
+
             cleaned_records = []
             # From each set of grouped records, build a normalised record
             grouped_records_by_linkage.each do |_linkage, records|
@@ -95,7 +117,8 @@ module Import
                          else
                            raise "No mapping found for #{@batch.e_type}"
                          end
-          YAML.load_file(SafePath.new('mappings_config').join(mapping_file))
+          YAML.safe_load_file(SafePath.new('mappings_config').join(mapping_file),
+                              permitted_classes: [NdrImport::Table, Regexp, Symbol])
         end
       end
     end

@@ -12,7 +12,8 @@ gem 'rails', '~> 7.0.4', '>= 7.0.8.1'
 # Use old psych for YAML on Ruby 3.1 until we move to Rails 7.0.4
 # so that we can continue to use aliases in config/locales/en.yml
 # cf. https://stackoverflow.com/questions/71191685/visit-psych-nodes-alias-unknown-alias-default-psychbadalias
-gem 'psych', '3.3.2' # Exactly match the version on Ruby 3.0
+gem 'psych', '4.0.4' # Exactly match the version on Ruby 3.1
+gem 'stringio', '3.0.1.2' # psych dependency: exactly match the version on Ruby 3.1
 
 # Use postgresql as the database for Active Record
 gem 'pg', '~> 1.4.6' # All client instance have postgres version >= 9.3
@@ -69,7 +70,7 @@ gem 'ndr_error', '~> 2.0'
 gem 'ndr_import'
 gem 'ndr_pseudonymise', '~> 0.4.1'
 gem 'ndr_support', '~> 5.9'
-gem 'ndr_ui'
+gem 'ndr_ui', '~> 3.3'
 gem 'ndr_workflow', '~> 1.2', '>= 1.2.2'
 
 gem 'bootstrap-table-rails', '~> 1.20.2'
@@ -80,7 +81,7 @@ gem 'nokogiri', '~> 1.11'
 gem 'regexp-examples'
 
 gem 'jquery-rails'
-gem 'jquery-ui-rails', github: 'jquery-ui-rails/jquery-ui-rails', tag: 'v7.0.0'
+gem 'jquery-ui-rails', '>= 7.0.0'
 gem 'rainbow'
 
 group :test do
