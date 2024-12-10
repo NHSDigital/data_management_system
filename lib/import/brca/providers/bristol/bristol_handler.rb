@@ -32,7 +32,6 @@ module Import
 
           def process_positive_record(genotype, positive_gene, record, genotypes)
             process_cdna_change(genotype, record)
-            genotype.add_gene_location(record.mapped_fields['codingdnasequencechange'])
             add_protein_impact(genotype, record)
             genotype.add_variant_class(record.mapped_fields['variantpathclass'])
             process_genomic_change(genotype, record)
