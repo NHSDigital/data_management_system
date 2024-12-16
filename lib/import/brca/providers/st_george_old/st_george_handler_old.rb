@@ -184,6 +184,7 @@ module Import
               genotype_dup.add_status(1)
               genotypes.append(genotype_dup)
               genotype.add_gene(positive_genes.join)
+              get_ucs_variants(record, genotype)
               genotype.add_status(10)
               #if no genes associated w/ variant, create empty records with status 4 as well
               if positive_genes.empty?
@@ -191,10 +192,21 @@ module Import
               end 
             else
               process_single_gene(genotype, record)
+              get_ucs_variants(record, genotype)
               genotype.add_status(10)  
             end    
 
             genotypes.append(genotype)
+          end 
+
+          def get_ucs_variants(record, genotype)
+            if positive_cdna?(record)
+              process_cdna_variant(genotype, record)
+            elsif positive_exonvariant?(record)
+             process_exonic_variant(genotype, record)
+            else
+             @logger.debug "FAILED variant parse for: #{record.raw_fields['genotype']}"
+            end 
           end 
 
           def unknown_status(genotype, genotypes, positive_genes, record)
@@ -482,6 +494,23 @@ module Import
             genotype.add_status(2)
             @logger.debug "SUCCESSFUL cdna change parse for: #{$LAST_MATCH_INFO[:cdna]}"
             # end
+          end
+
+          def process_exonic_ucs_variant(genotype, record)
+            return unless record.raw_fields['genotype'].scan(EXON_VARIANT_REGEX).size.positive?
+
+            genotype.add_exon_location($LAST_MATCH_INFO[:exons])
+            genotype.add_variant_type($LAST_MATCH_INFO[:variant])
+            genotype.add_status(10)
+            @logger.debug "SUCCESSFUL exon variant parse for: #{record.raw_fields['genotype']}"
+          end
+
+          def process_cdna_ucs_variant(genotype, record)
+            return unless record.raw_fields['genotype'].scan(CDNA_REGEX).size.positive?
+
+            genotype.add_gene_location($LAST_MATCH_INFO[:cdna])
+            genotype.add_status(10)
+            @logger.debug "SUCCESSFUL cdna change parse for: #{$LAST_MATCH_INFO[:cdna]}"
           end
 
           def process_normal_record(genotype, record)
