@@ -154,9 +154,9 @@ module Import
           end
 
           def process_fullscreen_records(genotype, record, positive_genes, genotypes)
-            if ucs_variant?(record)
-              process_ucs_variants(genotype, genotypes, positive_genes, record)       
-            elsif failed_test?(record)
+            #if ucs_variant?(record)
+             # process_ucs_variants(genotype, genotypes, positive_genes, record)       
+            if failed_test?(record)
               failed_full_screen(genotype, genotypes)
             elsif positive_cdna?(record) || positive_exonvariant?(record)
               if record.raw_fields['genotype'].scan(CDNA_REGEX).size > 1
@@ -255,12 +255,15 @@ module Import
             process_single_positive_variants(genotype, record)
             process_single_protein(genotype, record)
             genotypes.append(genotype)
+            if positive_genes.empty? #create teststatus 4 records for BRCA1/2 to capture they have been tested.
+              create_empty_brca_tests(record, genotype_dup, genotypes) 
+            end
           end
 
           def process_targeted_records(positive_genes, genotype, record, genotypes)
-            if ucs_variant?(record)
-              process_ucs_variants(genotype, genotypes, positive_genes, record)
-            elsif failed_test?(record)
+            #if ucs_variant?(record)
+              #process_ucs_variants(genotype, genotypes, positive_genes, record)
+            if failed_test?(record)
               process_failed_targeted(genotype, record, genotypes)
             elsif positive_cdna?(record) || positive_exonvariant?(record)
               process_positive_targeted(record, positive_genes, genotype, genotypes)
@@ -337,13 +340,17 @@ module Import
             end
           end
 
-          def add_variants_multiple_results(variants, genotype, genotypes)
+          def add_variants_multiple_results(variants, genotype, genotypes, record)
             variants.each do |gene, mutation, protein|
               genotype_dup = genotype.dup
               genotype_dup.add_gene(gene)
               genotype_dup.add_gene_location(mutation)
               genotype_dup.add_protein_impact(protein)
-              genotype_dup.add_status(2)
+              if ucs_variant?(record)
+                genotype_dup.add_status(10)
+              else
+                genotype_dup.add_status(2)
+              end 
               genotypes.append(genotype_dup)
             end
           end
@@ -356,7 +363,7 @@ module Import
             elsif positive_genes.empty?
               process_multi_variants_no_gene(record, genotype, genotypes)
             end
-            add_variants_multiple_results(variants, genotype, genotypes) unless variants.nil?
+            add_variants_multiple_results(variants, genotype, genotypes, record) unless variants.nil?
 
             genotypes
           end
@@ -379,7 +386,11 @@ module Import
                 protein = get_protein_impact(raw_genotype)
                 genotype_dup.add_gene_location(mutation[0]) unless mutation.nil?
                 genotype_dup.add_protein_impact(protein[0]) unless protein.nil?
-                genotype_dup.add_status(2)
+                if ucs_variant?(record)
+                  genotype_dup.add_status(10)
+                else
+                  genotype_dup.add_status(2)
+                end 
                 genotypes.append(genotype_dup)
               end
           end 
@@ -482,7 +493,11 @@ module Import
 
             genotype.add_exon_location($LAST_MATCH_INFO[:exons])
             genotype.add_variant_type($LAST_MATCH_INFO[:variant])
-            genotype.add_status(2)
+            if ucs_variant?(record)
+              genotype.add_status(10)
+            else
+              genotype.add_status(2)
+            end 
             @logger.debug "SUCCESSFUL exon variant parse for: #{record.raw_fields['genotype']}"
             # end
           end
@@ -491,7 +506,11 @@ module Import
             return unless record.raw_fields['genotype'].scan(CDNA_REGEX).size.positive?
 
             genotype.add_gene_location($LAST_MATCH_INFO[:cdna])
-            genotype.add_status(2)
+            if ucs_variant?(record)
+              genotype.add_status(10)
+            else
+              genotype.add_status(2)
+            end
             @logger.debug "SUCCESSFUL cdna change parse for: #{$LAST_MATCH_INFO[:cdna]}"
             # end
           end
