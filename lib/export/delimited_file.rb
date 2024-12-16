@@ -59,7 +59,8 @@ module Export
                        raise "No mapping found for #{@batch.e_type}"
                      end
 
-      YAML.load_file(SafePath.new('mappings_config').join(mapping_file))
+      YAML.safe_load_file(SafePath.new('mappings_config').join(mapping_file),
+                          permitted_classes: [NdrImport::Table, Regexp, Symbol])
     end
 
     # Header rows (including weird capitalisations of some fields)

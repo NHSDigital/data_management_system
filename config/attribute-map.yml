@@ -1,12 +1,8 @@
 # Maps attributes from IdP SAML response to SP user model fields.
 # See https://github.com/apokalipto/devise_saml_authenticatable for more.
-default: &default {}
+development: {}
 
-development:
-  <<: *default
-
-test:
-  <<: *default
+test: {}
 
 production:
   objectGuid: object_guid

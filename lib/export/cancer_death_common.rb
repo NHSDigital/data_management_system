@@ -151,7 +151,8 @@ module Export
     # Load the required mapping file based on @batch.e_type
     def table_mapping
       mapping_file = 'cd_mapping.yml'
-      YAML.load_file(SafePath.new('mappings_config').join(mapping_file))['cd']
+      YAML.safe_load_file(SafePath.new('mappings_config').join(mapping_file),
+                          permitted_classes: [NdrImport::Table, Regexp, Symbol])['cd']
     end
 
     # Does this row match the current extract
