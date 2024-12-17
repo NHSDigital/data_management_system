@@ -153,9 +153,7 @@ module Import
             end
           end
 
-          def process_fullscreen_records(genotype, record, positive_genes, genotypes)
-            #if ucs_variant?(record)
-             # process_ucs_variants(genotype, genotypes, positive_genes, record)       
+          def process_fullscreen_records(genotype, record, positive_genes, genotypes)     
             if failed_test?(record)
               failed_full_screen(genotype, genotypes)
             elsif positive_cdna?(record) || positive_exonvariant?(record)
@@ -174,27 +172,7 @@ module Import
 
           def ucs_variant?(record)
             record.raw_fields['genotype'].scan(/ucs/i).size.positive?
-          end 
-
-          def process_ucs_variants(genotype, genotypes, positive_genes, record)
-            if ashkenazi?(record) || polish?(record) || full_screen?(record)
-              negative_gene = %w[BRCA1 BRCA2] - positive_genes
-              genotype_dup = genotype.dup
-              genotype_dup.add_gene(negative_gene.join)
-              genotype_dup.add_status(1)
-              genotypes.append(genotype_dup)
-              genotype.add_gene(positive_genes.join)
-              get_ucs_variants(record, genotype)
-              genotype.add_status(10)
-              #if no genes associated w/ variant, create empty records with status 4 as well
-              if positive_genes.empty?
-                create_empty_brca_tests(record, genotype, genotypes) 
-              end 
-            else
-              process_single_gene(genotype, record)
-              get_ucs_variants(record, genotype)
-              genotype.add_status(10)  
-            end    
+          end        
 
             genotypes.append(genotype)
           end 
@@ -261,8 +239,6 @@ module Import
           end
 
           def process_targeted_records(positive_genes, genotype, record, genotypes)
-            #if ucs_variant?(record)
-              #process_ucs_variants(genotype, genotypes, positive_genes, record)
             if failed_test?(record)
               process_failed_targeted(genotype, record, genotypes)
             elsif positive_cdna?(record) || positive_exonvariant?(record)
